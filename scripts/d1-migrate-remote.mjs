@@ -43,6 +43,32 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     from sqlite_master where type = 'index' and name = 'transfer_items_idempotency_idx'
   `,
   `
+    select 'agent-device-authorizations-table' as item, count(*) as present
+    from sqlite_master where type = 'table' and name = 'agent_device_authorizations'
+    union all
+    select 'agent-access-tokens-table', count(*)
+    from sqlite_master where type = 'table' and name = 'agent_access_tokens'
+    union all
+    select 'agent-audit-log-table', count(*)
+    from sqlite_master where type = 'table' and name = 'agent_audit_log'
+  `,
+  `
+    select 'agent-device-status-expires-index' as item, count(*) as present
+    from sqlite_master where type = 'index' and name = 'agent_device_status_expires_idx'
+    union all
+    select 'agent-device-ip-created-index', count(*)
+    from sqlite_master where type = 'index' and name = 'agent_device_ip_created_idx'
+    union all
+    select 'agent-access-tokens-user-index', count(*)
+    from sqlite_master where type = 'index' and name = 'agent_access_tokens_user_idx'
+    union all
+    select 'agent-access-tokens-expires-index', count(*)
+    from sqlite_master where type = 'index' and name = 'agent_access_tokens_expires_idx'
+    union all
+    select 'agent-audit-created-index', count(*)
+    from sqlite_master where type = 'index' and name = 'agent_audit_created_idx'
+  `,
+  `
     select 'article-delivery-auto-publish-column' as item, count(*) as present
     from pragma_table_info('article_delivery_channels') where name = 'auto_publish'
     union all
@@ -86,7 +112,7 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260806-site-guides-password-rooms-r2'
+    where key = 'article_seed_version' and value = '20260806-whiteboard-2048-agent-r1'
     union all
     select 'whiteboard-reliable-sketch-update-article', count(*)
     from articles where article_id = 'seed-update-2026-08-01-whiteboard-reliable-sketch'

@@ -1,18 +1,26 @@
 # 临时互传维护与部署
 
-**当前子项目版本：1.0.1**
+**当前子项目版本：1.0.2**
 
 本目录是临时互传的治理根：`VERSION` / `project.json` 保存独立版本，`CHANGELOG.md` 保存子项目更新，`AGENTS.md` 约束分布在主站、Pages Functions、后台和清理 Worker 中的实现，`AGENT.md` 仅作兼容入口。任何互传更改都必须把该版本精确增加 `0.0.1`，并同步本目录全部受影响文档和根项目记录。
 
 ## 当前边界
 
 - 入口位于主站“工具区 / Tools / ツール”（内部 route 仍为 `resources`），不是新的顶层 route 或 Dock App。
-- 所有用户接口复用现有 `lusu_session` HttpOnly 会话；管理员仅由 D1 `users.role = 'admin'` 判断。
+- 浏览器界面继续复用现有 `lusu_session` HttpOnly 会话；本地 CLI 与 stdio MCP 通过设备码授权取得有期限、可撤销、最小权限的 Agent Bearer。管理员仍仅由 Cookie 会话中的 D1 `users.role = 'admin'` 判断，Agent Bearer 不得进入 `/api/admin/*`，即使授权账号本身是管理员也按普通用户能力执行。
 - 房间口令在浏览器规范化并派生 `roomKey` 与文字 AES-GCM key，明文口令不进入 API、D1、R2、日志或埋点。
 - 文字是客户端加密；文件不是端到端加密。文件依赖 HTTPS、私有 R2、随机对象键、登录/房间鉴权、24 小时过期和危险类型强制下载。
 - 第一版没有病毒扫描，UI 必须继续提示只下载可信来源文件。
 - 普通账号单文件默认 95 MiB；95 MiB 是为了低于 Cloudflare Free/Pro 账户 100 MB 请求体上限。管理员更大文件必须走 Multipart Upload。
 - 管理员“不限频次”只是不受普通用户业务频次与免费池暂停影响；客户端使用有界队列，桌面最多同时处理 2 个文件任务、手机最多 1 个任务，单任务分片并发分别最多 4 / 2，且继续受 R2、浏览器、网络和账户账单边界约束。
+
+## Agent、CLI 与 stdio MCP
+
+- `npm.cmd run lusu -- auth login` 启动设备码授权：CLI 只展示一次性用户码并打开站内确认页，登录用户明确批准请求的 scope 后才签发 Bearer。`auth status` 查看当前授权，`auth logout` 撤销当前令牌；浏览器也可在 `/api/agent-auth/tokens/manage` 查看和撤销本人令牌。
+- CLI 已提供 `transfer join / ls / send / put / get / rm`；本地 stdio MCP 已提供对应的加入、列表、文字发送、上传、下载与删除工具。它们复用同一互传 API、24 小时过期、配额、幂等与对象清理语义，不创建第二套房间或存储协议。
+- 房间口令只从 CLI 的隐藏输入或 `--password-stdin` 读取，禁止作为命令行参数；stdio MCP 只接受 `env:NAME` 形式的 `secretRef`。授权服务既不会接收房间口令，也不会接收派生后的 `roomKey`。互传业务 API 仍按原协议接收派生 `roomKey`，本地房间状态只保存 `roomKey` 与可选环境变量引用，不保存明文口令或文字密钥。
+- `transfer:read` 用于配置、列表、上传状态和下载等 GET/HEAD；`transfer:write` 用于 `room/join`、发送文字、普通上传以及 Multipart 初始化、分片与完成；`transfer:delete` 用于删除条目和中止 Multipart。默认设备授权的互传权限只包含 read/write（另含公开内容所需的 `content:read`），删除能力必须明确追加。
+- CLI 与 stdio MCP 下载都默认拒绝覆盖已有文件；stdio MCP 的上传和下载还必须位于显式允许的目录根内。访问令牌、本地房间状态和环境变量都属于敏感本机数据，不得提交、打印到日志或传入 MCP 工具输出。当前远程 MCP 只开放公开只读内容能力，未开放远程互传，也未执行生产部署。
 
 ## 本地要求
 
@@ -24,6 +32,7 @@
 6. 执行 `npm.cmd run d1:migrate:local`。
 7. 开发临时互传 API 时执行 `npm.cmd run transfer:dev`。该命令通过 `--r2 TRANSFER_BUCKET` 提供本地 R2 模拟绑定，不需要 Production R2 密钥；其他页面仍可使用现有 `npm.cmd run dev`。
 8. 图标源图变化时执行 `npm.cmd run build:transfer-icons`；再执行 `npm.cmd run transfer:test` 与 `npm.cmd run build`。
+9. 验证本地 Agent 入口时执行 `npm.cmd run lusu -- --help` 与 `npm.cmd run mcp:local`；stdio MCP 由宿主进程管理标准输入输出，不要把令牌、口令或 `secretRef` 对应值写进仓库配置。
 
 不要把 Production R2 Access Key 放入前端或 `.dev.vars`。Pages Functions 和清理 Worker都通过绑定访问 R2，不需要浏览器持有永久 R2 密钥。
 
@@ -128,7 +137,8 @@ D1 表：
 
 ## 验证
 
-- `npm.cmd run transfer:test`：内存 D1 与模拟 R2，覆盖登录、普通账号限制、管理员角色、1 GiB 完整分片、5 GiB 分片规划、Range 和 schema。
+- `npm.cmd run transfer:test`：内存 D1 与模拟 R2，覆盖浏览器会话、Agent Bearer scope、普通账号限制、管理员角色、1 GiB 完整分片、5 GiB 分片规划、Range 和 schema。
+- Agent 定向测试：`node --test tests/agent-auth.test.mjs tests/transfer-capability-crypto.test.mjs tests/site-capabilities-client.test.mjs tests/lusu-cli.test.mjs tests/local-mcp-server.test.mjs`，覆盖设备码、令牌撤销、口令本地派生、CLI/MCP 秘密边界与文件路径保护。
 - `/api/transfer/config`：确认 `r2Ready: true`，且普通/管理员配置与角色相符。
 - 普通账号：小文件上传、配额拒绝、24 小时剩余、删除。
 - 管理员：1 GiB 以上分片、暂停/恢复/取消、刷新后重选同文件续传。

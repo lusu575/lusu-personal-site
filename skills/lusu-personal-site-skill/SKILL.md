@@ -7,6 +7,14 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 
 ## 公开主站发布收口规则
 
+- AI 能力层以 `lib/capabilities/registry.mjs` 为唯一声明源。`transport` 是长期目标接入面，`availableTransports` 是当前已实现的真实接入面；CLI、MCP、文档与公开更新只能宣告后者。新增或改动能力时要先更新 registry 的权限、副作用、确认需求和实际 transport，再共享同一服务适配层；不得在 CLI、本地 MCP 和远程 MCP 重复业务规则。
+- 本地 CLI 和 stdio MCP 使用账号持有者确认的设备码授权，令牌按 `content:read`、`transfer:read`、`transfer:write`、`transfer:delete`、`whiteboard:read`、`whiteboard:write` 最小化请求；默认不授予删除或画板 scope。Quick Transfer 查看／下载属于 read，进房／发文字／上传属于 write，项目删除和分片上传中止属于 delete；画板 write 只隐含 read。Agent Bearer 令牌永远是普通机器角色，不能继承 admin 或访问管理接口；管理功能继续只接受 HttpOnly 浏览器会话。
+- Quick Transfer 口令不得放入命令行参数、URL、History、日志、telemetry 或持久明文；CLI 只从隐藏输入／stdin 取得，MCP 只接受明确的本地环境变量引用，文字密钥始终在本地派生。下载必须限定允许根、默认不覆盖已有文件；能导致外部写入或删除的 MCP 工具必须如实标注副作用与非幂等语义。
+- CLI 与 stdio MCP 必须复用 `自动新闻/integrations/lusu-site/network-fetch.mjs` 的共享代理感知 fetch，再把它注入 `SiteClient`；`SiteClient` 保持可注入网络边界，不把“本身使用平台 fetch”写成架构事实。代理 URL、代理凭据与 Agent Token 都不得输出、写日志或进入错误上下文。
+- `workers/site-mcp/` 当前只是未部署的公开只读远程 MCP Worker；在没有真实发布和线上验证前不得宣称存在正式远程入口。任何远程账号或写能力必须先实现标准 OAuth、最小 scope、撤销与审计，不得把本地设备令牌直接暴露给公网 MCP。在线画板的受限追加／导出和隔离 2048 会话已可从本地 CLI／stdio MCP 使用，但不代表远程写入、任意画板编辑、图片写入或已打开浏览器的游戏接管；其余能力仍须等 `availableTransports` 与安全回归同时落地才可宣告。
+- 画板 Agent Bearer 与房间访问令牌必须分离，后者绑定当前 tokenId；密码只允许隐藏 stdin 或 `env:NAME` 引用，并通过同源 HTTPS 请求体交给服务端 HMAC 映射。Agent 写入必须基于最新完整 Yjs 状态，只追加经过 allowlist 的高层元素；服务端必须拒绝修改／删除、图片／嵌入、链接／绑定、customData、未知根和任意二进制注入。`operationId + payload SHA-256` 收据要与更新／版本原子提交，严格处理重放与冲突。
+- 游戏 AI 首个适配器是隔离的本地 2048 会话：只接受引擎声明的语义动作，并保持 revision CAS、clientActionId 幂等去重、状态／会话／TTL 上限及重置／关闭确认。页面 bridge 与本地引擎可共享协议，但在没有受审计的配对传输前不得把 CLI／MCP 描述为接管、观看或控制已经打开的浏览器会话。
+- 本地敏感状态的 read-modify-write 不得无锁覆盖或直接以 `"w"` 截断目标：白板句柄使用跨进程 owner-token 锁与同目录私有临时文件 fsync／原子替换；游戏锁还要有进程实例、PID、心跳和释放前 owner 校验。标为只读的 observe／actions 不得 touch、续 TTL、删除过期文件或产生目录写入。
 - 正式链路仍是仓库根目录由 GitHub `main` 触发 Cloudflare Pages；Dashboard 固定执行 `npm run build` 并发布 `dist`。标准构建必须先运行 `scripts/build-check.mjs` 守卫，再由 `scripts/build-production.mjs` 原子生成可复现、内容哈希、白名单和 sourcemap 可定位的 `dist/`；该目录是 Pages 构建输出但不得提交 Git。HTML、哈希资产、未哈希 CSS/JS、API/JSON 必须使用各自缓存策略，禁止用一个全局 `/*` immutable 规则覆盖。
 - 壁纸、窗口背景、图标或图集优化必须先匹配真实槽位与像素风轮廓，再提供 AVIF/WebP 和可靠 fallback；首屏只预加载当前主题/壳，主题切换要卸载旧动态层。同路径二进制变化也必须更新公开 query。
 - 文章、视频、游戏、社交等公开列表复用统一的有界 ETag / SWR / last-known-good 请求层；304 不重建列表，离线/短暂错误不清空成功内容，用户强制重试可绕过新鲜缓存且仍受单飞与生命周期 Abort 约束。ETag 必须覆盖完整公开响应，不能只取数据库行时间等不足以描述代码转换和关联数据的局部种子。视频封面禁止恢复无上限 base64 列表负载；同源封面代理 URL 必须带内容或行更新时间版本，后台换图与纯代码兼容修复都要能击穿旧浏览器缓存。
@@ -19,6 +27,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - Headless 中每个独立审计场景必须用唯一 query 强制新文档，并确认 CDP 返回 `loaderId`；不要依赖 Hash-only `Page.navigate` 清空 route 模块或 30 秒内存缓存。刻意测试 SPA History、重试链或连续动效时才保留同文档。DOM 数量和交叠断言必须限定到真实场景容器；移动 App 外框可处于半透明 Dock 后方，但 composer、反馈、页脚和最后操作必须位于 Dock 上方。
 - `.codex-worktrees/` 保存其他 Codex 任务的独立 checkout，不是当前发布源码。Git 忽略、递归构建守卫和仓库密钥扫描都必须跳过该目录；发现其中旧文件导致当前构建失败时应修正扫描边界，不得删除或改写其他任务工作树来换取通过。
 - Production D1 的单条复合 `SELECT` 最多 5 项。远程迁移分组校验必须在任何写入前锁定该上限，超过时拆成多条查询；本地 SQLite 能执行更长的 `UNION ALL` 不能替代真实 D1 校验。
+- 独立 `package-lock.json` 不继承根 `package.json` 的 `overrides`。新增或更新根依赖时，必须盘点所有独立 npm 子项目，在各自清单重复必需的安全 override，并分别执行严格安装、测试与完整 `npm audit`；不能用根审计为子项目背书。
 
 ## 账号、文章与 Chat 稳定性规则
 
@@ -353,7 +362,7 @@ $env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wran
 
 - 建议使用 Node.js 22.13+；本地 Pages Functions / API 的同名变量只放在 Git 忽略的根目录 `.dev.vars`，并独立于 Production 生成。
 - `.dev.vars`、`.env`、`.env.*`、真实邮箱、Webhook URL、R2 Access Key 和其他真实密钥绝不能提交 GitHub。
-- 临时互传固定放在工具区（内部 `resources` route），不新增顶层 route、任务栏或移动 Dock。所有 API 复用 HttpOnly 会话，管理员只能由 D1 `users.role = admin` 判断。
+- 临时互传固定放在工具区（内部 `resources` route），不新增顶层 route、任务栏或移动 Dock。网站 UI 复用 HttpOnly 会话，本地 CLI / MCP 只能使用经设备码授予的 scoped Agent Bearer；管理员仍只由 D1 `users.role = admin` 判断且只能使用浏览器会话进入管理功能。
 - 在线画板固定放在工具区并按路由懒加载；本地除 Pages 服务外还要运行 `npm run whiteboard:dev`，根 `.dev.vars` 与 Worker `.dev.vars` 的 internal secret 必须一致且只使用本地测试值。
 - 未登录用户从手机 Tools App（内部 `resources` route）打开临时互传时必须能直接到达登录操作；不能只代理点击在非 Home 路由被隐藏的 `.topbar-actions`，账号弹窗也不能留在 `display: none` 的祖先内。
 - 互传房间的消息流、上传任务和输入区必须在 359x500、375x667、390x844、430x932、844x390 及软键盘 `visualViewport` 缩小时保持可到达。手机房间保持单一 `.transfer-room` 滚动路径，composer 必须留在正常文档流，不能用 sticky / fixed 层覆盖已发送卡片；仅把 composer 改成 `position: static` 不够，竖屏房间必须使用纵向 Flex，toolbar/feed/composer/tasks 直接子项不可收缩，让消息按真实内容高度撑开，短横屏再显式恢复双栏 Grid。验收必须测量 composer 与图片、文件卡的二维交集为零，不得用嵌套滚动、过度 overscroll containment 或固定高度把登录、发送或上传操作锁在视口外。

@@ -1,6 +1,11 @@
 import { DurableObject } from "cloudflare:workers";
 import {
   ADMIN_AUTHORIZED_HEADER,
+  AGENT_AUTHORIZED_HEADER,
+  AGENT_OPERATION_ID_HEADER,
+  AGENT_RECEIPT_PREFIX,
+  AGENT_RECEIPT_TTL_MS,
+  AGENT_SUBJECT_HEADER,
   ANONYMOUS_ID_HEADER,
   ASSET_REFERENCE_RECHECK_MS,
   ASSET_SWEEP_NEXT_KEY,
@@ -13,6 +18,7 @@ import {
   IMAGE_META_PREFIX,
   IP_HASH_HEADER,
   MAX_AWARENESS_BYTES,
+  MAX_AGENT_RECEIPTS,
   MAX_BYTES_PER_WINDOW,
   MAX_CONNECTIONS_PER_IDENTITY,
   MAX_CONNECTIONS_PER_IP,
@@ -80,6 +86,7 @@ import {
 } from "./security";
 import type {
   AdminAction,
+  AgentUpdateReceipt,
   BanEntry,
   ConnectionAttachment,
   ImageMeta,
@@ -112,6 +119,8 @@ interface FocusMessage {
 const IDENTITY_VERSION_PATTERN = /^[1-9][0-9]{0,8}$/;
 const TICKET_JTI_PATTERN = /^[A-Za-z0-9_-]{16,160}$/;
 const ASSET_ID_PATTERN = /^[a-f0-9]{32}$/;
+const AGENT_SUBJECT_PATTERN = /^[a-f0-9]{64}$/;
+const AGENT_OPERATION_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,79}$/;
 const CLOSE_POLICY_VIOLATION = 1008;
 const CLOSE_TRY_AGAIN = 1013;
 
@@ -374,6 +383,22 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     ) {
       await this.ensureMeta(roomId, roomType);
     }
+    if (
+      (request.method === "GET" || request.method === "POST") &&
+      url.pathname === "/agent-scene"
+    ) {
+      if (request.headers.get(AGENT_AUTHORIZED_HEADER) !== "1") {
+        return safeJsonResponse(
+          { ok: false, error: "not_authorized", code: "WHITEBOARD_AGENT_NOT_AUTHORIZED" },
+          403
+        );
+      }
+      return this.enqueueMutation(() =>
+        request.method === "GET"
+          ? this.handleAgentSceneRead(request)
+          : this.handleAgentSceneWrite(request, roomId, roomType)
+      );
+    }
     if (request.method === "GET" && url.pathname === "/realtime") {
       return this.enqueueMutation(() =>
         this.handleWebSocketUpgrade(request, roomId, roomType)
@@ -436,6 +461,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
         return;
       }
       const now = Date.now();
+      await this.pruneAgentReceipts(now);
       await this.pruneRateStates(now);
       await this.maybeSweepUnreferencedAssets(now);
       const stale = new Set<WebSocket>();
@@ -505,6 +531,152 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       await this.scheduleAlarm();
     }
     return this.meta;
+  }
+
+  private async handleAgentSceneRead(request: Request): Promise<Response> {
+    const subject = request.headers.get(AGENT_SUBJECT_HEADER) || "";
+    if (!AGENT_SUBJECT_PATTERN.test(subject)) {
+      return safeJsonResponse(
+        { ok: false, error: "agent_identity_invalid", code: "WHITEBOARD_AGENT_IDENTITY_INVALID" },
+        401
+      );
+    }
+    const state = this.documentStore.encodeState();
+    return new Response(asArrayBuffer(state), {
+      status: 200,
+      headers: {
+        "cache-control": "no-store",
+        "content-length": String(state.byteLength),
+        "content-type": "application/vnd.yjs",
+        "x-whiteboard-document-version": String(this.meta?.documentVersion || 0),
+        "x-whiteboard-locked": this.meta?.isLocked ? "1" : "0",
+        "x-content-type-options": "nosniff"
+      }
+    });
+  }
+
+  private async handleAgentSceneWrite(
+    request: Request,
+    roomId: string,
+    roomType: RoomType
+  ): Promise<Response> {
+    const subject = request.headers.get(AGENT_SUBJECT_HEADER) || "";
+    const operationId = request.headers.get(AGENT_OPERATION_ID_HEADER) || "";
+    const contentType = String(request.headers.get("content-type") || "")
+      .split(";", 1)[0]
+      .trim()
+      .toLowerCase();
+    if (!AGENT_SUBJECT_PATTERN.test(subject)) {
+      return safeJsonResponse(
+        { ok: false, error: "agent_identity_invalid", code: "WHITEBOARD_AGENT_IDENTITY_INVALID" },
+        401
+      );
+    }
+    if (!AGENT_OPERATION_ID_PATTERN.test(operationId)) {
+      return safeJsonResponse(
+        { ok: false, error: "operation_id_invalid", code: "WHITEBOARD_AGENT_OPERATION_ID_INVALID" },
+        422
+      );
+    }
+    if (contentType !== "application/vnd.yjs-update") {
+      return safeJsonResponse(
+        { ok: false, error: "content_type_invalid", code: "WHITEBOARD_AGENT_CONTENT_TYPE_INVALID" },
+        415
+      );
+    }
+    if (this.meta?.isLocked) {
+      return safeJsonResponse(
+        { ok: false, error: "room_locked", code: "WHITEBOARD_ROOM_LOCKED" },
+        423
+      );
+    }
+    const update = await readBodyWithLimit(request, MAX_MESSAGE_BYTES);
+    if (!update || update.byteLength === 0) {
+      return safeJsonResponse(
+        { ok: false, error: "update_invalid", code: "WHITEBOARD_AGENT_UPDATE_INVALID" },
+        422
+      );
+    }
+
+    const now = Date.now();
+    const payloadSha256 = await sha256Hex(update);
+    const receiptKey = `${AGENT_RECEIPT_PREFIX}${await sha256Hex(
+      new TextEncoder().encode(`${subject}\u0000${operationId}`)
+    )}`;
+    const receipts = await this.ctx.storage.list<AgentUpdateReceipt>({
+      prefix: AGENT_RECEIPT_PREFIX
+    });
+    const existing = receipts.get(receiptKey);
+    if (existing && existing.expiresAt > now) {
+      if (existing.payloadSha256 !== payloadSha256) {
+        return safeJsonResponse(
+          { ok: false, error: "operation_conflict", code: "WHITEBOARD_OPERATION_CONFLICT" },
+          409
+        );
+      }
+      return safeJsonResponse({
+        ok: true,
+        replayed: true,
+        documentVersion: existing.documentVersion
+      });
+    }
+
+    const activeReceipts = [...receipts.entries()]
+      .filter(([key, value]) =>
+        key !== receiptKey &&
+        value?.version === 1 &&
+        value.expiresAt > now
+      )
+      .sort((left, right) =>
+        left[1].createdAt - right[1].createdAt || left[0].localeCompare(right[0])
+      );
+    const deleteKeys = [...receipts.entries()]
+      .filter(([, value]) =>
+        value?.version !== 1 ||
+        !Number.isSafeInteger(value.expiresAt) ||
+        value.expiresAt <= now
+      )
+      .map(([key]) => key);
+    const excess = Math.max(0, activeReceipts.length - (MAX_AGENT_RECEIPTS - 1));
+    deleteKeys.push(...activeReceipts.slice(0, excess).map(([key]) => key));
+
+    const currentSockets = this.ctx.getWebSockets().filter(socketIsOpen);
+    const onlineCount = uniqueParticipants(currentSockets).length;
+    const baseMeta = this.meta || createRoomMeta(roomId, roomType, now);
+    const activeMeta = onlineCount > 0
+      ? markRoomJoined(baseMeta, now, onlineCount)
+      : markRoomEmpty(baseMeta, now);
+    const result = await this.documentStore.applyAgentIncrementalUpdate(
+      update,
+      activeMeta,
+      {
+        key: receiptKey,
+        payloadSha256,
+        createdAt: now,
+        expiresAt: now + AGENT_RECEIPT_TTL_MS,
+        deleteKeys
+      }
+    );
+    if (!result.accepted) {
+      return safeJsonResponse(
+        {
+          ok: false,
+          error: "update_rejected",
+          code: "WHITEBOARD_AGENT_UPDATE_REJECTED"
+        },
+        422
+      );
+    }
+
+    this.meta = result.meta;
+    this.broadcastBinary(WS_YJS_UPDATE, update);
+    await this.scheduleAlarm();
+    await this.persistD1MetadataIfDue(this.meta, now);
+    return safeJsonResponse({
+      ok: true,
+      replayed: false,
+      documentVersion: this.meta.documentVersion
+    });
   }
 
   private async handleWebSocketUpgrade(
@@ -1494,6 +1666,36 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     return earliestExpiry;
   }
 
+  private async pruneAgentReceipts(now: number): Promise<number | null> {
+    const receipts = await this.ctx.storage.list<AgentUpdateReceipt>({
+      prefix: AGENT_RECEIPT_PREFIX
+    });
+    const retained = [...receipts.entries()]
+      .filter(([, value]) =>
+        value?.version === 1 &&
+        /^[a-f0-9]{64}$/.test(String(value.payloadSha256 || "")) &&
+        Number.isSafeInteger(value.documentVersion) &&
+        value.documentVersion >= 1 &&
+        Number.isSafeInteger(value.createdAt) &&
+        Number.isSafeInteger(value.expiresAt) &&
+        value.expiresAt > now
+      )
+      .sort((left, right) =>
+        right[1].createdAt - left[1].createdAt || left[0].localeCompare(right[0])
+      );
+    const retainedKeys = new Set(
+      retained.slice(0, MAX_AGENT_RECEIPTS).map(([key]) => key)
+    );
+    const deleteKeys = [...receipts.keys()].filter((key) => !retainedKeys.has(key));
+    if (deleteKeys.length > 0) {
+      await this.ctx.storage.delete(deleteKeys);
+    }
+    const expiries = retained
+      .slice(0, MAX_AGENT_RECEIPTS)
+      .map(([, value]) => value.expiresAt);
+    return expiries.length > 0 ? Math.min(...expiries) : null;
+  }
+
   private async handleStatus(request: Request): Promise<Response> {
     if (request.headers.get(ADMIN_AUTHORIZED_HEADER) !== "1") {
       return safeJsonResponse({ ok: false, error: "not_authorized" }, 403);
@@ -1944,6 +2146,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       now
     );
     const ticketCleanupAlarm = await this.pruneConsumedTicketJtis(now);
+    const agentReceiptCleanupAlarm = await this.pruneAgentReceipts(now);
     const storedAssetSweepAlarm =
       await this.ctx.storage.get<number>(ASSET_SWEEP_NEXT_KEY);
     const assetSweepAlarm =
@@ -1959,6 +2162,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     const candidates = [
       lifecycleAlarm,
       ticketCleanupAlarm,
+      agentReceiptCleanupAlarm,
       assetSweepAlarm,
       rateSweepAlarm
     ].filter((value): value is number => value !== null);

@@ -3,11 +3,13 @@ import {
   publicAnonymousIdentity,
   withAnonymousIdentityCookie
 } from "./anonymous-identity.mjs";
+import { authenticateAgentBearer } from "./agent-auth.mjs";
 
 const PUBLIC_ROOM_ID = "public-v1";
 const PUBLIC_ROOM_TYPE = "public";
 const PRIVATE_ROOM_TYPE = "private";
 const WS_PROTOCOL = "whiteboard.v1";
+const AGENT_ACCESS_KIND = "agent-access";
 const TOKEN_PREFIX = "wbt1";
 const TOKEN_AUDIENCE = "lusu-whiteboard";
 const TOKEN_VERSION = 1;
@@ -18,6 +20,9 @@ const MAX_JSON_BYTES = 16 * 1024;
 const MAX_TOKEN_CHARS = 4096;
 const MAX_PROTOCOL_HEADER_CHARS = 8192;
 const MAX_ASSET_BYTES = 5 * 1024 * 1024;
+const MAX_AGENT_SCENE_BYTES = 256 * 1024;
+const AGENT_SCENE_CONTENT_TYPE = "application/vnd.yjs";
+const AGENT_UPDATE_CONTENT_TYPE = "application/vnd.yjs-update";
 const MAX_ADMIN_PAGE = 100;
 const MAX_ADMIN_OFFSET = 10_000;
 const ROOM_ID_PATTERN = /^wb_[A-Za-z0-9_-]{43}$/;
@@ -25,6 +30,8 @@ const ANONYMOUS_ID_PATTERN = /^[A-Za-z0-9_-]{20,160}$/;
 const ASSET_ID_PATTERN = /^[A-Za-z0-9_-]{16,128}$/;
 const CONNECTION_ID_PATTERN = /^[A-Za-z0-9_-]{8,128}$/;
 const IP_HASH_PATTERN = /^[a-f0-9]{64}$/;
+const AGENT_TOKEN_ID_PATTERN = /^[A-Za-z0-9_-]{8,160}$/;
+const AGENT_OPERATION_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,79}$/;
 const SAFE_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
 const API_SECURITY_HEADERS = Object.freeze({
   "Cache-Control": "no-store",
@@ -47,7 +54,10 @@ const INTERNAL_HEADERS = Object.freeze({
   ticketJti: "x-whiteboard-ticket-jti",
   clientOrigin: "x-whiteboard-client-origin",
   adminAuthorized: "x-whiteboard-admin-authorized",
-  adminUserId: "x-whiteboard-admin-user-id"
+  adminUserId: "x-whiteboard-admin-user-id",
+  agentAuthorized: "x-whiteboard-agent-authorized",
+  agentSubject: "x-whiteboard-agent-subject",
+  agentOperationId: "x-whiteboard-agent-operation-id"
 });
 
 const schemaPromises = new WeakMap();
@@ -92,6 +102,8 @@ export async function handleWhiteboardApi(
         parts.slice(2),
         options.adminUser || null
       );
+    } else if (parts[1] === "agent") {
+      response = await handleAgentWhiteboardApi(context, parts.slice(2));
     } else {
       identity = await ensureAnonymousIdentity(request, env);
       response = await handlePublicWhiteboardApi(context, parts.slice(1), identity);
@@ -105,6 +117,168 @@ export async function handleWhiteboardApi(
       ? withAnonymousIdentityCookie(response, request, identity)
       : response;
   }
+}
+
+async function handleAgentWhiteboardApi(context, parts) {
+  const { request, env } = context;
+  assertAgentRequestOrigin(request);
+
+  if (
+    request.method === "POST"
+    && parts.length === 2
+    && parts[0] === "rooms"
+    && parts[1] === "join"
+  ) {
+    const principal = await authenticateWhiteboardAgent(request, env, "join");
+    const body = await readBoundedJson(request);
+    return joinWhiteboardRoomAsAgent(context, principal, body);
+  }
+
+  if (
+    (request.method === "GET" || request.method === "POST")
+    && parts.length === 1
+    && parts[0] === "scene"
+  ) {
+    const principal = await authenticateWhiteboardAgent(
+      request,
+      env,
+      request.method === "POST" ? "write" : "read"
+    );
+    return proxyWhiteboardAgentScene(context, principal);
+  }
+
+  return whiteboardJson({
+    error: "Agent whiteboard endpoint not found.",
+    code: "WHITEBOARD_AGENT_NOT_FOUND"
+  }, 404);
+}
+
+async function joinWhiteboardRoomAsAgent(context, principal, body) {
+  assertPlainObject(body);
+  const allowedKeys = new Set(["type", "password"]);
+  if (Object.keys(body).some((key) => !allowedKeys.has(key))) {
+    throw joinFailedError();
+  }
+  const roomType = normalizeRoomType(body.type);
+  if (
+    (roomType === PRIVATE_ROOM_TYPE && typeof body.password !== "string")
+    || (roomType === PUBLIC_ROOM_TYPE && body.password !== undefined)
+  ) {
+    throw joinFailedError();
+  }
+  const ip = await whiteboardIpContext(context.request, context.env);
+  await consumeAgentWhiteboardAttempt(
+    context.env,
+    principal.tokenId,
+    ip.ipHash,
+    "join"
+  );
+  if (roomType === PRIVATE_ROOM_TYPE) {
+    await consumeJoinAttempt(context.env, ip.ipHash, roomType);
+  }
+
+  const roomId = roomType === PUBLIC_ROOM_TYPE
+    ? PUBLIC_ROOM_ID
+    : await derivePrivateWhiteboardRoomId(
+        body.password,
+        requiredSecret(context.env, "WHITEBOARD_ROOM_HMAC_SECRET")
+      );
+  assertRealtimeBindings(context.env);
+  const credentials = await issueAgentRoomCredential(
+    context.env,
+    principal,
+    roomId,
+    roomType
+  );
+  return whiteboardJson({
+    room: { type: roomType },
+    accessToken: credentials.accessToken,
+    accessExpiresAt: credentials.accessExpiresAt
+  });
+}
+
+async function proxyWhiteboardAgentScene(context, principal) {
+  const { request, env } = context;
+  assertRealtimeBindings(env);
+  const accessToken = agentAccessTokenFromRequest(request);
+  const claims = await verifyWhiteboardToken(
+    accessToken,
+    requiredSecret(env, "WHITEBOARD_TICKET_SECRET"),
+    { expectedKind: AGENT_ACCESS_KIND }
+  );
+  if (claims.tid !== principal.tokenId) {
+    throw accessDeniedError();
+  }
+  const ip = await whiteboardIpContext(request, env);
+  const method = request.method;
+  await consumeAgentWhiteboardAttempt(
+    env,
+    principal.tokenId,
+    ip.ipHash,
+    method === "POST" ? "write" : "read"
+  );
+
+  const headers = await agentInternalRoomHeaders({
+    env,
+    claims,
+    principal,
+    ipHash: ip.ipHash
+  });
+  let body;
+  let operationId = "";
+  if (method === "POST") {
+    const contentType = String(request.headers.get("Content-Type") || "")
+      .split(";", 1)[0]
+      .trim()
+      .toLowerCase();
+    if (contentType !== AGENT_UPDATE_CONTENT_TYPE) {
+      throw new WhiteboardHttpError(
+        `Agent scene writes must use ${AGENT_UPDATE_CONTENT_TYPE}.`,
+        415,
+        "WHITEBOARD_AGENT_CONTENT_TYPE_INVALID"
+      );
+    }
+    operationId = normalizeAgentOperationId(
+      request.headers.get("X-Whiteboard-Operation-Id")
+    );
+    body = await readBoundedBytes(request, MAX_AGENT_SCENE_BYTES);
+    if (body.byteLength === 0) {
+      throw new WhiteboardHttpError(
+        "Agent scene update is empty.",
+        422,
+        "WHITEBOARD_AGENT_UPDATE_INVALID"
+      );
+    }
+    await consumeAgentWhiteboardByteBudget(
+      env,
+      principal.tokenId,
+      ip.ipHash,
+      body.byteLength
+    );
+    headers.set(INTERNAL_HEADERS.agentOperationId, operationId);
+    headers.set("Content-Type", AGENT_UPDATE_CONTENT_TYPE);
+    headers.set("Content-Length", String(body.byteLength));
+  }
+
+  const stub = whiteboardRoomStub(env, claims.rid);
+  const upstream = await stub.fetch(new Request(
+    "https://whiteboard.internal/agent-scene",
+    { method, headers, body }
+  ));
+  if (method === "GET") {
+    if (!upstream.ok) {
+      return safeUpstreamJson(upstream, "WHITEBOARD_AGENT_SCENE_READ_FAILED");
+    }
+    return safeAgentSceneResponse(upstream);
+  }
+  const response = await safeUpstreamJson(
+    upstream,
+    "WHITEBOARD_AGENT_SCENE_WRITE_FAILED"
+  );
+  if (response.ok) {
+    await recordWhiteboardAgentWriteAudit(env, principal, claims.rid, operationId);
+  }
+  return response;
 }
 
 async function handlePublicWhiteboardApi(context, parts, identity) {
@@ -774,6 +948,35 @@ async function issueRoomCredentials(
   };
 }
 
+async function issueAgentRoomCredential(
+  env,
+  principal,
+  roomId,
+  roomType
+) {
+  const now = Math.floor(Date.now() / 1000);
+  const bearerExpiry = Math.floor(Date.parse(principal.expiresAt) / 1000);
+  const accessExpiry = Math.min(now + ACCESS_LIFETIME_SECONDS, bearerExpiry);
+  if (!Number.isInteger(accessExpiry) || accessExpiry <= now) {
+    throw accessDeniedError();
+  }
+  const accessToken = await signWhiteboardToken({
+    v: TOKEN_VERSION,
+    aud: TOKEN_AUDIENCE,
+    kind: AGENT_ACCESS_KIND,
+    rid: roomId,
+    rt: roomType,
+    tid: principal.tokenId,
+    iat: now,
+    exp: accessExpiry,
+    jti: randomToken(18)
+  }, requiredSecret(env, "WHITEBOARD_TICKET_SECRET"));
+  return {
+    accessToken,
+    accessExpiresAt: new Date(accessExpiry * 1000).toISOString()
+  };
+}
+
 function roomCredentialResponse(identity, roomType, credentials) {
   return {
     identity: publicAnonymousIdentity(identity),
@@ -793,20 +996,22 @@ function validateTokenClaims(value, expectedKind, nowMs) {
   const kind = value.kind;
   const maximumLifetime = kind === "ws"
     ? 5 * 60
-    : kind === "access"
+    : kind === "access" || kind === AGENT_ACCESS_KIND
       ? 24 * 60 * 60
       : 0;
+  const browserCredential = kind === "ws" || kind === "access";
+  const agentCredential = kind === AGENT_ACCESS_KIND;
   if (
     value.v !== TOKEN_VERSION
     || value.aud !== TOKEN_AUDIENCE
-    || !["ws", "access"].includes(kind)
+    || (!browserCredential && !agentCredential)
     || (expectedKind && kind !== expectedKind)
     || !isValidRoomId(value.rid)
     || ![PUBLIC_ROOM_TYPE, PRIVATE_ROOM_TYPE].includes(value.rt)
     || (value.rid === PUBLIC_ROOM_ID) !== (value.rt === PUBLIC_ROOM_TYPE)
-    || !ANONYMOUS_ID_PATTERN.test(String(value.sub || ""))
-    || !Number.isInteger(value.iv)
-    || value.iv < 1
+    || (browserCredential && !ANONYMOUS_ID_PATTERN.test(String(value.sub || "")))
+    || (browserCredential && (!Number.isInteger(value.iv) || value.iv < 1))
+    || (agentCredential && !AGENT_TOKEN_ID_PATTERN.test(String(value.tid || "")))
     || !Number.isInteger(value.iat)
     || !Number.isInteger(value.exp)
     || value.iat > now + CLOCK_SKEW_SECONDS
@@ -822,12 +1027,22 @@ function validateTokenClaims(value, expectedKind, nowMs) {
     kind,
     rid: value.rid,
     rt: value.rt,
-    sub: value.sub,
-    iv: value.iv,
+    ...(browserCredential ? { sub: value.sub, iv: value.iv } : {}),
+    ...(agentCredential ? { tid: value.tid } : {}),
     iat: value.iat,
     exp: value.exp,
     jti: value.jti
   });
+}
+
+function agentAccessTokenFromRequest(request) {
+  const token = String(
+    request.headers.get("X-Whiteboard-Access-Token") || ""
+  ).trim();
+  if (!token || token.length > MAX_TOKEN_CHARS || /\s/.test(token)) {
+    throw accessDeniedError();
+  }
+  return token;
 }
 
 async function verifiedAccessClaims(request, env, identity) {
@@ -865,6 +1080,55 @@ function accessTokenFromRequest(request, body = null) {
   return supplied[0];
 }
 
+async function authenticateWhiteboardAgent(request, env, capability) {
+  let principal;
+  try {
+    principal = await authenticateAgentBearer(request, env);
+  } catch (error) {
+    const status = Number.isInteger(error?.status) ? error.status : 500;
+    throw new WhiteboardHttpError(
+      status >= 500
+        ? "Agent authorization is temporarily unavailable."
+        : String(error?.message || "Agent access token is invalid."),
+      status,
+      typeof error?.code === "string"
+        ? error.code
+        : "WHITEBOARD_AGENT_AUTH_FAILED",
+      Number(error?.retryAfter || 0)
+    );
+  }
+  const scopes = Array.isArray(principal.scopes) ? principal.scopes : [];
+  const hasWrite = scopes.includes("whiteboard:write")
+    || scopes.includes("whiteboard:*");
+  const hasRead = hasWrite || scopes.includes("whiteboard:read");
+  const granted = capability === "write" ? hasWrite : hasRead;
+  if (!granted) {
+    throw new WhiteboardHttpError(
+      `Agent access token is missing required scope: whiteboard:${capability === "write" ? "write" : "read"}.`,
+      403,
+      "AGENT_SCOPE_REQUIRED"
+    );
+  }
+  return principal;
+}
+
+async function agentInternalRoomHeaders({ env, claims, principal, ipHash }) {
+  const subjectDigest = new Uint8Array(await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(
+      `lusu:whiteboard:agent-subject:v1\u0000${principal.tokenId}`
+    )
+  ));
+  return new Headers({
+    [INTERNAL_HEADERS.secret]: requiredSecret(env, "WHITEBOARD_INTERNAL_SECRET"),
+    [INTERNAL_HEADERS.roomId]: claims.rid,
+    [INTERNAL_HEADERS.roomType]: claims.rt,
+    [INTERNAL_HEADERS.ipHash]: ipHash,
+    [INTERNAL_HEADERS.agentAuthorized]: "1",
+    [INTERNAL_HEADERS.agentSubject]: hexEncode(subjectDigest)
+  });
+}
+
 function internalRoomHeaders({ env, request, identity, claims, ipHash }) {
   return new Headers({
     [INTERNAL_HEADERS.secret]: requiredSecret(env, "WHITEBOARD_INTERNAL_SECRET"),
@@ -880,6 +1144,18 @@ function internalRoomHeaders({ env, request, identity, claims, ipHash }) {
     [INTERNAL_HEADERS.ticketJti]: claims.jti,
     [INTERNAL_HEADERS.clientOrigin]: new URL(request.url).origin
   });
+}
+
+function normalizeAgentOperationId(value) {
+  const operationId = String(value || "").trim();
+  if (!AGENT_OPERATION_ID_PATTERN.test(operationId)) {
+    throw new WhiteboardHttpError(
+      "Agent operation id is invalid.",
+      422,
+      "WHITEBOARD_AGENT_OPERATION_ID_INVALID"
+    );
+  }
+  return operationId;
 }
 
 function whiteboardRoomStub(env, roomId) {
@@ -1058,6 +1334,65 @@ async function consumeUploadByteBudget(env, ipHash, byteLength) {
         result.retryAfterSeconds
       );
     }
+  }
+}
+
+async function consumeAgentWhiteboardAttempt(
+  env,
+  tokenId,
+  ipHash,
+  action
+) {
+  const policy = action === "write"
+    ? { windowMs: 60_000, limit: 20, backoffMs: 60_000, maxBackoffMs: 30 * 60_000 }
+    : action === "read"
+      ? { windowMs: 60_000, limit: 60, backoffMs: 60_000, maxBackoffMs: 15 * 60_000 }
+      : { windowMs: 10 * 60_000, limit: 30, backoffMs: 10 * 60_000, maxBackoffMs: 60 * 60_000 };
+  const result = await consumeRateLimit(
+    env,
+    await rateLimitBucketKey(
+      `whiteboard:agent:${action}:token-ip`,
+      `${tokenId}\u0000${ipHash}`
+    ),
+    policy
+  );
+  if (!result.allowed) {
+    throw new WhiteboardHttpError(
+      "Agent whiteboard request rate limit exceeded.",
+      429,
+      "WHITEBOARD_AGENT_RATE_LIMITED",
+      result.retryAfterSeconds
+    );
+  }
+}
+
+async function consumeAgentWhiteboardByteBudget(
+  env,
+  tokenId,
+  ipHash,
+  byteLength
+) {
+  const result = await consumeRateLimit(
+    env,
+    await rateLimitBucketKey(
+      "whiteboard:agent:write-bytes:token-ip",
+      `${tokenId}\u0000${ipHash}`
+    ),
+    {
+      windowMs: 60_000,
+      limit: 4 * 1024 * 1024,
+      backoffMs: 60_000,
+      maxBackoffMs: 30 * 60_000
+    },
+    byteLength
+  );
+  if (!result.allowed) {
+    throw new WhiteboardHttpError(
+      "Agent whiteboard byte budget exceeded.",
+      429,
+      "WHITEBOARD_AGENT_RATE_LIMITED",
+      result.retryAfterSeconds
+    );
   }
 }
 
@@ -1313,6 +1648,46 @@ async function recordWhiteboardAudit(env, adminUser, action, roomId, details) {
     JSON.stringify(details),
     now
   ).run();
+}
+
+async function recordWhiteboardAgentWriteAudit(
+  env,
+  principal,
+  roomId,
+  operationId
+) {
+  const eventDigest = new Uint8Array(await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(
+      `lusu:whiteboard:agent-audit:v1\u0000${principal.tokenId}\u0000${roomId}\u0000${operationId}`
+    )
+  ));
+  const roomDigest = new Uint8Array(await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(`lusu:whiteboard:agent-room:v1\u0000${roomId}`)
+  ));
+  try {
+    await env.DB.prepare(`
+      insert or ignore into agent_audit_log (
+        event_id, actor_user_id, token_id, action, target_type, target_id,
+        scopes, result, created_at
+      ) values (?, ?, ?, 'whiteboard-scene-applied', 'whiteboard-room', ?, ?, 'success', ?)
+    `).bind(
+      `waev_${hexEncode(eventDigest).slice(0, 48)}`,
+      principal.user?.id || "",
+      principal.tokenId,
+      `wbar_${hexEncode(roomDigest).slice(0, 48)}`,
+      JSON.stringify(
+        [...new Set((principal.scopes || []).map((scope) => String(scope)))].sort()
+      ),
+      new Date().toISOString()
+    ).run();
+  } catch {
+    console.error(JSON.stringify({
+      message: "whiteboard agent audit write failed",
+      action: "whiteboard-scene-applied"
+    }));
+  }
 }
 
 function safeAuditDetails(action) {
@@ -1728,6 +2103,21 @@ function assertExactOrigin(request) {
   }
 }
 
+function assertAgentRequestOrigin(request) {
+  const expected = new URL(request.url).origin;
+  const origin = String(request.headers.get("Origin") || "");
+  const fetchSite = String(
+    request.headers.get("Sec-Fetch-Site") || ""
+  ).toLowerCase();
+  if (fetchSite === "cross-site" || (origin && origin !== expected)) {
+    throw new WhiteboardHttpError(
+      "Agent request origin is not trusted.",
+      403,
+      "WHITEBOARD_ORIGIN_REJECTED"
+    );
+  }
+}
+
 function assertTrustedSameOriginRead(request) {
   const expected = new URL(request.url).origin;
   const origin = String(request.headers.get("Origin") || "");
@@ -1891,6 +2281,37 @@ async function safeUpstreamJson(upstream, fallbackCode) {
     }, normalizeUpstreamStatus(upstream.status));
   }
   return whiteboardJson(payload || { ok: true }, upstream.status);
+}
+
+function safeAgentSceneResponse(upstream) {
+  const contentType = String(upstream.headers.get("Content-Type") || "")
+    .split(";", 1)[0]
+    .trim()
+    .toLowerCase();
+  const documentVersion = String(
+    upstream.headers.get("X-Whiteboard-Document-Version") || ""
+  );
+  const locked = String(upstream.headers.get("X-Whiteboard-Locked") || "");
+  if (
+    contentType !== AGENT_SCENE_CONTENT_TYPE
+    || !/^(0|[1-9][0-9]{0,15})$/.test(documentVersion)
+    || !/^[01]$/.test(locked)
+  ) {
+    return whiteboardJson({
+      error: "Agent whiteboard scene response is invalid.",
+      code: "WHITEBOARD_AGENT_SCENE_INVALID"
+    }, 502);
+  }
+  const headers = apiSecurityHeaders({
+    "Content-Type": AGENT_SCENE_CONTENT_TYPE,
+    "X-Whiteboard-Document-Version": documentVersion,
+    "X-Whiteboard-Locked": locked
+  });
+  const contentLength = upstream.headers.get("Content-Length");
+  if (contentLength && /^[1-9][0-9]{0,8}$/.test(contentLength)) {
+    headers.set("Content-Length", contentLength);
+  }
+  return new Response(upstream.body, { status: 200, headers });
 }
 
 function safeAssetResponse(upstream) {

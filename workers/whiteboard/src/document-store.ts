@@ -1,16 +1,18 @@
 import * as Y from "yjs";
 import {
+  AGENT_RECEIPT_PREFIX,
   ROOM_META_KEY,
   DOCUMENT_SNAPSHOT_CHUNK_BYTES,
   DOCUMENT_SNAPSHOT_CHUNK_PREFIX,
   DOCUMENT_SNAPSHOT_KEY,
   DOCUMENT_UPDATE_PREFIX,
   MAX_DOCUMENT_BYTES,
+  MAX_AGENT_ELEMENTS_PER_UPDATE,
   MAX_OBJECTS,
   MAX_UPDATE_BYTES_BEFORE_COMPACTION,
   MAX_UPDATES_BEFORE_COMPACTION
 } from "./constants";
-import type { RoomMeta } from "./types";
+import type { AgentUpdateReceipt, RoomMeta } from "./types";
 
 interface ChunkedSnapshotManifest {
   format: "chunked-v1";
@@ -43,6 +45,249 @@ function countActiveElements(document: Y.Doc): number {
     }
   });
   return activeCount;
+}
+
+const AGENT_ELEMENT_ID_PATTERN = /^[A-Za-z0-9_-]{1,128}$/;
+const AGENT_ELEMENT_TYPES = new Set([
+  "text",
+  "rectangle",
+  "ellipse",
+  "diamond",
+  "line",
+  "arrow"
+]);
+const AGENT_BASE_ELEMENT_KEYS = new Set([
+  "type",
+  "x",
+  "y",
+  "width",
+  "height",
+  "angle",
+  "strokeColor",
+  "backgroundColor",
+  "fillStyle",
+  "strokeWidth",
+  "strokeStyle",
+  "roughness",
+  "opacity",
+  "groupIds",
+  "frameId",
+  "index",
+  "roundness",
+  "seed",
+  "version",
+  "versionNonce",
+  "isDeleted",
+  "boundElements",
+  "updated",
+  "link",
+  "locked",
+  "__position"
+]);
+const AGENT_TEXT_ELEMENT_KEYS = new Set([
+  "fontSize",
+  "fontFamily",
+  "text",
+  "textAlign",
+  "verticalAlign",
+  "containerId",
+  "originalText",
+  "autoResize",
+  "lineHeight"
+]);
+const AGENT_LINEAR_ELEMENT_KEYS = new Set([
+  "points",
+  "lastCommittedPoint",
+  "startBinding",
+  "endBinding",
+  "startArrowhead",
+  "endArrowhead",
+  "elbowed"
+]);
+const AGENT_COLOR_PATTERN = /^(?:transparent|#[0-9a-fA-F]{6}(?:[0-9a-fA-F]{2})?)$/;
+
+interface ChangedYjsTarget {
+  _item?: {
+    parent?: unknown;
+    parentSub?: string | null;
+  } | null;
+}
+
+export interface AgentAtomicReceiptInput {
+  key: string;
+  payloadSha256: string;
+  createdAt: number;
+  expiresAt: number;
+  deleteKeys: string[];
+}
+
+function boundedFinite(value: unknown, minimum: number, maximum: number): boolean {
+  return (
+    typeof value === "number" &&
+    Number.isFinite(value) &&
+    value >= minimum &&
+    value <= maximum
+  );
+}
+
+function boundedInteger(value: unknown, minimum: number, maximum: number): boolean {
+  return Number.isSafeInteger(value) && Number(value) >= minimum && Number(value) <= maximum;
+}
+
+function safeStringArray(value: unknown, maximumItems: number): boolean {
+  return (
+    Array.isArray(value) &&
+    value.length <= maximumItems &&
+    value.every(
+      (item) => typeof item === "string" && AGENT_ELEMENT_ID_PATTERN.test(item)
+    )
+  );
+}
+
+function safePoint(value: unknown): boolean {
+  return (
+    Array.isArray(value) &&
+    value.length === 2 &&
+    boundedFinite(value[0], -100_000, 100_000) &&
+    boundedFinite(value[1], -100_000, 100_000)
+  );
+}
+
+function safeRoundness(value: unknown): boolean {
+  if (value === null) return true;
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const record = value as Record<string, unknown>;
+  if (Object.keys(record).some((key) => key !== "type" && key !== "value")) {
+    return false;
+  }
+  return (
+    boundedInteger(record.type, 1, 3) &&
+    (record.value === undefined || boundedFinite(record.value, 0, 100_000))
+  );
+}
+
+function safeArrowhead(value: unknown): boolean {
+  return value === null || [
+    "arrow",
+    "bar",
+    "dot",
+    "triangle",
+    "circle",
+    "circle_outline",
+    "diamond",
+    "diamond_outline",
+    "crowfoot_one",
+    "crowfoot_many",
+    "crowfoot_one_or_many"
+  ].includes(String(value));
+}
+
+function safeAgentElement(
+  id: string,
+  value: unknown
+): { valid: boolean; textLength: number } {
+  if (!AGENT_ELEMENT_ID_PATTERN.test(id) || !(value instanceof Y.Map)) {
+    return { valid: false, textLength: 0 };
+  }
+  const fields = new Map<string, unknown>();
+  value.forEach((fieldValue, key) => fields.set(String(key), fieldValue));
+  const type = fields.get("type");
+  if (typeof type !== "string" || !AGENT_ELEMENT_TYPES.has(type)) {
+    return { valid: false, textLength: 0 };
+  }
+  const allowedKeys = new Set(AGENT_BASE_ELEMENT_KEYS);
+  if (type === "text") {
+    for (const key of AGENT_TEXT_ELEMENT_KEYS) allowedKeys.add(key);
+  }
+  if (type === "line" || type === "arrow") {
+    for (const key of AGENT_LINEAR_ELEMENT_KEYS) allowedKeys.add(key);
+  }
+  if ([...fields.keys()].some((key) => !allowedKeys.has(key))) {
+    return { valid: false, textLength: 0 };
+  }
+  for (const required of ["x", "y", "width", "height"]) {
+    if (!fields.has(required)) return { valid: false, textLength: 0 };
+  }
+  if (
+    !boundedFinite(fields.get("x"), -100_000, 100_000) ||
+    !boundedFinite(fields.get("y"), -100_000, 100_000) ||
+    !boundedFinite(fields.get("width"), 0, 100_000) ||
+    !boundedFinite(fields.get("height"), 0, 100_000)
+  ) {
+    return { valid: false, textLength: 0 };
+  }
+
+  const validators: Record<string, (candidate: unknown) => boolean> = {
+    angle: (candidate) => boundedFinite(candidate, -Math.PI * 2, Math.PI * 2),
+    strokeColor: (candidate) => typeof candidate === "string" && AGENT_COLOR_PATTERN.test(candidate),
+    backgroundColor: (candidate) => typeof candidate === "string" && AGENT_COLOR_PATTERN.test(candidate),
+    fillStyle: (candidate) => ["solid", "hachure", "cross-hatch", "zigzag"].includes(String(candidate)),
+    strokeWidth: (candidate) => boundedFinite(candidate, 0.5, 20),
+    strokeStyle: (candidate) => ["solid", "dashed", "dotted"].includes(String(candidate)),
+    roughness: (candidate) => boundedInteger(candidate, 0, 2),
+    opacity: (candidate) => boundedInteger(candidate, 0, 100),
+    groupIds: (candidate) => safeStringArray(candidate, 20),
+    frameId: (candidate) => candidate === null,
+    index: (candidate) => typeof candidate === "string" && candidate.length <= 64 && /^[A-Za-z0-9_-]+$/.test(candidate),
+    roundness: safeRoundness,
+    seed: (candidate) => boundedInteger(candidate, -2_147_483_648, 2_147_483_647),
+    version: (candidate) => boundedInteger(candidate, 1, 2_147_483_647),
+    versionNonce: (candidate) => boundedInteger(candidate, -2_147_483_648, 2_147_483_647),
+    isDeleted: (candidate) => candidate === false,
+    boundElements: (candidate) => candidate === null || (Array.isArray(candidate) && candidate.length === 0),
+    updated: (candidate) => boundedInteger(candidate, 0, Number.MAX_SAFE_INTEGER),
+    link: (candidate) => candidate === null,
+    locked: (candidate) => typeof candidate === "boolean",
+    __position: (candidate) => boundedInteger(candidate, 0, 5_000),
+    fontSize: (candidate) => boundedFinite(candidate, 1, 256),
+    fontFamily: (candidate) => boundedInteger(candidate, 1, 5),
+    textAlign: (candidate) => ["left", "center", "right"].includes(String(candidate)),
+    verticalAlign: (candidate) => ["top", "middle", "bottom"].includes(String(candidate)),
+    containerId: (candidate) => candidate === null,
+    autoResize: (candidate) => typeof candidate === "boolean",
+    lineHeight: (candidate) => boundedFinite(candidate, 0.5, 3),
+    lastCommittedPoint: (candidate) => candidate === null || safePoint(candidate),
+    startBinding: (candidate) => candidate === null,
+    endBinding: (candidate) => candidate === null,
+    startArrowhead: safeArrowhead,
+    endArrowhead: safeArrowhead,
+    elbowed: (candidate) => typeof candidate === "boolean"
+  };
+  for (const [key, fieldValue] of fields) {
+    if (["type", "x", "y", "width", "height", "text", "originalText", "points"].includes(key)) {
+      continue;
+    }
+    const validate = validators[key];
+    if (!validate || !validate(fieldValue)) {
+      return { valid: false, textLength: 0 };
+    }
+  }
+
+  if (type === "text") {
+    const text = fields.get("text");
+    const originalText = fields.get("originalText");
+    if (
+      typeof text !== "string" ||
+      Array.from(text).length > 4_000 ||
+      (originalText !== undefined &&
+        (typeof originalText !== "string" || Array.from(originalText).length > 4_000))
+    ) {
+      return { valid: false, textLength: 0 };
+    }
+    return { valid: true, textLength: Array.from(text).length };
+  }
+  if (type === "line" || type === "arrow") {
+    const points = fields.get("points");
+    if (
+      !Array.isArray(points) ||
+      points.length < 2 ||
+      points.length > 256 ||
+      !points.every(safePoint)
+    ) {
+      return { valid: false, textLength: 0 };
+    }
+  }
+  return { valid: true, textLength: 0 };
 }
 
 function updateKey(version: number): string {
@@ -80,7 +325,7 @@ function isChunkedSnapshotManifest(
 
 export interface ApplyUpdateResult {
   accepted: boolean;
-  reason?: "object-limit" | "document-limit" | "invalid-update";
+  reason?: "object-limit" | "document-limit" | "invalid-update" | "agent-policy";
   meta: RoomMeta;
 }
 
@@ -216,10 +461,33 @@ export class YjsDocumentStore {
     update: Uint8Array,
     meta: RoomMeta
   ): Promise<ApplyUpdateResult> {
+    return this.applyUpdate(update, meta, null);
+  }
+
+  async applyAgentIncrementalUpdate(
+    update: Uint8Array,
+    meta: RoomMeta,
+    receipt: AgentAtomicReceiptInput
+  ): Promise<ApplyUpdateResult> {
+    return this.applyUpdate(update, meta, receipt);
+  }
+
+  private async applyUpdate(
+    update: Uint8Array,
+    meta: RoomMeta,
+    receipt: AgentAtomicReceiptInput | null
+  ): Promise<ApplyUpdateResult> {
     const candidate = new Y.Doc();
     try {
       Y.applyUpdate(candidate, Y.encodeStateAsUpdate(this.document));
-      Y.applyUpdate(candidate, update);
+      if (receipt) {
+        if (!this.applySafeAgentUpdate(candidate, update)) {
+          candidate.destroy();
+          return { accepted: false, reason: "agent-policy", meta };
+        }
+      } else {
+        Y.applyUpdate(candidate, update);
+      }
     } catch {
       candidate.destroy();
       return { accepted: false, reason: "invalid-update", meta };
@@ -270,6 +538,7 @@ export class YjsDocumentStore {
             await transaction.delete([...updateEntries.keys()]);
           }
           await transaction.put(ROOM_META_KEY, committedMeta);
+          await this.writeAgentReceipt(transaction, receipt, committedMeta);
         });
       } else {
         await this.storage.transaction(async (transaction) => {
@@ -278,6 +547,7 @@ export class YjsDocumentStore {
             toArrayBuffer(update)
           );
           await transaction.put(ROOM_META_KEY, committedMeta);
+          await this.writeAgentReceipt(transaction, receipt, committedMeta);
         });
       }
     } catch (error) {
@@ -289,6 +559,100 @@ export class YjsDocumentStore {
     this.document = candidate;
     this.encodedStateBytes = encodedCandidate.byteLength;
     return { accepted: true, meta: committedMeta };
+  }
+
+  private applySafeAgentUpdate(candidate: Y.Doc, update: Uint8Array): boolean {
+    const elements = candidate.getMap<unknown>("elements");
+    const beforeIds = new Set(elements.keys());
+    const changes: Array<{ target: unknown; keys: Set<string | null> }> = [];
+    const observer = (transaction: Y.Transaction): void => {
+      transaction.changed.forEach((keys, target) => {
+        changes.push({
+          target,
+          keys: new Set(keys)
+        });
+      });
+    };
+    candidate.on("afterTransaction", observer);
+    try {
+      Y.applyUpdate(candidate, update);
+    } finally {
+      candidate.off("afterTransaction", observer);
+    }
+
+    const afterIds = new Set(elements.keys());
+    if ([...beforeIds].some((id) => !afterIds.has(id))) return false;
+    const newIds = [...afterIds].filter((id) => !beforeIds.has(id));
+    if (
+      newIds.length < 1 ||
+      newIds.length > MAX_AGENT_ELEMENTS_PER_UPDATE ||
+      afterIds.size !== beforeIds.size + newIds.length
+    ) {
+      return false;
+    }
+    const newIdSet = new Set(newIds);
+    const elementsRoot = candidate.share.get("elements");
+    for (const change of changes) {
+      if (change.target === elementsRoot) {
+        if (
+          [...change.keys].some(
+            (key) => typeof key !== "string" || !newIdSet.has(key)
+          )
+        ) {
+          return false;
+        }
+        continue;
+      }
+      const item = (change.target as ChangedYjsTarget)?._item;
+      if (
+        !item ||
+        item.parent !== elementsRoot ||
+        typeof item.parentSub !== "string" ||
+        !newIdSet.has(item.parentSub)
+      ) {
+        return false;
+      }
+    }
+
+    let totalTextLength = 0;
+    for (const id of newIds) {
+      const validated = safeAgentElement(id, elements.get(id));
+      if (!validated.valid) return false;
+      totalTextLength += validated.textLength;
+      if (totalTextLength > 20_000) return false;
+    }
+    return true;
+  }
+
+  private async writeAgentReceipt(
+    transaction: DurableObjectTransaction,
+    receipt: AgentAtomicReceiptInput | null,
+    meta: RoomMeta
+  ): Promise<void> {
+    if (!receipt) return;
+    if (
+      !new RegExp(`^${AGENT_RECEIPT_PREFIX}[a-f0-9]{64}$`).test(receipt.key) ||
+      !/^[a-f0-9]{64}$/.test(receipt.payloadSha256) ||
+      !Number.isSafeInteger(receipt.createdAt) ||
+      !Number.isSafeInteger(receipt.expiresAt) ||
+      receipt.expiresAt <= receipt.createdAt
+    ) {
+      throw new Error("agent_receipt_invalid");
+    }
+    const deleteKeys = [...new Set(receipt.deleteKeys)].filter(
+      (key) => key !== receipt.key && key.startsWith(AGENT_RECEIPT_PREFIX)
+    );
+    if (deleteKeys.length > 0) {
+      await transaction.delete(deleteKeys);
+    }
+    const value: AgentUpdateReceipt = {
+      version: 1,
+      payloadSha256: receipt.payloadSha256,
+      documentVersion: meta.documentVersion,
+      createdAt: receipt.createdAt,
+      expiresAt: receipt.expiresAt
+    };
+    await transaction.put(receipt.key, value);
   }
 
   async compact(meta: RoomMeta): Promise<RoomMeta> {
@@ -326,6 +690,9 @@ export class YjsDocumentStore {
     const updates = await this.storage.list({
       prefix: DOCUMENT_UPDATE_PREFIX
     });
+    const agentReceipts = await this.storage.list({
+      prefix: AGENT_RECEIPT_PREFIX
+    });
     const snapshotChunkEntries = await this.storage.list({
       prefix: DOCUMENT_SNAPSHOT_CHUNK_PREFIX
     });
@@ -346,6 +713,9 @@ export class YjsDocumentStore {
         );
         if (updates.size > 0) {
           await transaction.delete([...updates.keys()]);
+        }
+        if (agentReceipts.size > 0) {
+          await transaction.delete([...agentReceipts.keys()]);
         }
         await transaction.put(ROOM_META_KEY, clearedMeta);
       });

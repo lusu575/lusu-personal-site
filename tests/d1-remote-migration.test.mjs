@@ -281,6 +281,14 @@ test("remote D1 verification groups stay within the production compound SELECT l
   const verificationSql = REMOTE_MIGRATION_VERIFICATION_QUERIES.join("\n");
   assert.match(verificationSql, /whiteboard_admin_audit/);
   assert.match(verificationSql, /whiteboard_metrics/);
+  assert.match(verificationSql, /agent_device_authorizations/);
+  assert.match(verificationSql, /agent_access_tokens/);
+  assert.match(verificationSql, /agent_audit_log/);
+  assert.match(verificationSql, /agent_device_status_expires_idx/);
+  assert.match(verificationSql, /agent_device_ip_created_idx/);
+  assert.match(verificationSql, /agent_access_tokens_user_idx/);
+  assert.match(verificationSql, /agent_access_tokens_expires_idx/);
+  assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
   assert.match(verificationSql, /seed-update-2026-08-01-whiteboard-reliable-sketch/);

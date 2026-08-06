@@ -22,8 +22,11 @@
 
 ## 安全与生命周期
 
-- 所有用户接口继续使用 HttpOnly `lusu_session`；管理员只由 `users.role = admin` 判断。
-- 房间明文口令不得离开浏览器。文字使用浏览器 AES-GCM；文件只准确描述为 HTTPS + 私有 R2 + 服务端鉴权，不能宣称文件端到端加密或已做病毒扫描。
+- 浏览器用户接口继续使用 HttpOnly `lusu_session`。机器客户端只允许使用设备码授权签发的 scoped Agent Bearer；任何畸形 `Authorization` 都必须失败关闭，不能回退到 Cookie。管理员接口只接受 Cookie 会话并由 `users.role = admin` 判断，Agent Bearer 永远按普通用户处理且不得访问 `/api/admin/*`。
+- Agent scope 固定按操作划分：GET/HEAD 使用 `transfer:read`；`room/join`、文字发送、普通上传和 Multipart 初始化/分片/完成使用 `transfer:write`；条目删除与 Multipart abort 使用 `transfer:delete`。新增路由时必须先归类 scope，不能让只读令牌进入 join 或修改流程。
+- 房间明文口令不得离开浏览器或本地 CLI/MCP 进程。授权服务不得接收口令或派生 `roomKey`；互传业务 API 仍按既有协议接收派生 `roomKey`。CLI 禁止命令行口令，只可隐藏输入或 stdin；stdio MCP 只接受 `env:NAME` secret reference。本地状态不得保存明文口令或文字密钥。
+- 文字使用浏览器或本地客户端 AES-GCM；文件只准确描述为 HTTPS + 私有 R2 + 服务端鉴权，不能宣称文件端到端加密或已做病毒扫描。
+- 设备码、用户码与访问令牌必须限时、限频、哈希落库且支持本人撤销；令牌管理页复用 Cookie 会话和 CSRF，当前令牌撤销使用 Bearer 自撤销接口。令牌、口令、`secretRef` 对应值与完整本地凭据不得进入日志、埋点、截图元数据、MCP 输出或 Git。
 - 列表和下载以 D1 `expires_at` 的发布完成后 24 小时逻辑过期为准；清理 Worker 与 R2 生命周期是物理删除兜底。
 - 上传、Multipart、删除、CAS、幂等、Generation、队列背压和部分失败语义不得被 UI 改动绕过。密钥、Webhook、真实邮箱、文件内容和口令不得进入日志、埋点、截图元数据或 Git。
 
@@ -31,5 +34,5 @@
 
 - 工具固定留在 Tools（内部 `resources` route）并按真实 CTA 懒加载；关闭后恢复打开前分类和列表几何。
 - zh/en/ja 与 359×500、375×667、390×844、430×932、844×390、1280×720 都要检查登录、房间、消息、文件卡、任务、composer、版本标识和 44px 触控。
-- 至少运行 `npm.cmd run transfer:test`、`npm.cmd run lint`、`npm.cmd run build`、`npm.cmd run build:production:verify`、相关 UI 审计与 `git diff --check`。
+- 至少运行 `npm.cmd run transfer:test`、Agent/CLI/MCP 定向测试、`npm.cmd run lint`、`npm.cmd run build`、`npm.cmd run build:production:verify`、相关 UI 审计与 `git diff --check`。
 - 正式发布仍由 GitHub `main` 触发 Pages；清理 Worker、R2 binding、生命周期和预算提醒必须按本目录 README 单独核验，未核验不得声称成功。

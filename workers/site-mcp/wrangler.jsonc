@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "lusu-site-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-06",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lusu_personal_site",
+      "database_id": "55087326-4cf0-4002-8229-f202af774da4"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

@@ -166,6 +166,12 @@ db.exec(`
     token_hash text primary key, user_id text not null references users(id) on delete cascade,
     created_at text not null, expires_at text not null
   );
+  create table agent_access_tokens (
+    token_id text primary key, token_hash text not null unique, token_hint text not null default '',
+    user_id text not null references users(id) on delete cascade, client_name text not null,
+    scopes text not null default '[]', created_at text not null, expires_at text not null,
+    last_used_at text not null default '', revoked_at text not null default ''
+  );
 `);
 
 const now = new Date().toISOString();
@@ -174,6 +180,54 @@ db.sqlite.prepare("insert into users values (?, ?, '', ?, ?, ?)").run("user-1", 
 db.sqlite.prepare("insert into users values (?, ?, '', ?, ?, ?)").run("admin-1", "admin@example.test", "admin", now, now);
 db.sqlite.prepare("insert into sessions values (?, ?, ?, ?)").run(await sha256Hex(userToken), "user-1", now, future);
 db.sqlite.prepare("insert into sessions values (?, ?, ?, ?)").run(await sha256Hex(adminToken), "admin-1", now, future);
+const agentToken = `lusu_agent_${"R".repeat(43)}`;
+const adminAgentToken = `lusu_agent_${"A".repeat(43)}`;
+const readOnlyAgentToken = `lusu_agent_${"Q".repeat(43)}`;
+db.sqlite.prepare(`
+  insert into agent_access_tokens (
+    token_id, token_hash, token_hint, user_id, client_name, scopes,
+    created_at, expires_at, last_used_at, revoked_at
+  ) values (?, ?, ?, ?, ?, ?, ?, ?, '', '')
+`).run(
+  "agent-token-user",
+  await sha256Hex(agentToken),
+  agentToken.slice(-6),
+  "user-1",
+  "Transfer test agent",
+  JSON.stringify(["transfer:read", "transfer:write"]),
+  now,
+  future
+);
+db.sqlite.prepare(`
+  insert into agent_access_tokens (
+    token_id, token_hash, token_hint, user_id, client_name, scopes,
+    created_at, expires_at, last_used_at, revoked_at
+  ) values (?, ?, ?, ?, ?, ?, ?, ?, '', '')
+`).run(
+  "agent-token-admin-account",
+  await sha256Hex(adminAgentToken),
+  adminAgentToken.slice(-6),
+  "admin-1",
+  "Admin account agent",
+  JSON.stringify(["transfer:read", "transfer:write", "transfer:delete"]),
+  now,
+  future
+);
+db.sqlite.prepare(`
+  insert into agent_access_tokens (
+    token_id, token_hash, token_hint, user_id, client_name, scopes,
+    created_at, expires_at, last_used_at, revoked_at
+  ) values (?, ?, ?, ?, ?, ?, ?, ?, '', '')
+`).run(
+  "agent-token-read-only",
+  await sha256Hex(readOnlyAgentToken),
+  readOnlyAgentToken.slice(-6),
+  "user-1",
+  "Read-only transfer agent",
+  JSON.stringify(["transfer:read"]),
+  now,
+  future
+);
 
 async function call(path, { method = "GET", token = "", body, headers = {}, includeOrigin = true, envOverride = env } = {}) {
   const requestHeaders = new Headers(headers);
@@ -238,6 +292,78 @@ test("ordinary accounts cannot access transfer administration", async () => {
   const response = await call("admin/transfer/overview", { token: userToken });
   assert.equal(response.status, 403);
   assert.equal((await response.json()).code, "TRANSFER_ADMIN_REQUIRED");
+});
+
+test("scoped agent tokens can use user routes without Origin but never inherit admin access", async () => {
+  const authorization = { Authorization: `Bearer ${agentToken}` };
+  const config = await call("transfer/config", { headers: authorization });
+  assert.equal(config.status, 200);
+
+  const joined = await call("transfer/room/join", {
+    method: "POST",
+    includeOrigin: false,
+    headers: { ...authorization, "Content-Type": "application/json" },
+    body: JSON.stringify({ roomKey })
+  });
+  assert.equal(joined.status, 200);
+
+  const crossOrigin = await call("transfer/room/join", {
+    method: "POST",
+    includeOrigin: false,
+    headers: {
+      ...authorization,
+      "Content-Type": "application/json",
+      Origin: "https://attacker.example"
+    },
+    body: JSON.stringify({ roomKey })
+  });
+  assert.equal(crossOrigin.status, 403);
+  assert.equal((await crossOrigin.json()).code, "TRANSFER_ORIGIN_REJECTED");
+
+  const readOnlyJoin = await call("transfer/room/join", {
+    method: "POST",
+    includeOrigin: false,
+    headers: {
+      Authorization: `Bearer ${readOnlyAgentToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ roomKey })
+  });
+  assert.equal(readOnlyJoin.status, 403);
+  assert.equal((await readOnlyJoin.json()).code, "AGENT_SCOPE_REQUIRED");
+
+  const readOnlyAbort = await call("transfer/upload/abort", {
+    method: "POST",
+    includeOrigin: false,
+    headers: {
+      Authorization: `Bearer ${readOnlyAgentToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ roomKey, sessionId: "session-not-used" })
+  });
+  assert.equal(readOnlyAbort.status, 403);
+  assert.equal((await readOnlyAbort.json()).code, "AGENT_SCOPE_REQUIRED");
+
+  const missingDeleteScope = await call("transfer/items/not-found", {
+    method: "DELETE",
+    includeOrigin: false,
+    headers: authorization
+  });
+  assert.equal(missingDeleteScope.status, 403);
+  assert.equal((await missingDeleteScope.json()).code, "AGENT_SCOPE_REQUIRED");
+
+  const adminRoute = await call("admin/transfer/overview", {
+    headers: { Authorization: `Bearer ${adminAgentToken}` }
+  });
+  assert.equal(adminRoute.status, 401);
+  assert.equal((await adminRoute.json()).code, "TRANSFER_ADMIN_BROWSER_SESSION_REQUIRED");
+
+  const malformedBearerWithCookie = await call("transfer/config", {
+    token: userToken,
+    headers: { Authorization: "Bearer malformed" }
+  });
+  assert.equal(malformedBearerWithCookie.status, 401);
+  assert.equal((await malformedBearerWithCookie.json()).code, "TRANSFER_AGENT_AUTHORIZATION_INVALID");
 });
 
 test("transfer settings use an expectedUpdatedAt revision and reject stale admin tabs", async () => {

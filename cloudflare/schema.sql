@@ -17,6 +17,63 @@ create table if not exists sessions (
 create index if not exists sessions_user_id_idx on sessions(user_id);
 create index if not exists sessions_expires_at_idx on sessions(expires_at);
 
+create table if not exists agent_device_authorizations (
+  device_id text primary key,
+  device_code_hash text not null unique,
+  user_code_hash text not null unique,
+  client_name text not null,
+  requested_scopes text not null default '[]',
+  granted_scopes text not null default '[]',
+  user_id text references users(id) on delete cascade,
+  status text not null default 'pending',
+  csrf_hash text not null default '',
+  ip_hash text not null default '',
+  created_at text not null,
+  expires_at text not null,
+  approved_at text not null default '',
+  consumed_at text not null default '',
+  poll_count integer not null default 0,
+  last_polled_at text not null default '',
+  decision_event_id text not null default ''
+);
+
+create table if not exists agent_access_tokens (
+  token_id text primary key,
+  token_hash text not null unique,
+  token_hint text not null default '',
+  user_id text not null references users(id) on delete cascade,
+  client_name text not null,
+  scopes text not null default '[]',
+  created_at text not null,
+  expires_at text not null,
+  last_used_at text not null default '',
+  revoked_at text not null default '',
+  revoked_event_id text not null default ''
+);
+
+create table if not exists agent_audit_log (
+  event_id text primary key,
+  actor_user_id text not null default '',
+  token_id text not null default '',
+  action text not null,
+  target_type text not null default '',
+  target_id text not null default '',
+  scopes text not null default '[]',
+  result text not null default '',
+  created_at text not null
+);
+
+create index if not exists agent_device_status_expires_idx
+  on agent_device_authorizations(status, expires_at);
+create index if not exists agent_device_ip_created_idx
+  on agent_device_authorizations(ip_hash, created_at);
+create index if not exists agent_access_tokens_user_idx
+  on agent_access_tokens(user_id, revoked_at, expires_at);
+create index if not exists agent_access_tokens_expires_idx
+  on agent_access_tokens(expires_at, revoked_at);
+create index if not exists agent_audit_created_idx
+  on agent_audit_log(created_at, action);
+
 create table if not exists user_login_events (
   event_id text primary key,
   user_id text not null references users(id) on delete cascade,
@@ -742,6 +799,232 @@ create index if not exists article_view_events_slug_idx
   on article_view_events(slug, created_at);
 create index if not exists article_view_events_visitor_idx
   on article_view_events(visitor_id, created_at);
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-08-06-whiteboard-2048-agent',
+  '2026-08-06-whiteboard-2048-agent',
+  'site-updates',
+  '["网站更新","AI 能力","在线画板","2048","MCP","CLI"]',
+  '', 'published', 0, 0,
+  '2026-08-06T03:50:00.000Z',
+  '2026-08-06T03:50:00.000Z',
+  '2026-08-06T03:50:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-06-whiteboard-2048-agent-zh',
+    'seed-update-2026-08-06-whiteboard-2048-agent',
+    'zh',
+    'AI 已可操作在线画板与 2048',
+    '第二阶段把在线画板与 2048 接入本地 CLI／stdio MCP：画板可安全追加高层元素并在本地导出 JSON、SVG、PNG；2048 运行在隔离的本地会话中。远程 MCP 仍未部署且保持只读。',
+    '# AI 已可操作在线画板与 2048
+
+AI 能力层进入第二阶段，先接入在线画板和第一个可操作游戏。当前入口严格限定在本地 CLI 与 stdio MCP，能力边界会与实际实现保持一致。
+
+## 在线画板
+
+- AI 可加入公共或密码房，读取场景摘要，并安全追加文字、矩形、椭圆、菱形、直线和箭头等高层元素。
+- 写入采用只追加规则；现有元素的编辑和删除、图片嵌入目前都不支持。
+- 场景可在本地导出为 JSON、SVG 或 PNG；SVG 与 PNG 是简化的可视化导出。
+
+## 2048
+
+- AI 可创建隔离的本地 2048 会话，观察棋盘和可用动作，并通过带版本检查的操作完成移动、重置和关闭。
+- 这不是对已经在浏览器中打开的游戏页面进行连接或接管，也不会混用访客的浏览器存档。
+
+## 接口边界
+
+这些新能力只通过本地 CLI／stdio MCP 提供。远程 MCP Worker 仍未部署且保持只读，没有公开连接地址，也没有远程写入能力。网站其余工具和游戏会继续按权限与数据边界分批接入。',
+    '2026-08-06T03:50:00.000Z',
+    '2026-08-06T03:50:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-06-whiteboard-2048-agent-en',
+    'seed-update-2026-08-06-whiteboard-2048-agent',
+    'en',
+    'AI Can Now Draw on Whiteboards and Play 2048',
+    'Phase two connects Online Whiteboard and 2048 to the local CLI/stdio MCP: the board safely appends high-level elements and exports JSON, SVG, or PNG locally, while 2048 runs in an isolated local session. The remote MCP remains undeployed and read-only.',
+    '# AI Can Now Draw on Whiteboards and Play 2048
+
+The AI capability layer has entered its second phase with Online Whiteboard and the first controllable game. Access is deliberately limited to the local CLI and stdio MCP, and the published capability boundary matches what is implemented.
+
+## Online Whiteboard
+
+- AI clients can join a public or password room, read a scene summary, and safely append high-level elements such as text, rectangles, ellipses, diamonds, lines, and arrows.
+- Writes are append-only. Editing or deleting existing elements and embedding images are not supported.
+- A scene can be exported locally as JSON, SVG, or PNG. The SVG and PNG outputs are simplified visual exports.
+
+## 2048
+
+- AI clients can create an isolated local 2048 session, observe the board and available actions, and use revision-checked operations to move, reset, or close it.
+- This does not connect to or take over a game page that is already open in a browser, and it does not reuse a visitor browser save.
+
+## Interface boundary
+
+These capabilities are available only through the local CLI and stdio MCP. The remote MCP Worker remains undeployed and read-only, with no public connection URL and no remote write operations. Other site tools and games will be connected in stages according to their permission and data boundaries.',
+    '2026-08-06T03:50:00.000Z',
+    '2026-08-06T03:50:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-06-whiteboard-2048-agent-ja',
+    'seed-update-2026-08-06-whiteboard-2048-agent',
+    'ja',
+    'AI がホワイトボード描画と 2048 操作に対応',
+    '第2段階としてオンラインホワイトボードと 2048 をローカル CLI／stdio MCP に接続しました。ホワイトボードは安全な高レベル要素の追記とローカル JSON／SVG／PNG 書き出し、2048 は分離されたローカルセッションに対応します。リモート MCP は未展開の読み取り専用のままです。',
+    '# AI がホワイトボード描画と 2048 操作に対応
+
+AI 機能レイヤーの第2段階として、オンラインホワイトボードと最初の操作可能なゲームを接続しました。入口はローカル CLI と stdio MCP に限定し、公開する機能範囲を実装済みの内容と一致させています。
+
+## オンラインホワイトボード
+
+- AI は公開ルームまたはパスワードルームに参加し、シーンの概要を読み取り、テキスト、長方形、楕円、ひし形、線、矢印などの高レベル要素を安全に追記できます。
+- 書き込みは追記専用です。既存要素の編集や削除、画像の埋め込みには対応していません。
+- シーンはローカルで JSON、SVG、PNG に書き出せます。SVG と PNG は簡略化した表示用の書き出しです。
+
+## 2048
+
+- AI は分離されたローカル 2048 セッションを作成し、盤面と利用可能な操作を確認して、リビジョン検査付きの操作で移動、リセット、終了を実行できます。
+- すでにブラウザーで開いているゲーム画面への接続や乗っ取りではなく、訪問者のブラウザー保存データも再利用しません。
+
+## インターフェースの境界
+
+これらの新機能はローカル CLI と stdio MCP だけで利用できます。リモート MCP Worker は未展開の読み取り専用のままで、公開接続 URL もリモート書き込み機能もありません。ほかのサイトツールとゲームは、権限とデータ境界に応じて段階的に接続します。',
+    '2026-08-06T03:50:00.000Z',
+    '2026-08-06T03:50:00.000Z'
+  )
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-08-06-agent-capabilities',
+  '2026-08-06-agent-capabilities',
+  'site-updates',
+  '["网站更新","AI 能力","MCP","CLI","临时互传"]',
+  '', 'published', 0, 0,
+  '2026-08-06T02:20:00.000Z',
+  '2026-08-06T02:20:00.000Z',
+  '2026-08-06T02:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-06-agent-capabilities-zh',
+    'seed-update-2026-08-06-agent-capabilities',
+    'zh',
+    'AI 能力层第一阶段：MCP、CLI 与临时互传',
+    '建立统一能力注册表、设备码和最小权限令牌，新增本地 CLI／stdio MCP 与尚未部署的只读远程 MCP；AI 现在可安全收发临时互传的文字和文件，白板与游戏控制仍在后续计划中。',
+    '# AI 能力层第一阶段：MCP、CLI 与临时互传
+
+网站开始补上一层面向 AI 的统一能力入口。第一阶段先把能力清单、授权边界和可复用客户端搭稳，再逐步接入更多工具。
+
+## 已经完成
+
+- 统一能力注册表会同时记录未来希望支持的入口和当前真正可用的入口，CLI、MCP 与文档都从同一份清单读取，避免把计划能力误报成已上线。
+- 本地 CLI 和 stdio MCP 已可读取文章、搜索公开内容、查看每日 AI 新闻与视频列表。
+- 临时互传已接入加入房间、列出内容、收发文字、上传下载文件和删除项目；密码只在本机输入或从明确指定的环境变量读取，不进入命令参数、能力清单或远程服务。
+- 设备码登录与最小权限令牌把公开内容、互传读取、写入和删除分开授权，管理接口仍只接受管理员浏览器会话。
+
+## 远程 MCP 的当前状态
+
+只读远程 MCP Worker 的代码和测试已经完成，可提供能力清单、公开文章列表、搜索与文章读取。它目前没有部署到生产环境，也没有开放远程写操作，因此本次更新不提供可连接的线上 MCP 地址。
+
+## 下一步
+
+在线画板、游戏控制以及其余工具已经登记为后续适配目标，但现在还不能由 AI 直接接管。后续会按权限风险和数据边界分批实现，并只在真实可用后标记为已支持。',
+    '2026-08-06T02:20:00.000Z',
+    '2026-08-06T02:20:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-06-agent-capabilities-en',
+    'seed-update-2026-08-06-agent-capabilities',
+    'en',
+    'AI Capability Layer: MCP, CLI, and Quick Transfer',
+    'Adds a governed capability registry, device authorization and scoped tokens, a local CLI/stdio MCP, and an undeployed read-only remote MCP; AI clients can now exchange Quick Transfer text and files, while Whiteboard and game control remain planned.',
+    '# AI Capability Layer: MCP, CLI, and Quick Transfer
+
+The site now has a shared capability layer for AI clients. This first phase establishes one inventory, authorization boundaries, and reusable clients before more tools are connected.
+
+## Available now
+
+- The capability registry records both intended transports and transports that are actually available. The CLI, MCP servers, and documentation read the same inventory so planned features are not presented as live.
+- The local CLI and stdio MCP can list and search public content, read articles and Daily AI News, and list videos.
+- Quick Transfer supports joining a room, listing items, sending and receiving text, uploading and downloading files, and deleting items. Passwords are entered locally or read from an explicitly named environment variable; they are not placed in command arguments, the registry, or the remote service.
+- Device authorization and least-privilege tokens separate public-content access from Transfer read, write, and delete scopes. Administrator routes still require an administrator browser session.
+
+## Remote MCP status
+
+The read-only remote MCP Worker is implemented and tested for capability discovery, public article lists, search, and article reads. It has not been deployed to production and exposes no remote write operation, so this release does not provide a live remote MCP URL.
+
+## Next
+
+Online Whiteboard, game control, and the remaining tools are registered as adapter targets, but AI clients cannot control them yet. They will be added in stages according to permission risk and data boundaries, and will be marked available only after they actually work.',
+    '2026-08-06T02:20:00.000Z',
+    '2026-08-06T02:20:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-06-agent-capabilities-ja',
+    'seed-update-2026-08-06-agent-capabilities',
+    'ja',
+    'AI 機能レイヤー第1段階：MCP・CLI・一時転送',
+    '統一機能レジストリ、デバイス認証、最小権限トークン、ローカル CLI／stdio MCP、未展開の読み取り専用リモート MCP を追加しました。AI は一時転送のテキストとファイルを扱えますが、ホワイトボードとゲーム操作はまだ計画段階です。',
+    '# AI 機能レイヤー第1段階：MCP・CLI・一時転送
+
+AI クライアント向けの共通機能レイヤーをサイトに追加しました。第1段階では、より多くのツールを接続する前に、機能一覧、認可境界、再利用できるクライアントを整えています。
+
+## 現在利用できるもの
+
+- 機能レジストリは、将来対応したい入口と、現在実際に利用できる入口を分けて記録します。CLI、MCP、文書が同じ一覧を参照し、計画中の機能を公開済みとして表示しません。
+- ローカル CLI と stdio MCP では、公開コンテンツの一覧・検索、記事と Daily AI News の取得、動画一覧の取得ができます。
+- 一時転送では、ルーム参加、項目一覧、テキスト送受信、ファイルのアップロード・ダウンロード、項目削除に対応しました。パスワードはローカル入力または明示した環境変数からだけ読み取り、コマンド引数、レジストリ、リモートサービスには保存しません。
+- デバイス認証と最小権限トークンで、公開コンテンツと一時転送の読み取り・書き込み・削除を分離しました。管理機能は引き続き管理者のブラウザーセッションだけを受け付けます。
+
+## リモート MCP の状態
+
+読み取り専用リモート MCP Worker は実装とテストを完了し、機能一覧、公開記事一覧、検索、記事取得を提供できます。ただし本番環境にはまだ展開しておらず、リモート書き込みもありません。そのため、今回の更新では接続可能な公開 MCP URL を案内しません。
+
+## 次の段階
+
+オンラインホワイトボード、ゲーム操作、そのほかのツールは今後のアダプター対象として登録済みですが、現時点で AI が直接操作することはできません。権限リスクとデータ境界に合わせて段階的に実装し、実際に動作した機能だけを利用可能として表示します。',
+    '2026-08-06T02:20:00.000Z',
+    '2026-08-06T02:20:00.000Z'
+  )
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
 
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -11614,7 +11897,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260806-site-guides-password-rooms-r2', '2026-08-06T00:55:00.000Z')
+values ('article_seed_version', '20260806-whiteboard-2048-agent-r1', '2026-08-06T03:50:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

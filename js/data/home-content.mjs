@@ -2,6 +2,56 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-06-whiteboard-2048-agent",
+      "slug": "2026-08-06-whiteboard-2048-agent",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "在线画板", "2048", "MCP", "CLI"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-06T03:50:00.000Z",
+      "updated_at": "2026-08-06T03:50:00.000Z",
+      "published_at": "2026-08-06T03:50:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.08.06",
+      "title": {
+        "zh": "AI 已可操作在线画板与 2048",
+        "en": "AI Can Now Draw on Whiteboards and Play 2048",
+        "ja": "AI がホワイトボード描画と 2048 操作に対応"
+      },
+      "summary": {
+        "zh": "第二阶段把在线画板与 2048 接入本地 CLI／stdio MCP：画板可安全追加高层元素并在本地导出 JSON、SVG、PNG；2048 运行在隔离的本地会话中。远程 MCP 仍未部署且保持只读。",
+        "en": "Phase two connects Online Whiteboard and 2048 to the local CLI/stdio MCP: the board safely appends high-level elements and exports JSON, SVG, or PNG locally, while 2048 runs in an isolated local session. The remote MCP remains undeployed and read-only.",
+        "ja": "第2段階としてオンラインホワイトボードと 2048 をローカル CLI／stdio MCP に接続しました。ホワイトボードは安全な高レベル要素の追記とローカル JSON／SVG／PNG 書き出し、2048 は分離されたローカルセッションに対応します。リモート MCP は未展開の読み取り専用のままです。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-08-06-agent-capabilities",
+      "slug": "2026-08-06-agent-capabilities",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "MCP", "CLI", "临时互传"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-06T02:20:00.000Z",
+      "updated_at": "2026-08-06T02:20:00.000Z",
+      "published_at": "2026-08-06T02:20:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.08.06",
+      "title": {
+        "zh": "AI 能力层第一阶段：MCP、CLI 与临时互传",
+        "en": "AI Capability Layer: MCP, CLI, and Quick Transfer",
+        "ja": "AI 機能レイヤー第1段階：MCP・CLI・一時転送"
+      },
+      "summary": {
+        "zh": "建立统一能力注册表、设备码和最小权限令牌，新增本地 CLI／stdio MCP 与尚未部署的只读远程 MCP；AI 现在可安全收发临时互传的文字和文件，白板与游戏控制仍在后续计划中。",
+        "en": "Adds a governed capability registry, device authorization and scoped tokens, a local CLI/stdio MCP, and an undeployed read-only remote MCP; AI clients can now exchange Quick Transfer text and files, while Whiteboard and game control remain planned.",
+        "ja": "統一機能レジストリ、デバイス認証、最小権限トークン、ローカル CLI／stdio MCP、未展開の読み取り専用リモート MCP を追加しました。AI は一時転送のテキストとファイルを扱えますが、ホワイトボードとゲーム操作はまだ計画段階です。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-06-site-guides-password-rooms",
       "slug": "2026-08-06-site-guides-password-rooms",
       "category": "site-updates",
@@ -74,56 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "画板 v1.0.2 统一所有房间的铅笔草图默认值，并用边缘自动心跳、后台停放、按变化批处理和空房无周期轮询降低 Cloudflare 用量；短暂重连不再弹大错误。",
         "en": "Whiteboard v1.0.2 gives every room the same pencil-sketch defaults and lowers Cloudflare usage through edge auto-responses, hidden-tab parking, change-only batching, and no recurring empty-room polling; brief reconnects no longer show large errors.",
         "ja": "ホワイトボード v1.0.2 は全ルームで鉛筆スケッチの既定値を統一し、エッジ自動応答、非表示タブの休止、変更時だけの一括同期、空室の定期巡回停止で Cloudflare 使用量を抑えます。短い再接続では大きなエラーを表示しません。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-01-whiteboard-reliable-sketch",
-      "slug": "2026-08-01-whiteboard-reliable-sketch",
-      "category": "site-updates",
-      "tags": ["网站更新", "在线画板", "可靠保存", "铅笔草图", "版本治理"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-01T09:55:00.000Z",
-      "updated_at": "2026-08-01T09:55:00.000Z",
-      "published_at": "2026-08-01T09:55:00.000Z",
-      "fallbackOnly": true,
-      "icon": "resources",
-      "date": "2026.08.01",
-      "title": {
-        "zh": "在线画板可靠保存与铅笔草图风",
-        "en": "Reliable Whiteboard Saving and Pencil Sketch Style",
-        "ja": "ホワイトボードの確実な保存と鉛筆スケッチ風"
-      },
-      "summary": {
-        "zh": "快速绘制现在会合并发送、等待服务端持久化确认并在断线后重传；公共画布持续保留，密码房空置24小时后整房清理，同时加入铅笔草图默认风格和画板、临时互传的独立版本记录。",
-        "en": "Rapid drawing is now batched, acknowledged only after durable storage, and retried after disconnects; the public canvas persists, empty password rooms are deleted after 24 hours, and Whiteboard plus Quick Transfer now have independent versions.",
-        "ja": "高速描画をまとめて送信し、永続化後の確認と切断時の再送に対応しました。公開キャンバスは保持し、パスワードルームは空室24時間後に全削除します。鉛筆風の既定値と独立版管理も追加しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-01-service-reliability",
-      "slug": "2026-08-01-service-reliability",
-      "category": "site-updates",
-      "tags": ["网站更新", "账号", "登录", "D1", "稳定性"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-01T07:10:00.000Z",
-      "updated_at": "2026-08-01T07:10:00.000Z",
-      "published_at": "2026-08-01T07:10:00.000Z",
-      "fallbackOnly": true,
-      "icon": "games",
-      "date": "2026.08.01",
-      "title": {
-        "zh": "账号与实时工具稳定性修复",
-        "en": "Account and Real-Time Tool Reliability Fixes",
-        "ja": "アカウントとリアルタイムツールの安定性を修正"
-      },
-      "summary": {
-        "zh": "修复 Cloudflare 密码派生兼容性导致的登录失败，并停止文章种子在冷启动时重复写入 D1，降低账号、匿名身份和在线画板共用数据库时的写入压力。",
-        "en": "Fixes sign-in failures caused by a Cloudflare password-derivation incompatibility and stops article seeds from rewriting D1 on cold starts, reducing shared write pressure for accounts, anonymous identity, and Whiteboard.",
-        "ja": "Cloudflare のパスワード導出互換性によるログイン失敗を修正し、コールドスタート時の記事 seed による D1 の反復書き込みを止め、アカウント・匿名ID・ホワイトボード共通DBの負荷を下げました。"
       }
     }
   ]

@@ -51,7 +51,6 @@ export default [
     ignores: [
       "dist/**",
       "node_modules/**",
-      "games/**/source/**",
       "output/**",
       "自动新闻/**"
     ]
@@ -68,6 +67,7 @@ export default [
     files: [
       "functions/api/anonymous-identity.mjs",
       "functions/api/whiteboard-service.mjs",
+      "games/2048/source/**/*.{js,mjs}",
       "js/features/anonymous-identity.mjs",
       "js/routes/chatroom.mjs",
       "tools/whiteboard/src/**/*.{js,jsx}",
