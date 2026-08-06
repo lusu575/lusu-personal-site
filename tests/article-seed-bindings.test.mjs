@@ -9,7 +9,8 @@ const PASSWORD_ROOM_GUIDE_ARTICLE_ID = "seed-site-guide-whiteboard-chat-password
 const AGENT_CAPABILITIES_UPDATE_ID = "seed-update-2026-08-06-agent-capabilities";
 const WHITEBOARD_2048_AGENT_UPDATE_ID = "seed-update-2026-08-06-whiteboard-2048-agent";
 const AGENT_READ_BREADTH_UPDATE_ID = "seed-update-2026-08-06-agent-read-breadth";
-const ARTICLE_SEED_VERSION = "20260806-agent-read-breadth-r1";
+const JAPANESE_AGENT_PROGRESS_UPDATE_ID = "seed-update-2026-08-06-japanese-agent-progress";
+const ARTICLE_SEED_VERSION = "20260806-japanese-agent-progress-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -208,6 +209,24 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /stdio MCP/);
     assert.match(params[5], /250/);
     assert.match(params[5], /2048/);
+    assert.match(params[5], /undeployed|未部署|未展開/);
+  }
+
+  const japaneseAgentProgressSeed = seedBatch.find(({ sql }) => (
+    sql.includes(`'${JAPANESE_AGENT_PROGRESS_UPDATE_ID}'`)
+    && /on conflict\(article_id\) do update/i.test(normalizedSql(sql))
+  ));
+  assert.ok(japaneseAgentProgressSeed, "the Phase 4 Japanese Agent progress update metadata must be seeded");
+  const japaneseAgentProgressTranslations = boundStatements.filter(({ params }) => (
+    params[1] === JAPANESE_AGENT_PROGRESS_UPDATE_ID
+    && ["zh", "en", "ja"].includes(params[2])
+  ));
+  assert.equal(japaneseAgentProgressTranslations.length, 3, "the Phase 4 Japanese Agent update must include three translations");
+  for (const { params } of japaneseAgentProgressTranslations) {
+    assert.match(params[5], /stdio MCP/);
+    assert.match(params[5], /revision/);
+    assert.match(params[5], /operation ID|operationId/);
+    assert.match(params[5], /bronze|铜牌|銅/);
     assert.match(params[5], /undeployed|未部署|未展開/);
   }
 

@@ -204,3 +204,48 @@ test("SiteClient validates stable video ids before constructing the request path
   }
   assert.deepEqual(calls, ["/api/videos/video_ID%3A1"]);
 });
+
+test("SiteClient reads Japanese progress and submits only a semantic attempt with Bearer auth", async () => {
+  const calls = [];
+  const client = new SiteClient({
+    baseUrl: "https://example.test",
+    accessToken: "japanese-progress-token",
+    fetch: async (url, options) => {
+      calls.push({ url, options });
+      return jsonResponse(url.pathname.endsWith("/attempts")
+        ? { status: "applied", revision: 8, score: 100 }
+        : { revision: 7, stages: [{ stageId: "L1-001" }] });
+    }
+  });
+  const progress = await client.getJapaneseSubtextProgress({ stageId: "L1-001", days: 14 });
+  assert.equal(progress.revision, 7);
+  const attempt = {
+    stageId: "L1-001",
+    stageRevision: 3,
+    contentHash: "a".repeat(64),
+    answers: [{ questionId: "q1", optionIds: ["a"] }],
+    expectedRevision: 7,
+    operationId: "attempt_client_0001"
+  };
+  const submitted = await client.submitJapaneseSubtextAttempt(attempt);
+  assert.equal(submitted.status, "applied");
+
+  assert.equal(calls[0].url.pathname, "/api/tools/japanese-subtext/agent-progress");
+  assert.equal(calls[0].url.searchParams.get("stageId"), "L1-001");
+  assert.equal(calls[0].url.searchParams.get("days"), "14");
+  assert.equal(calls[0].options.headers.get("Authorization"), "Bearer japanese-progress-token");
+  assert.equal(calls[1].url.pathname, "/api/tools/japanese-subtext/attempts");
+  assert.equal(calls[1].options.method, "POST");
+  assert.equal(calls[1].options.headers.get("Authorization"), "Bearer japanese-progress-token");
+  assert.deepEqual(JSON.parse(calls[1].options.body), attempt);
+
+  await assert.rejects(
+    client.submitJapaneseSubtextAttempt({ ...attempt, expectedRevision: 0 }),
+    (error) => error instanceof SiteClientError && error.code === "JAPANESE_SUBTEXT_EXPECTED_REVISION_INVALID"
+  );
+  await assert.rejects(
+    client.submitJapaneseSubtextAttempt({ ...attempt, rawProgress: {} }),
+    (error) => error instanceof SiteClientError && error.code === "JAPANESE_SUBTEXT_ATTEMPT_INVALID"
+  );
+  assert.equal(calls.length, 2);
+});

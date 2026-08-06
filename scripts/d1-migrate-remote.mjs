@@ -10,6 +10,27 @@ const root = resolve(import.meta.dirname, "..");
 const database = "lusu_personal_site";
 const wranglerCli = resolve(root, "node_modules", "wrangler", "bin", "wrangler.js");
 const D1_MAX_COMPOUND_SELECT_TERMS = 5;
+const REMOTE_D1_READ_RETRY_DELAYS_MS = Object.freeze([750, 1500]);
+
+export async function retryRemoteD1Read(
+  operation,
+  {
+    delays = REMOTE_D1_READ_RETRY_DELAYS_MS,
+    wait = (delayMs) => new Promise((resolveWait) => setTimeout(resolveWait, delayMs))
+  } = {}
+) {
+  let lastError;
+  for (let attempt = 0; attempt <= delays.length; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      if (attempt === delays.length) break;
+      await wait(delays[attempt]);
+    }
+  }
+  throw lastError;
+}
 
 export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
   `
@@ -107,12 +128,32 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     where type = 'index' and name = 'whiteboard_bans_active_scope_subject_idx'
   `,
   `
+    select 'japanese-agent-operation-column' as item, count(*) as present
+    from pragma_table_info('japanese_subtext_profiles') where name = 'last_agent_operation_id'
+    union all
+    select 'japanese-agent-payload-column', count(*)
+    from pragma_table_info('japanese_subtext_profiles') where name = 'last_agent_payload_hash'
+    union all
+    select 'japanese-agent-attempts-table', count(*)
+    from sqlite_master where type = 'table' and name = 'japanese_subtext_agent_attempts'
+    union all
+    select 'japanese-agent-receipts-table', count(*)
+    from sqlite_master where type = 'table' and name = 'japanese_subtext_agent_receipts'
+  `,
+  `
+    select 'japanese-agent-attempts-index' as item, count(*) as present
+    from sqlite_master where type = 'index' and name = 'japanese_subtext_agent_attempts_created_idx'
+    union all
+    select 'japanese-agent-receipts-index', count(*)
+    from sqlite_master where type = 'index' and name = 'japanese_subtext_agent_receipts_created_idx'
+  `,
+  `
     select 'traffic-control-default-state' as item, count(*) as present
     from site_runtime_state where key = 'traffic_control_settings_v1'
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260806-agent-read-breadth-r1'
+    where key = 'article_seed_version' and value = '20260806-japanese-agent-progress-r1'
     union all
     select 'whiteboard-reliable-sketch-update-article', count(*)
     from articles where article_id = 'seed-update-2026-08-01-whiteboard-reliable-sketch'
@@ -208,15 +249,15 @@ async function executeRemoteCommand(sql) {
 }
 
 async function queryRemoteRows(sql) {
-  const output = await runWrangler([
-    "d1",
-    "execute",
-    database,
-    "--remote",
-    "--command",
-    sql.replace(/\s+/g, " ").trim(),
-    "--json"
-  ], { captureStdout: true });
+  const output = await retryRemoteD1Read(() => runWrangler([
+      "d1",
+      "execute",
+      database,
+      "--remote",
+      "--command",
+      sql.replace(/\s+/g, " ").trim(),
+      "--json"
+    ], { captureStdout: true }));
   let payload;
   try {
     payload = JSON.parse(output);

@@ -26,6 +26,7 @@ test("local MCP registers the first capability surface with safe annotations", a
     "capabilities_list", "content_list", "content_search", "content_get", "daily_news_get", "videos_list",
     "video_get", "tools_list", "tools_get", "games_list", "game_get",
     "japanese_subtext_levels", "japanese_subtext_stages", "japanese_subtext_stage_get",
+    "japanese_subtext_progress_get", "japanese_subtext_attempt_submit",
     "transfer_join", "transfer_list", "transfer_send_text", "transfer_upload",
     "transfer_download", "transfer_delete", "whiteboard_join", "whiteboard_scene",
     "whiteboard_draw", "whiteboard_export", "game_create", "game_observe",
@@ -36,6 +37,9 @@ test("local MCP registers the first capability surface with safe annotations", a
   assert.equal(tool(server, "tools_list").annotations.openWorldHint, false);
   assert.equal(tool(server, "games_list").annotations.openWorldHint, true);
   assert.equal(tool(server, "japanese_subtext_stage_get").annotations.readOnlyHint, true);
+  assert.equal(tool(server, "japanese_subtext_progress_get").annotations.readOnlyHint, true);
+  assert.equal(tool(server, "japanese_subtext_attempt_submit").annotations.idempotentHint, true);
+  assert.equal(tool(server, "japanese_subtext_attempt_submit").annotations.destructiveHint, false);
   assert.equal(tool(server, "transfer_delete").annotations.destructiveHint, true);
   assert.equal(tool(server, "transfer_upload").annotations.idempotentHint, false);
   assert.equal(tool(server, "transfer_join").annotations.idempotentHint, false);
@@ -73,6 +77,19 @@ test("local MCP registers the first capability surface with safe annotations", a
   assert.equal(tool(server, "japanese_subtext_stage_get").inputSchema.safeParse({
     stageId: "L1-051",
     lang: "ja"
+  }).success, false);
+  assert.equal(tool(server, "japanese_subtext_progress_get").inputSchema.safeParse({
+    stageId: "L1-001",
+    days: 91
+  }).success, false);
+  assert.equal(tool(server, "japanese_subtext_attempt_submit").inputSchema.safeParse({
+    stageId: "L1-001",
+    stageRevision: 3,
+    contentHash: "a".repeat(64),
+    answers: [{ questionId: "q1", optionIds: ["a"] }],
+    expectedRevision: 1,
+    operationId: "mcp_attempt_0001",
+    progress: {}
   }).success, false);
 });
 
@@ -163,6 +180,14 @@ test("local MCP serves the Phase 3 public read breadth through bounded adapters"
         });
       }
       return { stageId, lang: options.lang, textLocked: true };
+    },
+    async getJapaneseSubtextProgress(options) {
+      calls.push(["progress", options]);
+      return { revision: 4, stages: [{ stageId: options.stageId }] };
+    },
+    async submitJapaneseSubtextAttempt(input) {
+      calls.push(["attempt", input]);
+      return { status: "applied", revision: input.expectedRevision + 1, score: 100 };
     }
   };
   const server = await createLocalMcpServer({ client, credential: null, allowRoots: [process.cwd()] });
@@ -206,6 +231,21 @@ test("local MCP serves the Phase 3 public read breadth through bounded adapters"
     code: "JAPANESE_SUBTEXT_NOT_FOUND",
     status: 404
   });
+  const progress = await tool(server, "japanese_subtext_progress_get").handler({
+    stageId: "L1-001",
+    days: 30
+  });
+  assert.equal(progress.structuredContent.result.revision, 4);
+  const attemptInput = {
+    stageId: "L1-001",
+    stageRevision: 3,
+    contentHash: "a".repeat(64),
+    answers: [{ questionId: "q1", optionIds: ["a"] }],
+    expectedRevision: 4,
+    operationId: "mcp_attempt_0001"
+  };
+  const attempt = await tool(server, "japanese_subtext_attempt_submit").handler(attemptInput);
+  assert.equal(attempt.structuredContent.result.status, "applied");
 
   assert.deepEqual(calls, [
     ["video", "video-123"],
@@ -214,7 +254,9 @@ test("local MCP serves the Phase 3 public read breadth through bounded adapters"
     ["levels", { lang: "zh" }],
     ["stages", { level: 1, query: "context", limit: 12, lang: "en" }],
     ["stage", "L1-001", { lang: "ja" }],
-    ["stage", "L1-050", { lang: "zh" }]
+    ["stage", "L1-050", { lang: "zh" }],
+    ["progress", { stageId: "L1-001", days: 30 }],
+    ["attempt", attemptInput]
   ]);
 });
 
@@ -471,9 +513,12 @@ test("local MCP serves a clean stdio initialize and tools/list exchange", async 
   assert.ok(listed.result.tools.some((entry) => entry.name === "tools_list"));
   assert.ok(listed.result.tools.some((entry) => entry.name === "games_list"));
   assert.ok(listed.result.tools.some((entry) => entry.name === "japanese_subtext_stage_get"));
+  assert.ok(listed.result.tools.some((entry) => entry.name === "japanese_subtext_progress_get"));
+  assert.ok(listed.result.tools.some((entry) => entry.name === "japanese_subtext_attempt_submit"));
   for (const name of [
     "video_get", "tools_list", "tools_get", "games_list", "game_get",
-    "japanese_subtext_levels", "japanese_subtext_stages", "japanese_subtext_stage_get"
+    "japanese_subtext_levels", "japanese_subtext_stages", "japanese_subtext_stage_get",
+    "japanese_subtext_progress_get", "japanese_subtext_attempt_submit"
   ]) {
     assert.equal(listed.result.tools.find((entry) => entry.name === name).inputSchema.additionalProperties, false);
   }

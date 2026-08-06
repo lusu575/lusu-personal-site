@@ -41,6 +41,7 @@ import {
 
 const DEFAULT_BASE_URL = "https://lusu575.com";
 const MAX_STDIN_BYTES = 1024 * 1024;
+const TRANSIENT_DEVICE_POLL_STATUSES = new Set([408, 425, 500, 502, 503, 504]);
 
 export async function runCli(argv = process.argv.slice(2), dependencies = {}) {
   if (dependencies.fetch) return runCliWithDependencies(argv, dependencies);
@@ -158,7 +159,11 @@ async function runCliWithDependencies(argv, dependencies) {
   } else if (command === "games") {
     result = await runGamesCatalogCommand(client, subcommand, commandArgs);
   } else if (command === "japanese-subtext") {
-    result = await runJapaneseSubtextCommand(client, subcommand, commandArgs);
+    result = await runJapaneseSubtextCommand(client, subcommand, commandArgs, {
+      accessToken,
+      readStdin,
+      tokenStdin: global.tokenStdin
+    });
   } else if (command === "game") {
     if (global.tokenStdin) {
       throw new CliInputError("--token-stdin is not used by isolated local game sessions.", "TOKEN_INPUT_UNUSED");
@@ -307,7 +312,7 @@ async function runGamesCatalogCommand(client, command, args) {
   throw new CliInputError(`Unknown games command: ${command || "<missing>"}`, "GAMES_COMMAND_UNKNOWN");
 }
 
-async function runJapaneseSubtextCommand(client, command, args) {
+async function runJapaneseSubtextCommand(client, command, args, context = {}) {
   if (command === "levels") {
     const parsed = parseOptions(args, { "--lang": "value" });
     assertNoPositionals(parsed);
@@ -339,6 +344,58 @@ async function runJapaneseSubtextCommand(client, command, args) {
       lang: validateOptionalLanguage(parsed.options.lang)
     });
   }
+  if (command === "progress") {
+    requireJapaneseSubtextAuth(context.accessToken);
+    const parsed = parseOptions(args, {
+      "--stage-id": "value",
+      "--days": "value"
+    });
+    assertNoPositionals(parsed);
+    return client.getJapaneseSubtextProgress(compactObject({
+      stageId: parsed.options.stageId === undefined
+        ? undefined
+        : validateJapaneseStageId(parsed.options.stageId),
+      days: validateOptionalInteger(parsed.options.days, 1, 90, "--days")
+    }));
+  }
+  if (command === "attempt") {
+    requireJapaneseSubtextAuth(context.accessToken);
+    const parsed = parseOptions(args, { "--input": "value" });
+    assertNoPositionals(parsed);
+    if (!parsed.options.input) {
+      throw new CliInputError(
+        "japanese-subtext attempt requires --input FILE or --input -.",
+        "JAPANESE_SUBTEXT_ATTEMPT_INPUT_REQUIRED"
+      );
+    }
+    let text;
+    if (parsed.options.input === "-") {
+      if (context.tokenStdin) {
+        throw new CliInputError(
+          "--token-stdin cannot share standard input with a Japanese Subtext attempt.",
+          "STDIN_INPUT_CONFLICT"
+        );
+      }
+      text = await context.readStdin();
+    } else {
+      text = await readBoundedFile(parsed.options.input, MAX_STDIN_BYTES, {
+        notFoundMessage: "The Japanese Subtext attempt input file does not exist.",
+        notFoundCode: "JAPANESE_SUBTEXT_ATTEMPT_FILE_NOT_FOUND",
+        invalidMessage: "The Japanese Subtext attempt input must be a regular file no larger than 1 MiB.",
+        invalidCode: "JAPANESE_SUBTEXT_ATTEMPT_FILE_INVALID"
+      });
+    }
+    let payload;
+    try {
+      payload = JSON.parse(text);
+    } catch {
+      throw new CliInputError(
+        "The Japanese Subtext attempt input must be valid JSON.",
+        "JAPANESE_SUBTEXT_ATTEMPT_JSON_INVALID"
+      );
+    }
+    return client.submitJapaneseSubtextAttempt(normalizeJapaneseSubtextAttempt(payload));
+  }
   throw new CliInputError(
     `Unknown japanese-subtext command: ${command || "<missing>"}`,
     "JAPANESE_SUBTEXT_COMMAND_UNKNOWN"
@@ -365,31 +422,48 @@ async function runAuthCommand(command, args, context) {
     const scopes = splitCommaList(parsed.options.scopes);
     const started = await client.startDeviceAuthorization(scopes.length ? { scopes } : {});
     validateDeviceStart(started);
+    const now = context.now || Date.now;
+    const expiresAt = now() + Number(started.expiresIn) * 1000;
     writeText(stderr, `Open ${started.verificationUriComplete}\nCode: ${started.userCode}\nWaiting for authorization…`);
     if (!parsed.options.noBrowser && env.LUSU_NO_BROWSER !== "1") {
       const opener = context.openBrowser || openBrowser;
       await opener(started.verificationUriComplete).catch(() => {});
     }
-    const now = context.now || Date.now;
     const sleep = context.sleep || delay;
-    const expiresAt = now() + Number(started.expiresIn) * 1000;
-    let intervalMs = clampNumber(Number(started.interval) * 1000, 1000, 30_000, 5000);
+    let pollIntervalMs = clampNumber(Number(started.interval) * 1000, 1000, 30_000, 5000);
+    let nextDelayMs = pollIntervalMs;
     let token;
     while (now() < expiresAt) {
-      await sleep(intervalMs);
+      await sleep(Math.min(nextDelayMs, Math.max(0, expiresAt - now())));
+      if (now() >= expiresAt) break;
+      const pollDeadline = createPollDeadline(expiresAt - now());
       try {
-        token = await client.pollDeviceAuthorization(started.deviceCode);
+        const polledToken = await client.pollDeviceAuthorization(started.deviceCode, {
+          signal: pollDeadline.signal
+        });
+        if (now() >= expiresAt) break;
+        token = polledToken;
         break;
       } catch (error) {
-        if (error instanceof SiteClientError && error.code === "AUTHORIZATION_PENDING") continue;
+        if (error instanceof SiteClientError && error.code === "AUTHORIZATION_PENDING") {
+          nextDelayMs = pollIntervalMs;
+          continue;
+        }
         if (error instanceof SiteClientError && error.code === "SLOW_DOWN") {
-          intervalMs = Math.min(30_000, intervalMs + 5000);
+          pollIntervalMs = Math.min(30_000, pollIntervalMs + 5000);
+          nextDelayMs = pollIntervalMs;
+          continue;
+        }
+        if (isTransientDevicePollError(error)) {
+          nextDelayMs = Math.min(30_000, Math.max(pollIntervalMs, nextDelayMs * 2));
           continue;
         }
         throw error;
+      } finally {
+        pollDeadline.cancel();
       }
     }
-    if (!token?.accessToken) {
+    if (!token?.accessToken || now() >= expiresAt) {
       throw new CliInputError("Device authorization expired before approval.", "AUTHORIZATION_EXPIRED");
     }
     await writeStoredCredential({ ...token, baseUrl }, stateOptions);
@@ -856,6 +930,93 @@ function validateJapaneseStageId(value) {
   return stageId;
 }
 
+function requireJapaneseSubtextAuth(accessToken) {
+  if (!accessToken) {
+    throw new CliInputError("Sign in first with `lusu auth login`.", "AUTH_REQUIRED");
+  }
+}
+
+function normalizeJapaneseSubtextAttempt(value) {
+  assertExactCliObjectKeys(value, [
+    "stageId",
+    "stageRevision",
+    "contentHash",
+    "answers",
+    "expectedRevision",
+    "operationId"
+  ], "JAPANESE_SUBTEXT_ATTEMPT_INVALID");
+  if (!Number.isSafeInteger(value.stageRevision) || value.stageRevision < 1 || value.stageRevision > 1_000_000) {
+    throw new CliInputError(
+      "stageRevision must be an integer from 1 to 1000000.",
+      "JAPANESE_SUBTEXT_STAGE_REVISION_INVALID"
+    );
+  }
+  const contentHash = String(value.contentHash || "").trim();
+  if (!/^[a-f0-9]{64}$/.test(contentHash)) {
+    throw new CliInputError(
+      "contentHash must be a lowercase SHA-256 digest.",
+      "JAPANESE_SUBTEXT_CONTENT_HASH_INVALID"
+    );
+  }
+  if (!Array.isArray(value.answers) || value.answers.length < 1 || value.answers.length > 5) {
+    throw new CliInputError("answers must contain 1-5 question answers.", "JAPANESE_SUBTEXT_ANSWERS_INVALID");
+  }
+  const questionIds = new Set();
+  const answers = value.answers.map((answer) => {
+    assertExactCliObjectKeys(answer, ["questionId", "optionIds"], "JAPANESE_SUBTEXT_ANSWER_INVALID");
+    const questionId = String(answer.questionId || "").trim();
+    if (!/^q[1-5]$/.test(questionId) || questionIds.has(questionId)) {
+      throw new CliInputError(
+        "questionId values must be unique q1-q5 ids.",
+        "JAPANESE_SUBTEXT_QUESTION_ID_INVALID"
+      );
+    }
+    questionIds.add(questionId);
+    if (!Array.isArray(answer.optionIds) || answer.optionIds.length < 1 || answer.optionIds.length > 6) {
+      throw new CliInputError("Each answer must contain 1-6 optionIds.", "JAPANESE_SUBTEXT_OPTION_IDS_INVALID");
+    }
+    const optionIds = answer.optionIds.map((optionId) => String(optionId || "").trim());
+    if (optionIds.some((optionId) => !/^[a-f]$/.test(optionId)) || new Set(optionIds).size !== optionIds.length) {
+      throw new CliInputError("optionIds must be unique a-f ids.", "JAPANESE_SUBTEXT_OPTION_IDS_INVALID");
+    }
+    return { questionId, optionIds };
+  });
+  if (!Number.isSafeInteger(value.expectedRevision)
+    || value.expectedRevision < 1
+    || value.expectedRevision > 1_000_000) {
+    throw new CliInputError(
+      "expectedRevision must be an integer from 1 to 1000000.",
+      "JAPANESE_SUBTEXT_EXPECTED_REVISION_INVALID"
+    );
+  }
+  const operationId = String(value.operationId || "").trim();
+  if (!/^[A-Za-z0-9][A-Za-z0-9._:-]{7,79}$/.test(operationId)) {
+    throw new CliInputError(
+      "operationId must contain 8-80 safe ASCII characters.",
+      "JAPANESE_SUBTEXT_OPERATION_ID_INVALID"
+    );
+  }
+  return {
+    stageId: validateJapaneseStageId(value.stageId),
+    stageRevision: value.stageRevision,
+    contentHash,
+    answers,
+    expectedRevision: value.expectedRevision,
+    operationId
+  };
+}
+
+function assertExactCliObjectKeys(value, keys, code) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new CliInputError("The Japanese Subtext attempt payload is invalid.", code);
+  }
+  const actual = Object.keys(value).sort();
+  const expected = [...keys].sort();
+  if (actual.length !== expected.length || actual.some((key, index) => key !== expected[index])) {
+    throw new CliInputError("The Japanese Subtext attempt payload contains missing or unknown fields.", code);
+  }
+}
+
 function validateOptionalInteger(value, min, max, optionName) {
   if (value === undefined) return undefined;
   const text = String(value);
@@ -904,13 +1065,20 @@ async function readStreamText(stream, maxBytes) {
   return Buffer.concat(chunks).toString("utf8");
 }
 
-async function readBoundedFile(filePath, maxBytes) {
+async function readBoundedFile(filePath, maxBytes, messages = {}) {
   const resolved = await fs.realpath(path.resolve(filePath)).catch((error) => {
-    throw new CliInputError("The whiteboard draw input file does not exist.", "WHITEBOARD_DRAW_FILE_NOT_FOUND", { cause: error });
+    throw new CliInputError(
+      messages.notFoundMessage || "The whiteboard draw input file does not exist.",
+      messages.notFoundCode || "WHITEBOARD_DRAW_FILE_NOT_FOUND",
+      { cause: error }
+    );
   });
   const stat = await fs.stat(resolved);
   if (!stat.isFile() || stat.size > maxBytes) {
-    throw new CliInputError("The whiteboard draw input must be a regular file no larger than 1 MiB.", "WHITEBOARD_DRAW_FILE_INVALID");
+    throw new CliInputError(
+      messages.invalidMessage || "The whiteboard draw input must be a regular file no larger than 1 MiB.",
+      messages.invalidCode || "WHITEBOARD_DRAW_FILE_INVALID"
+    );
   }
   return fs.readFile(resolved, "utf8");
 }
@@ -1003,6 +1171,21 @@ function validateDeviceStart(value) {
   }
 }
 
+function isTransientDevicePollError(error) {
+  return error instanceof SiteClientError
+    && (["SITE_NETWORK_ERROR", "SITE_REQUEST_ABORTED"].includes(error.code)
+      || TRANSIENT_DEVICE_POLL_STATUSES.has(error.status));
+}
+
+function createPollDeadline(remainingMs) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), Math.max(1, Math.ceil(remainingMs)));
+  return {
+    signal: controller.signal,
+    cancel() { clearTimeout(timeout); }
+  };
+}
+
 function clampNumber(value, min, max, fallback) {
   return Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : fallback;
 }
@@ -1056,6 +1239,8 @@ function helpText() {
     "  lusu japanese-subtext levels [--lang zh|en|ja]",
     "  lusu japanese-subtext stages --level 1|2|3|4|5 [--query TEXT] [--limit 1..50] [--lang zh|en|ja]",
     "  lusu japanese-subtext get L1-001 [--lang zh|en|ja]",
+    "  lusu japanese-subtext progress [--stage-id L1-001] [--days 1..90]",
+    "  lusu japanese-subtext attempt --input ATTEMPT.json|-",
     "  lusu auth login [--scopes scope,scope] [--no-browser]",
     "  lusu auth status | logout",
     "  lusu transfer join [--password-stdin]",

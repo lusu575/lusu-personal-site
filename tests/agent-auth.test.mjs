@@ -224,10 +224,12 @@ async function startAndApproveDevice(env, {
   return device;
 }
 
-test("whiteboard agent scopes are supported but never granted by default", async () => {
+test("governed tool scopes are supported but never granted by default", async () => {
   const { env } = await createFixture();
   assert.equal(AGENT_SCOPE_DEFINITIONS["whiteboard:read"].readOnly, true);
   assert.equal(AGENT_SCOPE_DEFINITIONS["whiteboard:write"].readOnly, false);
+  assert.equal(AGENT_SCOPE_DEFINITIONS["japanese-subtext:progress:read"].readOnly, true);
+  assert.equal(AGENT_SCOPE_DEFINITIONS["japanese-subtext:progress:write"].readOnly, false);
 
   const defaults = await call(env, "device/start", {
     method: "POST",
@@ -259,6 +261,23 @@ test("whiteboard agent scopes are supported but never granted by default", async
   assert.deepEqual((await explicit.json()).scopes, [
     "whiteboard:read",
     "whiteboard:write"
+  ]);
+
+  const japaneseSubtext = await call(env, "device/start", {
+    method: "POST",
+    ...jsonRequest({
+      clientName: "Japanese Subtext scope test",
+      scopes: ["japanese-subtext:progress:write", "japanese-subtext:progress:read"]
+    }),
+    headers: {
+      "CF-Connecting-IP": "203.0.113.203",
+      "Content-Type": "application/json"
+    }
+  });
+  assert.equal(japaneseSubtext.status, 201);
+  assert.deepEqual((await japaneseSubtext.json()).scopes, [
+    "japanese-subtext:progress:read",
+    "japanese-subtext:progress:write"
   ]);
 });
 

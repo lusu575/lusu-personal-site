@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-06-japanese-agent-progress",
+      "slug": "2026-08-06-japanese-agent-progress",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "MCP", "CLI", "日语", "账号进度"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-06T08:30:00.000Z",
+      "updated_at": "2026-08-06T08:30:00.000Z",
+      "published_at": "2026-08-06T08:30:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.08.06",
+      "title": {
+        "zh": "AI 已可读取日语进度并受控提交答题",
+        "en": "AI Can Read Japanese Progress and Submit Checked Attempts",
+        "ja": "AI が日本語学習進捗の取得と検証済み解答送信に対応"
+      },
+      "summary": {
+        "zh": "第四阶段为本地 CLI／stdio MCP 加入账号日语进度读取和服务端判分的答题提交；新增权限、版本冲突与幂等保护，远程 MCP 仍未部署。",
+        "en": "Phase four adds account-bound Japanese progress reads and server-scored attempt submission to the local CLI/stdio MCP, with dedicated scopes, revision checks, and idempotency. The remote MCP remains undeployed.",
+        "ja": "第4段階ではローカル CLI／stdio MCP にアカウント連携の学習進捗取得とサーバー採点の解答送信を追加しました。専用権限、リビジョン検査、冪等性を備え、リモート MCP は未展開のままです。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-06-agent-read-breadth",
       "slug": "2026-08-06-agent-read-breadth",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "知识库新增固定“网站使用指南”专区，并用一篇轻松攻略讲清匿名聊天室和在线画板的密码房，配有电脑端、手机端实拍图。",
         "en": "Knowledge now has a permanent Website Guides section and one relaxed password-room walkthrough for Anonymous Chat and Online Whiteboard, with real desktop and mobile screenshots.",
         "ja": "知識庫に固定の「サイト利用ガイド」を追加し、匿名チャットとオンラインホワイトボードのパスワードルームを実際のPC・スマホ画像でやさしく案内します。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-02-traffic-discovery-monitoring",
-      "slug": "2026-08-02-traffic-discovery-monitoring",
-      "category": "site-updates",
-      "tags": ["网站更新", "流量保护", "SEO", "线上监控", "D1"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-02T08:20:00.000Z",
-      "updated_at": "2026-08-02T08:20:00.000Z",
-      "published_at": "2026-08-02T08:20:00.000Z",
-      "fallbackOnly": true,
-      "icon": "knowledge",
-      "date": "2026.08.02",
-      "title": {
-        "zh": "流量发现与线上监控优化",
-        "en": "Traffic Discovery and Production Monitoring",
-        "ja": "流入発見性と本番監視の改善"
-      },
-      "summary": {
-        "zh": "减少重复遥测请求并提前收紧 D1 免费额度保护，补齐文章访问留存、三语 sitemap 与文章结构化数据，同时加入低频生产冒烟检查。",
-        "en": "Reduces duplicate telemetry requests, reserves more of the D1 free tier, completes article-view retention and multilingual SEO signals, and adds a low-frequency production smoke check.",
-        "ja": "重複テレメトリ要求を減らして D1 無料枠の余裕を広げ、記事閲覧の保存期限、多言語 SEO、本番の低頻度スモーク監視を追加しました。"
       }
     }
   ]

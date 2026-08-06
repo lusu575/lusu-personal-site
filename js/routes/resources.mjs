@@ -18,7 +18,7 @@ export function createResourcesRoute({
 
   async function ensureQuickTransferLoader() {
     if (quickTransferLoader) return quickTransferLoader;
-    quickTransferPending ||= import("../features/quick-transfer-loader.mjs?v=20260806-agent-read-breadth-r1")
+    quickTransferPending ||= import("../features/quick-transfer-loader.mjs?v=20260806-japanese-agent-progress-r1")
       .then(({ createQuickTransferLoader }) => {
         quickTransferLoader = createQuickTransferLoader();
         quickTransferLoader.setLanguage(quickTransferLanguage);

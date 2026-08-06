@@ -46,6 +46,12 @@ const publicToolIdSchema = z.string().regex(/^[a-z0-9][a-z0-9-]{0,63}$/);
 const catalogGameIdSchema = z.string().regex(/^[a-z0-9][a-z0-9-]{0,63}$/);
 const japaneseStageIdSchema = z.string().regex(/^L[1-5]-(?:00[1-9]|0[1-4][0-9]|050)$/);
 const japaneseQuerySchema = z.string().max(200).trim().min(1).regex(/^[^\u0000-\u001F\u007F]+$/u);
+const japaneseQuestionIdSchema = z.enum(["q1", "q2", "q3", "q4", "q5"]);
+const japaneseOptionIdSchema = z.enum(["a", "b", "c", "d", "e", "f"]);
+const japaneseAttemptAnswerSchema = z.object({
+  questionId: japaneseQuestionIdSchema,
+  optionIds: z.array(japaneseOptionIdSchema).min(1).max(6)
+}).strict();
 const roomHandleSchema = z.string().regex(/^room_[a-zA-Z0-9_-]{12,80}$/);
 const boardHandleSchema = z.string().regex(/^board_[a-zA-Z0-9_-]{12,80}$/);
 const itemIdSchema = z.string().min(16).max(80);
@@ -257,6 +263,30 @@ export async function createLocalMcpServer(options = {}) {
     inputSchema: z.object({ stageId: japaneseStageIdSchema, lang: languageSchema }).strict(),
     annotations: readOnlyAnnotations({ openWorldHint: true })
   }, ({ stageId, lang }) => client.getJapaneseSubtextStage(stageId, { lang }));
+
+  registerTool(server, "japanese_subtext_progress_get", {
+    title: "Read Japanese Subtext progress",
+    description: "Reads a bounded projection of the authenticated account's Japanese Subtext progress. Requires japanese-subtext:progress:read.",
+    inputSchema: z.object({
+      stageId: japaneseStageIdSchema.optional(),
+      days: z.number().int().min(1).max(90).optional()
+    }).strict(),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, (input) => client.getJapaneseSubtextProgress(input));
+
+  registerTool(server, "japanese_subtext_attempt_submit", {
+    title: "Submit a Japanese Subtext attempt",
+    description: "Submits answers for server-side scoring and progress advancement. Requires japanese-subtext:progress:write and an idempotent operationId.",
+    inputSchema: z.object({
+      stageId: japaneseStageIdSchema,
+      stageRevision: z.number().int().min(1).max(1_000_000),
+      contentHash: z.string().regex(/^[a-f0-9]{64}$/),
+      answers: z.array(japaneseAttemptAnswerSchema).min(1).max(5),
+      expectedRevision: z.number().int().min(1).max(1_000_000),
+      operationId: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._:-]{7,79}$/)
+    }).strict(),
+    annotations: writeAnnotations({ idempotentHint: true })
+  }, (input) => client.submitJapaneseSubtextAttempt(input));
 
   registerTool(server, "transfer_join", {
     title: "Join a Quick Transfer room",

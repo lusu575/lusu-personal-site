@@ -8,6 +8,7 @@
 - 只有题库结构、内容哈希边界或存档兼容发生变化时才增加 `contentVersion`。仅 UI 热修不得改写 250 关内容哈希、音频 manifest、时间轴或云进度兼容版本。
 - `appVersion` 必须同步到工具 manifest、前端常量、三语可见版本、主站工具区卡片（内部 `resources` route）、缓存 query、构建守卫和更新记录；`contentVersion` 变化时才额外同步内容批次与目录、音频 manifest、云进度 API 和迁移说明。
 - 已发布关卡 ID 永久稳定；修改某关可见内容时单独增加该关 `revision`，版本号和关卡 revision 不能互相替代。
+- Agent 进度能力不改变公开应用或题库版本时，可保持 `appVersion`／`contentVersion` 不变；但必须继续锁定独立 read/write scope、账号归属、关卡解锁、题库 revision/hash、进度 CAS 和 operationId 幂等。Agent 活动固定按 `Asia/Shanghai` 归日，答题与收据保留 180 天，调用方必须永久生成新 operationId；不得把浏览器完整快照 PUT 原样暴露给通用 Agent，也不得接受调用方提供的分数、奖牌、解锁或时间戳。
 
 ## 界面维护
 

@@ -69,6 +69,8 @@ TTS 只作为离线批处理进程运行，不安装 Windows 服务、不加入�
 ## 存档与安全边界
 
 - 未登录时使用版本化本地存档；登录后与独立的 `japanese_subtext_profiles`、`japanese_subtext_stage_progress`、`japanese_subtext_daily_activity` D1 表合并。
+- 本地 CLI／stdio MCP 可通过设备码令牌读取账号的有界进度投影，并提交由服务端判分的语义答题；`japanese-subtext:progress:read` 与 `japanese-subtext:progress:write` 均为独立、非默认 scope，Agent Bearer 始终按普通用户访问自己的记录。
+- Agent 答题只接受锁定关卡 ID、revision、contentHash、逐题选项、进度 expectedRevision 与 operationId。分数、通关、奖牌、尝试次数、解锁和时间戳均由服务端生成；辅助答题固定按双语模式记录且奖牌最高为铜牌。活动按站点 `Asia/Shanghai` 日界线归日；同一 operationId 在 180 天收据窗口内只能重放完全相同的载荷，客户端不得复用过期 ID。
 - 云端失败不会阻止本地答题，空云端也不会清空本地进度。
 - 跨设备合并必须保留任一已通关记录的首次通关模式；较新的失败尝试不能把合法通关状态变成服务端拒绝的组合。
 - 服务端从 HttpOnly 会话取得用户 ID，并验证关卡 ID、解锁链、成绩、奖章和请求大小。

@@ -127,6 +127,8 @@ create table if not exists japanese_subtext_profiles (
   current_level integer not null default 1 check(current_level between 1 and 5),
   current_stage integer not null default 1 check(current_stage between 1 and 50),
   settings_json text not null default '{}',
+  last_agent_operation_id text not null default '',
+  last_agent_payload_hash text not null default '',
   progress_updated_at text not null,
   settings_updated_at text not null,
   created_at text not null,
@@ -165,6 +167,41 @@ create table if not exists japanese_subtext_daily_activity (
   primary key (user_id, local_date, stage_id)
 );
 
+create table if not exists japanese_subtext_agent_attempts (
+  attempt_id text primary key,
+  user_id text not null references users(id) on delete cascade,
+  token_id text not null,
+  operation_id text not null,
+  payload_hash text not null,
+  stage_id text not null,
+  stage_revision integer not null check(stage_revision between 1 and 1000000),
+  content_hash text not null,
+  expected_revision integer not null check(expected_revision between 1 and 1000000),
+  resulting_revision integer not null check(resulting_revision between 1 and 1000000),
+  answers_json text not null,
+  score integer not null check(score between 0 and 100),
+  cleared integer not null check(cleared in (0, 1)),
+  medal integer not null check(medal between 0 and 1),
+  attempt_mode text not null check(attempt_mode = 'bilingual'),
+  used_translation integer not null check(used_translation = 1),
+  used_kana integer not null check(used_kana = 1),
+  used_listening_mode integer not null check(used_listening_mode = 0),
+  replay_count integer not null check(replay_count = 0),
+  hint_count integer not null check(hint_count = 0),
+  created_at text not null,
+  unique (user_id, operation_id)
+);
+
+create table if not exists japanese_subtext_agent_receipts (
+  user_id text not null references users(id) on delete cascade,
+  operation_id text not null,
+  payload_hash text not null,
+  attempt_id text not null references japanese_subtext_agent_attempts(attempt_id) on delete cascade,
+  response_json text not null,
+  created_at text not null,
+  primary key (user_id, operation_id)
+);
+
 create index if not exists japanese_subtext_profiles_updated_idx
   on japanese_subtext_profiles(updated_at);
 create index if not exists japanese_subtext_stage_progress_user_level_idx
@@ -173,6 +210,10 @@ create index if not exists japanese_subtext_stage_progress_updated_idx
   on japanese_subtext_stage_progress(updated_at);
 create index if not exists japanese_subtext_daily_activity_user_date_idx
   on japanese_subtext_daily_activity(user_id, local_date);
+create index if not exists japanese_subtext_agent_attempts_created_idx
+  on japanese_subtext_agent_attempts(created_at);
+create index if not exists japanese_subtext_agent_receipts_created_idx
+  on japanese_subtext_agent_receipts(created_at);
 
 create table if not exists site_runtime_state (
   key text primary key,
@@ -799,6 +840,110 @@ create index if not exists article_view_events_slug_idx
   on article_view_events(slug, created_at);
 create index if not exists article_view_events_visitor_idx
   on article_view_events(visitor_id, created_at);
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-08-06-japanese-agent-progress',
+  '2026-08-06-japanese-agent-progress',
+  'site-updates',
+  '["网站更新","AI 能力","MCP","CLI","日语","账号进度"]',
+  '', 'published', 0, 0,
+  '2026-08-06T08:30:00.000Z',
+  '2026-08-06T08:30:00.000Z',
+  '2026-08-06T08:30:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-06-japanese-agent-progress-zh',
+    'seed-update-2026-08-06-japanese-agent-progress',
+    'zh',
+    'AI 已可读取日语进度并受控提交答题',
+    '第四阶段为本地 CLI／stdio MCP 加入账号日语进度读取和服务端判分的答题提交；新增权限、版本冲突与幂等保护，远程 MCP 仍未部署。',
+    '# AI 已可读取日语进度并受控提交答题
+
+AI 能力层第四阶段为“日语的言外之意”补上账号进度闭环，同时保留浏览器原有云同步行为。
+
+## 新增能力
+
+- 本地 CLI 与 stdio MCP 可读取当前关卡、已解锁关卡、通关与奖牌汇总、单关进度和有界的近期活动。
+- AI 可提交关卡 ID、题库版本、内容哈希和逐题选项；分数、通关、奖牌、尝试次数和下一关解锁全部由服务端计算，调用方不能自行填写。
+- Agent 辅助答题固定记录为双语辅助模式，奖牌最高为铜牌，不能冒充纯听训练成绩。
+
+## 权限与一致性
+
+进度读取和答题写入使用两个独立且非默认的最小权限 scope。写入同时检查账号、关卡解锁状态、题库哈希、进度 revision 和 operation ID；相同请求可安全重试，不同载荷复用同一 ID 会被拒绝。设备码轮询也会从短暂网络失败中有界恢复。
+
+独立远程 MCP Worker 仍未部署，也没有获得这些账号能力。',
+    '2026-08-06T08:30:00.000Z',
+    '2026-08-06T08:30:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-06-japanese-agent-progress-en',
+    'seed-update-2026-08-06-japanese-agent-progress',
+    'en',
+    'AI Can Read Japanese Progress and Submit Checked Attempts',
+    'Phase four adds account-bound Japanese progress reads and server-scored attempt submission to the local CLI/stdio MCP, with dedicated scopes, revision checks, and idempotency. The remote MCP remains undeployed.',
+    '# AI Can Read Japanese Progress and Submit Checked Attempts
+
+Phase four closes the account progress loop for Behind the Japanese while preserving the browser application''s existing cloud-sync behavior.
+
+## New capabilities
+
+- The local CLI and stdio MCP can read the current stage, unlocked stages, clear and medal totals, optional per-stage progress, and a bounded recent-activity view.
+- An AI client can submit a stage ID, content revision and hash, plus selected options for every question. Score, clear status, medal, attempt count, and the next unlock are computed by the server; callers cannot supply them.
+- Agent-assisted attempts are recorded as bilingual assisted mode and can earn at most bronze, so they cannot be presented as verified listening-only results.
+
+## Authorization and consistency
+
+Progress reads and attempt writes use separate, non-default least-privilege scopes. Writes verify the account, unlock state, content hash, progress revision, and operation ID. An identical request can be retried safely, while reusing an ID for different input is rejected. Device authorization polling now also recovers from bounded transient network failures.
+
+The separate remote MCP Worker remains undeployed and has not received these account capabilities.',
+    '2026-08-06T08:30:00.000Z',
+    '2026-08-06T08:30:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-06-japanese-agent-progress-ja',
+    'seed-update-2026-08-06-japanese-agent-progress',
+    'ja',
+    'AI が日本語学習進捗の取得と検証済み解答送信に対応',
+    '第4段階ではローカル CLI／stdio MCP にアカウント連携の学習進捗取得とサーバー採点の解答送信を追加しました。専用権限、リビジョン検査、冪等性を備え、リモート MCP は未展開のままです。',
+    '# AI が日本語学習進捗の取得と検証済み解答送信に対応
+
+第4段階では「日本語の裏側」にアカウント進捗の閉ループを追加し、ブラウザー版の既存クラウド同期動作は維持しました。
+
+## 新しい機能
+
+- ローカル CLI と stdio MCP で、現在の問題、解放済み問題、クリア数・メダル集計、任意の問題別進捗、上限付きの最近の活動を取得できます。
+- AI は問題 ID、題庫リビジョン、内容ハッシュ、各設問の選択肢だけを送信します。得点、クリア、メダル、挑戦回数、次の問題の解放はすべてサーバーが計算し、呼び出し側は指定できません。
+- Agent 補助による解答はバイリンガル補助モードとして記録し、獲得できるメダルは銅までです。純粋なリスニング成績として扱うことはできません。
+
+## 権限と整合性
+
+進捗取得と解答書き込みには、既定では付与されない個別の最小権限 scope を使います。書き込み時はアカウント、解放状態、内容ハッシュ、進捗 revision、operation ID を検査します。同一要求は安全に再試行できますが、異なる内容で同じ ID を再利用すると拒否されます。デバイス認証のポーリングも、一時的なネットワーク障害から上限付きで復旧します。
+
+独立リモート MCP Worker は引き続き未展開で、これらのアカウント機能も追加されていません。',
+    '2026-08-06T08:30:00.000Z',
+    '2026-08-06T08:30:00.000Z'
+  )
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
 
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -12010,7 +12155,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260806-agent-read-breadth-r1', '2026-08-06T05:30:00.000Z')
+values ('article_seed_version', '20260806-japanese-agent-progress-r1', '2026-08-06T08:30:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at
