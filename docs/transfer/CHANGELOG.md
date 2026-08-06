@@ -2,6 +2,12 @@
 
 本日志只记录临时互传子项目。根项目发布历史仍写入仓库根 `CHANGELOG.md`。
 
+## 1.0.5 - 2026-08-06
+
+- 修复共享 Agent Auth 的浏览器确认页：授权与令牌管理 HTML 不再使用会把表单 POST 变成 `Origin: null` 的 `no-referrer`，改为只发送来源站点、不携带路径或 `user_code` 查询的 `strict-origin`；JSON 响应继续使用 `no-referrer`。
+- POST 仍严格要求当前授权页的精确 Origin、有效登录态和双提交 CSRF；缺失／`null`／当前页面异源／攻击者 Origin 继续拒绝。授权页允许从 CLI、Codex 或外部链接打开的顶层文档导航，同时继续拒绝 iframe 与非文档子资源。
+- 本次修改命中 Quick Transfer 的共享受管授权入口，因此从 1.0.4 精确升至 1.0.5；互传房间、口令派生、AES-GCM 文字、私有 R2 文件、配额、Multipart、鉴权与发布完成后 24 小时过期语义均未改变。
+
 ## 1.0.4 - 2026-08-06
 
 - 共享 `Agent Auth`、能力注册表、`SiteClient`、本地 CLI 与 stdio MCP 增加日语账号进度读取和受控答题提交；读取与写入使用两个独立、非默认 scope，服务端负责判分、奖牌、尝试次数与解锁，调用方不能伪造派生结果。

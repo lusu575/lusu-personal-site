@@ -17,6 +17,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 独立 `package-lock.json` 不会继承根 `overrides`；根依赖安全版本变化时必须逐个检查独立 npm 子项目，在各自清单补齐必要 override，并分别执行严格安装、测试与完整 `npm audit`。Windows 重建根 lockfile 时要在没有既有 `node_modules` 的干净目录中包含 optional／peer 依赖，并以严格 `npm ci` 验证跨平台条目，不能只凭 Windows 本机安装成功。
 - AI 能力层以 `lib/capabilities/registry.mjs` 为唯一声明源：`transport` 是目标面，只有 `availableTransports` 是已实现且可对外承诺的真实面。CLI、本地 MCP 和远程 MCP 共享适配服务，不复制业务规则；本地已提供受限画板追加／导出和隔离 2048，会话浏览器接管、其他游戏与其余能力仍以 registry 为准。
 - 本地 CLI / stdio MCP 使用账号持有者确认的设备码和最小 scope；`content:read`、Transfer scopes 可按需授予，`transfer:delete`、`whiteboard:read`／`whiteboard:write` 与日语进度 read/write 默认不授予。设备码轮询只对明确瞬态故障在有效期内有界退避，不输出底层网络或凭据。Agent Bearer 永远是普通机器角色，不能访问管理接口；Transfer／Whiteboard 口令只从隐藏 stdin 或明确的本地环境变量引用取得，不进命令行、URL、日志、telemetry、MCP 输出或持久明文。
+- 设备授权和令牌管理 HTML 使用 `strict-origin`，JSON 使用 `no-referrer`；依赖 POST `Origin` 的表单不得套用会产生 `Origin: null` 的 `no-referrer`，也不得通过接受缺失／`null` Origin 或 Referer fallback 放宽边界。精确 Origin、登录态、CSRF 保持不变；外部顶层授权导航可进入，iframe／子资源继续拒绝。
 - 白板 Agent Bearer 与绑定当前 tokenId 的房间令牌必须分离；只允许基于最新完整 Yjs scene 追加受支持的高层元素，并用 operation ID + payload hash 原子幂等。服务端拒绝改删、图片、嵌入、链接、绑定、未知根及任意 Yjs 注入；简化本地 SVG／PNG 导出忽略图片时必须显式告警。
 - 2048 CLI／MCP 是有 CAS、action ID 去重、状态／TTL 上限和破坏性确认的隔离本地会话；页面虽有冻结语义 bridge，在建立受审计的配对通道前不得宣传为接管已打开的浏览器游戏。
 - 本地敏感 JSON 的 read-modify-write 必须用 owner-token 锁与同目录私有临时文件原子替换；游戏锁还需进程／心跳与释放前所有权校验。声明 readOnly 的观察／动作发现不得写文件、续 TTL 或顺带清理过期会话。

@@ -831,12 +831,12 @@ const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
 const whiteboardReleaseVersion = "20260806-agent-capabilities-quick-transfer-r1";
-const japaneseAgentProgressReleaseVersion = "20260806-japanese-agent-progress-r1";
-const transferReleaseVersion = japaneseAgentProgressReleaseVersion;
+const agentAuthFormOriginReleaseVersion = "20260806-agent-auth-form-origin-r1";
+const transferReleaseVersion = agentAuthFormOriginReleaseVersion;
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
   ? whiteboardReleaseVersion
-  : (route === "resources" ? japaneseAgentProgressReleaseVersion : routeLazyVersion);
+  : (route === "resources" ? agentAuthFormOriginReleaseVersion : routeLazyVersion);
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
 const chatroomIconVersion = "20260726-chatroom-icon-redraw-r2";
 const transferAtlasReferences = [];
@@ -885,9 +885,9 @@ for (const route of lazyPublicRoutes) {
 
 for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", whiteboardReleaseVersion],
-  ["./data/home-content.mjs", japaneseAgentProgressReleaseVersion],
+  ["./data/home-content.mjs", agentAuthFormOriginReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
-  ["./data/resources-content.mjs", japaneseAgentProgressReleaseVersion]
+  ["./data/resources-content.mjs", agentAuthFormOriginReleaseVersion]
 ]) {
   const versions = assetQueryVersions(mainEntryJs, modulePath);
   if (versions.length !== 1 || versions[0] !== expectedVersion) {
@@ -2885,7 +2885,7 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = "20260726-security-reliability-r1";
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = japaneseAgentProgressReleaseVersion;
+const currentMainVersion = agentAuthFormOriginReleaseVersion;
 const currentCssVersion = trustSafetyStatusVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260726-game-network-resilience-r1";
@@ -4238,13 +4238,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-06-japanese-agent-progress";
-const finalUpdateSlug = "2026-08-06-japanese-agent-progress";
+const finalUpdateId = "seed-update-2026-08-06-agent-auth-form-origin";
+const finalUpdateSlug = "2026-08-06-agent-auth-form-origin";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "AI Can Read Japanese Progress and Submit Checked Attempts";
-const finalPublishedAt = "2026-08-06T08:30:00.000Z";
+const finalTitleEn = "AI and CLI Authorization Forms Restored";
+const finalPublishedAt = "2026-08-06T12:00:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,

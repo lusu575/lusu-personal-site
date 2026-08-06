@@ -867,11 +867,9 @@ function assertSameOrigin(request) {
 }
 
 function assertTrustedAuthorizationNavigation(request) {
-  const site = String(request.headers.get("Sec-Fetch-Site") || "").toLowerCase();
   const mode = String(request.headers.get("Sec-Fetch-Mode") || "").toLowerCase();
   const destination = String(request.headers.get("Sec-Fetch-Dest") || "").toLowerCase();
-  if (site === "cross-site"
-    || (mode && mode !== "navigate")
+  if ((mode && mode !== "navigate")
     || (destination && destination !== "document")) {
     throw new AgentAuthError(
       "Authorization links must be opened as a top-level site page.",
@@ -1058,9 +1056,11 @@ function authorizationHtml(request, details, status = 200) {
 </head>
 <body><main><h1>${escapeHtml(details.title)}</h1><section>${body}${home}</section></main></body>
 </html>`;
+  const headers = authorizationSecurityHeaders({ "Content-Type": "text/html; charset=utf-8" });
+  headers.set("Referrer-Policy", "strict-origin");
   return new Response(html, {
     status,
-    headers: authorizationSecurityHeaders({ "Content-Type": "text/html; charset=utf-8" })
+    headers
   });
 }
 

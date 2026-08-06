@@ -121,6 +121,8 @@ node .\mcp\local\server.mjs
 
 设备码有效期为 10 分钟，建议轮询间隔为 5 秒；访问令牌有效期为 30 天。服务器会限制设备码申请、查询频率以及单个账户的有效令牌数量。CLI 遇到网络失败、请求中止或 408／425／500／502／503／504 等明确瞬态故障时，只会在设备码剩余有效期内有界退避继续；不会把访问令牌、代理值或底层网络细节写到输出。
 
+浏览器授权确认页和令牌管理页使用 `Referrer-Policy: strict-origin`：普通 HTML 表单可以携带当前页面的精确来源站点，但不会泄露包含 `user_code` 的路径或查询；JSON 响应继续使用 `no-referrer`。所有授权、拒绝和撤销 POST 仍必须同时通过有效登录态、精确 Origin 与双提交／D1 绑定的 CSRF，缺失或 `null` Origin、与授权页不同的同站异源和任意攻击者来源都拒绝。授权 GET 可由 CLI、Codex 或外部网页作为顶层文档打开，但 iframe、图片及 fetch/XHR 等非顶层上下文继续拒绝。
+
 当前可申请 scopes：
 
 | scope | 用途 |
@@ -282,7 +284,7 @@ npm.cmd test
 - 注册表筛选只把 `availableTransports` 中确实存在的适配器显示为可用。
 - CLI 拒绝 argv 中的房间口令，MCP schema 拒绝 `password` 字段，只接受环境 `secretRef`。
 - 缺 scope 的令牌得到拒绝；Agent Bearer 不能访问管理员端点。
-- 日语进度 GET 不改变 revision／活动；答题拒绝未解锁关、旧题库／进度、额外派生字段、漏题／重题／未知选项，并覆盖同 operationId 同载荷重放与异载荷冲突。除上文已声明的 Agent 固定站点日界线与浏览器设备本地日口径外，服务端结果必须与浏览器 `recordAttempt()` 的计分、bronze bilingual 奖牌、活动合并和解锁语义一致。
+- 日语进度 GET 不改变 revision／活动；答题拒绝未解锁关、旧题库／进度、额外派生字段、漏题／重题／未知选项，并覆盖同 operationId 同载荷重放与异载荷冲突。除已声明的日界线口径外，计分、奖牌、活动合并和解锁语义必须与浏览器 `recordAttempt()` 一致。
 - 白板 Agent Bearer 与房间访问令牌保持分离，追加验证拒绝修改／删除／图片／未知根，operation ID 重试与冲突均有覆盖。
 - 2048 CAS、action ID 重放、状态篡改、会话上限、TTL，以及重置／关闭确认均有覆盖；测试不声称连接已打开的浏览器。
 - 公开工具／游戏／日语适配器拒绝 traversal、恶意 ID、任意 URL、超限 JSON、重复 ID、版本／计数／hash／`textLocked` 不匹配，并确认输出不含源文件路径、存储键、题库 batch 路径或内部音频文本。

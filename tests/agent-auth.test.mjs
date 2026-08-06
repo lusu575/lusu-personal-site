@@ -546,6 +546,126 @@ test("device authorization validates origin, content type and per-IP rate limits
   assert.equal((await exchangeLimited.json()).code, "AGENT_DEVICE_TOKEN_RATE_LIMITED");
 });
 
+test("authorization HTML preserves exact POST origins without leaking device-code paths", async () => {
+  const { env, db } = await createFixture();
+  const started = await call(env, "device/start", {
+    method: "POST",
+    ...jsonRequest({ clientName: "Browser form policy test", scopes: ["transfer:read"] }),
+    headers: { "CF-Connecting-IP": "203.0.113.81", "Content-Type": "application/json" }
+  });
+  assert.equal(started.status, 201);
+  assert.equal(started.headers.get("Referrer-Policy"), "no-referrer");
+  const device = await started.json();
+  for (const headers of [
+    { "CF-Connecting-IP": "203.0.113.81" },
+    { "CF-Connecting-IP": "203.0.113.81", "Sec-Fetch-Site": "none", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-Dest": "document" },
+    { "CF-Connecting-IP": "203.0.113.81", "Sec-Fetch-Site": "same-origin", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-Dest": "document" },
+    { "CF-Connecting-IP": "203.0.113.81", "Sec-Fetch-Site": "same-site", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-Dest": "document" },
+    { "CF-Connecting-IP": "203.0.113.81", "Sec-Fetch-Site": "cross-site", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-Dest": "document" }
+  ]) {
+    const navigation = await call(env, `device/authorize?user_code=${device.userCode}`, {
+      browserSession: true,
+      headers
+    });
+    assert.equal(navigation.status, 200);
+    assert.equal(navigation.headers.get("Referrer-Policy"), "strict-origin");
+  }
+  for (const headers of [
+    { "Sec-Fetch-Site": "cross-site", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-Dest": "iframe" },
+    { "Sec-Fetch-Site": "same-origin", "Sec-Fetch-Mode": "cors", "Sec-Fetch-Dest": "empty" }
+  ]) {
+    const rejected = await call(env, `device/authorize?user_code=${device.userCode}`, {
+      browserSession: true,
+      headers: { "CF-Connecting-IP": "203.0.113.83", ...headers }
+    });
+    assert.equal(rejected.status, 403);
+    assert.equal((await rejected.json()).code, "AGENT_AUTH_NAVIGATION_REJECTED");
+  }
+  const consent = await call(env, `device/authorize?user_code=${device.userCode}`, {
+    browserSession: true,
+    headers: { "CF-Connecting-IP": "203.0.113.81" }
+  });
+  const csrf = cookieValue(consent.headers.get("Set-Cookie"), "__Host-lusu_agent_csrf");
+  const formBody = new URLSearchParams({
+    user_code: device.userCode,
+    csrf_token: csrf,
+    decision: "approve"
+  }).toString();
+  const fallbackHeaders = {
+    "CF-Connecting-IP": "203.0.113.81",
+    "Content-Type": "application/x-www-form-urlencoded",
+    Cookie: `__Host-lusu_agent_csrf=${encodeURIComponent(csrf)}`
+  };
+
+  for (const rejectedOrigin of [
+    null,
+    "null",
+    "https://www.example.test",
+    "https://attacker.example"
+  ]) {
+    const headers = { ...fallbackHeaders };
+    if (rejectedOrigin !== null) headers.Origin = rejectedOrigin;
+    const response = await call(env, "device/authorize", {
+      method: "POST",
+      browserSession: true,
+      body: formBody,
+      headers
+    });
+    assert.equal(response.status, 403);
+    assert.equal((await response.json()).code, "AGENT_ORIGIN_REJECTED");
+    assert.equal(
+      db.sqlite.prepare("select status from agent_device_authorizations limit 1").get().status,
+      "pending"
+    );
+  }
+
+  for (const { body, cookie } of [
+    { body: formBody, cookie: "" },
+    {
+      body: new URLSearchParams({
+        user_code: device.userCode,
+        csrf_token: "invalid-csrf-token",
+        decision: "approve"
+      }).toString(),
+      cookie: `__Host-lusu_agent_csrf=${encodeURIComponent(csrf)}`
+    }
+  ]) {
+    const response = await call(env, "device/authorize", {
+      method: "POST",
+      browserSession: true,
+      body,
+      headers: {
+        "CF-Connecting-IP": "203.0.113.81",
+        "Content-Type": "application/x-www-form-urlencoded",
+        Origin: origin,
+        ...(cookie ? { Cookie: cookie } : {})
+      }
+    });
+    assert.equal(response.status, 403);
+    assert.equal((await response.json()).code, "AGENT_CSRF_INVALID");
+    assert.equal(
+      db.sqlite.prepare("select status from agent_device_authorizations limit 1").get().status,
+      "pending"
+    );
+  }
+
+  const approved = await call(env, "device/authorize", {
+    method: "POST",
+    browserSession: true,
+    body: formBody,
+    headers: { ...fallbackHeaders, Origin: origin }
+  });
+  assert.equal(approved.status, 200);
+  assert.equal(
+    db.sqlite.prepare("select status from agent_device_authorizations limit 1").get().status,
+    "approved"
+  );
+
+  const management = await call(env, "tokens/manage", { browserSession: true });
+  assert.equal(management.status, 200);
+  assert.equal(management.headers.get("Referrer-Policy"), "strict-origin");
+});
+
 test("revoke-all invalidates active tokens and approved unconsumed device grants", async () => {
   const { db, env } = await createFixture();
   const started = await call(env, "device/start", {

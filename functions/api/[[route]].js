@@ -31,7 +31,7 @@ import {
   toPublicArticle
 } from "./public-content-service.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260806-japanese-agent-progress-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260806-agent-auth-form-origin-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
 const PUBLIC_RELEASE_DATE = "2026-08-06";
@@ -82,7 +82,7 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260806-japanese-agent-progress-r1";
+const ARTICLE_SEED_VERSION = "20260806-agent-auth-form-origin-r1";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AGENT_AUDIT_RETENTION_DAYS = 180;
@@ -7238,6 +7238,92 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-08-06-agent-auth-form-origin',
+        '2026-08-06-agent-auth-form-origin',
+        'site-updates',
+        '["网站更新","AI 能力","设备授权","安全","CLI","MCP","临时互传"]',
+        '', 'published', 0, 0,
+        '2026-08-06T12:00:00.000Z',
+        '2026-08-06T12:00:00.000Z',
+        '2026-08-06T12:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-08-06-agent-auth-form-origin", {
+      zh: {
+        title: "AI／CLI 授权确认页恢复正常",
+        summary: "修复浏览器点击 Allow 时被 no-referrer 变成 Origin:null 而误拒绝的问题；授权与令牌管理表单恢复，精确同源、登录态和 CSRF 边界不变。",
+        content_markdown: `# AI／CLI 授权确认页恢复正常
+
+浏览器中的设备授权确认已恢复。此前点击 Allow 时，授权 HTML 继承的 \`no-referrer\` 策略会让表单 POST 带上 \`Origin: null\`，因而被服务端的精确同源检查正确地拒绝。
+
+## 修复方式
+
+- 仅设备授权与令牌管理 HTML 改用 \`strict-origin\`，让表单提交保留精确站点来源。
+- 浏览器只会发送 \`https://lusu575.com\` 这样的来源，不会泄露包含 \`user_code\` 的路径或查询字符串。
+- JSON 接口继续使用 \`no-referrer\`，没有放宽数据接口的隐私策略。
+- \`/tokens/manage\` 的撤销表单同步修复。
+
+## 安全边界不变
+
+POST 仍必须通过精确 \`Origin\`、账号登录态和 CSRF 检查。缺失来源、\`Origin: null\`、与当前授权页 origin 不同的来源或攻击者来源仍会被拒绝。从 CLI、Codex 或外部链接打开的顶层授权 GET 现在可正常进入，而 iframe 和其他子资源加载仍被拒绝。
+
+Quick Transfer 版本更新为 1.0.5，互传协议未改变。独立远程 MCP Worker 仍未部署。`
+      },
+      en: {
+        title: "AI and CLI Authorization Forms Restored",
+        summary: "Fixes browser Allow submissions that no-referrer turned into Origin:null; authorization and token-management forms work again while exact-origin, session, and CSRF checks remain unchanged.",
+        content_markdown: `# AI and CLI Authorization Forms Restored
+
+Browser device authorization works again. Previously, the authorization HTML inherited a \`no-referrer\` policy that caused the Allow form POST to carry \`Origin: null\`, so the server's exact same-origin check correctly rejected it.
+
+## What changed
+
+- Only the device-authorization and token-management HTML pages now use \`strict-origin\`, preserving the exact site origin required by their form submissions.
+- The browser sends only an origin such as \`https://lusu575.com\`; it does not expose the path or query string containing \`user_code\`.
+- JSON endpoints remain on \`no-referrer\`, so their privacy policy has not been relaxed.
+- The revoke forms under \`/tokens/manage\` receive the same fix.
+
+## Security boundary unchanged
+
+POST requests must still pass exact \`Origin\`, signed-in session, and CSRF checks. Missing origins, \`Origin: null\`, any origin different from the authorization page, and attacker origins remain rejected. Top-level authorization GET navigations opened from a CLI, Codex, or another external link are now accepted, while iframe and other subresource loads remain blocked.
+
+Quick Transfer is now version 1.0.5 with no change to its transfer protocol. The separate remote MCP Worker remains undeployed.`
+      },
+      ja: {
+        title: "AI／CLI 認証フォームを復旧",
+        summary: "no-referrer により Allow 送信の Origin が null となり拒否される問題を修正しました。認証・トークン管理フォームを復旧し、厳密な同一オリジン、セッション、CSRF 検査は維持します。",
+        content_markdown: `# AI／CLI 認証フォームを復旧
+
+ブラウザーのデバイス認証を復旧しました。これまでは認証 HTML が継承した \`no-referrer\` により、Allow フォームの POST が \`Origin: null\` となっていました。そのため、サーバーの厳密な同一オリジン検査によって正しく拒否されていました。
+
+## 変更内容
+
+- デバイス認証とトークン管理の HTML だけを \`strict-origin\` に変更し、フォーム送信に必要な正確なサイトオリジンを保持します。
+- ブラウザーが送るのは \`https://lusu575.com\` のようなオリジンのみで、\`user_code\` を含むパスやクエリーは漏れません。
+- JSON エンドポイントは引き続き \`no-referrer\` を使用します。
+- \`/tokens/manage\` の取り消しフォームも同時に復旧しました。
+
+## 安全境界は維持
+
+POST には、厳密な \`Origin\`、ログインセッション、CSRF 検査が引き続き必要です。Origin の欠落、\`Origin: null\`、認証ページと異なるオリジン、攻撃者のオリジンは今後も拒否されます。CLI、Codex、外部リンクから開くトップレベルの認証 GET は許可し、iframe やその他のサブリソース読み込みは引き続き拒否します。
+
+Quick Transfer はバージョン 1.0.5 となり、転送プロトコルに変更はありません。独立リモート MCP Worker は引き続き未展開です。`
+      }
+    }, "2026-08-06T12:00:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,
