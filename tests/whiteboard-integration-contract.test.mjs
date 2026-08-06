@@ -61,9 +61,9 @@ test("whiteboard custom UI does not embed code-drawn image material", async () =
   assert.doesNotMatch(css, /url\(/i);
 });
 
-test("whiteboard exposes v1.0.5 and gives every room the same editable pencil sketch style", async () => {
+test("whiteboard exposes v1.0.6 and gives every room the same editable pencil sketch style", async () => {
   const main = await read("tools/whiteboard/src/main.jsx");
-  assert.match(main, /const WHITEBOARD_VERSION = "1\.0\.5"/);
+  assert.match(main, /const WHITEBOARD_VERSION = "1\.0\.6"/);
   assert.match(main, /const ALL_ROOM_SKETCH_APP_STATE = Object\.freeze/);
   assert.match(main, /function createAllRoomSketchInitialData\(\)/);
   assert.match(main, /initialData=\{sketchInitialData\}/);

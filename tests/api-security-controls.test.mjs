@@ -251,6 +251,33 @@ test("main API mutation gate permits only safe raster uploads for the whiteboard
     const response = await invoke(onRequest, DB, upload);
     assert.equal(response.status, 201, await response.clone().text());
 
+    const agentUpload = new Request(`${ORIGIN}/api/whiteboard/agent/assets`, {
+      method: "POST",
+      headers: {
+        "CF-Connecting-IP": "203.0.113.80",
+        "Content-Type": "image/png",
+        "X-Whiteboard-Operation-Id": "agent-raster-gate-smoke"
+      },
+      body: new Uint8Array([0x89, 0x50, 0x4e, 0x47])
+    });
+    const agentResponse = await invoke(onRequest, DB, agentUpload);
+    assert.equal(agentResponse.status, 401, await agentResponse.clone().text());
+    assert.equal((await agentResponse.json()).code, "AGENT_TOKEN_REQUIRED");
+
+    const crossOriginAgent = new Request(`${ORIGIN}/api/whiteboard/agent/assets`, {
+      method: "POST",
+      headers: {
+        "CF-Connecting-IP": "203.0.113.80",
+        "Content-Type": "image/png",
+        Origin: "https://evil.example",
+        "Sec-Fetch-Site": "cross-site",
+        "X-Whiteboard-Operation-Id": "agent-raster-gate-cross-origin"
+      },
+      body: new Uint8Array([0x89, 0x50, 0x4e, 0x47])
+    });
+    const crossOriginAgentResponse = await invoke(onRequest, DB, crossOriginAgent);
+    assert.equal(crossOriginAgentResponse.status, 403);
+
     const unsafe = await invoke(onRequest, DB, apiRequest("whiteboard/assets", {
       method: "POST",
       headers: {
@@ -262,6 +289,28 @@ test("main API mutation gate permits only safe raster uploads for the whiteboard
       body: "<svg></svg>"
     }));
     assert.equal(unsafe.status, 415);
+
+    const unsafeAgent = await invoke(onRequest, DB, apiRequest("whiteboard/agent/assets", {
+      method: "POST",
+      headers: {
+        "CF-Connecting-IP": "203.0.113.80",
+        "Content-Type": "image/svg+xml",
+        "X-Whiteboard-Operation-Id": "agent-raster-gate-unsafe"
+      },
+      body: "<svg></svg>"
+    }));
+    assert.equal(unsafeAgent.status, 415);
+
+    const adjacentAgentPath = await invoke(onRequest, DB, apiRequest("whiteboard/agent/assets/extra", {
+      method: "POST",
+      headers: {
+        "CF-Connecting-IP": "203.0.113.80",
+        "Content-Type": "image/png",
+        "X-Whiteboard-Operation-Id": "agent-raster-gate-adjacent"
+      },
+      body: new Uint8Array([0x89, 0x50, 0x4e, 0x47])
+    }));
+    assert.equal(adjacentAgentPath.status, 415);
   } finally {
     DB.close();
   }

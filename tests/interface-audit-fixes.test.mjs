@@ -93,8 +93,8 @@ test("Knowledge Markdown links use a fresh cache version without invalidating un
   const stableVersion = "20260726-security-reliability-r1";
   const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
   const agentCapabilitiesVersion = "20260806-agent-capabilities-quick-transfer-r1";
-  const whiteboardAgentImagesVersion = "20260806-whiteboard-agent-images-r1";
-  const transferVersion = whiteboardAgentImagesVersion;
+  const whiteboardAgentImagesVersion = "20260806-whiteboard-agent-images-r2";
+  const transferVersion = "20260806-whiteboard-agent-images-r1";
   const index = read("index.html");
   const main = read("js/main.js");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");
@@ -114,7 +114,7 @@ test("Knowledge Markdown links use a fresh cache version without invalidating un
   assert.ok(main.includes(`./core/i18n.mjs?v=${agentCapabilitiesVersion}`));
   assert.ok(main.includes(`./data/home-content.mjs?v=${whiteboardAgentImagesVersion}`));
   assert.ok(main.includes(`./routes/knowledge.mjs?v=${agentCapabilitiesVersion}`));
-  assert.ok(main.includes(`./routes/resources.mjs?v=${whiteboardAgentImagesVersion}`));
+  assert.ok(main.includes(`./routes/resources.mjs?v=${transferVersion}`));
   assert.ok(main.includes(`./data/resources-content.mjs?v=${whiteboardAgentImagesVersion}`));
   assert.ok(transferLoader.includes(`const TRANSFER_VERSION = "${transferVersion}"`));
   assert.ok(resources.includes(`../features/quick-transfer-loader.mjs?v=${transferVersion}`));
