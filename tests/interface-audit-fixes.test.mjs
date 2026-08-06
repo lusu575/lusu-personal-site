@@ -34,8 +34,9 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the Agent authorization form fix leads the five-item trilingual projection while older updates remain archived", async () => {
-  const updateId = "seed-update-2026-08-06-agent-auth-form-origin";
+test("the whiteboard Agent image release leads the five-item trilingual projection while older updates remain archived", async () => {
+  const updateId = "seed-update-2026-08-06-whiteboard-agent-images";
+  const agentAuthFormOriginUpdateId = "seed-update-2026-08-06-agent-auth-form-origin";
   const japaneseProgressUpdateId = "seed-update-2026-08-06-japanese-agent-progress";
   const agentReadBreadthUpdateId = "seed-update-2026-08-06-agent-read-breadth";
   const whiteboard2048UpdateId = "seed-update-2026-08-06-whiteboard-2048-agent";
@@ -54,15 +55,16 @@ test("the Agent authorization form fix leads the five-item trilingual projection
 
   assert.equal(content.updates[0].article_id, updateId);
   assert.equal(homeContent.updates[0].article_id, updateId);
-  assert.equal(content.updates[1].article_id, japaneseProgressUpdateId);
-  assert.equal(homeContent.updates[1].article_id, japaneseProgressUpdateId);
-  assert.equal(content.updates[2].article_id, agentReadBreadthUpdateId);
-  assert.equal(homeContent.updates[2].article_id, agentReadBreadthUpdateId);
-  assert.equal(content.updates[3].article_id, whiteboard2048UpdateId);
-  assert.equal(homeContent.updates[3].article_id, whiteboard2048UpdateId);
-  assert.equal(content.updates[4].article_id, firstPhaseUpdateId);
-  assert.equal(homeContent.updates[4].article_id, firstPhaseUpdateId);
-  assert.equal(content.updates[5].article_id, websiteGuideUpdateId);
+  assert.equal(content.updates[1].article_id, agentAuthFormOriginUpdateId);
+  assert.equal(homeContent.updates[1].article_id, agentAuthFormOriginUpdateId);
+  assert.equal(content.updates[2].article_id, japaneseProgressUpdateId);
+  assert.equal(homeContent.updates[2].article_id, japaneseProgressUpdateId);
+  assert.equal(content.updates[3].article_id, agentReadBreadthUpdateId);
+  assert.equal(homeContent.updates[3].article_id, agentReadBreadthUpdateId);
+  assert.equal(content.updates[4].article_id, whiteboard2048UpdateId);
+  assert.equal(homeContent.updates[4].article_id, whiteboard2048UpdateId);
+  assert.equal(content.updates[5].article_id, firstPhaseUpdateId);
+  assert.equal(content.updates[6].article_id, websiteGuideUpdateId);
   assert.ok(content.updates.some((update) => update.article_id === trafficUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === calmWhiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === reliableWhiteboardUpdateId));
@@ -91,8 +93,8 @@ test("Knowledge Markdown links use a fresh cache version without invalidating un
   const stableVersion = "20260726-security-reliability-r1";
   const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
   const agentCapabilitiesVersion = "20260806-agent-capabilities-quick-transfer-r1";
-  const agentAuthFormOriginVersion = "20260806-agent-auth-form-origin-r1";
-  const transferVersion = agentAuthFormOriginVersion;
+  const whiteboardAgentImagesVersion = "20260806-whiteboard-agent-images-r1";
+  const transferVersion = whiteboardAgentImagesVersion;
   const index = read("index.html");
   const main = read("js/main.js");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");
@@ -107,13 +109,13 @@ test("Knowledge Markdown links use a fresh cache version without invalidating un
     assert.ok(index.includes(`${asset}?v=${stableVersion}`), `${asset} should use ${stableVersion}`);
   }
   assert.ok(index.includes(`/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`));
-  assert.ok(index.includes(`/js/main.js?v=${agentAuthFormOriginVersion}`));
+  assert.ok(index.includes(`/js/main.js?v=${whiteboardAgentImagesVersion}`));
   assert.ok(main.includes(`const routeStyleVersion = "${knowledgeReaderVersion}"`));
   assert.ok(main.includes(`./core/i18n.mjs?v=${agentCapabilitiesVersion}`));
-  assert.ok(main.includes(`./data/home-content.mjs?v=${agentAuthFormOriginVersion}`));
+  assert.ok(main.includes(`./data/home-content.mjs?v=${whiteboardAgentImagesVersion}`));
   assert.ok(main.includes(`./routes/knowledge.mjs?v=${agentCapabilitiesVersion}`));
-  assert.ok(main.includes(`./routes/resources.mjs?v=${agentAuthFormOriginVersion}`));
-  assert.ok(main.includes(`./data/resources-content.mjs?v=${agentAuthFormOriginVersion}`));
+  assert.ok(main.includes(`./routes/resources.mjs?v=${whiteboardAgentImagesVersion}`));
+  assert.ok(main.includes(`./data/resources-content.mjs?v=${whiteboardAgentImagesVersion}`));
   assert.ok(transferLoader.includes(`const TRANSFER_VERSION = "${transferVersion}"`));
   assert.ok(resources.includes(`../features/quick-transfer-loader.mjs?v=${transferVersion}`));
   assert.doesNotMatch([index, main, transferLoader, resources].join("\n"), /20260726-tools-rename-r1/);

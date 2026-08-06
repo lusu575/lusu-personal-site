@@ -717,6 +717,11 @@ test("CLI joins, draws, reads, and exports a private whiteboard through opaque h
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-cli-whiteboard-"));
   t.after(() => fs.rm(directory, { recursive: true, force: true }));
   const accessToken = `wbt1.${"c".repeat(80)}`;
+  const assetId = "0123456789abcdef0123456789abcdef";
+  const imageBytes = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+    "base64"
+  );
   const document = new Y.Doc();
   let documentVersion = 0;
   const calls = [];
@@ -727,6 +732,27 @@ test("CLI joins, draws, reads, and exports a private whiteboard through opaque h
         room: { type: "private" },
         accessToken,
         accessExpiresAt: "2030-01-01T00:00:00.000Z"
+      });
+    }
+    if (url.pathname.endsWith("/agent/assets") && options.method === "POST") {
+      assert.deepEqual(Buffer.from(options.body), imageBytes);
+      assert.equal(options.headers.get("X-Whiteboard-Operation-Id"), "cli_asset_0001");
+      return response({
+        ok: true,
+        replayed: false,
+        asset: {
+          assetId,
+          contentType: "image/png",
+          byteLength: imageBytes.byteLength,
+          width: 1,
+          height: 1
+        }
+      }, 201);
+    }
+    if (url.pathname.endsWith(`/agent/assets/${assetId}`)) {
+      return new Response(imageBytes, {
+        status: 200,
+        headers: { "Content-Type": "image/png", "Content-Length": String(imageBytes.byteLength) }
       });
     }
     if (url.pathname.endsWith("/agent/scene") && options.method === "POST") {
@@ -807,6 +833,63 @@ test("CLI joins, draws, reads, and exports a private whiteboard through opaque h
   });
   assert.equal(exported.elementCount, 2);
   assert.equal(JSON.parse(await fs.readFile(destination, "utf8")).type, "excalidraw");
+
+  const imageFile = path.join(directory, "source.png");
+  await fs.writeFile(imageFile, imageBytes);
+  const uploadOutput = captureStream();
+  const uploaded = await runCli([
+    "--base-url", "https://example.test", "whiteboard", "asset", "put",
+    joined.boardHandle, imageFile, "--operation-id", "cli_asset_0001"
+  ], {
+    fetch,
+    stdout: uploadOutput.stream,
+    stderr: captureStream().stream,
+    env
+  });
+  assert.equal(uploaded.asset.assetId, assetId);
+  assert.equal(uploadOutput.text().includes(directory), false);
+  assert.equal(uploadOutput.text().includes(accessToken), false);
+
+  const imageDestination = path.join(directory, "downloaded.png");
+  const downloadOutput = captureStream();
+  const downloaded = await runCli([
+    "--base-url", "https://example.test", "whiteboard", "asset", "get",
+    joined.boardHandle, assetId, imageDestination
+  ], {
+    fetch,
+    stdout: downloadOutput.stream,
+    stderr: captureStream().stream,
+    env
+  });
+  assert.equal(downloaded.destination, "downloaded.png");
+  assert.deepEqual(await fs.readFile(imageDestination), imageBytes);
+  assert.equal(downloadOutput.text().includes(directory), false);
+  await assert.rejects(
+    runCli([
+      "--base-url", "https://example.test", "whiteboard", "asset", "get",
+      joined.boardHandle, assetId, path.join(directory, "CON.png")
+    ], { fetch, stdout: captureStream().stream, stderr: captureStream().stream, env }),
+    (error) => error.code === "FILE_REF_UNSAFE_PATH"
+  );
+  await assert.rejects(
+    runCli([
+      "--base-url", "https://example.test", "whiteboard", "asset", "get",
+      joined.boardHandle, assetId, imageDestination
+    ], { fetch, stdout: captureStream().stream, stderr: captureStream().stream, env }),
+    (error) => error.code === "FILE_ALREADY_EXISTS"
+  );
+
+  const imageDrawFile = path.join(directory, "image-draw.json");
+  await fs.writeFile(imageDrawFile, JSON.stringify({
+    operationId: "cli_image_draw_0001",
+    elements: [{ type: "image", assetId, x: 200, y: 40, width: 80, height: 80 }]
+  }));
+  const imageDrawn = await runCli([
+    "--base-url", "https://example.test", "whiteboard", "draw", joined.boardHandle,
+    "--input", imageDrawFile
+  ], { fetch, stdout: captureStream().stream, stderr: captureStream().stream, env });
+  assert.equal(imageDrawn.scene.assetCount, 1);
+  assert.equal(imageDrawn.scene.elements.at(-1).assetId, assetId);
 });
 
 test("CLI runs an isolated 2048 session without network access", async (t) => {

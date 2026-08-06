@@ -2,6 +2,11 @@
 
 本日志只记录临时互传子项目。根项目发布历史仍写入仓库根 `CHANGELOG.md`。
 
+## 1.0.6 - 2026-08-06
+
+- 共享 Agent Auth、能力注册表、`SiteClient`、CLI 与 stdio MCP 增加在线画板图片上传／下载／放置能力，并以独立、非默认 `whiteboard:assets` scope 隔离原始图片访问。
+- 本次修改命中 Quick Transfer 的共享受管入口，因此从 1.0.5 精确升至 1.0.6；没有改变互传房间、口令派生、AES-GCM 文字、私有 R2 文件、普通账号滚动 24 小时配额、Multipart、鉴权或发布完成后 24 小时过期语义，画板 scope 也不能用于访问 Transfer 数据。
+
 ## 1.0.5 - 2026-08-06
 
 - 修复共享 Agent Auth 的浏览器确认页：授权与令牌管理 HTML 不再使用会把表单 POST 变成 `Origin: null` 的 `no-referrer`，改为只发送来源站点、不携带路径或 `user_code` 查询的 `strict-origin`；JSON 响应继续使用 `no-referrer`。

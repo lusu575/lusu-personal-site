@@ -1,10 +1,10 @@
 # AI 能力层：架构与运行手册
 
-本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前四阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道、首个 2048 游戏适配器、视频／工具／游戏／日语题库的公开只读目录，以及日语账号进度读取与受控答题，并保留一个独立的 Cloudflare 远程 MCP Worker 工程；它不是“全站所有功能已经接入”或“远程写入已经上线”的声明。
+本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前五阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道（含真实图片闭环）、首个 2048 游戏适配器、视频／工具／游戏／日语题库的公开只读目录，以及日语账号进度读取与受控答题，并保留一个独立的 Cloudflare 远程 MCP Worker 工程；它不是“全站所有功能已经接入”或“远程写入已经上线”的声明。
 
 ## 1. 先看能力注册表，不要靠猜
 
-统一清单位于 `lib/capabilities/registry.mjs`。每项能力都包含 `id`、`domain`、`scope`、风险、幂等性、破坏性以及两组容易混淆的传输字段：
+统一清单位于 `lib/capabilities/registry.mjs`。每项能力都包含 `id`、`domain`、主 `scope`、风险、幂等性、破坏性以及两组容易混淆的传输字段：
 
 - `transport` 是目标传输面：表示架构希望这项能力最终可以从哪些入口使用。
 - `availableTransports` 是当前已经有具体适配器、现在可以调用的传输面。
@@ -24,6 +24,8 @@ capability.status === "available"
 | `existing-api` | 站内已有底层 API，但 CLI/MCP 适配器未必存在；不能把目标 `transport` 当成可调用能力。 |
 | `adapter-planned` | 只是纳入治理清单和后续设计，当前不得调用。 |
 | `restricted` | 受限或高危能力，只保留原有受保护入口，不应暴露给通用 AI 客户端。 |
+
+`requiredScopes` 是必须全部满足的 scope，`anyOfScopes` 非空时还必须至少满足其中一个；两者均是冻结、可机读的授权契约。不要只读取单值 `scope` 推断复合权限。例如图片上传要求 `whiteboard:write + whiteboard:assets`，图片下载要求 `whiteboard:assets + (whiteboard:read 或 whiteboard:write)`。
 
 列出能力：
 
@@ -53,7 +55,7 @@ node .\cli\lusu.mjs help
 - `japanese-subtext levels|stages|get|progress|attempt`：读取 5 个难度、250 个锁定关卡和账号有界进度，或提交由服务端判分的语义答题；进度与答题需要独立、非默认 scope。
 - `auth login|status|logout`：设备码登录、检查身份和撤销当前令牌。
 - `transfer join|ls|send|put|get|rm`：加入密码房、列出或传输内容；删除必须显式加 `--yes`。
-- `whiteboard join|scene|draw|export`：加入公共／密码房、读取场景摘要、追加高层元素并在本地导出；不支持修改／删除既有元素或注入任意 Yjs 字节。
+- `whiteboard join|scene|draw|asset put|asset get|export`：加入公共／密码房、读取场景摘要、上传／下载当前房真实图片、追加高层图形或图片并在本地导出；不支持修改／删除既有元素或资源，也不接受任意 Yjs 字节。
 - `game create|observe|actions|act|close`：运行隔离的本地 2048 会话；重置和关闭都需要显式确认。
 
 示例（不包含任何真实凭证）：
@@ -65,10 +67,12 @@ node .\cli\lusu.mjs games list --agent-only --lang en
 node .\cli\lusu.mjs japanese-subtext stages --level 2 --limit 10 --lang ja
 node .\cli\lusu.mjs auth login
 node .\cli\lusu.mjs auth login --scopes japanese-subtext:progress:read,japanese-subtext:progress:write
+node .\cli\lusu.mjs auth login --scopes whiteboard:read,whiteboard:write,whiteboard:assets
 node .\cli\lusu.mjs japanese-subtext progress --stage-id L1-001 --days 30
 node .\cli\lusu.mjs japanese-subtext attempt --input .\attempt.json
 $env:LUSU_ROOM_SECRET | node .\cli\lusu.mjs transfer join --password-stdin
 node .\cli\lusu.mjs whiteboard join --public
+node .\cli\lusu.mjs whiteboard asset put BOARD_HANDLE .\image.png --operation-id wb_asset_0001
 node .\cli\lusu.mjs game create 2048
 ```
 
@@ -105,7 +109,7 @@ node .\mcp\local\server.mjs
 - 公开目录：`tools_list`、`tools_get`、`games_list`、`game_get`
 - 日语题库与进度：`japanese_subtext_levels`、`japanese_subtext_stages`、`japanese_subtext_stage_get`、`japanese_subtext_progress_get`、`japanese_subtext_attempt_submit`
 - Quick Transfer：`transfer_join`、`transfer_list`、`transfer_send_text`、`transfer_upload`、`transfer_download`、`transfer_delete`
-- 在线画板：`whiteboard_join`、`whiteboard_scene`、`whiteboard_draw`、`whiteboard_export`
+- 在线画板：`whiteboard_join`、`whiteboard_scene`、`whiteboard_asset_upload`、`whiteboard_asset_download`、`whiteboard_draw`、`whiteboard_export`
 - 2048：`game_create`、`game_observe`、`game_actions`、`game_act`、`game_reset`、`game_close`
 
 本地 MCP 的公开内容、视频、游戏目录、日语题库／进度、Quick Transfer 与在线画板使用网站 API 或站点静态 JSON，因此依赖网络；工具目录来自受审查的本地公开数据模块。Quick Transfer、在线画板和日语账号进度还需要有效的 Agent Bearer 令牌及对应 scope。2048 隔离会话完全在本机运行，不发送站点请求。CLI 与 stdio MCP 会向 `SiteClient` 注入项目共享的代理感知 `fetch`，按 `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY` 工作；代理值、凭据和原始令牌不得写入日志或 MCP 输出。
@@ -133,6 +137,7 @@ node .\mcp\local\server.mjs
 | `transfer:delete` | 删除房间项目或中止分片上传；默认登录不授予。 |
 | `whiteboard:read` | 加入画板并读取场景；默认登录不授予。 |
 | `whiteboard:write` | 追加受支持的画板元素，并隐含读取；默认登录不授予。 |
+| `whiteboard:assets` | 访问画板原始图片字节；上传还要求 write，下载还要求 read 或 write，场景图片分支还要求 write；默认登录不授予。 |
 | `japanese-subtext:progress:read` | 读取令牌所属账号的有界日语学习进度；默认登录不授予。 |
 | `japanese-subtext:progress:write` | 提交令牌所属账号的受控日语答题；默认登录不授予。 |
 
@@ -181,15 +186,16 @@ CLI 的 `transfer put|get` 是操作者直接给出的本机路径，不套用 M
 
 CLI 和 MCP 下载都不覆盖已有文件。目标文件以独占创建方式打开；文件已经存在时直接失败，传输中途失败时清理本次未完成文件。调用方不得通过“先删除再下载”绕过这条默认保护，除非用户明确授权了单独的文件删除动作。
 
-## 6. 在线画板 Agent 的双令牌与追加边界
+## 6. 在线画板 Agent 的双令牌、图片与追加边界
 
 白板 CLI／MCP 使用站点专用 Agent HTTP 路由，不属于 `workers/site-mcp/`，也不是标准 OAuth 公网远程写能力：
 
-- Agent Bearer 只证明用户和 `whiteboard:read`／`whiteboard:write` scope；加入房间后还必须携带独立、短期且绑定当前 Agent tokenId 的房间访问令牌。两者不能互换，也不得进入 URL。
+- Agent Bearer 只证明用户和 `whiteboard:read`／`whiteboard:write`／`whiteboard:assets` scope；加入房间后还必须携带独立、短期且绑定当前 Agent tokenId 的房间访问令牌。两者不能互换，也不得进入 URL。write 只隐含场景 read；上传图片必须同时具备 write+assets，下载原图必须具备 assets 加 read/write。
 - 密码房口令只允许 CLI 隐藏输入／`--password-stdin`，或 MCP 的 `env:NAME` `secretRef`。MCP schema 不接受明文 `password`；口令经同源 HTTPS 请求体送到服务端做 HMAC 房间映射，本地句柄和响应永不回显它。
-- 绘制前必须获取最新完整 Yjs 状态。适配器只从高层文字／矩形／椭圆／菱形／线条／箭头描述创建确定性 Excalidraw 元素；单次最多 50 个。服务端重新合并并验证只追加、不修改、不删除、无图片／嵌入／链接／绑定／未知根数据。
+- 绘制前必须获取最新完整 Yjs 状态。适配器只从高层文字／矩形／椭圆／菱形／线条／箭头／图片描述创建确定性 Excalidraw 元素；单次最多 50 个。图片只能引用当前房已经完成 R2 提交、逐字段匹配 DO 权威 `ImageMeta` 的资源。没有 assets scope 的 write-only 请求、pending 或跨房资源、URL／Base64／SVG／HTML、伪造元数据、孤立资源、既有元素／资源改删、链接／绑定／`customData`／未知根数据都会由服务端拒绝；规范既有资源可继续被引用，同图可放置多次。
+- `whiteboard asset put`／`whiteboard_asset_upload` 只读取最大 5 MiB 的真实常规 PNG／JPEG／WebP，并严格验证容器边界、关键块段、声明宽高与像素数；该边界不宣称完整像素解码。MCP 还拒绝 allow-root 外路径和符号链接。上传使用独立 operation ID + byte SHA-256 收据，同字节重试完成同一资源，换字节复用 ID 冲突。`whiteboard asset get`／`whiteboard_asset_download` 只读取当前房资源，目标独占创建且不覆盖；MCP 输出不包含本机绝对路径、令牌或内部房间 ID。
 - `operationId` 与载荷 SHA-256 形成每房幂等收据。同一载荷安全重试，不同载荷不得复用 ID；房间锁定时写入失败。公共房不设空房 TTL；密码房 Agent 写入会重置空房 24 小时期限，但不计在线人数。
-- `whiteboard_export` 只在 MCP allow-root 内独占创建目标，不覆盖现有文件。JSON 保留高层元素；简化 SVG／PNG 当前忽略图片资源并返回警告，不能当作浏览器 Excalidraw 的像素级等价导出。
+- `whiteboard_export` 只在 MCP allow-root 内独占创建目标，不覆盖现有文件。JSON 保留高层元素和图片资源引用；简化 SVG／PNG 当前忽略图片字节并返回警告，不能当作浏览器 Excalidraw 的像素级等价导出。
 
 ## 7. 2048 隔离会话与页面桥
 
@@ -252,7 +258,7 @@ npm.cmd run dev
 
 ## 11. 仍是 inventory / planned 的能力
 
-- 白板读取、追加和本地导出，以及隔离的 2048 会话已经在本地 CLI／stdio MCP 可用；它们不表示远程 MCP 写入、白板任意编辑／删除／图片写入，或浏览器游戏接管已经完成。
+- 白板读取、图片上传／下载、高层追加和本地导出，以及隔离的 2048 会话已经在本地 CLI／stdio MCP 可用；它们不表示远程 MCP 写入、白板任意编辑／删除，或浏览器游戏接管已经完成。
 - 五个游戏的安全目录已经可读，但除隔离 2048 外，其他游戏的语义动作 adapter、已打开浏览器游戏的配对／观看／控制，以及游戏云存档通用写入仍需单独适配与授权。
 - 日语等级／关卡公开内容和账号进度闭环已经可用；聊天写入、任意完整进度快照写入、游戏存档写入等条目仍只是既有 API 的 inventory 或受限入口，没有通用 CLI/MCP 写适配器。
 - Daily AI News、Tool Radar 的生产发布能力是 `restricted`，不会出现在公开远程 MCP 或通用本地 MCP 中。
@@ -285,7 +291,7 @@ npm.cmd test
 - CLI 拒绝 argv 中的房间口令，MCP schema 拒绝 `password` 字段，只接受环境 `secretRef`。
 - 缺 scope 的令牌得到拒绝；Agent Bearer 不能访问管理员端点。
 - 日语进度 GET 不改变 revision／活动；答题拒绝未解锁关、旧题库／进度、额外派生字段、漏题／重题／未知选项，并覆盖同 operationId 同载荷重放与异载荷冲突。除已声明的日界线口径外，计分、奖牌、活动合并和解锁语义必须与浏览器 `recordAttempt()` 一致。
-- 白板 Agent Bearer 与房间访问令牌保持分离，追加验证拒绝修改／删除／图片／未知根，operation ID 重试与冲突均有覆盖。
+- 白板 Agent Bearer 与房间访问令牌保持分离；追加验证只在独立 assets scope、可信内部 header 和当前房已提交元数据同时满足时接受规范图片，并继续拒绝既有修改／删除、孤立资源与未知根。scene／asset operation ID 的重试与冲突均有覆盖。
 - 2048 CAS、action ID 重放、状态篡改、会话上限、TTL，以及重置／关闭确认均有覆盖；测试不声称连接已打开的浏览器。
 - 公开工具／游戏／日语适配器拒绝 traversal、恶意 ID、任意 URL、超限 JSON、重复 ID、版本／计数／hash／`textLocked` 不匹配，并确认输出不含源文件路径、存储键、题库 batch 路径或内部音频文本。
 - allow-root 的相对路径、绝对路径、`..`、链接逃逸及不存在父目录均有覆盖。

@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-06-whiteboard-agent-images",
+      "slug": "2026-08-06-whiteboard-agent-images",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "在线画板", "图片", "CLI", "MCP", "安全"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-06T13:20:00.000Z",
+      "updated_at": "2026-08-06T13:20:00.000Z",
+      "published_at": "2026-08-06T13:20:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.08.06",
+      "title": {
+        "zh": "AI 现在可以给在线画板添加图片",
+        "en": "AI Can Now Add Images to the Online Whiteboard",
+        "ja": "AI がオンラインホワイトボードに画像を追加可能に"
+      },
+      "summary": {
+        "zh": "本地 CLI／stdio MCP 现在可上传、下载并在当前房追加真实图片；独立图片权限、房间隔离、幂等收据和只追加验证共同保护边界，远程 MCP 仍未部署。",
+        "en": "The local CLI and stdio MCP can now upload, download, and append real images in the current room, protected by a separate asset scope, room isolation, idempotent receipts, and append-only validation. The remote MCP remains undeployed.",
+        "ja": "ローカル CLI／stdio MCP から現在のルームへ実画像をアップロード・取得・追記できるようになりました。専用画像権限、ルーム分離、冪等レシート、追記専用検証を維持し、リモート MCP は未展開です。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-06-agent-auth-form-origin",
       "slug": "2026-08-06-agent-auth-form-origin",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "第二阶段把在线画板与 2048 接入本地 CLI／stdio MCP：画板可安全追加高层元素并在本地导出 JSON、SVG、PNG；2048 运行在隔离的本地会话中。远程 MCP 仍未部署且保持只读。",
         "en": "Phase two connects Online Whiteboard and 2048 to the local CLI/stdio MCP: the board safely appends high-level elements and exports JSON, SVG, or PNG locally, while 2048 runs in an isolated local session. The remote MCP remains undeployed and read-only.",
         "ja": "第2段階としてオンラインホワイトボードと 2048 をローカル CLI／stdio MCP に接続しました。ホワイトボードは安全な高レベル要素の追記とローカル JSON／SVG／PNG 書き出し、2048 は分離されたローカルセッションに対応します。リモート MCP は未展開の読み取り専用のままです。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-06-agent-capabilities",
-      "slug": "2026-08-06-agent-capabilities",
-      "category": "site-updates",
-      "tags": ["网站更新", "AI 能力", "MCP", "CLI", "临时互传"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-06T02:20:00.000Z",
-      "updated_at": "2026-08-06T02:20:00.000Z",
-      "published_at": "2026-08-06T02:20:00.000Z",
-      "fallbackOnly": true,
-      "icon": "resources",
-      "date": "2026.08.06",
-      "title": {
-        "zh": "AI 能力层第一阶段：MCP、CLI 与临时互传",
-        "en": "AI Capability Layer: MCP, CLI, and Quick Transfer",
-        "ja": "AI 機能レイヤー第1段階：MCP・CLI・一時転送"
-      },
-      "summary": {
-        "zh": "建立统一能力注册表、设备码和最小权限令牌，新增本地 CLI／stdio MCP 与尚未部署的只读远程 MCP；AI 现在可安全收发临时互传的文字和文件，白板与游戏控制仍在后续计划中。",
-        "en": "Adds a governed capability registry, device authorization and scoped tokens, a local CLI/stdio MCP, and an undeployed read-only remote MCP; AI clients can now exchange Quick Transfer text and files, while Whiteboard and game control remain planned.",
-        "ja": "統一機能レジストリ、デバイス認証、最小権限トークン、ローカル CLI／stdio MCP、未展開の読み取り専用リモート MCP を追加しました。AI は一時転送のテキストとファイルを扱えますが、ホワイトボードとゲーム操作はまだ計画段階です。"
       }
     }
   ]

@@ -7,8 +7,8 @@ import {
 
 test("whiteboard and Quick Transfer keep independent patch versions and synchronized project docs", () => {
   assert.deepEqual(checkSubprojectGovernance(), [
-    "online-whiteboard@1.0.4",
-    "quick-transfer@1.0.5",
+    "online-whiteboard@1.0.5",
+    "quick-transfer@1.0.6",
   ]);
 });
 
@@ -22,6 +22,6 @@ test("a matching version elsewhere in a shared catalog cannot mask a stale gover
     template: '"version": "v{{version}}"',
     maxChars: 64,
   };
-  assert.equal(hasAnchoredVisibleVersion(catalog, check, "1.0.5"), false);
-  assert.equal(hasAnchoredVisibleVersion(catalog.replace("v1.0.2", "v1.0.5"), check, "1.0.5"), true);
+  assert.equal(hasAnchoredVisibleVersion(catalog, check, "1.0.6"), false);
+  assert.equal(hasAnchoredVisibleVersion(catalog.replace("v1.0.2", "v1.0.6"), check, "1.0.6"), true);
 });

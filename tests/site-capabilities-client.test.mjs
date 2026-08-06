@@ -116,6 +116,79 @@ test("SiteClient uploads exact bytes and streams downloads into a writable", asy
   assert.equal(closed, true);
 });
 
+test("SiteClient uploads and downloads bounded whiteboard raster assets with separated credentials", async () => {
+  const assetId = "0123456789abcdef0123456789abcdef";
+  const accessToken = `wbt1.${"z".repeat(80)}`;
+  const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3]);
+  const calls = [];
+  const client = new SiteClient({
+    baseUrl: "https://example.test",
+    accessToken: "agent-token",
+    fetch: async (url, options) => {
+      calls.push({ url, options });
+      if (options.method === "POST") {
+        return jsonResponse({
+          ok: true,
+          replayed: false,
+          asset: { assetId, contentType: "image/png", byteLength: png.byteLength, width: 1, height: 1 }
+        }, { status: 201 });
+      }
+      return new Response(png, {
+        status: 200,
+        headers: { "Content-Type": "image/png", "Content-Length": String(png.byteLength) }
+      });
+    }
+  });
+  const uploaded = await client.uploadWhiteboardAsset(accessToken, {
+    contentType: "image/png",
+    sizeBytes: png.byteLength,
+    body: png
+  }, { operationId: "asset_upload_0001" });
+  assert.equal(uploaded.asset.assetId, assetId);
+  assert.equal(calls[0].url.pathname, "/api/whiteboard/agent/assets");
+  assert.equal(calls[0].options.headers.get("Authorization"), "Bearer agent-token");
+  assert.equal(calls[0].options.headers.get("X-Whiteboard-Access-Token"), accessToken);
+  assert.equal(calls[0].options.headers.get("X-Whiteboard-Operation-Id"), "asset_upload_0001");
+  assert.equal(calls[0].options.headers.get("Content-Length"), String(png.byteLength));
+  await assert.rejects(
+    client.uploadWhiteboardAsset(accessToken, {
+      contentType: "image/png",
+      sizeBytes: png.byteLength + 1,
+      body: png
+    }, { operationId: "asset_upload_0002" }),
+    (error) => error instanceof SiteClientError && error.code === "WHITEBOARD_ASSET_LENGTH_MISMATCH"
+  );
+
+  const chunks = [];
+  const downloaded = await client.downloadWhiteboardAsset(accessToken, assetId, {
+    write(chunk) { chunks.push(new Uint8Array(chunk)); },
+    async close() {}
+  });
+  assert.equal(downloaded.assetId, assetId);
+  assert.equal(downloaded.bytesWritten, png.byteLength);
+  assert.deepEqual([...chunks[0]], [...png]);
+  assert.equal(calls[1].url.pathname, `/api/whiteboard/agent/assets/${assetId}`);
+  assert.equal(calls[1].options.headers.get("X-Whiteboard-Access-Token"), accessToken);
+
+  await assert.rejects(
+    client.getWhiteboardAsset(accessToken, "../other-room"),
+    (error) => error instanceof SiteClientError && error.code === "WHITEBOARD_ASSET_ID_INVALID"
+  );
+  assert.equal(calls.length, 2);
+
+  const oversized = new SiteClient({
+    baseUrl: "https://example.test",
+    fetch: async () => new Response(new Uint8Array([1]), {
+      status: 200,
+      headers: { "Content-Type": "image/png", "Content-Length": String(5 * 1024 * 1024 + 1) }
+    })
+  });
+  await assert.rejects(
+    oversized.getWhiteboardAsset(accessToken, assetId),
+    (error) => error instanceof SiteClientError && error.code === "WHITEBOARD_ASSET_SIZE_INVALID"
+  );
+});
+
 test("SiteClient revokes the current agent token through the server contract", async () => {
   let request;
   const client = new SiteClient({

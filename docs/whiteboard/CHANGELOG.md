@@ -2,6 +2,14 @@
 
 本日志只记录在线画板子项目。根项目发布历史仍写入仓库根 `CHANGELOG.md`。
 
+## 1.0.5 - 2026-08-06
+
+- 新增受管 Agent 图片通道：上传同时要求非默认 `whiteboard:write` 与 `whiteboard:assets`，原图下载要求 `whiteboard:assets` 加场景读取权限；Agent Bearer、绑定当前 tokenId 的房间令牌和 Pages→DO 内部授权继续分层。
+- CLI／stdio MCP 可上传、下载并用高层 `image` 元素把当前房已验证的 PNG／JPEG／WebP 放入画板。输入限制为常规文件、5 MiB、严格容器边界／关键块段／声明尺寸／像素上限；该边界不宣称完整像素解码。MCP 受 allow-root 与 realpath 约束，下载默认不覆盖，本机路径、令牌和内部房间 ID 不进入工具输出。
+- 场景验证仍只允许追加：普通 write-only 客户端继续不能写图片；图片只能引用当前 DO 的权威 `ImageMeta`，资源记录必须规范且被本次图片使用，可复用既有记录或多次放置同图。既有元素／资源的改删、孤立资源、URL／Base64／SVG／HTML、跨房引用、链接、绑定、`customData`、未知根和任意 Yjs 注入继续拒绝。
+- 图片上传以主体、operation ID 和字节 SHA-256 提供独立幂等收据；同字节重试返回同一资源，不同字节复用 ID 冲突。资源仍存私有 R2，并沿用每图、每房容量、未引用清理和密码房 24 小时生命周期；简化 SVG／PNG Agent 导出仍不嵌入图片并明确告警。
+- 把白板专属 adapter、scene builder 与能力测试加入子项目 tracked paths，后续图片或高层场景协议变化不能因位于共享能力目录而绕过白板精确升版。
+
 ## 1.0.4 - 2026-08-06
 
 - 将在线画板加入三项真实工具的固定机器可读目录契约，锁定 `whiteboard` 能力域与同源 `/tools/whiteboard/` 入口，目录不再依赖可变或任意启动目标。

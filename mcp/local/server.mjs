@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { createReadStream } from "node:fs";
+import { createReadStream, promises as fs } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { McpServer } from "@modelcontextprotocol/server";
@@ -21,10 +21,13 @@ import {
 import { GameProtocolError } from "../../lib/capabilities/game-protocol.mjs";
 import { deriveTransferRoomSecret } from "../../lib/capabilities/transfer-crypto.mjs";
 import {
+  downloadWhiteboardAssetHandle,
   drawWhiteboardHandle,
   exportWhiteboardHandle,
+  inspectWhiteboardAssetPath,
   joinWhiteboardHandle,
-  readWhiteboardHandle
+  readWhiteboardHandle,
+  uploadWhiteboardAssetHandle
 } from "../../lib/capabilities/whiteboard-adapter.mjs";
 import { WhiteboardSceneError } from "../../lib/capabilities/whiteboard-scene.mjs";
 import {
@@ -96,6 +99,15 @@ const whiteboardElementSchema = z.discriminatedUnion("type", [
     startArrowhead: z.enum(["arrow", "bar", "dot", "triangle"]).nullable().optional(),
     endArrowhead: z.enum(["arrow", "bar", "dot", "triangle"]).nullable().optional(),
     ...whiteboardStyleShape
+  }).strict(),
+  z.object({
+    type: z.literal("image"),
+    assetId: z.string().regex(/^[a-f0-9]{32}$/),
+    x: z.number().min(-100_000).max(100_000),
+    y: z.number().min(-100_000).max(100_000),
+    width: z.number().min(1).max(10_000).optional(),
+    height: z.number().min(1).max(10_000).optional(),
+    opacity: z.number().int().min(1).max(100).optional()
   }).strict()
 ]);
 
@@ -131,7 +143,7 @@ export async function createLocalMcpServer(options = {}) {
   });
   const gameStore = options.gameStore || createGameSessionStore(stateOptions);
   const server = new McpServer(
-    { name: "lusu-personal-site-local", version: "0.4.0" },
+    { name: "lusu-personal-site-local", version: "0.5.0" },
     { capabilities: { tools: {} } }
   );
 
@@ -413,9 +425,56 @@ export async function createLocalMcpServer(options = {}) {
     annotations: readOnlyAnnotations({ openWorldHint: true })
   }, ({ boardHandle }) => readWhiteboardHandle(client, boardHandle, stateOptions));
 
+  registerTool(server, "whiteboard_asset_upload", {
+    title: "Upload an allow-root whiteboard image",
+    description: "Uploads one real, non-symlink PNG, JPEG, or WebP file of at most 5 MiB into the room behind boardHandle. Requires whiteboard:write and whiteboard:assets; credentials never enter output.",
+    inputSchema: z.object({
+      boardHandle: boardHandleSchema,
+      fileRef: fileRefSchema,
+      operationId: operationIdSchema
+    }).strict(),
+    annotations: writeAnnotations({ idempotentHint: true })
+  }, async ({ boardHandle, fileRef, operationId }) => {
+    const file = await resolveWhiteboardAssetInput(fileRef, allowRoots);
+    return uploadWhiteboardAssetHandle(
+      client,
+      boardHandle,
+      file,
+      operationId,
+      stateOptions
+    );
+  });
+
+  registerTool(server, "whiteboard_asset_download", {
+    title: "Download a whiteboard image into an allow-root file",
+    description: "Downloads one current-room PNG, JPEG, or WebP asset of at most 5 MiB into a new non-symlink allow-root path. Requires whiteboard:assets plus whiteboard:read or whiteboard:write; existing files are never overwritten.",
+    inputSchema: z.object({
+      boardHandle: boardHandleSchema,
+      assetId: z.string().regex(/^[a-f0-9]{32}$/),
+      fileRef: fileRefSchema
+    }).strict(),
+    annotations: writeAnnotations({ idempotentHint: false })
+  }, async ({ boardHandle, assetId, fileRef }) => {
+    const destination = await resolveWhiteboardAssetDestination(fileRef, allowRoots);
+    const opened = await openNoClobberSink(destination);
+    try {
+      const downloaded = await downloadWhiteboardAssetHandle(
+        client,
+        boardHandle,
+        assetId,
+        opened.sink,
+        stateOptions
+      );
+      return { fileRef: relativeAllowRootRef(destination, allowRoots), ...downloaded };
+    } catch (error) {
+      await opened.cleanup();
+      throw error;
+    }
+  });
+
   registerTool(server, "whiteboard_draw", {
-    title: "Add shapes and text to an online whiteboard",
-    description: "Adds up to 50 safe high-level rectangle, ellipse, diamond, text, line, or arrow elements. Existing elements cannot be changed or deleted. Reuse operationId only for an exact retry.",
+    title: "Add safe elements to an online whiteboard",
+    description: "Adds up to 50 safe high-level shapes, text, lines, arrows, or current-room image asset references. Images require whiteboard:assets and are GET-verified through this boardHandle; URL/base64/link/customData and all existing-element changes remain forbidden. Reuse operationId only for an exact retry.",
     inputSchema: z.object({
       boardHandle: boardHandleSchema,
       operationId: operationIdSchema,
@@ -648,6 +707,79 @@ function writeAnnotations(overrides = {}) {
     openWorldHint: true,
     ...overrides
   };
+}
+
+async function resolveWhiteboardAssetInput(fileRef, allowRoots) {
+  const requested = requestedFileRefPath(fileRef, allowRoots);
+  const file = await resolveReadableFileRef(fileRef, allowRoots);
+  const requestedReal = await fs.realpath(requested);
+  const requestedStat = await fs.lstat(requested);
+  if (requestedStat.isSymbolicLink() || !sameLocalPath(requested, requestedReal)) {
+    throw new LocalStateError("Whiteboard image fileRef may not traverse a symbolic link.", "FILE_REF_SYMLINK_FORBIDDEN");
+  }
+  if (file.sizeBytes < 1 || file.sizeBytes > 5 * 1024 * 1024) {
+    throw new LocalStateError("The whiteboard image must contain 1-5242880 bytes.", "WHITEBOARD_ASSET_FILE_SIZE_INVALID");
+  }
+  const inspected = await inspectWhiteboardAssetPath(file.path);
+  if (!sameLocalPath(file.path, inspected.path)) {
+    throw new LocalStateError("The whiteboard image changed during inspection.", "WHITEBOARD_ASSET_FILE_CHANGED");
+  }
+  return { ...file, ...inspected };
+}
+
+async function resolveWhiteboardAssetDestination(fileRef, allowRoots) {
+  const requested = requestedFileRefPath(fileRef, allowRoots);
+  const requestedParent = path.dirname(requested);
+  const realParent = await fs.realpath(requestedParent).catch((error) => {
+    throw new LocalStateError("The destination directory does not exist.", "FILE_REF_PARENT_NOT_FOUND", { cause: error });
+  });
+  const parentStat = await fs.stat(realParent);
+  if (!parentStat.isDirectory()) {
+    throw new LocalStateError("The destination parent is not a directory.", "FILE_REF_PARENT_NOT_FOUND");
+  }
+  if (!sameLocalPath(requestedParent, realParent)) {
+    throw new LocalStateError("Whiteboard image destinations may not traverse a symbolic link.", "FILE_REF_SYMLINK_FORBIDDEN");
+  }
+  return resolveWritableFileRef(fileRef, allowRoots);
+}
+
+function requestedFileRefPath(fileRef, allowRoots) {
+  const reference = String(fileRef || "").trim().replace(/^file:/, "");
+  const requested = path.isAbsolute(reference)
+    ? path.resolve(reference)
+    : path.resolve(allowRoots[0], reference);
+  assertPortableFilePath(requested);
+  return requested;
+}
+
+function assertPortableFilePath(filePath) {
+  const parsed = path.parse(filePath);
+  const remainder = filePath.slice(parsed.root.length);
+  const components = remainder.split(/[\\/]+/u).filter(Boolean);
+  const reserved = /^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?$/iu;
+  if (/^[\\/]{2}[.?][\\/]/u.test(filePath)
+    || components.some((component) => component.includes(":")
+      || /[. ]$/u.test(component)
+      || reserved.test(component))) {
+    throw new LocalStateError("fileRef uses a reserved or unsafe filesystem path.", "FILE_REF_UNSAFE_PATH");
+  }
+}
+
+function sameLocalPath(left, right) {
+  const normalize = (value) => process.platform === "win32"
+    ? path.normalize(value).toLowerCase()
+    : path.normalize(value);
+  return normalize(left) === normalize(right);
+}
+
+function relativeAllowRootRef(destination, allowRoots) {
+  for (const root of allowRoots) {
+    const relative = path.relative(root, destination);
+    if (relative === "" || (!relative.startsWith(`..${path.sep}`) && relative !== ".." && !path.isAbsolute(relative))) {
+      return relative.replaceAll(path.sep, "/");
+    }
+  }
+  return path.basename(destination);
 }
 
 function inferMimeType(filePath) {

@@ -153,10 +153,18 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260806-agent-auth-form-origin-r1'
+    where key = 'article_seed_version' and value = '20260806-whiteboard-agent-images-r1'
     union all
     select 'whiteboard-reliable-sketch-update-article', count(*)
     from articles where article_id = 'seed-update-2026-08-01-whiteboard-reliable-sketch'
+    union all
+    select 'whiteboard-agent-images-update-article', count(*)
+    from articles where article_id = 'seed-update-2026-08-06-whiteboard-agent-images'
+    union all
+    select 'whiteboard-agent-images-update-translations',
+      case when count(*) = 3 then 1 else 0 end
+    from article_translations
+    where article_id = 'seed-update-2026-08-06-whiteboard-agent-images'
   `
 ]);
 

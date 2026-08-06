@@ -29,7 +29,8 @@ test("local MCP registers the first capability surface with safe annotations", a
     "japanese_subtext_progress_get", "japanese_subtext_attempt_submit",
     "transfer_join", "transfer_list", "transfer_send_text", "transfer_upload",
     "transfer_download", "transfer_delete", "whiteboard_join", "whiteboard_scene",
-    "whiteboard_draw", "whiteboard_export", "game_create", "game_observe",
+    "whiteboard_asset_upload", "whiteboard_asset_download", "whiteboard_draw",
+    "whiteboard_export", "game_create", "game_observe",
     "game_actions", "game_act", "game_reset", "game_close"
   ]);
   assert.equal(tool(server, "content_get").annotations.readOnlyHint, true);
@@ -46,7 +47,20 @@ test("local MCP registers the first capability surface with safe annotations", a
   assert.equal(tool(server, "transfer_join").inputSchema.safeParse({ password: "forbidden" }).success, false);
   assert.equal(tool(server, "transfer_join").inputSchema.safeParse({ secretRef: "env:LUSU_ROOM_SECRET" }).success, true);
   assert.equal(tool(server, "whiteboard_scene").annotations.readOnlyHint, true);
+  assert.equal(tool(server, "whiteboard_asset_upload").annotations.idempotentHint, true);
+  assert.equal(tool(server, "whiteboard_asset_download").annotations.readOnlyHint, false);
   assert.equal(tool(server, "whiteboard_draw").annotations.idempotentHint, true);
+  assert.equal(tool(server, "whiteboard_draw").inputSchema.safeParse({
+    boardHandle: "board_123456789012",
+    operationId: "draw_image_0001",
+    elements: [{
+      type: "image",
+      assetId: "0123456789abcdef0123456789abcdef",
+      x: 0,
+      y: 0,
+      dataURL: "data:image/png;base64,AAAA"
+    }]
+  }).success, false);
   assert.equal(tool(server, "whiteboard_join").inputSchema.safeParse({ roomType: "private", password: "forbidden" }).success, false);
   assert.equal(tool(server, "whiteboard_join").inputSchema.safeParse({
     roomType: "private",
@@ -425,6 +439,155 @@ test("local MCP joins, reads, draws, and exports a whiteboard without exposing c
   assert.equal(noClobber.structuredContent.result.code, "FILE_ALREADY_EXISTS");
 });
 
+test("local MCP constrains whiteboard assets to verified allow-root raster files and safe output", async (t) => {
+  const parent = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-mcp-whiteboard-assets-"));
+  const allowed = path.join(parent, "allowed");
+  await fs.mkdir(allowed);
+  t.after(() => fs.rm(parent, { recursive: true, force: true }));
+  const imageBytes = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+    "base64"
+  );
+  const assetId = "0123456789abcdef0123456789abcdef";
+  await fs.writeFile(path.join(allowed, "source.png"), imageBytes);
+  await fs.writeFile(path.join(parent, "outside.png"), imageBytes);
+  await fs.writeFile(path.join(allowed, "too-large.png"), Buffer.alloc(5 * 1024 * 1024 + 1));
+  const accessToken = `wbt1.${"d".repeat(80)}`;
+  const document = new Y.Doc();
+  let documentVersion = 0;
+  const client = {
+    capabilities: () => [],
+    async joinWhiteboardRoom() {
+      return { room: { type: "public" }, accessToken, accessExpiresAt: "2030-01-01T00:00:00.000Z" };
+    },
+    async uploadWhiteboardAsset(roomToken, file, options) {
+      assert.equal(roomToken, accessToken);
+      assert.equal(options.operationId, "mcp_asset_0001");
+      await fs.writeFile(path.join(allowed, "source.png"), "replaced-after-inspection");
+      assert.deepEqual(Buffer.from(file.body), imageBytes);
+      return {
+        ok: true,
+        replayed: false,
+        asset: { assetId, contentType: "image/png", byteLength: imageBytes.byteLength, width: 1, height: 1 }
+      };
+    },
+    async getWhiteboardAsset(roomToken, requestedAssetId) {
+      assert.equal(roomToken, accessToken);
+      assert.equal(requestedAssetId, assetId);
+      return { assetId, contentType: "image/png", byteLength: imageBytes.byteLength, bytes: imageBytes };
+    },
+    async downloadWhiteboardAsset(roomToken, requestedAssetId, sink) {
+      assert.equal(roomToken, accessToken);
+      assert.equal(requestedAssetId, assetId);
+      await sink.write(imageBytes);
+      await sink.close();
+      return {
+        assetId,
+        contentType: "image/png",
+        byteLength: imageBytes.byteLength,
+        bytesWritten: imageBytes.byteLength
+      };
+    },
+    async getWhiteboardScene() {
+      return { updateBytes: Y.encodeStateAsUpdate(document), documentVersion, locked: false };
+    },
+    async applyWhiteboardUpdate(_roomToken, update) {
+      Y.applyUpdate(document, update);
+      documentVersion += 1;
+      return { ok: true, replayed: false, documentVersion };
+    }
+  };
+  const server = await createLocalMcpServer({
+    client,
+    credential: null,
+    allowRoots: [allowed],
+    env: { LUSU_CONFIG_DIR: path.join(allowed, ".state") }
+  });
+  const joined = await tool(server, "whiteboard_join").handler({ roomType: "public" });
+  const boardHandle = joined.structuredContent.result.boardHandle;
+  const uploaded = await tool(server, "whiteboard_asset_upload").handler({
+    boardHandle,
+    fileRef: "source.png",
+    operationId: "mcp_asset_0001"
+  });
+  assert.equal(uploaded.isError, undefined);
+  assert.equal(uploaded.structuredContent.result.asset.assetId, assetId);
+  const serializedUpload = JSON.stringify(uploaded);
+  assert.equal(serializedUpload.includes(parent), false);
+  assert.equal(serializedUpload.includes(accessToken), false);
+
+  const outside = await tool(server, "whiteboard_asset_upload").handler({
+    boardHandle,
+    fileRef: path.join(parent, "outside.png"),
+    operationId: "mcp_asset_0002"
+  });
+  assert.equal(outside.isError, true);
+  assert.equal(outside.structuredContent.result.code, "FILE_REF_OUTSIDE_ALLOW_ROOT");
+  const oversized = await tool(server, "whiteboard_asset_upload").handler({
+    boardHandle,
+    fileRef: "too-large.png",
+    operationId: "mcp_asset_0003"
+  });
+  assert.equal(oversized.isError, true);
+  assert.equal(oversized.structuredContent.result.code, "WHITEBOARD_ASSET_FILE_SIZE_INVALID");
+  const nonFile = await tool(server, "whiteboard_asset_upload").handler({
+    boardHandle,
+    fileRef: ".",
+    operationId: "mcp_asset_0004"
+  });
+  assert.equal(nonFile.isError, true);
+  assert.equal(nonFile.structuredContent.result.code, "FILE_REF_NOT_FILE");
+  for (const fileRef of ["download.png:stream", "CON.png", "trailing.", "NUL"]) {
+    const unsafe = await tool(server, "whiteboard_asset_download").handler({
+      boardHandle,
+      assetId,
+      fileRef
+    });
+    assert.equal(unsafe.isError, true);
+    assert.equal(unsafe.structuredContent.result.code, "FILE_REF_UNSAFE_PATH");
+  }
+
+  const downloaded = await tool(server, "whiteboard_asset_download").handler({
+    boardHandle,
+    assetId,
+    fileRef: "download.png"
+  });
+  assert.equal(downloaded.isError, undefined);
+  assert.equal(downloaded.structuredContent.result.fileRef, "download.png");
+  assert.equal(JSON.stringify(downloaded).includes(parent), false);
+  assert.deepEqual(await fs.readFile(path.join(allowed, "download.png")), imageBytes);
+  const noClobber = await tool(server, "whiteboard_asset_download").handler({
+    boardHandle,
+    assetId,
+    fileRef: "download.png"
+  });
+  assert.equal(noClobber.isError, true);
+  assert.equal(noClobber.structuredContent.result.code, "FILE_ALREADY_EXISTS");
+
+  const drawn = await tool(server, "whiteboard_draw").handler({
+    boardHandle,
+    operationId: "mcp_image_draw_0001",
+    elements: [{ type: "image", assetId, x: 10, y: 20, width: 100, height: 80 }]
+  });
+  assert.equal(drawn.isError, undefined);
+  assert.equal(drawn.structuredContent.result.scene.assetCount, 1);
+  assert.equal(drawn.structuredContent.result.scene.elements[0].assetId, assetId);
+
+  const symlink = path.join(allowed, "source-link.png");
+  try {
+    await fs.symlink(path.join(allowed, "source.png"), symlink, "file");
+    const linked = await tool(server, "whiteboard_asset_upload").handler({
+      boardHandle,
+      fileRef: "source-link.png",
+      operationId: "mcp_asset_0005"
+    });
+    assert.equal(linked.isError, true);
+    assert.equal(linked.structuredContent.result.code, "FILE_REF_SYMLINK_FORBIDDEN");
+  } catch (error) {
+    if (!["EPERM", "EACCES"].includes(error?.code)) throw error;
+  }
+});
+
 test("local MCP runs a bounded isolated 2048 session with CAS and explicit destructive tools", async (t) => {
   const configDir = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-mcp-game-"));
   t.after(() => fs.rm(configDir, { recursive: true, force: true }));
@@ -502,7 +665,7 @@ test("local MCP serves a clean stdio initialize and tools/list exchange", async 
   })}\n`);
   const initialized = await waitForMessage(messages, (message) => message.id === 1);
   assert.equal(initialized.result.serverInfo.name, "lusu-personal-site-local");
-  assert.equal(initialized.result.serverInfo.version, "0.4.0");
+  assert.equal(initialized.result.serverInfo.version, "0.5.0");
   input.write(`${JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized", params: {} })}\n`);
   input.write(`${JSON.stringify({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} })}\n`);
   const listed = await waitForMessage(messages, (message) => message.id === 2);

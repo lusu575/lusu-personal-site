@@ -11,7 +11,8 @@ const WHITEBOARD_2048_AGENT_UPDATE_ID = "seed-update-2026-08-06-whiteboard-2048-
 const AGENT_READ_BREADTH_UPDATE_ID = "seed-update-2026-08-06-agent-read-breadth";
 const JAPANESE_AGENT_PROGRESS_UPDATE_ID = "seed-update-2026-08-06-japanese-agent-progress";
 const AGENT_AUTH_FORM_ORIGIN_UPDATE_ID = "seed-update-2026-08-06-agent-auth-form-origin";
-const ARTICLE_SEED_VERSION = "20260806-agent-auth-form-origin-r1";
+const WHITEBOARD_AGENT_IMAGES_UPDATE_ID = "seed-update-2026-08-06-whiteboard-agent-images";
+const ARTICLE_SEED_VERSION = "20260806-whiteboard-agent-images-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -245,6 +246,24 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /strict-origin/);
     assert.match(params[5], /Origin: null/);
     assert.match(params[5], /no-referrer/);
+    assert.match(params[5], /undeployed|未部署|未展開/);
+  }
+
+  const whiteboardAgentImagesSeed = seedBatch.find(({ sql }) => (
+    sql.includes(`'${WHITEBOARD_AGENT_IMAGES_UPDATE_ID}'`)
+    && /on conflict\(article_id\) do update/i.test(normalizedSql(sql))
+  ));
+  assert.ok(whiteboardAgentImagesSeed, "the Phase 5 whiteboard Agent image update metadata must be seeded");
+  const whiteboardAgentImagesTranslations = boundStatements.filter(({ params }) => (
+    params[1] === WHITEBOARD_AGENT_IMAGES_UPDATE_ID
+    && ["zh", "en", "ja"].includes(params[2])
+  ));
+  assert.equal(whiteboardAgentImagesTranslations.length, 3, "the Phase 5 whiteboard image update must include three translations");
+  for (const { params } of whiteboardAgentImagesTranslations) {
+    assert.match(params[5], /stdio MCP/);
+    assert.match(params[5], /whiteboard:assets/);
+    assert.match(params[5], /PNG/);
+    assert.match(params[5], /append-only|只追加|追記専用/);
     assert.match(params[5], /undeployed|未部署|未展開/);
   }
 

@@ -57,6 +57,7 @@ const INTERNAL_HEADERS = Object.freeze({
   adminUserId: "x-whiteboard-admin-user-id",
   agentAuthorized: "x-whiteboard-agent-authorized",
   agentSubject: "x-whiteboard-agent-subject",
+  agentAssetsAuthorized: "x-whiteboard-agent-assets-authorized",
   agentOperationId: "x-whiteboard-agent-operation-id"
 });
 
@@ -147,6 +148,23 @@ async function handleAgentWhiteboardApi(context, parts) {
     return proxyWhiteboardAgentScene(context, principal);
   }
 
+  if (
+    ((request.method === "POST" && parts.length === 1)
+      || (request.method === "GET" && parts.length === 2))
+    && parts[0] === "assets"
+  ) {
+    const principal = await authenticateWhiteboardAgent(
+      request,
+      env,
+      request.method === "POST" ? "asset-write" : "asset-read"
+    );
+    return proxyWhiteboardAgentAsset(
+      context,
+      principal,
+      request.method === "GET" ? parts[1] : null
+    );
+  }
+
   return whiteboardJson({
     error: "Agent whiteboard endpoint not found.",
     code: "WHITEBOARD_AGENT_NOT_FOUND"
@@ -200,15 +218,7 @@ async function joinWhiteboardRoomAsAgent(context, principal, body) {
 async function proxyWhiteboardAgentScene(context, principal) {
   const { request, env } = context;
   assertRealtimeBindings(env);
-  const accessToken = agentAccessTokenFromRequest(request);
-  const claims = await verifyWhiteboardToken(
-    accessToken,
-    requiredSecret(env, "WHITEBOARD_TICKET_SECRET"),
-    { expectedKind: AGENT_ACCESS_KIND }
-  );
-  if (claims.tid !== principal.tokenId) {
-    throw accessDeniedError();
-  }
+  const claims = await verifiedAgentAccessClaims(request, env, principal);
   const ip = await whiteboardIpContext(request, env);
   const method = request.method;
   await consumeAgentWhiteboardAttempt(
@@ -271,12 +281,88 @@ async function proxyWhiteboardAgentScene(context, principal) {
     }
     return safeAgentSceneResponse(upstream);
   }
-  const response = await safeUpstreamJson(
+  const response = await safeAgentSceneWriteResponse(
     upstream,
     "WHITEBOARD_AGENT_SCENE_WRITE_FAILED"
   );
   if (response.ok) {
-    await recordWhiteboardAgentWriteAudit(env, principal, claims.rid, operationId);
+    const result = await response.clone().json();
+    await recordWhiteboardAgentWriteAudit(
+      env,
+      principal,
+      claims.rid,
+      operationId,
+      "whiteboard-scene-applied",
+      String(result.documentVersion)
+    );
+  }
+  return response;
+}
+
+async function proxyWhiteboardAgentAsset(context, principal, value) {
+  const { request, env } = context;
+  assertRealtimeBindings(env);
+  const claims = await verifiedAgentAccessClaims(request, env, principal);
+  const ip = await whiteboardIpContext(request, env);
+  const method = request.method;
+  await consumeAgentWhiteboardAttempt(
+    env,
+    principal.tokenId,
+    ip.ipHash,
+    method === "POST" ? "write" : "read"
+  );
+
+  const headers = await agentInternalRoomHeaders({
+    env,
+    claims,
+    principal,
+    ipHash: ip.ipHash
+  });
+  const stub = whiteboardRoomStub(env, claims.rid);
+  if (method === "GET") {
+    const assetId = normalizeAssetId(value);
+    const upstream = await stub.fetch(new Request(
+      `https://whiteboard.internal/agent-assets/${encodeURIComponent(assetId)}`,
+      { method: "GET", headers }
+    ));
+    return safeAgentAssetResponse(upstream);
+  }
+
+  const contentType = normalizeAssetContentType(request.headers.get("Content-Type"));
+  const operationId = normalizeAgentOperationId(
+    request.headers.get("X-Whiteboard-Operation-Id")
+  );
+  await consumeUploadAttempt(env, ip.ipHash);
+  const bytes = await readBoundedBytes(request, MAX_ASSET_BYTES);
+  if (bytes.byteLength === 0) {
+    throw new WhiteboardHttpError(
+      "Agent image content is invalid.",
+      422,
+      "WHITEBOARD_ASSET_INVALID"
+    );
+  }
+  await consumeUploadByteBudget(env, ip.ipHash, bytes.byteLength);
+  headers.set(INTERNAL_HEADERS.agentOperationId, operationId);
+  headers.set("Content-Type", contentType);
+  headers.set("Content-Length", String(bytes.byteLength));
+  const upstream = await stub.fetch(new Request(
+    "https://whiteboard.internal/agent-assets",
+    { method: "POST", headers, body: bytes }
+  ));
+  const response = await safeAgentAssetUploadResponse(
+    upstream,
+    "WHITEBOARD_AGENT_ASSET_UPLOAD_FAILED"
+  );
+  if (response.ok) {
+    const result = await response.clone().json();
+    await recordWhiteboardAgentWriteAudit(
+      env,
+      principal,
+      claims.rid,
+      operationId,
+      "whiteboard-asset-uploaded",
+      result.asset.assetId
+    );
   }
   return response;
 }
@@ -1045,6 +1131,18 @@ function agentAccessTokenFromRequest(request) {
   return token;
 }
 
+async function verifiedAgentAccessClaims(request, env, principal) {
+  const claims = await verifyWhiteboardToken(
+    agentAccessTokenFromRequest(request),
+    requiredSecret(env, "WHITEBOARD_TICKET_SECRET"),
+    { expectedKind: AGENT_ACCESS_KIND }
+  );
+  if (claims.tid !== principal.tokenId) {
+    throw accessDeniedError();
+  }
+  return claims;
+}
+
 async function verifiedAccessClaims(request, env, identity) {
   const token = accessTokenFromRequest(request);
   const claims = await verifyWhiteboardToken(
@@ -1098,13 +1196,26 @@ async function authenticateWhiteboardAgent(request, env, capability) {
     );
   }
   const scopes = Array.isArray(principal.scopes) ? principal.scopes : [];
-  const hasWrite = scopes.includes("whiteboard:write")
-    || scopes.includes("whiteboard:*");
+  const hasWildcard = scopes.includes("whiteboard:*");
+  const hasWrite = scopes.includes("whiteboard:write") || hasWildcard;
   const hasRead = hasWrite || scopes.includes("whiteboard:read");
-  const granted = capability === "write" ? hasWrite : hasRead;
-  if (!granted) {
+  const hasAssets = scopes.includes("whiteboard:assets") || hasWildcard;
+  const missing = capability === "asset-write"
+    ? [
+        ...(!hasWrite ? ["whiteboard:write"] : []),
+        ...(!hasAssets ? ["whiteboard:assets"] : [])
+      ]
+    : capability === "asset-read"
+      ? [
+          ...(!hasRead ? ["whiteboard:read"] : []),
+          ...(!hasAssets ? ["whiteboard:assets"] : [])
+        ]
+    : capability === "write"
+      ? (!hasWrite ? ["whiteboard:write"] : [])
+      : (!hasRead ? ["whiteboard:read"] : []);
+  if (missing.length > 0) {
     throw new WhiteboardHttpError(
-      `Agent access token is missing required scope: whiteboard:${capability === "write" ? "write" : "read"}.`,
+      `Agent access token is missing required scope: ${missing.join(", ")}.`,
       403,
       "AGENT_SCOPE_REQUIRED"
     );
@@ -1119,7 +1230,7 @@ async function agentInternalRoomHeaders({ env, claims, principal, ipHash }) {
       `lusu:whiteboard:agent-subject:v1\u0000${principal.tokenId}`
     )
   ));
-  return new Headers({
+  const headers = new Headers({
     [INTERNAL_HEADERS.secret]: requiredSecret(env, "WHITEBOARD_INTERNAL_SECRET"),
     [INTERNAL_HEADERS.roomId]: claims.rid,
     [INTERNAL_HEADERS.roomType]: claims.rt,
@@ -1127,6 +1238,14 @@ async function agentInternalRoomHeaders({ env, claims, principal, ipHash }) {
     [INTERNAL_HEADERS.agentAuthorized]: "1",
     [INTERNAL_HEADERS.agentSubject]: hexEncode(subjectDigest)
   });
+  const scopes = Array.isArray(principal.scopes) ? principal.scopes : [];
+  if (
+    scopes.includes("whiteboard:assets")
+    || scopes.includes("whiteboard:*")
+  ) {
+    headers.set(INTERNAL_HEADERS.agentAssetsAuthorized, "1");
+  }
+  return headers;
 }
 
 function internalRoomHeaders({ env, request, identity, claims, ipHash }) {
@@ -1654,12 +1773,21 @@ async function recordWhiteboardAgentWriteAudit(
   env,
   principal,
   roomId,
-  operationId
+  operationId,
+  action,
+  committedResultId
 ) {
+  const normalizedResultId = String(committedResultId || "");
+  const validResultId = action === "whiteboard-asset-uploaded"
+    ? /^[a-f0-9]{32}$/.test(normalizedResultId)
+    : action === "whiteboard-scene-applied"
+      ? /^[1-9][0-9]{0,15}$/.test(normalizedResultId)
+      : false;
+  if (!validResultId) return;
   const eventDigest = new Uint8Array(await crypto.subtle.digest(
     "SHA-256",
     new TextEncoder().encode(
-      `lusu:whiteboard:agent-audit:v1\u0000${principal.tokenId}\u0000${roomId}\u0000${operationId}`
+      `lusu:whiteboard:agent-audit:v2\u0000${principal.tokenId}\u0000${roomId}\u0000${action}\u0000${operationId}\u0000${normalizedResultId}`
     )
   ));
   const roomDigest = new Uint8Array(await crypto.subtle.digest(
@@ -1671,11 +1799,12 @@ async function recordWhiteboardAgentWriteAudit(
       insert or ignore into agent_audit_log (
         event_id, actor_user_id, token_id, action, target_type, target_id,
         scopes, result, created_at
-      ) values (?, ?, ?, 'whiteboard-scene-applied', 'whiteboard-room', ?, ?, 'success', ?)
+      ) values (?, ?, ?, ?, 'whiteboard-room', ?, ?, 'success', ?)
     `).bind(
       `waev_${hexEncode(eventDigest).slice(0, 48)}`,
       principal.user?.id || "",
       principal.tokenId,
+      action,
       `wbar_${hexEncode(roomDigest).slice(0, 48)}`,
       JSON.stringify(
         [...new Set((principal.scopes || []).map((scope) => String(scope)))].sort()
@@ -1685,7 +1814,7 @@ async function recordWhiteboardAgentWriteAudit(
   } catch {
     console.error(JSON.stringify({
       message: "whiteboard agent audit write failed",
-      action: "whiteboard-scene-applied"
+      action
     }));
   }
 }
@@ -2283,6 +2412,94 @@ async function safeUpstreamJson(upstream, fallbackCode) {
   return whiteboardJson(payload || { ok: true }, upstream.status);
 }
 
+async function safeAgentSceneWriteResponse(upstream, fallbackCode) {
+  if (!upstream.ok) return safeUpstreamJson(upstream, fallbackCode);
+  let payload;
+  try {
+    const text = await upstream.text();
+    if (new TextEncoder().encode(text).byteLength > 16 * 1024) {
+      throw new Error("response_too_large");
+    }
+    payload = JSON.parse(text || "{}");
+  } catch {
+    payload = null;
+  }
+  if (
+    upstream.status !== 200
+    || !isPlainObject(payload)
+    || payload.ok !== true
+    || typeof payload.replayed !== "boolean"
+    || !Number.isSafeInteger(payload.documentVersion)
+    || payload.documentVersion < 1
+  ) {
+    return whiteboardJson({
+      error: "Agent whiteboard scene response is invalid.",
+      code: "WHITEBOARD_AGENT_SCENE_INVALID"
+    }, 502);
+  }
+  return whiteboardJson({
+    ok: true,
+    replayed: payload.replayed,
+    documentVersion: payload.documentVersion
+  });
+}
+
+async function safeAgentAssetUploadResponse(upstream, fallbackCode) {
+  if (!upstream.ok) {
+    return safeUpstreamJson(upstream, fallbackCode);
+  }
+  let payload;
+  try {
+    const text = await upstream.text();
+    if (new TextEncoder().encode(text).byteLength > 16 * 1024) {
+      throw new Error("response_too_large");
+    }
+    payload = JSON.parse(text || "{}");
+  } catch {
+    payload = null;
+  }
+  const asset = isPlainObject(payload?.asset) ? payload.asset : null;
+  const valid = isPlainObject(payload)
+    && payload.ok === true
+    && typeof payload.replayed === "boolean"
+    && asset
+    && /^[a-f0-9]{32}$/.test(String(asset.assetId || ""))
+    && SAFE_IMAGE_TYPES.has(String(asset.contentType || ""))
+    && Number.isSafeInteger(asset.byteLength)
+    && asset.byteLength > 0
+    && asset.byteLength <= MAX_ASSET_BYTES
+    && Number.isSafeInteger(asset.width)
+    && asset.width > 0
+    && asset.width <= 8192
+    && Number.isSafeInteger(asset.height)
+    && asset.height > 0
+    && asset.height <= 8192
+    && asset.width * asset.height <= 32_000_000
+    && asset.version === 1
+    && (
+      (payload.replayed === true && upstream.status === 200)
+      || (payload.replayed === false && upstream.status === 201)
+    );
+  if (!valid) {
+    return whiteboardJson({
+      error: "Agent whiteboard asset response is invalid.",
+      code: "WHITEBOARD_AGENT_ASSET_INVALID"
+    }, 502);
+  }
+  return whiteboardJson({
+    ok: true,
+    replayed: payload.replayed,
+    asset: {
+      assetId: asset.assetId,
+      contentType: asset.contentType,
+      byteLength: asset.byteLength,
+      width: asset.width,
+      height: asset.height,
+      version: 1
+    }
+  }, upstream.status);
+}
+
 function safeAgentSceneResponse(upstream) {
   const contentType = String(upstream.headers.get("Content-Type") || "")
     .split(";", 1)[0]
@@ -2310,6 +2527,39 @@ function safeAgentSceneResponse(upstream) {
   const contentLength = upstream.headers.get("Content-Length");
   if (contentLength && /^[1-9][0-9]{0,8}$/.test(contentLength)) {
     headers.set("Content-Length", contentLength);
+  }
+  return new Response(upstream.body, { status: 200, headers });
+}
+
+async function safeAgentAssetResponse(upstream) {
+  if (!upstream.ok) {
+    return safeUpstreamJson(upstream, "WHITEBOARD_AGENT_ASSET_READ_FAILED");
+  }
+  const contentType = String(upstream.headers.get("Content-Type") || "")
+    .split(";", 1)[0]
+    .trim()
+    .toLowerCase();
+  const contentLength = String(upstream.headers.get("Content-Length") || "");
+  const byteLength = Number(contentLength);
+  if (
+    !SAFE_IMAGE_TYPES.has(contentType)
+    || !/^[1-9][0-9]{0,7}$/.test(contentLength)
+    || !Number.isSafeInteger(byteLength)
+    || byteLength > MAX_ASSET_BYTES
+  ) {
+    return whiteboardJson({
+      error: "Agent whiteboard asset response is invalid.",
+      code: "WHITEBOARD_AGENT_ASSET_INVALID"
+    }, 502);
+  }
+  const headers = apiSecurityHeaders({
+    "Content-Type": contentType,
+    "Content-Length": contentLength,
+    "Content-Disposition": "inline"
+  });
+  const etag = String(upstream.headers.get("ETag") || "");
+  if (etag && etag.length <= 160 && !/[\r\n]/.test(etag)) {
+    headers.set("ETag", etag);
   }
   return new Response(upstream.body, { status: 200, headers });
 }

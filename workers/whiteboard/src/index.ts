@@ -1,6 +1,8 @@
 import { DurableObject } from "cloudflare:workers";
 import {
   ADMIN_AUTHORIZED_HEADER,
+  AGENT_ASSETS_AUTHORIZED_HEADER,
+  AGENT_ASSET_RECEIPT_PREFIX,
   AGENT_AUTHORIZED_HEADER,
   AGENT_OPERATION_ID_HEADER,
   AGENT_RECEIPT_PREFIX,
@@ -18,6 +20,7 @@ import {
   IMAGE_META_PREFIX,
   IP_HASH_HEADER,
   MAX_AWARENESS_BYTES,
+  MAX_AGENT_ASSET_RECEIPTS,
   MAX_AGENT_RECEIPTS,
   MAX_BYTES_PER_WINDOW,
   MAX_CONNECTIONS_PER_IDENTITY,
@@ -25,6 +28,8 @@ import {
   MAX_CONNECTIONS_PER_ROOM,
   MAX_IMAGE_BYTES,
   MAX_IMAGE_BYTES_PER_ROOM,
+  MAX_IMAGE_DIMENSION,
+  MAX_IMAGE_PIXELS,
   MAX_IMAGES_PER_ROOM,
   MAX_LARGE_DOCUMENT_UPDATES_PER_WINDOW,
   MAX_MESSAGES_PER_WINDOW,
@@ -86,6 +91,7 @@ import {
 } from "./security";
 import type {
   AdminAction,
+  AgentAssetReceipt,
   AgentUpdateReceipt,
   BanEntry,
   ConnectionAttachment,
@@ -143,6 +149,74 @@ async function sha256Hex(value: Uint8Array): Promise<string> {
   return Array.from(digest, (byte) =>
     byte.toString(16).padStart(2, "0")
   ).join("");
+}
+
+function isAgentAssetReceipt(value: unknown): value is AgentAssetReceipt {
+  if (!value || typeof value !== "object") return false;
+  const receipt = value as Partial<AgentAssetReceipt>;
+  const asset = receipt.asset;
+  return (
+    receipt.version === 2
+    && receipt.kind === "asset"
+    && (receipt.status === "pending" || receipt.status === "committed")
+    && isValidRoomId(String(receipt.roomId || ""))
+    && /^[a-f0-9]{64}$/.test(String(receipt.payloadSha256 || ""))
+    && Boolean(asset)
+    && ASSET_ID_PATTERN.test(String(asset?.assetId || ""))
+    && ["image/png", "image/jpeg", "image/webp"].includes(String(asset?.contentType || ""))
+    && Number.isSafeInteger(asset?.byteLength)
+    && Number(asset?.byteLength) > 0
+    && Number(asset?.byteLength) <= MAX_IMAGE_BYTES
+    && Number.isSafeInteger(asset?.width)
+    && Number(asset?.width) > 0
+    && Number(asset?.width) <= MAX_IMAGE_DIMENSION
+    && Number.isSafeInteger(asset?.height)
+    && Number(asset?.height) > 0
+    && Number(asset?.height) <= MAX_IMAGE_DIMENSION
+    && Number(asset?.width) * Number(asset?.height) <= MAX_IMAGE_PIXELS
+    && asset?.version === 1
+    && Number.isSafeInteger(receipt.createdAt)
+    && Number.isSafeInteger(receipt.expiresAt)
+    && Number(receipt.expiresAt) > Number(receipt.createdAt)
+  );
+}
+
+function isCanonicalImageMeta(value: unknown, roomId: string): value is ImageMeta {
+  if (!value || typeof value !== "object") return false;
+  const image = value as Partial<ImageMeta>;
+  return (
+    image.roomId === roomId
+    && ASSET_ID_PATTERN.test(String(image.assetId || ""))
+    && image.key === `whiteboard/v1/${roomId}/${image.assetId}`
+    && ["image/png", "image/jpeg", "image/webp"].includes(String(image.contentType || ""))
+    && Number.isSafeInteger(image.byteLength)
+    && Number(image.byteLength) > 0
+    && Number(image.byteLength) <= MAX_IMAGE_BYTES
+    && Number.isSafeInteger(image.width)
+    && Number(image.width) > 0
+    && Number(image.width) <= MAX_IMAGE_DIMENSION
+    && Number.isSafeInteger(image.height)
+    && Number(image.height) > 0
+    && Number(image.height) <= MAX_IMAGE_DIMENSION
+    && Number(image.width) * Number(image.height) <= MAX_IMAGE_PIXELS
+    && Number.isSafeInteger(image.createdAt)
+    && Number(image.createdAt) > 0
+    && typeof image.createdBy === "string"
+    && image.createdBy.length > 0
+  );
+}
+
+function assetReceiptMatchesImage(
+  receipt: AgentAssetReceipt,
+  image: ImageMeta
+): boolean {
+  return (
+    receipt.asset.assetId === image.assetId
+    && receipt.asset.contentType === image.contentType
+    && receipt.asset.byteLength === image.byteLength
+    && receipt.asset.width === image.width
+    && receipt.asset.height === image.height
+  );
 }
 
 function socketIsOpen(socket: WebSocket): boolean {
@@ -399,6 +473,25 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
           : this.handleAgentSceneWrite(request, roomId, roomType)
       );
     }
+    if (
+      (request.method === "POST" && url.pathname === "/agent-assets")
+      || (request.method === "GET" && url.pathname.startsWith("/agent-assets/"))
+    ) {
+      if (request.headers.get(AGENT_AUTHORIZED_HEADER) !== "1") {
+        return safeJsonResponse(
+          { ok: false, error: "not_authorized", code: "WHITEBOARD_AGENT_NOT_AUTHORIZED" },
+          403
+        );
+      }
+      return this.enqueueMutation(() =>
+        request.method === "POST"
+          ? this.handleAgentImageUpload(request, roomId, roomType)
+          : this.handleAgentImageGet(
+              request,
+              url.pathname.slice("/agent-assets/".length)
+            )
+      );
+    }
     if (request.method === "GET" && url.pathname === "/realtime") {
       return this.enqueueMutation(() =>
         this.handleWebSocketUpgrade(request, roomId, roomType)
@@ -457,11 +550,13 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     await this.ready;
     await this.enqueueMutation(async () => {
       if (!this.meta) {
-        await this.ctx.storage.deleteAlarm();
+        await this.pruneAgentAssetReceipts(Date.now());
+        await this.scheduleAlarm();
         return;
       }
       const now = Date.now();
       await this.pruneAgentReceipts(now);
+      await this.pruneAgentAssetReceipts(now);
       await this.pruneRateStates(now);
       await this.maybeSweepUnreferencedAssets(now);
       const stale = new Set<WebSocket>();
@@ -646,6 +741,9 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     const activeMeta = onlineCount > 0
       ? markRoomJoined(baseMeta, now, onlineCount)
       : markRoomEmpty(baseMeta, now);
+    const allowedAssets = request.headers.get(AGENT_ASSETS_AUTHORIZED_HEADER) === "1"
+      ? await this.agentAllowedAssets(roomId)
+      : new Map<string, ImageMeta>();
     const result = await this.documentStore.applyAgentIncrementalUpdate(
       update,
       activeMeta,
@@ -655,7 +753,8 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
         createdAt: now,
         expiresAt: now + AGENT_RECEIPT_TTL_MS,
         deleteKeys
-      }
+      },
+      allowedAssets
     );
     if (!result.accepted) {
       return safeJsonResponse(
@@ -1292,6 +1391,376 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     return `${requested}·${randomId(2).toUpperCase()}`;
   }
 
+  private async agentAllowedAssets(roomId: string): Promise<Map<string, ImageMeta>> {
+    const entries = await this.ctx.storage.list<ImageMeta>({
+      prefix: IMAGE_META_PREFIX
+    });
+    const allowed = new Map<string, ImageMeta>();
+    for (const image of entries.values()) {
+      if (!isCanonicalImageMeta(image, roomId)) continue;
+      allowed.set(image.assetId, image);
+    }
+    return allowed;
+  }
+
+  private async agentPendingAssetUsage(
+    roomId: string,
+    excludeReceiptKey = ""
+  ): Promise<{ bytes: number; images: number }> {
+    const receipts = await this.ctx.storage.list<AgentAssetReceipt>({
+      prefix: AGENT_ASSET_RECEIPT_PREFIX
+    });
+    const now = Date.now();
+    let bytes = 0;
+    let images = 0;
+    for (const [key, receipt] of receipts) {
+      if (
+        key === excludeReceiptKey
+        || !isAgentAssetReceipt(receipt)
+        || receipt.status !== "pending"
+        || receipt.roomId !== roomId
+        || receipt.expiresAt <= now
+      ) {
+        continue;
+      }
+      bytes += receipt.asset.byteLength;
+      images += 1;
+    }
+    return { bytes, images };
+  }
+
+  private async handleAgentImageUpload(
+    request: Request,
+    roomId: string,
+    roomType: RoomType
+  ): Promise<Response> {
+    if (request.headers.get(AGENT_ASSETS_AUTHORIZED_HEADER) !== "1") {
+      return safeJsonResponse(
+        { ok: false, error: "not_authorized", code: "WHITEBOARD_AGENT_ASSETS_NOT_AUTHORIZED" },
+        403
+      );
+    }
+    if (!this.env.WHITEBOARD_BUCKET) {
+      return safeJsonResponse({ ok: false, error: "storage_unavailable" }, 503);
+    }
+    const subject = request.headers.get(AGENT_SUBJECT_HEADER) || "";
+    const operationId = request.headers.get(AGENT_OPERATION_ID_HEADER) || "";
+    const ipHash = normalizeIpHash(request.headers.get(IP_HASH_HEADER));
+    const declaredContentType = String(request.headers.get("content-type") || "")
+      .split(";", 1)[0]
+      .trim()
+      .toLowerCase();
+    if (!AGENT_SUBJECT_PATTERN.test(subject) || !ipHash) {
+      return safeJsonResponse(
+        { ok: false, error: "agent_identity_invalid", code: "WHITEBOARD_AGENT_IDENTITY_INVALID" },
+        401
+      );
+    }
+    if (!AGENT_OPERATION_ID_PATTERN.test(operationId)) {
+      return safeJsonResponse(
+        { ok: false, error: "operation_id_invalid", code: "WHITEBOARD_AGENT_OPERATION_ID_INVALID" },
+        422
+      );
+    }
+    if (!["image/png", "image/jpeg", "image/webp"].includes(declaredContentType)) {
+      return safeJsonResponse(
+        { ok: false, error: "content_type_invalid", code: "WHITEBOARD_AGENT_CONTENT_TYPE_INVALID" },
+        415
+      );
+    }
+    if (await this.isBanned("", ipHash)) {
+      return safeJsonResponse({ ok: false, error: "access_denied" }, 403);
+    }
+
+    const bytes = await readBodyWithLimit(request, MAX_IMAGE_BYTES);
+    if (!bytes || bytes.byteLength === 0) {
+      return safeJsonResponse({ ok: false, error: "invalid_image" }, 415);
+    }
+    const image = parseSafeRasterImage(bytes);
+    if (!image || image.contentType !== declaredContentType) {
+      return safeJsonResponse({ ok: false, error: "invalid_image" }, 415);
+    }
+    const now = Date.now();
+    const payloadSha256 = await sha256Hex(bytes);
+    const receiptKey = `${AGENT_ASSET_RECEIPT_PREFIX}${await sha256Hex(
+      new TextEncoder().encode(
+        `lusu:whiteboard:agent-asset-receipt:v1\u0000${subject}\u0000${operationId}`
+      )
+    )}`;
+    const exactReceipt = await this.ctx.storage.get<unknown>(receiptKey);
+    if (exactReceipt !== undefined && !isAgentAssetReceipt(exactReceipt)) {
+      return safeJsonResponse(
+        { ok: false, error: "operation_conflict", code: "WHITEBOARD_OPERATION_CONFLICT" },
+        409
+      );
+    }
+    const existing = exactReceipt as AgentAssetReceipt | undefined;
+    if (existing && existing.expiresAt > now) {
+      if (
+        !isAgentAssetReceipt(existing)
+        || existing.roomId !== roomId
+        || existing.payloadSha256 !== payloadSha256
+      ) {
+        return safeJsonResponse(
+          { ok: false, error: "operation_conflict", code: "WHITEBOARD_OPERATION_CONFLICT" },
+          409
+        );
+      }
+      if (existing.status === "committed") {
+        const storedImage = await this.ctx.storage.get<ImageMeta>(
+          `${IMAGE_META_PREFIX}${existing.asset.assetId}`
+        );
+        if (
+          !isCanonicalImageMeta(storedImage, roomId)
+          || storedImage.createdBy !== subject
+          || !assetReceiptMatchesImage(existing, storedImage)
+        ) {
+          return safeJsonResponse(
+            { ok: false, error: "operation_conflict", code: "WHITEBOARD_OPERATION_CONFLICT" },
+            409
+          );
+        }
+        return safeJsonResponse({
+          ok: true,
+          replayed: true,
+          asset: existing.asset
+        });
+      }
+      if (!(await this.consumeUploadRate(`agent:${subject}`, ipHash))) {
+        return safeJsonResponse({ ok: false, error: "rate_limited" }, 429);
+      }
+      return this.completeAgentImageUpload(
+        existing,
+        receiptKey,
+        bytes,
+        subject,
+        ipHash,
+        roomId,
+        roomType,
+        now
+      );
+    }
+    await this.pruneAgentAssetReceipts(now, MAX_AGENT_ASSET_RECEIPTS - 1);
+    if (await this.ctx.storage.get(receiptKey) !== undefined) {
+      await this.scheduleAlarm();
+      return safeJsonResponse(
+        {
+          ok: false,
+          error: "asset_cleanup_pending",
+          code: "WHITEBOARD_ASSET_CLEANUP_PENDING"
+        },
+        503
+      );
+    }
+
+    if (this.meta?.isLocked) {
+      return safeJsonResponse(
+        { ok: false, error: "room_locked", code: "WHITEBOARD_ROOM_LOCKED" },
+        423
+      );
+    }
+    if (!(await this.consumeUploadRate(`agent:${subject}`, ipHash))) {
+      return safeJsonResponse({ ok: false, error: "rate_limited" }, 429);
+    }
+
+    const currentSockets = this.ctx.getWebSockets().filter(socketIsOpen);
+    const onlineCount = uniqueParticipants(currentSockets).length;
+    const baseMeta = this.meta || createRoomMeta(roomId, roomType, now);
+    const activeMeta = onlineCount > 0
+      ? markRoomJoined(baseMeta, now, onlineCount)
+      : markRoomEmpty(baseMeta, now);
+    const pendingUsage = await this.agentPendingAssetUsage(roomId);
+    if (
+      activeMeta.resourceUsage.images + pendingUsage.images >= MAX_IMAGES_PER_ROOM
+      || activeMeta.resourceUsage.bytes + pendingUsage.bytes + bytes.byteLength
+        > MAX_IMAGE_BYTES_PER_ROOM
+    ) {
+      return safeJsonResponse({ ok: false, error: "room_asset_limit" }, 413);
+    }
+
+    const assetId = randomId(16);
+    const publicAsset = {
+      assetId,
+      contentType: image.contentType,
+      byteLength: bytes.byteLength,
+      width: image.width,
+      height: image.height,
+      version: 1 as const
+    };
+    const pendingReceipt: AgentAssetReceipt = {
+      version: 2,
+      kind: "asset",
+      status: "pending",
+      roomId,
+      payloadSha256,
+      asset: publicAsset,
+      createdAt: now,
+      expiresAt: now + UNREFERENCED_ASSET_GRACE_MS
+    };
+    await this.ctx.storage.put(receiptKey, pendingReceipt);
+    await this.scheduleAlarm();
+    return this.completeAgentImageUpload(
+      pendingReceipt,
+      receiptKey,
+      bytes,
+      subject,
+      ipHash,
+      roomId,
+      roomType,
+      now
+    );
+  }
+
+  private async completeAgentImageUpload(
+    pendingReceipt: AgentAssetReceipt,
+    receiptKey: string,
+    bytes: Uint8Array,
+    subject: string,
+    ipHash: string,
+    roomId: string,
+    roomType: RoomType,
+    now: number
+  ): Promise<Response> {
+    if (this.meta?.isLocked) {
+      return safeJsonResponse(
+        { ok: false, error: "room_locked", code: "WHITEBOARD_ROOM_LOCKED" },
+        423
+      );
+    }
+    const currentSockets = this.ctx.getWebSockets().filter(socketIsOpen);
+    const onlineCount = uniqueParticipants(currentSockets).length;
+    const baseMeta = this.meta || createRoomMeta(roomId, roomType, now);
+    const activeMeta = onlineCount > 0
+      ? markRoomJoined(baseMeta, now, onlineCount)
+      : markRoomEmpty(baseMeta, now);
+    const pendingUsage = await this.agentPendingAssetUsage(roomId, receiptKey);
+    if (
+      activeMeta.resourceUsage.images + pendingUsage.images >= MAX_IMAGES_PER_ROOM
+      || activeMeta.resourceUsage.bytes + pendingUsage.bytes + bytes.byteLength
+        > MAX_IMAGE_BYTES_PER_ROOM
+    ) {
+      return safeJsonResponse({ ok: false, error: "room_asset_limit" }, 413);
+    }
+    const imageKey = `whiteboard/v1/${roomId}/${pendingReceipt.asset.assetId}`;
+    try {
+      await this.env.WHITEBOARD_BUCKET!.put(imageKey, bytes, {
+        httpMetadata: { contentType: pendingReceipt.asset.contentType },
+        customMetadata: {
+          room: roomId,
+          width: String(pendingReceipt.asset.width),
+          height: String(pendingReceipt.asset.height)
+        }
+      });
+    } catch (error) {
+      await this.recordOperationalError("asset_upload_failed");
+      throw error;
+    }
+
+    const commitNow = Date.now();
+    if (await this.isBanned("", ipHash)) {
+      return safeJsonResponse({ ok: false, error: "access_denied" }, 403);
+    }
+    const commitSockets = this.ctx.getWebSockets().filter(socketIsOpen);
+    const commitOnlineCount = uniqueParticipants(commitSockets).length;
+    const commitBaseMeta = this.meta || createRoomMeta(roomId, roomType, commitNow);
+    const commitActiveMeta = commitOnlineCount > 0
+      ? markRoomJoined(commitBaseMeta, commitNow, commitOnlineCount)
+      : markRoomEmpty(commitBaseMeta, commitNow);
+    const commitPendingUsage = await this.agentPendingAssetUsage(roomId, receiptKey);
+    if (
+      commitActiveMeta.isLocked
+      || commitActiveMeta.resourceUsage.images + commitPendingUsage.images
+        >= MAX_IMAGES_PER_ROOM
+      || commitActiveMeta.resourceUsage.bytes + commitPendingUsage.bytes + bytes.byteLength
+        > MAX_IMAGE_BYTES_PER_ROOM
+    ) {
+      return safeJsonResponse(
+        commitActiveMeta.isLocked
+          ? { ok: false, error: "room_locked", code: "WHITEBOARD_ROOM_LOCKED" }
+          : { ok: false, error: "room_asset_limit" },
+        commitActiveMeta.isLocked ? 423 : 413
+      );
+    }
+    const imageMeta: ImageMeta = {
+      assetId: pendingReceipt.asset.assetId,
+      roomId,
+      key: imageKey,
+      contentType: pendingReceipt.asset.contentType,
+      byteLength: pendingReceipt.asset.byteLength,
+      width: pendingReceipt.asset.width,
+      height: pendingReceipt.asset.height,
+      createdAt: commitNow,
+      createdBy: subject
+    };
+    const nextMeta: RoomMeta = {
+      ...commitActiveMeta,
+      lastActiveAt: commitNow,
+      resourceUsage: {
+        bytes: commitActiveMeta.resourceUsage.bytes + bytes.byteLength,
+        images: commitActiveMeta.resourceUsage.images + 1
+      }
+    };
+    const committedReceipt: AgentAssetReceipt = {
+      ...pendingReceipt,
+      status: "committed",
+      expiresAt: commitNow + AGENT_RECEIPT_TTL_MS
+    };
+    const currentSweep = await this.ctx.storage.get<number>(ASSET_SWEEP_NEXT_KEY);
+    const nextSweep = commitNow + UNREFERENCED_ASSET_GRACE_MS;
+    await this.ctx.storage.transaction(async (transaction) => {
+      await transaction.put(ROOM_META_KEY, nextMeta);
+      await transaction.put(
+        `${IMAGE_META_PREFIX}${imageMeta.assetId}`,
+        imageMeta
+      );
+      await transaction.put(receiptKey, committedReceipt);
+      if (typeof currentSweep !== "number" || nextSweep < currentSweep) {
+        await transaction.put(ASSET_SWEEP_NEXT_KEY, nextSweep);
+      }
+    });
+    this.meta = nextMeta;
+    await this.persistD1Asset(imageMeta, pendingReceipt.payloadSha256);
+    await this.persistD1MetadataIfDue(nextMeta, commitNow, true);
+    await this.scheduleAlarm();
+    return safeJsonResponse({
+      ok: true,
+      replayed: false,
+      asset: pendingReceipt.asset
+    }, 201);
+  }
+
+  private async handleAgentImageGet(
+    request: Request,
+    assetId: string
+  ): Promise<Response> {
+    if (request.headers.get(AGENT_ASSETS_AUTHORIZED_HEADER) !== "1") {
+      return safeJsonResponse(
+        { ok: false, error: "not_authorized", code: "WHITEBOARD_AGENT_ASSETS_NOT_AUTHORIZED" },
+        403
+      );
+    }
+    const subject = request.headers.get(AGENT_SUBJECT_HEADER) || "";
+    const ipHash = normalizeIpHash(request.headers.get(IP_HASH_HEADER));
+    if (!AGENT_SUBJECT_PATTERN.test(subject) || !ipHash) {
+      return safeJsonResponse(
+        { ok: false, error: "agent_identity_invalid", code: "WHITEBOARD_AGENT_IDENTITY_INVALID" },
+        401
+      );
+    }
+    if (await this.isBanned("", ipHash)) {
+      return safeJsonResponse({ ok: false, error: "access_denied" }, 403);
+    }
+    if (!this.meta || !ASSET_ID_PATTERN.test(assetId)) {
+      return safeJsonResponse({ ok: false, error: "asset_not_found" }, 404);
+    }
+    const allowed = await this.agentAllowedAssets(this.meta.roomId);
+    const imageMeta = allowed.get(assetId);
+    if (!imageMeta) {
+      return safeJsonResponse({ ok: false, error: "asset_not_found" }, 404);
+    }
+    return this.imageResponse(assetId, imageMeta);
+  }
+
   private async handleImageUpload(request: Request): Promise<Response> {
     if (!this.meta) {
       return safeJsonResponse({ ok: false, error: "room_unavailable" }, 404);
@@ -1419,8 +1888,34 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     if (!imageMeta || imageMeta.roomId !== this.meta.roomId) {
       return safeJsonResponse({ ok: false, error: "asset_not_found" }, 404);
     }
+    return this.imageResponse(assetId, imageMeta);
+  }
+
+  private async imageResponse(
+    assetId: string,
+    imageMeta: ImageMeta
+  ): Promise<Response> {
+    if (
+      !this.meta
+      || !this.env.WHITEBOARD_BUCKET
+      || !ASSET_ID_PATTERN.test(assetId)
+      || !isCanonicalImageMeta(imageMeta, this.meta.roomId)
+      || imageMeta.assetId !== assetId
+    ) {
+      return safeJsonResponse({ ok: false, error: "asset_not_found" }, 404);
+    }
     const object = await this.env.WHITEBOARD_BUCKET.get(imageMeta.key);
     if (!object) {
+      return safeJsonResponse({ ok: false, error: "asset_not_found" }, 404);
+    }
+    const storedContentType = String(object.httpMetadata?.contentType || "")
+      .split(";", 1)[0]
+      .trim()
+      .toLowerCase();
+    if (
+      object.size !== imageMeta.byteLength
+      || (storedContentType && storedContentType !== imageMeta.contentType)
+    ) {
       return safeJsonResponse({ ok: false, error: "asset_not_found" }, 404);
     }
     return new Response(object.body, {
@@ -1696,6 +2191,64 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     return expiries.length > 0 ? Math.min(...expiries) : null;
   }
 
+  private async pruneAgentAssetReceipts(
+    now: number,
+    maximum = MAX_AGENT_ASSET_RECEIPTS
+  ): Promise<number | null> {
+    const receipts = await this.ctx.storage.list<AgentAssetReceipt>({
+      prefix: AGENT_ASSET_RECEIPT_PREFIX
+    });
+    const valid = [...receipts.entries()]
+      .filter(([, value]) => isAgentAssetReceipt(value))
+      .sort((left, right) =>
+        right[1].createdAt - left[1].createdAt || left[0].localeCompare(right[0])
+      );
+    const retainedKeys = new Set(
+      valid
+        .filter(([, value]) => value.expiresAt > now)
+        .slice(0, Math.max(0, maximum))
+        .map(([key]) => key)
+    );
+    const deleteKeys: string[] = [];
+    const retryExpiries: number[] = [];
+    for (const [key, value] of receipts) {
+      if (retainedKeys.has(key)) continue;
+      if (isAgentAssetReceipt(value) && value.status === "pending") {
+        try {
+          if (!this.env.WHITEBOARD_BUCKET) {
+            throw new Error("asset_storage_unavailable");
+          }
+          await this.env.WHITEBOARD_BUCKET.delete(
+            `whiteboard/v1/${value.roomId}/${value.asset.assetId}`
+          );
+        } catch {
+          const retryAt = now + ASSET_REFERENCE_RECHECK_MS;
+          await this.ctx.storage.put(key, {
+            ...value,
+            expiresAt: retryAt
+          } satisfies AgentAssetReceipt);
+          retainedKeys.add(key);
+          retryExpiries.push(retryAt);
+          continue;
+        }
+        try {
+          await this.deleteD1Asset(value.asset.assetId);
+        } catch {
+          // D1 is only a best-effort fleet index; R2 cleanup remains authoritative.
+        }
+      }
+      deleteKeys.push(key);
+    }
+    if (deleteKeys.length > 0) {
+      await this.ctx.storage.delete(deleteKeys);
+    }
+    const retainedExpiries = valid
+      .filter(([key, value]) => retainedKeys.has(key) && value.expiresAt > now)
+      .map(([, value]) => value.expiresAt);
+    const expiries = [...retainedExpiries, ...retryExpiries];
+    return expiries.length > 0 ? Math.min(...expiries) : null;
+  }
+
   private async handleStatus(request: Request): Promise<Response> {
     if (request.headers.get(ADMIN_AUTHORIZED_HEADER) !== "1") {
       return safeJsonResponse({ ok: false, error: "not_authorized" }, 403);
@@ -1742,6 +2295,12 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       });
       if (assetMetadata.size > 0) {
         await this.ctx.storage.delete([...assetMetadata.keys()]);
+      }
+      const agentAssetReceipts = await this.ctx.storage.list({
+        prefix: AGENT_ASSET_RECEIPT_PREFIX
+      });
+      if (agentAssetReceipts.size > 0) {
+        await this.ctx.storage.delete([...agentAssetReceipts.keys()]);
       }
       await this.ctx.storage.delete(ASSET_SWEEP_NEXT_KEY);
       this.meta = await this.documentStore.clear(this.meta);
@@ -2135,18 +2694,17 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   }
 
   private async scheduleAlarm(): Promise<void> {
-    if (!this.meta) {
-      await this.ctx.storage.deleteAlarm();
-      return;
-    }
     const now = Date.now();
-    const lifecycleAlarm = nextAlarmAt(
-      this.meta,
-      this.ctx.getWebSockets().filter(socketIsOpen).length,
-      now
-    );
+    const lifecycleAlarm = this.meta
+      ? nextAlarmAt(
+          this.meta,
+          this.ctx.getWebSockets().filter(socketIsOpen).length,
+          now
+        )
+      : null;
     const ticketCleanupAlarm = await this.pruneConsumedTicketJtis(now);
     const agentReceiptCleanupAlarm = await this.pruneAgentReceipts(now);
+    const agentAssetReceiptCleanupAlarm = await this.pruneAgentAssetReceipts(now);
     const storedAssetSweepAlarm =
       await this.ctx.storage.get<number>(ASSET_SWEEP_NEXT_KEY);
     const assetSweepAlarm =
@@ -2163,6 +2721,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       lifecycleAlarm,
       ticketCleanupAlarm,
       agentReceiptCleanupAlarm,
+      agentAssetReceiptCleanupAlarm,
       assetSweepAlarm,
       rateSweepAlarm
     ].filter((value): value is number => value !== null);

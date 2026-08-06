@@ -82,6 +82,26 @@ export interface AgentUpdateReceipt {
   expiresAt: number;
 }
 
+export interface AgentAssetReceipt {
+  version: 2;
+  kind: "asset";
+  status: "pending" | "committed";
+  roomId: string;
+  payloadSha256: string;
+  asset: {
+    assetId: string;
+    contentType: ImageMeta["contentType"];
+    byteLength: number;
+    width: number;
+    height: number;
+    version: 1;
+  };
+  createdAt: number;
+  expiresAt: number;
+}
+
+export type AgentReceipt = AgentUpdateReceipt | AgentAssetReceipt;
+
 export interface WhiteboardEnv {
   WHITEBOARD_ROOMS: DurableObjectNamespace<WhiteboardRoom>;
   WHITEBOARD_BUCKET?: R2Bucket;

@@ -18,6 +18,9 @@ const CHAT_IP_SALT = "chat-ip-hash-salt-for-tests-000000000000000005";
 const ANALYTICS_IP_SALT = "analytics-ip-hash-salt-for-tests-000000000006";
 const AGENT_TOKEN = `lusu_agent_${"W".repeat(43)}`;
 const AGENT_READ_TOKEN = `lusu_agent_${"R".repeat(43)}`;
+const AGENT_ASSET_TOKEN = `lusu_agent_${"A".repeat(43)}`;
+const AGENT_READ_ASSET_TOKEN = `lusu_agent_${"G".repeat(43)}`;
+const AGENT_ASSET_ONLY_TOKEN = `lusu_agent_${"H".repeat(43)}`;
 
 class D1Statement {
   constructor(database, sql, values = []) {
@@ -87,6 +90,9 @@ class WhiteboardRoomStub {
     this.assets = new Map();
     this.scene = new Uint8Array([0, 0]);
     this.documentVersion = 0;
+    this.replayNextScene = false;
+    this.agentAssetId = "a".repeat(32);
+    this.replayNextAsset = false;
   }
 
   async fetch(request) {
@@ -96,7 +102,11 @@ class WhiteboardRoomStub {
     let bodyBytes = new Uint8Array();
     let bodyByteLength = 0;
     if (request.method !== "GET" && request.body) {
-      if (pathname === "/assets" || pathname === "/agent-scene") {
+      if (
+        pathname === "/assets"
+        || pathname === "/agent-assets"
+        || pathname === "/agent-scene"
+      ) {
         bodyBytes = new Uint8Array(await request.clone().arrayBuffer());
         bodyByteLength = bodyBytes.byteLength;
       } else {
@@ -126,17 +136,25 @@ class WhiteboardRoomStub {
     }
 
     if (request.method === "POST" && pathname === "/agent-scene") {
-      this.scene = bodyBytes;
-      this.documentVersion += 1;
+      if (!this.replayNextScene) {
+        this.scene = bodyBytes;
+        this.documentVersion += 1;
+      }
       return Response.json({
         ok: true,
-        replayed: false,
+        replayed: this.replayNextScene,
         documentVersion: this.documentVersion
       });
     }
 
-    if (request.method === "GET" && pathname.startsWith("/assets/")) {
-      const assetId = decodeURIComponent(pathname.slice("/assets/".length));
+    if (
+      request.method === "GET"
+      && (pathname.startsWith("/assets/") || pathname.startsWith("/agent-assets/"))
+    ) {
+      const prefix = pathname.startsWith("/agent-assets/")
+        ? "/agent-assets/"
+        : "/assets/";
+      const assetId = decodeURIComponent(pathname.slice(prefix.length));
       const bytes = this.assets.get(assetId);
       if (!bytes) {
         return Response.json(
@@ -146,8 +164,29 @@ class WhiteboardRoomStub {
       }
       return new Response(bytes, {
         status: 200,
-        headers: { "Content-Type": "image/png" }
-      });
+          headers: {
+            "Content-Type": "image/png",
+            "Content-Length": String(bytes.byteLength),
+            ETag: '"safe-test-etag"'
+          }
+        });
+      }
+
+    if (request.method === "POST" && pathname === "/agent-assets") {
+      return Response.json({
+        ok: true,
+        replayed: this.replayNextAsset,
+        asset: {
+          assetId: this.agentAssetId,
+          contentType: "image/png",
+          byteLength: bodyBytes.byteLength,
+          width: 2,
+          height: 2,
+          version: 1,
+          internalRoomId: this.roomId
+        },
+        internalRoomId: this.roomId
+      }, { status: this.replayNextAsset ? 200 : 201 });
     }
 
     if (request.method === "POST" && pathname === "/assets") {
@@ -698,6 +737,7 @@ test("agent whiteboard scene routes keep bearer identity and room capability sep
   assert.equal(readCall.headers["x-whiteboard-access-token"], undefined);
   assert.equal(readCall.headers["x-whiteboard-admin-authorized"], undefined);
   assert.equal(readCall.headers["x-whiteboard-agent-authorized"], "1");
+  assert.equal(readCall.headers["x-whiteboard-agent-assets-authorized"], undefined);
   assert.match(readCall.headers["x-whiteboard-agent-subject"], /^[a-f0-9]{64}$/);
   assert.equal(readCall.headers["x-whiteboard-internal-secret"], INTERNAL_SECRET);
 
@@ -710,7 +750,8 @@ test("agent whiteboard scene routes keep bearer identity and room capability sep
       Authorization: `Bearer ${AGENT_TOKEN}`,
       "X-Whiteboard-Access-Token": credential.accessToken,
       "X-Whiteboard-Operation-Id": "operation-agent-scene-0001",
-      "Content-Type": "application/vnd.yjs-update"
+      "Content-Type": "application/vnd.yjs-update",
+      "X-Whiteboard-Agent-Assets-Authorized": "1"
     }
   });
   assert.equal(applied.status, 200, await applied.clone().text());
@@ -721,6 +762,7 @@ test("agent whiteboard scene routes keep bearer identity and room capability sep
   });
   const writeCall = room.calls[1];
   assert.equal(writeCall.headers["x-whiteboard-agent-operation-id"], "operation-agent-scene-0001");
+  assert.equal(writeCall.headers["x-whiteboard-agent-assets-authorized"], undefined);
   assert.deepEqual(writeCall.bodyBytes, update);
 
   const audit = harness.DB.sqlite.prepare(`
@@ -763,6 +805,349 @@ test("agent whiteboard scene routes keep bearer identity and room capability sep
   assert.equal(readOnlyWrite.status, 403);
   assert.equal((await readOnlyWrite.json()).code, "AGENT_SCOPE_REQUIRED");
   assert.equal(room.calls.length, 2);
+});
+
+test("agent whiteboard assets require independent scope, exact token room binding, and sanitized proxying", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.close());
+  const fullTokenId = "agent-token-whiteboard-assets-0001";
+  const writeOnlyTokenId = "agent-token-whiteboard-write-only-0001";
+  await installAgentToken(
+    harness,
+    AGENT_ASSET_TOKEN,
+    fullTokenId,
+    ["whiteboard:write", "whiteboard:assets"]
+  );
+  await installAgentToken(
+    harness,
+    AGENT_TOKEN,
+    writeOnlyTokenId,
+    ["whiteboard:write"]
+  );
+  const password = "agent-private-assets";
+  const roomId = await derivePrivateWhiteboardRoomId(password, ROOM_SECRET);
+  const joined = await callApi(harness, "whiteboard/agent/rooms/join", {
+    method: "POST",
+    includeOrigin: false,
+    json: { type: "private", password },
+    headers: { Authorization: `Bearer ${AGENT_ASSET_TOKEN}` }
+  });
+  assert.equal(joined.status, 200, await joined.clone().text());
+  const credential = await joined.json();
+  const imageBytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 1, 2, 3, 4]);
+
+  const missingAssetScope = await callApi(harness, "whiteboard/agent/assets", {
+    method: "POST",
+    includeOrigin: false,
+    body: imageBytes,
+    headers: {
+      Authorization: `Bearer ${AGENT_TOKEN}`,
+      "X-Whiteboard-Access-Token": credential.accessToken,
+      "X-Whiteboard-Operation-Id": "operation-agent-asset-no-scope-0001",
+      "Content-Type": "image/png"
+    }
+  });
+  assert.equal(missingAssetScope.status, 403);
+  assert.equal((await missingAssetScope.json()).code, "AGENT_SCOPE_REQUIRED");
+  assert.equal(harness.WHITEBOARD_ROOMS.requestedNames.length, 0);
+
+  const uploaded = await callApi(harness, "whiteboard/agent/assets", {
+    method: "POST",
+    includeOrigin: false,
+    body: imageBytes,
+    headers: {
+      Authorization: `Bearer ${AGENT_ASSET_TOKEN}`,
+      "X-Whiteboard-Access-Token": credential.accessToken,
+      "X-Whiteboard-Operation-Id": "operation-agent-asset-upload-0001",
+      "Content-Type": "image/png",
+      "Content-Disposition": "attachment; filename=secret.png",
+      "X-Original-Filename": "secret.png",
+      Cookie: "lusu_session=must-not-be-forwarded",
+      "X-Whiteboard-Admin-Authorized": "1"
+    }
+  });
+  assert.equal(uploaded.status, 201, await uploaded.clone().text());
+  assert.deepEqual(await uploaded.json(), {
+    ok: true,
+    replayed: false,
+    asset: {
+      assetId: "a".repeat(32),
+      contentType: "image/png",
+      byteLength: imageBytes.byteLength,
+      width: 2,
+      height: 2,
+      version: 1
+    }
+  });
+  const room = harness.WHITEBOARD_ROOMS.rooms.get(roomId);
+  const uploadCall = room.calls[0];
+  assert.equal(new URL(uploadCall.url).pathname, "/agent-assets");
+  assert.equal(uploadCall.headers.authorization, undefined);
+  assert.equal(uploadCall.headers.cookie, undefined);
+  assert.equal(uploadCall.headers["content-disposition"], undefined);
+  assert.equal(uploadCall.headers["x-original-filename"], undefined);
+  assert.equal(uploadCall.headers["x-whiteboard-access-token"], undefined);
+  assert.equal(uploadCall.headers["x-whiteboard-admin-authorized"], undefined);
+  assert.equal(uploadCall.headers["x-whiteboard-agent-assets-authorized"], "1");
+  assert.equal(uploadCall.headers["x-whiteboard-agent-operation-id"], "operation-agent-asset-upload-0001");
+  assert.match(uploadCall.headers["x-whiteboard-agent-subject"], /^[a-f0-9]{64}$/);
+  assert.deepEqual(uploadCall.bodyBytes, imageBytes);
+
+  const otherPassword = "agent-private-assets-other-room";
+  const otherRoomId = await derivePrivateWhiteboardRoomId(otherPassword, ROOM_SECRET);
+  const otherAssetId = "b".repeat(32);
+  harness.WHITEBOARD_ROOMS.room(otherRoomId).assets.set(otherAssetId, imageBytes);
+  const crossRoom = await callApi(
+    harness,
+    `whiteboard/agent/assets/${otherAssetId}`,
+    {
+      includeOrigin: false,
+      headers: {
+        Authorization: `Bearer ${AGENT_ASSET_TOKEN}`,
+        "X-Whiteboard-Access-Token": credential.accessToken
+      }
+    }
+  );
+  assert.equal(crossRoom.status, 404);
+  assert.equal((await crossRoom.json()).code, "WHITEBOARD_ASSET_NOT_FOUND");
+  assert.equal(room.calls.length, 2);
+
+  const assetId = "a".repeat(32);
+  room.assets.set(assetId, imageBytes);
+  const downloaded = await callApi(
+    harness,
+    `whiteboard/agent/assets/${assetId}`,
+    {
+      includeOrigin: false,
+      headers: {
+        Authorization: `Bearer ${AGENT_ASSET_TOKEN}`,
+        "X-Whiteboard-Access-Token": credential.accessToken,
+        Cookie: "lusu_session=must-not-be-forwarded"
+      }
+    }
+  );
+  assert.equal(downloaded.status, 200, await downloaded.clone().text());
+  assert.equal(downloaded.headers.get("Content-Type"), "image/png");
+  assert.equal(downloaded.headers.get("Content-Length"), String(imageBytes.byteLength));
+  assert.equal(downloaded.headers.get("Content-Disposition"), "inline");
+  assert.deepEqual(new Uint8Array(await downloaded.arrayBuffer()), imageBytes);
+  const getCall = room.calls[2];
+  assert.equal(new URL(getCall.url).pathname, `/agent-assets/${assetId}`);
+  assert.equal(getCall.headers.authorization, undefined);
+  assert.equal(getCall.headers.cookie, undefined);
+  assert.equal(getCall.headers["x-whiteboard-agent-assets-authorized"], "1");
+
+  const missingReadAssetScope = await callApi(
+    harness,
+    `whiteboard/agent/assets/${assetId}`,
+    {
+      includeOrigin: false,
+      headers: {
+        Authorization: `Bearer ${AGENT_TOKEN}`,
+        "X-Whiteboard-Access-Token": credential.accessToken
+      }
+    }
+  );
+  assert.equal(missingReadAssetScope.status, 403);
+  assert.equal((await missingReadAssetScope.json()).code, "AGENT_SCOPE_REQUIRED");
+  assert.equal(room.calls.length, 3);
+
+  const audit = harness.DB.sqlite.prepare(`
+    select token_id, action, target_type, result
+    from agent_audit_log
+    where action = 'whiteboard-asset-uploaded'
+  `).get();
+  assert.deepEqual({ ...audit }, {
+    token_id: fullTokenId,
+    action: "whiteboard-asset-uploaded",
+    target_type: "whiteboard-room",
+    result: "success"
+  });
+  assert.equal(JSON.stringify(audit).includes(roomId), false);
+});
+
+test("agent whiteboard audit ids deduplicate exact replays but retain post-TTL results", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.close());
+  await installAgentToken(
+    harness,
+    AGENT_ASSET_TOKEN,
+    "agent-token-whiteboard-audit-results-0001",
+    ["whiteboard:write", "whiteboard:assets"]
+  );
+  const password = "agent-audit-result-room";
+  const roomId = await derivePrivateWhiteboardRoomId(password, ROOM_SECRET);
+  const joined = await callApi(harness, "whiteboard/agent/rooms/join", {
+    method: "POST",
+    includeOrigin: false,
+    json: { type: "private", password },
+    headers: { Authorization: `Bearer ${AGENT_ASSET_TOKEN}` }
+  });
+  const credential = await joined.json();
+  const sceneHeaders = {
+    Authorization: `Bearer ${AGENT_ASSET_TOKEN}`,
+    "X-Whiteboard-Access-Token": credential.accessToken,
+    "X-Whiteboard-Operation-Id": "operation-agent-audit-scene-0001",
+    "Content-Type": "application/vnd.yjs-update"
+  };
+  const room = harness.WHITEBOARD_ROOMS.room(roomId);
+  assert.equal((await callApi(harness, "whiteboard/agent/scene", {
+    method: "POST",
+    includeOrigin: false,
+    body: new Uint8Array([1]),
+    headers: sceneHeaders
+  })).status, 200);
+  room.replayNextScene = true;
+  const sceneReplay = await callApi(harness, "whiteboard/agent/scene", {
+    method: "POST",
+    includeOrigin: false,
+    body: new Uint8Array([1]),
+    headers: sceneHeaders
+  });
+  assert.deepEqual(await sceneReplay.json(), {
+    ok: true,
+    replayed: true,
+    documentVersion: 1
+  });
+  room.replayNextScene = false;
+  assert.equal((await callApi(harness, "whiteboard/agent/scene", {
+    method: "POST",
+    includeOrigin: false,
+    body: new Uint8Array([2]),
+    headers: sceneHeaders
+  })).status, 200);
+  assert.equal(harness.DB.sqlite.prepare(`
+    select count(*) as count from agent_audit_log
+    where action = 'whiteboard-scene-applied'
+  `).get().count, 2);
+
+  const assetHeaders = {
+    Authorization: `Bearer ${AGENT_ASSET_TOKEN}`,
+    "X-Whiteboard-Access-Token": credential.accessToken,
+    "X-Whiteboard-Operation-Id": "operation-agent-audit-asset-0001",
+    "Content-Type": "image/png"
+  };
+  const imageBytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 1, 2, 3, 4]);
+  assert.equal((await callApi(harness, "whiteboard/agent/assets", {
+    method: "POST",
+    includeOrigin: false,
+    body: imageBytes,
+    headers: assetHeaders
+  })).status, 201);
+  room.replayNextAsset = true;
+  const assetReplay = await callApi(harness, "whiteboard/agent/assets", {
+    method: "POST",
+    includeOrigin: false,
+    body: imageBytes,
+    headers: assetHeaders
+  });
+  assert.equal(assetReplay.status, 200);
+  assert.equal((await assetReplay.json()).replayed, true);
+  room.replayNextAsset = false;
+  room.agentAssetId = "b".repeat(32);
+  assert.equal((await callApi(harness, "whiteboard/agent/assets", {
+    method: "POST",
+    includeOrigin: false,
+    body: imageBytes,
+    headers: assetHeaders
+  })).status, 201);
+  assert.equal(harness.DB.sqlite.prepare(`
+    select count(*) as count from agent_audit_log
+    where action = 'whiteboard-asset-uploaded'
+  `).get().count, 2);
+});
+
+test("agent whiteboard asset scope matrix separates read, write, and credential ownership", async (t) => {
+  const harness = createHarness();
+  t.after(() => harness.close());
+  await installAgentToken(
+    harness,
+    AGENT_READ_ASSET_TOKEN,
+    "agent-token-whiteboard-read-assets-0001",
+    ["whiteboard:read", "whiteboard:assets"]
+  );
+  await installAgentToken(
+    harness,
+    AGENT_ASSET_ONLY_TOKEN,
+    "agent-token-whiteboard-assets-only-0001",
+    ["whiteboard:assets"]
+  );
+  await installAgentToken(
+    harness,
+    AGENT_ASSET_TOKEN,
+    "agent-token-whiteboard-matrix-full-0001",
+    ["whiteboard:write", "whiteboard:assets"]
+  );
+  const password = "agent-asset-scope-matrix";
+  const roomId = await derivePrivateWhiteboardRoomId(password, ROOM_SECRET);
+  const joined = await callApi(harness, "whiteboard/agent/rooms/join", {
+    method: "POST",
+    includeOrigin: false,
+    json: { type: "private", password },
+    headers: { Authorization: `Bearer ${AGENT_READ_ASSET_TOKEN}` }
+  });
+  assert.equal(joined.status, 200);
+  const credential = await joined.json();
+  const assetId = "c".repeat(32);
+  const imageBytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 1, 2, 3, 4]);
+  harness.WHITEBOARD_ROOMS.room(roomId).assets.set(assetId, imageBytes);
+
+  const readable = await callApi(harness, `whiteboard/agent/assets/${assetId}`, {
+    includeOrigin: false,
+    headers: {
+      Authorization: `Bearer ${AGENT_READ_ASSET_TOKEN}`,
+      "X-Whiteboard-Access-Token": credential.accessToken
+    }
+  });
+  assert.equal(readable.status, 200);
+  const readOnlyUpload = await callApi(harness, "whiteboard/agent/assets", {
+    method: "POST",
+    includeOrigin: false,
+    body: imageBytes,
+    headers: {
+      Authorization: `Bearer ${AGENT_READ_ASSET_TOKEN}`,
+      "X-Whiteboard-Access-Token": credential.accessToken,
+      "X-Whiteboard-Operation-Id": "operation-agent-read-only-upload-0001",
+      "Content-Type": "image/png"
+    }
+  });
+  assert.equal(readOnlyUpload.status, 403);
+
+  const assetOnlyJoin = await callApi(harness, "whiteboard/agent/rooms/join", {
+    method: "POST",
+    includeOrigin: false,
+    json: { type: "private", password },
+    headers: { Authorization: `Bearer ${AGENT_ASSET_ONLY_TOKEN}` }
+  });
+  assert.equal(assetOnlyJoin.status, 403);
+  for (const [path, method] of [
+    [`whiteboard/agent/assets/${assetId}`, "GET"],
+    ["whiteboard/agent/assets", "POST"]
+  ]) {
+    const denied = await callApi(harness, path, {
+      method,
+      includeOrigin: false,
+      body: method === "POST" ? imageBytes : undefined,
+      headers: {
+        Authorization: `Bearer ${AGENT_ASSET_ONLY_TOKEN}`,
+        "X-Whiteboard-Access-Token": credential.accessToken,
+        ...(method === "POST" ? {
+          "X-Whiteboard-Operation-Id": "operation-agent-assets-only-0001",
+          "Content-Type": "image/png"
+        } : {})
+      }
+    });
+    assert.equal(denied.status, 403);
+  }
+
+  const wrongBearer = await callApi(harness, `whiteboard/agent/assets/${assetId}`, {
+    includeOrigin: false,
+    headers: {
+      Authorization: `Bearer ${AGENT_ASSET_TOKEN}`,
+      "X-Whiteboard-Access-Token": credential.accessToken
+    }
+  });
+  assert.equal(wrongBearer.status, 401);
 });
 
 test("agent whiteboard routes reject cross-site and malformed bearer requests without cookie fallback", async (t) => {

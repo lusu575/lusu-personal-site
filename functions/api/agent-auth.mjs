@@ -22,6 +22,7 @@ export const AGENT_SCOPE_DEFINITIONS = Object.freeze({
   "transfer:delete": Object.freeze({ readOnly: false }),
   "whiteboard:read": Object.freeze({ readOnly: true }),
   "whiteboard:write": Object.freeze({ readOnly: false }),
+  "whiteboard:assets": Object.freeze({ readOnly: false }),
   "japanese-subtext:progress:read": Object.freeze({ readOnly: true }),
   "japanese-subtext:progress:write": Object.freeze({ readOnly: false })
 });

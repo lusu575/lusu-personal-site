@@ -23,8 +23,9 @@
 
 - Excalidraw 变更通过 Yjs 对象级 CRDT 发送。连续绘制必须合并为有界更新，并等待 Worker 持久化 ACK；未确认批次在断线后重新入队，不能因限速或网络切换静默丢线条。
 - Worker 必须先持久化 Yjs 更新和房间元数据，再向来源连接发送 `update-accepted`。Yjs 重发保持幂等；不得先 ACK 后落盘。
-- Agent 场景访问必须保持非默认 `whiteboard:read`／`whiteboard:write` scope、Agent Bearer 与绑定当前 tokenId 的房间令牌分离；密码只从隐藏 stdin 或环境 secret reference 进入同源 HTTPS 请求体，不得出现在 argv、句柄、MCP 输出或本地明文状态。
-- Agent 写入必须基于最新完整 Yjs scene 且只追加 allowlist 高层元素；DO 必须重新拒绝任何既有元素改删、图片／嵌入、链接／绑定、customData、未知根和任意二进制注入。`operationId + payload SHA-256` 收据、更新与版本要在同一事务落盘；重试安全，换载荷复用 ID 必须冲突。
+- Agent 场景访问必须保持非默认 `whiteboard:read`／`whiteboard:write`／`whiteboard:assets` scope、Agent Bearer 与绑定当前 tokenId 的房间令牌分离；图片上传要求 write+assets，原图下载要求 assets 加 read（write 可满足 read）。密码只从隐藏 stdin 或环境 secret reference 进入同源 HTTPS 请求体，不得出现在 argv、句柄、MCP 输出或本地明文状态。
+- Agent 写入必须基于最新完整 Yjs scene 且只追加 allowlist 高层元素。没有 assets scope 时 DO 必须继续拒绝图片与资源；有权限时，图片只能引用当前房权威 `ImageMeta`，新资源记录必须规范且被本次图片使用，可复用未修改的既有记录或多次放置同图。既有元素／资源改删、孤立资源、URL／Base64／SVG／HTML、跨房引用、链接／绑定、customData、未知根和任意二进制注入一律拒绝。
+- 场景与图片上传都使用独立 domain 的 `operationId + payload SHA-256` 收据；同载荷重试安全，换载荷复用 ID 必须冲突。场景收据、更新与版本必须在同一事务落盘；图片流程必须处理 R2 与 DO 元数据的部分失败，不能因重试产生可见重复资源或永久孤儿。
 - `rate_limited`、同步预算和普通连接波动是可恢复状态；访问拒绝、无效票据和协议破坏才可停止自动重连。短暂波动不得弹大横幅或通用错误，持续超过有界延迟后只显示不遮挡画布的小状态；真正不可恢复或需用户处理的错误仍保留具体类别。
 - 没有 Yjs 变化就不得产生文档写入。可见连接使用不会唤醒休眠 DO 的静态 WebSocket auto-response；标签页长期隐藏时先排空未确认更新再停放连接。空公共房不得周期轮询，空密码房只保留真实待办和 24 小时删除 Alarm；D1 房间摘要必须低频于 DO 权威写入。
 - 公共房 `public-v1` 的画布与资源不按空房 TTL 删除，除非管理员明确清空。密码房从最后一条有效连接离开起 24 小时无人重入时整房幂等删除；重入必须取消旧删除计划。

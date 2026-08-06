@@ -1,6 +1,36 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-08-06-whiteboard-agent-images",
+      "slug": "2026-08-06-whiteboard-agent-images",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "在线画板", "图片", "CLI", "MCP", "安全"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-06T13:20:00.000Z",
+      "updated_at": "2026-08-06T13:20:00.000Z",
+      "published_at": "2026-08-06T13:20:00.000Z",
+      "fallbackOnly": true,
+      "icon": "resources",
+      "date": "2026.08.06",
+      "title": {
+        "zh": "AI 现在可以给在线画板添加图片",
+        "en": "AI Can Now Add Images to the Online Whiteboard",
+        "ja": "AI がオンラインホワイトボードに画像を追加可能に"
+      },
+      "summary": {
+        "zh": "本地 CLI／stdio MCP 现在可上传、下载并在当前房追加真实图片；独立图片权限、房间隔离、幂等收据和只追加验证共同保护边界，远程 MCP 仍未部署。",
+        "en": "The local CLI and stdio MCP can now upload, download, and append real images in the current room, protected by a separate asset scope, room isolation, idempotent receipts, and append-only validation. The remote MCP remains undeployed.",
+        "ja": "ローカル CLI／stdio MCP から現在のルームへ実画像をアップロード・取得・追記できるようになりました。専用画像権限、ルーム分離、冪等レシート、追記専用検証を維持し、リモート MCP は未展開です。"
+      },
+      "content_markdown": {
+        "zh": "# AI 现在可以给在线画板添加图片\n\nAI 能力层第五阶段补齐了在线画板的真实图片闭环。本地 CLI 与 stdio MCP 现在可以上传、下载当前房图片，并用高层 `image` 元素把已验证资源追加到画布。\n\n## 图片能力\n\n- 只接受最大 5 MiB、严格容器边界、关键块段、声明宽高和像素数均通过校验的 PNG、JPEG 与 WebP；这项检查不宣称完整像素解码。\n- 上传使用 operation ID 与图片 SHA-256 幂等；相同字节可安全重试，不同字节复用同一 ID 会冲突。\n- 下载默认不覆盖已有文件；stdio MCP 还会校验 allow-root、真实路径和常规文件，工具输出不回显本机路径或内部房间标识。\n\n## 权限与房间隔离\n\n`whiteboard:assets` 是独立且默认不授予的权限。上传要求它与 `whiteboard:write` 同时存在；下载原图要求它加场景 read（write 可满足 read）。Agent Bearer 之外仍必须使用绑定当前 tokenId 的房间令牌，图片只可在当前房的私有 R2 空间读写，不能跨房引用。\n\n## 继续保持只追加\n\n服务端只接受已经完成存储、元数据逐字段一致的当前房图片。普通 write-only 调用、pending 资源、URL、Base64、SVG、HTML、伪造元数据、孤立资源、既有元素或资源的改删、链接、绑定和任意 Yjs 注入都会被拒绝。同一规范资源可以被多次放置；简化 SVG／PNG Agent 导出仍不嵌入图片并会明确告警。\n\n在线画板版本更新为 1.0.5。Quick Transfer 因共享受管基础设施更新为 1.0.6，但互传协议没有变化。独立远程 MCP Worker 仍未部署。",
+        "en": "# AI Can Now Add Images to the Online Whiteboard\n\nPhase five of the AI capability layer completes a real-image loop for Online Whiteboard. The local CLI and stdio MCP can upload and download current-room images, then append a verified asset through a high-level `image` element.\n\n## Image operations\n\n- Inputs are limited to PNG, JPEG, or WebP files up to 5 MiB whose container boundaries, critical chunks or segments, declared dimensions, and pixel limits pass strict checks; this does not claim full pixel decoding.\n- Uploads use an operation ID plus the image SHA-256 for idempotency. Identical bytes can be retried safely; reusing the ID for different bytes conflicts.\n- Downloads never overwrite an existing file by default. The stdio MCP also enforces allow-root, real-path, and regular-file checks, while tool output omits local paths and internal room identifiers.\n\n## Authorization and room isolation\n\n`whiteboard:assets` is a separate, non-default permission. Upload requires it together with `whiteboard:write`; raw image download requires it plus scene read, which write already satisfies. A token-bound room credential is still required in addition to the Agent Bearer. Images remain in the current room's private R2 namespace and cannot be referenced across rooms.\n\n## Still append-only\n\nThe server accepts only current-room images whose storage commit is complete and whose metadata matches field by field. A write-only caller, pending asset, URL, Base64 data, SVG, HTML, forged metadata, orphan asset record, modification or deletion of existing data, link, binding, or arbitrary Yjs input is rejected. One canonical asset may be placed more than once. Simplified Agent SVG and PNG exports still omit image bytes and report a warning.\n\nOnline Whiteboard is now version 1.0.5. Quick Transfer moves to 1.0.6 because its governed shared infrastructure changed, but its transfer protocol did not. The separate remote MCP Worker remains undeployed.",
+        "ja": "# AI がオンラインホワイトボードに画像を追加可能に\n\nAI 機能レイヤー第5段階として、オンラインホワイトボードの実画像フローを完成させました。ローカル CLI と stdio MCP から現在のルームの画像をアップロード・取得し、高レベルの `image` 要素として検証済み素材を追記できます。\n\n## 画像操作\n\n- 最大 5 MiB の PNG、JPEG、WebP のみを受け付け、コンテナ境界、主要チャンク／セグメント、宣言寸法、総画素数を厳格に検証します。これは全画素の完全デコードを保証するものではありません。\n- アップロードは operation ID と画像 SHA-256 で冪等化します。同じバイト列は安全に再試行でき、異なる内容で同じ ID を使うと競合になります。\n- ダウンロードは既存ファイルを既定で上書きしません。stdio MCP は allow-root、実パス、通常ファイルも確認し、ツール出力にはローカルパスや内部ルーム識別子を含めません。\n\n## 権限とルーム分離\n\n`whiteboard:assets` は既定では付与されない独立権限です。アップロードには `whiteboard:write` との両方が必要で、原画像の取得には assets とシーン read（write は read を満たす）が必要です。Agent Bearer に加えて現在の tokenId に結び付いたルーム資格情報も必要です。画像は現在のルーム専用の非公開 R2 名前空間に保存され、別ルームから参照できません。\n\n## 追記専用を維持\n\nサーバーは保存完了済みで、全メタデータが一致する現在ルームの画像だけを受け付けます。通常の write-only 呼び出し、pending 素材、URL、Base64、SVG、HTML、偽造メタデータ、孤立した素材記録、既存要素や素材の変更・削除、リンク、バインディング、任意 Yjs 入力は拒否します。同じ正規素材は複数回配置できます。簡易 Agent SVG／PNG 書き出しは引き続き画像バイトを埋め込まず、警告を返します。\n\nオンラインホワイトボードは 1.0.5 になりました。Quick Transfer は共有の管理対象基盤変更により 1.0.6 になりますが、転送プロトコルは変更していません。独立リモート MCP Worker は引き続き未展開です。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-06-agent-auth-form-origin",
       "slug": "2026-08-06-agent-auth-form-origin",
       "category": "site-updates",
