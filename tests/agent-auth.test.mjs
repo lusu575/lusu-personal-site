@@ -228,6 +228,7 @@ test("governed tool scopes are supported but never granted by default", async ()
   const { env } = await createFixture();
   assert.equal(AGENT_SCOPE_DEFINITIONS["whiteboard:read"].readOnly, true);
   assert.equal(AGENT_SCOPE_DEFINITIONS["whiteboard:write"].readOnly, false);
+  assert.equal(AGENT_SCOPE_DEFINITIONS["whiteboard:assets"].readOnly, false);
   assert.equal(AGENT_SCOPE_DEFINITIONS["japanese-subtext:progress:read"].readOnly, true);
   assert.equal(AGENT_SCOPE_DEFINITIONS["japanese-subtext:progress:write"].readOnly, false);
 
@@ -250,7 +251,7 @@ test("governed tool scopes are supported but never granted by default", async ()
     method: "POST",
     ...jsonRequest({
       clientName: "Whiteboard scope test",
-      scopes: ["whiteboard:write", "whiteboard:read"]
+      scopes: ["whiteboard:write", "whiteboard:assets", "whiteboard:read"]
     }),
     headers: {
       "CF-Connecting-IP": "203.0.113.202",
@@ -259,6 +260,7 @@ test("governed tool scopes are supported but never granted by default", async ()
   });
   assert.equal(explicit.status, 201);
   assert.deepEqual((await explicit.json()).scopes, [
+    "whiteboard:assets",
     "whiteboard:read",
     "whiteboard:write"
   ]);

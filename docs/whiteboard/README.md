@@ -1,8 +1,8 @@
 # 在线画板架构与运维
 
-**当前子项目版本：1.0.4**
+**当前子项目版本：1.0.5**
 
-本目录是在线画板的治理根：`VERSION` / `project.json` 保存独立版本，`CHANGELOG.md` 保存子项目更新，`AGENTS.md` 约束维护流程，`AGENT.md` 仅作兼容入口。任何画板更改都必须把该版本精确增加 `0.0.1`，并同步本目录全部受影响文档和根项目记录。1.0.4 将白板的固定机器入口纳入共享工具目录契约和子项目追踪；房间协议、权限、持久化与绘制行为没有变化。
+本目录是在线画板的治理根：`VERSION` / `project.json` 保存独立版本，`CHANGELOG.md` 保存子项目更新，`AGENTS.md` 约束维护流程，`AGENT.md` 仅作兼容入口。任何画板更改都必须把该版本精确增加 `0.0.1`，并同步本目录全部受影响文档和根项目记录。1.0.5 为受管 Agent 通道加入真实图片上传、当前房资源下载与追加式图片放置；既有元素／资源仍不可修改或删除，浏览器协作协议与房间生命周期保持兼容。
 
 在线画板是鲁肃个人站**工具区**中的独立工具页：`/tools/whiteboard/`。它不新增或恢复“资源区”页面、入口、路由或分类；主站内部继续保留 `resources` 兼容键，用户可见文字统一为“工具区 / Tools / ツール”。
 
@@ -51,15 +51,17 @@ WebSocket 票据通过 `Sec-WebSocket-Protocol` 发送，不放入查询参数�
 
 ## Agent 场景通道
 
-本地 `lusu` CLI 与 stdio MCP 通过站点专用 Agent HTTP 通道操作画板。它使用带 scope 的站点 Agent Bearer，不是公网远程 MCP 的标准 OAuth 写入口；`workers/site-mcp/` 继续保持未部署、只读且不包含画板写工具。`whiteboard:read` 与 `whiteboard:write` 都是非默认 scope，写权限只隐含读取。
+本地 `lusu` CLI 与 stdio MCP 通过站点专用 Agent HTTP 通道操作画板。它使用带 scope 的站点 Agent Bearer，不是公网远程 MCP 的标准 OAuth 写入口；`workers/site-mcp/` 继续保持未部署、只读且不包含画板写工具。`whiteboard:read`、`whiteboard:write` 与 `whiteboard:assets` 都是非默认 scope，写权限只隐含场景读取；原始图片字节仍必须额外持有 `whiteboard:assets`。
 
 - `POST /api/whiteboard/agent/rooms/join` 使用 Agent Bearer 加入公共房或密码房，并只返回房型、独立房间访问令牌和过期时间；不返回内部 `roomId`、WebSocket 票据或匿名身份。密码房密码仍只通过同源 HTTPS 请求体交给服务端完成 HMAC 房间映射，不进入 argv、MCP 输出、URL、日志或本地明文状态。
 - `GET /api/whiteboard/agent/scene` 同时要求 Agent Bearer 与 `X-Whiteboard-Access-Token`，返回完整 `application/vnd.yjs` 状态、文档版本和锁定状态。读取尚未创建的空房返回版本 0 的空状态，不创建元数据或延长生命周期。
-- `POST /api/whiteboard/agent/scene` 还要求 `X-Whiteboard-Operation-Id`，仅接受不超过 256 KiB 的 Yjs update。客户端必须先读取最新完整状态，并从该状态追加 1–50 个文字、矩形、椭圆、菱形、线条或箭头；不得修改／删除既有元素，也不得新增图片、嵌入、链接、绑定、资源或未知根数据。
+- `POST /api/whiteboard/agent/assets` 同时要求 `whiteboard:write + whiteboard:assets`、当前房令牌和 `X-Whiteboard-Operation-Id`；只接受不超过 5 MiB、严格容器边界、关键块段、声明宽高与像素数均通过校验的 PNG／JPEG／WebP，该边界不宣称完整像素解码。相同主体、operation ID 与相同字节安全返回原资源；换字节复用 ID 返回冲突。`GET /api/whiteboard/agent/assets/:assetId` 要求 `whiteboard:assets` 加上场景 read（write 可满足 read），并且只能读取当前房已有资源。
+- `POST /api/whiteboard/agent/scene` 还要求 `X-Whiteboard-Operation-Id`，仅接受不超过 256 KiB 的 Yjs update。客户端必须先读取最新完整状态，并从该状态追加 1–50 个文字、矩形、椭圆、菱形、线条、箭头或图片。图片分支必须同时持有 `whiteboard:assets`，只能引用当前房 DO 中已经验证的图片元数据，并在同一追加更新中写入规范资源记录；URL、Base64、SVG、HTML、跨房资源和伪造元数据全部拒绝。
+- 所有场景写入继续禁止修改／删除既有元素或资源，禁止链接、绑定、`customData`、未知根和任意 Yjs 注入。已存在且仍与当前房权威元数据一致的资源记录可以被新的图片元素复用，同一张图片也可放置多次；新建但未被本次图片引用的孤立资源记录会被拒绝。
 - Durable Object 在持久化前对合并后的 Yjs 文档执行严格验证，并将文档更新、版本和 `operationId + payload SHA-256` 幂等收据放在同一事务中。完全相同的重试返回 `replayed: true`；同一 ID 搭配不同载荷返回冲突；只读锁定返回 423。每房只保留最近 128 条收据。
 - Agent 访问不计入在线人数。公共房仍不执行空房 TTL；密码房 Agent 写入会让空房重新从该次持久化活动计算 24 小时清理期限，但不会伪造一个在线连接。
 
-本地能力层只暴露高层绘制指令和不透明 `board_...` 句柄。密码只能从标准输入或 `env:NAME` secret reference 读取；本地私有状态只保存房间访问令牌、房型、到期时间和可选 secret reference。`whiteboards.json` 的整次 read-modify-write 由跨进程 owner-token 锁保护，写入采用同目录 0600 临时文件、fsync 和原子 rename；并发加入／刷新不会互相覆盖，失败也不先截断旧文件。JSON 导出保留 Excalidraw 元素；SVG／PNG 是安全的简化本地渲染，当前不嵌入房间图片并会返回警告。编辑、删除、图片写入和任意 Yjs 字节注入都不属于此能力面。
+本地能力层只暴露高层绘制指令、受验证的图片文件操作和不透明 `board_...` 句柄。CLI 提供 `whiteboard asset put|get`，stdio MCP 提供对应上传／下载工具；两者只接受本机常规文件、最大 5 MiB，下载默认不覆盖已有文件，MCP 还必须通过真实路径与 allow-root 检查。密码只能从标准输入或 `env:NAME` secret reference 读取；本地私有状态只保存房间访问令牌、房型、到期时间和可选 secret reference，不保存图片字节或本机路径。`whiteboards.json` 的整次 read-modify-write 由跨进程 owner-token 锁保护，写入采用同目录 0600 临时文件、fsync 和原子 rename；并发加入／刷新不会互相覆盖，失败也不先截断旧文件。JSON 导出保留 Excalidraw 元素与资源引用；SVG／PNG 是安全的简化本地渲染，仍不嵌入房间图片并会返回警告。编辑、删除与任意 Yjs 字节注入都不属于此能力面。
 
 ## 保存、增量与资源
 
@@ -75,7 +77,7 @@ Durable Object SQLite 保存：
 
 客户端只在 Yjs 文档真实变化时合并更新，并按 Worker 随文档大小下发的 250／500／1000ms 间隔逐个发送；没有画布变化就没有文档帧或持久化写入。Worker 只在增量与文档版本已持久化后返回 `update-accepted`；客户端在收到回执前保留原更新，限流、断线或回执丢失时重连重传，不再把未落盘线条当作已完成。显式退出和后台停放都会给未确认更新一个有界的排空时间。持续绘制期间，跨房 D1 摘要最多约每分钟同步一次；DO SQLite 文档仍是权威状态。
 
-图片上传支持文件选择、手机相册、拖拽和剪贴板。浏览器在 Excalidraw 读取前只放行 PNG、JPEG 和 WebP；HEIC/HEIF、SVG、GIF、AVIF、BMP、空 MIME 及其他未支持格式直接拒绝。服务端再校验 magic bytes、文件大小、尺寸、像素数、频率和房间容量。R2 key 使用 `whiteboard/v1/<opaque-room>/<asset-id>`，画布只保存资源 ID。读取必须携带当前房间访问票据，不能跨房间获取资源。
+图片上传支持浏览器文件选择、手机相册、拖拽和剪贴板，也支持经明确 scope 授权的 CLI／stdio MCP。所有入口在 Excalidraw 或 Agent 场景读取前只放行 PNG、JPEG 和 WebP；HEIC/HEIF、SVG、GIF、AVIF、BMP、空 MIME 及其他未支持格式直接拒绝。服务端再校验 magic bytes、严格容器边界、关键块段、声明尺寸、像素数、频率和房间容量，但不宣称完整像素解码。R2 key 使用 `whiteboard/v1/<opaque-room>/<asset-id>`，画布只保存资源 ID与权威元数据投影。读取必须携带绑定当前 Agent tokenId 或浏览器会话的当前房间访问票据，不能跨房间获取资源。
 
 工具区入口图标 `assets/images/generated-icons/whiteboard.png` 由 image2 生成并保存为项目内 192×192 RGBA PNG。`assets/images/generated-icons/whiteboard.source.json` 记录 image2、256×256 生成输出、192×192 发布输出、最终 SHA-256，以及唯一的 nearest-neighbor 机械 resize；守卫测试会同时核对 manifest、真实图片元数据与字节哈希。在线画板新增或替换图标、插画、装饰等素材时只能使用 image2；不得用 CSS、Canvas、SVG 路径或代码几何拼凑素材。布局、交互状态和响应式适配仍由 CSS 完成。
 

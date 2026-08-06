@@ -12,7 +12,7 @@ import {
   MAX_UPDATE_BYTES_BEFORE_COMPACTION,
   MAX_UPDATES_BEFORE_COMPACTION
 } from "./constants";
-import type { AgentUpdateReceipt, RoomMeta } from "./types";
+import type { AgentUpdateReceipt, ImageMeta, RoomMeta } from "./types";
 
 interface ChunkedSnapshotManifest {
   format: "chunked-v1";
@@ -54,7 +54,8 @@ const AGENT_ELEMENT_TYPES = new Set([
   "ellipse",
   "diamond",
   "line",
-  "arrow"
+  "arrow",
+  "image"
 ]);
 const AGENT_BASE_ELEMENT_KEYS = new Set([
   "type",
@@ -103,6 +104,48 @@ const AGENT_LINEAR_ELEMENT_KEYS = new Set([
   "startArrowhead",
   "endArrowhead",
   "elbowed"
+]);
+const AGENT_IMAGE_ELEMENT_KEYS = new Set([
+  "fileId",
+  "status",
+  "scale",
+  "crop"
+]);
+const AGENT_IMAGE_REQUIRED_BASE_KEYS = new Set([
+  "type",
+  "x",
+  "y",
+  "width",
+  "height",
+  "angle",
+  "strokeColor",
+  "backgroundColor",
+  "fillStyle",
+  "strokeWidth",
+  "strokeStyle",
+  "roundness",
+  "roughness",
+  "opacity",
+  "seed",
+  "version",
+  "versionNonce",
+  "index",
+  "isDeleted",
+  "groupIds",
+  "frameId",
+  "boundElements",
+  "updated",
+  "link",
+  "locked",
+  "__position"
+]);
+const AGENT_ASSET_RECORD_KEYS = new Set([
+  "assetId",
+  "contentType",
+  "byteLength",
+  "width",
+  "height",
+  "version"
 ]);
 const AGENT_COLOR_PATTERN = /^(?:transparent|#[0-9a-fA-F]{6}(?:[0-9a-fA-F]{2})?)$/;
 
@@ -185,15 +228,15 @@ function safeArrowhead(value: unknown): boolean {
 function safeAgentElement(
   id: string,
   value: unknown
-): { valid: boolean; textLength: number } {
+): { valid: boolean; textLength: number; fileId: string | null } {
   if (!AGENT_ELEMENT_ID_PATTERN.test(id) || !(value instanceof Y.Map)) {
-    return { valid: false, textLength: 0 };
+    return { valid: false, textLength: 0, fileId: null };
   }
   const fields = new Map<string, unknown>();
   value.forEach((fieldValue, key) => fields.set(String(key), fieldValue));
   const type = fields.get("type");
   if (typeof type !== "string" || !AGENT_ELEMENT_TYPES.has(type)) {
-    return { valid: false, textLength: 0 };
+    return { valid: false, textLength: 0, fileId: null };
   }
   const allowedKeys = new Set(AGENT_BASE_ELEMENT_KEYS);
   if (type === "text") {
@@ -202,11 +245,14 @@ function safeAgentElement(
   if (type === "line" || type === "arrow") {
     for (const key of AGENT_LINEAR_ELEMENT_KEYS) allowedKeys.add(key);
   }
+  if (type === "image") {
+    for (const key of AGENT_IMAGE_ELEMENT_KEYS) allowedKeys.add(key);
+  }
   if ([...fields.keys()].some((key) => !allowedKeys.has(key))) {
-    return { valid: false, textLength: 0 };
+    return { valid: false, textLength: 0, fileId: null };
   }
   for (const required of ["x", "y", "width", "height"]) {
-    if (!fields.has(required)) return { valid: false, textLength: 0 };
+    if (!fields.has(required)) return { valid: false, textLength: 0, fileId: null };
   }
   if (
     !boundedFinite(fields.get("x"), -100_000, 100_000) ||
@@ -214,7 +260,24 @@ function safeAgentElement(
     !boundedFinite(fields.get("width"), 0, 100_000) ||
     !boundedFinite(fields.get("height"), 0, 100_000)
   ) {
-    return { valid: false, textLength: 0 };
+    return { valid: false, textLength: 0, fileId: null };
+  }
+  if (
+    type === "image"
+    && (
+      [...AGENT_IMAGE_REQUIRED_BASE_KEYS].some((key) => !fields.has(key))
+      || !boundedFinite(fields.get("width"), 1, 100_000)
+      || !boundedFinite(fields.get("height"), 1, 100_000)
+      || !boundedInteger(fields.get("opacity"), 1, 100)
+      || !Array.isArray(fields.get("groupIds"))
+      || (fields.get("groupIds") as unknown[]).length !== 0
+      || fields.get("frameId") !== null
+      || fields.get("boundElements") !== null
+      || fields.get("link") !== null
+      || fields.get("locked") !== false
+    )
+  ) {
+    return { valid: false, textLength: 0, fileId: null };
   }
 
   const validators: Record<string, (candidate: unknown) => boolean> = {
@@ -251,7 +314,11 @@ function safeAgentElement(
     endBinding: (candidate) => candidate === null,
     startArrowhead: safeArrowhead,
     endArrowhead: safeArrowhead,
-    elbowed: (candidate) => typeof candidate === "boolean"
+    elbowed: (candidate) => typeof candidate === "boolean",
+    fileId: (candidate) => typeof candidate === "string" && AGENT_ELEMENT_ID_PATTERN.test(candidate),
+    status: (candidate) => candidate === "saved",
+    scale: (candidate) => Array.isArray(candidate) && candidate.length === 2 && candidate[0] === 1 && candidate[1] === 1,
+    crop: (candidate) => candidate === null
   };
   for (const [key, fieldValue] of fields) {
     if (["type", "x", "y", "width", "height", "text", "originalText", "points"].includes(key)) {
@@ -259,7 +326,7 @@ function safeAgentElement(
     }
     const validate = validators[key];
     if (!validate || !validate(fieldValue)) {
-      return { valid: false, textLength: 0 };
+      return { valid: false, textLength: 0, fileId: null };
     }
   }
 
@@ -272,9 +339,9 @@ function safeAgentElement(
       (originalText !== undefined &&
         (typeof originalText !== "string" || Array.from(originalText).length > 4_000))
     ) {
-      return { valid: false, textLength: 0 };
+      return { valid: false, textLength: 0, fileId: null };
     }
-    return { valid: true, textLength: Array.from(text).length };
+    return { valid: true, textLength: Array.from(text).length, fileId: null };
   }
   if (type === "line" || type === "arrow") {
     const points = fields.get("points");
@@ -284,10 +351,59 @@ function safeAgentElement(
       points.length > 256 ||
       !points.every(safePoint)
     ) {
-      return { valid: false, textLength: 0 };
+      return { valid: false, textLength: 0, fileId: null };
     }
   }
-  return { valid: true, textLength: 0 };
+  if (type === "image") {
+    const fileId = fields.get("fileId");
+    if (
+      typeof fileId !== "string"
+      || !AGENT_ELEMENT_ID_PATTERN.test(fileId)
+      || fields.get("status") !== "saved"
+      || !Array.isArray(fields.get("scale"))
+      || fields.get("crop") !== null
+    ) {
+      return { valid: false, textLength: 0, fileId: null };
+    }
+    return { valid: true, textLength: 0, fileId };
+  }
+  return { valid: true, textLength: 0, fileId: null };
+}
+
+function safeAgentAssetRecord(
+  fileId: string,
+  value: unknown,
+  allowedAssets: ReadonlyMap<string, ImageMeta>
+): boolean {
+  if (
+    !AGENT_ELEMENT_ID_PATTERN.test(fileId)
+    || !value
+    || typeof value !== "object"
+    || Array.isArray(value)
+    || value instanceof Y.Map
+  ) {
+    return false;
+  }
+  const record = value as Record<string, unknown>;
+  const keys = Object.keys(record);
+  if (
+    keys.length !== AGENT_ASSET_RECORD_KEYS.size
+    || keys.some((key) => !AGENT_ASSET_RECORD_KEYS.has(key))
+  ) {
+    return false;
+  }
+  const assetId = record.assetId;
+  if (typeof assetId !== "string") return false;
+  const stored = allowedAssets.get(assetId);
+  return Boolean(
+    stored
+    && stored.assetId === assetId
+    && record.contentType === stored.contentType
+    && record.byteLength === stored.byteLength
+    && record.width === stored.width
+    && record.height === stored.height
+    && record.version === 1
+  );
 }
 
 function updateKey(version: number): string {
@@ -439,7 +555,34 @@ export class YjsDocumentStore {
 
   referencedAssetIds(): Set<string> {
     const referenced = new Set<string>();
-    this.document.getMap<unknown>("assets").forEach((value) => {
+    const activeFileIds = new Set<string>();
+    this.document.getMap<unknown>("elements").forEach((value) => {
+      const type = value instanceof Y.Map
+        ? value.get("type")
+        : value && typeof value === "object"
+          ? (value as Record<string, unknown>).type
+          : null;
+      const isDeleted = value instanceof Y.Map
+        ? value.get("isDeleted")
+        : value && typeof value === "object"
+          ? (value as Record<string, unknown>).isDeleted
+          : null;
+      const fileId = value instanceof Y.Map
+        ? value.get("fileId")
+        : value && typeof value === "object"
+          ? (value as Record<string, unknown>).fileId
+          : null;
+      if (
+        type === "image"
+        && isDeleted !== true
+        && typeof fileId === "string"
+        && AGENT_ELEMENT_ID_PATTERN.test(fileId)
+      ) {
+        activeFileIds.add(fileId);
+      }
+    });
+    this.document.getMap<unknown>("assets").forEach((value, fileId) => {
+      if (!activeFileIds.has(String(fileId))) return;
       if (value instanceof Y.Map) {
         const assetId = value.get("assetId");
         if (typeof assetId === "string") referenced.add(assetId);
@@ -461,27 +604,29 @@ export class YjsDocumentStore {
     update: Uint8Array,
     meta: RoomMeta
   ): Promise<ApplyUpdateResult> {
-    return this.applyUpdate(update, meta, null);
+    return this.applyUpdate(update, meta, null, new Map());
   }
 
   async applyAgentIncrementalUpdate(
     update: Uint8Array,
     meta: RoomMeta,
-    receipt: AgentAtomicReceiptInput
+    receipt: AgentAtomicReceiptInput,
+    allowedAssets: ReadonlyMap<string, ImageMeta> = new Map()
   ): Promise<ApplyUpdateResult> {
-    return this.applyUpdate(update, meta, receipt);
+    return this.applyUpdate(update, meta, receipt, allowedAssets);
   }
 
   private async applyUpdate(
     update: Uint8Array,
     meta: RoomMeta,
-    receipt: AgentAtomicReceiptInput | null
+    receipt: AgentAtomicReceiptInput | null,
+    allowedAssets: ReadonlyMap<string, ImageMeta>
   ): Promise<ApplyUpdateResult> {
     const candidate = new Y.Doc();
     try {
       Y.applyUpdate(candidate, Y.encodeStateAsUpdate(this.document));
       if (receipt) {
-        if (!this.applySafeAgentUpdate(candidate, update)) {
+        if (!this.applySafeAgentUpdate(candidate, update, allowedAssets)) {
           candidate.destroy();
           return { accepted: false, reason: "agent-policy", meta };
         }
@@ -561,9 +706,15 @@ export class YjsDocumentStore {
     return { accepted: true, meta: committedMeta };
   }
 
-  private applySafeAgentUpdate(candidate: Y.Doc, update: Uint8Array): boolean {
+  private applySafeAgentUpdate(
+    candidate: Y.Doc,
+    update: Uint8Array,
+    allowedAssets: ReadonlyMap<string, ImageMeta>
+  ): boolean {
     const elements = candidate.getMap<unknown>("elements");
+    const assets = candidate.getMap<unknown>("assets");
     const beforeIds = new Set(elements.keys());
+    const beforeAssetFileIds = new Set(assets.keys());
     const changes: Array<{ target: unknown; keys: Set<string | null> }> = [];
     const observer = (transaction: Y.Transaction): void => {
       transaction.changed.forEach((keys, target) => {
@@ -581,8 +732,13 @@ export class YjsDocumentStore {
     }
 
     const afterIds = new Set(elements.keys());
+    const afterAssetFileIds = new Set(assets.keys());
     if ([...beforeIds].some((id) => !afterIds.has(id))) return false;
+    if ([...beforeAssetFileIds].some((id) => !afterAssetFileIds.has(id))) return false;
     const newIds = [...afterIds].filter((id) => !beforeIds.has(id));
+    const newAssetFileIds = [...afterAssetFileIds].filter(
+      (id) => !beforeAssetFileIds.has(id)
+    );
     if (
       newIds.length < 1 ||
       newIds.length > MAX_AGENT_ELEMENTS_PER_UPDATE ||
@@ -591,12 +747,24 @@ export class YjsDocumentStore {
       return false;
     }
     const newIdSet = new Set(newIds);
+    const newAssetFileIdSet = new Set(newAssetFileIds);
     const elementsRoot = candidate.share.get("elements");
+    const assetsRoot = candidate.share.get("assets");
     for (const change of changes) {
       if (change.target === elementsRoot) {
         if (
           [...change.keys].some(
             (key) => typeof key !== "string" || !newIdSet.has(key)
+          )
+        ) {
+          return false;
+        }
+        continue;
+      }
+      if (change.target === assetsRoot) {
+        if (
+          [...change.keys].some(
+            (key) => typeof key !== "string" || !newAssetFileIdSet.has(key)
           )
         ) {
           return false;
@@ -615,11 +783,22 @@ export class YjsDocumentStore {
     }
 
     let totalTextLength = 0;
+    const imageFileIds: string[] = [];
     for (const id of newIds) {
       const validated = safeAgentElement(id, elements.get(id));
       if (!validated.valid) return false;
       totalTextLength += validated.textLength;
       if (totalTextLength > 20_000) return false;
+      if (validated.fileId) imageFileIds.push(validated.fileId);
+    }
+    const imageFileIdSet = new Set(imageFileIds);
+    if (newAssetFileIds.some((fileId) => !imageFileIdSet.has(fileId))) {
+      return false;
+    }
+    for (const fileId of imageFileIdSet) {
+      if (!safeAgentAssetRecord(fileId, assets.get(fileId), allowedAssets)) {
+        return false;
+      }
     }
     return true;
   }

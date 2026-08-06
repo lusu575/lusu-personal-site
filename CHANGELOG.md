@@ -4,6 +4,11 @@
 
 ## 2026-08-06
 
+- 完成 AI 能力层第五阶段在线画板图片闭环：新增非默认 `whiteboard:assets` scope，图片上传同时要求 write+assets，原图读取要求 assets 加 read（write 可满足 read）；Agent Bearer、绑定当前 tokenId 的房间令牌与 Pages→DO 内部授权继续分层，普通 write-only 调用不能绕过 CLI 注入图片。
+- 本地 CLI／stdio MCP 新增画板图片上传、下载和高层 `image` 放置。只接受最大 5 MiB、严格容器边界、关键块段、声明宽高与像素数通过校验的 PNG／JPEG／WebP；该边界不宣称完整像素解码。MCP 使用 allow-root、realpath、常规文件与 no-clobber 边界，URL／Base64／SVG／HTML、跨房引用、本机路径泄露和任意 Yjs 注入均拒绝。简化 SVG／PNG Agent 导出仍不嵌入图片并明确告警。
+- Durable Object 为 Agent 图片使用独立 `operationId + SHA-256` 收据和 current-room `ImageMeta` 闭环：相同字节重试补全同一资源，异载荷冲突；只有已提交 R2 的权威图片可进入 scene。场景仍只追加，允许复用既有规范资源和多次放置同图，继续拒绝既有元素／资源改删、孤立记录、链接、绑定、`customData` 与未知根。
+- 在线画板从 v1.0.4 精确升至 v1.0.5；共享 Agent Auth／registry／`SiteClient`／CLI／MCP 命中 Quick Transfer 受管路径，因此互传从 v1.0.5 精确升至 v1.0.6，但互传协议、口令、加密、R2、Multipart、配额、鉴权和 24 小时生命周期不变。新增三语公开更新 `seed-update-2026-08-06-whiteboard-agent-images`，公开／API／文章 seed 与主模块缓存版本为 `20260806-whiteboard-agent-images-r1`；独立远程 MCP Worker 仍未部署。
+- Phase 5 发布门禁通过：根测试 557／557、白板前端 8／8、白板 Worker 57／57、独立远程 MCP 工程 4／4、Lint、TypeScript、子项目治理、192 项 headless 公开界面审计与连续双构建复现均成功，生产构建清单 SHA-256 为 `2a583b2f7a3aa994bde115041b29bc1e8c9621981306acb6106a0b36e6e6eee0`。Production D1 migration／分组回读已完成，白板 Worker 生产版本为 `1ac664ac-0696-459a-8e6b-aa70efdd1cf6`；主站 Pages 仍由 GitHub `main` 合并触发，不改用手工 Pages 发布。
 - 修复生产 Agent 设备授权和令牌管理表单：HTML 的 `Referrer-Policy` 从会令非 CORS 表单 POST 发送 `Origin: null` 的 `no-referrer` 改为仅发送来源站点的 `strict-origin`，因此浏览器点击 Allow／Deny 和撤销令牌可恢复工作，同时不会泄露包含 `user_code` 的路径或查询；JSON 响应继续使用 `no-referrer`。
 - 安全边界保持严格：授权、拒绝与撤销 POST 仍同时要求精确匹配当前授权页的 Origin、有效 HttpOnly 登录态和双提交／D1 CSRF，缺失／`null`／当前页面异源／攻击者 Origin 都拒绝；授权 GET 可从 CLI、Codex 或外部网页作为顶层文档打开，但 iframe 和非文档子资源继续拦截。回归覆盖各类 Fetch Metadata、状态不变性、授权成功和令牌管理页响应头。
 - 共享受管入口变化使 Quick Transfer 从 v1.0.4 精确升至 v1.0.5，业务协议、口令、加密、R2、Multipart、配额、鉴权与 24 小时生命周期不变。新增三语更新 `seed-update-2026-08-06-agent-auth-form-origin`，公开/API/文章 seed 与主模块缓存版本为 `20260806-agent-auth-form-origin-r1`；独立远程 MCP Worker 仍未部署。

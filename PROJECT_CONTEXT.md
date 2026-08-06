@@ -1,5 +1,15 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-06 AI 能力层第五阶段：在线画板图片闭环
+
+- 在线画板 Agent 通道新增真实图片上传、当前房资源下载与高层图片放置。`whiteboard:assets` 是独立、非默认 scope：上传要求 `whiteboard:write + whiteboard:assets`，原图读取要求 assets 加场景 read（现有 write 可满足 read）；场景中的图片分支也必须由 Pages 通过 internal secret 保护的内部 header 显式授权，只有普通 write 的客户端仍被 DO 拒绝。
+- 图片只接受最大 5 MiB、严格容器边界、关键块段、声明宽高和像素数均通过检查的 PNG／JPEG／WebP；该边界不宣称完整像素解码。Agent Bearer 与绑定当前 tokenId 的房间访问令牌保持分离；资源只存当前房私有 R2，Pages／DO 都不接受 URL、Base64、SVG、HTML 或跨房 asset。CLI 使用真实常规文件，stdio MCP 进一步执行 allow-root／realpath／链接逃逸防护；下载默认独占创建、不覆盖已有文件，结果不回显本机绝对路径、令牌、口令或内部房间 ID。
+- Durable Object 的 scene validator 保持只追加：新增图片只能引用当前房已经完成 R2 提交且逐字段匹配的权威 `ImageMeta`，规范 `assets` 记录必须被本次新增图片引用；允许未修改地复用既有规范记录和多次放置同图。既有元素／资源的修改或删除、孤立资源、伪造元数据、链接、绑定、`customData`、未知根和任意 Yjs 字节注入继续失败关闭。
+- Agent 图片上传使用与 scene 分离的主体 + operation ID + 图片 SHA-256 收据。DO 先固定 pending 收据并据此预留容量，写入 R2 后再以事务提交 `ImageMeta`、房间用量与 committed 收据；中断后同字节重试只补全同一资源，不重复计数，异载荷复用 ID 返回冲突。pending 资源不能被 scene 引用，房间锁定也阻止新上传和 pending 续传；未引用清理、每房 100 张／100 MiB、公共房永久保留规则和密码房空房 24 小时生命周期继续生效。
+- 本地 CLI 提供 `whiteboard asset put|get`，stdio MCP 提供对应图片上传／下载工具；`whiteboard draw`／`whiteboard_draw` 的 allowlist 新增 `image`，但仍不提供编辑、删除或任意 Yjs。JSON 导出保留资源引用，简化 SVG／PNG 导出继续忽略图片并返回警告。独立 `workers/site-mcp/` 仍未部署且不增加远程写入。
+- Capability registry 新增冻结的 `requiredScopes` 与 `anyOfScopes` 机器契约，用于表达“全部满足”与“至少一个”而不让 AI 客户端只凭单值主 scope 猜权限；图片上传是 write+assets，图片下载是 assets+(read|write)，图片场景追加是 write+assets。
+- 在线画板按受管路径从 1.0.4 精确升至 1.0.5。共享 Agent Auth、registry、`SiteClient`、CLI、stdio MCP 与测试同时命中 Quick Transfer 治理范围，因此互传从 1.0.5 升至 1.0.6；互传业务协议、口令、AES-GCM 文字、私有 R2 文件、滚动配额、Multipart、鉴权与 24 小时过期均未改变。公开记录为 `seed-update-2026-08-06-whiteboard-agent-images`，表示／文章 seed／主模块缓存版本为 `20260806-whiteboard-agent-images-r1`。
+
 ## 2026-08-06 Agent 设备授权浏览器确认修复
 
 - 生产设备授权页点击 Allow 曾稳定返回 `AGENT_ORIGIN_REJECTED`。根因不是账号、主域登录态或跨站 GET：授权／令牌管理 HTML 的 `Referrer-Policy: no-referrer` 会让浏览器非 CORS 表单 POST 发送字面值 `Origin: null`，随后被服务端精确同源检查正确拒绝；同一问题也影响 `/api/agent-auth/tokens/manage` 的逐个撤销和全部撤销。
@@ -31,8 +41,8 @@
 ## 2026-08-06 AI 能力层第二阶段：在线画板与 2048
 
 - 在线画板子项目升级到 `v1.0.3`。站点 Agent Auth 新增非默认 `whiteboard:read`／`whiteboard:write` scope；Pages 提供 Agent 加入与 scene GET/POST，并将 Agent Bearer、绑定当前 tokenId 的房间访问令牌和 DO 内部授权分层。密码仍只通过同源 HTTPS 请求体交给服务端 HMAC 映射，不进入 argv、URL、日志、遥测、MCP 输出或本地明文状态。
-- Durable Object 的 Agent 更新是严格追加式：调用方必须先读取最新完整 Yjs scene，单次只新增 1–50 个文字、矩形、椭圆、菱形、线条或箭头。服务端在候选文档上拒绝既有元素修改／删除、图片／嵌入、资源、链接、绑定、customData 与未知根数据，并对文字、坐标、点数、更新字节和完整文档大小设限。`operationId + payload SHA-256` 幂等收据、文档增量与版本在同一 DO transaction 落盘；同载荷重试不重复绘制，换载荷复用 ID 返回冲突，锁定房拒绝写入。
-- `cli/lusu.mjs` 与本地 stdio MCP 已实现白板加入、scene 摘要、追加高层元素和本地 JSON／SVG／PNG 导出。私房只允许隐藏 stdin 或 `env:NAME` secret reference；本地 `whiteboards.json` 保存不透明 `board_...` 句柄、房型、到期时间、访问令牌与可选引用，不保存密码。句柄 read-modify-write 使用跨进程 owner-token 锁，同目录 0600 临时文件 fsync 后原子替换目标，避免并发加入／401 刷新丢写和崩溃截断。简化 SVG／PNG 当前忽略图片并返回警告；编辑、删除、图片写入与任意 Yjs 注入不属于能力面。
+- Durable Object 的 Agent 更新保持严格追加式：调用方必须先读取最新完整 Yjs scene，单次只新增 1–50 个受支持的高层元素；图片还必须具有独立 assets 授权，并逐字段引用当前房已完成 R2 提交的权威资源。服务端在候选文档上拒绝既有元素／资源修改或删除、孤立资源、嵌入、链接、绑定、customData 与未知根数据，并对文字、坐标、点数、更新字节和完整文档大小设限。`operationId + payload SHA-256` 幂等收据、文档增量与版本在同一 DO transaction 落盘；同载荷重试不重复绘制，换载荷复用 ID 返回冲突，锁定房拒绝写入。
+- `cli/lusu.mjs` 与本地 stdio MCP 已实现白板加入、scene 摘要、图片上传／下载、追加高层元素或当前房图片，以及本地 JSON／SVG／PNG 导出。私房只允许隐藏 stdin 或 `env:NAME` secret reference；本地 `whiteboards.json` 保存不透明 `board_...` 句柄、房型、到期时间、访问令牌与可选引用，不保存密码或图片路径。句柄 read-modify-write 使用跨进程 owner-token 锁，同目录 0600 临时文件 fsync 后原子替换目标，避免并发加入／401 刷新丢写和崩溃截断。简化 SVG／PNG 当前忽略图片并返回警告；编辑、删除与任意 Yjs 注入仍不属于能力面。
 - 2048 成为首个游戏 Agent adapter。浏览器游戏与本地会话共用纯确定性引擎，页面保留 `window.gamePage.save` 并新增冻结的语义 `window.gamePage.agent` bridge；本地 CLI／MCP 通过 `create -> observe -> actions -> act` 运行隔离会话，使用 revision CAS、clientActionId 最近 128 条去重、状态／会话数／闲置 TTL 上限和原子文件锁。锁包含唯一 owner、进程实例／PID 与心跳，释放前复核所有权；observe／actions 不落盘、不刷新过期时间，只有真实动作续期。重置与关闭需要显式确认。当前没有页面配对传输，因此不是接管已打开浏览器里的游戏。
 - `workers/site-mcp/` 仍是未部署的公开只读工程，不含白板或游戏工具。白板专用 Agent HTTP 通道使用站点设备令牌而非标准 OAuth，只服务当前本地 CLI／stdio MCP 边界；任何真正公网远程写入仍必须另行实现第一方 OAuth 2.1、最小 scope、撤销、审计与独立审核。
 - 本批公开更新为 `seed-update-2026-08-06-whiteboard-2048-agent`，公开/API/文章 seed 与主模块／2048 缓存版本为 `20260806-whiteboard-2048-agent-r1`。生产发布固定先迁移并回读 Production D1，再部署和验证兼容 `lusu-whiteboard-do` Worker，最后合并 GitHub `main` 触发 Pages；独立远程 MCP 不在本批部署范围内。上线结论必须以 D1、Worker、Pages 和正式域名的实际回读为准。

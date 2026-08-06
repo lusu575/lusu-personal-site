@@ -19,10 +19,12 @@ import {
 import { GameProtocolError } from "../lib/capabilities/game-protocol.mjs";
 import { deriveTransferRoomSecret } from "../lib/capabilities/transfer-crypto.mjs";
 import {
+  downloadWhiteboardAssetHandle,
   drawWhiteboardHandle,
   exportWhiteboardHandle,
   joinWhiteboardHandle,
-  readWhiteboardHandle
+  readWhiteboardHandle,
+  uploadWhiteboardAssetHandle
 } from "../lib/capabilities/whiteboard-adapter.mjs";
 import { WhiteboardSceneError } from "../lib/capabilities/whiteboard-scene.mjs";
 import {
@@ -688,6 +690,71 @@ async function runWhiteboardCommand(client, command, args, context) {
     }
     return drawWhiteboardHandle(client, parsed.positionals[0], { operationId, elements }, context.stateOptions);
   }
+  if (command === "asset") {
+    const action = args[0] || "";
+    const assetArgs = args.slice(1);
+    if (action === "put") {
+      const parsed = parseOptions(assetArgs, { "--operation-id": "value" });
+      if (parsed.positionals.length !== 2) {
+        throw new CliInputError(
+          "whiteboard asset put requires a board handle and image file.",
+          "WHITEBOARD_ASSET_PUT_ARGUMENTS_REQUIRED"
+        );
+      }
+      if (!parsed.options.operationId) {
+        throw new CliInputError(
+          "whiteboard asset put requires --operation-id.",
+          "WHITEBOARD_OPERATION_ID_REQUIRED"
+        );
+      }
+      assertPortableWhiteboardPath(path.resolve(parsed.positionals[1]));
+      return uploadWhiteboardAssetHandle(
+        client,
+        parsed.positionals[0],
+        parsed.positionals[1],
+        parsed.options.operationId,
+        context.stateOptions
+      );
+    }
+    if (action === "get") {
+      const parsed = parseOptions(assetArgs, {});
+      if (parsed.positionals.length !== 3) {
+        throw new CliInputError(
+          "whiteboard asset get requires a board handle, asset id, and destination path.",
+          "WHITEBOARD_ASSET_GET_ARGUMENTS_REQUIRED"
+        );
+      }
+      const requestedDestination = path.resolve(parsed.positionals[2]);
+      assertPortableWhiteboardPath(requestedDestination);
+      const parent = await fs.realpath(path.dirname(requestedDestination)).catch((error) => {
+        throw new CliInputError(
+          "The whiteboard image destination directory does not exist.",
+          "WHITEBOARD_DESTINATION_INVALID",
+          { cause: error }
+        );
+      });
+      const parentStat = await fs.stat(parent);
+      if (!parentStat.isDirectory()) {
+        throw new CliInputError("The whiteboard image destination is invalid.", "WHITEBOARD_DESTINATION_INVALID");
+      }
+      const destination = path.join(parent, path.basename(requestedDestination));
+      const opened = await openNoClobberSink(destination);
+      try {
+        const downloaded = await downloadWhiteboardAssetHandle(
+          client,
+          parsed.positionals[0],
+          parsed.positionals[1],
+          opened.sink,
+          context.stateOptions
+        );
+        return { destination: path.basename(destination), ...downloaded };
+      } catch (error) {
+        await opened.cleanup();
+        throw error;
+      }
+    }
+    throw new CliInputError(`Unknown whiteboard asset command: ${action || "<missing>"}`, "WHITEBOARD_ASSET_COMMAND_UNKNOWN");
+  }
   if (command === "export") {
     const parsed = parseOptions(args, { "--format": "value" });
     if (parsed.positionals.length !== 2) {
@@ -1202,6 +1269,18 @@ async function openBrowser(url) {
   child.unref();
 }
 
+function assertPortableWhiteboardPath(filePath) {
+  const parsed = path.parse(filePath);
+  const components = filePath.slice(parsed.root.length).split(/[\\/]+/u).filter(Boolean);
+  const reserved = /^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?$/iu;
+  if (/^[\\/]{2}[.?][\\/]/u.test(filePath)
+    || components.some((component) => component.includes(":")
+      || /[. ]$/u.test(component)
+      || reserved.test(component))) {
+    throw new CliInputError("The whiteboard image path uses a reserved or unsafe name.", "FILE_REF_UNSAFE_PATH");
+  }
+}
+
 function inferMimeType(filePath) {
   const extension = path.extname(filePath).toLowerCase();
   return ({
@@ -1252,6 +1331,8 @@ function helpText() {
     "  lusu whiteboard join --public | --password-stdin | --secret-ref env:NAME",
     "  lusu whiteboard scene BOARD_HANDLE",
     "  lusu whiteboard draw BOARD_HANDLE --input DRAW.json --operation-id ID",
+    "  lusu whiteboard asset put BOARD_HANDLE FILE --operation-id ID",
+    "  lusu whiteboard asset get BOARD_HANDLE ASSET_ID DESTINATION",
     "  lusu whiteboard export BOARD_HANDLE DESTINATION [--format json|svg|png]",
     "  lusu game create 2048",
     "  lusu game observe SESSION_ID | actions SESSION_ID",

@@ -49,6 +49,7 @@ import type {
   UploadRateState,
   WhiteboardEnv
 } from "../src/types";
+import { validPng } from "./image-fixtures";
 
 const testEnv = env as unknown as WhiteboardEnv;
 const secret = "test-only-whiteboard-internal-secret-000000000000";
@@ -191,20 +192,6 @@ function nextSocketClose(
   });
 }
 
-function minimalPng(width = 2, height = 2): Uint8Array {
-  const bytes = new Uint8Array(45);
-  bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a], 0);
-  bytes.set([0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52], 8);
-  const view = new DataView(bytes.buffer);
-  view.setUint32(16, width);
-  view.setUint32(20, height);
-  bytes[24] = 8;
-  bytes[25] = 6;
-  bytes.set([0, 0, 0, 0, 0], 28);
-  bytes.set([0, 0, 0, 0, 0x49, 0x45, 0x4e, 0x44, 0, 0, 0, 0], 33);
-  return bytes;
-}
-
 function internalHeaders(roomId: string, roomType: RoomType): Headers {
   return new Headers({
     [INTERNAL_SECRET_HEADER]: secret,
@@ -243,7 +230,7 @@ async function uploadPng(
     new Request("https://whiteboard.internal/assets", {
       method: "POST",
       headers,
-      body: minimalPng()
+      body: validPng()
     })
   );
   expect(response.status).toBe(201);
@@ -271,11 +258,17 @@ function yjsElementUpdate(id: string): ArrayBuffer {
 
 function yjsAssetReferenceUpdate(assetId: string): ArrayBuffer {
   const document = new Y.Doc();
-  document.getMap("assets").set("excalidraw-file-1", {
+  const fileId = "excalidraw-file-1";
+  document.getMap("assets").set(fileId, {
     assetId,
     contentType: "image/png",
     width: 2,
     height: 2
+  });
+  document.getMap("elements").set("referenced-image-1", {
+    type: "image",
+    fileId,
+    isDeleted: false
   });
   const update = Y.encodeStateAsUpdate(document);
   const message = new Uint8Array(update.byteLength + 1);

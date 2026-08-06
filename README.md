@@ -9,7 +9,7 @@
 - 密码经 NFKC、trim 后以服务端 HMAC-SHA256 映射为不可逆房间 ID；明文不进入 URL、存储、埋点或普通日志。公共房不执行 TTL；密码房最后一名真实用户离开后保留 24 小时，重入取消旧 Alarm，再次为空重新计时，清理前会再次核对连接和截止时间。
 - 快速画线只在画布真实变化时合并为 250／500／1000ms 有界增量；只有 Worker 确认已持久化的更新才从本地队列移除，限流或断线时自动重连重传。可见页保活由边缘自动应答而不唤醒休眠 DO，隐藏页 60 秒后排空并停放连接；空公共房不周期轮询且内容持续保留，密码房仍按最后离开 24 小时清理。
 - 图片只接受校验后的 PNG/JPEG/WebP，保存到私有 R2 的房间前缀，画布仅保存资源 ID；清空画布和删除房间会幂等清理无引用资源。管理员可查看容量、连接、错误与自动清理计数，清空或锁定公共画板、移除异常连接、临时封禁以及删除空密码房。
-- 受 `whiteboard:read`／`whiteboard:write` 非默认 scope 约束的本地 CLI／stdio MCP 可加入房间、读取 scene、追加最多 50 个安全高层元素并本地导出 JSON／SVG／PNG。Agent Bearer 与房间令牌分离，服务端只接受追加式 Yjs 更新和幂等 operation ID；不支持编辑／删除、图片写入或任意 Yjs 注入。
+- 受 `whiteboard:read`／`whiteboard:write`／`whiteboard:assets` 非默认 scope 约束的本地 CLI／stdio MCP 可加入房间、读取 scene、上传或下载当前房图片、追加最多 50 个安全高层元素或已提交图片，并本地导出 JSON／SVG／PNG。Agent Bearer 与房间令牌分离，服务端只接受追加式 Yjs 更新和幂等 operation ID；不支持编辑／删除、未授权或跨房图片写入及任意 Yjs 注入。
 - 画板工具卡图标是 image2 生成的项目内 PNG；`assets/images/generated-icons/whiteboard.source.json` 锁定生成器、生成/发布尺寸、最终 SHA-256，并声明发布前仅做机械 resize。在线画板后续所有图标、插画和装饰素材也只能由 image2 生成，不使用 CSS、Canvas、SVG 路径或代码几何拼凑素材。
 - 详细架构、限制、绑定、测试、部署和回滚见 `docs/whiteboard/README.md` 与 `workers/whiteboard/README.md`。仓库中的配置和代码不代表 Cloudflare 远端迁移、生产部署或正式域名已经验证。
 

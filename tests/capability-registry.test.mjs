@@ -23,6 +23,11 @@ test("capability registry has unique stable ids and complete machine-readable sa
     assert.equal(Object.isFrozen(capability), true);
     assert.equal(Object.isFrozen(capability.transport), true);
     assert.equal(Object.isFrozen(capability.availableTransports), true);
+    assert.ok(Array.isArray(capability.requiredScopes));
+    assert.ok(capability.requiredScopes.includes(capability.scope));
+    assert.equal(Object.isFrozen(capability.requiredScopes), true);
+    assert.ok(Array.isArray(capability.anyOfScopes));
+    assert.equal(Object.isFrozen(capability.anyOfScopes), true);
     assert.equal(typeof capability.readOnly, "boolean");
     assert.equal(typeof capability.destructive, "boolean");
     assert.equal(typeof capability.idempotent, "boolean");
@@ -57,7 +62,15 @@ test("registry list, get, and filter APIs expose only matching capabilities", ()
   );
   assert.deepEqual(
     filterCapabilities({ domain: "whiteboard", status: "available" }).map(({ id }) => id),
-    ["whiteboard.rooms.join", "whiteboard.scene.read", "whiteboard.scene.apply", "whiteboard.scene.export"]
+    [
+      "whiteboard.rooms.join",
+      "whiteboard.scene.read",
+      "whiteboard.scene.apply",
+      "whiteboard.assets.upload",
+      "whiteboard.scene.images.apply",
+      "whiteboard.assets.download",
+      "whiteboard.scene.export"
+    ]
   );
   assert.deepEqual(
     filterCapabilities({ domain: "whiteboard", availableTransports: "browser-adapter" }),
@@ -79,6 +92,27 @@ test("registry list, get, and filter APIs expose only matching capabilities", ()
   );
   assert.ok(filterCapabilities({ risk: ["high", "critical"] }).length > 0);
   assert.throws(() => filterCapabilities({ unknown: true }), /Unsupported capability filter/);
+
+  const assetUpload = getCapability("whiteboard.assets.upload");
+  assert.deepEqual(assetUpload.requiredScopes, ["whiteboard:write", "whiteboard:assets"]);
+  assert.deepEqual(assetUpload.anyOfScopes, []);
+  assert.equal(assetUpload.idempotent, true);
+  const assetDownload = getCapability("whiteboard.assets.download");
+  assert.deepEqual(assetDownload.requiredScopes, ["whiteboard:assets"]);
+  assert.deepEqual(assetDownload.anyOfScopes, ["whiteboard:read", "whiteboard:write"]);
+  assert.deepEqual(assetDownload.availableTransports, ["site-api", "local-mcp", "cli"]);
+  assert.deepEqual(
+    filterCapabilities({ anyOfScopes: "whiteboard:write" }).map(({ id }) => id),
+    ["whiteboard.assets.download"]
+  );
+  assert.ok(
+    filterCapabilities({ requiredScopes: "whiteboard:assets" })
+      .some(({ id }) => id === "whiteboard.assets.upload")
+  );
+  assert.deepEqual(
+    getCapability("whiteboard.scene.images.apply").requiredScopes,
+    ["whiteboard:write", "whiteboard:assets"]
+  );
 });
 
 test("phase-three public reads declare only transports with implemented adapters", () => {

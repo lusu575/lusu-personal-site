@@ -8,6 +8,7 @@ import * as Y from "yjs";
 import {
   createWhiteboardIncrementalUpdate,
   decodeWhiteboardScene,
+  parseWhiteboardRasterAsset,
   renderWhiteboardExport,
   summarizeWhiteboardScene
 } from "../lib/capabilities/whiteboard-scene.mjs";
@@ -16,8 +17,23 @@ import {
   loadWhiteboardRecord,
   storeWhiteboardHandle
 } from "../lib/capabilities/local-state.mjs";
+import { drawWhiteboardHandle } from "../lib/capabilities/whiteboard-adapter.mjs";
 
 const ACCESS_TOKEN = `wbt1.${"a".repeat(80)}`;
+
+function legacyHeaderOnlyPng(width = 2, height = 2) {
+  const bytes = new Uint8Array(45);
+  bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a], 0);
+  bytes.set([0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52], 8);
+  const view = new DataView(bytes.buffer);
+  view.setUint32(16, width);
+  view.setUint32(20, height);
+  bytes[24] = 8;
+  bytes[25] = 6;
+  bytes.set([0, 0, 0, 0, 0], 28);
+  bytes.set([0, 0, 0, 0, 0x49, 0x45, 0x4e, 0x44, 0, 0, 0, 0], 33);
+  return bytes;
+}
 
 test("whiteboard scene adapter creates deterministic high-level elements and detects replay", () => {
   const empty = Y.encodeStateAsUpdate(new Y.Doc());
@@ -89,6 +105,202 @@ test("whiteboard exporter produces importable JSON, escaped SVG, and PNG bytes",
 
   const png = await renderWhiteboardExport(scene, "png");
   assert.deepEqual([...png.bytes.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+});
+
+test("whiteboard draw validates and deduplicates image requests before asset I/O", async (t) => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-whiteboard-draw-"));
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const stateOptions = { env: { LUSU_CONFIG_DIR: directory } };
+  const boardHandle = await storeWhiteboardHandle({
+    room: { type: "public" },
+    accessToken: ACCESS_TOKEN
+  }, {
+    ...stateOptions,
+    boardHandle: "board_draw_preflight_0001"
+  });
+  const source = createWhiteboardIncrementalUpdate(new Uint8Array(), {
+    operationId: "draw_preflight_fixture_0001",
+    elements: [{ type: "rectangle", x: 0, y: 0, width: 8, height: 8 }]
+  });
+  const png = await renderWhiteboardExport(source.scene, "png");
+  let assetReads = 0;
+  const client = {
+    async getWhiteboardScene() {
+      return {
+        updateBytes: new Uint8Array(),
+        documentVersion: 0,
+        locked: false
+      };
+    },
+    async getWhiteboardAsset(_accessToken, assetId) {
+      assetReads += 1;
+      return { assetId, contentType: "image/png", bytes: png.bytes };
+    },
+    async applyWhiteboardUpdate() {
+      return { ok: true, replayed: false, documentVersion: 1 };
+    }
+  };
+  const assetId = "1".repeat(32);
+  await assert.rejects(
+    drawWhiteboardHandle(client, boardHandle, {
+      operationId: "draw_too_many_images_0001",
+      elements: Array.from({ length: 51 }, (_, index) => ({
+        type: "image",
+        assetId,
+        x: index,
+        y: index
+      }))
+    }, stateOptions),
+    { code: "WHITEBOARD_ELEMENTS_INVALID" }
+  );
+  assert.equal(assetReads, 0);
+
+  await assert.rejects(
+    drawWhiteboardHandle(client, boardHandle, {
+      operationId: "draw_invalid_asset_id_0001",
+      elements: [
+        { type: "image", assetId, x: 0, y: 0 },
+        { type: "image", assetId: "invalid", x: 20, y: 20 }
+      ]
+    }, stateOptions),
+    { code: "WHITEBOARD_ASSET_ID_INVALID" }
+  );
+  assert.equal(assetReads, 0);
+
+  const drawn = await drawWhiteboardHandle(client, boardHandle, {
+    operationId: "draw_deduplicated_assets_0001",
+    elements: [
+      { type: "image", assetId, x: 0, y: 0 },
+      { type: "image", assetId, x: 20, y: 20 }
+    ]
+  }, stateOptions);
+  assert.equal(assetReads, 1);
+  assert.equal(drawn.addedElements.length, 2);
+});
+
+test("whiteboard image elements require current-room verified assets and append exact safe Yjs records", async () => {
+  const source = createWhiteboardIncrementalUpdate(new Uint8Array(), {
+    operationId: "image_source_0001",
+    elements: [{ type: "rectangle", x: 0, y: 0, width: 24, height: 16 }]
+  });
+  const png = await renderWhiteboardExport(source.scene, "png");
+  const parsed = parseWhiteboardRasterAsset(png.bytes, "image/png");
+  assert.throws(
+    () => parseWhiteboardRasterAsset(png.bytes, "image/jpeg"),
+    { code: "WHITEBOARD_ASSET_INVALID" }
+  );
+  assert.throws(
+    () => parseWhiteboardRasterAsset(legacyHeaderOnlyPng(), "image/png"),
+    { code: "WHITEBOARD_ASSET_INVALID" }
+  );
+  const { default: sharp } = await import("sharp");
+  for (const [format, contentType] of [["jpeg", "image/jpeg"], ["webp", "image/webp"]]) {
+    const bytes = await sharp({
+      create: { width: 3, height: 2, channels: 4, background: "#336699ff" }
+    })[format]().toBuffer();
+    assert.deepEqual(
+      parseWhiteboardRasterAsset(bytes, contentType),
+      { contentType, width: 3, height: 2, byteLength: bytes.byteLength, version: 1 }
+    );
+  }
+  const alphaSource = {
+    create: { width: 3, height: 2, channels: 4, background: "#33669980" }
+  };
+  const variants = [
+    [await sharp({
+      create: { width: 3, height: 2, channels: 4, background: "#336699ff" }
+    }).jpeg({ progressive: true }).toBuffer(), "image/jpeg"],
+    [await sharp(alphaSource).webp({ lossless: true }).toBuffer(), "image/webp"],
+    [await sharp(alphaSource).webp({ lossless: false }).toBuffer(), "image/webp"]
+  ];
+  for (const [bytes, contentType] of variants) {
+    assert.deepEqual(
+      parseWhiteboardRasterAsset(bytes, contentType),
+      { contentType, width: 3, height: 2, byteLength: bytes.byteLength, version: 1 }
+    );
+  }
+  const validJpeg = await sharp({
+    create: { width: 3, height: 2, channels: 4, background: "#336699ff" }
+  }).jpeg().toBuffer();
+  assert.throws(
+    () => parseWhiteboardRasterAsset(validJpeg.subarray(0, validJpeg.byteLength - 2), "image/jpeg"),
+    { code: "WHITEBOARD_ASSET_INVALID" }
+  );
+  assert.throws(
+    () => parseWhiteboardRasterAsset(new Uint8Array([
+      0xff, 0xd8,
+      0xff, 0xc0, 0x00, 0x0b, 0x08, 0x00, 0x02, 0x00, 0x03, 0x01, 0x01, 0x11, 0x00,
+      0xff, 0xd9
+    ]), "image/jpeg"),
+    { code: "WHITEBOARD_ASSET_INVALID" }
+  );
+  const validWebp = await sharp({
+    create: { width: 3, height: 2, channels: 4, background: "#336699ff" }
+  }).webp().toBuffer();
+  assert.throws(
+    () => parseWhiteboardRasterAsset(validWebp.subarray(0, validWebp.byteLength - 1), "image/webp"),
+    { code: "WHITEBOARD_ASSET_INVALID" }
+  );
+  const headerOnlyVp8x = Buffer.from(variants[2][0].subarray(0, 30));
+  headerOnlyVp8x.writeUInt32LE(headerOnlyVp8x.byteLength - 8, 4);
+  assert.throws(
+    () => parseWhiteboardRasterAsset(headerOnlyVp8x, "image/webp"),
+    { code: "WHITEBOARD_ASSET_INVALID" }
+  );
+  const assetId = "0123456789abcdef0123456789abcdef";
+  const metadata = { ...parsed, assetId };
+  const request = {
+    operationId: "image_draw_0001",
+    elements: [{ type: "image", assetId, x: 40, y: 50, width: 240, height: 160, opacity: 90 }]
+  };
+  const created = createWhiteboardIncrementalUpdate(new Uint8Array(), request, {
+    assetMetadata: new Map([[assetId, metadata]])
+  });
+  assert.equal(created.addedElements[0].assetId, assetId);
+  const document = new Y.Doc();
+  Y.applyUpdate(document, created.updateBytes);
+  const image = document.getMap("elements").get(created.addedElements[0].id);
+  assert.equal(image.get("type"), "image");
+  assert.equal(image.get("status"), "saved");
+  assert.deepEqual(image.get("scale"), [1, 1]);
+  assert.equal(image.get("crop"), null);
+  assert.equal(image.get("link"), null);
+  assert.equal(image.has("customData"), false);
+  const fileId = image.get("fileId");
+  assert.match(fileId, /^[A-Za-z0-9_-]{1,128}$/);
+  assert.deepEqual(document.getMap("assets").get(fileId), {
+    assetId,
+    contentType: "image/png",
+    byteLength: png.bytes.byteLength,
+    width: parsed.width,
+    height: parsed.height,
+    version: 1
+  });
+  const committed = Y.encodeStateAsUpdate(document);
+  const replay = createWhiteboardIncrementalUpdate(committed, request, {
+    assetMetadata: new Map([[assetId, metadata]])
+  });
+  assert.equal(replay.replayed, true);
+  assert.equal(replay.updateBytes, null);
+
+  assert.throws(
+    () => createWhiteboardIncrementalUpdate(new Uint8Array(), request),
+    { code: "WHITEBOARD_ASSET_NOT_VERIFIED" }
+  );
+  for (const forbidden of [
+    { url: "https://example.test/image.png" },
+    { dataURL: "data:image/png;base64,AAAA" },
+    { customData: { unsafe: true } },
+    { link: "https://example.test/" }
+  ]) {
+    assert.throws(
+      () => createWhiteboardIncrementalUpdate(new Uint8Array(), {
+        ...request,
+        elements: [{ ...request.elements[0], ...forbidden }]
+      }, { assetMetadata: new Map([[assetId, metadata]]) }),
+      { code: "WHITEBOARD_ELEMENT_FIELD_UNSUPPORTED" }
+    );
+  }
 });
 
 test("whiteboard SiteClient keeps agent and room tokens in separate headers", async () => {
