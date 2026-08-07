@@ -45,6 +45,7 @@ class D1Database {
     this.sqlite.exec("pragma foreign_keys = on");
     this.batchTail = Promise.resolve();
     this.failBatchSqlPattern = null;
+    this.batchChangesTransform = null;
   }
 
   prepare(sql) {
@@ -66,10 +67,13 @@ class D1Database {
           throw new Error("Injected D1 batch failure containing private SQL details");
         }
         const result = this.sqlite.prepare(statement.sql).run(...statement.values);
+        const directChanges = Number(result.changes || 0);
         results.push({
           success: true,
           meta: {
-            changes: Number(result.changes || 0),
+            changes: this.batchChangesTransform
+              ? this.batchChangesTransform(statement.sql, directChanges)
+              : directChanges,
             last_row_id: result.lastInsertRowid
           }
         });
@@ -614,6 +618,43 @@ test("delete requires confirmation, commits with its receipt, and replays after 
   );
   assert.equal(changedRetry.response.status, 409);
   assert.equal(changedRetry.payload.code, "ARTICLE_OPERATION_CONFLICT");
+});
+
+test("delete accepts D1 metadata that includes cascaded translation changes", async () => {
+  const fixture = createFixture();
+  const published = await callApi(
+    fixture.env,
+    fixture.tokens.adminBoth,
+    "agent/articles/publish",
+    { method: "POST", body: publishPayload("publish-delete-cascade-0001", "delete-cascade") }
+  );
+  fixture.DB.batchChangesTransform = (sql, directChanges) => (
+    /delete\s+from\s+articles/i.test(sql) && directChanges === 1 ? 4 : directChanges
+  );
+  const deleteBody = {
+    operationId: "article-delete-cascade-0001",
+    expectedUpdatedAt: published.payload.updatedAt,
+    confirm: true
+  };
+
+  const deleted = await callApi(
+    fixture.env,
+    fixture.tokens.adminBoth,
+    `agent/articles/${published.payload.articleId}`,
+    { method: "DELETE", body: deleteBody }
+  );
+  assert.equal(deleted.response.status, 200);
+  assert.equal(deleted.payload.deleted, true);
+  assert.equal(deleted.payload.duplicate, false);
+
+  const replay = await callApi(
+    fixture.env,
+    fixture.tokens.adminBoth,
+    `agent/articles/${published.payload.articleId}`,
+    { method: "DELETE", body: deleteBody }
+  );
+  assert.equal(replay.response.status, 200);
+  assert.equal(replay.payload.duplicate, true);
 });
 
 test("governed categories cannot be updated, deleted, or targeted by recategorization", async () => {

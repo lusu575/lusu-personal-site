@@ -479,8 +479,10 @@ async function deleteAgentArticle(request, env, principal, articleIdValue) {
     throw error;
   }
 
+  // Production D1 may include foreign-key-cascaded translation rows here.
+  const deletedChanges = Number(batchResults?.[2]?.meta?.changes || 0);
   if (Number(batchResults?.[0]?.meta?.changes || 0) !== 1
-    || Number(batchResults?.[2]?.meta?.changes || 0) !== 1) {
+    || deletedChanges < 1) {
     const racedReceipt = await readAgentArticleReceipt(
       env,
       principal.user.id,
