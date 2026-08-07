@@ -281,7 +281,7 @@ Hextris 使用相同的语义动作原则，但保持独立 GPL 进程边界：
 - 动态注册兼容 DCR 和 CIMD；回调最多四个，默认只收 HTTPS，HTTP 仅允许 loopback 并在三语同意页警告。注册按 HMAC-IP 使用 D1 原子 UPSERT 限流；未验证的 `software_statement` 拒绝。
 - 短期授权 state、PKCE 与 consent flow 放在独立 KV；grant 与审计放在 D1。Worker 禁用 workers.dev 和持久 observability，路由先用 query-safe wildcard 命中，再由代码中的精确 pathname allowlist 收窄。
 
-该工程当前仍是生产候选：提交配置中的 `OAUTH_KV` 为全零占位，部署预检会失败关闭。首次激活必须先创建真实 KV、替换 ID、完成 check／preflight／dry-run、迁移并回读 Production D1，再把独立高熵 Secret 通过最终 `wrangler deploy --secrets-file` 的仓库外临时文件与首版一起提交；不能先运行会创建并立即部署版本的 `wrangler secret put`。正式域名 OAuth 原子发布／幂等／CAS／删除闭环完成后，才能公布地址或更新 registry 的 `availableTransports`。
+该工程当前仍是生产候选：生产 `OAUTH_KV` 已创建并绑定，check／preflight／dry-run 已通过。首次激活还必须迁移并回读 Production D1，再把独立高熵 Secret 通过最终 `wrangler deploy --secrets-file` 的仓库外临时文件与首版一起提交；不能先运行会创建并立即部署版本的 `wrangler secret put`。正式域名 OAuth 原子发布／幂等／CAS／删除闭环完成后，才能公布地址或更新 registry 的 `availableTransports`。
 
 公开 Worker 部署目标 `compatibility_date` 是 `2026-08-06`，并启用 `nodejs_compat`。当前锁定的 Wrangler 所带本地 workerd 最多支持 `2026-07-29`，所以 `npm.cmd run dev` 和 Vitest只在本地使用 `2026-07-29` override；这个 override 不是生产目标，升级 Wrangler/workerd 后应移除。
 

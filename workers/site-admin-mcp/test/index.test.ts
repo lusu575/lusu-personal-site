@@ -758,7 +758,7 @@ describe("complete owner OAuth MCP flow", () => {
       arguments: payload
     });
     expect(published.response.status, JSON.stringify(published.body)).toBe(200);
-    expect(published.body.result?.isError).not.toBe(true);
+    expect(published.body.result?.isError, JSON.stringify(published.body)).not.toBe(true);
     const created = structuredToolResult(published.body);
     expect(created).toMatchObject({ ok: true, duplicate: false });
     const articleId = String(created.articleId || "");

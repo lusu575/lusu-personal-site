@@ -4,7 +4,7 @@
 
 - 新增独立 `workers/site-admin-mcp/`，目标入口为 `https://lusu575.com/mcp`。它用标准 OAuth 2.1 authorization code + PKCE S256、精确 RFC 8707 resource、动态注册／CIMD 和 `content:read`／`content:write`／`content:delete` 最小 scope 暴露四个公开读取工具与五个站长文章管理工具。它不接受站点设备 Bearer，不传递 `lusu_session`，也不把 OAuth token、code、state、cookie、IP、回调或文章正文写入日志。
 - 远程管理工具与 Pages 设备通道复用 `functions/api/agent-article-service.mjs`；发布／更新／删除继续把条件 mutation、三语内容、审计和幂等收据放在同一 D1 batch。OAuth provider token 经 provider 公共 `unwrapToken()` 解包后仍独立复核过期时间、精确 audience、client、scope 与 D1 active grant；管理员角色丢失会撤销 grant，并让下一次调用返回标准 401 challenge。动态注册限流使用 HMAC-IP 与 D1 原子 UPSERT，授权页使用一次性 KV flow、登录态、CSRF、三语同意信息和 loopback 警告。
-- 生产配置目前仍保留全零 `OAUTH_KV` ID，部署预检会失败关闭。首次激活先创建／写入独立 KV ID并完成 check、preflight、dry-run 和 Production D1 迁移；至少 32 字节的新 `ANALYTICS_IP_HASH_SALT` 只能通过最终 `wrangler deploy --secrets-file` 的仓库外临时文件与首版一次提交，不能用会提前创建并部署版本的 `wrangler secret put` 绕过门禁。只有正式域名真实 OAuth 原子发布／幂等／CAS／删除闭环完成后，才能把 `remote-mcp` 写入相关能力的 `availableTransports`、发布公开更新并宣称其他 AI 可以连接。独立 `workers/site-mcp/` 仍是未部署的公开只读 Worker 目标；它只导出可复用的公开工具注册层，不承载站长 OAuth。
+- 生产 `OAUTH_KV` 已创建并把公开 namespace ID 写入 Worker 配置；check、preflight 和不携带真实 Secret 的 dry-run 均通过，bundle 为 2,178.18 KiB／gzip 379.46 KiB。首次激活仍须完成 Production D1 迁移；至少 32 字节的新 `ANALYTICS_IP_HASH_SALT` 只能通过最终 `wrangler deploy --secrets-file` 的仓库外临时文件与首版一次提交，不能用会提前创建并部署版本的 `wrangler secret put` 绕过门禁。只有正式域名真实 OAuth 原子发布／幂等／CAS／删除闭环完成后，才能把 `remote-mcp` 写入相关能力的 `availableTransports`、发布公开更新并宣称其他 AI 可以连接。独立 `workers/site-mcp/` 仍是未部署的公开只读 Worker 目标；它只导出可复用的公开工具注册层，不承载站长 OAuth。
 
 ## 2026-08-07 AI 能力层第七阶段：人生重开与知识库原子 MCP
 

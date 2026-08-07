@@ -2,7 +2,7 @@
 
 This independent Cloudflare Worker exposes the site's public read tools plus owner-only article management over stateless Streamable HTTP at `https://lusu575.com/mcp`.
 
-It is intentionally not deployable from the checked-in configuration yet: `wrangler.jsonc` contains a fail-closed placeholder for `OAUTH_KV`. Create the production namespace and secret first. Never replace the placeholder with a secret; a KV namespace ID is public configuration.
+The production `OAUTH_KV` namespace has been created and its public namespace ID is bound in `wrangler.jsonc`; check, preflight, and dry-run pass. The Worker is still not live until the production D1 migration succeeds and the first reviewed deploy supplies the secret in the same version.
 
 ## What another AI connects to
 
@@ -28,10 +28,9 @@ From this directory, while authenticated to the correct Cloudflare account:
 
 ```powershell
 npm.cmd install
-npx.cmd wrangler kv namespace create OAUTH_KV
 ```
 
-Replace only the all-zero `OAUTH_KV` ID in `wrangler.jsonc` with the returned production namespace ID. Do not run `wrangler secret put` during first activation: that command can create and immediately deploy a Worker version before the release gates and valid KV binding are in place.
+The checked-in `OAUTH_KV` ID is the existing production namespace. Do not create a second namespace during routine deploys. Disaster recovery or a separate environment must use its own namespace and reviewed config change. Do not run `wrangler secret put` during first activation: that command can create and immediately deploy a Worker version before the release gates and valid KV binding are in place.
 
 Then validate locally and complete the dry run before running the production D1 migration from the repository root:
 
@@ -66,7 +65,7 @@ try {
 }
 ```
 
-Use a purpose-specific value for `ANALYTICS_IP_HASH_SALT`; do not reuse an application password, print it, or commit it. Later reviewed deployments may use `npm.cmd run deploy` and retain the existing secret; rotate it only as a deliberate security operation. `deploy` and the first-activation flow are blocked until the KV placeholder is replaced. The Worker uses query-safe same-host routes plus an exact internal pathname allowlist, so the public Pages deployment continues serving every other path.
+Use a purpose-specific value for `ANALYTICS_IP_HASH_SALT`; do not reuse an application password, print it, or commit it. Later reviewed deployments may use `npm.cmd run deploy` and retain the existing secret; rotate it only as a deliberate security operation. The Worker uses query-safe same-host routes plus an exact internal pathname allowlist, so the public Pages deployment continues serving every other path.
 
 ## OAuth policy
 
