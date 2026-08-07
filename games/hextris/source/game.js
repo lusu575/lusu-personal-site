@@ -1,3 +1,12 @@
+/*
+ * Hextris compatibility implementation for LuSu's Personal Site.
+ * Copyright (C) 2026 LuSu
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * This implementation was adapted for trilingual site integration and local
+ * saves. See COPYING and ../NOTICE.md. Modified 2026-08-07.
+ */
+
 const params = new URLSearchParams(window.location.search);
 const lang = ["zh", "en", "ja"].includes(params.get("lang")) ? params.get("lang") : "zh";
 const saveKey = "lusu.hextris.save";

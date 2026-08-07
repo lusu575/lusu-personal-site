@@ -763,9 +763,13 @@ test("online plus a failed refresh stays reconnecting until manual retry succeed
 
 test("private-room switching is single-flight and exposes a real busy state", async () => {
   const privateHistory = deferred();
+  const privateHistoryRequested = deferred();
   const harness = makeHarness({
     getMessages(attempt) {
-      if (attempt === 2) return privateHistory.promise;
+      if (attempt === 2) {
+        privateHistoryRequested.resolve();
+        return privateHistory.promise;
+      }
       return response({ messages: [] });
     }
   });
@@ -778,7 +782,7 @@ test("private-room switching is single-flight and exposes a real busy state", as
     harness.elements.privateInput.value = "secret-room";
     const submit = harness.listeners.get("chat-private-room-form:submit");
     const firstSwitch = submit({ preventDefault() {} });
-    await waitFor(() => harness.getCount === 2, "private history request");
+    await privateHistoryRequested.promise;
     const duplicateSwitch = submit({ preventDefault() {} });
     await duplicateSwitch;
 

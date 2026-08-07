@@ -2,6 +2,17 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-08-07
+
+- 完成 AI 能力层第六阶段的 Hextris 独立适配：`games/hextris/agent/` 新增确定性六 lane 引擎、独立本地会话存储、专用 CLI 与专用 stdio MCP。MCP 只暴露 `hextris_session_create／observe／actions／act／reset／close`，动作只接受 lane 0–5；会话使用 revision CAS、`clientActionId` 幂等收据、数量／大小／24 小时 TTL 上限、带 token marker 的非空目录锁和 fsync 原子替换。锁对存活 PID／进程实例失败关闭，以心跳判断陈旧状态，写入／删除前执行所有权 fence，并用保留同一 token 的 retiring 阶段安全释放；旧 owner 或恢复者不能删除 successor。observe／actions 不写入或续期，reset／close 要求显式确认。
+- Hextris Agent 固定为自包含 GPL-3.0-or-later 进程，不导入主站共享能力库、主 CLI 或通用 MCP；主能力层也不静态包含它。它不连接已打开的浏览器 Hextris，不提供页面 bridge、配对、观看、云存档写入或远程 MCP。机器游戏目录新增 `surface` 投影：2048 为 `integrated`，Hextris 为 `dedicated-process`，其余三款为 `none`。
+- 补齐 Hextris 浏览器副本和 Agent 的完整 GPL 文本、SPDX／无担保说明、上游归属与本地修改记录；补齐 2048 的完整 MIT 文本及来源说明。后续强 copyleft 游戏不得在没有单独兼容性评估和明确许可证决定时静态并入通用 CLI／MCP。
+- Hextris Agent 是随 GitHub 源码仓库分发的本地程序，不属于 Cloudflare Pages 浏览器运行面；生产构建整目录排除 `games/hextris/agent/`，避免把含 `package.json` 的不完整本地进程散落到 `dist`。浏览器 Hextris、`source/COPYING` 与页面 NOTICE 继续进入正式静态产物。
+- 新增三语 `site-updates` 公开更新 `seed-update-2026-08-07-hextris-agent`，同步 `content.mjs` fallback、Home 最近五条投影、Functions seed 与 schema seed；公开 API／文章 seed／主模块缓存版本为 `20260807-hextris-agent-r1`，静态最近更新日期同步到 2026.08.07。在线画板继续为 1.0.7，Quick Transfer 继续为 1.0.6；独立远程 MCP Worker 仍未部署。
+- Home／Knowledge 中本期新增的 `AI 能力`、`CLI`、`MCP`、`开源许可` 标签补齐中文／English／日本語映射，英文和日文界面不再回退显示中文标签。
+- 仓库凭据扫描继续覆盖受 Git 管理及尚未暂存的源码，但明确排除已由子项目 `.gitignore` 管理的 `自动新闻/data/mcp-runs/` 本地运行证据；外部新闻正文中形似 JWT 的文本不再让发布门禁误报，同时没有放宽任何凭据识别表达式或源代码目录。
+- Chat 私房 single-flight 回归不再用“50 次 × 1ms”计时轮询猜测 mock 历史请求何时开始，而由请求 stub 发出精确 deferred 信号；Linux CI 高负载下仍检查同一套 busy／禁用／重复提交不发第二次请求语义，不改 Chat 生产逻辑。
+
 ## 2026-08-06
 
 - 修复授权生产闭环发现的第二个 Phase 5 Pages mutation gate 漏项：精确 `POST /api/whiteboard/agent/scene` 且 `application/vnd.yjs-update` 的请求现在可越过 JSON 门禁并进入既有 Agent Bearer、write scope、tokenId 房间令牌、operation ID、正文上限与只追加场景验证；同源检查仍最先执行，跨源、相邻路径、非 POST 与错误 MIME 继续失败关闭。在线画板按受管规则从 v1.0.6 精确升至 v1.0.7；Quick Transfer 未命中受管路径，保持 v1.0.6。公开记录沿用 `seed-update-2026-08-06-whiteboard-agent-images`，表示／文章 seed／白板公开模块缓存修订为 `20260806-whiteboard-agent-images-r3`，Quick Transfer 模块缓存仍为 r1。

@@ -22,13 +22,21 @@ const ignoredDirectories = new Set([
   ".git", ".wrangler", ".wrangler-config", ".codex-remote-attachments", ".codex-screenshots",
   ".codex-worktrees", ".playwright-cli", "node_modules", "output"
 ]);
+const ignoredLocalDirectoryPaths = new Set([
+  "自动新闻/data/mcp-runs"
+]);
 const ignoredLocalFiles = /^(?:\.env(?:\..*)?|\.dev\.vars(?:\..*)?|tts\.local\.json)$/i;
 
 function sourceFiles(directory = root) {
   const files = [];
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
     if (entry.isDirectory()) {
-      if (!ignoredDirectories.has(entry.name)) files.push(...sourceFiles(resolve(directory, entry.name)));
+      const childDirectory = resolve(directory, entry.name);
+      const childRelativePath = relative(root, childDirectory).replaceAll("\\", "/");
+      if (
+        !ignoredDirectories.has(entry.name)
+        && !ignoredLocalDirectoryPaths.has(childRelativePath)
+      ) files.push(...sourceFiles(childDirectory));
       continue;
     }
     if (!entry.isFile() || ignoredLocalFiles.test(entry.name)) continue;

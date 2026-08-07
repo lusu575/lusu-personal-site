@@ -4,7 +4,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260806-agent-capabilities-quick-transfer-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260806-whiteboard-agent-images-r3";
+import { homeContent } from "./data/home-content.mjs?v=20260807-hextris-agent-r1";
 import { blogManifest } from "./data/blog-manifest.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
@@ -245,6 +245,10 @@ const tagLabels = {
   "fallback": { zh: "fallback", en: "Fallback", ja: "Fallback" },
   "测试": { zh: "测试", en: "Test", ja: "テスト" },
   "工具": { zh: "工具", en: "Tools", ja: "ツール" },
+  "AI 能力": { zh: "AI 能力", en: "AI capabilities", ja: "AI 機能" },
+  "CLI": { zh: "CLI", en: "CLI", ja: "CLI" },
+  "MCP": { zh: "MCP", en: "MCP", ja: "MCP" },
+  "开源许可": { zh: "开源许可", en: "Open-source license", ja: "オープンソースライセンス" },
   "2048": { zh: "2048", en: "2048", ja: "2048" },
   "Hextris": { zh: "Hextris", en: "Hextris", ja: "Hextris" },
   "Bilibili": { zh: "Bilibili", en: "Bilibili", ja: "Bilibili" },

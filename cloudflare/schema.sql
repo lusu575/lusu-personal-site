@@ -845,6 +845,119 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-08-07-hextris-agent',
+  '2026-08-07-hextris-agent',
+  'site-updates',
+  '["网站更新","AI 能力","Hextris","游戏","CLI","MCP","开源许可"]',
+  '', 'published', 0, 0,
+  '2026-08-07T00:30:00.000Z',
+  '2026-08-07T00:30:00.000Z',
+  '2026-08-07T00:30:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-07-hextris-agent-zh',
+    'seed-update-2026-08-07-hextris-agent',
+    'zh',
+    'Hextris 现在支持独立 AI 游戏会话',
+    '新增确定性的 Hextris 隔离会话、专用 CLI 与 stdio MCP，并补全 GPL 分发说明；它以独立进程运行，不接管已打开的浏览器，也不静态并入通用 CLI／MCP。',
+    '# Hextris 现在支持独立 AI 游戏会话
+
+AI 能力层第六阶段为 Hextris 增加了第二套可玩的语义游戏能力。AI 可以创建隔离会话、观察六条色块轨道和下一块颜色、查看合法动作，并按目标轨道放置色块。
+
+## 确定性与安全边界
+
+- 引擎使用版本化状态和确定性随机数；同一 seed 与动作序列会得到相同结果。
+- 每次操作都检查 revision 与 clientActionId，相同请求可安全重试，换载荷复用 ID 会被拒绝。
+- 本地状态有会话数、大小和空闲期限上限，并使用带所有权校验的锁与原子替换；只读观察不会偷偷续期或写盘。
+- 重置与关闭都要求明确确认，动作只接受 0–5 的目标轨道，不接受选择器、脚本、按键或任意页面调用。
+
+## 独立 GPL 进程
+
+Hextris 专用引擎、CLI 与 stdio MCP 作为自包含的 GPL-3.0-or-later 进程运行，不 import 通用站点 CLI、通用 MCP 或游戏会话存储。浏览器版的完整 GPL 文本、上游署名、修改日期和本地源码说明也已补齐；现有 2048 同步恢复完整 MIT 许可与来源说明。
+
+## 当前范围
+
+这是独立本地模拟会话，不会观看或接管已经打开的 Hextris 标签页，也不连接云存档或未部署的远程 MCP。2048 继续使用原有通用 `lusu game`／本地 MCP 入口；Hextris 使用自己单独的 CLI 与 MCP 进程。',
+    '2026-08-07T00:30:00.000Z',
+    '2026-08-07T00:30:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-07-hextris-agent-en',
+    'seed-update-2026-08-07-hextris-agent',
+    'en',
+    'Hextris Now Supports a Dedicated AI Game Session',
+    'Adds deterministic isolated Hextris sessions, a dedicated CLI and stdio MCP, plus complete GPL distribution notices. It runs as a separate process, does not take over an open browser, and is not statically linked into the general CLI or MCP.',
+    '# Hextris Now Supports a Dedicated AI Game Session
+
+Phase six of the AI capability layer adds a second playable semantic game surface for Hextris. An AI can create an isolated session, observe six color lanes and the incoming piece, list legal actions, and place the piece into a selected lane.
+
+## Determinism and safety boundaries
+
+- The engine uses versioned state and deterministic randomness, so the same seed and action sequence produce the same result.
+- Every mutation checks a revision and clientActionId. Exact retries are safe, while reusing an ID for different input is rejected.
+- Local state has session-count, size, and idle-lifetime limits, plus ownership-checked locks and atomic replacement. Read-only observation does not silently extend the session or write to disk.
+- Reset and close both require explicit confirmation. Actions accept only destination lanes 0–5, never selectors, scripts, raw keys, or arbitrary page calls.
+
+## Separate GPL process
+
+The Hextris-specific engine, CLI, and stdio MCP run as a self-contained GPL-3.0-or-later process. They do not import the general site CLI, general MCP, or shared game session store. The browser game now also ships the full GPL text, upstream attribution, modification dates, and source notice. The existing 2048 distribution restores its complete MIT license and provenance notice as well.
+
+## Current scope
+
+This is an isolated local simulation. It does not watch or take over an already-open Hextris tab, connect to cloud saves, or extend the undeployed remote MCP. 2048 continues to use the integrated `lusu game` and local MCP tools, while Hextris uses its dedicated CLI and MCP process.',
+    '2026-08-07T00:30:00.000Z',
+    '2026-08-07T00:30:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-07-hextris-agent-ja',
+    'seed-update-2026-08-07-hextris-agent',
+    'ja',
+    'Hextris が独立 AI ゲームセッションに対応',
+    '決定論的な Hextris 分離セッション、専用 CLI／stdio MCP、GPL 配布表示を追加しました。独立プロセスとして動作し、開いているブラウザーを操作せず、共通 CLI／MCP に静的統合もしません。',
+    '# Hextris が独立 AI ゲームセッションに対応
+
+AI 機能レイヤー第6段階として、Hextris に2つ目のプレイ可能な意味操作ゲーム面を追加しました。AI は分離セッションを作成し、6本の色レーンと次のピースを観察し、許可された操作を確認して配置先レーンを選べます。
+
+## 決定性と安全境界
+
+- エンジンは版管理された状態と決定論的乱数を使い、同じ seed と操作列から同じ結果を生成します。
+- 各更新は revision と clientActionId を検査します。同一要求は安全に再試行でき、異なる入力で同じ ID を使うと拒否されます。
+- ローカル状態にはセッション数、サイズ、アイドル期限の上限があり、所有権を確認するロックと原子的置換を使います。読み取りだけでは期限延長や書き込みを行いません。
+- リセットと終了には明示確認が必要です。操作は 0–5 の配置先レーンだけを受け付け、セレクター、スクリプト、生キー、任意のページ操作は受け付けません。
+
+## 独立した GPL プロセス
+
+Hextris 専用エンジン、CLI、stdio MCP は自己完結した GPL-3.0-or-later プロセスとして動作し、共通サイト CLI、共通 MCP、共有ゲームセッションストアを import しません。ブラウザー版にも GPL 全文、上流の帰属、変更日、ソース案内を追加しました。既存 2048 にも完全な MIT ライセンスと由来表示を復元しています。
+
+## 現在の範囲
+
+これは分離されたローカルシミュレーションです。開いている Hextris タブの監視・操作、クラウドセーブ、未展開のリモート MCP には接続しません。2048 は従来の共通 `lusu game`／ローカル MCP を使い、Hextris は専用 CLI と MCP プロセスを使います。',
+    '2026-08-07T00:30:00.000Z',
+    '2026-08-07T00:30:00.000Z'
+  )
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-08-06-whiteboard-agent-images',
   '2026-08-06-whiteboard-agent-images',
   'site-updates',
@@ -12396,7 +12509,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260806-whiteboard-agent-images-r3', '2026-08-06T15:53:00.000Z')
+values ('article_seed_version', '20260807-hextris-agent-r1', '2026-08-07T00:30:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

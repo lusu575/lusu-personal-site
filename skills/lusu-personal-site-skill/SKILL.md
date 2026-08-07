@@ -18,7 +18,9 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 日语账号进度只通过专用有界投影读取；通用 Agent 写入必须使用语义答题操作，不能暴露浏览器完整快照 PUT。服务端只接受已解锁关卡的稳定 ID、revision、contentHash、完整逐题选项、expectedRevision 与 operationId，并自行计算分数、通关、奖牌、尝试次数、解锁和时间戳；调用方提供派生字段、旧题库、旧进度或同 ID 异载荷时失败关闭。Agent 辅助答题固定按 bilingual 记录、奖牌最高 bronze；`operationId + canonical payload SHA-256` 收据必须阻止重复计次。仅增加 Agent API／CLI／MCP 而不改公开应用、题库或存档兼容边界时，日语 `appVersion`／`contentVersion` 保持不变。
 - 画板 Agent Bearer 与房间访问令牌必须分离，后者绑定当前 tokenId；密码只允许隐藏 stdin 或 `env:NAME` 引用，并通过同源 HTTPS 请求体交给服务端 HMAC 映射。Agent 写入必须基于最新完整 Yjs 状态，只追加经过 allowlist 的高层元素；只有同时具备 assets scope、可信内部 header 且引用当前房已提交 `ImageMeta` 的规范图片分支可通过。服务端必须拒绝既有修改／删除、未授权图片、嵌入、URL／Base64、链接／绑定、customData、孤立资源、未知根和任意二进制注入。`operationId + payload SHA-256` 收据要与更新／版本原子提交，严格处理重放与冲突。
 - 游戏 AI 首个适配器是隔离的本地 2048 会话：只接受引擎声明的语义动作，并保持 revision CAS、clientActionId 幂等去重、状态／会话／TTL 上限及重置／关闭确认。页面 bridge 与本地引擎可共享协议，但在没有受审计的配对传输前不得把 CLI／MCP 描述为接管、观看或控制已经打开的浏览器会话。
-- 本地敏感状态的 read-modify-write 不得无锁覆盖或直接以 `"w"` 截断目标：白板句柄使用跨进程 owner-token 锁与同目录私有临时文件 fsync／原子替换；游戏锁还要有进程实例、PID、心跳和释放前 owner 校验。标为只读的 observe／actions 不得 touch、续 TTL、删除过期文件或产生目录写入。
+- 本地敏感状态的 read-modify-write 不得无锁覆盖或直接以 `"w"` 截断目标：白板句柄使用跨进程 owner-token 锁与同目录私有临时文件 fsync／原子替换；游戏锁还要使用 token marker 非空目录、进程实例、PID、心跳和提交前 owner fence。存活 PID 失败关闭；恢复／释放只能操作精确 token 与文件身份，必要的 retiring 阶段继续保留同一 token，绝不能先读 owner 再按公共路径删除而误伤 successor。标为只读的 observe／actions 不得 touch、续 TTL、删除过期文件或产生目录写入。
+- 仓库凭据扫描必须覆盖已跟踪源码和当前工作树中尚未暂存的新源码，但不得递归读取明确 Git-ignored 的本地运行证据目录（例如 `自动新闻/data/mcp-runs/`）。应按精确路径排除运行证据，不能放宽 token／私钥识别规则，也不能用宽泛目录名跳过可能受管理的源码。
+- 并发／single-flight 回归必须等待 mock、hook 或被测代码发出的确定事件；不得用“固定次数 × 1ms sleep”推断异步请求已经开始。确实只能轮询时应使用有界的真实 deadline 并在错误中报告条件，但优先使用 deferred gate 消除共享 runner 负载差异。
 - 正式链路仍是仓库根目录由 GitHub `main` 触发 Cloudflare Pages；Dashboard 固定执行 `npm run build` 并发布 `dist`。标准构建必须先运行 `scripts/build-check.mjs` 守卫，再由 `scripts/build-production.mjs` 原子生成可复现、内容哈希、白名单和 sourcemap 可定位的 `dist/`；该目录是 Pages 构建输出但不得提交 Git。HTML、哈希资产、未哈希 CSS/JS、API/JSON 必须使用各自缓存策略，禁止用一个全局 `/*` immutable 规则覆盖。
 - 壁纸、窗口背景、图标或图集优化必须先匹配真实槽位与像素风轮廓，再提供 AVIF/WebP 和可靠 fallback；首屏只预加载当前主题/壳，主题切换要卸载旧动态层。同路径二进制变化也必须更新公开 query。
 - 文章、视频、游戏、社交等公开列表复用统一的有界 ETag / SWR / last-known-good 请求层；304 不重建列表，离线/短暂错误不清空成功内容，用户强制重试可绕过新鲜缓存且仍受单飞与生命周期 Abort 约束。ETag 必须覆盖完整公开响应，不能只取数据库行时间等不足以描述代码转换和关联数据的局部种子。视频封面禁止恢复无上限 base64 列表负载；同源封面代理 URL 必须带内容或行更新时间版本，后台换图与纯代码兼容修复都要能击穿旧浏览器缓存。
@@ -225,6 +227,9 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
   - 中文 / English / 日本語 的支持情况
 - 如果 `storage.keys` 不完整，导出和云存档会找不到对应游戏存档。
 - 后续新增游戏时，必须在游戏标签或信息里标明中文、English、日本語是否支持。
+- 为游戏增加 Agent 前必须先审计代码与素材许可证、来源、归属和完整许可证文本。强 copyleft 实现未经单独兼容性评估与站点所有者明确许可证决定，不得静态导入主站通用 `lib/capabilities/`、`cli/` 或 `mcp/local/`；采用独立进程时，引擎、状态、CLI、MCP、测试、许可证与 NOTICE 都留在游戏自己的目录，只通过进程启动边界使用，也不得把“隔离模拟”描述为浏览器配对或接管。
+- 游戏目录下只供本机运行的 Agent 子树不得因 `games/` 整树复制而进入 Pages `dist`；在 `config/public-production-build.json` 按完整前缀排除，避免只删 `package.json` 后散发不可运行的残缺程序。对应 preferred source、许可证与 NOTICE 必须仍在公开源码仓库可得，浏览器游戏所需许可证不能随本地 Agent 一起排除。
+- 游戏机器目录必须逐项返回真实 Agent profile：`localSession`、`browserBridge`、`browserPairing` 和 `surface`。`surface` 只允许表达已经实现的 `integrated`、`dedicated-process` 或 `none`；目录可发现、浏览器有存档、或存在独立模拟器都不能自动推导页面控制能力。
 - 五游戏共享壳必须固定为单一 `100dvh` 网格：外层 document 横／纵都不滚动，iframe 获得工具区之外的剩余高度并作为游戏内容滚动主体。359×500、390×844、844×390 要测量外层滚动、iframe 可达性，以及返回、登录、下载、导入、云存档／冲突操作的 44px 热区，不能只看截图。
 - 上游游戏嵌入本站后不得保留固定桌面宽度、与本站无关的第三方统计、原站账号同步、localhost／原生开发桥接或未使用主题触发的外部字体请求。窄屏 document 必须满足 `scrollWidth <= clientWidth`；A Dark Room 声音提示维护 zh／en／ja，并在同页 resize／orientationchange 后重算滑轨、偏移和资源面板归属；Kittens Game 固定关闭 Google Analytics、KGNet 和 `localhost:7780`，首屏只加载当前主题、切换时按需加载，把 iframe `lang` 同步到站点语言，且窄屏顶部工具栏自然换为两行，Steam／Version 不裁切、全部可见关键控件至少 44px，同时不得破坏本站 localStorage、JSON 备份与账号云存档。
 - Life Restart 的移动几何只能在粗指针运行时启用：主操作与所有当前可见的 `btn*` hitArea 均不得小于 44px，竖屏把工具操作与主流程分开，短横屏把工具放到底部横排；细指针桌面几何必须保持上游原样。升级上游或调整补丁后，要分别验证粗指针竖屏、粗指针短横屏与细指针桌面，不能用全局缩放或永久改写桌面布局换取移动达标。

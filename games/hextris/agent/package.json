@@ -1,0 +1,20 @@
+{
+  "name": "@lusu/hextris-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "check": "node --check engine.mjs && node --check session-store.mjs && node --check cli.mjs && node --check mcp-server.mjs && node --test test/*.test.mjs",
+    "start:cli": "node cli.mjs",
+    "start:mcp": "node mcp-server.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.0.0",
+    "zod": "4.4.3"
+  }
+}

@@ -1,3 +1,10 @@
-Hextris is listed in this site catalog with upstream attribution to Hextris/hextris, licensed under GPL-3.0-or-later.
+Hextris compatibility implementation for LuSu's Personal Site
+Copyright (C) 2026 LuSu
 
-This local page is a compact compatible implementation for LuSu's Personal Site, with trilingual interface text and site save integration.
+This local implementation and its Hextris-specific Agent subsystem are
+distributed under GNU GPL version 3 or, at your option, any later version.
+They come WITHOUT ANY WARRANTY. See COPYING for the complete license text and
+../NOTICE.md for source, attribution, and modification information.
+
+Upstream reference: https://github.com/Hextris/hextris
+Upstream copyright notice: Copyright (C) 2018 Logan Engstrom

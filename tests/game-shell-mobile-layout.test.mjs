@@ -73,5 +73,5 @@ test("all game entries share one explicit shell cache version", () => {
     assert.match(html, new RegExp(`game-shell\\.js\\?v=${shellCacheVersion}`), path);
   }
   assert.match(read("games/2048/source/index.html"), /styles\.css\?v=20260726-mobile-touch-r1/);
-  assert.match(read("games/hextris/source/index.html"), /styles\.css\?v=20260726-mobile-touch-r1/);
+  assert.match(read("games/hextris/source/index.html"), /styles\.css\?v=20260807-hextris-agent-gpl-r1/);
 });
