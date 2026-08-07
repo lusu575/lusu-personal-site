@@ -97,22 +97,30 @@ test("public tools fail closed unless id, domain, and launch target match the fi
   ]);
 });
 
-test("public game projection allowlists metadata and enables agent play only for 2048", async () => {
+test("public game projection distinguishes integrated and dedicated Agent sessions", async () => {
   const payload = await gameCatalog();
   const catalog = projectPublicGameCatalog(payload, { lang: "ja" });
   assert.equal(catalog.games.length, 5);
-  assert.deepEqual(catalog.games.filter((game) => game.agent.localSession).map((game) => game.id), ["2048"]);
+  assert.deepEqual(catalog.games.filter((game) => game.agent.localSession).map((game) => game.id), ["2048", "hextris"]);
   assert.deepEqual(catalog.games.find((game) => game.id === "2048").agent, {
     localSession: true,
     browserBridge: true,
-    browserPairing: false
+    browserPairing: false,
+    surface: "integrated"
   });
-  assert.ok(catalog.games.filter((game) => game.id !== "2048").every((game) => (
+  assert.deepEqual(catalog.games.find((game) => game.id === "hextris").agent, {
+    localSession: true,
+    browserBridge: false,
+    browserPairing: false,
+    surface: "dedicated-process"
+  });
+  assert.ok(catalog.games.filter((game) => !["2048", "hextris"].includes(game.id)).every((game) => (
     game.agent.localSession === false
     && game.agent.browserBridge === false
     && game.agent.browserPairing === false
+    && game.agent.surface === "none"
   )));
-  assert.deepEqual(projectPublicGameCatalog(payload, { agentOnly: true }).games.map((game) => game.id), ["2048"]);
+  assert.deepEqual(projectPublicGameCatalog(payload, { agentOnly: true }).games.map((game) => game.id), ["2048", "hextris"]);
   assert.match(catalog.games[0].launchPath, /^\/games\/[a-z0-9-]+\/\?lang=ja$/);
   assert.equal(getPublicGame(payload, "life-restart", { lang: "en" }).title, "Life Restart");
 

@@ -232,13 +232,38 @@ export async function migrateLocalD1() {
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260806-whiteboard-agent-images-r3'
+    where key = 'article_seed_version' and value = '20260807-hextris-agent-r1'
     union all
-    select 'whiteboard-reliable-sketch-update-article', count(*)
-    from articles where article_id = 'seed-update-2026-08-01-whiteboard-reliable-sketch'
+    select 'hextris-agent-update-article',
+      case when count(*) = 1 then 1 else 0 end
+    from articles
+    where article_id = 'seed-update-2026-08-07-hextris-agent'
+      and slug = '2026-08-07-hextris-agent'
+      and category = 'site-updates'
+      and status = 'published'
+      and published_at = '2026-08-07T00:30:00.000Z'
+    union all
+    select 'hextris-agent-update-translations',
+      case
+        when count(*) = 3
+          and count(distinct lang) = 3
+          and sum(case when lang in ('zh', 'en', 'ja') then 1 else 0 end) = 3
+          and sum(case
+            when length(trim(title)) > 0
+              and length(trim(summary)) > 0
+              and length(trim(content_markdown)) > 0
+            then 1 else 0 end) = 3
+        then 1 else 0
+      end
+    from article_translations
+    where article_id = 'seed-update-2026-08-07-hextris-agent'
     union all
     select 'whiteboard-agent-images-update-article', count(*)
     from articles where article_id = 'seed-update-2026-08-06-whiteboard-agent-images'
+    `),
+    ...await queryRows(`
+    select 'whiteboard-reliable-sketch-update-article' as item, count(*) as present
+    from articles where article_id = 'seed-update-2026-08-01-whiteboard-reliable-sketch'
     union all
     select 'whiteboard-agent-images-update-translations',
       case when count(*) = 3 then 1 else 0 end

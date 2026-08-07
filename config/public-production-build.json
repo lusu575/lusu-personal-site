@@ -47,6 +47,7 @@
       "excludePrefixes": [
         "a-dark-room/source/doc/",
         "a-dark-room/source/tools/",
+        "hextris/agent/",
         "kittens-game/source/test/",
         "kittens-game/source/tools/"
       ],

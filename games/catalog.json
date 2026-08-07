@@ -1,5 +1,5 @@
 {
-  "updated": "2026.07.19",
+  "updated": "2026.08.07",
   "games": [
     {
       "id": "kittens-game",
@@ -156,7 +156,7 @@
       },
       "license": {
         "name": "GPL-3.0-or-later",
-        "file": "source/LICENSE.txt",
+        "file": "source/COPYING",
         "url": "https://github.com/Hextris/hextris"
       },
       "repo": "https://github.com/Hextris/hextris",

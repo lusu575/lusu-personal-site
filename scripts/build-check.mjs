@@ -832,6 +832,7 @@ const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
 const whiteboardReleaseVersion = "20260806-agent-capabilities-quick-transfer-r1";
 const whiteboardAgentImagesReleaseVersion = "20260806-whiteboard-agent-images-r3";
+const hextrisAgentReleaseVersion = "20260807-hextris-agent-r1";
 const transferReleaseVersion = "20260806-whiteboard-agent-images-r1";
 const resourcesRouteVersion = transferReleaseVersion;
 const routeStyleVersion = knowledgeReaderVersion;
@@ -886,7 +887,7 @@ for (const route of lazyPublicRoutes) {
 
 for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", whiteboardReleaseVersion],
-  ["./data/home-content.mjs", whiteboardAgentImagesReleaseVersion],
+  ["./data/home-content.mjs", hextrisAgentReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", whiteboardAgentImagesReleaseVersion]
 ]) {
@@ -2886,7 +2887,7 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = "20260726-security-reliability-r1";
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = whiteboardAgentImagesReleaseVersion;
+const currentMainVersion = hextrisAgentReleaseVersion;
 const currentCssVersion = trustSafetyStatusVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260726-game-network-resilience-r1";
@@ -4239,13 +4240,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-06-whiteboard-agent-images";
-const finalUpdateSlug = "2026-08-06-whiteboard-agent-images";
+const finalUpdateId = "seed-update-2026-08-07-hextris-agent";
+const finalUpdateSlug = "2026-08-07-hextris-agent";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "AI Can Now Add Images to the Online Whiteboard";
-const finalPublishedAt = "2026-08-06T13:20:00.000Z";
+const finalTitleEn = "Hextris Now Supports a Dedicated AI Game Session";
+const finalPublishedAt = "2026-08-07T00:30:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -4273,6 +4274,7 @@ const changelog20260728Section = markdownSection(changelog, "## 2026-07-28");
 const changelog20260729Section = markdownSection(changelog, "## 2026-07-29");
 const changelog20260801Section = markdownSection(changelog, "## 2026-08-01");
 const changelog20260806Section = markdownSection(changelog, "## 2026-08-06");
+const changelog20260807Section = markdownSection(changelog, "## 2026-08-07");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4446,7 +4448,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-08-06">2026.08.06</time>',
+    '<time id="top-updated" datetime="2026-08-07">2026.08.07</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`,
     `/js/main.js?v=${finalMainVersion}`
@@ -4464,7 +4466,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260806Section.includes(token)) {
+    if (!changelog20260807Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }

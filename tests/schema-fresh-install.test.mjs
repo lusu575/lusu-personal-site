@@ -24,6 +24,7 @@ const agentCapabilitiesUpdateId = "seed-update-2026-08-06-agent-capabilities";
 const whiteboard2048AgentUpdateId = "seed-update-2026-08-06-whiteboard-2048-agent";
 const agentReadBreadthUpdateId = "seed-update-2026-08-06-agent-read-breadth";
 const japaneseAgentProgressUpdateId = "seed-update-2026-08-06-japanese-agent-progress";
+const hextrisAgentUpdateId = "seed-update-2026-08-07-hextris-agent";
 
 test("D1 schema initializes an empty database and remains idempotent", () => {
   const db = new DatabaseSync(":memory:");
@@ -97,6 +98,14 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       db.prepare("select count(*) as count from article_translations where article_id = ?").get(japaneseAgentProgressUpdateId).count,
       3
     );
+    assert.equal(
+      db.prepare("select count(*) as count from articles where article_id = ? and category = 'site-updates'").get(hextrisAgentUpdateId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(hextrisAgentUpdateId).count,
+      3
+    );
     const trafficSettings = JSON.parse(
       db.prepare("select value from site_runtime_state where key = 'traffic_control_settings_v1'").get().value
     );
@@ -106,7 +115,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260806-whiteboard-agent-images-r3"
+      "20260807-hextris-agent-r1"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),

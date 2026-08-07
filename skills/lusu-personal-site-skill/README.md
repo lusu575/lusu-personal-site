@@ -15,12 +15,15 @@ skills/lusu-personal-site-skill/SKILL.md
 - 正式发布仍由 GitHub `main` 触发 Cloudflare Pages；Dashboard 使用 `npm run build` 与输出目录 `dist`。标准构建先跑仓库守卫，再生成被 Git 忽略且不提交的内容哈希 `dist/` 部署产物；根 `wrangler.jsonc` 的 `pages_build_output_dir` 同步为 `dist`。缓存必须区分 HTML、哈希资产、未哈希源码与 API/JSON。
 - 根 `wrangler.jsonc` 只使用 Pages Git 部署支持的字段，不加入 Worker-only `observability` 或非标准 `secrets` 元数据；Secret 名称由 `.env.example` 空声明与运行时校验维护，独立 Worker 的 observability 放在自己的配置中。
 - 独立 `package-lock.json` 不会继承根 `overrides`；根依赖安全版本变化时必须逐个检查独立 npm 子项目，在各自清单补齐必要 override，并分别执行严格安装、测试与完整 `npm audit`。Windows 重建根 lockfile 时要在没有既有 `node_modules` 的干净目录中包含 optional／peer 依赖，并以严格 `npm ci` 验证跨平台条目，不能只凭 Windows 本机安装成功。
-- AI 能力层以 `lib/capabilities/registry.mjs` 为唯一声明源：`transport` 是目标面，只有 `availableTransports` 是已实现且可对外承诺的真实面；复合授权由 `requiredScopes` 全满足与 `anyOfScopes` 至少一个表达。CLI、本地 MCP 和远程 MCP 共享适配服务，不复制业务规则；本地已提供受限画板追加／图片／导出和隔离 2048，会话浏览器接管、其他游戏与其余能力仍以 registry 为准。
+- AI 能力层以 `lib/capabilities/registry.mjs` 为唯一声明源：`transport` 是目标面，只有 `availableTransports` 是已实现且可对外承诺的真实面；复合授权由 `requiredScopes` 全满足与 `anyOfScopes` 至少一个表达。CLI、本地 MCP 和远程 MCP 共享适配服务，不复制业务规则；本地已提供受限画板追加／图片／导出、集成式隔离 2048，以及独立 GPL 进程中的隔离 Hextris。两款游戏都没有浏览器配对或接管，其余能力仍以 registry 和安全目录的真实 profile 为准。
 - 本地 CLI / stdio MCP 使用账号持有者确认的设备码和最小 scope；`content:read`、Transfer scopes 可按需授予，`transfer:delete`、`whiteboard:read`／`whiteboard:write`／`whiteboard:assets` 与日语进度 read/write 默认不授予。画板图片上传要求 write+assets，原图读取要求 assets 加 read/write；设备码轮询只对明确瞬态故障在有效期内有界退避，不输出底层网络或凭据。Agent Bearer 永远是普通机器角色，不能访问管理接口；Transfer／Whiteboard 口令只从隐藏 stdin 或明确的本地环境变量引用取得，不进命令行、URL、日志、telemetry、MCP 输出或持久明文。
 - 设备授权和令牌管理 HTML 使用 `strict-origin`，JSON 使用 `no-referrer`；依赖 POST `Origin` 的表单不得套用会产生 `Origin: null` 的 `no-referrer`，也不得通过接受缺失／`null` Origin 或 Referer fallback 放宽边界。精确 Origin、登录态、CSRF 保持不变；外部顶层授权导航可进入，iframe／子资源继续拒绝。
 - 白板 Agent Bearer 与绑定当前 tokenId 的房间令牌必须分离；只允许基于最新完整 Yjs scene 追加受支持的高层元素，并用 operation ID + payload hash 幂等。图片还必须通过独立 assets scope、真实文件／allow-root、当前房已提交 `ImageMeta` 和 Pages→DO 可信 header 闭环；pending／跨房／URL／Base64／SVG／HTML／伪造元数据拒绝。服务端继续拒绝既有元素／资源改删、孤立资源、链接、绑定、未知根及任意 Yjs 注入；可复用规范资源或多次放置同图，简化本地 SVG／PNG 导出忽略图片时必须显式告警。
 - 2048 CLI／MCP 是有 CAS、action ID 去重、状态／TTL 上限和破坏性确认的隔离本地会话；页面虽有冻结语义 bridge，在建立受审计的配对通道前不得宣传为接管已打开的浏览器游戏。
-- 本地敏感 JSON 的 read-modify-write 必须用 owner-token 锁与同目录私有临时文件原子替换；游戏锁还需进程／心跳与释放前所有权校验。声明 readOnly 的观察／动作发现不得写文件、续 TTL 或顺带清理过期会话。
+- 游戏 Agent 接入前先审计代码／素材许可证、完整文本与 attribution。强 copyleft 游戏未经单独兼容性评估和站点所有者明确许可证决定，不得静态并入通用能力层；独立进程必须把引擎、状态、CLI、MCP、测试、COPYING 和 NOTICE 留在自己的目录。游戏目录以 `integrated`／`dedicated-process`／`none` 加独立 browser bridge／pairing 布尔值表达真实能力，不从“有本地会话”推断浏览器控制。
+- 只供本机运行的游戏 Agent 子树按完整前缀从 Pages `dist` 排除，不得为了绕过生产包名守卫只删除 `package.json` 后部署残缺程序；完整源码／许可证留在公开仓库，浏览器游戏所需许可证仍随站点发布。
+- 本地敏感 JSON 的 read-modify-write 必须用 owner-token 锁与同目录私有临时文件原子替换；游戏锁还需 token marker 非空目录、进程实例／PID／心跳、提交前所有权 fence，以及保留同 token 的 retiring 释放。存活 owner 失败关闭，恢复／释放只能删除精确 token 与文件身份，旧 owner 不得误删 successor。声明 readOnly 的观察／动作发现不得写文件、续 TTL 或顺带清理过期会话。
+- 凭据扫描覆盖已跟踪及未暂存源码，但按精确路径排除 Git-ignored 的本地运行证据（当前为 `自动新闻/data/mcp-runs/`）；不要为消除外部正文误报而放宽密钥模式或宽泛忽略源码目录。
 - CLI / stdio MCP 复用 `自动新闻/integrations/lusu-site/network-fetch.mjs` 的共享代理感知 fetch 并注入 `SiteClient`，兼容代理与直连环境；`SiteClient` 本身只接受注入的 fetch。代理值、代理凭据和 Agent Token 不得输出或写入日志。
 - 本机 credential 只允许发送到签发时相同的规范化 HTTP(S) origin；覆盖 CLI/MCP base URL 时不得把旧 origin 的 Bearer 带到 Preview 或其他站点，也不得在跨 origin logout 中删除旧凭据。当前 origin 的显式 stdin／环境 token 仍由操作者自行授权。
 - `workers/site-mcp/` 是独立且尚未部署的公开只读 remote MCP Worker，不得宣称已有正式地址。远程写能力必须先完成标准 OAuth、最小 scope、撤销与审计，不得把本地设备令牌直接暴露给公网 MCP。详细边界见 `docs/agent-capabilities/README.md`。

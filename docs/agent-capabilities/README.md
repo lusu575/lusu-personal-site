@@ -1,6 +1,6 @@
 # AI 能力层：架构与运行手册
 
-本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前五阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道（含真实图片闭环）、首个 2048 游戏适配器、视频／工具／游戏／日语题库的公开只读目录，以及日语账号进度读取与受控答题，并保留一个独立的 Cloudflare 远程 MCP Worker 工程；它不是“全站所有功能已经接入”或“远程写入已经上线”的声明。
+本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前六阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道（含真实图片闭环）、2048 集成式游戏适配器、独立 GPL 进程边界内的 Hextris 游戏适配器、视频／工具／游戏／日语题库的公开只读目录，以及日语账号进度读取与受控答题，并保留一个独立的 Cloudflare 远程 MCP Worker 工程；它不是“全站所有功能已经接入”“浏览器游戏已经接管”或“远程写入已经上线”的声明。
 
 ## 1. 先看能力注册表，不要靠猜
 
@@ -56,7 +56,8 @@ node .\cli\lusu.mjs help
 - `auth login|status|logout`：设备码登录、检查身份和撤销当前令牌。
 - `transfer join|ls|send|put|get|rm`：加入密码房、列出或传输内容；删除必须显式加 `--yes`。
 - `whiteboard join|scene|draw|asset put|asset get|export`：加入公共／密码房、读取场景摘要、上传／下载当前房真实图片、追加高层图形或图片并在本地导出；不支持修改／删除既有元素或资源，也不接受任意 Yjs 字节。
-- `game create|observe|actions|act|close`：运行隔离的本地 2048 会话；重置和关闭都需要显式确认。
+- `game create|observe|actions|act|close`：通过主 CLI 运行隔离的本地 2048 会话；重置和关闭都需要显式确认。
+- `games/hextris/agent/cli.mjs create|observe|actions|act|reset|close`：通过独立 GPL 进程运行确定性的 Hextris 本地会话；它不导入主 CLI，也不连接已经打开的浏览器页面。
 
 示例（不包含任何真实凭证）：
 
@@ -74,11 +75,12 @@ $env:LUSU_ROOM_SECRET | node .\cli\lusu.mjs transfer join --password-stdin
 node .\cli\lusu.mjs whiteboard join --public
 node .\cli\lusu.mjs whiteboard asset put BOARD_HANDLE .\image.png --operation-id wb_asset_0001
 node .\cli\lusu.mjs game create 2048
+node .\games\hextris\agent\cli.mjs create --seed 123
 ```
 
 默认站点地址是 `https://lusu575.com`。本地联调可使用全局参数 `--base-url <URL>` 或 `LUSU_BASE_URL` 指向实际预览地址。存储凭据严格绑定登录时的规范化 HTTP(S) origin；切到 Preview 或其他 origin 后不会复用、发送或删除原 origin 的 Bearer。确需给当前覆盖 origin 提供令牌时，只能由操作者显式通过 `--token-stdin` 或受控进程的 `LUSU_ACCESS_TOKEN` 注入。不要把生产令牌写进命令历史；常规使用优先采用 `auth login` 为目标 origin 创建的本机凭据文件。
 
-本地状态目录按以下顺序解析：`LUSU_CONFIG_DIR`、Windows 的 `%APPDATA%\lusu-cli`、其他系统的 `~/.config/lusu-cli`。其中的 `credentials.json`、`rooms.json`、`whiteboards.json` 与 `game-sessions/` 是本机私有状态，不得提交、上传或复制进日志。白板句柄和游戏会话 ID 都是不透明本地引用，不是服务器房间 ID 或授权凭证。白板句柄更新使用跨进程 owner-token 锁和同目录临时文件原子替换；游戏会话使用带 owner／进程／心跳校验的独立锁，不能退回无锁 read-modify-write 或先截断目标文件。
+主 CLI 本地状态目录按以下顺序解析：`LUSU_CONFIG_DIR`、Windows 的 `%APPDATA%\lusu-cli`、其他系统的 `~/.config/lusu-cli`。其中的 `credentials.json`、`rooms.json`、`whiteboards.json` 与 `game-sessions/` 是本机私有状态，不得提交、上传或复制进日志。Hextris 独立进程另按 `LUSU_HEXTRIS_AGENT_DIR`、Windows 的 `%APPDATA%\lusu-hextris-agent`、其他系统的 `~/.config/lusu-hextris-agent` 解析自己的状态根，不能与主 CLI 状态目录混用。白板句柄和游戏会话 ID 都是不透明本地引用，不是服务器房间 ID 或授权凭证。白板句柄更新使用跨进程 owner-token 锁和同目录临时文件原子替换；游戏会话使用 token marker 非空目录锁、PID／进程实例／心跳校验、同 token retiring 释放和提交前 owner fence，不能退回无锁 read-modify-write、先截断目标文件，或采用可能误删 successor 的“读 owner 后按公共路径删除”流程。
 
 ## 3. 本地 stdio MCP
 
@@ -112,7 +114,9 @@ node .\mcp\local\server.mjs
 - 在线画板：`whiteboard_join`、`whiteboard_scene`、`whiteboard_asset_upload`、`whiteboard_asset_download`、`whiteboard_draw`、`whiteboard_export`
 - 2048：`game_create`、`game_observe`、`game_actions`、`game_act`、`game_reset`、`game_close`
 
-本地 MCP 的公开内容、视频、游戏目录、日语题库／进度、Quick Transfer 与在线画板使用网站 API 或站点静态 JSON，因此依赖网络；工具目录来自受审查的本地公开数据模块。Quick Transfer、在线画板和日语账号进度还需要有效的 Agent Bearer 令牌及对应 scope。2048 隔离会话完全在本机运行，不发送站点请求。CLI 与 stdio MCP 会向 `SiteClient` 注入项目共享的代理感知 `fetch`，按 `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY` 工作；代理值、凭据和原始令牌不得写入日志或 MCP 输出。
+Hextris 不注册到上述通用服务。它由 `node .\games\hextris\agent\mcp-server.mjs` 启动专用 stdio MCP 进程，只公开 `hextris_session_create`、`hextris_session_observe`、`hextris_session_actions`、`hextris_session_act`、`hextris_session_reset` 与 `hextris_session_close`。这个进程及其引擎、存储和测试全部位于 `games/hextris/agent/`，不静态导入主站 `lib/capabilities/`、`cli/` 或 `mcp/local/`；完整 GPL 文本和来源说明随该目录发布。
+
+本地 MCP 的公开内容、视频、游戏目录、日语题库／进度、Quick Transfer 与在线画板使用网站 API 或站点静态 JSON，因此依赖网络；工具目录来自受审查的本地公开数据模块。Quick Transfer、在线画板和日语账号进度还需要有效的 Agent Bearer 令牌及对应 scope。2048 与 Hextris 隔离会话都完全在本机运行，不发送站点请求，但分别由通用进程和专用进程承载。通用 CLI 与 stdio MCP 会向 `SiteClient` 注入项目共享的代理感知 `fetch`，按 `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY` 工作；代理值、凭据和原始令牌不得写入日志或 MCP 输出。
 
 ## 4. 设备码授权、scope 与令牌管理
 
@@ -197,21 +201,28 @@ CLI 和 MCP 下载都不覆盖已有文件。目标文件以独占创建方式�
 - `operationId` 与载荷 SHA-256 形成每房幂等收据。同一载荷安全重试，不同载荷不得复用 ID；房间锁定时写入失败。公共房不设空房 TTL；密码房 Agent 写入会重置空房 24 小时期限，但不计在线人数。
 - `whiteboard_export` 只在 MCP allow-root 内独占创建目标，不覆盖现有文件。JSON 保留高层元素和图片资源引用；简化 SVG／PNG 当前忽略图片字节并返回警告，不能当作浏览器 Excalidraw 的像素级等价导出。
 
-## 7. 2048 隔离会话与页面桥
+## 7. 游戏隔离会话、页面桥与许可证边界
 
-首个游戏适配器只支持 `2048`。`game_create` 创建本机隔离会话，之后按 `observe -> actions -> act` 协议执行：
+主能力层的集成式游戏适配器支持 `2048`。`game_create` 创建本机隔离会话，之后按 `observe -> actions -> act` 协议执行：
 
 - observation 和 action 都是有界 JSON；AI 只能选择引擎声明的 `up`／`down`／`left`／`right` 语义动作，不能发送选择器、脚本、按键或任意页面调用。
 - 每次动作必须带当前 `expectedRevision` 和唯一 `clientActionId`。revision 不匹配会拒绝，最近 128 个 action ID 用于幂等重试；相同 ID 搭配不同动作会拒绝。
 - 会话数量、序列化状态大小和闲置 TTL 都有上限，并使用本地锁和原子替换持久化。`game_observe`／`game_actions` 是真实只读操作，不写文件、不延长 TTL；只有动作更新会续期。`game_reset`、CLI `--reset` 与 `game_close` 是破坏性操作，必须显式确认。
 - 2048 页面加载同一份纯引擎，并公开冻结的 `window.gamePage.agent` 语义桥，保留既有 `window.gamePage.save` 兼容性。当前 CLI／MCP 不与已经打开的浏览器页面配对，所以这是隔离模拟会话，不是远程接管或观看现有玩家会话。
 
+Hextris 使用相同的语义动作原则，但保持独立 GPL 进程边界：
+
+- `games/hextris/agent/engine.mjs` 只接受 `place` 加 0–5 号 lane，使用可复现种子产生 incoming block，并返回有界状态；不接受选择器、脚本、任意按键或浏览器控制命令。
+- 专用 CLI／MCP 的会话独立于浏览器游戏和主站 2048 会话，继续执行 revision CAS、`clientActionId` 最近 128 条幂等收据、数量／状态大小／24 小时闲置上限、token marker 非空目录锁与原子替换。锁对存活 PID／进程实例失败关闭，只恢复精确陈旧 owner；释放使用同 token retiring marker，所有持久化和删除在提交前执行 owner fence，旧 owner 不能误删 successor。observe／actions 不写文件、不续期；reset／close 必须显式确认。
+- Hextris 浏览器页面仍由原有游戏壳、本地存档和账号云存档服务；本阶段没有加入页面语义 bridge、配对、观看或接管。机器目录用 `agent.surface: "dedicated-process"` 与 2048 的 `"integrated"` 明确区分。
+- Hextris 浏览器副本和专用 Agent 程序均保留 GPL-3.0-or-later 全文、上游归属和本地修改说明。未经单独许可证评估与站点所有者明确决定，不得把这个实现静态导入主站通用 CLI／MCP 或共享能力库。
+
 ## 8. 公开目录与日语题库的安全投影
 
 第三阶段的目录工具读取的是公开内容，但仍不把面向浏览器的原始 manifest 直接交给 AI：
 
 - 工具目录只返回带稳定 `toolId` 的在线画板、Quick Transfer 和日语工具。示例占位卡、未完成资源和任意外链不进入机器能力面。
-- 游戏目录只返回稳定 ID、三语标题／摘要、语言支持、固定同源启动路径、许可证／仓库和真实 Agent 支持状态；不返回 `sourceEntry`、存储键／默认值、内部语言映射或任意启动查询。只有 2048 标记本地隔离会话与页面语义 bridge，其他游戏仍只是可发现、不可接管。
+- 游戏目录只返回稳定 ID、三语标题／摘要、语言支持、固定同源启动路径、许可证／仓库和真实 Agent 支持状态；不返回 `sourceEntry`、存储键／默认值、内部语言映射或任意启动查询。2048 标记集成式本地会话与页面语义 bridge，Hextris 标记独立进程本地会话但不标记页面 bridge，其余游戏仍只是可发现、不可接管。
 - 日语能力只访问固定 catalog、五个 level index 和由合法 `L1-001` 至 `L5-050` ID 推导出的固定 batch。适配器限制 JSON 字节、条目和搜索结果，验证 schema、`contentVersion: 1.0.2`、250 关计数、唯一 ID、64 位 SHA-256、`textLocked: true` 与关卡哈希；输出省略 batch 路径、内部音频文本和构建字段。
 - 所有公开目录参数只接受 zh／en／ja、白名单 ID、1–5 等级和有界 limit／query。URL 必须是固定站内路径或安全 GitHub HTTPS 地址，调用方不能借参数读取任意文件或 URL。
 
@@ -258,8 +269,8 @@ npm.cmd run dev
 
 ## 11. 仍是 inventory / planned 的能力
 
-- 白板读取、图片上传／下载、高层追加和本地导出，以及隔离的 2048 会话已经在本地 CLI／stdio MCP 可用；它们不表示远程 MCP 写入、白板任意编辑／删除，或浏览器游戏接管已经完成。
-- 五个游戏的安全目录已经可读，但除隔离 2048 外，其他游戏的语义动作 adapter、已打开浏览器游戏的配对／观看／控制，以及游戏云存档通用写入仍需单独适配与授权。
+- 白板读取、图片上传／下载、高层追加和本地导出、主能力层的隔离 2048 会话，以及专用 GPL 进程中的隔离 Hextris 会话已经在本地 CLI／stdio MCP 可用；它们不表示远程 MCP 写入、白板任意编辑／删除，或浏览器游戏接管已经完成。
+- 五个游戏的安全目录已经可读，其中 2048 是集成式适配器、Hextris 是独立进程适配器；其余三个游戏的语义动作 adapter、全部已打开浏览器游戏的配对／观看／控制，以及游戏云存档通用写入仍需单独适配与授权。
 - 日语等级／关卡公开内容和账号进度闭环已经可用；聊天写入、任意完整进度快照写入、游戏存档写入等条目仍只是既有 API 的 inventory 或受限入口，没有通用 CLI/MCP 写适配器。
 - Daily AI News、Tool Radar 的生产发布能力是 `restricted`，不会出现在公开远程 MCP 或通用本地 MCP 中。
 
@@ -292,7 +303,7 @@ npm.cmd test
 - 缺 scope 的令牌得到拒绝；Agent Bearer 不能访问管理员端点。
 - 日语进度 GET 不改变 revision／活动；答题拒绝未解锁关、旧题库／进度、额外派生字段、漏题／重题／未知选项，并覆盖同 operationId 同载荷重放与异载荷冲突。除已声明的日界线口径外，计分、奖牌、活动合并和解锁语义必须与浏览器 `recordAttempt()` 一致。
 - 白板 Agent Bearer 与房间访问令牌保持分离；追加验证只在独立 assets scope、可信内部 header 和当前房已提交元数据同时满足时接受规范图片，并继续拒绝既有修改／删除、孤立资源与未知根。scene／asset operation ID 的重试与冲突均有覆盖。
-- 2048 CAS、action ID 重放、状态篡改、会话上限、TTL，以及重置／关闭确认均有覆盖；测试不声称连接已打开的浏览器。
+- 2048 与 Hextris 的 CAS、action ID 重放、状态篡改、会话上限、TTL，以及重置／关闭确认均有覆盖；Hextris 还必须验证确定性种子、lane 边界和独立进程未导入主能力层。两者的测试都不声称连接已打开的浏览器。
 - 公开工具／游戏／日语适配器拒绝 traversal、恶意 ID、任意 URL、超限 JSON、重复 ID、版本／计数／hash／`textLocked` 不匹配，并确认输出不含源文件路径、存储键、题库 batch 路径或内部音频文本。
 - allow-root 的相对路径、绝对路径、`..`、链接逃逸及不存在父目录均有覆盖。
 - 下载已有文件时失败且原文件字节不变；失败下载不留下半成品。
@@ -303,6 +314,7 @@ npm.cmd test
 - 个人站的正常发布路径仍是合并到 GitHub `main` 后由 Cloudflare Pages 自动部署；不要把手工 Wrangler Pages 部署当成常规路径。
 - `workers/site-mcp` 是独立 Worker，第一阶段明确不部署。未来部署必须由站点所有者单独批准，并先复核 D1 binding、公开数据范围、域名/Origin、限流、监控与认证路线。
 - 本地 CLI 与 stdio MCP 本身不需要服务器部署；它们调用的 Agent Auth／Transfer／Whiteboard API 必须先存在于目标站点。白板 Pages Agent 路由依赖新的 Durable Object 协议，因此发布时必须先部署并验证兼容 Worker，再让 Pages 使用新路由。
+- Hextris 专用 Agent 也只从源码仓库在本机启动；生产构建整目录排除 `games/hextris/agent/`，不会把其 Node 包、会话存储或 stdio 服务复制到 Pages `dist`。浏览器 Hextris 与 `games/hextris/source/COPYING` 继续作为静态站点内容发布。
 - 任何验证命令都不得使用生产凭据、生产房间口令或 `--remote` D1。
 
 回滚时优先撤回代码或恢复上一版 Pages/Worker 路由；不要为了紧急回滚直接删除 D1 表。若 Agent Auth 已经上线，应先通过令牌管理页撤销令牌，再停用新入口，并保留哈希令牌记录与审计记录用于排查。当前远程 MCP 尚未部署，因此不存在需要回滚的线上 MCP 实例。

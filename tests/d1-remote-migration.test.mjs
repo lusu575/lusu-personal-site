@@ -305,6 +305,13 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
+  assert.match(verificationSql, /slug = '2026-08-07-hextris-agent'/);
+  assert.match(verificationSql, /category = 'site-updates'/);
+  assert.match(verificationSql, /status = 'published'/);
+  assert.match(verificationSql, /count\(distinct lang\) = 3/);
+  assert.match(verificationSql, /lang in \('zh', 'en', 'ja'\)/);
+  assert.match(verificationSql, /length\(trim\(content_markdown\)\) > 0/);
+  assert.match(verificationSql, /whiteboard-agent-images-update-translations/);
   assert.match(verificationSql, /seed-update-2026-08-01-whiteboard-reliable-sketch/);
 });
 

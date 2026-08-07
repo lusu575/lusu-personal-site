@@ -82,6 +82,7 @@ test("production policy is an explicit static allowlist with source and secret e
   assert.ok(games.excludeFiles.includes("a-dark-room/source/yarn.lock"));
   assert.ok(games.excludeFiles.includes("kittens-game/source/yarn.lock"));
   assert.ok(games.excludePrefixes.includes("a-dark-room/source/tools/"));
+  assert.ok(games.excludePrefixes.includes("hextris/agent/"));
   assert.ok(games.excludePrefixes.includes("kittens-game/source/tools/"));
   assert.deepEqual(games.excludeExtensions, [".po", ".pot"]);
   assert.ok(toolContent.excludeFiles.includes("blueprint.json"));
