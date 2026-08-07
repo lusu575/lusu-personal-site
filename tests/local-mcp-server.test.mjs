@@ -23,7 +23,9 @@ test("local MCP registers the first capability surface with safe annotations", a
   });
   const names = Object.keys(server._registeredTools);
   assert.deepEqual(names, [
-    "capabilities_list", "content_list", "content_search", "content_get", "daily_news_get", "videos_list",
+    "capabilities_list", "content_list", "content_search", "content_get",
+    "article_manage_list", "article_manage_get", "article_publish", "article_publish_files",
+    "article_update", "article_delete", "daily_news_get", "videos_list",
     "video_get", "tools_list", "tools_get", "games_list", "game_get",
     "japanese_subtext_levels", "japanese_subtext_stages", "japanese_subtext_stage_get",
     "japanese_subtext_progress_get", "japanese_subtext_attempt_submit",
@@ -34,6 +36,28 @@ test("local MCP registers the first capability surface with safe annotations", a
     "game_actions", "game_act", "game_reset", "game_close"
   ]);
   assert.equal(tool(server, "content_get").annotations.readOnlyHint, true);
+  assert.equal(tool(server, "article_manage_get").annotations.readOnlyHint, true);
+  assert.equal(tool(server, "article_publish").annotations.idempotentHint, true);
+  assert.equal(tool(server, "article_publish").annotations.destructiveHint, false);
+  assert.equal(tool(server, "article_update").annotations.destructiveHint, true);
+  assert.equal(tool(server, "article_delete").annotations.destructiveHint, true);
+  assert.equal(tool(server, "article_delete").inputSchema.safeParse({
+    articleId: "article-1",
+    operationId: "delete_article_001",
+    expectedUpdatedAt: "2026-08-07T10:00:00.000Z",
+    confirm: false
+  }).success, false);
+  assert.equal(tool(server, "article_publish").inputSchema.safeParse({
+    operationId: "publish_article_001",
+    slug: "mcp-article",
+    category: "note",
+    tags: [],
+    isPinned: false,
+    translations: {
+      zh: { title: "中文", contentMarkdown: "# 中文" },
+      en: { title: "English", contentMarkdown: "# English" }
+    }
+  }).success, false);
   assert.equal(tool(server, "video_get").annotations.readOnlyHint, true);
   assert.equal(tool(server, "tools_list").annotations.openWorldHint, false);
   assert.equal(tool(server, "games_list").annotations.openWorldHint, true);
@@ -105,6 +129,66 @@ test("local MCP registers the first capability surface with safe annotations", a
     operationId: "mcp_attempt_0001",
     progress: {}
   }).success, false);
+});
+
+test("local MCP atomically publishes inline or allow-root Markdown without forwarding file paths", async (t) => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-article-mcp-"));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  await Promise.all([
+    fs.writeFile(path.join(root, "zh.md"), "# 中文正文", "utf8"),
+    fs.writeFile(path.join(root, "en.md"), "# English body", "utf8"),
+    fs.writeFile(path.join(root, "ja.md"), "# 日本語本文", "utf8")
+  ]);
+  const calls = [];
+  const client = {
+    capabilities: () => [],
+    async publishArticle(payload) {
+      calls.push(["publish", payload]);
+      return { ok: true, article: { articleId: "article-1", slug: payload.slug } };
+    },
+    async updateArticle(articleId, payload) {
+      calls.push(["update", articleId, payload]);
+      return { ok: true, articleId };
+    },
+    async deleteArticle(articleId, payload) {
+      calls.push(["delete", articleId, payload]);
+      return { ok: true, articleId };
+    }
+  };
+  const server = await createLocalMcpServer({ client, credential: null, allowRoots: [root] });
+  const metadata = {
+    operationId: "publish_article_001",
+    slug: "atomic-article",
+    category: "note",
+    tags: ["MCP"],
+    isPinned: false
+  };
+  const published = await tool(server, "article_publish_files").handler({
+    ...metadata,
+    translations: {
+      zh: { title: "中文", contentFile: "zh.md" },
+      en: { title: "English", contentFile: "en.md" },
+      ja: { title: "日本語", contentFile: "ja.md" }
+    }
+  });
+  assert.equal(published.structuredContent.result.article.articleId, "article-1");
+  assert.equal(calls[0][1].translations.en.contentMarkdown, "# English body");
+  assert.equal(JSON.stringify(calls[0]).includes(root), false);
+  assert.equal(JSON.stringify(calls[0]).includes("contentFile"), false);
+
+  await tool(server, "article_update").handler({
+    articleId: "article-1",
+    operationId: "update_article_001",
+    expectedUpdatedAt: "2026-08-07T10:00:00.000Z",
+    translations: { zh: { title: "新标题", contentMarkdown: "# 新正文" } }
+  });
+  await tool(server, "article_delete").handler({
+    articleId: "article-1",
+    operationId: "delete_article_001",
+    expectedUpdatedAt: "2026-08-07T10:01:00.000Z",
+    confirm: true
+  });
+  assert.deepEqual(calls.slice(1).map((entry) => entry[0]), ["update", "delete"]);
 });
 
 test("local MCP sends stored credentials only to their matching normalized origin", async () => {
@@ -632,6 +716,43 @@ test("local MCP runs a bounded isolated 2048 session with CAS and explicit destr
   assert.equal(closed.structuredContent.result.closed, true);
 });
 
+test("local MCP drives Life Restart through semantic phase actions", async (t) => {
+  const configDir = await fs.mkdtemp(path.join(os.tmpdir(), "lusu-mcp-life-"));
+  t.after(() => fs.rm(configDir, { recursive: true, force: true }));
+  const server = await createLocalMcpServer({
+    client: { capabilities: () => [] },
+    credential: null,
+    allowRoots: [configDir],
+    env: { LUSU_CONFIG_DIR: configDir }
+  });
+  const created = await tool(server, "game_create").handler({ gameId: "life-restart" });
+  assert.equal(created.isError, undefined);
+  const sessionId = created.structuredContent.result.observation.sessionId;
+  assert.equal(created.structuredContent.result.observation.phase, "talent-selection");
+
+  const talentActions = await tool(server, "game_actions").handler({ sessionId });
+  const choose = talentActions.structuredContent.result.actions.find((entry) => entry.id === "choose-talents").action;
+  const chosen = await tool(server, "game_act").handler({
+    sessionId,
+    expectedRevision: 0,
+    clientActionId: "mcp_life_choose_001",
+    action: choose
+  });
+  assert.equal(chosen.structuredContent.result.observation.phase, "property-allocation");
+
+  const allocationActions = await tool(server, "game_actions").handler({ sessionId });
+  const allocate = allocationActions.structuredContent.result.actions.find((entry) => entry.id === "allocate-properties").action;
+  const allocated = await tool(server, "game_act").handler({
+    sessionId,
+    expectedRevision: 1,
+    clientActionId: "mcp_life_allocate_001",
+    action: allocate
+  });
+  assert.equal(allocated.structuredContent.result.observation.phase, "trajectory");
+  assert.equal(JSON.stringify(allocated).includes("localStorage"), false);
+  assert.equal(JSON.stringify(allocated).includes(configDir), false);
+});
+
 test("local MCP serves a clean stdio initialize and tools/list exchange", async () => {
   const input = new PassThrough();
   const output = new PassThrough();
@@ -665,7 +786,7 @@ test("local MCP serves a clean stdio initialize and tools/list exchange", async 
   })}\n`);
   const initialized = await waitForMessage(messages, (message) => message.id === 1);
   assert.equal(initialized.result.serverInfo.name, "lusu-personal-site-local");
-  assert.equal(initialized.result.serverInfo.version, "0.5.0");
+  assert.equal(initialized.result.serverInfo.version, "0.7.0");
   input.write(`${JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized", params: {} })}\n`);
   input.write(`${JSON.stringify({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} })}\n`);
   const listed = await waitForMessage(messages, (message) => message.id === 2);
@@ -678,8 +799,13 @@ test("local MCP serves a clean stdio initialize and tools/list exchange", async 
   assert.ok(listed.result.tools.some((entry) => entry.name === "japanese_subtext_stage_get"));
   assert.ok(listed.result.tools.some((entry) => entry.name === "japanese_subtext_progress_get"));
   assert.ok(listed.result.tools.some((entry) => entry.name === "japanese_subtext_attempt_submit"));
+  assert.ok(listed.result.tools.some((entry) => entry.name === "article_publish"));
+  assert.ok(listed.result.tools.some((entry) => entry.name === "article_publish_files"));
+  assert.ok(listed.result.tools.some((entry) => entry.name === "article_delete"));
   for (const name of [
     "video_get", "tools_list", "tools_get", "games_list", "game_get",
+    "article_manage_list", "article_manage_get", "article_publish", "article_publish_files",
+    "article_update", "article_delete",
     "japanese_subtext_levels", "japanese_subtext_stages", "japanese_subtext_stage_get",
     "japanese_subtext_progress_get", "japanese_subtext_attempt_submit"
   ]) {

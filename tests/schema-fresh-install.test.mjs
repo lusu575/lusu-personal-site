@@ -25,6 +25,7 @@ const whiteboard2048AgentUpdateId = "seed-update-2026-08-06-whiteboard-2048-agen
 const agentReadBreadthUpdateId = "seed-update-2026-08-06-agent-read-breadth";
 const japaneseAgentProgressUpdateId = "seed-update-2026-08-06-japanese-agent-progress";
 const hextrisAgentUpdateId = "seed-update-2026-08-07-hextris-agent";
+const lifeRestartAgentUpdateId = "seed-update-2026-08-07-life-restart-agent";
 
 test("D1 schema initializes an empty database and remains idempotent", () => {
   const db = new DatabaseSync(":memory:");
@@ -106,6 +107,14 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       db.prepare("select count(*) as count from article_translations where article_id = ?").get(hextrisAgentUpdateId).count,
       3
     );
+    assert.equal(
+      db.prepare("select count(*) as count from articles where article_id = ? and category = 'site-updates'").get(lifeRestartAgentUpdateId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(lifeRestartAgentUpdateId).count,
+      3
+    );
     const trafficSettings = JSON.parse(
       db.prepare("select value from site_runtime_state where key = 'traffic_control_settings_v1'").get().value
     );
@@ -115,7 +124,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260807-hextris-agent-r1"
+      "20260807-life-restart-agent-r1"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),
@@ -157,6 +166,13 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
         "target_id", "scopes", "result", "created_at"
       ]
     );
+    assert.deepEqual(
+      db.prepare("pragma table_info(agent_article_receipts)").all().map((column) => column.name),
+      [
+        "receipt_id", "user_id", "operation_id", "action", "payload_hash",
+        "article_id", "response_json", "created_at"
+      ]
+    );
     assert.equal(
       db.prepare(`
         select count(*) as count from sqlite_master
@@ -165,10 +181,11 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
           'agent_device_ip_created_idx',
           'agent_access_tokens_user_idx',
           'agent_access_tokens_expires_idx',
-          'agent_audit_created_idx'
+          'agent_audit_created_idx',
+          'agent_article_receipts_created_idx'
         )
       `).get().count,
-      5
+      6
     );
     assert.equal(db.prepare("select count(*) as count from agent_access_tokens").get().count, 0);
     assert.deepEqual(

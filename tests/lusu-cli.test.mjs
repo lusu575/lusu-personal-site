@@ -81,6 +81,81 @@ test("CLI exposes the governed article-list capability", async () => {
   assert.equal(result.articles[0].slug, "one");
 });
 
+test("CLI exposes authenticated atomic article publish, CAS update, and confirmed delete", async () => {
+  const calls = [];
+  const client = {
+    async publishArticle(payload) {
+      calls.push(["publish", payload]);
+      return { ok: true, article: { articleId: "article-1" } };
+    },
+    async updateArticle(articleId, payload) {
+      calls.push(["update", articleId, payload]);
+      return { ok: true, articleId };
+    },
+    async deleteArticle(articleId, payload) {
+      calls.push(["delete", articleId, payload]);
+      return { ok: true, articleId };
+    }
+  };
+  const env = {
+    LUSU_ACCESS_TOKEN: "admin-content-token",
+    LUSU_CONFIG_DIR: path.join(os.tmpdir(), `missing-${crypto.randomUUID()}`)
+  };
+  const run = (args, stdinValue = "") => runCli(args, {
+    client,
+    fetch: async () => { throw new Error("injected article client must handle the request"); },
+    readStdin: async () => stdinValue,
+    stdout: captureStream().stream,
+    stderr: captureStream().stream,
+    env
+  });
+  const publishPayload = {
+    operationId: "publish_article_001",
+    slug: "atomic-article",
+    translations: {
+      zh: { title: "中文", contentMarkdown: "# 中文" },
+      en: { title: "English", contentMarkdown: "# English" },
+      ja: { title: "日本語", contentMarkdown: "# 日本語" }
+    }
+  };
+  await run(["content", "publish", "--input", "-"], JSON.stringify(publishPayload));
+  await run(["content", "update", "article-1", "--input", "-"], JSON.stringify({
+    operationId: "update_article_001",
+    expectedUpdatedAt: "2026-08-07T10:00:00.000Z",
+    tags: ["MCP"]
+  }));
+  await run([
+    "content", "delete", "article-1",
+    "--expected-updated-at", "2026-08-07T10:01:00.000Z",
+    "--operation-id", "delete_article_001",
+    "--yes"
+  ]);
+  assert.deepEqual(calls, [
+    ["publish", publishPayload],
+    ["update", "article-1", {
+      operationId: "update_article_001",
+      expectedUpdatedAt: "2026-08-07T10:00:00.000Z",
+      tags: ["MCP"]
+    }],
+    ["delete", "article-1", {
+      operationId: "delete_article_001",
+      expectedUpdatedAt: "2026-08-07T10:01:00.000Z",
+      confirm: true
+    }]
+  ]);
+
+  await assert.rejects(
+    runCli(["content", "delete", "article-1"], {
+      client,
+      fetch: async () => { throw new Error("unconfirmed delete must not make a request"); },
+      stdout: captureStream().stream,
+      stderr: captureStream().stream,
+      env
+    }),
+    (error) => error.code === "CONFIRMATION_REQUIRED"
+  );
+});
+
 test("CLI reads one published video by a validated stable id", async () => {
   const stdout = captureStream();
   let requested;

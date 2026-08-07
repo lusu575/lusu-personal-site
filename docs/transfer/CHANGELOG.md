@@ -2,6 +2,11 @@
 
 本日志只记录临时互传子项目。根项目发布历史仍写入仓库根 `CHANGELOG.md`。
 
+## 1.0.7 - 2026-08-07
+
+- 共享能力注册表补充破坏性的游戏会话 reset 事实，通用 CLI 与 stdio MCP 接入 Life Restart 的严格语义动作，并将本地 MCP 版本升级到 0.6.0。
+- 本次修改命中 Quick Transfer 的共享受管入口，因此从 1.0.6 精确升至 1.0.7；没有改变互传房间、口令派生、AES-GCM 文字、私有 R2 文件、普通账号滚动 24 小时配额、Multipart、鉴权或发布完成后 24 小时过期语义，游戏能力也不能访问 Transfer 数据。
+
 ## 1.0.6 - 2026-08-06
 
 - 共享 Agent Auth、能力注册表、`SiteClient`、CLI 与 stdio MCP 增加在线画板图片上传／下载／放置能力，并以独立、非默认 `whiteboard:assets` scope 隔离原始图片访问。

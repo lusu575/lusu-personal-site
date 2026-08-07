@@ -298,6 +298,8 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_device_authorizations/);
   assert.match(verificationSql, /agent_access_tokens/);
   assert.match(verificationSql, /agent_audit_log/);
+  assert.match(verificationSql, /agent_article_receipts/);
+  assert.match(verificationSql, /agent_article_receipts_created_idx/);
   assert.match(verificationSql, /agent_device_status_expires_idx/);
   assert.match(verificationSql, /agent_device_ip_created_idx/);
   assert.match(verificationSql, /agent_access_tokens_user_idx/);
@@ -305,7 +307,7 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
-  assert.match(verificationSql, /slug = '2026-08-07-hextris-agent'/);
+  assert.match(verificationSql, /slug = '2026-08-07-life-restart-agent'/);
   assert.match(verificationSql, /category = 'site-updates'/);
   assert.match(verificationSql, /status = 'published'/);
   assert.match(verificationSql, /count\(distinct lang\) = 3/);

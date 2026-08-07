@@ -1,4 +1,4 @@
-const TRANSFER_VERSION = "20260806-whiteboard-agent-images-r1";
+const TRANSFER_VERSION = "20260807-life-restart-agent-r1";
 const FRAGMENT_PATH = "/fragments/quick-transfer.html";
 const FRAGMENT_CANONICAL_PATH = "/fragments/quick-transfer";
 const ALLOWED_FRAGMENT_PATHS = Object.freeze([FRAGMENT_PATH, FRAGMENT_CANONICAL_PATH]);

@@ -44,6 +44,23 @@ test("registry list, get, and filter APIs expose only matching capabilities", ()
   assert.equal(articleGet?.scope, "content:read");
   assert.equal(articleGet?.status, "available");
   assert.equal(getCapability("missing.capability"), null);
+  assert.deepEqual(
+    filterCapabilities({ domain: "knowledge-management", status: "available" }).map(({ id }) => id),
+    [
+      "content.articles.manage-list",
+      "content.articles.manage-get",
+      "content.articles.publish",
+      "content.articles.update",
+      "content.articles.delete"
+    ]
+  );
+  assert.equal(getCapability("content.articles.publish")?.scope, "content:write");
+  assert.equal(getCapability("content.articles.publish")?.idempotent, true);
+  assert.equal(getCapability("content.articles.delete")?.scope, "content:delete");
+  assert.equal(getCapability("content.articles.delete")?.destructive, true);
+  assert.deepEqual(getCapability("content.articles.publish")?.availableTransports, [
+    "site-api", "local-mcp", "cli"
+  ]);
 
   const remoteReads = listCapabilities({
     availableTransports: "remote-mcp",
@@ -87,6 +104,7 @@ test("registry list, get, and filter APIs expose only matching capabilities", ()
       "games.session.observe",
       "games.session.actions",
       "games.session.act",
+      "games.session.reset",
       "games.session.close"
     ]
   );

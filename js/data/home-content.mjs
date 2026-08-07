@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-07-life-restart-agent",
+      "slug": "2026-08-07-life-restart-agent",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "知识库", "原子发布", "MCP", "CLI", "人生重开模拟器", "安全"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-07T08:00:00.000Z",
+      "updated_at": "2026-08-07T08:00:00.000Z",
+      "published_at": "2026-08-07T08:00:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.08.07",
+      "title": {
+        "zh": "知识库原子发布 MCP 与人生重开语义会话上线",
+        "en": "Atomic Knowledge Publishing MCP and Life Restart Sessions",
+        "ja": "知識ベース原子公開 MCP と Life Restart セッションを追加"
+      },
+      "summary": {
+        "zh": "本地 stdio MCP 现已支持三语知识库文章的原子发布、Markdown 文件发布、CAS 更新和确认删除，并继续提供可复现的人生重开游戏会话；写入仅接受管理员批准的独立 scope。",
+        "en": "The local stdio MCP now atomically publishes trilingual knowledge articles, publishes Markdown files, performs CAS updates and confirmed deletes, and also runs reproducible Life Restart sessions. Writes require separately administrator-approved scopes.",
+        "ja": "ローカル stdio MCP で、3言語の知識記事の原子的公開、Markdown ファイル公開、CAS 更新、確認付き削除に対応し、再現可能な Life Restart セッションも利用できます。書き込みには管理者が別途承認した scope が必要です。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-07-hextris-agent",
       "slug": "2026-08-07-hextris-agent",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "第四阶段为本地 CLI／stdio MCP 加入账号日语进度读取和服务端判分的答题提交；新增权限、版本冲突与幂等保护，远程 MCP 仍未部署。",
         "en": "Phase four adds account-bound Japanese progress reads and server-scored attempt submission to the local CLI/stdio MCP, with dedicated scopes, revision checks, and idempotency. The remote MCP remains undeployed.",
         "ja": "第4段階ではローカル CLI／stdio MCP にアカウント連携の学習進捗取得とサーバー採点の解答送信を追加しました。専用権限、リビジョン検査、冪等性を備え、リモート MCP は未展開のままです。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-06-agent-read-breadth",
-      "slug": "2026-08-06-agent-read-breadth",
-      "category": "site-updates",
-      "tags": ["网站更新", "AI 能力", "MCP", "CLI", "工具", "游戏", "日语"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-06T05:30:00.000Z",
-      "updated_at": "2026-08-06T05:30:00.000Z",
-      "published_at": "2026-08-06T05:30:00.000Z",
-      "fallbackOnly": true,
-      "icon": "resources",
-      "date": "2026.08.06",
-      "title": {
-        "zh": "AI 只读能力扩展到工具、游戏与日语关卡",
-        "en": "AI Read Access Expands to Tools, Games, and Japanese Stages",
-        "ja": "AI の読み取り機能をツール・ゲーム・日本語問題へ拡張"
-      },
-      "summary": {
-        "zh": "第三阶段为本地 CLI／stdio MCP 补齐视频详情、三项真实工具、五个游戏的安全目录和 250 个日语潜台词关卡；远程 MCP 仍未部署，也没有新增远程写入。",
-        "en": "Phase three adds video details, three real tools, a safe catalog of five games, and 250 Japanese subtext stages to the local CLI/stdio MCP. The remote MCP remains undeployed with no new remote writes.",
-        "ja": "第3段階ではローカル CLI／stdio MCP に動画詳細、3つの実用ツール、5ゲームの安全な一覧、250問の日本語含意問題を追加しました。リモート MCP は未展開で、遠隔書き込みも追加していません。"
       }
     }
   ]
