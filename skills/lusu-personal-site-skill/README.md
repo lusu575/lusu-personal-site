@@ -27,7 +27,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 异步并发测试优先等待 mock／hook 发出的 deferred 信号，不用固定次数的 1ms 轮询猜测请求进度；只有无法暴露确定事件时才使用带真实 deadline 的有界轮询。
 - CLI / stdio MCP 复用 `自动新闻/integrations/lusu-site/network-fetch.mjs` 的共享代理感知 fetch 并注入 `SiteClient`，兼容代理与直连环境；`SiteClient` 本身只接受注入的 fetch。代理值、代理凭据和 Agent Token 不得输出或写入日志。
 - 本机 credential 只允许发送到签发时相同的规范化 HTTP(S) origin；覆盖 CLI/MCP base URL 时不得把旧 origin 的 Bearer 带到 Preview 或其他站点，也不得在跨 origin logout 中删除旧凭据。当前 origin 的显式 stdin／环境 token 仍由操作者自行授权。
-- `workers/site-mcp/` 是独立且尚未部署的公开只读 remote MCP Worker，不得宣称已有正式地址。远程写能力必须先完成标准 OAuth、最小 scope、撤销与审计，不得把本地设备令牌直接暴露给公网 MCP。详细边界见 `docs/agent-capabilities/README.md`。
+- `workers/site-mcp/` 是尚未部署的公开只读 Worker 目标；站长写能力位于独立 `workers/site-admin-mcp/`，必须使用 OAuth 2.1 + PKCE、精确 resource、最小 scope、D1 grant／审计和管理员实时复核，不得复用设备令牌或会话 Cookie。仓库实现和本地测试不代表正式地址可用；真实生产发布与 OAuth 写入闭环完成后，才可更新 registry 的 `availableTransports` 和对外文档。详细边界见 `docs/agent-capabilities/README.md`。
 - 工具、游戏和题库的机器只读目录必须使用有界安全投影，不原样暴露前端 manifest。固定同源路径／版本并校验 ID、数量、大小、URL、hash 与锁定状态；占位工具不进入目录，内部源路径、存储键、语言映射、题库批次路径与音频构建字段不对 CLI／MCP 输出，游戏可控状态只按真实适配器声明。
 - 日语账号进度只返回专用有界投影；Agent 写入只能提交已解锁关卡的锁定版本／哈希、完整逐题选项、进度 revision 与 operationId，由服务端判分、计次、授予最高 bronze 的 bilingual 辅助奖牌并解锁下一关。不得暴露浏览器完整进度快照 PUT 或接受调用方伪造的分数、奖牌、解锁和时间戳；相同 operationId 只可重放完全相同载荷。若不改公开应用／题库／存档兼容，`appVersion` 与 `contentVersion` 不随 Agent 接口变化。
 - GitHub 共享 runner 的首页首屏 TBT 固定采样三次并按原预算检查中位数，其他场景仍只测一次；网络体积、load、CLS、内存、运行时错误等结构性门槛逐样本检查，任一次失败都阻断。

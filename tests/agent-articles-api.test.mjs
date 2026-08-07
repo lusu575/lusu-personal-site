@@ -7,6 +7,11 @@ import {
   handleAgentArticlesApi,
   isAgentArticlesApiPath
 } from "../functions/api/agent-articles.mjs";
+import {
+  deleteAgentArticleService,
+  listAgentArticlesService,
+  publishAgentArticleService
+} from "../functions/api/agent-article-service.mjs";
 
 class D1Statement {
   constructor(database, sql, values = []) {
@@ -823,4 +828,55 @@ test("article mutation JSON is strict and enforces field, translation, text, and
   assert.equal(count(fixture.DB, "articles"), 0);
   assert.equal(count(fixture.DB, "agent_audit_log"), 0);
   assert.equal(count(fixture.DB, "agent_article_receipts"), 0);
+});
+
+test("transport-neutral article service accepts OAuth principals and rechecks current admin role", async () => {
+  const fixture = createFixture();
+  const principal = {
+    authType: "oauth",
+    userId: "admin-1",
+    clientId: "https://client.example.test/metadata.json",
+    grantRef: "oauth-grant-test-1",
+    effectiveScopes: ["content:delete", "content:write"]
+  };
+  const created = await publishAgentArticleService({
+    env: fixture.env,
+    principal,
+    payload: publishPayload("service-publish-0001", "service-publish")
+  });
+  assert.equal(created.status, 201);
+  assert.equal(created.payload.ok, true);
+  assert.equal(created.payload.duplicate, false);
+
+  const listed = await listAgentArticlesService({
+    env: fixture.env,
+    principal,
+    query: { status: "published", limit: 10 }
+  });
+  assert.equal(listed.status, 200);
+  assert.equal(listed.payload.articles.length, 1);
+  assert.equal(listed.payload.articles[0].articleId, created.payload.articleId);
+
+  const audit = fixture.DB.sqlite.prepare(`
+    select token_id, scopes from agent_audit_log
+    where action = 'agent-article-published'
+  `).get();
+  assert.equal(audit.token_id, `oauth:${principal.grantRef}`);
+  assert.deepEqual(JSON.parse(audit.scopes), ["content:delete", "content:write"]);
+
+  fixture.DB.sqlite.prepare("update users set role = 'user' where id = ?").run(principal.userId);
+  await assert.rejects(
+    deleteAgentArticleService({
+      env: fixture.env,
+      principal,
+      articleId: created.payload.articleId,
+      payload: {
+        operationId: "service-delete-0001",
+        expectedUpdatedAt: created.payload.updatedAt,
+        confirm: true
+      }
+    }),
+    (error) => error?.status === 403 && error?.code === "AGENT_ADMIN_REQUIRED"
+  );
+  assert.equal(count(fixture.DB, "articles"), 1);
 });

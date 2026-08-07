@@ -1,6 +1,6 @@
 # AI 能力层：架构与运行手册
 
-本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前七阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道（含真实图片闭环）、2048 与人生重开模拟器的集成式游戏适配器、独立 GPL 进程边界内的 Hextris 游戏适配器、知识库文章的管理员原子发布／CAS 更新／确认删除、视频／工具／游戏／日语题库的公开只读目录，以及日语账号进度读取与受控答题，并保留一个独立的 Cloudflare 远程 MCP Worker 工程；它不是“全站所有功能已经接入”“浏览器游戏已经接管”或“公网远程 MCP 写入已经上线”的声明。
+本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前七阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道（含真实图片闭环）、2048 与人生重开模拟器的集成式游戏适配器、独立 GPL 进程边界内的 Hextris 游戏适配器、知识库文章的管理员原子发布／CAS 更新／确认删除、视频／工具／游戏／日语题库的公开只读目录，以及日语账号进度读取与受控答题；仓库另有未部署的公开只读 Worker 和待生产激活的站长 OAuth Worker。它不是“全站所有功能已经接入”“浏览器游戏已经接管”或“公网远程 MCP 写入已经上线”的声明。
 
 ## 1. 先看能力注册表，不要靠猜
 
@@ -173,7 +173,7 @@ Agent Bearer 仍只代表一个普通机器会话，不能进入 `/api/admin/*` 
 - `article_delete` 必须同时提供 `confirm: true`、`expectedUpdatedAt`、独立 `content:delete` scope 与 `operationId`。精确重试即使文章已经删除也能读取原收据；不同载荷复用 ID 会失败。
 - publish／update／delete 收据由周期健康检查按 180 天边界分批清理。调用方必须永久生成新的 `operationId`，不得把过期后的旧 ID 当成可复用 ID；只有收据仍在保留窗口内时，服务端才保证精确重试返回原结果。
 - `site-updates`、`daily-ai-news` 与 `tool-radar` 是受治理发布通道，通用文章 Agent 工具明确拒绝创建、修改或删除这些分类；它们继续遵守各自的公开更新／自动投递规则。
-- 管理列表和详情只通过专用 `/api/agent/articles*` 暴露给已授权管理员令牌；独立的 `workers/site-mcp/` 仍是未部署、公开只读的工程，不包含这些写工具。
+- Pages 设备通道仍通过专用 `/api/agent/articles*` 暴露给已授权管理员令牌；站长远程 OAuth 工程复用同一 transport-neutral 文章服务，不复制发布规则。独立的 `workers/site-mcp/` 仍是未部署、公开只读的工程，不包含这些写工具。
 
 ## 5. Quick Transfer 的秘密与文件边界
 
@@ -257,9 +257,9 @@ Hextris 使用相同的语义动作原则，但保持独立 GPL 进程边界：
 - Agent 活动日固定按站点 `Asia/Shanghai` 日界线计算，GET 投影的 `activity.timeZone` 会明确返回这一口径；浏览器应用仍按设备本地日记录其原生会话，两者的计分、奖牌、解锁与合并规则相同。
 - 浏览器现有 Cookie `GET/PUT /api/tools/japanese-subtext/progress` 继续负责原应用的完整快照合并，没有改成 Agent 接口。此次未修改公开应用、题库和存档兼容边界，所以 appVersion 仍为 1.0.3、contentVersion 仍为 1.0.2。
 
-## 10. 远程 Cloudflare MCP：当前只是未部署的公开只读面
+## 10. 远程 Cloudflare MCP：公开目标与站长 OAuth 生产候选
 
-独立工程位于 `workers/site-mcp/`。它当前没有部署，也没有 OAuth；不要把仓库中的 Worker 配置理解为线上端点已经存在。
+公开只读工程位于 `workers/site-mcp/`。它当前没有部署，也没有 OAuth；不要把仓库中的 Worker 配置理解为线上端点已经存在。其工具注册器可被独立站长工程复用，但公开 Worker 自身始终不承载账号或写权限。
 
 设计边界：
 
@@ -271,7 +271,19 @@ Hextris 使用相同的语义动作原则，但保持独立 GPL 进程边界：
 - Daily AI News 通过 `content_list(category: "daily-ai-news")` 找到文章，再调用 `article_get`，不是单独的发布或自动化工具。
 - 保留 MCP handler 默认的 Host 与浏览器 Origin 校验，不得改成通配放行。
 
-部署目标 `compatibility_date` 是 `2026-08-06`，并启用 `nodejs_compat`。当前锁定的 Wrangler 所带本地 workerd 最多支持 `2026-07-29`，所以 `npm.cmd run dev` 和 Vitest 只在本地使用 `2026-07-29` override；这个 override 不是生产目标，升级 Wrangler/workerd 后应移除。
+站长专用工程位于 `workers/site-admin-mcp/`，目标地址为 `https://lusu575.com/mcp`。它自己创建 MCP SDK server，注册上述四个公开工具，再加入 `article_manage_list`、`article_manage_get`、`article_publish`、`article_update`、`article_delete`。本地 `article_publish_files` 需要 allow-root 与真实文件边界，永远不进入远程面。
+
+站长入口的身份边界：
+
+- OAuth 2.1 authorization code + 强制 PKCE S256；authorization 与 token 都必须带唯一、精确的 RFC 8707 resource `https://lusu575.com/mcp`。
+- `content:read` 是基线；管理读取、原子发布和更新要求 `content:write`，永久删除还要求 `content:delete`。工具始终可发现，缺 scope 通过标准 `mcp/www_authenticate` 发起增量授权。
+- 浏览器只使用现有 HttpOnly `lusu_session` 确认站长身份，Cookie 不交给 MCP 客户端；远程入口拒绝站点设备 Bearer。Provider token 解包后仍独立复核到期、audience、client、scope、D1 active grant 与当前管理员角色。
+- 动态注册兼容 DCR 和 CIMD；回调最多四个，默认只收 HTTPS，HTTP 仅允许 loopback 并在三语同意页警告。注册按 HMAC-IP 使用 D1 原子 UPSERT 限流；未验证的 `software_statement` 拒绝。
+- 短期授权 state、PKCE 与 consent flow 放在独立 KV；grant 与审计放在 D1。Worker 禁用 workers.dev 和持久 observability，路由先用 query-safe wildcard 命中，再由代码中的精确 pathname allowlist 收窄。
+
+该工程当前仍是生产候选：提交配置中的 `OAUTH_KV` 为全零占位，部署预检会失败关闭。首次激活必须先创建真实 KV、替换 ID、完成 check／preflight／dry-run、迁移并回读 Production D1，再把独立高熵 Secret 通过最终 `wrangler deploy --secrets-file` 的仓库外临时文件与首版一起提交；不能先运行会创建并立即部署版本的 `wrangler secret put`。正式域名 OAuth 原子发布／幂等／CAS／删除闭环完成后，才能公布地址或更新 registry 的 `availableTransports`。
+
+公开 Worker 部署目标 `compatibility_date` 是 `2026-08-06`，并启用 `nodejs_compat`。当前锁定的 Wrangler 所带本地 workerd 最多支持 `2026-07-29`，所以 `npm.cmd run dev` 和 Vitest只在本地使用 `2026-07-29` override；这个 override 不是生产目标，升级 Wrangler/workerd 后应移除。
 
 本地验证：
 
@@ -281,9 +293,13 @@ npm.cmd install
 npm.cmd run typecheck
 npm.cmd test
 npm.cmd run dev
+
+Set-Location ..\site-admin-mcp
+npm.cmd install
+npm.cmd run check
 ```
 
-本地开发不要加 `--remote`，不要连接生产 D1，也不要执行 `wrangler deploy`。远程写操作必须等第一方 OAuth 2.1、用户映射、最小 scope 与审计边界完成后再单独设计；不能把网站 `lusu_session` cookie 转交给 MCP。
+普通本地开发不要加 `--remote`，不要连接生产 D1，也不要执行 `wrangler deploy`。只有站点所有者明确批准的生产激活流程才可创建资源、迁移与部署；任何路径都不能把网站 `lusu_session` cookie 或设备令牌转交给 MCP。
 
 ## 11. 仍是 inventory / planned 的能力
 
@@ -312,6 +328,9 @@ git diff --stat
 Set-Location .\workers\site-mcp
 npm.cmd run typecheck
 npm.cmd test
+
+Set-Location ..\site-admin-mcp
+npm.cmd run check
 ```
 
 还应验证以下安全契约：
@@ -326,14 +345,14 @@ npm.cmd test
 - 公开工具／游戏／日语适配器拒绝 traversal、恶意 ID、任意 URL、超限 JSON、重复 ID、版本／计数／hash／`textLocked` 不匹配，并确认输出不含源文件路径、存储键、题库 batch 路径或内部音频文本。
 - allow-root 的相对路径、绝对路径、`..`、链接逃逸及不存在父目录均有覆盖。
 - 下载已有文件时失败且原文件字节不变；失败下载不留下半成品。
-- 远程 MCP 只能读取已发布文章，返回内容和结果大小有界，错误输出不泄露 SQL 或凭据。
+- 公开远程工具只能读取已发布文章，返回内容和结果大小有界；站长工具必须按精确 OAuth scope、active grant、当前管理员角色、operationId、CAS 与确认条件失败关闭。两者的错误输出都不能泄露 SQL、token、code、state、Cookie、原始 IP、回调或文章正文。
 
 部署边界：
 
 - 个人站的正常发布路径仍是合并到 GitHub `main` 后由 Cloudflare Pages 自动部署；不要把手工 Wrangler Pages 部署当成常规路径。
-- `workers/site-mcp` 是独立 Worker，第一阶段明确不部署。未来部署必须由站点所有者单独批准，并先复核 D1 binding、公开数据范围、域名/Origin、限流、监控与认证路线。
+- `workers/site-mcp` 是独立公开 Worker，第一阶段明确不部署。`workers/site-admin-mcp` 是单独的站长生产候选；只可在真实 KV／Secret、D1 schema、精确路由、OAuth 元数据、正式域名 401 challenge 和完整写入闭环均验证后上线。Pages 仍由 GitHub `main` 自动部署，不能用站长 Worker 的 Wrangler 发布代替 Pages 发布。
 - 本地 CLI 与 stdio MCP 本身不需要服务器部署；它们调用的 Agent Auth／Transfer／Whiteboard API 必须先存在于目标站点。白板 Pages Agent 路由依赖新的 Durable Object 协议，因此发布时必须先部署并验证兼容 Worker，再让 Pages 使用新路由。
 - Hextris 专用 Agent 也只从源码仓库在本机启动；生产构建整目录排除 `games/hextris/agent/`，不会把其 Node 包、会话存储或 stdio 服务复制到 Pages `dist`。浏览器 Hextris 与 `games/hextris/source/COPYING` 继续作为静态站点内容发布。
 - 任何验证命令都不得使用生产凭据、生产房间口令或 `--remote` D1。
 
-回滚时优先撤回代码或恢复上一版 Pages/Worker 路由；不要为了紧急回滚直接删除 D1 表。若 Agent Auth 已经上线，应先通过令牌管理页撤销令牌，再停用新入口，并保留哈希令牌记录与审计记录用于排查。当前远程 MCP 尚未部署，因此不存在需要回滚的线上 MCP 实例。
+回滚时优先撤回代码或恢复上一版 Pages/Worker 路由；不要为了紧急回滚直接删除 D1 表。若 Agent Auth 已经上线，应先通过令牌管理页撤销令牌，再停用新入口，并保留哈希令牌记录与审计记录用于排查。站长 OAuth Worker 尚未完成生产激活时不存在可宣称的线上 MCP 实例；激活后回滚应先撤销 active grants／路由，再保留 D1 grant 与审计证据，不删除账本。

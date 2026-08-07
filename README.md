@@ -32,6 +32,7 @@
 - 本地机器客户端通过网站设备码页面由账号持有者确认，令牌按 `content:read`、Transfer 与 Whiteboard 的最小 scope 授权；删除和画板 scope 均非默认。机器 Bearer 令牌不能获得管理员权限；房间口令不放进命令行、URL、日志或分析数据，Transfer 文字密钥始终在本地派生。
 - 2048 适配器使用共享纯引擎、revision CAS 和 clientActionId 去重；CLI／MCP 会话与已打开的浏览器隔离，不应描述为远程接管现有游戏。页面只预留了冻结的语义 Agent bridge，并保留原有云存档兼容入口。
 - `workers/site-mcp/` 是独立的远程 MCP Worker 工程，当前只提供公开内容的只读能力。代码和本地测试已就绪，但未部署、未提供正式远程 MCP 地址，也没有在线画板、游戏或其他写工具；这些本地能力不改变远程 OAuth 前置条件。
+- `workers/site-admin-mcp/` 是与公开 Worker 分离的站长 OAuth 远程 MCP 生产候选，复用公开读取和知识库原子业务服务；代码已覆盖标准 OAuth、最小 scope、撤销和审计，但生产 KV／Secret／D1 迁移与正式域名闭环完成前仍不得把 `https://lusu575.com/mcp` 宣称为可用入口。
 - 能力盘点、安全边界、本地使用和远程部署前清单见 `docs/agent-capabilities/README.md`。
 
 鲁肃的个人站，一个保留 Windows XP + Pixel Art + Y2K 桌面识别度、同时提供原创移动虚拟 OS 的个人空间。
@@ -145,6 +146,7 @@ Cloudflare Pages Git 部署必须与仓库契约保持一致：框架预设 `Non
 - AI 能力注册表：`lib/capabilities/registry.mjs`
 - 本地 CLI / stdio MCP：`cli/lusu.mjs`、`mcp/local/server.mjs`
 - 远程只读 MCP Worker（未部署）：`workers/site-mcp/`
+- 站长 OAuth 远程 MCP Worker（生产激活待点检）：`workers/site-admin-mcp/`
 - AI 能力架构与运维：`docs/agent-capabilities/README.md`
 - D1 schema：`cloudflare/schema.sql`
 - 日语潜台词训练器：`tools/japanese-subtext/`（维护与离线语音说明见其 `README.md`）

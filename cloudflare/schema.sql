@@ -74,6 +74,61 @@ create index if not exists agent_access_tokens_expires_idx
 create index if not exists agent_audit_created_idx
   on agent_audit_log(created_at, action);
 
+create table if not exists mcp_oauth_grants (
+  grant_ref text primary key,
+  user_id text not null references users(id) on delete cascade,
+  client_id text not null,
+  client_name text not null default '',
+  resource text not null,
+  authorized_scopes text not null default '[]',
+  status text not null default 'pending',
+  created_at text not null,
+  activated_at text not null default '',
+  expires_at text not null default '',
+  revoked_at text not null default '',
+  revoked_reason text not null default '',
+  last_used_at text not null default ''
+);
+
+create table if not exists mcp_oauth_audit_log (
+  event_id text primary key,
+  user_id text not null default '',
+  client_id text not null default '',
+  grant_ref text not null default '',
+  token_ref_hash text not null default '',
+  resource text not null default '',
+  capability_id text not null default '',
+  tool_name text not null default '',
+  operation_id text not null default '',
+  target_type text not null default '',
+  target_id_hash text not null default '',
+  requested_scopes text not null default '[]',
+  effective_scopes text not null default '[]',
+  action text not null,
+  result text not null default '',
+  error_code text not null default '',
+  ip_hash text not null default '',
+  created_at text not null
+);
+
+create table if not exists mcp_oauth_registration_limits (
+  bucket_key text primary key,
+  request_count integer not null default 0,
+  expires_at text not null,
+  updated_at text not null
+);
+
+create index if not exists mcp_oauth_grants_user_status_idx
+  on mcp_oauth_grants(user_id, status, created_at);
+create index if not exists mcp_oauth_grants_client_resource_idx
+  on mcp_oauth_grants(client_id, resource, status);
+create index if not exists mcp_oauth_audit_created_idx
+  on mcp_oauth_audit_log(created_at, action);
+create index if not exists mcp_oauth_audit_grant_idx
+  on mcp_oauth_audit_log(grant_ref, created_at);
+create index if not exists mcp_oauth_registration_limits_expires_idx
+  on mcp_oauth_registration_limits(expires_at);
+
 create table if not exists user_login_events (
   event_id text primary key,
   user_id text not null references users(id) on delete cascade,

@@ -27,12 +27,17 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             workers/site-mcp/package-lock.json
+            workers/site-admin-mcp/package-lock.json
 
       - name: Install locked dependencies
         run: npm ci
 
       - name: Install locked Site MCP dependencies
         working-directory: workers/site-mcp
+        run: npm ci
+
+      - name: Install locked owner MCP dependencies
+        working-directory: workers/site-admin-mcp
         run: npm ci
 
       - name: Initialize local D1

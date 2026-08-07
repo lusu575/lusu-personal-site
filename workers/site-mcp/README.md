@@ -4,9 +4,10 @@ Stateless, public, read-only MCP access to LuSu's published site content. The
 Worker shares the production D1 database and the repository's capability and
 public-content services; it does not call the public website over HTTP.
 
-This first slice is intentionally not deployed and does not implement OAuth.
-Only already-public, read-only operations belong here until the site has a
-first-party OAuth 2.1 authorization bridge with per-user scopes. Transfer room
+This standalone public target is intentionally not deployed and does not implement
+OAuth. Its public tool registrar is also reused by the separate owner-only
+`workers/site-admin-mcp/` server, which supplies its own MCP SDK instance and
+OAuth boundary. Only already-public, read-only operations belong in this project. Transfer room
 passwords, local files, account saves, chat writes, whiteboard writes,
 publishing, and administrator operations must not be added to this unauthenticated
 Worker.
@@ -69,9 +70,8 @@ do not treat the older local date as the deployment target.
 ## Authentication boundary
 
 The public read-only surface is useful without login because it only exposes
-already-published records. A future authenticated surface must live behind
-OAuth 2.1 with PKCE/resource indicators and narrowly issued scopes. It must map
-tokens to site users on the server and must never reuse, return, or log the
-existing `lusu_session` cookie or raw bearer tokens. High-risk and publishing
-capabilities should remain in a separate owner-only server even after OAuth is
-available.
+already-published records. The separate owner server implements OAuth 2.1 with
+PKCE/resource indicators and narrowly issued scopes, maps grants to site users
+on the server, and never reuses, returns, or logs the existing `lusu_session`
+cookie or raw bearer tokens. High-risk and publishing capabilities remain in
+that separate owner-only server.
