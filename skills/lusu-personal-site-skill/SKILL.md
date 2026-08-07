@@ -20,6 +20,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 游戏 AI 首个适配器是隔离的本地 2048 会话：只接受引擎声明的语义动作，并保持 revision CAS、clientActionId 幂等去重、状态／会话／TTL 上限及重置／关闭确认。页面 bridge 与本地引擎可共享协议，但在没有受审计的配对传输前不得把 CLI／MCP 描述为接管、观看或控制已经打开的浏览器会话。
 - 本地敏感状态的 read-modify-write 不得无锁覆盖或直接以 `"w"` 截断目标：白板句柄使用跨进程 owner-token 锁与同目录私有临时文件 fsync／原子替换；游戏锁还要使用 token marker 非空目录、进程实例、PID、心跳和提交前 owner fence。存活 PID 失败关闭；恢复／释放只能操作精确 token 与文件身份，必要的 retiring 阶段继续保留同一 token，绝不能先读 owner 再按公共路径删除而误伤 successor。标为只读的 observe／actions 不得 touch、续 TTL、删除过期文件或产生目录写入。
 - 仓库凭据扫描必须覆盖已跟踪源码和当前工作树中尚未暂存的新源码，但不得递归读取明确 Git-ignored 的本地运行证据目录（例如 `自动新闻/data/mcp-runs/`）。应按精确路径排除运行证据，不能放宽 token／私钥识别规则，也不能用宽泛目录名跳过可能受管理的源码。
+- 并发／single-flight 回归必须等待 mock、hook 或被测代码发出的确定事件；不得用“固定次数 × 1ms sleep”推断异步请求已经开始。确实只能轮询时应使用有界的真实 deadline 并在错误中报告条件，但优先使用 deferred gate 消除共享 runner 负载差异。
 - 正式链路仍是仓库根目录由 GitHub `main` 触发 Cloudflare Pages；Dashboard 固定执行 `npm run build` 并发布 `dist`。标准构建必须先运行 `scripts/build-check.mjs` 守卫，再由 `scripts/build-production.mjs` 原子生成可复现、内容哈希、白名单和 sourcemap 可定位的 `dist/`；该目录是 Pages 构建输出但不得提交 Git。HTML、哈希资产、未哈希 CSS/JS、API/JSON 必须使用各自缓存策略，禁止用一个全局 `/*` immutable 规则覆盖。
 - 壁纸、窗口背景、图标或图集优化必须先匹配真实槽位与像素风轮廓，再提供 AVIF/WebP 和可靠 fallback；首屏只预加载当前主题/壳，主题切换要卸载旧动态层。同路径二进制变化也必须更新公开 query。
 - 文章、视频、游戏、社交等公开列表复用统一的有界 ETag / SWR / last-known-good 请求层；304 不重建列表，离线/短暂错误不清空成功内容，用户强制重试可绕过新鲜缓存且仍受单飞与生命周期 Abort 约束。ETag 必须覆盖完整公开响应，不能只取数据库行时间等不足以描述代码转换和关联数据的局部种子。视频封面禁止恢复无上限 base64 列表负载；同源封面代理 URL 必须带内容或行更新时间版本，后台换图与纯代码兼容修复都要能击穿旧浏览器缓存。

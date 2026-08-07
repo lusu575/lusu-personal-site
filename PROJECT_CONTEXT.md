@@ -8,6 +8,7 @@
 - 引擎只接受 `{ type: "place", lane: 0..5 }` 语义动作；可选种子使 incoming block 和状态演进可复现。专用会话继续使用 revision CAS、`clientActionId` 最近 128 条幂等收据、32 会话／256 KiB／24 小时闲置上限，以及带随机 token marker 的非空目录锁。锁记录 PID、进程实例与心跳；存活 owner 一律失败关闭，只有精确陈旧 owner 才可恢复；释放先把同一 token marker 进入 retiring 状态，写入／删除在原子替换前再次执行 owner fence，旧 owner 或恢复者都不能删除 successor。observe／actions 真正只读且不续期，reset／close 必须显式确认；这些保证只适用于隔离模拟会话，不代表浏览器游戏控制。
 - 浏览器 Hextris 副本补齐 GPL-3.0-or-later 全文、SPDX／修改说明和上游 attribution；2048 也补回完整 MIT 文本与来源说明。公开三语更新为 `seed-update-2026-08-07-hextris-agent`，同步 fallback、Home 最近五条、Functions seed 与 schema seed，公开 API／文章 seed／主模块缓存版本为 `20260807-hextris-agent-r1`；在线画板保持 1.0.7，Quick Transfer 保持 1.0.6，独立远程 MCP Worker 仍未部署。
 - 发布凭据扫描覆盖受管理源码及工作树中新建源码，但按精确路径排除子项目已忽略的 `自动新闻/data/mcp-runs/` 本地运行证据。该目录会保存外部检索正文，可能自然出现形似 JWT 的文本；排除只作用于这个运行证据前缀，不改变密钥识别规则，也不扩大到其他源码目录。
+- 异步回归不能用固定次数的 1ms 计时轮询推断请求已经开始；Chat 私房切换测试由 mock 请求直接发出 deferred 信号，再断言 single-flight 与 busy 状态，避免 Linux 共享 runner 的计时器饥饿造成假失败。
 
 ## 2026-08-06 AI 能力层第五阶段：在线画板图片闭环
 

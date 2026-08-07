@@ -11,6 +11,7 @@
 - 新增三语 `site-updates` 公开更新 `seed-update-2026-08-07-hextris-agent`，同步 `content.mjs` fallback、Home 最近五条投影、Functions seed 与 schema seed；公开 API／文章 seed／主模块缓存版本为 `20260807-hextris-agent-r1`，静态最近更新日期同步到 2026.08.07。在线画板继续为 1.0.7，Quick Transfer 继续为 1.0.6；独立远程 MCP Worker 仍未部署。
 - Home／Knowledge 中本期新增的 `AI 能力`、`CLI`、`MCP`、`开源许可` 标签补齐中文／English／日本語映射，英文和日文界面不再回退显示中文标签。
 - 仓库凭据扫描继续覆盖受 Git 管理及尚未暂存的源码，但明确排除已由子项目 `.gitignore` 管理的 `自动新闻/data/mcp-runs/` 本地运行证据；外部新闻正文中形似 JWT 的文本不再让发布门禁误报，同时没有放宽任何凭据识别表达式或源代码目录。
+- Chat 私房 single-flight 回归不再用“50 次 × 1ms”计时轮询猜测 mock 历史请求何时开始，而由请求 stub 发出精确 deferred 信号；Linux CI 高负载下仍检查同一套 busy／禁用／重复提交不发第二次请求语义，不改 Chat 生产逻辑。
 
 ## 2026-08-06
 

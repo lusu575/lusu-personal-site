@@ -24,6 +24,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 只供本机运行的游戏 Agent 子树按完整前缀从 Pages `dist` 排除，不得为了绕过生产包名守卫只删除 `package.json` 后部署残缺程序；完整源码／许可证留在公开仓库，浏览器游戏所需许可证仍随站点发布。
 - 本地敏感 JSON 的 read-modify-write 必须用 owner-token 锁与同目录私有临时文件原子替换；游戏锁还需 token marker 非空目录、进程实例／PID／心跳、提交前所有权 fence，以及保留同 token 的 retiring 释放。存活 owner 失败关闭，恢复／释放只能删除精确 token 与文件身份，旧 owner 不得误删 successor。声明 readOnly 的观察／动作发现不得写文件、续 TTL 或顺带清理过期会话。
 - 凭据扫描覆盖已跟踪及未暂存源码，但按精确路径排除 Git-ignored 的本地运行证据（当前为 `自动新闻/data/mcp-runs/`）；不要为消除外部正文误报而放宽密钥模式或宽泛忽略源码目录。
+- 异步并发测试优先等待 mock／hook 发出的 deferred 信号，不用固定次数的 1ms 轮询猜测请求进度；只有无法暴露确定事件时才使用带真实 deadline 的有界轮询。
 - CLI / stdio MCP 复用 `自动新闻/integrations/lusu-site/network-fetch.mjs` 的共享代理感知 fetch 并注入 `SiteClient`，兼容代理与直连环境；`SiteClient` 本身只接受注入的 fetch。代理值、代理凭据和 Agent Token 不得输出或写入日志。
 - 本机 credential 只允许发送到签发时相同的规范化 HTTP(S) origin；覆盖 CLI/MCP base URL 时不得把旧 origin 的 Bearer 带到 Preview 或其他站点，也不得在跨 origin logout 中删除旧凭据。当前 origin 的显式 stdin／环境 token 仍由操作者自行授权。
 - `workers/site-mcp/` 是独立且尚未部署的公开只读 remote MCP Worker，不得宣称已有正式地址。远程写能力必须先完成标准 OAuth、最小 scope、撤销与审计，不得把本地设备令牌直接暴露给公网 MCP。详细边界见 `docs/agent-capabilities/README.md`。
