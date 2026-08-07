@@ -75,3 +75,7 @@ tokens to site users on the server and must never reuse, return, or log the
 existing `lusu_session` cookie or raw bearer tokens. High-risk and publishing
 capabilities should remain in a separate owner-only server even after OAuth is
 available.
+
+Daily AI News follows that separation. Its owner-only publishing bridge lives
+in `workers/daily-ai-news-mcp/`; this public Worker remains read-only and must
+never import or proxy the publishing tool.

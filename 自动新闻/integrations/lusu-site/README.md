@@ -44,6 +44,9 @@
 - `workflow.json`：schemaVersion 4 的 07:00—08:00 自动生产时间、完整覆盖审阅、事件阶段去重、成文、fail-closed 与当天人工恢复边界。
 - `ARTICLE_STYLE.md`：固定标题、栏目、事实段、AI 解读和传闻标准。
 - `AUTOMATION_PROMPT.md`：每日 Codex 任务的完整说明。
+- `GPTWORK_AUTOMATION_PROMPT.md`：GPTWork 每次从 GitHub 重新加载的云端
+  执行边界；不依赖跨次工作区，不保存候选缓存，并在 owner-only 发布工具
+  不可用或需要无法完成的确认时失败关闭。
 - `MANUAL_RECOVERY.md`：仅供站长在交互任务中明确授权的当天 08:00 后人工补发说明；自动任务不得使用。
 - `validate-draft.mjs`：校验窗口、Horizon 来源、全候选处置、受保护事件证据复核、重要性、三语结构和正文无外链；还会拒绝整批候选被归为 `other`、大量拒稿复制或轮换少量评分／结论模板、聚合页冒充可靠证据、拒稿理由与 `substantiveChange` 矛盾，或低条数二审没有列出必需复查对象的运行。
 - `network-fetch.mjs`：正式 Node 外联的统一代理感知客户端；从环境读取 `HTTP_PROXY`／`HTTPS_PROXY`／`NO_PROXY`，兼容 Clash Fake-IP 与无代理直连，且不记录代理值、凭证或投递 Token。
@@ -149,7 +152,25 @@ npm.cmd run ai-news:configure:production -- --confirm-production
 
 ## 每日正式任务
 
-本机 Codex 已启用任务“每日 AI 新闻：7点生成，8点前发布”（ID `ai-7-8`），按电脑当前的北京时间每天 07:00 启动。它是本地任务，不是云端常驻服务；电脑、Codex 和网络必须在 07:00–08:00 保持可用，休眠、关机或断网会让当期按失败关闭规则停止。自动任务自身不在 08:00 后补发，也不得携带人工恢复参数。
+GPTWork 云端任务“每日 AI 新闻”已于 2026-08-07 创建并启用，时区为
+`Asia/Shanghai`，每天 07:00 运行，首次计划运行是 2026-08-08。它每次
+从 GitHub 默认分支重新加载规则和工作流，候选、审核记录、草稿与日志只在
+当次临时空间存在；不新增 R2、KV、D1 状态表、Durable Objects 或其他新闻
+缓存。最终允许保留的数据仍只有正式文章及三语翻译。
+
+云端发布仍处于迁移门禁：独立 `workers/daily-ai-news-mcp/` 已在仓库实现
+owner-only 最终文章工具，但在 Cloudflare Access、Worker 部署、GPTWork
+连接和定时写操作确认完成生产验收也仍不够：当前工具只能校验文章结构，
+不能独立证明完整 Horizon／editorial validator 已通过。只有服务端能验证
+完整临时运行包，或验证与报告日期及精确三语内容 hash 绑定的短时可信签名
+回执后，registry 才可把 `remote-mcp` 标为 available。此前云端任务必须
+生成后停止并输出未发布结果，不能调用该工具或旧生产 POST。现有本机任务
+在全部验收完成前保留为兼容路径，不能仅因云端计划已经创建就关闭。两类
+自动任务都不得在 08:00 后补发，也不得携带人工恢复参数。
+
+新 Worker 的三语公开回读必须携带真实跨站来源，使现有 read-source gate
+跳过 article-view、visitor profile 与 view-count 写入；不能让发布校验本身
+制造额外分析数据。
 
 示例中的日期每天由任务按北京时间换算。正式运行记录使用 schemaVersion 4，并引用同一次 Horizon 运行的 `daily_candidates.json`、`candidate_index.json` 与 `coverage_manifest.json`：
 

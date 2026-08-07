@@ -2,6 +2,46 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-08-07
+
+- 共享能力注册表新增每日 AI 新闻 owner-only `remote-mcp` 目标，命中 Quick Transfer 的受管路径，因此临时互传从 v1.0.6 精确升至 v1.0.7；远程发布仍未进入 `availableTransports`，也没有新增 Transfer scope 或改变房间、口令、加密、R2、配额、Multipart、鉴权与 24 小时生命周期。
+
+- 开始把每日 AI 新闻从本机 Codex 迁移到 GPTWork：云端任务已按
+  `Asia/Shanghai` 每天 07:00 创建并启用，首次计划运行是 8 月 8 日；新增
+  `GPTWORK_AUTOMATION_PROMPT.md`，强制每次从 GitHub 默认分支读取正式规则、
+  使用固定 24 小时窗口、完成全候选／受保护事件真实复核，并在 08:00、发布
+  工具、写确认或任一门禁失败时关闭。不把 Token 写入任务提示词，也不在
+  多次任务间保存工作区、候选、草稿或运行状态。
+- 新增独立 owner-only `workers/daily-ai-news-mcp/`。Cloudflare Access JWT
+  在源站验证 signature、issuer、audience 和精确 owner email；MCP 仅提供
+  `publish_daily_ai_news`，服务端固定 slug、daily-ai-news 分类、published
+  状态、标签、封面、置顶与时间，并以同日最终内容实现幂等／冲突保护。它
+  验证 Access 必需 claims、owner、Host 与无 Origin，只读核对现有
+  enabled+auto-publish，标签保持“每日AI新闻 + AI”，并在成功前精确回读正式
+  站三语 slug／分类／状态／语言／标题／摘要／全文；回读携带真实跨站
+  Worker 来源，不生成 article-view、visitor profile 或 view-count 写入。
+  它只写现有 `articles`
+  一行和恰好三语 `article_translations`，不绑定 KV、R2、
+  Durable Objects、Queues 或新 D1，也不写 delivery event、channel 状态、
+  候选包、草稿、checkpoint 或缓存。固定错误码不进入应用存储；平台安全／
+  请求元数据仍按平台保留策略处理。公开 `workers/site-mcp/` 继续只读。
+- 能力登记把 `remote-mcp` 加入每日新闻发布的目标 transport，但生产
+  Access、Worker 部署、GPTWork 连接和定时写操作确认尚未完成；当前工具也
+  尚不能独立证明完整 Horizon/editorial validator 通过。服务端验证完整临时
+  运行包或绑定日期与三语内容 hash 的短时可信签名回执之前只允许站长逐次
+  确认的交互试投，所以
+  `availableTransports` 仍只有现有 `site-api`；本机兼容任务暂不关闭，不能
+  把计划已创建误写成无人值守发布已经上线。
+- 把 Demis Hassabis 与 DeepSeek 的过宽 required 查询拆为人物产品／战略／
+  科学和模型发布／产品运营互补 focused queries，并新增目录回归；8 月 7 日
+  固定窗口运行 `run-20260807T010342Z-13b62bed` 由 partial 恢复为 success，
+  取得 1,983 条候选；该运行早于旧宽查询恢复为 optional 召回安全网，不能
+  证明当前最终 query 配置已实跑。候选级历史对比仍有未被 focused 结果覆盖
+  的记录，尚未完成事件级召回回归和最终配置同窗实跑，因此不能仅凭 success
+  宣称召回保持不变。当前没有用模板伪造全量审阅，正式 validator 仍失败关闭；本次环境也没有
+  生产发布凭证或已连接的 owner-only 工具，因此 8 月
+  7 日文章未上传，线上最新一期仍是 8 月 6 日。
+
 ## 2026-08-06
 
 - 修复授权生产闭环发现的第二个 Phase 5 Pages mutation gate 漏项：精确 `POST /api/whiteboard/agent/scene` 且 `application/vnd.yjs-update` 的请求现在可越过 JSON 门禁并进入既有 Agent Bearer、write scope、tokenId 房间令牌、operation ID、正文上限与只追加场景验证；同源检查仍最先执行，跨源、相邻路径、非 POST 与错误 MIME 继续失败关闭。在线画板按受管规则从 v1.0.6 精确升至 v1.0.7；Quick Transfer 未命中受管路径，保持 v1.0.6。公开记录沿用 `seed-update-2026-08-06-whiteboard-agent-images`，表示／文章 seed／白板公开模块缓存修订为 `20260806-whiteboard-agent-images-r3`，Quick Transfer 模块缓存仍为 r1。

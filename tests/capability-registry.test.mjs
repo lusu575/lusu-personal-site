@@ -166,3 +166,12 @@ test("phase-three public reads declare only transports with implemented adapters
   ].filter((id) => getCapability(id)?.availableTransports.includes("remote-mcp"));
   assert.deepEqual(remotePhaseThree, []);
 });
+
+test("Daily AI News keeps the owner-only remote publisher unavailable until deployment", () => {
+  const publisher = getCapability("automation.daily-ai-news.publish");
+  assert.equal(publisher?.status, "restricted");
+  assert.equal(publisher?.readOnly, false);
+  assert.equal(publisher?.idempotent, true);
+  assert.ok(publisher?.transport.includes("remote-mcp"));
+  assert.deepEqual(publisher?.availableTransports, ["site-api"]);
+});

@@ -1,6 +1,6 @@
 # 临时互传维护与部署
 
-**当前子项目版本：1.0.6**
+**当前子项目版本：1.0.7**
 
 本目录是临时互传的治理根：`VERSION` / `project.json` 保存独立版本，`CHANGELOG.md` 保存子项目更新，`AGENTS.md` 约束分布在主站、Pages Functions、后台和清理 Worker 中的实现，`AGENT.md` 仅作兼容入口。任何互传更改都必须把该版本精确增加 `0.0.1`，并同步本目录全部受影响文档和根项目记录。
 
@@ -21,6 +21,7 @@
 - 共享 CLI／stdio MCP 能力面同时提供公开内容目录，以及经独立 scope 授权的日语学习进度读取与服务端判分答题。设备码轮询可从短暂网络失败中有界恢复；这些能力不需要也不会复用 Transfer 房间口令。
 - 授权确认页与令牌管理页使用 `Referrer-Policy: strict-origin`，让浏览器表单保留当前页面的精确来源站点而不泄露授权路径或 `user_code` 查询；JSON 响应继续使用 `no-referrer`。写操作仍必须同时通过精确 Origin、登录态和双提交 CSRF，缺失／`null`／与授权页不同的跨来源请求一律拒绝；顶层授权链接可从外部应用打开，iframe 与子资源仍被拦截。
 - Quick Transfer 因共享 Agent Auth、能力注册表、`SiteClient`、CLI 与 stdio MCP 被画板图片能力命中而按治理规则升至 1.0.6；互传房间、口令派生、AES-GCM 文字、私有 R2 文件、配额、Multipart、鉴权与发布完成后 24 小时生命周期保持不变。新增 `whiteboard:assets` 不授予任何 Transfer 权限。
+- Quick Transfer 因共享能力注册表登记每日 AI 新闻的 owner-only 远程发布目标而按治理规则升至 1.0.7；该远程目标仍未进入 `availableTransports`，不授予 Transfer 权限，也不改变互传房间、口令、加密、R2、配额、Multipart、鉴权或 24 小时生命周期。
 - 设备登录保存的 Agent credential 只绑定签发时的 HTTP(S) origin；通过 `--base-url`、`LUSU_BASE_URL` 或 MCP 配置切到 Preview／其他 origin 时不会把原 Bearer 发过去，也不会在跨 origin logout 中删除它。当前覆盖 origin 只能使用操作者显式提供的 stdin／环境 token 或重新完成设备登录。
 - 房间口令只从 CLI 的隐藏输入或 `--password-stdin` 读取，禁止作为命令行参数；stdio MCP 只接受 `env:NAME` 形式的 `secretRef`。授权服务既不会接收房间口令，也不会接收派生后的 `roomKey`。互传业务 API 仍按原协议接收派生 `roomKey`，本地房间状态只保存 `roomKey` 与可选环境变量引用，不保存明文口令或文字密钥。
 - `transfer:read` 用于配置、列表、上传状态和下载等 GET/HEAD；`transfer:write` 用于 `room/join`、发送文字、普通上传以及 Multipart 初始化、分片与完成；`transfer:delete` 用于删除条目和中止 Multipart。默认设备授权的互传权限只包含 read/write（另含公开内容所需的 `content:read`），删除能力必须明确追加。

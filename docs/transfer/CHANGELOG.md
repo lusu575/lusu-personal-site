@@ -2,6 +2,11 @@
 
 本日志只记录临时互传子项目。根项目发布历史仍写入仓库根 `CHANGELOG.md`。
 
+## 1.0.7 - 2026-08-07
+
+- 共享能力注册表为每日 AI 新闻登记 owner-only `remote-mcp` 目标，但仍只把现有 `site-api` 标为可用；远程发布在生产验收前继续失败关闭。
+- 本次修改命中 Quick Transfer 的共享受管入口，因此从 1.0.6 精确升至 1.0.7；没有新增 Transfer scope，也没有改变互传房间、口令派生、AES-GCM 文字、私有 R2 文件、滚动配额、Multipart、鉴权或发布完成后 24 小时过期语义。
+
 ## 1.0.6 - 2026-08-06
 
 - 共享 Agent Auth、能力注册表、`SiteClient`、CLI 与 stdio MCP 增加在线画板图片上传／下载／放置能力，并以独立、非默认 `whiteboard:assets` scope 隔离原始图片访问。

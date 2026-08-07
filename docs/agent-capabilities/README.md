@@ -256,12 +256,44 @@ npm.cmd run dev
 
 本地开发不要加 `--remote`，不要连接生产 D1，也不要执行 `wrangler deploy`。远程写操作必须等第一方 OAuth 2.1、用户映射、最小 scope 与审计边界完成后再单独设计；不能把网站 `lusu_session` cookie 转交给 MCP。
 
+### 10.1 每日 AI 新闻 owner-only 远程发布候选
+
+`workers/daily-ai-news-mcp/` 是与公开只读 Worker 完全分离的受限工程，只
+用于 GPTWork 每日任务提交已经通过正式门禁的最终三语文章。它不是公开
+内容服务，也不能加入 `workers/site-mcp/`。
+
+- Cloudflare Access Managed OAuth 在边缘提供授权流程，Worker 仍必须在
+  源站验证 `Cf-Access-Jwt-Assertion` 的签名、issuer、audience、必需身份／
+  时间 claims 和精确 owner email，并拒绝错误 Host 与任何 browser Origin；
+  缺配置、缺 JWT、非 owner 或验证失败全部拒绝。
+- MCP 只注册 `publish_daily_ai_news`。调用方不能控制 slug、分类、状态、
+  标签、封面、置顶和时间；只接受当天完整 zh／en／ja 最终稿。
+- 正常自动窗口固定为 `Asia/Shanghai` 07:00–08:00。相同最终稿重放返回
+  既有结果，同日不同内容返回冲突；不存在换 slug 或轮换键绕过分支。发布
+  前只读核对现有专用 channel 的 enabled+auto-publish，成功前从正式站三语
+  公开 API 精确回读 slug、category、status、语言、标题、摘要和正文。回读
+  携带真实跨站 Worker 来源，使现有 read-source gate 跳过 article-view、
+  visitor profile 与 view-count 写入。
+- Worker 只绑定现有 Production D1，并只写 `articles` 与
+  `article_translations`；不绑定 KV／R2／DO／Queue，不写投递事件、通道
+  状态、候选、草稿、运行记录或缓存。
+- 当前代码和本地测试不等于远端已经可用。Access 应用、Managed OAuth、
+  Worker 部署、GPTWork connector 和定时写确认都通过验收也还不够：当前
+  tool 只能校验最终文章结构，不能证明完整 Horizon/editorial run 已通过
+  正式 validator。服务端能够验证当次完整运行包，或能验证绑定日期和精确
+  三语内容 hash 的短时可信签名回执后，才能把
+  `automation.daily-ai-news.publish` 的 `remote-mcp` 加入
+  `availableTransports` 并停用本机兼容计划；在此之前只允许站长逐次确认的
+  交互试投，定时任务只生成不上传。
+
 ## 11. 仍是 inventory / planned 的能力
 
 - 白板读取、图片上传／下载、高层追加和本地导出，以及隔离的 2048 会话已经在本地 CLI／stdio MCP 可用；它们不表示远程 MCP 写入、白板任意编辑／删除，或浏览器游戏接管已经完成。
 - 五个游戏的安全目录已经可读，但除隔离 2048 外，其他游戏的语义动作 adapter、已打开浏览器游戏的配对／观看／控制，以及游戏云存档通用写入仍需单独适配与授权。
 - 日语等级／关卡公开内容和账号进度闭环已经可用；聊天写入、任意完整进度快照写入、游戏存档写入等条目仍只是既有 API 的 inventory 或受限入口，没有通用 CLI/MCP 写适配器。
-- Daily AI News、Tool Radar 的生产发布能力是 `restricted`，不会出现在公开远程 MCP 或通用本地 MCP 中。
+- Daily AI News、Tool Radar 的生产发布能力是 `restricted`，不会出现在
+  公开远程 MCP 或通用本地 MCP 中。Daily AI News 的独立 owner-only 远程
+  候选在生产验收前也保持 unavailable。
 
 后续接入必须先补可验证的业务适配层、输入/输出 schema、身份与 scope、幂等/确认机制和审计，再将对应传输加入 `availableTransports`。不能只改 `transport` 或工具描述来宣称完成。
 

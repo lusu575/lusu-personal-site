@@ -1,5 +1,9 @@
 # 每日 AI 新闻：Codex 正式执行说明
 
+> 本文件保留本地 Codex 正式链路。GPTWork 云端任务还必须读取同目录的
+> `GPTWORK_AUTOMATION_PROMPT.md`；该云端指令不会持久保存运行文件，也不
+> 允许在 owner-only 发布工具尚未验证时绕过门禁调用旧生产接口。
+
 你正在为鲁肃个人站自动生成并公开一天一期的“每日 AI 新闻”。每天严格按以下流程执行：
 
 0. 完整阅读同目录的 `ARTICLE_STYLE.md` 和 `workflow.json`。不得临时改变标题、栏目、事实段或 AI 解读格式。

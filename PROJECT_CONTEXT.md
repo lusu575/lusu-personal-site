@@ -1,5 +1,57 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-07 每日 AI 新闻迁移到 GPTWork
+
+- 共享能力注册表为每日 AI 新闻登记 owner-only `remote-mcp` 目标，命中 Quick Transfer 的受管路径，因此临时互传从 v1.0.6 精确升至 v1.0.7；`availableTransports` 仍只有现有 `site-api`，没有新增 Transfer scope，也不改变互传房间、口令、加密、R2、配额、Multipart、鉴权与 24 小时生命周期。
+
+- GPTWork 云端任务“每日 AI 新闻”已创建并启用，固定使用
+  `Asia/Shanghai`，每天 07:00 运行，首次计划运行是 2026-08-08。每次运行
+  都从 GitHub 默认分支重新读取正式规则；工作区、候选、证据、草稿和运行
+  记录不跨次保留。任务在发布工具缺失、写确认不可完成、审核门禁失败或
+  08:00 截止时失败关闭，不得直接使用旧生产 Token／POST 或自动转入
+  manual recovery。
+- 新增独立 `workers/daily-ai-news-mcp/` owner-only Cloudflare Worker；公开
+  `workers/site-mcp/` 继续严格只读。新 Worker 只暴露
+  `publish_daily_ai_news`，通过 Cloudflare Access JWT 的签名、issuer、
+  audience、必需 claims、精确 owner email、Host 与无 Origin 验证身份。调用
+  方只能提交当天最终 zh／en／
+  ja 稿件；slug、分类、published 状态、标签、封面、置顶和时间全部由服务
+  端固定，标签沿用“每日AI新闻 + AI”。它只读核对现有 channel 的
+  enabled+auto-publish，同稿重放幂等、同日异稿冲突，并在返回成功前从正式
+  站三语公开 API 精确回读全文。回读会标识真实跨站 Worker 来源，让现有
+  read-source gate 跳过 article-view、visitor profile 与 view-count 写入。
+  普通自动窗口只允许北京时间 07:00–08:00，
+  保留 45 秒回读余量，不提供人工恢复入口。
+- 零缓存边界已经写入代码和测试：Worker 不绑定 KV、R2、Durable Objects、
+  Queues 或新 D1，只向现有 `articles` 写 1 行、向
+  `article_translations` 写 3 行；不写 delivery event、channel
+  `last_used_at`、候选包、草稿、运行状态或去重缓存。固定错误码日志不写入
+  应用 D1／R2／KV；Cloudflare Access 与平台请求元数据仍按平台策略处理，
+  不能称为绝对零平台存储。迁移期本机兼容任务仍走旧接口并保留原 delivery
+  event／channel usage，最终文章-only 边界只适用于新 Worker 切换后。
+- 远程发布尚未上线：Cloudflare Access 应用／Managed OAuth、Worker 部署、
+  GPTWork 连接和定时任务写操作确认仍需生产配置与验收；更关键的是当前
+  Worker 只能校验最终文章结构，尚不能证明完整 Horizon/editorial run 已
+  通过正式 validator。服务端验证完整临时运行包，或验证绑定日期与精确三语
+  内容 hash 的短时可信签名回执之前，只允许站长逐次确认的交互试投。
+  registry 因此只把
+  `remote-mcp` 记为目标 transport，`availableTransports` 仍只有现有
+  `site-api`。在上述验收前不能停用本机兼容任务，也不能声称云端会无人值守
+  上传。
+- 8 月 7 日固定窗口 `[2026-08-06 07:00, 2026-08-07 07:00)` 已真实重跑。
+  Demis Hassabis 与 DeepSeek 的过宽 required 查询按人物产品／战略／科学和
+  模型发布／产品运营拆成互补 focused queries 后，coverage 在运行
+  `run-20260807T010342Z-13b62bed` 中恢复为 success，得到 1,983 条精确窗口
+  候选；该运行早于旧宽查询作为 optional 召回安全网的恢复，不能作为当前
+  最终 query 配置已实跑的证据。候选级对比仍发现旧样本
+  中存在未被 focused 结果覆盖的记录；其中包含大量重复来源，尚未完成事件级
+  召回回归，最终配置也仍待一次同窗实跑，因此不能仅凭 coverage success
+  宣称召回保持不变。当前只完成
+  可靠事件短名单和三语候选稿，未伪造 1,983 条逐项处置；正式 validator 仍按 fail-closed 拒绝，且
+  当前 GPTWork
+  环境没有生产发布凭证／已连接的 owner-only 工具。因此
+  `daily-ai-news-2026-08-07` 没有上传，线上仍以 8 月 6 日为最新一期。
+
 ## 2026-08-06 AI 能力层第五阶段：在线画板图片闭环
 
 - 两轮生产闭环先后确认 Phase 5 Pages 全局 mutation gate 漏列精确 Agent 图片上传和 Agent Yjs 场景更新。1.0.6 将 raster 特例严格扩展到 `POST /api/whiteboard/agent/assets` 的 PNG／JPEG／WebP；1.0.7 只让精确 `POST /api/whiteboard/agent/scene` 且 `application/vnd.yjs-update` 跳过 JSON 门禁。两项例外都在同源检查之后，后续 Agent Bearer、scope、tokenId 绑定房间令牌、operation ID、正文／容量限制、图片和只追加场景校验均未放宽；跨源、相邻路径、非 POST 和其他 MIME 继续失败关闭。两次修复都未命中 Quick Transfer 受管路径，因此 Quick Transfer 保持 1.0.6；公开记录沿用原文章，表示／文章 seed／白板公开模块缓存修订为 `20260806-whiteboard-agent-images-r3`，Quick Transfer 模块缓存继续使用 r1。

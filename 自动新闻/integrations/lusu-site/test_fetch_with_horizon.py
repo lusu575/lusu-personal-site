@@ -354,6 +354,71 @@ class DiscoveryQueryTests(unittest.TestCase):
             self.assertTrue(entry["mustReview"])
             self.assertEqual(entry["reviewLane"], review_lane)
 
+        demis_query = by_id["demis-hassabis-en"]
+        self.assertTrue(demis_query["required"])
+        self.assertTrue(demis_query["mustReview"])
+        self.assertEqual(demis_query["reviewLane"], "google-ai-products")
+        self.assertNotIn("(DeepMind OR AI)", demis_query["query"])
+        for term in [
+            "Demis Hassabis",
+            "DeepMind",
+            "-Gemini",
+            "-AlphaFold",
+        ]:
+            self.assertIn(term, demis_query["query"])
+
+        demis_gemini_query = by_id["demis-hassabis-gemini-en"]
+        demis_science_query = by_id["demis-hassabis-science-en"]
+        for entry in [demis_gemini_query, demis_science_query]:
+            self.assertTrue(entry["required"])
+            self.assertTrue(entry["mustReview"])
+            self.assertEqual(entry["reviewLane"], "google-ai-products")
+        self.assertIn('"Demis Hassabis" Gemini', demis_gemini_query["query"])
+        self.assertIn("AlphaFold OR Isomorphic", demis_science_query["query"])
+
+        demis_strategy_query = by_id["demis-hassabis-strategy-en"]
+        self.assertTrue(demis_strategy_query["required"])
+        self.assertTrue(demis_strategy_query["mustReview"])
+        self.assertEqual(demis_strategy_query["reviewLane"], "google-ai-products")
+        for term in ["Demis Hassabis", "safety", "regulation", "policy", "investment"]:
+            self.assertIn(term, demis_strategy_query["query"])
+
+        demis_broad_query = by_id["demis-hassabis-broad-en"]
+        self.assertFalse(demis_broad_query["required"])
+        self.assertFalse(demis_broad_query["mustReview"])
+        self.assertEqual(
+            demis_broad_query["query"],
+            '"Demis Hassabis" (DeepMind OR AI)',
+        )
+
+        deepseek_model_query = by_id["deepseek-model-releases-zh"]
+        self.assertTrue(deepseek_model_query["required"])
+        self.assertTrue(deepseek_model_query["mustReview"])
+        self.assertEqual(deepseek_model_query["reviewLane"], "china-model-releases")
+        for term in ["DeepSeek OR 深度求索", "新模型", "开源权重", "模型更新"]:
+            self.assertIn(term, deepseek_model_query["query"])
+
+        deepseek_query = by_id["deepseek-products-zh"]
+        self.assertTrue(deepseek_query["required"])
+        self.assertTrue(deepseek_query["mustReview"])
+        self.assertEqual(deepseek_query["reviewLane"], "china-product-releases")
+        self.assertNotIn("发布 OR 上线 OR 开源", deepseek_query["query"])
+        for term in [
+            "DeepSeek OR 深度求索",
+            "产品上线",
+            "开放 API",
+            "可用范围",
+            "价格调整",
+            "额度调整",
+            "用量规则",
+        ]:
+            self.assertIn(term, deepseek_query["query"])
+
+        deepseek_broad_query = by_id["deepseek-broad-zh"]
+        self.assertFalse(deepseek_broad_query["required"])
+        self.assertFalse(deepseek_broad_query["mustReview"])
+        self.assertIn("发布 OR 上线 OR 开源", deepseek_broad_query["query"])
+
         for supplemental_id in [
             "ai-general-en",
             "frontier-labs-people-en",
@@ -363,6 +428,7 @@ class DiscoveryQueryTests(unittest.TestCase):
             "anthropic-claude-en",
             "gemini-deepmind-en",
             "frontier-product-operations-en",
+            "demis-hassabis-broad-en",
             "developer-ai-en",
             "developer-products-en",
             "open-models-en",
@@ -372,6 +438,7 @@ class DiscoveryQueryTests(unittest.TestCase):
             "china-models-ko",
             "other-china-models-zh",
             "bytedance-models-zh",
+            "deepseek-broad-zh",
             "china-semiconductor-zh",
             "china-semiconductor-en",
             "china-semiconductor-ja",

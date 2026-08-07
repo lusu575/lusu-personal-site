@@ -14156,7 +14156,7 @@ function assertSameOriginRequest(request) {
   }
 }
 
-function analyticsReadSourceIsTrusted(request) {
+export function analyticsReadSourceIsTrusted(request) {
   try {
     assertSameOriginRequest(request);
     return true;

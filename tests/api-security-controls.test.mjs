@@ -784,6 +784,26 @@ test("unexpected server failures are logged but never reflected to clients", asy
 
 test("article view counters are gated by the deduplicated telemetry result", () => {
   assert.match(source, /if \(view\.recorded\) \{\s*await env\.DB\.prepare\("update articles set view_count = view_count \+ 1/i);
+  assert.match(source, /if \(!analyticsReadSourceIsTrusted\(request\)\) \{\s*return \{ \.\.\.identity, recorded: false \};\s*\}\s*const decision/i);
   assert.match(source, /analytics:article:visitor/);
   assert.match(source, /ANALYTICS_RATE_LIMITS\.articleVisitor/);
+});
+
+test("cross-site publication readback is excluded from article-view telemetry", async () => {
+  const { analyticsReadSourceIsTrusted } = await freshApi("article-readback-source");
+  const crossSite = apiRequest("articles/daily-ai-news-2026-08-08?lang=zh", {
+    headers: {
+      Origin: "https://daily-ai-news-mcp.example",
+      "Sec-Fetch-Site": "cross-site"
+    }
+  });
+  assert.equal(analyticsReadSourceIsTrusted(crossSite), false);
+
+  const sameOrigin = apiRequest("articles/daily-ai-news-2026-08-08?lang=zh", {
+    headers: {
+      Origin: ORIGIN,
+      "Sec-Fetch-Site": "same-origin"
+    }
+  });
+  assert.equal(analyticsReadSourceIsTrusted(sameOrigin), true);
 });
