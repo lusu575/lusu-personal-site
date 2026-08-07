@@ -4,6 +4,13 @@
 
 ## 2026-08-07
 
+- 完成 AI 能力层第七阶段的知识库管理闭环，本地 stdio MCP 0.7.0 新增 `article_manage_list`、`article_manage_get`、`article_publish`、`article_publish_files`、`article_update`、`article_delete`，主 CLI 同步提供管理员文章列表／详情、JSON 发布、CAS 更新和确认删除。`article_publish` 把文章元数据、zh／en／ja 三语标题／摘要／Markdown 正文、Agent 审计事件和幂等收据放进同一个 D1 batch；任一步失败都会整体回滚，不留下半篇文章。文件发布只读取 MCP allow-root 内真实、非符号链接、有效 UTF-8 且大小／扩展名受限的 Markdown，本机路径不会发往站点或进入工具输出。
+- 文章更新要求精确 `expectedUpdatedAt` CAS，永久删除还要求 `confirm: true`、独立 `content:delete` scope 与新的 `operationId`；更新／删除也把条件写入、审计和收据放进同批事务。`operationId + canonical payload SHA-256` 只允许完全相同的动作和载荷重放，异载荷或跨动作复用返回冲突；收据由健康检查按 180 天边界分批清理，因此客户端必须永久生成新 ID，只有保留窗口内保证原结果重放。通用文章工具拒绝 `site-updates`、`daily-ai-news`、`tool-radar`，不能绕过公开更新与两条专用自动投递通道。
+- 新增非默认、管理员专属的 `content:write`／`content:delete` 设备授权 scope：授权页只允许当前管理员批准，`/api/agent/articles*` 每次请求都重新读取令牌所属账号的当前角色。Agent Bearer 仍映射普通机器 principal，不能进入 `/api/admin/*`，账号被降级后已有令牌也立即失去知识库管理能力。
+- 人生重开模拟器加入主能力层集成式本地会话，状态 schema 升至 v2：每轮保存当前人生起点 checkpoint，恢复时按固定 commit、中文数据 SHA-256、版本化 PRNG、所选天赋、属性分配与逐年动作重放当前人生，再与完整状态深比较；单独或互不一致地伪造年龄、历史描述、已见事件、激活天赋、随机状态或 revision 均失败关闭。这是确定性一致性校验，不是对能主动重写整个本地状态或程序的攻击者提供密码学认证。当前仍只支持 Custom 模式、中文剧情和隔离会话，不读取浏览器／云存档，也不提供页面 bridge、配对、观看或接管。
+- 通用 `GameSessionStore` 在既有 token marker 非空目录锁、PID／进程实例／心跳、精确陈旧恢复、retiring 释放、提交前 owner fence 和 Windows 有界重试之外，为超过 4 KiB 且确实变小的 action 幂等结果增加 deflate-raw 压缩。压缩收据记录原始字节数与 SHA-256，解压严格受 96 KiB 上限约束并拒绝非规范 Base64、篡改和膨胀输入；既有未压缩收据继续兼容，人生重开长轨迹不会因 128 条完整 observation 收据过早撞上 512 KiB 会话上限。
+- 共享 registry、`SiteClient`、Agent Auth、主 CLI 与 stdio MCP 命中 Quick Transfer 受管路径，子项目从 v1.0.6 精确升至 v1.0.7；互传房间、口令、AES-GCM 文字、私有 R2 文件、Multipart、滚动配额、鉴权和发布完成后 24 小时生命周期均未改变。在线画板保持 1.0.7；独立 `workers/site-mcp/` 继续未部署、公开只读且不包含知识库写工具。
+- 三语公开更新沿用 `seed-update-2026-08-07-life-restart-agent`，已在 fallback、Home 五条投影、Functions seed 和 schema seed 中同步改为“知识库原子发布 MCP 与人生重开语义会话上线”；公开 API／文章 seed／主模块缓存版本保持 `20260807-life-restart-agent-r1`。
 - 完成 AI 能力层第六阶段的 Hextris 独立适配：`games/hextris/agent/` 新增确定性六 lane 引擎、独立本地会话存储、专用 CLI 与专用 stdio MCP。MCP 只暴露 `hextris_session_create／observe／actions／act／reset／close`，动作只接受 lane 0–5；会话使用 revision CAS、`clientActionId` 幂等收据、数量／大小／24 小时 TTL 上限、带 token marker 的非空目录锁和 fsync 原子替换。锁对存活 PID／进程实例失败关闭，以心跳判断陈旧状态，写入／删除前执行所有权 fence，并用保留同一 token 的 retiring 阶段安全释放；旧 owner 或恢复者不能删除 successor。observe／actions 不写入或续期，reset／close 要求显式确认。
 - Hextris Agent 固定为自包含 GPL-3.0-or-later 进程，不导入主站共享能力库、主 CLI 或通用 MCP；主能力层也不静态包含它。它不连接已打开的浏览器 Hextris，不提供页面 bridge、配对、观看、云存档写入或远程 MCP。机器游戏目录新增 `surface` 投影：2048 为 `integrated`，Hextris 为 `dedicated-process`，其余三款为 `none`。
 - 补齐 Hextris 浏览器副本和 Agent 的完整 GPL 文本、SPDX／无担保说明、上游归属与本地修改记录；补齐 2048 的完整 MIT 文本及来源说明。后续强 copyleft 游戏不得在没有单独兼容性评估和明确许可证决定时静态并入通用 CLI／MCP。

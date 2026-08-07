@@ -1,5 +1,13 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-07 AI 能力层第七阶段：人生重开与知识库原子 MCP
+
+- 主能力层新增 `life-restart` 集成式本地游戏适配器，固定适配 `VickScarlet/remake` commit `a10861eed93296c96d0e0fca98c82e86f4dfda4b` 的 MIT 语义，并对项目内 `zh-cn` age／talents／events 数据逐文件校验固定 SHA-256。当前仅支持 Custom 模式和 `choose_talents`、`allocate_properties`、逐年 `advance`、终局 `restart_life`、确认 reset。状态 schema v2 为每轮保存起点 checkpoint；恢复时从该 checkpoint 按固定数据、版本化 PRNG 和动作数重放当前人生，再与完整状态深比较，不能信任调用方保存的年龄、历史描述、已见事件、激活天赋、随机状态或 revision 等派生字段。它不导入浏览器／云存档，不提供页面 bridge、配对、观看或接管；`en-us` 数据与中文文件字节相同，因此目录只声明中文 Agent 内容。
+- 通用 `GameSessionStore` 在加入第二个集成适配器前完成独立锁硬化：锁是包含随机 owner／heartbeat marker 的非空目录，记录 PID 与进程实例 token；存活或不可确认 owner 一律失败关闭，陈旧恢复与释放都先按精确 token／身份迁入私有 retiring 路径，再核验内容哈希和文件身份。会话 rename、close、TTL 删除及并发 create 在不可逆操作前执行 owner fence，Windows sharing violation 只做有界重试；`observe`／`actions` 保持零写入、零续期、零清理。超过 4 KiB 且压缩后确实更小的 action 幂等结果使用带原始长度与 SHA-256 的 `deflate-raw-base64-v1` 存储；解压输出限制为 96 KiB，非规范 Base64、长度／哈希篡改和膨胀输入失败关闭，既有未压缩收据继续兼容。该实现没有复制或导入 GPL Hextris 代码。
+- 本地 stdio MCP 0.7.0 新增知识库管理员工具：`article_manage_list`、`article_manage_get`、`article_publish`、`article_publish_files`、`article_update`、`article_delete`。`article_publish` 在一个 D1 batch 中原子写入文章、zh／en／ja 三语正文、审计事件和持久幂等收据；`operationId + canonical payload SHA-256` 支持精确重试并拒绝异载荷或跨动作复用。文件发布只读取 MCP allow-root 内真实、非符号链接、有效 UTF-8 的 Markdown，路径不离开本地进程。更新和删除要求 `expectedUpdatedAt` CAS，删除还要求 `confirm: true` 与独立 `content:delete` scope；两者也把条件 mutation、审计与收据放进同一 batch。收据由周期健康检查按 180 天边界有界清理，调用方必须永久生成新 operationId，只有保留窗口内保证精确重放。
+- `content:write` 与 `content:delete` 是非默认、管理员专属设备授权 scope。普通 Agent Bearer 仍不继承 admin，也不能访问 `/api/admin/*`；授权页和每次 `/api/agent/articles*` 请求都会重新核对令牌所属账号当前仍为管理员。通用文章 Agent 明确拒绝 `site-updates`、`daily-ai-news`、`tool-radar`，不能绕过公开更新或专用自动投递规则。独立 `workers/site-mcp/` 继续保持未部署、公开只读，不包含这些写工具。
+- 公开三语更新、fallback、Home 最近五条、Functions seed、schema seed、公开 API／文章 seed／主模块缓存统一使用本阶段知识库写入版本；共享 registry／SiteClient／CLI／stdio MCP／Agent Auth 属于 Quick Transfer 受治理路径，因此 Quick Transfer 从 1.0.6 精确升至 1.0.7，业务房间、密码、加密、R2、multipart、配额与 24 小时生命周期未改变；在线画板保持 1.0.7。
+
 ## 2026-08-07 AI 能力层第六阶段：Hextris 独立游戏进程
 
 - 游戏机器目录现在真实区分两种适配面：2048 继续是主能力层内的 `integrated` 本地会话并保留页面语义 bridge；Hextris 新增 `dedicated-process` 本地会话，但明确没有 browser bridge、页面配对、观看或接管。其余三款游戏仍只可发现。目录 `agentOnly` 只返回前两款，并逐项返回 `localSession`、`browserBridge`、`browserPairing` 与 `surface`，不能再用单一布尔值扩大承诺。

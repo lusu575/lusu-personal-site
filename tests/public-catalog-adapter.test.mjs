@@ -101,26 +101,43 @@ test("public game projection distinguishes integrated and dedicated Agent sessio
   const payload = await gameCatalog();
   const catalog = projectPublicGameCatalog(payload, { lang: "ja" });
   assert.equal(catalog.games.length, 5);
-  assert.deepEqual(catalog.games.filter((game) => game.agent.localSession).map((game) => game.id), ["2048", "hextris"]);
+  assert.deepEqual(catalog.games.filter((game) => game.agent.localSession).map((game) => game.id), [
+    "2048",
+    "hextris",
+    "life-restart"
+  ]);
   assert.deepEqual(catalog.games.find((game) => game.id === "2048").agent, {
     localSession: true,
     browserBridge: true,
     browserPairing: false,
-    surface: "integrated"
+    surface: "integrated",
+    contentLanguages: []
   });
   assert.deepEqual(catalog.games.find((game) => game.id === "hextris").agent, {
     localSession: true,
     browserBridge: false,
     browserPairing: false,
-    surface: "dedicated-process"
+    surface: "dedicated-process",
+    contentLanguages: []
   });
-  assert.ok(catalog.games.filter((game) => !["2048", "hextris"].includes(game.id)).every((game) => (
+  assert.deepEqual(catalog.games.find((game) => game.id === "life-restart").agent, {
+    localSession: true,
+    browserBridge: false,
+    browserPairing: false,
+    surface: "integrated",
+    contentLanguages: ["zh"]
+  });
+  assert.ok(catalog.games.filter((game) => !["2048", "hextris", "life-restart"].includes(game.id)).every((game) => (
     game.agent.localSession === false
     && game.agent.browserBridge === false
     && game.agent.browserPairing === false
     && game.agent.surface === "none"
   )));
-  assert.deepEqual(projectPublicGameCatalog(payload, { agentOnly: true }).games.map((game) => game.id), ["2048", "hextris"]);
+  assert.deepEqual(projectPublicGameCatalog(payload, { agentOnly: true }).games.map((game) => game.id), [
+    "2048",
+    "hextris",
+    "life-restart"
+  ]);
   assert.match(catalog.games[0].launchPath, /^\/games\/[a-z0-9-]+\/\?lang=ja$/);
   assert.equal(getPublicGame(payload, "life-restart", { lang: "en" }).title, "Life Restart");
 

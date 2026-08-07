@@ -172,6 +172,13 @@ export async function migrateLocalD1() {
     from sqlite_master where type = 'index' and name = 'transfer_items_idempotency_idx'
     `),
     ...await queryRows(`
+    select 'agent-article-receipts-table' as item, count(*) as present
+    from sqlite_master where type = 'table' and name = 'agent_article_receipts'
+    union all
+    select 'agent-article-receipts-created-index', count(*)
+    from sqlite_master where type = 'index' and name = 'agent_article_receipts_created_idx'
+    `),
+    ...await queryRows(`
     select 'article-delivery-auto-publish-column' as item, count(*) as present
     from pragma_table_info('article_delivery_channels') where name = 'auto_publish'
     union all
@@ -232,18 +239,18 @@ export async function migrateLocalD1() {
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260807-hextris-agent-r1'
+    where key = 'article_seed_version' and value = '20260807-life-restart-agent-r1'
     union all
-    select 'hextris-agent-update-article',
+    select 'life-restart-agent-update-article',
       case when count(*) = 1 then 1 else 0 end
     from articles
-    where article_id = 'seed-update-2026-08-07-hextris-agent'
-      and slug = '2026-08-07-hextris-agent'
+    where article_id = 'seed-update-2026-08-07-life-restart-agent'
+      and slug = '2026-08-07-life-restart-agent'
       and category = 'site-updates'
       and status = 'published'
-      and published_at = '2026-08-07T00:30:00.000Z'
+      and published_at = '2026-08-07T08:00:00.000Z'
     union all
-    select 'hextris-agent-update-translations',
+    select 'life-restart-agent-update-translations',
       case
         when count(*) = 3
           and count(distinct lang) = 3
@@ -256,7 +263,7 @@ export async function migrateLocalD1() {
         then 1 else 0
       end
     from article_translations
-    where article_id = 'seed-update-2026-08-07-hextris-agent'
+    where article_id = 'seed-update-2026-08-07-life-restart-agent'
     union all
     select 'whiteboard-agent-images-update-article', count(*)
     from articles where article_id = 'seed-update-2026-08-06-whiteboard-agent-images'

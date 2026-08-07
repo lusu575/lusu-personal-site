@@ -61,7 +61,73 @@ const itemIdSchema = z.string().min(16).max(80);
 const fileRefSchema = z.string().min(1).max(1024);
 const gameSessionIdSchema = z.string().regex(/^game_[a-z0-9][a-z0-9_-]{0,63}_[a-f0-9]{24,64}$/);
 const clientActionIdSchema = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$/);
+const lifeRestartTalentIdSchema = z.number().int().min(0).max(99_999_999);
+const gameActionSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("move"),
+    direction: z.enum(["up", "down", "left", "right"])
+  }).strict(),
+  z.object({
+    type: z.literal("choose_talents"),
+    talentIds: z.array(lifeRestartTalentIdSchema).length(3)
+  }).strict(),
+  z.object({
+    type: z.literal("allocate_properties"),
+    properties: z.object({
+      CHR: z.number().int().min(0).max(10),
+      INT: z.number().int().min(0).max(10),
+      STR: z.number().int().min(0).max(10),
+      MNY: z.number().int().min(0).max(10)
+    }).strict()
+  }).strict(),
+  z.object({
+    type: z.literal("advance"),
+    steps: z.literal(1)
+  }).strict(),
+  z.object({
+    type: z.literal("restart_life"),
+    inheritedTalentId: z.union([lifeRestartTalentIdSchema, z.null()])
+  }).strict()
+]);
 const operationIdSchema = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._:-]{7,79}$/);
+const articleIdSchema = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,179}$/);
+const articleSlugSchema = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(120);
+const articleCategorySchema = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(80);
+const articleTagSchema = z.string().trim().min(1).max(40);
+const articleTranslationInlineSchema = z.object({
+  title: z.string().trim().min(1).max(180),
+  summary: z.string().trim().max(500).optional(),
+  contentMarkdown: z.string().trim().min(1).max(200_000)
+}).strict();
+const articleTranslationFileSchema = z.object({
+  title: z.string().trim().min(1).max(180),
+  summary: z.string().trim().max(500).optional(),
+  contentFile: fileRefSchema
+}).strict();
+const articleInlineTranslationsSchema = z.object({
+  zh: articleTranslationInlineSchema,
+  en: articleTranslationInlineSchema,
+  ja: articleTranslationInlineSchema
+}).strict();
+const articleFileTranslationsSchema = z.object({
+  zh: articleTranslationFileSchema,
+  en: articleTranslationFileSchema,
+  ja: articleTranslationFileSchema
+}).strict();
+const articlePublishMetadataShape = {
+  operationId: operationIdSchema,
+  slug: articleSlugSchema,
+  category: articleCategorySchema.default("note"),
+  tags: z.array(articleTagSchema).max(12).default([]),
+  coverImage: z.string().trim().max(500).optional(),
+  isPinned: z.boolean().default(false),
+  publishedAt: z.string().datetime({ offset: true }).optional()
+};
+const articlePartialTranslationsSchema = z.object({
+  zh: articleTranslationInlineSchema.optional(),
+  en: articleTranslationInlineSchema.optional(),
+  ja: articleTranslationInlineSchema.optional()
+}).strict();
 const whiteboardStyleShape = {
   strokeColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
   backgroundColor: z.union([z.literal("transparent"), z.string().regex(/^#[0-9a-fA-F]{6}$/)]).optional(),
@@ -143,7 +209,7 @@ export async function createLocalMcpServer(options = {}) {
   });
   const gameStore = options.gameStore || createGameSessionStore(stateOptions);
   const server = new McpServer(
-    { name: "lusu-personal-site-local", version: "0.5.0" },
+    { name: "lusu-personal-site-local", version: "0.7.0" },
     { capabilities: { tools: {} } }
   );
 
@@ -189,6 +255,86 @@ export async function createLocalMcpServer(options = {}) {
     inputSchema: z.object({ slug: z.string().min(1).max(180), lang: languageSchema }),
     annotations: readOnlyAnnotations({ openWorldHint: true })
   }, ({ slug, lang }) => client.getArticle(slug, { lang }));
+
+  registerTool(server, "article_manage_list", {
+    title: "List managed knowledge-base articles",
+    description: "Lists draft and published article metadata for the authenticated site administrator. Requires content:write.",
+    inputSchema: z.object({
+      status: z.enum(["draft", "published", "archived"]).optional(),
+      category: articleCategorySchema.optional(),
+      limit: z.number().int().min(1).max(200).default(50)
+    }).strict(),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, (input) => client.listManagedArticles(input));
+
+  registerTool(server, "article_manage_get", {
+    title: "Read a managed knowledge-base article",
+    description: "Reads full zh/en/ja source and the current updatedAt revision for one administrator-managed article. Requires content:write.",
+    inputSchema: z.object({ articleId: articleIdSchema }).strict(),
+    annotations: readOnlyAnnotations({ openWorldHint: true })
+  }, ({ articleId }) => client.getManagedArticle(articleId));
+
+  registerTool(server, "article_publish", {
+    title: "Atomically publish a trilingual article",
+    description: "Atomically publishes metadata plus complete zh/en/ja Markdown in one server transaction. operationId makes exact retries idempotent. Requires an administrator-approved content:write token.",
+    inputSchema: z.object({
+      ...articlePublishMetadataShape,
+      translations: articleInlineTranslationsSchema
+    }).strict(),
+    annotations: writeAnnotations({ idempotentHint: true })
+  }, (input) => client.publishArticle(input));
+
+  registerTool(server, "article_publish_files", {
+    title: "Atomically publish trilingual Markdown files",
+    description: "Reads three non-symlink UTF-8 Markdown files inside LUSU_MCP_ALLOW_ROOT, then atomically publishes the complete article. Local paths never leave the MCP process. Requires content:write.",
+    inputSchema: z.object({
+      ...articlePublishMetadataShape,
+      translations: articleFileTranslationsSchema
+    }).strict(),
+    annotations: writeAnnotations({ idempotentHint: true })
+  }, async (input) => {
+    const translations = Object.fromEntries(await Promise.all(
+      Object.entries(input.translations).map(async ([lang, translation]) => [
+        lang,
+        {
+          title: translation.title,
+          ...(translation.summary ? { summary: translation.summary } : {}),
+          contentMarkdown: await readArticleMarkdownFile(translation.contentFile, allowRoots)
+        }
+      ])
+    ));
+    return client.publishArticle({ ...input, translations });
+  });
+
+  registerTool(server, "article_update", {
+    title: "Atomically update a knowledge-base article",
+    description: "Updates metadata and/or selected language sources with expectedUpdatedAt CAS and an idempotent operationId. Requires content:write; governed automation categories are excluded.",
+    inputSchema: z.object({
+      articleId: articleIdSchema,
+      operationId: operationIdSchema,
+      expectedUpdatedAt: z.string().datetime({ offset: true }),
+      slug: articleSlugSchema.optional(),
+      category: articleCategorySchema.optional(),
+      tags: z.array(articleTagSchema).max(12).optional(),
+      coverImage: z.string().trim().max(500).optional(),
+      isPinned: z.boolean().optional(),
+      publishedAt: z.union([z.string().datetime({ offset: true }), z.null()]).optional(),
+      translations: articlePartialTranslationsSchema.optional()
+    }).strict(),
+    annotations: writeAnnotations({ destructiveHint: true, idempotentHint: true })
+  }, ({ articleId, ...payload }) => client.updateArticle(articleId, payload));
+
+  registerTool(server, "article_delete", {
+    title: "Delete a knowledge-base article",
+    description: "Permanently deletes one article only when confirm is true and expectedUpdatedAt still matches. Exact retries use operationId. Requires the separately approved content:delete scope.",
+    inputSchema: z.object({
+      articleId: articleIdSchema,
+      operationId: operationIdSchema,
+      expectedUpdatedAt: z.string().datetime({ offset: true }),
+      confirm: z.literal(true)
+    }).strict(),
+    annotations: writeAnnotations({ destructiveHint: true, idempotentHint: true })
+  }, ({ articleId, ...payload }) => client.deleteArticle(articleId, payload));
 
   registerTool(server, "daily_news_get", {
     title: "Read Daily AI News",
@@ -521,14 +667,14 @@ export async function createLocalMcpServer(options = {}) {
 
   registerTool(server, "game_create", {
     title: "Create an isolated AI game session",
-    description: "Creates a bounded local 2048 session for an AI agent. This does not take over an already-open browser game.",
-    inputSchema: z.object({ gameId: z.literal("2048") }).strict(),
+    description: "Creates a bounded local 2048 or Life Restart session for an AI agent. It never takes over an already-open browser game.",
+    inputSchema: z.object({ gameId: z.enum(["2048", "life-restart"]) }).strict(),
     annotations: writeAnnotations({ idempotentHint: false, openWorldHint: false })
   }, ({ gameId }) => gameStore.createSession(gameId));
 
   registerTool(server, "game_observe", {
     title: "Observe an isolated game session",
-    description: "Returns the structured board, score, phase, terminal state, revision, and available moves for a local AI game session.",
+    description: "Returns a bounded structured observation for a local AI game session, including its phase, revision, and game-specific semantic state.",
     inputSchema: z.object({ sessionId: gameSessionIdSchema }).strict(),
     annotations: readOnlyAnnotations()
   }, ({ sessionId }) => gameStore.observeSession(sessionId));
@@ -542,15 +688,12 @@ export async function createLocalMcpServer(options = {}) {
 
   registerTool(server, "game_act", {
     title: "Apply one semantic game action",
-    description: "Applies one CAS-guarded 2048 move. clientActionId makes exact retries idempotent; selectors, scripts, URLs, and raw keys are rejected.",
+    description: "Applies one CAS-guarded 2048 or Life Restart semantic action. clientActionId makes exact retries idempotent; selectors, scripts, URLs, paths, saves, and raw keys are rejected.",
     inputSchema: z.object({
       sessionId: gameSessionIdSchema,
       expectedRevision: z.number().int().min(0).max(1_000_000_000),
       clientActionId: clientActionIdSchema,
-      action: z.object({
-        type: z.literal("move"),
-        direction: z.enum(["up", "down", "left", "right"])
-      }).strict()
+      action: gameActionSchema
     }).strict(),
     annotations: writeAnnotations({ idempotentHint: true, openWorldHint: false })
   }, ({ sessionId, expectedRevision, clientActionId, action }) => gameStore.actSession(sessionId, {
@@ -561,7 +704,7 @@ export async function createLocalMcpServer(options = {}) {
 
   registerTool(server, "game_reset", {
     title: "Reset an isolated game session",
-    description: "Discards the current 2048 run and starts a new board. This destructive action requires confirm=true and remains CAS-guarded and retry-safe.",
+    description: "Discards the current isolated game run and starts again. This destructive action requires confirm=true and remains CAS-guarded and retry-safe.",
     inputSchema: z.object({
       sessionId: gameSessionIdSchema,
       expectedRevision: z.number().int().min(0).max(1_000_000_000),
@@ -707,6 +850,42 @@ function writeAnnotations(overrides = {}) {
     openWorldHint: true,
     ...overrides
   };
+}
+
+async function readArticleMarkdownFile(fileRef, allowRoots) {
+  const requested = requestedFileRefPath(fileRef, allowRoots);
+  const requestedStat = await fs.lstat(requested).catch((error) => {
+    throw new LocalStateError("The Markdown file does not exist.", "ARTICLE_FILE_NOT_FOUND", { cause: error });
+  });
+  if (requestedStat.isSymbolicLink()) {
+    throw new LocalStateError("Article Markdown may not be a symbolic link.", "ARTICLE_FILE_SYMLINK_FORBIDDEN");
+  }
+  const extension = path.extname(requested).toLowerCase();
+  if (![".md", ".markdown"].includes(extension)) {
+    throw new LocalStateError("Article files must use .md or .markdown.", "ARTICLE_FILE_EXTENSION_INVALID");
+  }
+  const file = await resolveReadableFileRef(fileRef, allowRoots);
+  const requestedReal = await fs.realpath(requested);
+  if (!sameLocalPath(requested, requestedReal) || !sameLocalPath(file.path, requestedReal)) {
+    throw new LocalStateError("Article Markdown may not traverse a symbolic link.", "ARTICLE_FILE_SYMLINK_FORBIDDEN");
+  }
+  if (file.sizeBytes < 1 || file.sizeBytes > 200_000) {
+    throw new LocalStateError("Article Markdown must contain 1-200000 UTF-8 bytes.", "ARTICLE_FILE_SIZE_INVALID");
+  }
+  const bytes = await fs.readFile(file.path);
+  if (bytes.byteLength !== file.sizeBytes) {
+    throw new LocalStateError("The Article Markdown changed while it was read.", "ARTICLE_FILE_CHANGED");
+  }
+  let content;
+  try {
+    content = new TextDecoder("utf-8", { fatal: true }).decode(bytes).replace(/^\uFEFF/u, "");
+  } catch (error) {
+    throw new LocalStateError("Article Markdown must be valid UTF-8.", "ARTICLE_FILE_UTF8_INVALID", { cause: error });
+  }
+  if (!content.trim() || content.length > 200_000) {
+    throw new LocalStateError("Article Markdown content is empty or too long.", "ARTICLE_FILE_CONTENT_INVALID");
+  }
+  return content;
 }
 
 async function resolveWhiteboardAssetInput(fileRef, allowRoots) {

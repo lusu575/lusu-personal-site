@@ -226,6 +226,10 @@ async function startAndApproveDevice(env, {
 
 test("governed tool scopes are supported but never granted by default", async () => {
   const { env } = await createFixture();
+  assert.equal(AGENT_SCOPE_DEFINITIONS["content:write"].readOnly, false);
+  assert.equal(AGENT_SCOPE_DEFINITIONS["content:write"].adminOnly, true);
+  assert.equal(AGENT_SCOPE_DEFINITIONS["content:delete"].readOnly, false);
+  assert.equal(AGENT_SCOPE_DEFINITIONS["content:delete"].adminOnly, true);
   assert.equal(AGENT_SCOPE_DEFINITIONS["whiteboard:read"].readOnly, true);
   assert.equal(AGENT_SCOPE_DEFINITIONS["whiteboard:write"].readOnly, false);
   assert.equal(AGENT_SCOPE_DEFINITIONS["whiteboard:assets"].readOnly, false);
@@ -281,6 +285,65 @@ test("governed tool scopes are supported but never granted by default", async ()
     "japanese-subtext:progress:read",
     "japanese-subtext:progress:write"
   ]);
+
+  const contentMutation = await call(env, "device/start", {
+    method: "POST",
+    ...jsonRequest({
+      clientName: "Knowledge management scope test",
+      scopes: ["content:delete", "content:write", "content:read"]
+    }),
+    headers: {
+      "CF-Connecting-IP": "203.0.113.204",
+      "Content-Type": "application/json"
+    }
+  });
+  assert.equal(contentMutation.status, 201);
+  assert.deepEqual((await contentMutation.json()).scopes, [
+    "content:delete",
+    "content:read",
+    "content:write"
+  ]);
+});
+
+test("content mutation scopes can only be approved by the current site administrator", async () => {
+  const { db, env } = await createFixture();
+  const started = await call(env, "device/start", {
+    method: "POST",
+    ...jsonRequest({ clientName: "Knowledge publisher", scopes: ["content:write", "content:delete"] }),
+    headers: { "CF-Connecting-IP": "203.0.113.205", "Content-Type": "application/json" }
+  });
+  assert.equal(started.status, 201);
+  const device = await started.json();
+
+  const blocked = await call(env, `device/authorize?user_code=${device.userCode}`, {
+    browserSession: true,
+    headers: { "CF-Connecting-IP": "203.0.113.205" }
+  });
+  assert.equal(blocked.status, 403);
+
+  db.sqlite.prepare("update users set role = 'admin' where id = 'user-1'").run();
+  const consent = await call(env, `device/authorize?user_code=${device.userCode}`, {
+    browserSession: true,
+    headers: { "CF-Connecting-IP": "203.0.113.205" }
+  });
+  assert.equal(consent.status, 200);
+  const csrf = cookieValue(consent.headers.get("Set-Cookie"), "__Host-lusu_agent_csrf");
+  const approved = await call(env, "device/authorize", {
+    method: "POST",
+    body: new URLSearchParams({
+      user_code: device.userCode,
+      csrf_token: csrf,
+      decision: "approve"
+    }).toString(),
+    browserSession: true,
+    headers: {
+      "CF-Connecting-IP": "203.0.113.205",
+      "Content-Type": "application/x-www-form-urlencoded",
+      Origin: origin,
+      Cookie: `__Host-lusu_agent_csrf=${encodeURIComponent(csrf)}`
+    }
+  });
+  assert.equal(approved.status, 200);
 });
 
 test("device authorization issues one hashed, scoped and revocable agent token", async () => {

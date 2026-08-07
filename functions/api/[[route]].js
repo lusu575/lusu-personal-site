@@ -5,6 +5,10 @@ import {
   isAgentAuthApiPath
 } from "./agent-auth.mjs";
 import {
+  handleAgentArticlesApi,
+  isAgentArticlesApiPath
+} from "./agent-articles.mjs";
+import {
   JapaneseSubtextAgentEvaluationError,
   canonicalJapaneseSubtextAgentPayload,
   evaluateJapaneseSubtextAgentAttempt,
@@ -31,7 +35,7 @@ import {
   toPublicArticle
 } from "./public-content-service.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260807-hextris-agent-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260807-life-restart-agent-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
 const PUBLIC_RELEASE_DATE = "2026-08-07";
@@ -82,10 +86,11 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260807-hextris-agent-r1";
+const ARTICLE_SEED_VERSION = "20260807-life-restart-agent-r1";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AGENT_AUDIT_RETENTION_DAYS = 180;
+const AGENT_ARTICLE_RECEIPT_RETENTION_DAYS = 180;
 const JAPANESE_SUBTEXT_AGENT_RETENTION_DAYS = 180;
 const JAPANESE_SUBTEXT_AGENT_ATTEMPT_RATE_LIMITS = Object.freeze({
   token: Object.freeze({ limit: 120, windowMs: 60 * 1000, backoffMs: 60 * 1000, maxBackoffMs: 15 * 60 * 1000 }),
@@ -261,6 +266,12 @@ export async function onRequest(context) {
     const transferResponse = await handleTransferApi(context, parts);
     if (transferResponse) {
       return transferResponse;
+    }
+
+    if (isAgentArticlesApiPath(parts)) {
+      await ensureArticleSchema(env);
+      await seedArticleTestData(env);
+      return await handleAgentArticlesApi(context, parts);
     }
 
     const adminSession = parts[0] === "admin"
@@ -5053,6 +5064,19 @@ async function ensureArticleSchema(env) {
       )
     `),
     env.DB.prepare(`
+      create table if not exists agent_article_receipts (
+        receipt_id text primary key,
+        user_id text not null,
+        operation_id text not null,
+        action text not null,
+        payload_hash text not null,
+        article_id text not null default '',
+        response_json text not null,
+        created_at text not null,
+        unique(user_id, operation_id)
+      )
+    `),
+    env.DB.prepare(`
       create table if not exists site_runtime_state (
         key text primary key,
         value text not null,
@@ -5061,7 +5085,8 @@ async function ensureArticleSchema(env) {
     `),
     env.DB.prepare("create index if not exists articles_status_published_idx on articles(status, published_at, article_id)"),
     env.DB.prepare("create index if not exists articles_category_idx on articles(category)"),
-    env.DB.prepare("create index if not exists article_translations_article_lang_idx on article_translations(article_id, lang)")
+    env.DB.prepare("create index if not exists article_translations_article_lang_idx on article_translations(article_id, lang)"),
+    env.DB.prepare("create index if not exists agent_article_receipts_created_idx on agent_article_receipts(created_at)")
   ]);
   articleSchemaReady = true;
 }
@@ -5816,6 +5841,24 @@ async function runPeriodicDataCleanup(env) {
   const japaneseSubtextAgentCutoff = new Date(
     now.getTime() - JAPANESE_SUBTEXT_AGENT_RETENTION_DAYS * 24 * 60 * 60 * 1000
   ).toISOString();
+  if (await tableExists(env, "agent_article_receipts")) {
+    statements.push(
+      env.DB.prepare(`
+        delete from agent_article_receipts
+        where rowid in (
+          select rowid from agent_article_receipts
+          where created_at < ?
+          order by created_at asc
+          limit ?
+        )
+      `).bind(
+        new Date(
+          now.getTime() - AGENT_ARTICLE_RECEIPT_RETENTION_DAYS * 24 * 60 * 60 * 1000
+        ).toISOString(),
+        DATA_CLEANUP_DELETE_LIMIT
+      )
+    );
+  }
   if (
     await tableExists(env, "japanese_subtext_agent_receipts")
     && await tableExists(env, "japanese_subtext_agent_attempts")
@@ -7238,6 +7281,98 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-08-07-life-restart-agent',
+        '2026-08-07-life-restart-agent',
+        'site-updates',
+        '["网站更新","AI 能力","知识库","原子发布","MCP","CLI","人生重开模拟器","安全"]',
+        '', 'published', 0, 0,
+        '2026-08-07T08:00:00.000Z',
+        '2026-08-07T08:00:00.000Z',
+        '2026-08-07T08:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-08-07-life-restart-agent", {
+      zh: {
+        title: "知识库原子发布 MCP 与人生重开语义会话上线",
+        summary: "本地 stdio MCP 现已支持三语知识库文章的原子发布、Markdown 文件发布、CAS 更新和确认删除，并继续提供可复现的人生重开游戏会话；写入仅接受管理员批准的独立 scope。",
+        content_markdown: `# 知识库原子发布 MCP 与人生重开语义会话上线
+
+AI 能力层第七阶段优先补齐本地 stdio MCP 的知识库管理，同时把人生重开模拟器接入通用 \`lusu game\` 会话。
+
+## 知识库原子发布
+
+- \`article_publish\` 在一次原子操作中写入文章元数据、zh／en／ja 三语正文、审计事件和幂等收据；任何一步失败都不会留下半发布文章。
+- \`article_publish_files\` 只读取 MCP 配置的 allow-root 内真实、非符号链接、有效 UTF-8 的 Markdown 文件，本地绝对路径不会发送到站点 API。
+- \`article_update\` 要求 \`expectedUpdatedAt\` CAS；\`article_delete\` 同样要求 CAS，并且必须显式提交 \`confirm: true\`。写入和删除分别需要管理员单独批准的 \`content:write\` 与 \`content:delete\` scope。
+- 通用文章工具会拒绝受保护分类 \`site-updates\`、\`daily-ai-news\` 与 \`tool-radar\`，不能绕过公开更新和专用自动投递规则。
+
+## 人生重开语义会话
+
+AI 可以在隔离会话里选择三项天赋、分配颜值／智力／体质／家境、逐岁推进，并在终局选择可继承天赋后开启下一轮。版本化随机状态、revision CAS 和 clientActionId 让同一初始状态与动作序列可复现且可安全重试；输入只接受这些结构化语义动作，不接受选择器、脚本、URL、任意按键或原始存档。第一版仅支持 Custom 模式和已固定哈希的中文剧情数据。
+
+## 当前边界
+
+知识库写入只在本地 CLI／stdio MCP 与受管理员授权的站点 API 中提供。独立的远程 MCP Worker 仍未部署，也不包含这些写工具。人生重开会话与浏览器页面和云存档分离，\`browserBridge\` 与 \`browserPairing\` 均为 false，不会观看或接管已打开的游戏。`
+      },
+      en: {
+        title: "Atomic Knowledge Publishing MCP and Life Restart Sessions",
+        summary: "The local stdio MCP now atomically publishes trilingual knowledge articles, publishes Markdown files, performs CAS updates and confirmed deletes, and also runs reproducible Life Restart sessions. Writes require separately administrator-approved scopes.",
+        content_markdown: `# Atomic Knowledge Publishing MCP and Life Restart Sessions
+
+Phase seven of the AI capability layer prioritizes knowledge-base management in the local stdio MCP while integrating Life Restart with shared \`lusu game\` sessions.
+
+## Atomic knowledge publishing
+
+- \`article_publish\` writes article metadata, zh/en/ja bodies, an audit event, and an idempotency receipt in one atomic operation. If any step fails, no partially published article remains.
+- \`article_publish_files\` reads only real, non-symlink, valid UTF-8 Markdown files beneath an MCP-configured allow-root. Local absolute paths are never sent to the site API.
+- \`article_update\` requires \`expectedUpdatedAt\` CAS. \`article_delete\` also requires CAS and an explicit \`confirm: true\`. Writes and deletes require the separately administrator-approved \`content:write\` and \`content:delete\` scopes.
+- General article tools reject the protected \`site-updates\`, \`daily-ai-news\`, and \`tool-radar\` categories, so they cannot bypass public-update or dedicated delivery rules.
+
+## Life Restart semantic sessions
+
+In an isolated session, an AI can select three talents, allocate charm, intelligence, strength, and money points, advance one year at a time, and start another life with an eligible inherited talent. Versioned random state, revision CAS, and clientActionId make the same initial state and action sequence reproducible and safely retryable. Inputs accept only those structured semantic actions, never selectors, scripts, URLs, arbitrary keys, or raw saves. Version one supports Custom mode and the pinned-hash Chinese story dataset.
+
+## Current boundary
+
+Knowledge writes are available only through the local CLI/stdio MCP and the administrator-authorized site API. The separate remote MCP Worker remains undeployed and does not expose these write tools. Life Restart sessions remain isolated from the browser page and cloud saves; both \`browserBridge\` and \`browserPairing\` are false, so they do not watch or take over an open game.`
+      },
+      ja: {
+        title: "知識ベース原子公開 MCP と Life Restart セッションを追加",
+        summary: "ローカル stdio MCP で、3言語の知識記事の原子的公開、Markdown ファイル公開、CAS 更新、確認付き削除に対応し、再現可能な Life Restart セッションも利用できます。書き込みには管理者が別途承認した scope が必要です。",
+        content_markdown: `# 知識ベース原子公開 MCP と Life Restart セッションを追加
+
+AI 機能レイヤー第7段階では、ローカル stdio MCP の知識ベース管理を優先して追加し、Life Restart を共通の \`lusu game\` セッションへ統合しました。
+
+## 知識ベースの原子公開
+
+- \`article_publish\` は、記事メタデータ、zh／en／ja の3言語本文、監査イベント、冪等レシートを1回の原子操作で書き込みます。途中で失敗しても半公開の記事は残りません。
+- \`article_publish_files\` は MCP で設定した allow-root 配下にある、実体ファイルかつシンボリックリンクでない有効な UTF-8 Markdown だけを読み取ります。ローカル絶対パスはサイト API へ送信しません。
+- \`article_update\` には \`expectedUpdatedAt\` CAS が必要です。\`article_delete\` にも CAS と明示的な \`confirm: true\` が必要です。書き込みと削除には、管理者が個別に承認した \`content:write\` と \`content:delete\` scope を使用します。
+- 汎用記事ツールは保護対象の \`site-updates\`、\`daily-ai-news\`、\`tool-radar\` を拒否し、公開更新や専用自動配信の規則を迂回できません。
+
+## Life Restart の意味操作セッション
+
+分離セッション内で、3つの天賦を選択し、魅力・知力・体力・家境へポイントを配分し、1年ずつ進め、終局後に継承可能な天賦で次の人生を開始できます。版管理された乱数状態、revision CAS、clientActionId により、同じ初期状態と操作列を再現して安全に再試行できます。入力はこれらの構造化された意味操作だけを受け付け、セレクター、スクリプト、URL、任意キー、生のセーブデータは拒否します。初版は Custom モードと、ハッシュを固定した中国語物語データに対応します。
+
+## 現在の境界
+
+知識ベースへの書き込みは、ローカル CLI／stdio MCP と管理者が承認したサイト API だけで利用できます。独立したリモート MCP Worker は未展開で、これらの書き込みツールも公開していません。Life Restart セッションはブラウザーページやクラウドセーブから分離され、\`browserBridge\` と \`browserPairing\` はともに false のため、開いているゲームを監視・操作しません。`
+      }
+    }, "2026-08-07T08:00:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,

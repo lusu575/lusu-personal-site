@@ -149,7 +149,11 @@ async function runCliWithDependencies(argv, dependencies) {
       }))
     };
   } else if (command === "content") {
-    result = await runContentCommand(client, subcommand, commandArgs);
+    result = await runContentCommand(client, subcommand, commandArgs, {
+      accessToken,
+      readStdin,
+      tokenStdin: global.tokenStdin
+    });
   } else if (command === "videos") {
     result = await runVideosCommand(client, subcommand, commandArgs);
   } else if (command === "tools") {
@@ -204,7 +208,7 @@ async function runCliWithDependencies(argv, dependencies) {
   return result;
 }
 
-async function runContentCommand(client, command, args) {
+async function runContentCommand(client, command, args, context = {}) {
   if (command === "list") {
     const parsed = parseOptions(args, {
       "--lang": "value",
@@ -243,7 +247,112 @@ async function runContentCommand(client, command, args) {
     assertNoPositionals(parsed);
     return client.getDailyNews({ lang: parsed.options.lang, date: parsed.options.date });
   }
+  if (command === "manage-list") {
+    requireContentMutationAuth(context.accessToken);
+    const parsed = parseOptions(args, {
+      "--status": "value",
+      "--category": "value",
+      "--limit": "value"
+    });
+    assertNoPositionals(parsed);
+    return client.listManagedArticles({
+      status: parsed.options.status,
+      category: parsed.options.category,
+      limit: parsed.options.limit
+    });
+  }
+  if (command === "manage-get") {
+    requireContentMutationAuth(context.accessToken);
+    const parsed = parseOptions(args, {});
+    if (parsed.positionals.length !== 1) {
+      throw new CliInputError("content manage-get requires one article id.", "ARTICLE_ID_REQUIRED");
+    }
+    return client.getManagedArticle(parsed.positionals[0]);
+  }
+  if (command === "publish") {
+    requireContentMutationAuth(context.accessToken);
+    const parsed = parseOptions(args, { "--input": "value" });
+    assertNoPositionals(parsed);
+    const payload = await readContentMutationInput(parsed.options.input, context, "publish");
+    return client.publishArticle(payload);
+  }
+  if (command === "update") {
+    requireContentMutationAuth(context.accessToken);
+    const parsed = parseOptions(args, { "--input": "value" });
+    if (parsed.positionals.length !== 1) {
+      throw new CliInputError("content update requires one article id.", "ARTICLE_ID_REQUIRED");
+    }
+    const payload = await readContentMutationInput(parsed.options.input, context, "update");
+    return client.updateArticle(parsed.positionals[0], payload);
+  }
+  if (command === "delete") {
+    requireContentMutationAuth(context.accessToken);
+    const parsed = parseOptions(args, {
+      "--expected-updated-at": "value",
+      "--operation-id": "value",
+      "--yes": "boolean"
+    });
+    if (parsed.positionals.length !== 1) {
+      throw new CliInputError("content delete requires one article id.", "ARTICLE_ID_REQUIRED");
+    }
+    if (!parsed.options.yes) {
+      throw new CliInputError("Article deletion is permanent; repeat with --yes.", "CONFIRMATION_REQUIRED");
+    }
+    if (!parsed.options.expectedUpdatedAt || !parsed.options.operationId) {
+      throw new CliInputError(
+        "content delete requires --expected-updated-at and --operation-id.",
+        "ARTICLE_DELETE_METADATA_REQUIRED"
+      );
+    }
+    return client.deleteArticle(parsed.positionals[0], {
+      operationId: parsed.options.operationId,
+      expectedUpdatedAt: parsed.options.expectedUpdatedAt,
+      confirm: true
+    });
+  }
   throw new CliInputError(`Unknown content command: ${command || "<missing>"}`, "CONTENT_COMMAND_UNKNOWN");
+}
+
+function requireContentMutationAuth(accessToken) {
+  if (!accessToken) {
+    throw new CliInputError(
+      "Sign in with administrator-approved content scopes first.",
+      "AUTH_REQUIRED"
+    );
+  }
+}
+
+async function readContentMutationInput(input, context, action) {
+  if (!input) {
+    throw new CliInputError(
+      `content ${action} requires --input FILE or --input -.`,
+      "ARTICLE_INPUT_REQUIRED"
+    );
+  }
+  let text;
+  if (input === "-") {
+    if (context.tokenStdin) {
+      throw new CliInputError(
+        "--token-stdin cannot share standard input with an article document.",
+        "STDIN_INPUT_CONFLICT"
+      );
+    }
+    text = await context.readStdin();
+  } else {
+    text = await readBoundedFile(input, MAX_STDIN_BYTES, {
+      notFoundMessage: "The article input file does not exist.",
+      notFoundCode: "ARTICLE_INPUT_FILE_NOT_FOUND",
+      invalidMessage: "The article input must be a regular file no larger than 1 MiB.",
+      invalidCode: "ARTICLE_INPUT_FILE_INVALID"
+    });
+  }
+  try {
+    const parsed = JSON.parse(text);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("object required");
+    return parsed;
+  } catch {
+    throw new CliInputError("The article input must be a JSON object.", "ARTICLE_INPUT_JSON_INVALID");
+  }
 }
 
 async function runVideosCommand(client, command, args) {
@@ -1309,6 +1418,11 @@ function helpText() {
     "  lusu content search QUERY [--lang zh|en|ja] [--category ID]",
     "  lusu content get SLUG [--lang zh|en|ja]",
     "  lusu content daily [--date YYYY-MM-DD] [--lang zh|en|ja]",
+    "  lusu content manage-list [--status draft|published] [--category ID] [--limit N]",
+    "  lusu content manage-get ARTICLE_ID",
+    "  lusu content publish --input ARTICLE.json|-",
+    "  lusu content update ARTICLE_ID --input PATCH.json|-",
+    "  lusu content delete ARTICLE_ID --expected-updated-at ISO --operation-id ID --yes",
     "  lusu videos list [--query TEXT] [--lang zh|en|ja]",
     "  lusu videos get VIDEO_ID",
     "  lusu tools list [--lang zh|en|ja]",
@@ -1334,11 +1448,11 @@ function helpText() {
     "  lusu whiteboard asset put BOARD_HANDLE FILE --operation-id ID",
     "  lusu whiteboard asset get BOARD_HANDLE ASSET_ID DESTINATION",
     "  lusu whiteboard export BOARD_HANDLE DESTINATION [--format json|svg|png]",
-    "  lusu game create 2048",
+    "  lusu game create 2048|life-restart",
     "  lusu game observe SESSION_ID | actions SESSION_ID",
     "  lusu game act SESSION_ID --expected-revision N --client-action-id ID --direction up|down|left|right",
     "  lusu game act SESSION_ID --expected-revision N --client-action-id ID --reset --yes",
-    "  lusu game act SESSION_ID --input ACTION.json",
+    "  lusu game act SESSION_ID --input ACTION.json|-  # all game-specific semantic actions",
     "  lusu game close SESSION_ID --yes",
     "",
     "Global: --base-url URL, --token-stdin. LUSU_ACCESS_TOKEN is also supported.",

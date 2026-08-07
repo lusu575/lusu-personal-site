@@ -13,7 +13,8 @@ const JAPANESE_AGENT_PROGRESS_UPDATE_ID = "seed-update-2026-08-06-japanese-agent
 const AGENT_AUTH_FORM_ORIGIN_UPDATE_ID = "seed-update-2026-08-06-agent-auth-form-origin";
 const WHITEBOARD_AGENT_IMAGES_UPDATE_ID = "seed-update-2026-08-06-whiteboard-agent-images";
 const HEXTRIS_AGENT_UPDATE_ID = "seed-update-2026-08-07-hextris-agent";
-const ARTICLE_SEED_VERSION = "20260807-hextris-agent-r1";
+const LIFE_RESTART_AGENT_UPDATE_ID = "seed-update-2026-08-07-life-restart-agent";
+const ARTICLE_SEED_VERSION = "20260807-life-restart-agent-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -285,6 +286,24 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /stdio MCP/);
     assert.match(params[5], /GPL-3\.0-or-later/);
     assert.match(params[5], /browser|浏览器|ブラウザー/);
+    assert.match(params[5], /undeployed|未部署|未展開/);
+  }
+
+  const lifeRestartAgentSeed = seedBatch.find(({ sql }) => (
+    sql.includes(`'${LIFE_RESTART_AGENT_UPDATE_ID}'`)
+    && /on conflict\(article_id\) do update/i.test(normalizedSql(sql))
+  ));
+  assert.ok(lifeRestartAgentSeed, "the Phase 7 Life Restart Agent update metadata must be seeded");
+  const lifeRestartAgentTranslations = boundStatements.filter(({ params }) => (
+    params[1] === LIFE_RESTART_AGENT_UPDATE_ID
+    && ["zh", "en", "ja"].includes(params[2])
+  ));
+  assert.equal(lifeRestartAgentTranslations.length, 3, "the Phase 7 Life Restart update must include three translations");
+  for (const { params } of lifeRestartAgentTranslations) {
+    assert.match(params[5], /Life Restart|人生重开模拟器/);
+    assert.match(params[5], /stdio MCP/);
+    assert.match(params[5], /clientActionId/);
+    assert.match(params[5], /browserBridge/);
     assert.match(params[5], /undeployed|未部署|未展開/);
   }
 

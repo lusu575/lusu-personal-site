@@ -204,6 +204,51 @@ test("SiteClient revokes the current agent token through the server contract", a
   assert.equal(request.options.method, "DELETE");
 });
 
+test("SiteClient sends bounded administrator article mutations to the dedicated Agent API", async () => {
+  const calls = [];
+  const client = new SiteClient({
+    baseUrl: "https://example.test",
+    accessToken: "admin-agent-token",
+    fetch: async (url, options) => {
+      calls.push({ url, options, body: options.body ? JSON.parse(options.body) : null });
+      return jsonResponse({ ok: true, article: { articleId: "article-1" } }, {
+        status: options.method === "POST" ? 201 : 200
+      });
+    }
+  });
+  const translations = Object.fromEntries(["zh", "en", "ja"].map((lang) => [lang, {
+    title: `${lang} title`,
+    contentMarkdown: `# ${lang}\n${"x".repeat(70_000)}`
+  }]));
+  await client.publishArticle({
+    operationId: "publish_article_001",
+    slug: "agent-article",
+    translations
+  });
+  await client.updateArticle("article-1", {
+    operationId: "update_article_001",
+    expectedUpdatedAt: "2026-08-07T10:00:00.000Z",
+    tags: ["MCP"]
+  });
+  await client.deleteArticle("article-1", {
+    operationId: "delete_article_001",
+    expectedUpdatedAt: "2026-08-07T10:01:00.000Z",
+    confirm: true
+  });
+  assert.deepEqual(calls.map(({ url, options }) => [url.pathname, options.method]), [
+    ["/api/agent/articles/publish", "POST"],
+    ["/api/agent/articles/article-1", "PUT"],
+    ["/api/agent/articles/article-1", "DELETE"]
+  ]);
+  assert.ok(calls.every(({ options }) => options.headers.get("Authorization") === "Bearer admin-agent-token"));
+  assert.ok(calls.every(({ options }) => options.headers.get("Origin") === "https://example.test"));
+  await assert.rejects(
+    client.updateArticle("../private", {}),
+    (error) => error instanceof SiteClientError && error.code === "ARTICLE_ID_INVALID"
+  );
+  assert.equal(calls.length, 3);
+});
+
 test("SiteClient supports per-request JSON limits without raising the client-wide ceiling", async () => {
   const client = new SiteClient({
     baseUrl: "https://example.test",

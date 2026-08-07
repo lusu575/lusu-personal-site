@@ -17,6 +17,8 @@ const USER_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 export const AGENT_SCOPE_DEFINITIONS = Object.freeze({
   "content:read": Object.freeze({ readOnly: true }),
+  "content:write": Object.freeze({ readOnly: false, adminOnly: true }),
+  "content:delete": Object.freeze({ readOnly: false, adminOnly: true }),
   "transfer:read": Object.freeze({ readOnly: true }),
   "transfer:write": Object.freeze({ readOnly: false }),
   "transfer:delete": Object.freeze({ readOnly: false }),
@@ -250,6 +252,13 @@ async function showDeviceAuthorization(request, env) {
   `).bind(await sha256Hex(csrfToken), row.device_id, new Date().toISOString()).run();
 
   const scopes = parseStoredScopes(row.requested_scopes);
+  const adminOnlyScopes = scopes.filter((scope) => AGENT_SCOPE_DEFINITIONS[scope]?.adminOnly);
+  if (adminOnlyScopes.length && session.user.role !== "admin") {
+    return authorizationHtml(request, {
+      title: "仅站点管理员可授权 / Site admin required / サイト管理者が必要です",
+      body: `这些权限只能由站点管理员授权：${adminOnlyScopes.join(", ")} / These scopes require the site administrator. / これらの権限にはサイト管理者が必要です。`
+    }, 403);
+  }
   const response = authorizationConsentHtml(request, {
     clientName: row.client_name,
     userCode,
@@ -280,8 +289,17 @@ async function decideDeviceAuthorization(request, env) {
   const session = await requireBrowserSession(request, env);
   const now = new Date().toISOString();
   const approved = decision === "approve";
+  const requestedScopes = parseStoredScopes(row.requested_scopes);
+  const adminOnlyScopes = requestedScopes.filter((scope) => AGENT_SCOPE_DEFINITIONS[scope]?.adminOnly);
+  if (approved && adminOnlyScopes.length && session.user.role !== "admin") {
+    throw new AgentAuthError(
+      "Only the site administrator can approve content mutation scopes.",
+      403,
+      "AGENT_ADMIN_SCOPE_REQUIRED"
+    );
+  }
   const status = approved ? "approved" : "denied";
-  const grantedScopes = approved ? parseStoredScopes(row.requested_scopes) : [];
+  const grantedScopes = approved ? requestedScopes : [];
   const decisionEventId = crypto.randomUUID();
   const result = await env.DB.batch([
     env.DB.prepare(`
