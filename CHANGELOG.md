@@ -4,6 +4,7 @@
 
 ## 2026-08-07
 
+- 修复知识库 MCP 生产点检发现的首次删除响应误判：Cloudflare D1 会把文章删除触发的三语翻译级联删除计入 `meta.changes`，旧判断因此把已经成功提交的首次删除当成幂等重放并返回 `duplicate: true`。删除仍由主键、CAS 和同批收据约束，现在接受一个或更多受影响行来覆盖级联元数据，同时继续要求收据只写入一次；新增生产等价回归，确保首次为 `duplicate: false`、完全相同的重试才为 `true`。
 - 完成 AI 能力层第七阶段的知识库管理闭环，本地 stdio MCP 0.7.0 新增 `article_manage_list`、`article_manage_get`、`article_publish`、`article_publish_files`、`article_update`、`article_delete`，主 CLI 同步提供管理员文章列表／详情、JSON 发布、CAS 更新和确认删除。`article_publish` 把文章元数据、zh／en／ja 三语标题／摘要／Markdown 正文、Agent 审计事件和幂等收据放进同一个 D1 batch；任一步失败都会整体回滚，不留下半篇文章。文件发布只读取 MCP allow-root 内真实、非符号链接、有效 UTF-8 且大小／扩展名受限的 Markdown，本机路径不会发往站点或进入工具输出。
 - 文章更新要求精确 `expectedUpdatedAt` CAS，永久删除还要求 `confirm: true`、独立 `content:delete` scope 与新的 `operationId`；更新／删除也把条件写入、审计和收据放进同批事务。`operationId + canonical payload SHA-256` 只允许完全相同的动作和载荷重放，异载荷或跨动作复用返回冲突；收据由健康检查按 180 天边界分批清理，因此客户端必须永久生成新 ID，只有保留窗口内保证原结果重放。通用文章工具拒绝 `site-updates`、`daily-ai-news`、`tool-radar`，不能绕过公开更新与两条专用自动投递通道。
 - 新增非默认、管理员专属的 `content:write`／`content:delete` 设备授权 scope：授权页只允许当前管理员批准，`/api/agent/articles*` 每次请求都重新读取令牌所属账号的当前角色。Agent Bearer 仍映射普通机器 principal，不能进入 `/api/admin/*`，账号被降级后已有令牌也立即失去知识库管理能力。
