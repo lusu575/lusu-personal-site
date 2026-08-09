@@ -10,11 +10,11 @@
 https://lusu575.com/mcp
 ```
 
-截至 2026-08-09，生产 Worker `lusu-site-admin-mcp` 已部署；当前精确 version ID 为 `377d494b-8f90-40ad-998f-863d209e1978`，Production D1 migration 已完成。正式域名的 OAuth protected-resource／authorization-server metadata、Dynamic Client Registration、未鉴权 `401 WWW-Authenticate` challenge、浏览器 Origin 拒绝和精确 pathname 拒绝均已完成线上 smoke。
+截至 2026-08-09，生产 Worker `lusu-site-admin-mcp` 已部署；当前精确 version ID 为 `849d8328-87db-4ac8-819a-ce725fc06349`，内部版本 `0.3.1`，承接 100% 流量，Production D1 migration 已完成。该精确 bundle 的 OAuth protected-resource／authorization-server metadata、未鉴权 `401 WWW-Authenticate` challenge 与非 allowlist pathname `404` 已完成线上 smoke；这些基础检查不替代 DCR、真实浏览器 OAuth 或业务生命周期验收。
 
 该地址是无状态 Streamable HTTP 端点，不提供旧式 `/sse`，也不接受网站设备码令牌、`lusu_session` Cookie 或 URL 查询参数中的 Bearer token。客户端必须通过该 resource 发现并完成站点 OAuth 2.1 授权。
 
-当前 Worker 的 `tools/list` 精确包含 23 个工具，`site_capabilities` 仍只发现已晋级的 4 项公开文章能力。历史 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` 已通过九工具文章闭环；当前 `377d...` 已用 `OpwviOTPYTU` 通过外链视频发布、同载荷重放、管理／公开 MCP／公开 HTTP 回读、元数据刷新、CAS 隐藏、确认删除、最终不存在与 RFC 7009 撤销，临时记录已清理。视频条目的 `availableTransports` 尚未包含 `remote-mcp`，六项游戏条目的 `availableTransports` 仍为空。游戏点检在 2048 暂停后等待玩家恢复时暴露空闲 WebSocket 断线；本次 Pages 发布加入严格 8 秒保活，但必须等精确 Pages commit 上线后逐款重验四游戏。每个新生产 Worker bundle 都必须重新执行适用的真实浏览器 OAuth 与完整闭环，不能复用历史证据。
+当前 Worker 的 `tools/list` 精确包含 23 个工具，`site_capabilities` 仍只发现已晋级的 4 项公开文章能力。历史 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` 已通过九工具文章闭环；外链视频发布、同载荷重放、管理／公开 MCP／公开 HTTP 回读、元数据刷新、CAS 隐藏、确认删除、最终不存在与 RFC 7009 撤销只对历史 `377d494b-8f90-40ad-998f-863d209e1978` 通过，当前 `849d...` 必须重验。视频条目的 `availableTransports` 尚未包含 `remote-mcp`，六项游戏条目的 `availableTransports` 仍为空。当前 `849d...` 已包含 paused `observe` 下行 `pong` 保活，但四款游戏仍须绑定该精确 bundle 与已上线 Pages 字节重跑配对、动作、CAS、至少 6 分钟后台暂停、玩家恢复、确认关闭与撤销闭环。每个新生产 Worker bundle 都必须重新执行适用的真实浏览器 OAuth 与完整闭环，不能复用历史证据。
 
 ## 当前 Worker 的 23 个工具
 

@@ -8,7 +8,7 @@ This standalone unauthenticated target is not the canonical production endpoint
 and does not implement OAuth. Its public tool registrar is reused by the
 production owner-only `workers/site-admin-mcp/` server, which supplies its own
 MCP SDK instance and OAuth boundary at `https://lusu575.com/mcp`. Deployed owner
-Worker version `377d494b-8f90-40ad-998f-863d209e1978` exposes all six public read
+Worker version `849d8328-87db-4ac8-819a-ce725fc06349` exposes all six public read
 tools behind `content:read`, alongside article, external-video, and browser-game
 owner tools. Only
 already-public, read-only operations belong in this project. Transfer room
