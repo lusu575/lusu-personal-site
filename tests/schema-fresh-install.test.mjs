@@ -26,6 +26,7 @@ const agentReadBreadthUpdateId = "seed-update-2026-08-06-agent-read-breadth";
 const japaneseAgentProgressUpdateId = "seed-update-2026-08-06-japanese-agent-progress";
 const hextrisAgentUpdateId = "seed-update-2026-08-07-hextris-agent";
 const lifeRestartAgentUpdateId = "seed-update-2026-08-07-life-restart-agent";
+const remoteMcpOauthUpdateId = "seed-update-2026-08-07-remote-mcp-oauth";
 
 test("D1 schema initializes an empty database and remains idempotent", () => {
   const db = new DatabaseSync(":memory:");
@@ -115,6 +116,14 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       db.prepare("select count(*) as count from article_translations where article_id = ?").get(lifeRestartAgentUpdateId).count,
       3
     );
+    assert.equal(
+      db.prepare("select count(*) as count from articles where article_id = ? and category = 'site-updates'").get(remoteMcpOauthUpdateId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(remoteMcpOauthUpdateId).count,
+      3
+    );
     const trafficSettings = JSON.parse(
       db.prepare("select value from site_runtime_state where key = 'traffic_control_settings_v1'").get().value
     );
@@ -124,7 +133,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260807-life-restart-agent-r1"
+      "20260809-remote-mcp-oauth-r2"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),
@@ -172,6 +181,40 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
         "receipt_id", "user_id", "operation_id", "action", "payload_hash",
         "article_id", "response_json", "created_at"
       ]
+    );
+    assert.deepEqual(
+      db.prepare("pragma table_info(mcp_oauth_grants)").all().map((column) => column.name),
+      [
+        "grant_ref", "user_id", "client_id", "client_name", "resource",
+        "authorized_scopes", "status", "created_at", "activated_at", "expires_at",
+        "revoked_at", "revoked_reason", "last_used_at"
+      ]
+    );
+    assert.deepEqual(
+      db.prepare("pragma table_info(mcp_oauth_audit_log)").all().map((column) => column.name),
+      [
+        "event_id", "user_id", "client_id", "grant_ref", "token_ref_hash",
+        "resource", "capability_id", "tool_name", "operation_id", "target_type",
+        "target_id_hash", "requested_scopes", "effective_scopes", "action",
+        "result", "error_code", "ip_hash", "created_at"
+      ]
+    );
+    assert.deepEqual(
+      db.prepare("pragma table_info(mcp_oauth_registration_limits)").all().map((column) => column.name),
+      ["bucket_key", "request_count", "expires_at", "updated_at"]
+    );
+    assert.equal(
+      db.prepare(`
+        select count(*) as count from sqlite_master
+        where type = 'index' and name in (
+          'mcp_oauth_grants_user_status_idx',
+          'mcp_oauth_grants_client_resource_idx',
+          'mcp_oauth_audit_created_idx',
+          'mcp_oauth_audit_grant_idx',
+          'mcp_oauth_registration_limits_expires_idx'
+        )
+      `).get().count,
+      5
     );
     assert.equal(
       db.prepare(`

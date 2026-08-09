@@ -1,6 +1,6 @@
 # AI 能力层：架构与运行手册
 
-本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前七阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道（含真实图片闭环）、2048 与人生重开模拟器的集成式游戏适配器、独立 GPL 进程边界内的 Hextris 游戏适配器、知识库文章的管理员原子发布／CAS 更新／确认删除、视频／工具／游戏／日语题库的公开只读目录，以及日语账号进度读取与受控答题，并保留一个独立的 Cloudflare 远程 MCP Worker 工程；它不是“全站所有功能已经接入”“浏览器游戏已经接管”或“公网远程 MCP 写入已经上线”的声明。
+本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前七阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道（含真实图片闭环）、2048 与人生重开模拟器的集成式游戏适配器、独立 GPL 进程边界内的 Hextris 游戏适配器、知识库文章的管理员原子发布／CAS 更新／确认删除、视频／工具／游戏／日语题库的公开只读目录，以及日语账号进度读取与受控答题。生产 OAuth remote MCP 现已在 `https://lusu575.com/mcp` 上线四个公开文章读取工具与五个站长知识库工具；2026-08-09，真实站长浏览器 OAuth 同意后的完整写闭环已对精确验收 bundle 通过。这仍不是“全站所有功能已经接入”或“浏览器游戏已经接管”的声明。
 
 ## 1. 先看能力注册表，不要靠猜
 
@@ -173,7 +173,7 @@ Agent Bearer 仍只代表一个普通机器会话，不能进入 `/api/admin/*` 
 - `article_delete` 必须同时提供 `confirm: true`、`expectedUpdatedAt`、独立 `content:delete` scope 与 `operationId`。精确重试即使文章已经删除也能读取原收据；不同载荷复用 ID 会失败。
 - publish／update／delete 收据由周期健康检查按 180 天边界分批清理。调用方必须永久生成新的 `operationId`，不得把过期后的旧 ID 当成可复用 ID；只有收据仍在保留窗口内时，服务端才保证精确重试返回原结果。
 - `site-updates`、`daily-ai-news` 与 `tool-radar` 是受治理发布通道，通用文章 Agent 工具明确拒绝创建、修改或删除这些分类；它们继续遵守各自的公开更新／自动投递规则。
-- 管理列表和详情只通过专用 `/api/agent/articles*` 暴露给已授权管理员令牌；独立的 `workers/site-mcp/` 仍是未部署、公开只读的工程，不包含这些写工具。
+- Pages 设备通道仍通过专用 `/api/agent/articles*` 暴露给已授权管理员令牌；生产站长远程 OAuth Worker 复用同一 transport-neutral 文章服务，不复制发布规则。`workers/site-mcp/` 只提供四个公开读取工具的复用注册层；五个站长工具始终留在 `workers/site-admin-mcp/` 的 OAuth 边界内。
 
 ## 5. Quick Transfer 的秘密与文件边界
 
@@ -244,7 +244,7 @@ Hextris 使用相同的语义动作原则，但保持独立 GPL 进程边界：
 - 日语能力只访问固定 catalog、五个 level index 和由合法 `L1-001` 至 `L5-050` ID 推导出的固定 batch。适配器限制 JSON 字节、条目和搜索结果，验证 schema、`contentVersion: 1.0.2`、250 关计数、唯一 ID、64 位 SHA-256、`textLocked: true` 与关卡哈希；输出省略 batch 路径、内部音频文本和构建字段。
 - 所有公开目录参数只接受 zh／en／ja、白名单 ID、1–5 等级和有界 limit／query。URL 必须是固定站内路径或安全 GitHub HTTPS 地址，调用方不能借参数读取任意文件或 URL。
 
-这些目录本身仍是只读发现面；账号日语进度由下节独立 scope 和专用 API 承担，不把浏览器原始存档混入目录响应。工具目录来自本地模块，因此只在 CLI／本地 MCP 可用；游戏和日语数据虽由正式站点提供，独立远程 MCP Worker 本阶段仍未接线或部署。
+这些目录本身仍是只读发现面；账号日语进度由下节独立 scope 和专用 API 承担，不把浏览器原始存档混入目录响应。工具目录来自本地模块，因此只在 CLI／本地 MCP 可用；游戏和日语数据虽由正式站点提供，当前生产远程 MCP 的九个工具也没有接入这些目录。这保留了第三阶段“没有远程接线”的历史范围，同时以本节当前工具清单为准。
 
 ## 9. 日语账号进度与受控答题
 
@@ -257,21 +257,41 @@ Hextris 使用相同的语义动作原则，但保持独立 GPL 进程边界：
 - Agent 活动日固定按站点 `Asia/Shanghai` 日界线计算，GET 投影的 `activity.timeZone` 会明确返回这一口径；浏览器应用仍按设备本地日记录其原生会话，两者的计分、奖牌、解锁与合并规则相同。
 - 浏览器现有 Cookie `GET/PUT /api/tools/japanese-subtext/progress` 继续负责原应用的完整快照合并，没有改成 Agent 接口。此次未修改公开应用、题库和存档兼容边界，所以 appVersion 仍为 1.0.3、contentVersion 仍为 1.0.2。
 
-## 10. 远程 Cloudflare MCP：当前只是未部署的公开只读面
+## 10. 远程 Cloudflare MCP：生产 OAuth 入口与公开注册层
 
-独立工程位于 `workers/site-mcp/`。它当前没有部署，也没有 OAuth；不要把仓库中的 Worker 配置理解为线上端点已经存在。
+生产 Worker `lusu-site-admin-mcp` 已部署到 canonical resource `https://lusu575.com/mcp`；2026-08-09 完成真实站长浏览器 OAuth 验收的 version ID 为 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b`。生产 `OAUTH_KV` 已绑定，Production D1 migration 已完成；正式域名 protected-resource／authorization-server metadata、DCR、未鉴权 `401 WWW-Authenticate` challenge、浏览器 Origin 拒绝和非 allowlist pathname 拒绝的线上 smoke 已通过。
 
-设计边界：
+站长已在普通顶层浏览器 OAuth 页面核对 client、回调、resource 与 scope 并手动点击 Allow。该精确 bundle 的验收确认 `tools/list` 九个工具、`site_capabilities` 四项公开能力、受控普通文章原子发布、同载荷幂等重放、管理列表／详情读取、最新 revision CAS 更新、zh／en／ja 三语公开回读、`confirm: true` 删除、三语删除后 404 与 grant 撤销均通过，临时文章已删除。以后每个新的生产 Worker bundle 都必须重新完成真实浏览器 OAuth 和同等完整闭环，不得用这次历史验收替代当前版本证据。
 
-- `/mcp` 提供无状态 Streamable HTTP MCP，每个请求创建新的 `McpServer`。
-- `GET /health` 只返回健康信息。
-- Worker 通过 `DB` binding 直接读取与个人站共享的 D1 公共文章数据，不经过公开网站 HTTP，也不接触草稿、房间、文件、聊天写入、存档、白板写入、发布或管理员操作。
-- 当前公开工具为 `site_capabilities`、`content_list`、`content_search`、`article_get`。
-- 另有公开文章资源模板 `lusu://articles/{slug}{?lang}`。
-- Daily AI News 通过 `content_list(category: "daily-ai-news")` 找到文章，再调用 `article_get`，不是单独的发布或自动化工具。
-- 保留 MCP handler 默认的 Host 与浏览器 Origin 校验，不得改成通配放行。
+生产端点共暴露九个工具：
 
-部署目标 `compatibility_date` 是 `2026-08-06`，并启用 `nodejs_compat`。当前锁定的 Wrangler 所带本地 workerd 最多支持 `2026-07-29`，所以 `npm.cmd run dev` 和 Vitest 只在本地使用 `2026-07-29` override；这个 override 不是生产目标，升级 Wrangler/workerd 后应移除。
+| 工具 | scope | 当前边界 |
+| --- | --- | --- |
+| `site_capabilities` | `content:read` | 有界列出当前远程公开能力。 |
+| `content_list` | `content:read` | 按语言／分类列出已发布文章摘要。 |
+| `content_search` | `content:read` | 有界搜索已发布文章摘要。 |
+| `article_get` | `content:read` | 按公开 slug 读取一篇已发布文章。 |
+| `article_manage_list` | `content:write` | 读取草稿／已发布／归档的管理列表。 |
+| `article_manage_get` | `content:write` | 读取一篇管理文章及全部现有翻译。 |
+| `article_publish` | `content:write` | 以唯一 `operationId` 原子发布完整 zh／en／ja 普通知识库文章。 |
+| `article_update` | `content:write` | 以 `expectedUpdatedAt` 和新 `operationId` 做 CAS 更新。 |
+| `article_delete` | `content:delete` | 永久删除；还必须有最新 CAS、新 `operationId` 和字面值 `confirm: true`。 |
+
+`content:write` 和 `content:delete` 都是站长专用非默认 scope；管理列表／详情虽然是只读工具，也因包含非公开管理数据而要求 write scope。客户端必须保留 publish／update／delete 的逐次人类审批，尤其不得把 `article_delete` 设为“始终允许”。服务端 scope、管理员实时复核、CAS、幂等和 `confirm: true` 是强制边界，但不能替代调用前对目标和参数的人工确认。
+
+公开工具实现位于 `workers/site-mcp/`。该目录保留四个公开读取工具的复用注册层和独立无 OAuth 目标，不是 canonical 生产入口；生产 `workers/site-admin-mcp/` 创建自己的 MCP SDK server，在 OAuth 后注册这四个公开工具，再加入五个站长工具。本地 `article_publish_files` 需要 allow-root 与真实文件边界，永远不进入远程面。独立资源模板 `lusu://articles/{slug}{?lang}` 也不注册到当前生产 owner server。
+
+远程设计与身份边界：
+
+- `/mcp` 提供无状态 Streamable HTTP MCP，每个请求创建新的 `McpServer`；生产端点不提供旧式 `/sse`。
+- 四个公开工具通过 `DB` binding 直接读取共享 D1 的已发布文章，不经过公开网站 HTTP。Daily AI News 用 `content_list(category: "daily-ai-news")` 找到文章，再调用 `article_get`，不是单独的发布或自动化工具。
+- OAuth 2.1 authorization code + 强制 PKCE S256；authorization 与 token 都必须带唯一、精确的 RFC 8707 resource `https://lusu575.com/mcp`。
+- 浏览器只使用现有 HttpOnly `lusu_session` 确认站长身份，Cookie 不交给 MCP 客户端；远程入口拒绝站点设备 Bearer。Provider token 解包后仍独立复核到期、audience、client、scope、D1 active grant 与当前管理员角色。
+- 动态注册兼容 DCR 和 CIMD；回调最多四个，默认只收 HTTPS，HTTP 仅允许 loopback 并在三语同意页警告。注册按 HMAC-IP 使用 D1 原子 UPSERT 限流；未验证的 `software_statement` 拒绝。
+- 短期 authorization state、PKCE 与 consent flow 放在独立 KV；grant 与审计放在 D1。Worker 禁用 workers.dev 和持久 observability，路由先用 query-safe wildcard 命中，再由代码中的精确 pathname allowlist 收窄。
+- 缺 scope 时以标准 `mcp/www_authenticate` 发起增量授权；账号降级、grant 撤销或 provider token 失效会让下一次管理调用返回标准挑战。
+
+生产 owner Worker 使用 `compatibility_date: 2026-08-07`。复用注册层的独立目标仍固定 `2026-08-06` 与 `nodejs_compat`；其本地 dev／Vitest workerd override 只是本地兼容措施，不是生产入口版本。外部 AI 的 Codex、Claude、Cursor、ChatGPT 与自建 Agent 连接步骤见 `REMOTE_MCP_CONNECT.md`。
 
 本地验证：
 
@@ -281,9 +301,13 @@ npm.cmd install
 npm.cmd run typecheck
 npm.cmd test
 npm.cmd run dev
+
+Set-Location ..\site-admin-mcp
+npm.cmd install
+npm.cmd run check
 ```
 
-本地开发不要加 `--remote`，不要连接生产 D1，也不要执行 `wrangler deploy`。远程写操作必须等第一方 OAuth 2.1、用户映射、最小 scope 与审计边界完成后再单独设计；不能把网站 `lusu_session` cookie 转交给 MCP。
+普通本地开发不要加 `--remote`，不要连接生产 D1，也不要执行 `wrangler deploy`。后续生产迁移、Secret 轮换或 Worker 发布仍须站点所有者明确批准；任何路径都不能把网站 `lusu_session` cookie 或设备令牌转交给 MCP。
 
 ## 11. 仍是 inventory / planned 的能力
 
@@ -312,6 +336,9 @@ git diff --stat
 Set-Location .\workers\site-mcp
 npm.cmd run typecheck
 npm.cmd test
+
+Set-Location ..\site-admin-mcp
+npm.cmd run check
 ```
 
 还应验证以下安全契约：
@@ -326,14 +353,14 @@ npm.cmd test
 - 公开工具／游戏／日语适配器拒绝 traversal、恶意 ID、任意 URL、超限 JSON、重复 ID、版本／计数／hash／`textLocked` 不匹配，并确认输出不含源文件路径、存储键、题库 batch 路径或内部音频文本。
 - allow-root 的相对路径、绝对路径、`..`、链接逃逸及不存在父目录均有覆盖。
 - 下载已有文件时失败且原文件字节不变；失败下载不留下半成品。
-- 远程 MCP 只能读取已发布文章，返回内容和结果大小有界，错误输出不泄露 SQL 或凭据。
+- 公开远程工具只能读取已发布文章，返回内容和结果大小有界；站长工具必须按精确 OAuth scope、active grant、当前管理员角色、operationId、CAS 与确认条件失败关闭。两者的错误输出都不能泄露 SQL、token、code、state、Cookie、原始 IP、回调或文章正文。
 
 部署边界：
 
 - 个人站的正常发布路径仍是合并到 GitHub `main` 后由 Cloudflare Pages 自动部署；不要把手工 Wrangler Pages 部署当成常规路径。
-- `workers/site-mcp` 是独立 Worker，第一阶段明确不部署。未来部署必须由站点所有者单独批准，并先复核 D1 binding、公开数据范围、域名/Origin、限流、监控与认证路线。
+- `workers/site-mcp` 是第一阶段保留下来的独立公开注册层／无 OAuth 目标；canonical 生产地址由已经部署的 `workers/site-admin-mcp` 承载。生产 D1、KV、Secret、精确路由、OAuth metadata、DCR、401、Origin 和 pathname smoke 已完成，version `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` 的真实站长手动 Allow 与完整写闭环也已验收。该结论不得跨 Worker bundle 复用；每个新生产 bundle 必须重新取得真实验收证据。Pages 仍由 GitHub `main` 自动部署，不能用站长 Worker 的 Wrangler 发布代替 Pages 发布。
 - 本地 CLI 与 stdio MCP 本身不需要服务器部署；它们调用的 Agent Auth／Transfer／Whiteboard API 必须先存在于目标站点。白板 Pages Agent 路由依赖新的 Durable Object 协议，因此发布时必须先部署并验证兼容 Worker，再让 Pages 使用新路由。
 - Hextris 专用 Agent 也只从源码仓库在本机启动；生产构建整目录排除 `games/hextris/agent/`，不会把其 Node 包、会话存储或 stdio 服务复制到 Pages `dist`。浏览器 Hextris 与 `games/hextris/source/COPYING` 继续作为静态站点内容发布。
 - 任何验证命令都不得使用生产凭据、生产房间口令或 `--remote` D1。
 
-回滚时优先撤回代码或恢复上一版 Pages/Worker 路由；不要为了紧急回滚直接删除 D1 表。若 Agent Auth 已经上线，应先通过令牌管理页撤销令牌，再停用新入口，并保留哈希令牌记录与审计记录用于排查。当前远程 MCP 尚未部署，因此不存在需要回滚的线上 MCP 实例。
+回滚时优先撤回代码或恢复上一版 Pages/Worker 路由；不要为了紧急回滚直接删除 D1 表。若 Agent Auth 已经上线，应先通过令牌管理页撤销令牌，再停用新入口，并保留哈希令牌记录与审计记录用于排查。生产站长 OAuth Worker 回滚应先撤销 active grants／路由，再保留 D1 grant 与审计证据，不删除账本；任何历史 bundle 的成功验收都不能补写成当前或回滚后 bundle 的成功证据。

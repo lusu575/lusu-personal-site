@@ -74,6 +74,61 @@ create index if not exists agent_access_tokens_expires_idx
 create index if not exists agent_audit_created_idx
   on agent_audit_log(created_at, action);
 
+create table if not exists mcp_oauth_grants (
+  grant_ref text primary key,
+  user_id text not null references users(id) on delete cascade,
+  client_id text not null,
+  client_name text not null default '',
+  resource text not null,
+  authorized_scopes text not null default '[]',
+  status text not null default 'pending',
+  created_at text not null,
+  activated_at text not null default '',
+  expires_at text not null default '',
+  revoked_at text not null default '',
+  revoked_reason text not null default '',
+  last_used_at text not null default ''
+);
+
+create table if not exists mcp_oauth_audit_log (
+  event_id text primary key,
+  user_id text not null default '',
+  client_id text not null default '',
+  grant_ref text not null default '',
+  token_ref_hash text not null default '',
+  resource text not null default '',
+  capability_id text not null default '',
+  tool_name text not null default '',
+  operation_id text not null default '',
+  target_type text not null default '',
+  target_id_hash text not null default '',
+  requested_scopes text not null default '[]',
+  effective_scopes text not null default '[]',
+  action text not null,
+  result text not null default '',
+  error_code text not null default '',
+  ip_hash text not null default '',
+  created_at text not null
+);
+
+create table if not exists mcp_oauth_registration_limits (
+  bucket_key text primary key,
+  request_count integer not null default 0,
+  expires_at text not null,
+  updated_at text not null
+);
+
+create index if not exists mcp_oauth_grants_user_status_idx
+  on mcp_oauth_grants(user_id, status, created_at);
+create index if not exists mcp_oauth_grants_client_resource_idx
+  on mcp_oauth_grants(client_id, resource, status);
+create index if not exists mcp_oauth_audit_created_idx
+  on mcp_oauth_audit_log(created_at, action);
+create index if not exists mcp_oauth_audit_grant_idx
+  on mcp_oauth_audit_log(grant_ref, created_at);
+create index if not exists mcp_oauth_registration_limits_expires_idx
+  on mcp_oauth_registration_limits(expires_at);
+
 create table if not exists user_login_events (
   event_id text primary key,
   user_id text not null references users(id) on delete cascade,
@@ -855,6 +910,113 @@ create index if not exists article_view_events_slug_idx
   on article_view_events(slug, created_at);
 create index if not exists article_view_events_visitor_idx
   on article_view_events(visitor_id, created_at);
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-08-07-remote-mcp-oauth',
+  '2026-08-07-remote-mcp-oauth',
+  'site-updates',
+  '["网站更新","AI 能力","知识库","MCP","安全"]',
+  '', 'published', 0, 0,
+  '2026-08-07T10:10:00.000Z',
+  '2026-08-09T01:00:00.000Z',
+  '2026-08-09T01:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-07-remote-mcp-oauth-zh',
+    'seed-update-2026-08-07-remote-mcp-oauth',
+    'zh',
+    '远程 MCP OAuth 与知识库原子工具完成生产验收',
+    '正式域名端到端生产验收已通过：OAuth Allow 后精确发现 9 项工具与 4 项公开能力，并完成原子发布、同载荷重放、管理读取、CAS 更新、三语公开回读、确认删除、删除后 404、令牌撤销和临时数据清理；文件发布仍仅限本地，全站工具及游戏远程接管尚未完成。',
+    '# 远程 MCP OAuth 与知识库原子工具完成生产验收
+
+站长远程 MCP 已在正式域名完成端到端生产验收，并继续复用经过验证的文章服务边界。
+
+## 已完成的生产验收
+
+- 登录站长账号后的 OAuth Allow 成功回到本地 AI 客户端，authorization code、PKCE S256、精确 resource 与最小 scope 全部生效。
+- MCP `tools/list` 精确返回 9 项工具：`site_capabilities`、`article_list`、`article_search`、`article_get`、`article_manage_list`、`article_manage_get`、`article_publish`、`article_update`、`article_delete`；公开能力清单精确为 4 项。
+- `article_publish` 完成一次原子发布，并用相同 operationId 与相同规范载荷安全重放；随后通过 `article_manage_list` 与 `article_manage_get` 读回管理数据。
+- `article_update` 通过 `expectedUpdatedAt` CAS 更新，公开接口以 zh／en／ja 三种语言逐一读回更新后的正文。
+- `article_delete` 使用 CAS 和显式 `confirm: true` 完成删除，三语公开接口随后均返回 404。
+- 验收结束后撤销授权，并清理临时客户端、grant、测试文章及收据，没有保留测试数据。
+
+## 安全边界与后续范围
+
+`content:read`、`content:write` 与 `content:delete` 继续分开授权；每次管理调用都会复核 grant、scope 与账号当前管理员角色。`article_publish_files` 仍仅属于本地 stdio MCP 的 allow-root 工具，不进入远程 MCP，也不会把本机路径发送到网站。当前远程入口已经覆盖公开内容读取与站长知识库原子管理，但全站其余工具和游戏的远程接管尚未完成，不能据此宣称 AI 已能接管整个网站或全部游戏。',
+    '2026-08-07T10:10:00.000Z',
+    '2026-08-09T01:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-07-remote-mcp-oauth-en',
+    'seed-update-2026-08-07-remote-mcp-oauth',
+    'en',
+    'Remote MCP OAuth and Atomic Knowledge Tools Pass Production Acceptance',
+    'End-to-end production acceptance on the live domain has passed: OAuth Allow exposed exactly 9 tools and 4 public capabilities, followed by atomic publish, same-payload replay, management reads, CAS update, zh/en/ja public readback, confirmed delete, post-delete 404, token revocation, and temporary-data cleanup. File publishing remains local, while whole-site tool and game takeover is not complete.',
+    '# Remote MCP OAuth and Atomic Knowledge Tools Pass Production Acceptance
+
+The owner remote MCP has completed end-to-end acceptance on the live domain while continuing to reuse the verified article-service boundaries.
+
+## Completed production acceptance
+
+- OAuth Allow after owner sign-in returned successfully to the local AI client, with authorization code, PKCE S256, exact resource, and minimum scopes enforced.
+- MCP `tools/list` returned exactly 9 tools: `site_capabilities`, `article_list`, `article_search`, `article_get`, `article_manage_list`, `article_manage_get`, `article_publish`, `article_update`, and `article_delete`; the public capability list contained exactly 4 entries.
+- `article_publish` completed one atomic publication and safely replayed the same canonical payload under the same operationId; `article_manage_list` and `article_manage_get` then read back the management data.
+- `article_update` passed its `expectedUpdatedAt` CAS update, and the public API read the updated body back in zh, en, and ja.
+- `article_delete` completed with CAS and explicit `confirm: true`; every zh/en/ja public read then returned 404.
+- The grant was revoked after acceptance, and the temporary client, grant, test article, and receipts were cleaned without retaining test data.
+
+## Security boundary and remaining scope
+
+`content:read`, `content:write`, and `content:delete` remain separately authorized. Every management call rechecks the grant, scopes, and current administrator role. `article_publish_files` remains a local stdio MCP allow-root tool; it is not exposed remotely, and local paths are never sent to the site. The remote endpoint now covers public content reads and atomic owner knowledge management, but remote takeover of the remaining site tools and games is not complete, so this release does not claim that AI can control the whole site or every game.',
+    '2026-08-07T10:10:00.000Z',
+    '2026-08-09T01:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-07-remote-mcp-oauth-ja',
+    'seed-update-2026-08-07-remote-mcp-oauth',
+    'ja',
+    'リモート MCP OAuth と知識ベース原子ツールの本番検証完了',
+    '本番ドメインのエンドツーエンド検証が完了しました。OAuth Allow 後に9ツールと4つの公開機能を正確に確認し、原子的公開、同一ペイロード再実行、管理一覧・取得、CAS 更新、zh／en／ja 公開再取得、確認付き削除、削除後404、トークン失効、一時データ消去まで合格しています。ファイル公開はローカル限定で、サイト全体のツールやゲームの遠隔操作は未完成です。',
+    '# リモート MCP OAuth と知識ベース原子ツールの本番検証完了
+
+サイト所有者向けリモート MCP は、検証済みの記事サービス境界を共有したまま、本番ドメインでエンドツーエンド検証を完了しました。
+
+## 完了した本番検証
+
+- 所有者ログイン後の OAuth Allow はローカル AI クライアントへ正常に戻り、authorization code、PKCE S256、正確な resource、最小 scope がすべて適用されました。
+- MCP `tools/list` は `site_capabilities`、`article_list`、`article_search`、`article_get`、`article_manage_list`、`article_manage_get`、`article_publish`、`article_update`、`article_delete` の9ツールを正確に返し、公開機能一覧は4項目でした。
+- `article_publish` で原子的公開を行い、同じ operationId と同じ正規化ペイロードを安全に再実行した後、`article_manage_list` と `article_manage_get` で管理データを再取得しました。
+- `article_update` は `expectedUpdatedAt` CAS 更新に合格し、公開 API から zh／en／ja の更新本文をそれぞれ再取得しました。
+- `article_delete` は CAS と明示的な `confirm: true` で削除を完了し、その後の zh／en／ja 公開取得はすべて404を返しました。
+- 検証後に認可を失効させ、一時クライアント、grant、テスト記事、レシートを消去し、テストデータを残していません。
+
+## セキュリティ境界と今後の範囲
+
+`content:read`、`content:write`、`content:delete` は個別認可を維持し、管理呼び出しごとに grant、scope、現在の管理者権限を再確認します。`article_publish_files` はローカル stdio MCP の allow-root ツールに限定され、リモート MCP には公開せず、ローカルパスもサイトへ送信しません。現在のリモート入口は公開コンテンツ取得と所有者向け知識ベース原子管理を提供しますが、サイト内の残りのツールやゲームの遠隔操作は未完成であり、AI がサイト全体や全ゲームを操作できるとは宣言しません。',
+    '2026-08-07T10:10:00.000Z',
+    '2026-08-09T01:00:00.000Z'
+  )
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
 
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
@@ -12637,7 +12799,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260807-life-restart-agent-r1', '2026-08-07T08:00:00.000Z')
+values ('article_seed_version', '20260809-remote-mcp-oauth-r2', '2026-08-09T01:00:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

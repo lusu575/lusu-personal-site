@@ -42,6 +42,7 @@ import {
 } from "../lib/capabilities/local-state.mjs";
 
 const DEFAULT_BASE_URL = "https://lusu575.com";
+export const CLI_VERSION = "0.8.0";
 const MAX_STDIN_BYTES = 1024 * 1024;
 const TRANSIENT_DEVICE_POLL_STATUSES = new Set([408, 425, 500, 502, 503, 504]);
 
@@ -93,6 +94,11 @@ async function runCliWithDependencies(argv, dependencies) {
   if (command === "help" || command === "--help" || command === "-h") {
     writeText(stdout, helpText());
     return { ok: true };
+  }
+
+  if (command === "version" || command === "--version" || command === "-V") {
+    writeText(stdout, CLI_VERSION);
+    return { ok: true, version: CLI_VERSION };
   }
 
   if (command === "auth") {
@@ -1411,7 +1417,7 @@ function writeText(stream, value) {
 
 function helpText() {
   return [
-    "LuSu personal-site CLI",
+    `LuSu personal-site CLI ${CLI_VERSION}`,
     "",
     "  lusu capabilities [--domain NAME] [--transport cli]",
     "  lusu content list [--lang zh|en|ja] [--category ID]",

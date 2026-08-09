@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "lusu-site-admin-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-07",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+  "workers_dev": false,
+  "routes": [
+    { "pattern": "lusu575.com/mcp*", "zone_name": "lusu575.com" },
+    { "pattern": "lusu575.com/oauth/authorize*", "zone_name": "lusu575.com" },
+    { "pattern": "lusu575.com/oauth/token*", "zone_name": "lusu575.com" },
+    { "pattern": "lusu575.com/oauth/register*", "zone_name": "lusu575.com" },
+    { "pattern": "lusu575.com/.well-known/oauth-authorization-server*", "zone_name": "lusu575.com" },
+    { "pattern": "lusu575.com/.well-known/oauth-protected-resource*", "zone_name": "lusu575.com" },
+    { "pattern": "lusu575.com/.well-known/oauth-protected-resource/mcp*", "zone_name": "lusu575.com" }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lusu_personal_site",
+      "database_id": "55087326-4cf0-4002-8229-f202af774da4"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "OAUTH_KV",
+      "id": "5a159320e9444346a8c67bd8ac358c52"
+    }
+  ],
+  "secrets": {
+    "required": ["ANALYTICS_IP_HASH_SALT"]
+  },
+  "observability": {
+    "enabled": false
+  }
+}

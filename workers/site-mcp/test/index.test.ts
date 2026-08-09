@@ -174,12 +174,46 @@ describe("site MCP Worker HTTP surface", () => {
     ).toBe(200);
     const capabilities = capabilitiesCall.body.result.structuredContent.result
       ?? capabilitiesCall.body.result.structuredContent;
+    expect(capabilities).toMatchObject({
+      mode: "public-read-only",
+      count: 4
+    });
     expect(capabilities.capabilities.map((item: { id: string }) => item.id)).toEqual([
       "content.articles.list",
       "content.articles.search",
       "content.articles.get",
       "content.daily-ai-news.get"
     ]);
+    expect(capabilities.capabilities).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        domain: "public-content",
+        scope: "content:read",
+        readOnly: true,
+        status: "available"
+      })
+    ]));
+    expect(capabilities.capabilities.every((item: {
+      domain: string;
+      scope: string;
+    }) => (
+      item.domain === "public-content" && item.scope === "content:read"
+    ))).toBe(true);
+
+    const privateDomainCall = await mcpRequest("tools/call", {
+      name: "site_capabilities",
+      arguments: { domain: "knowledge-management" }
+    });
+    expect(
+      privateDomainCall.response.status,
+      JSON.stringify(privateDomainCall.body)
+    ).toBe(200);
+    const privateDomain = privateDomainCall.body.result.structuredContent.result
+      ?? privateDomainCall.body.result.structuredContent;
+    expect(privateDomain).toMatchObject({
+      mode: "public-read-only",
+      count: 0,
+      capabilities: []
+    });
   });
 
   it("searches published summaries without exposing internal article ids", async () => {

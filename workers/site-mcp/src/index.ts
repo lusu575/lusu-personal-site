@@ -37,6 +37,13 @@ type PublicArticle = {
   content_markdown?: unknown;
 };
 
+export type SiteMcpServerOptions = {
+  toolMeta?: Readonly<Record<string, unknown>>;
+  includeResources?: boolean;
+};
+
+type SiteMcpRegistrar = Pick<McpServer, "registerTool" | "registerResource">;
+
 const SERVER_NAME = "lusu-site-mcp";
 const SERVER_VERSION = "0.1.0";
 const SEARCH_RESULT_LIMIT = 20;
@@ -189,12 +196,23 @@ async function readArticle(env: Env, slug: string, lang: z.infer<typeof Language
   return toBoundedArticle(toPublicArticle(row, { includeContent: true }));
 }
 
-export function createSiteMcpServer(env: Env): McpServer {
+export function createSiteMcpServer(
+  env: Env,
+  options: SiteMcpServerOptions = {}
+): McpServer {
   const server = new McpServer({
     name: SERVER_NAME,
     version: SERVER_VERSION
   });
+  registerSiteMcpSurface(server, env, options);
+  return server;
+}
 
+export function registerSiteMcpSurface<T extends SiteMcpRegistrar>(
+  server: T,
+  env: Env,
+  options: SiteMcpServerOptions = {}
+): T {
   server.registerTool(
     "site_capabilities",
     {
@@ -208,16 +226,18 @@ export function createSiteMcpServer(env: Env): McpServer {
         count: z.number().int().nonnegative(),
         capabilities: z.array(CapabilitySchema)
       }),
-      annotations: ReadOnlyAnnotations
+      annotations: ReadOnlyAnnotations,
+      ...(options.toolMeta ? { _meta: { ...options.toolMeta } } : {})
     },
     async ({ domain }) => {
       try {
         const capabilities = listCapabilities({
+          domain: "public-content",
+          scope: "content:read",
           availableTransports: "remote-mcp",
           readOnly: true,
-          status: "available",
-          ...(domain ? { domain } : {})
-        });
+          status: "available"
+        }).filter((capability) => !domain || capability.domain === domain);
         return successfulToolResult({
           mode: "public-read-only",
           count: capabilities.length,
@@ -246,7 +266,8 @@ export function createSiteMcpServer(env: Env): McpServer {
         count: z.number().int().min(0).max(SEARCH_RESULT_LIMIT),
         articles: z.array(ArticleSummarySchema).max(SEARCH_RESULT_LIMIT)
       }),
-      annotations: ReadOnlyAnnotations
+      annotations: ReadOnlyAnnotations,
+      ...(options.toolMeta ? { _meta: { ...options.toolMeta } } : {})
     },
     async ({ lang, category, limit }) => {
       try {
@@ -293,7 +314,8 @@ export function createSiteMcpServer(env: Env): McpServer {
         count: z.number().int().min(0).max(SEARCH_RESULT_LIMIT),
         articles: z.array(ArticleSummarySchema).max(SEARCH_RESULT_LIMIT)
       }),
-      annotations: ReadOnlyAnnotations
+      annotations: ReadOnlyAnnotations,
+      ...(options.toolMeta ? { _meta: { ...options.toolMeta } } : {})
     },
     async ({ query, lang, category, limit }) => {
       try {
@@ -338,7 +360,8 @@ export function createSiteMcpServer(env: Env): McpServer {
         found: z.boolean(),
         article: ArticleSchema.nullable()
       }),
-      annotations: ReadOnlyAnnotations
+      annotations: ReadOnlyAnnotations,
+      ...(options.toolMeta ? { _meta: { ...options.toolMeta } } : {})
     },
     async ({ slug, lang }) => {
       try {
@@ -354,42 +377,44 @@ export function createSiteMcpServer(env: Env): McpServer {
     }
   );
 
-  server.registerResource(
-    "published-article",
-    new ResourceTemplate("lusu://articles/{slug}{?lang}", { list: undefined }),
-    {
-      title: "LuSu published article",
-      description: "A published LuSu site article selected by public slug and optional zh, en, or ja language.",
-      mimeType: "application/json"
-    },
-    async (uri, variables) => {
-      const variableSlug = variables.slug;
-      const slug = Array.isArray(variableSlug) ? variableSlug[0] : variableSlug;
-      const lang = normalizeLanguage(uri.searchParams.get("lang"));
-      if (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-        throw new ResourceNotFoundError(uri.href, "Published article not found.");
-      }
-      try {
-        const article = await readArticle(env, slug, lang);
-        if (!article) {
+  if (options.includeResources !== false) {
+    server.registerResource(
+      "published-article",
+      new ResourceTemplate("lusu://articles/{slug}{?lang}", { list: undefined }),
+      {
+        title: "LuSu published article",
+        description: "A published LuSu site article selected by public slug and optional zh, en, or ja language.",
+        mimeType: "application/json"
+      },
+      async (uri, variables) => {
+        const variableSlug = variables.slug;
+        const slug = Array.isArray(variableSlug) ? variableSlug[0] : variableSlug;
+        const lang = normalizeLanguage(uri.searchParams.get("lang"));
+        if (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
           throw new ResourceNotFoundError(uri.href, "Published article not found.");
         }
-        return {
-          contents: [
-            {
-              uri: uri.href,
-              mimeType: "application/json",
-              text: JSON.stringify({ article })
-            }
-          ]
-        };
-      } catch (error) {
-        if (error instanceof ResourceNotFoundError) throw error;
-        logFailure("published-article-resource", error);
-        throw new Error("Published article lookup is temporarily unavailable.");
+        try {
+          const article = await readArticle(env, slug, lang);
+          if (!article) {
+            throw new ResourceNotFoundError(uri.href, "Published article not found.");
+          }
+          return {
+            contents: [
+              {
+                uri: uri.href,
+                mimeType: "application/json",
+                text: JSON.stringify({ article })
+              }
+            ]
+          };
+        } catch (error) {
+          if (error instanceof ResourceNotFoundError) throw error;
+          logFailure("published-article-resource", error);
+          throw new Error("Published article lookup is temporarily unavailable.");
+        }
       }
-    }
-  );
+    );
+  }
 
   return server;
 }

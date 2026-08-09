@@ -831,9 +831,9 @@ const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
 const whiteboardReleaseVersion = "20260806-agent-capabilities-quick-transfer-r1";
-const lifeRestartAgentReleaseVersion = "20260807-life-restart-agent-r1";
-const whiteboardAgentImagesReleaseVersion = lifeRestartAgentReleaseVersion;
-const transferReleaseVersion = lifeRestartAgentReleaseVersion;
+const remoteMcpOauthReleaseVersion = "20260809-remote-mcp-oauth-r2";
+const whiteboardAgentImagesReleaseVersion = "20260807-remote-mcp-oauth-r1";
+const transferReleaseVersion = "20260807-remote-mcp-oauth-r1";
 const resourcesRouteVersion = transferReleaseVersion;
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
@@ -887,7 +887,7 @@ for (const route of lazyPublicRoutes) {
 
 for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", whiteboardReleaseVersion],
-  ["./data/home-content.mjs", lifeRestartAgentReleaseVersion],
+  ["./data/home-content.mjs", remoteMcpOauthReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", whiteboardAgentImagesReleaseVersion]
 ]) {
@@ -2887,7 +2887,7 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = "20260726-security-reliability-r1";
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = lifeRestartAgentReleaseVersion;
+const currentMainVersion = remoteMcpOauthReleaseVersion;
 const currentCssVersion = trustSafetyStatusVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260726-game-network-resilience-r1";
@@ -4240,13 +4240,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-07-life-restart-agent";
-const finalUpdateSlug = "2026-08-07-life-restart-agent";
+const finalUpdateId = "seed-update-2026-08-07-remote-mcp-oauth";
+const finalUpdateSlug = "2026-08-07-remote-mcp-oauth";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Atomic Knowledge Publishing MCP and Life Restart Sessions";
-const finalPublishedAt = "2026-08-07T08:00:00.000Z";
+const finalTitleEn = "Remote MCP OAuth and Atomic Knowledge Tools Pass Production Acceptance";
+const finalPublishedAt = "2026-08-09T01:00:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -4448,7 +4448,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-08-07">2026.08.07</time>',
+    '<time id="top-updated" datetime="2026-08-09">2026.08.09</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`,
     `/js/main.js?v=${finalMainVersion}`

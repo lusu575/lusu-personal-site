@@ -35,7 +35,7 @@ import {
   toPublicArticle
 } from "./public-content-service.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260807-life-restart-agent-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260809-remote-mcp-oauth-r2";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
 const PUBLIC_RELEASE_DATE = "2026-08-07";
@@ -86,7 +86,7 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260807-life-restart-agent-r1";
+const ARTICLE_SEED_VERSION = "20260809-remote-mcp-oauth-r2";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AGENT_AUDIT_RETENTION_DAYS = 180;
@@ -7281,6 +7281,92 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-08-07-remote-mcp-oauth',
+        '2026-08-07-remote-mcp-oauth',
+        'site-updates',
+        '["网站更新","AI 能力","知识库","MCP","安全"]',
+        '', 'published', 0, 0,
+        '2026-08-07T10:10:00.000Z',
+        '2026-08-09T01:00:00.000Z',
+        '2026-08-09T01:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-08-07-remote-mcp-oauth", {
+      zh: {
+        title: "远程 MCP OAuth 与知识库原子工具完成生产验收",
+        summary: "正式域名端到端生产验收已通过：OAuth Allow 后精确发现 9 项工具与 4 项公开能力，并完成原子发布、同载荷重放、管理读取、CAS 更新、三语公开回读、确认删除、删除后 404、令牌撤销和临时数据清理；文件发布仍仅限本地，全站工具及游戏远程接管尚未完成。",
+        content_markdown: `# 远程 MCP OAuth 与知识库原子工具完成生产验收
+
+站长远程 MCP 已在正式域名完成端到端生产验收，并继续复用经过验证的文章服务边界。
+
+## 已完成的生产验收
+
+- 登录站长账号后的 OAuth Allow 成功回到本地 AI 客户端，authorization code、PKCE S256、精确 resource 与最小 scope 全部生效。
+- MCP \`tools/list\` 精确返回 9 项工具：\`site_capabilities\`、\`article_list\`、\`article_search\`、\`article_get\`、\`article_manage_list\`、\`article_manage_get\`、\`article_publish\`、\`article_update\`、\`article_delete\`；公开能力清单精确为 4 项。
+- \`article_publish\` 完成一次原子发布，并用相同 operationId 与相同规范载荷安全重放；随后通过 \`article_manage_list\` 与 \`article_manage_get\` 读回管理数据。
+- \`article_update\` 通过 \`expectedUpdatedAt\` CAS 更新，公开接口以 zh／en／ja 三种语言逐一读回更新后的正文。
+- \`article_delete\` 使用 CAS 和显式 \`confirm: true\` 完成删除，三语公开接口随后均返回 404。
+- 验收结束后撤销授权，并清理临时客户端、grant、测试文章及收据，没有保留测试数据。
+
+## 安全边界与后续范围
+
+\`content:read\`、\`content:write\` 与 \`content:delete\` 继续分开授权；每次管理调用都会复核 grant、scope 与账号当前管理员角色。\`article_publish_files\` 仍仅属于本地 stdio MCP 的 allow-root 工具，不进入远程 MCP，也不会把本机路径发送到网站。当前远程入口已经覆盖公开内容读取与站长知识库原子管理，但全站其余工具和游戏的远程接管尚未完成，不能据此宣称 AI 已能接管整个网站或全部游戏。`
+      },
+      en: {
+        title: "Remote MCP OAuth and Atomic Knowledge Tools Pass Production Acceptance",
+        summary: "End-to-end production acceptance on the live domain has passed: OAuth Allow exposed exactly 9 tools and 4 public capabilities, followed by atomic publish, same-payload replay, management reads, CAS update, zh/en/ja public readback, confirmed delete, post-delete 404, token revocation, and temporary-data cleanup. File publishing remains local, while whole-site tool and game takeover is not complete.",
+        content_markdown: `# Remote MCP OAuth and Atomic Knowledge Tools Pass Production Acceptance
+
+The owner remote MCP has completed end-to-end acceptance on the live domain while continuing to reuse the verified article-service boundaries.
+
+## Completed production acceptance
+
+- OAuth Allow after owner sign-in returned successfully to the local AI client, with authorization code, PKCE S256, exact resource, and minimum scopes enforced.
+- MCP \`tools/list\` returned exactly 9 tools: \`site_capabilities\`, \`article_list\`, \`article_search\`, \`article_get\`, \`article_manage_list\`, \`article_manage_get\`, \`article_publish\`, \`article_update\`, and \`article_delete\`; the public capability list contained exactly 4 entries.
+- \`article_publish\` completed one atomic publication and safely replayed the same canonical payload under the same operationId; \`article_manage_list\` and \`article_manage_get\` then read back the management data.
+- \`article_update\` passed its \`expectedUpdatedAt\` CAS update, and the public API read the updated body back in zh, en, and ja.
+- \`article_delete\` completed with CAS and explicit \`confirm: true\`; every zh/en/ja public read then returned 404.
+- The grant was revoked after acceptance, and the temporary client, grant, test article, and receipts were cleaned without retaining test data.
+
+## Security boundary and remaining scope
+
+\`content:read\`, \`content:write\`, and \`content:delete\` remain separately authorized. Every management call rechecks the grant, scopes, and current administrator role. \`article_publish_files\` remains a local stdio MCP allow-root tool; it is not exposed remotely, and local paths are never sent to the site. The remote endpoint now covers public content reads and atomic owner knowledge management, but remote takeover of the remaining site tools and games is not complete, so this release does not claim that AI can control the whole site or every game.`
+      },
+      ja: {
+        title: "リモート MCP OAuth と知識ベース原子ツールの本番検証完了",
+        summary: "本番ドメインのエンドツーエンド検証が完了しました。OAuth Allow 後に9ツールと4つの公開機能を正確に確認し、原子的公開、同一ペイロード再実行、管理一覧・取得、CAS 更新、zh／en／ja 公開再取得、確認付き削除、削除後404、トークン失効、一時データ消去まで合格しています。ファイル公開はローカル限定で、サイト全体のツールやゲームの遠隔操作は未完成です。",
+        content_markdown: `# リモート MCP OAuth と知識ベース原子ツールの本番検証完了
+
+サイト所有者向けリモート MCP は、検証済みの記事サービス境界を共有したまま、本番ドメインでエンドツーエンド検証を完了しました。
+
+## 完了した本番検証
+
+- 所有者ログイン後の OAuth Allow はローカル AI クライアントへ正常に戻り、authorization code、PKCE S256、正確な resource、最小 scope がすべて適用されました。
+- MCP \`tools/list\` は \`site_capabilities\`、\`article_list\`、\`article_search\`、\`article_get\`、\`article_manage_list\`、\`article_manage_get\`、\`article_publish\`、\`article_update\`、\`article_delete\` の9ツールを正確に返し、公開機能一覧は4項目でした。
+- \`article_publish\` で原子的公開を行い、同じ operationId と同じ正規化ペイロードを安全に再実行した後、\`article_manage_list\` と \`article_manage_get\` で管理データを再取得しました。
+- \`article_update\` は \`expectedUpdatedAt\` CAS 更新に合格し、公開 API から zh／en／ja の更新本文をそれぞれ再取得しました。
+- \`article_delete\` は CAS と明示的な \`confirm: true\` で削除を完了し、その後の zh／en／ja 公開取得はすべて404を返しました。
+- 検証後に認可を失効させ、一時クライアント、grant、テスト記事、レシートを消去し、テストデータを残していません。
+
+## セキュリティ境界と今後の範囲
+
+\`content:read\`、\`content:write\`、\`content:delete\` は個別認可を維持し、管理呼び出しごとに grant、scope、現在の管理者権限を再確認します。\`article_publish_files\` はローカル stdio MCP の allow-root ツールに限定され、リモート MCP には公開せず、ローカルパスもサイトへ送信しません。現在のリモート入口は公開コンテンツ取得と所有者向け知識ベース原子管理を提供しますが、サイト内の残りのツールやゲームの遠隔操作は未完成であり、AI がサイト全体や全ゲームを操作できるとは宣言しません。`
+      }
+    }, "2026-08-09T01:00:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,

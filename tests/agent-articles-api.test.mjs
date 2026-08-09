@@ -7,6 +7,12 @@ import {
   handleAgentArticlesApi,
   isAgentArticlesApiPath
 } from "../functions/api/agent-articles.mjs";
+import {
+  assertAgentArticleAccess,
+  deleteAgentArticleService,
+  listAgentArticlesService,
+  publishAgentArticleService
+} from "../functions/api/agent-article-service.mjs";
 
 class D1Statement {
   constructor(database, sql, values = []) {
@@ -823,4 +829,122 @@ test("article mutation JSON is strict and enforces field, translation, text, and
   assert.equal(count(fixture.DB, "articles"), 0);
   assert.equal(count(fixture.DB, "agent_audit_log"), 0);
   assert.equal(count(fixture.DB, "agent_article_receipts"), 0);
+});
+
+test("transport-neutral article service accepts OAuth principals and rechecks current admin role", async () => {
+  const fixture = createFixture();
+  const principal = {
+    authType: "oauth",
+    userId: "admin-1",
+    clientId: "https://client.example.test/metadata.json",
+    grantRef: "oauth-grant-test-1",
+    effectiveScopes: ["content:delete", "content:write"]
+  };
+  const created = await publishAgentArticleService({
+    env: fixture.env,
+    principal,
+    payload: publishPayload("service-publish-0001", "service-publish")
+  });
+  assert.equal(created.status, 201);
+  assert.equal(created.payload.ok, true);
+  assert.equal(created.payload.duplicate, false);
+
+  const listed = await listAgentArticlesService({
+    env: fixture.env,
+    principal,
+    query: { status: "published", limit: 10 }
+  });
+  assert.equal(listed.status, 200);
+  assert.equal(listed.payload.articles.length, 1);
+  assert.equal(listed.payload.articles[0].articleId, created.payload.articleId);
+
+  const audit = fixture.DB.sqlite.prepare(`
+    select token_id, scopes from agent_audit_log
+    where action = 'agent-article-published'
+  `).get();
+  assert.equal(audit.token_id, `oauth:${principal.grantRef}`);
+  assert.deepEqual(JSON.parse(audit.scopes), ["content:delete", "content:write"]);
+
+  fixture.DB.sqlite.prepare("update users set role = 'user' where id = ?").run(principal.userId);
+  await assert.rejects(
+    deleteAgentArticleService({
+      env: fixture.env,
+      principal,
+      articleId: created.payload.articleId,
+      payload: {
+        operationId: "service-delete-0001",
+        expectedUpdatedAt: created.payload.updatedAt,
+        confirm: true
+      }
+    }),
+    (error) => error?.status === 403 && error?.code === "AGENT_ADMIN_REQUIRED"
+  );
+  assert.equal(count(fixture.DB, "articles"), 1);
+});
+
+test("OAuth article principals accept the complete grant reference alphabet without weakening device references", async () => {
+  const fixture = createFixture();
+  const commonPrincipal = {
+    authType: "oauth",
+    userId: "admin-1",
+    clientId: "https://client.example.test/metadata.json",
+    effectiveScopes: ["content:write"]
+  };
+
+  for (const grantRef of [
+    `-${"A".repeat(15)}`,
+    `_${"z".repeat(127)}`
+  ]) {
+    const principal = await assertAgentArticleAccess({
+      env: fixture.env,
+      principal: { ...commonPrincipal, grantRef },
+      requiredScope: "content:write"
+    });
+    assert.equal(principal.grantRef, grantRef);
+  }
+
+  for (const grantRef of [
+    "A".repeat(15),
+    "A".repeat(129),
+    `.unsafe-grant-ref`,
+    `:unsafe-grant-ref`,
+    `A.oauth-grant-ref`,
+    `A:oauth-grant-ref`,
+    `A${"b".repeat(14)}/`
+  ]) {
+    await assert.rejects(
+      assertAgentArticleAccess({
+        env: fixture.env,
+        principal: { ...commonPrincipal, grantRef },
+        requiredScope: "content:write"
+      }),
+      (error) => error?.status === 401 && error?.code === "AGENT_PRINCIPAL_INVALID",
+      grantRef
+    );
+  }
+
+  const devicePrincipal = await assertAgentArticleAccess({
+    env: fixture.env,
+    principal: {
+      authType: "agent-token",
+      userId: "admin-1",
+      tokenRef: "device.token:legacy_1",
+      effectiveScopes: ["content:write"]
+    },
+    requiredScope: "content:write"
+  });
+  assert.equal(devicePrincipal.tokenRef, "device.token:legacy_1");
+  await assert.rejects(
+    assertAgentArticleAccess({
+      env: fixture.env,
+      principal: {
+        authType: "agent-token",
+        userId: "admin-1",
+        tokenRef: "-device-token-legacy",
+        effectiveScopes: ["content:write"]
+      },
+      requiredScope: "content:write"
+    }),
+    (error) => error?.status === 401 && error?.code === "AGENT_PRINCIPAL_INVALID"
+  );
 });

@@ -1,11 +1,19 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-09 站长远程 MCP OAuth 生产写闭环验收
+
+- 独立生产 Worker `lusu-site-admin-mcp` 已部署，canonical resource 为 `https://lusu575.com/mcp`，2026-08-09 完成真实站长浏览器 OAuth 验收的 version ID 为 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b`。它用标准 OAuth 2.1 authorization code + PKCE S256、精确 RFC 8707 resource、动态注册／CIMD 和 `content:read`／`content:write`／`content:delete` 最小 scope 暴露九个工具：`site_capabilities`、`content_list`、`content_search`、`article_get`、`article_manage_list`、`article_manage_get`、`article_publish`、`article_update`、`article_delete`。它不接受站点设备 Bearer，不传递 `lusu_session`，也不把 OAuth token、code、state、cookie、IP、回调或文章正文写入日志。
+- 远程管理工具与 Pages 设备通道复用 `functions/api/agent-article-service.mjs`；发布／更新／删除继续把条件 mutation、三语内容、审计和幂等收据放在同一 D1 batch。OAuth provider token 经 provider 公共 `unwrapToken()` 解包后仍独立复核过期时间、精确 audience、client、scope 与 D1 active grant；管理员角色丢失会撤销 grant，并让下一次调用返回标准 401 challenge。动态注册限流使用 HMAC-IP 与 D1 原子 UPSERT，授权页使用一次性 KV flow、登录态、CSRF、三语同意信息和 loopback 警告。
+- OAuth `grantRef` 是 16–128 位 base64url 标识，合法首字符包括 `-` 与 `_`。授权 flow、D1 ledger 和 transport-neutral 文章服务必须使用同一精确契约；设备 Agent token 的较宽内部引用格式仍独立校验，不能用统一正则误拒绝合法 OAuth grant，也不能借兼容修复放宽设备 token 或允许点、冒号、斜线进入 OAuth grant。
+- 生产 `OAUTH_KV` 已绑定，Production D1 migration 已完成；远程迁移成功判定会逐项回读 `mcp_oauth_grants`、`mcp_oauth_audit_log`、`mcp_oauth_registration_limits` 三张表、完整关键列集和五个必需索引，并继续遵守单组最多五项的 Production D1 复合查询上限。正式域名 OAuth protected-resource／authorization-server metadata、DCR、未鉴权 `401 WWW-Authenticate` challenge、浏览器 Origin 拒绝和非 allowlist pathname 拒绝的线上 smoke 已通过。相关九项能力的 `availableTransports` 已包含 `remote-mcp`。独立 `workers/site-mcp/` 只保留四个公开工具的复用注册层与非 canonical 无 OAuth 目标，生产入口和五个站长工具均由 `workers/site-admin-mcp/` 承载。
+- 2026-08-09 真实站长在普通顶层浏览器 OAuth 页面核对并点击 Allow 后，验收确认 `tools/list` 九个工具与 `site_capabilities` 四项公开能力均正确，并完整通过受控文章原子发布、同载荷幂等回放、管理列表／详情读取、最新 revision CAS 更新、zh／en／ja 三语公开回读、`confirm: true` 永久删除、三语删除后 404 和 grant 撤销；临时验收文章已删除。该结论只适用于上述精确生产 Worker bundle；以后每个新的生产 Worker bundle 都必须重新完成真实浏览器 OAuth 与同等完整闭环，不得拿历史验收冒充当前版本验收。全站所有功能的远程 MCP 与已打开浏览器游戏的配对／接管仍未实现。
+
 ## 2026-08-07 AI 能力层第七阶段：人生重开与知识库原子 MCP
 
 - 主能力层新增 `life-restart` 集成式本地游戏适配器，固定适配 `VickScarlet/remake` commit `a10861eed93296c96d0e0fca98c82e86f4dfda4b` 的 MIT 语义，并对项目内 `zh-cn` age／talents／events 数据逐文件校验固定 SHA-256。当前仅支持 Custom 模式和 `choose_talents`、`allocate_properties`、逐年 `advance`、终局 `restart_life`、确认 reset。状态 schema v2 为每轮保存起点 checkpoint；恢复时从该 checkpoint 按固定数据、版本化 PRNG 和动作数重放当前人生，再与完整状态深比较，不能信任调用方保存的年龄、历史描述、已见事件、激活天赋、随机状态或 revision 等派生字段。它不导入浏览器／云存档，不提供页面 bridge、配对、观看或接管；`en-us` 数据与中文文件字节相同，因此目录只声明中文 Agent 内容。
 - 通用 `GameSessionStore` 在加入第二个集成适配器前完成独立锁硬化：锁是包含随机 owner／heartbeat marker 的非空目录，记录 PID 与进程实例 token；存活或不可确认 owner 一律失败关闭，陈旧恢复与释放都先按精确 token／身份迁入私有 retiring 路径，再核验内容哈希和文件身份。会话 rename、close、TTL 删除及并发 create 在不可逆操作前执行 owner fence，Windows sharing violation 只做有界重试；`observe`／`actions` 保持零写入、零续期、零清理。超过 4 KiB 且压缩后确实更小的 action 幂等结果使用带原始长度与 SHA-256 的 `deflate-raw-base64-v1` 存储；解压输出限制为 96 KiB，非规范 Base64、长度／哈希篡改和膨胀输入失败关闭，既有未压缩收据继续兼容。该实现没有复制或导入 GPL Hextris 代码。
 - 本地 stdio MCP 0.7.0 新增知识库管理员工具：`article_manage_list`、`article_manage_get`、`article_publish`、`article_publish_files`、`article_update`、`article_delete`。`article_publish` 在一个 D1 batch 中原子写入文章、zh／en／ja 三语正文、审计事件和持久幂等收据；`operationId + canonical payload SHA-256` 支持精确重试并拒绝异载荷或跨动作复用。文件发布只读取 MCP allow-root 内真实、非符号链接、有效 UTF-8 的 Markdown，路径不离开本地进程。更新和删除要求 `expectedUpdatedAt` CAS，删除还要求 `confirm: true` 与独立 `content:delete` scope；两者也把条件 mutation、审计与收据放进同一 batch。收据由周期健康检查按 180 天边界有界清理，调用方必须永久生成新 operationId，只有保留窗口内保证精确重放。
-- `content:write` 与 `content:delete` 是非默认、管理员专属设备授权 scope。普通 Agent Bearer 仍不继承 admin，也不能访问 `/api/admin/*`；授权页和每次 `/api/agent/articles*` 请求都会重新核对令牌所属账号当前仍为管理员。通用文章 Agent 明确拒绝 `site-updates`、`daily-ai-news`、`tool-radar`，不能绕过公开更新或专用自动投递规则。独立 `workers/site-mcp/` 继续保持未部署、公开只读，不包含这些写工具。
+- `content:write` 与 `content:delete` 是非默认、管理员专属设备授权 scope。普通 Agent Bearer 仍不继承 admin，也不能访问 `/api/admin/*`；授权页和每次 `/api/agent/articles*` 请求都会重新核对令牌所属账号当前仍为管理员。通用文章 Agent 明确拒绝 `site-updates`、`daily-ai-news`、`tool-radar`，不能绕过公开更新或专用自动投递规则。该第七阶段记录时，独立 `workers/site-mcp/` 仍是未部署的公开只读目标且不包含写工具；当前生产远程状态以上方最新部署段为准。
 - 公开三语更新、fallback、Home 最近五条、Functions seed、schema seed、公开 API／文章 seed／主模块缓存统一使用本阶段知识库写入版本；共享 registry／SiteClient／CLI／stdio MCP／Agent Auth 属于 Quick Transfer 受治理路径，因此 Quick Transfer 从 1.0.6 精确升至 1.0.7，业务房间、密码、加密、R2、multipart、配额与 24 小时生命周期未改变；在线画板保持 1.0.7。
 
 ## 2026-08-07 AI 能力层第六阶段：Hextris 独立游戏进程
@@ -14,7 +22,7 @@
 - Hextris Agent 是 `games/hextris/agent/` 下自包含的 GPL-3.0-or-later 程序，包含确定性引擎、独立会话存储、专用 CLI、专用 stdio MCP、测试、完整许可证与来源／修改说明。它不导入主站 `lib/capabilities/`、`cli/` 或 `mcp/local/`；主 `lusu` CLI 和通用 MCP 也不静态包含它。当前只能把它作为单独进程启动，未经单独的兼容性评估和站点所有者明确许可证决定，不得把实现并入通用能力层。
 - 专用 Agent 由用户从 GitHub 源码仓库取得和在本机运行，`config/public-production-build.json` 整目录排除 `games/hextris/agent/`，不把含包元数据的本地进程复制到 Pages `dist`；浏览器 Hextris、完整浏览器许可证和 NOTICE 仍正常部署。这个构建边界不改变专用 CLI／MCP 的源码可得性。
 - 引擎只接受 `{ type: "place", lane: 0..5 }` 语义动作；可选种子使 incoming block 和状态演进可复现。专用会话继续使用 revision CAS、`clientActionId` 最近 128 条幂等收据、32 会话／256 KiB／24 小时闲置上限，以及带随机 token marker 的非空目录锁。锁记录 PID、进程实例与心跳；存活 owner 一律失败关闭，只有精确陈旧 owner 才可恢复；释放先把同一 token marker 进入 retiring 状态，写入／删除在原子替换前再次执行 owner fence，旧 owner 或恢复者都不能删除 successor。observe／actions 真正只读且不续期，reset／close 必须显式确认；这些保证只适用于隔离模拟会话，不代表浏览器游戏控制。
-- 浏览器 Hextris 副本补齐 GPL-3.0-or-later 全文、SPDX／修改说明和上游 attribution；2048 也补回完整 MIT 文本与来源说明。公开三语更新为 `seed-update-2026-08-07-hextris-agent`，同步 fallback、Home 最近五条、Functions seed 与 schema seed，公开 API／文章 seed／主模块缓存版本为 `20260807-hextris-agent-r1`；在线画板保持 1.0.7，Quick Transfer 保持 1.0.6，独立远程 MCP Worker 仍未部署。
+- 浏览器 Hextris 副本补齐 GPL-3.0-or-later 全文、SPDX／修改说明和上游 attribution；2048 也补回完整 MIT 文本与来源说明。公开三语更新为 `seed-update-2026-08-07-hextris-agent`，同步 fallback、Home 最近五条、Functions seed 与 schema seed，公开 API／文章 seed／主模块缓存版本为 `20260807-hextris-agent-r1`；在线画板保持 1.0.7，Quick Transfer 保持 1.0.6。该阶段当时独立远程 MCP Worker 尚未部署；当前状态以上方最新部署段为准。
 - 发布凭据扫描覆盖受管理源码及工作树中新建源码，但按精确路径排除子项目已忽略的 `自动新闻/data/mcp-runs/` 本地运行证据。该目录会保存外部检索正文，可能自然出现形似 JWT 的文本；排除只作用于这个运行证据前缀，不改变密钥识别规则，也不扩大到其他源码目录。
 - 异步回归不能用固定次数的 1ms 计时轮询推断请求已经开始；Chat 私房切换测试由 mock 请求直接发出 deferred 信号，再断言 single-flight 与 busy 状态，避免 Linux 共享 runner 的计时器饥饿造成假失败。
 
@@ -25,7 +33,7 @@
 - 图片只接受最大 5 MiB、严格容器边界、关键块段、声明宽高和像素数均通过检查的 PNG／JPEG／WebP；该边界不宣称完整像素解码。Agent Bearer 与绑定当前 tokenId 的房间访问令牌保持分离；资源只存当前房私有 R2，Pages／DO 都不接受 URL、Base64、SVG、HTML 或跨房 asset。CLI 使用真实常规文件，stdio MCP 进一步执行 allow-root／realpath／链接逃逸防护；下载默认独占创建、不覆盖已有文件，结果不回显本机绝对路径、令牌、口令或内部房间 ID。
 - Durable Object 的 scene validator 保持只追加：新增图片只能引用当前房已经完成 R2 提交且逐字段匹配的权威 `ImageMeta`，规范 `assets` 记录必须被本次新增图片引用；允许未修改地复用既有规范记录和多次放置同图。既有元素／资源的修改或删除、孤立资源、伪造元数据、链接、绑定、`customData`、未知根和任意 Yjs 字节注入继续失败关闭。
 - Agent 图片上传使用与 scene 分离的主体 + operation ID + 图片 SHA-256 收据。DO 先固定 pending 收据并据此预留容量，写入 R2 后再以事务提交 `ImageMeta`、房间用量与 committed 收据；中断后同字节重试只补全同一资源，不重复计数，异载荷复用 ID 返回冲突。pending 资源不能被 scene 引用，房间锁定也阻止新上传和 pending 续传；未引用清理、每房 100 张／100 MiB、公共房永久保留规则和密码房空房 24 小时生命周期继续生效。
-- 本地 CLI 提供 `whiteboard asset put|get`，stdio MCP 提供对应图片上传／下载工具；`whiteboard draw`／`whiteboard_draw` 的 allowlist 新增 `image`，但仍不提供编辑、删除或任意 Yjs。JSON 导出保留资源引用，简化 SVG／PNG 导出继续忽略图片并返回警告。独立 `workers/site-mcp/` 仍未部署且不增加远程写入。
+- 本地 CLI 提供 `whiteboard asset put|get`，stdio MCP 提供对应图片上传／下载工具；`whiteboard draw`／`whiteboard_draw` 的 allowlist 新增 `image`，但仍不提供编辑、删除或任意 Yjs。JSON 导出保留资源引用，简化 SVG／PNG 导出继续忽略图片并返回警告。该阶段当时独立 `workers/site-mcp/` 尚未部署且没有增加远程写入；当前生产九工具仍不包含白板能力。
 - Capability registry 新增冻结的 `requiredScopes` 与 `anyOfScopes` 机器契约，用于表达“全部满足”与“至少一个”而不让 AI 客户端只凭单值主 scope 猜权限；图片上传是 write+assets，图片下载是 assets+(read|write)，图片场景追加是 write+assets。
 - 在线画板按受管路径从 1.0.4 精确升至 1.0.5。共享 Agent Auth、registry、`SiteClient`、CLI、stdio MCP 与测试同时命中 Quick Transfer 治理范围，因此互传从 1.0.5 升至 1.0.6；互传业务协议、口令、AES-GCM 文字、私有 R2 文件、滚动配额、Multipart、鉴权与 24 小时过期均未改变。公开记录为 `seed-update-2026-08-06-whiteboard-agent-images`，表示／文章 seed／主模块缓存版本为 `20260806-whiteboard-agent-images-r1`。
 
@@ -34,7 +42,7 @@
 - 生产设备授权页点击 Allow 曾稳定返回 `AGENT_ORIGIN_REJECTED`。根因不是账号、主域登录态或跨站 GET：授权／令牌管理 HTML 的 `Referrer-Policy: no-referrer` 会让浏览器非 CORS 表单 POST 发送字面值 `Origin: null`，随后被服务端精确同源检查正确拒绝；同一问题也影响 `/api/agent-auth/tokens/manage` 的逐个撤销和全部撤销。
 - 修复只把授权与令牌管理 HTML 改为 `Referrer-Policy: strict-origin`，使 POST 保留当前授权页的精确来源且不携带路径或 `user_code` 查询；JSON 响应继续使用 `no-referrer`。精确 Origin、HttpOnly 登录态和双提交／D1 绑定 CSRF 都没有放宽，缺失／`null`／当前页面异源／攻击者 Origin 仍失败关闭。
 - 授权 GET 允许从 CLI、Codex 或外部网页打开的顶层 `navigate + document`，不再因 `Sec-Fetch-Site: cross-site` 单独拒绝；iframe、图片、XHR/fetch 等非顶层上下文继续拒绝。GET 只轮换短期 CSRF 绑定，不批准、拒绝或签发令牌；授权决定仍只发生在通过同源与 CSRF 的 POST。
-- 因修改命中共享 `functions/api/agent-auth.mjs`，Quick Transfer 按治理规则从 1.0.4 精确升至 1.0.5；互传房间、口令、AES-GCM 文字、私有 R2、Multipart、配额、鉴权和发布完成后 24 小时生命周期均未改变。公开更新为 `seed-update-2026-08-06-agent-auth-form-origin`，表示／文章 seed／主模块缓存版本为 `20260806-agent-auth-form-origin-r1`；独立远程 MCP Worker 仍未部署。
+- 因修改命中共享 `functions/api/agent-auth.mjs`，Quick Transfer 按治理规则从 1.0.4 精确升至 1.0.5；互传房间、口令、AES-GCM 文字、私有 R2、Multipart、配额、鉴权和发布完成后 24 小时生命周期均未改变。公开更新为 `seed-update-2026-08-06-agent-auth-form-origin`，表示／文章 seed／主模块缓存版本为 `20260806-agent-auth-form-origin-r1`；该修复发布时独立远程 MCP Worker 尚未部署。
 
 ## 2026-08-06 AI 能力层第四阶段：日语账号进度闭环
 
@@ -43,18 +51,18 @@
 - Agent 辅助答题固定按 `bilingual` 记录，`usedTranslation`／`usedKana` 为 true、`usedListeningMode` 为 false，通关奖牌最高为 bronze，不能冒充纯听训练金牌。Agent 活动按固定站点时区 `Asia/Shanghai` 归日，进度响应显式返回该时区。幂等收据绑定用户、operationId 与 canonical payload SHA-256；相同载荷在 180 天保留窗口内重放不重复计次，换载荷复用返回 409；客户端必须永久生成新 operationId，不能把过期清理后的旧 ID 当成可复用 ID。浏览器 Cookie GET／PUT 的多设备合并语义保持不变。
 - 设备码授权轮询在一次网络失败、请求中止或 408／425／500／502／503／504 等明确瞬态故障后，会在设备码剩余有效期内有界退避继续；不会输出访问令牌、代理值或底层网络细节。批准和一次性令牌签发仍由站点用户在浏览器明确完成。
 - 本次不改日语公开界面、250 关题库、音频或存档兼容边界，因此工具 `appVersion` 保持 1.0.3、`contentVersion` 保持 1.0.2。因 `agent-auth.mjs`、registry、`SiteClient`、CLI、stdio MCP 与相关测试属于 Quick Transfer 共享受管路径，Quick Transfer 从 1.0.3 精确升至 1.0.4，但互传房间、口令、加密、R2、Multipart、配额、鉴权与 24 小时生命周期均未改变；在线画板未命中受管路径，仍为 1.0.4。
-- 独立 `workers/site-mcp/` 继续未部署，且没有接入日语账号读写或其他远程写能力。公开更新记录为 `seed-update-2026-08-06-japanese-agent-progress`，公开/API/文章 seed 与主模块缓存版本为 `20260806-japanese-agent-progress-r1`；正式上线仍必须完成本地门禁、Production D1 migration／回读、GitHub `main` 合并、Pages 部署与正式域名点检后再记录为已发布。
+- 该第四阶段记录时，独立 `workers/site-mcp/` 尚未部署，且没有接入日语账号读写或其他远程写能力。公开更新记录为 `seed-update-2026-08-06-japanese-agent-progress`，公开/API/文章 seed 与主模块缓存版本为 `20260806-japanese-agent-progress-r1`；该阶段的正式上线仍必须完成本地门禁、Production D1 migration／回读、GitHub `main` 合并、Pages 部署与正式域名点检后再记录为已发布。
 
 ## 2026-08-06 AI 能力层第三阶段：公开只读能力扩展
 
 - 本地 CLI 与 stdio MCP 在既有文章列表／搜索／详情和视频列表之外，补齐单个视频详情、真实工具目录、游戏目录，以及“日语的言外之意”等级／关卡列表／单关详情。工具目录只公开在线画板、Quick Transfer 和日语工具三项真实入口；占位卡片没有稳定 `toolId`，不得进入机器能力面。
 - 游戏能力把 `games/catalog.json` 投影为有界安全字段：稳定 ID、三语标题与摘要、语言支持、同源启动路径、许可证／仓库和真实 Agent 支持状态。`sourceEntry`、存储键、默认值、内部语言映射与任意启动参数不对机器客户端开放；当前只有 2048 声明隔离本地会话与页面语义 bridge，其他游戏不得误报为可接管。
 - 日语题库能力只访问固定 catalog、五个固定 level index 和由关卡 ID 推导的固定 batch，验证 schema/contentVersion、250 关计数、唯一 ID、64 位 SHA-256、`textLocked: true` 与路径边界；输出省略批次路径、内部音频文本和构建字段。它只读取公开题库，不读写用户进度，应用版本仍为 1.0.3、内容兼容版本仍为 1.0.2。
-- 新适配器统一限制 zh／en／ja、ID、查询长度、列表上限、响应字节与同源／GitHub URL；CLI、MCP 和测试复用 `SiteClient`／目录适配器，不复制业务规则。`workers/site-mcp/` 继续未部署且只保留原来的公开文章只读实现，本阶段没有新增公网 MCP 地址或远程写能力。
+- 新适配器统一限制 zh／en／ja、ID、查询长度、列表上限、响应字节与同源／GitHub URL；CLI、MCP 和测试复用 `SiteClient`／目录适配器，不复制业务规则。该第三阶段记录时，`workers/site-mcp/` 尚未部署且只保留原来的公开文章只读实现，本阶段没有新增公网 MCP 地址或远程写能力。
 - 本地 credential 现在与设备登录时的规范化 HTTP(S) origin 绑定；`--base-url`、`LUSU_BASE_URL` 或 MCP `baseUrl` 切到 Preview／其他 origin 时不会复用、发送或删除生产 Bearer。只有操作者显式提供的 stdin／环境 token 才绑定当前覆盖 origin，CLI 普通命令、auth status/logout 与 stdio MCP 共用同一匹配规则。
 - 因 registry、`SiteClient`、CLI 与本地 MCP 位于 Quick Transfer 的共享受管路径，Quick Transfer 按治理规则从 1.0.2 精确升至 1.0.3；房间、口令、文字加密、文件存储、配额、Multipart、鉴权和 24 小时生命周期均未改变。
 - 因固定工具目录同时新增 `whiteboard` 能力域和 `/tools/whiteboard/` 入口契约，在线画板按治理规则从 1.0.3 精确升至 1.0.4；三项工具契约按工具拆分，白板与 Quick Transfer 只追踪各自专属模块。共享目录的可见版本再以项目 `toolId` 锚点、有界窗口和精确模板校验，既避免机器入口或卡片版本变化绕过升版，也不让无关工具变化误触。画板房间协议、Agent scope、Yjs／DO／R2 与生命周期均未改变。
-- 本批公开记录为 `seed-update-2026-08-06-agent-read-breadth`，公开/API/文章 seed 与主模块缓存版本为 `20260806-agent-read-breadth-r1`。Phase 3 已通过 PR #8 合并到 `main`，提交为 `48bf92c9ce1dd2423eea902fcee2ee287075efb9`，GitHub 触发的 Cloudflare Pages Production 部署和正式域名只读点检均通过；独立远程 MCP Worker 仍按范围明确未部署。
+- 本批公开记录为 `seed-update-2026-08-06-agent-read-breadth`，公开/API/文章 seed 与主模块缓存版本为 `20260806-agent-read-breadth-r1`。Phase 3 已通过 PR #8 合并到 `main`，提交为 `48bf92c9ce1dd2423eea902fcee2ee287075efb9`，GitHub 触发的 Cloudflare Pages Production 部署和正式域名只读点检均通过；该阶段范围明确不部署独立远程 MCP Worker。
 - 本地最终验证：根测试 522 / 522，白板前端 8 / 8、Worker 44 / 44，Quick Transfer 50 / 50，2048 14 / 14，未部署远程 MCP 工程 4 / 4；Lint、TypeScript、21 模块公共依赖图、子项目治理、正式构建和连续双构建复现均通过。Headless 公开界面 release 审计通过 192 项（147 个路由／语言／视口组合），A Dark Room 旋转专项通过；产物清单 SHA-256 为 `044bb4a3ea16f1685854b6148d54ba4cd595af9d8dece78321b9d15a2fecae0c`。Production D1 迁移／回读、Pages deployment 与公开线上点检也已完成；Quick Transfer 的真实文件全链路仍需一次用户设备授权后再验。
 
 ## 2026-08-06 AI 能力层第二阶段：在线画板与 2048
@@ -63,7 +71,7 @@
 - Durable Object 的 Agent 更新保持严格追加式：调用方必须先读取最新完整 Yjs scene，单次只新增 1–50 个受支持的高层元素；图片还必须具有独立 assets 授权，并逐字段引用当前房已完成 R2 提交的权威资源。服务端在候选文档上拒绝既有元素／资源修改或删除、孤立资源、嵌入、链接、绑定、customData 与未知根数据，并对文字、坐标、点数、更新字节和完整文档大小设限。`operationId + payload SHA-256` 幂等收据、文档增量与版本在同一 DO transaction 落盘；同载荷重试不重复绘制，换载荷复用 ID 返回冲突，锁定房拒绝写入。
 - `cli/lusu.mjs` 与本地 stdio MCP 已实现白板加入、scene 摘要、图片上传／下载、追加高层元素或当前房图片，以及本地 JSON／SVG／PNG 导出。私房只允许隐藏 stdin 或 `env:NAME` secret reference；本地 `whiteboards.json` 保存不透明 `board_...` 句柄、房型、到期时间、访问令牌与可选引用，不保存密码或图片路径。句柄 read-modify-write 使用跨进程 owner-token 锁，同目录 0600 临时文件 fsync 后原子替换目标，避免并发加入／401 刷新丢写和崩溃截断。简化 SVG／PNG 当前忽略图片并返回警告；编辑、删除与任意 Yjs 注入仍不属于能力面。
 - 2048 成为首个游戏 Agent adapter。浏览器游戏与本地会话共用纯确定性引擎，页面保留 `window.gamePage.save` 并新增冻结的语义 `window.gamePage.agent` bridge；本地 CLI／MCP 通过 `create -> observe -> actions -> act` 运行隔离会话，使用 revision CAS、clientActionId 最近 128 条去重、状态／会话数／闲置 TTL 上限和原子文件锁。锁包含唯一 owner、进程实例／PID 与心跳，释放前复核所有权；observe／actions 不落盘、不刷新过期时间，只有真实动作续期。重置与关闭需要显式确认。当前没有页面配对传输，因此不是接管已打开浏览器里的游戏。
-- `workers/site-mcp/` 仍是未部署的公开只读工程，不含白板或游戏工具。白板专用 Agent HTTP 通道使用站点设备令牌而非标准 OAuth，只服务当前本地 CLI／stdio MCP 边界；任何真正公网远程写入仍必须另行实现第一方 OAuth 2.1、最小 scope、撤销、审计与独立审核。
+- 该第二阶段记录时，`workers/site-mcp/` 仍是未部署的公开只读工程，不含白板或游戏工具。白板专用 Agent HTTP 通道使用站点设备令牌而非标准 OAuth，只服务当前本地 CLI／stdio MCP 边界；该阶段任何真正公网远程写入仍必须另行实现第一方 OAuth 2.1、最小 scope、撤销、审计与独立审核。
 - 本批公开更新为 `seed-update-2026-08-06-whiteboard-2048-agent`，公开/API/文章 seed 与主模块／2048 缓存版本为 `20260806-whiteboard-2048-agent-r1`。生产发布固定先迁移并回读 Production D1，再部署和验证兼容 `lusu-whiteboard-do` Worker，最后合并 GitHub `main` 触发 Pages；独立远程 MCP 不在本批部署范围内。上线结论必须以 D1、Worker、Pages 和正式域名的实际回读为准。
 - 本地验证结果：根测试 498 / 498、2048 14 / 14、白板前端 8 项与 Worker 44 / 44、远程只读 MCP 4 / 4；Lint、TypeScript、子项目治理、生产构建、双构建复现与 192 项 Headless public UI release 审计全部通过。产物清单 SHA-256 为 `111eb9274dc2e91398c0d8da974a2ed33852301cc67149886ab0c16e2d160df9`；这些结果不代替线上 D1／Worker／Pages 验收。
 
@@ -624,7 +632,7 @@
 - 前端：HTML + CSS + JavaScript；在线画板独立使用 React、Excalidraw、Yjs
 - 后端：Cloudflare Pages Functions；在线画板房间权威服务使用独立 Cloudflare Durable Object Worker
 - 数据：Cloudflare D1；在线画板另使用 Durable Object SQLite 和私有 R2
-- AI 接入：共享能力注册表 + 本地 Node.js CLI / stdio MCP；远程只读 MCP 为独立 Cloudflare Worker 工程，尚未部署
+- AI 接入：共享能力注册表 + 本地 Node.js CLI / stdio MCP；生产 OAuth remote MCP 位于 `https://lusu575.com/mcp`，当前提供四个公开读取工具与五个站长知识库工具
 - 部署：Cloudflare Pages Git 自动部署
 - 依赖管理：npm / package-lock
 - Cloudflare CLI：Wrangler
@@ -1013,7 +1021,8 @@ D1 表：`anonymous_chat_messages`
 │       ├── src/
 │       └── THIRD_PARTY_NOTICES.md
 ├── workers/
-│   ├── site-mcp/  (未部署的公开只读 remote MCP)
+│   ├── site-mcp/  (公开读取工具注册层与独立无 OAuth 目标)
+│   ├── site-admin-mcp/  (生产 OAuth remote MCP)
 │   └── whiteboard/
 │       ├── src/
 │       └── wrangler.jsonc

@@ -27,7 +27,9 @@ skills/lusu-personal-site-skill/SKILL.md
 - 异步并发测试优先等待 mock／hook 发出的 deferred 信号，不用固定次数的 1ms 轮询猜测请求进度；只有无法暴露确定事件时才使用带真实 deadline 的有界轮询。
 - CLI / stdio MCP 复用 `自动新闻/integrations/lusu-site/network-fetch.mjs` 的共享代理感知 fetch 并注入 `SiteClient`，兼容代理与直连环境；`SiteClient` 本身只接受注入的 fetch。代理值、代理凭据和 Agent Token 不得输出或写入日志。
 - 本机 credential 只允许发送到签发时相同的规范化 HTTP(S) origin；覆盖 CLI/MCP base URL 时不得把旧 origin 的 Bearer 带到 Preview 或其他站点，也不得在跨 origin logout 中删除旧凭据。当前 origin 的显式 stdin／环境 token 仍由操作者自行授权。
-- `workers/site-mcp/` 是独立且尚未部署的公开只读 remote MCP Worker，不得宣称已有正式地址。远程写能力必须先完成标准 OAuth、最小 scope、撤销与审计，不得把本地设备令牌直接暴露给公网 MCP。详细边界见 `docs/agent-capabilities/README.md`。
+- 生产站长 OAuth remote MCP 位于 `workers/site-admin-mcp/` 和 `https://lusu575.com/mcp`；2026-08-09 由真实站长浏览器 OAuth Allow 完成验收的 `lusu-site-admin-mcp` version ID 为 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b`，Production D1 migration、OAuth metadata／DCR／401 challenge／Origin／pathname 线上 smoke，以及九个工具／四项公开 capability、原子发布、同载荷重放、管理回读、CAS 更新、三语公开回读、确认删除／三语 404 与 grant 撤销闭环均已通过，临时文章已删除。它继续使用 OAuth 2.1 + PKCE、精确 resource、最小 `content:read`／`content:write`／`content:delete` scope、D1 grant／审计和管理员实时复核，不得复用设备令牌或会话 Cookie；每个新生产 Worker bundle 必须重新完成真实浏览器 OAuth 与同等完整闭环，不得复用历史验收。`workers/site-mcp/` 只保留四个公开读取工具的复用注册层与非 canonical 无 OAuth 目标；全站远程 MCP 和浏览器游戏配对／接管仍未实现。详细边界见 `docs/agent-capabilities/README.md` 和 `docs/agent-capabilities/REMOTE_MCP_CONNECT.md`。
+- OAuth 同意提交以服务端幂等为边界：持久 claim 只允许一个 leader 完成授权，短期 completion receipt 仅在同一管理员会话、decision、请求指纹和 per-flow 双提交 CSRF Cookie 下回放；Cookie 与 receipt 同寿命，不能用缺 Cookie fallback。授权页 CSP 只向已验证且精确注册 callback 的规范 origin 扩展 `form-action`，错误页继续仅 `'self'`，不得用通配来源解决导航问题。
+- OAuth `grantRef` 使用 16–128 位 base64url 字符，合法值可能以 `-` 或 `_` 开头；授权 flow、ledger 与文章服务必须保持同一精确规则。设备 Agent token reference 继续独立校验，不能用一个共享正则混淆两种标识，也不能因兼容合法首字符而接受 OAuth grant 中的点、冒号、斜线或越界长度。
 - 工具、游戏和题库的机器只读目录必须使用有界安全投影，不原样暴露前端 manifest。固定同源路径／版本并校验 ID、数量、大小、URL、hash 与锁定状态；占位工具不进入目录，内部源路径、存储键、语言映射、题库批次路径与音频构建字段不对 CLI／MCP 输出，游戏可控状态只按真实适配器声明。
 - 日语账号进度只返回专用有界投影；Agent 写入只能提交已解锁关卡的锁定版本／哈希、完整逐题选项、进度 revision 与 operationId，由服务端判分、计次、授予最高 bronze 的 bilingual 辅助奖牌并解锁下一关。不得暴露浏览器完整进度快照 PUT 或接受调用方伪造的分数、奖牌、解锁和时间戳；相同 operationId 只可重放完全相同载荷。若不改公开应用／题库／存档兼容，`appVersion` 与 `contentVersion` 不随 Agent 接口变化。
 - GitHub 共享 runner 的首页首屏 TBT 固定采样三次并按原预算检查中位数，其他场景仍只测一次；网络体积、load、CLS、内存、运行时错误等结构性门槛逐样本检查，任一次失败都阻断。
@@ -39,7 +41,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - Wrangler compatibility date 不能超过仓库锁定 workerd 的支持上限；当前 `4.118.0` 使用 `2026-07-17`。改日期或 Wrangler 后必须真实启动 Pages dev 并冒烟请求健康、文章、404 与后台入口。
 - 独立 Headless 场景必须以唯一 query 创建新文档并验证 `loaderId`，避免 Hash-only 导航沿用 route 模块和内存缓存；刻意的 SPA History/重试/连续动效流程除外。DOM 断言限定到场景容器，移动窗口背景可延伸到 Dock 后方，真实内容与操作不可被遮挡。
 - `.codex-worktrees/` 属于其他 Codex 任务的独立 checkout，Git、递归构建守卫和仓库密钥扫描都必须忽略；不能删除或修改其他任务工作树来掩盖当前构建扫描边界错误。
-- Production D1 的单条复合 `SELECT` 最多 5 项；远程迁移校验必须在写入前检查并拆分超限的 `UNION ALL`，不能以本地 SQLite 通过代替生产验证。
+- Production D1 的单条复合 `SELECT` 最多 5 项；远程迁移校验必须在写入前检查并拆分超限的 `UNION ALL`，不能以本地 SQLite 通过代替生产验证。新增生产表时还要显式回读表、关键列和全部必需索引，并由 fresh-install 锁定同一契约；仅看到 schema 导入成功不得放行。
 - Production D1 的 mutation `meta.changes` 可能计入外键级联行；主键／CAS 删除应要求同批收据插入恰好 1 行、删除变更至少 1 行（或使用精确 `RETURNING`），不能把 `=== 1` 当作成功条件。首次结果保持 `duplicate: false`，仅收据重放返回 `true`，并用级联计数回归验证。
 - 账号表单必须保持稳定 DOM；登录/注册、字段错误、忙碌/退出失败、实际触发源焦点归还和移动 44px 关闭必须一起回归。Transfer 未登录态只保留一个上下文登录任务。
 - 账号状态检查使用有界超时并在稳定 popover 内原位重试；Chat 只有消息刷新成功后才能标记 online，失败保留 reconnecting 和可聚焦手动重试。密码房切换必须单飞，历史读取失败不能显示 ready。

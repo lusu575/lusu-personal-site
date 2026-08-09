@@ -59,7 +59,7 @@ test("registry list, get, and filter APIs expose only matching capabilities", ()
   assert.equal(getCapability("content.articles.delete")?.scope, "content:delete");
   assert.equal(getCapability("content.articles.delete")?.destructive, true);
   assert.deepEqual(getCapability("content.articles.publish")?.availableTransports, [
-    "site-api", "local-mcp", "cli"
+    "site-api", "remote-mcp", "local-mcp", "cli"
   ]);
 
   const remoteReads = listCapabilities({
@@ -183,4 +183,16 @@ test("phase-three public reads declare only transports with implemented adapters
     "japanese-subtext.stages.get"
   ].filter((id) => getCapability(id)?.availableTransports.includes("remote-mcp"));
   assert.deepEqual(remotePhaseThree, []);
+
+  const remoteKnowledgeManagement = [
+    "content.articles.manage-list",
+    "content.articles.manage-get",
+    "content.articles.publish",
+    "content.articles.update",
+    "content.articles.delete"
+  ];
+  assert.deepEqual(
+    remoteKnowledgeManagement.filter((id) => getCapability(id)?.availableTransports.includes("remote-mcp")),
+    remoteKnowledgeManagement
+  );
 });

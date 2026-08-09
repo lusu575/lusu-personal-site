@@ -4,7 +4,7 @@ import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import * as Y from "yjs";
-import { runCli } from "../cli/lusu.mjs";
+import { CLI_VERSION, runCli } from "../cli/lusu.mjs";
 import { writeStoredCredential } from "../lib/capabilities/local-state.mjs";
 
 function captureStream() {
@@ -21,6 +21,18 @@ function response(value, status = 200) {
     headers: { "Content-Type": "application/json" }
   });
 }
+
+test("CLI reports the current capability-surface version", async () => {
+  const stdout = captureStream();
+  const result = await runCli(["--version"], {
+    stdout: stdout.stream,
+    stderr: captureStream().stream,
+    env: { LUSU_CONFIG_DIR: path.join(os.tmpdir(), `missing-${crypto.randomUUID()}`) }
+  });
+  assert.equal(CLI_VERSION, "0.8.0");
+  assert.deepEqual(result, { ok: true, version: CLI_VERSION });
+  assert.equal(stdout.text(), `${CLI_VERSION}\n`);
+});
 
 test("CLI capabilities is machine-readable and reuses the governed registry", async () => {
   const stdout = captureStream();
