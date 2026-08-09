@@ -16,14 +16,14 @@ export const homeContent = Object.freeze({
       "icon": "games",
       "date": "2026.08.09",
       "title": {
-        "zh": "游戏浏览器接管与视频 MCP 候选进入验收",
-        "en": "Browser Game Control and Video MCP Candidate Enters Acceptance",
-        "ja": "ブラウザーゲーム操作と動画 MCP 候補が検証段階へ"
+        "zh": "游戏 MCP 保活修复候选与视频闭环点检",
+        "en": "Game MCP Heartbeat Fix Candidate and Video Lifecycle Check",
+        "ja": "ゲーム MCP 保活修正候補と動画ライフサイクル検証"
       },
       "summary": {
-        "zh": "本地候选已为 2048、Hextris、A Dark Room 与人生重开补齐语义浏览器 bridge，并准备站长 OAuth 下的配对、观察、动作、暂停与关闭工具；视频第一阶段只管理并原子发布 YouTube／Bilibili 外链记录。新 Worker 尚未部署或生产验收，Kittens Game 与真实视频文件上传仍不开放。",
-        "en": "The local candidate adds semantic browser bridges for 2048, Hextris, A Dark Room, and Life Restart, plus owner-OAuth pairing, observation, action, pause, and close tools. Video phase one only manages and atomically publishes YouTube/Bilibili external-link records. The new Worker is not deployed or production-accepted; Kittens Game and real video-file upload remain unavailable.",
-        "ja": "ローカル候補では 2048、Hextris、A Dark Room、Life Restart に意味操作ブラウザーブリッジを追加し、所有者 OAuth によるペアリング、観察、操作、停止、終了ツールを準備しました。動画第1段階は YouTube／Bilibili 外部リンク記録の管理と原子的公開だけです。新 Worker は未展開・本番未検証で、Kittens Game と実動画ファイルのアップロードは利用できません。"
+        "zh": "当前生产站长 Worker 为 377d494b-8f90-40ad-998f-863d209e1978；外链视频管理闭环已在该精确 bundle 通过，但远程可用性尚未晋级。2048 点检在暂停后暴露空闲 WebSocket 断线；本次 Pages 发布加入每 8 秒严格 ping／pong 保活，Worker 已具备边缘自动应答。精确线上字节与四游戏闭环仍待核验，Kittens Game 与真视频上传不开放。",
+        "en": "The current production owner Worker is 377d494b-8f90-40ad-998f-863d209e1978. Its external-video management lifecycle passed for that exact bundle, but remote availability is not promoted. A 2048 check exposed an idle WebSocket disconnect after pause. This Pages release adds an exact eight-second ping/pong heartbeat, while the Worker already provides the edge auto-response. Exact live bytes and the four-game lifecycle still require verification; Kittens Game and true video upload remain unavailable.",
+        "ja": "現在の本番所有者 Worker は 377d494b-8f90-40ad-998f-863d209e1978 です。この正確な bundle で外部動画管理のライフサイクルは合格しましたが、リモート可用性はまだ昇格していません。2048 の点検では停止後の待機中に WebSocket 切断が判明しました。今回の Pages 公開は8秒ごとの厳密な ping／pong 保活を追加し、Worker は既にエッジ自動応答を備えています。正確な本番バイトと4ゲームの完全検証は未完了で、Kittens Game と実動画アップロードは利用できません。"
       }
     },
     {

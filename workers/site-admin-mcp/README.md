@@ -1,22 +1,22 @@
 # LuSu site owner remote MCP
 
-This independent Cloudflare Worker exposes the site's public read tools plus owner-only article management over stateless Streamable HTTP at `https://lusu575.com/mcp`.
+This independent Cloudflare Worker exposes public reads plus owner-only article, external-video, and browser-game tools over stateless Streamable HTTP at `https://lusu575.com/mcp`.
 
 ## Production state
 
-The production Worker `lusu-site-admin-mcp` is deployed. Version `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` completed real owner-browser OAuth acceptance on 2026-08-09, and the canonical resource is live at `https://lusu575.com/mcp`. The production `OAUTH_KV` namespace is bound, and the Production D1 migration is complete. Online smoke checks have passed for protected-resource and authorization-server metadata, Dynamic Client Registration, the unauthenticated `401 WWW-Authenticate` challenge, rejected browser origins, and rejected non-allowlisted paths.
+The production Worker `lusu-site-admin-mcp` is deployed. The exact current version is `377d494b-8f90-40ad-998f-863d209e1978`, and the canonical resource is live at `https://lusu575.com/mcp`. The production `OAUTH_KV` namespace is bound, and the Production D1 migration is complete. Online smoke checks have passed for protected-resource and authorization-server metadata, Dynamic Client Registration, the unauthenticated `401 WWW-Authenticate` challenge, rejected browser origins, and rejected non-allowlisted paths.
 
-For that exact bundle, the owner reviewed the OAuth page in a normal top-level browser and clicked Allow. Acceptance verified all nine tools, four public capabilities, atomic publish, same-payload replay, management list/get, CAS update, zh/en/ja public readback, confirmed delete, three-language 404 readback, and grant revocation; the temporary article was deleted. This acceptance is bundle-specific: every new production Worker bundle must repeat the real browser OAuth and the same complete lifecycle, never reuse historical acceptance as current evidence. Whole-site remote MCP and browser-game pairing/control remain outside the implemented boundary.
+Historical version `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` retains the accepted nine-tool article lifecycle. Current version `377d...` completed external-video production acceptance with `OpwviOTPYTU`: publish, same-`operationId` replay, owner/public MCP and public HTTP readback, metadata refresh, CAS hide, confirmed delete, final absence, and RFC 7009 revocation passed, and the temporary record was removed. Every acceptance result is exact-bundle evidence; every new production Worker must repeat the applicable real-browser OAuth and lifecycle.
 
-## Local next-bundle candidate: games and external videos
+## Current game and external-video surface
 
-The current repository also contains a next-bundle candidate that is **not deployed and not production-accepted**. The canonical production endpoint still exposes only the exact nine tools listed below. Do not advertise any candidate tool as available until its new Worker version, Production D1 migration, OAuth consent, Durable Object relay, and complete real-browser lifecycle have independently passed.
+The canonical endpoint's `tools/list` exposes exactly 23 tools: nine article tools, eight external-video tools, and six browser-game tools. `site_capabilities` still returns only the four promoted article-read capabilities. Video `availableTransports` does not yet include `remote-mcp`, and game `availableTransports` remains empty; tool presence must not be misrepresented as final availability promotion.
 
-Candidate browser-game tools are `game_browser_pair`, `game_browser_observe`, `game_browser_actions`, `game_browser_act`, `game_browser_pause`, and `game_browser_close`. They require the non-default `games:play` scope, an active grant, a current administrator recheck, an explicit one-time owner/client-bound pairing code, and revision CAS. The relay accepts only opaque `actionId` values offered by the current semantic snapshot; selectors, scripts, raw keys, coordinates, URLs, screenshots, and DOM access are outside the protocol. Only one command may be pending, and the browser player retains visible lock, pause, take-back, close, and disconnect-unlock controls.
+Browser-game tools are `game_browser_pair`, `game_browser_observe`, `game_browser_actions`, `game_browser_act`, `game_browser_pause`, and `game_browser_close`. They require the non-default `games:play` scope, an active grant, a current administrator recheck, an explicit one-time owner/client-bound pairing code, and revision CAS. The relay accepts only opaque `actionId` values offered by the current semantic snapshot; selectors, scripts, raw keys, coordinates, URLs, screenshots, and DOM access are outside the protocol. Only one command may be pending, and the browser player retains visible lock, pause, take-back, close, and disconnect-unlock controls. Production 2048 smoke exposed an idle disconnect after pause. This Pages release adds an exact eight-second `ping`/`pong` heartbeat; current Worker `377d...` already provides the Cloudflare edge auto-response, so no Worker redeploy belongs to this hotfix. Four-game acceptance remains pending until the exact Pages commit is live and rechecked.
 
 The corresponding semantic browser bridges currently cover 2048, Hextris, A Dark Room, and Life Restart. Kittens Game remains `NO_AGENT` because the WET PAWS LICENSE requires explicit permission or legal confirmation before any control bridge is added. Registry entries for remote pairing/control intentionally keep empty `availableTransports` until production acceptance.
 
-The next-bundle candidate adds public `videos_list` and `video_get` reads plus owner-only `video_manage_list`, `video_manage_get`, `video_publish`, `video_update`, `video_refresh_metadata`, and `video_delete`. All eight remain undeployed; `content.videos.list/get` also stay out of remote `availableTransports`, so `site_capabilities` on the accepted production bundle still discovers only the historical four article capabilities. Phase one handles only YouTube, Bilibili, and b23.tv external-link records. Publish/update/delete use active-admin rechecks, audit records, durable `operationId` receipts, and canonical payload hashes; update/delete require `expectedUpdatedAt`, while delete also requires literal `confirm: true`. The remote MCP never reads local paths, Base64, raw video bytes, or files from the AI client's machine. True hosted upload is not configured; a future upload phase requires a separate private R2 binary data plane with bounded multipart, quotas, scanning, commit, abort, expiry, and orphan cleanup.
+Public `videos_list` and `video_get` reads plus owner-only `video_manage_list`, `video_manage_get`, `video_publish`, `video_update`, `video_refresh_metadata`, and `video_delete` are deployed in the current Worker and passed the exact-bundle lifecycle above. Phase one handles only YouTube, Bilibili, and b23.tv external-link records. Publish/update/delete use active-admin rechecks, audit records, durable `operationId` receipts, and canonical payload hashes; update/delete require `expectedUpdatedAt`, while delete also requires literal `confirm: true`. The remote MCP never reads local paths, Base64, raw video bytes, or files from the AI client's machine. True hosted upload is not configured; a future upload phase requires a separate private R2 binary data plane with bounded multipart, quotas, scanning, commit, abort, expiry, and orphan cleanup.
 
 ## What another AI connects to
 
@@ -30,15 +30,14 @@ The client should discover OAuth metadata from the same host, identify itself wi
 
 Scopes:
 
-- `content:read`: public capabilities and published article retrieval. This baseline is always included.
-- `content:write`: list/get managed articles, atomic trilingual publish, and CAS update.
-- `content:delete`: confirmed, idempotent, CAS-protected permanent deletion.
-
-`games:play` is reserved for the undeployed browser-game candidate above. It is not a scope offered by the currently accepted nine-tool production bundle.
+- `content:read`: public capabilities plus published article and external-video retrieval. This baseline is always included.
+- `content:write`: list/get managed articles or video records, atomic publish, CAS update, and bounded video metadata refresh.
+- `content:delete`: confirmed, idempotent, CAS-protected permanent article or video-record deletion.
+- `games:play`: one-time browser pairing and bounded semantic observe/action/pause/close operations. It is non-default and remains production-candidate until four-game acceptance passes.
 
 All tools remain visible so a client can perform incremental authorization. Each tool advertises `_meta.securitySchemes`; an insufficient grant returns `_meta["mcp/www_authenticate"]` with the exact required scope. Publishing uses the shared article service and requires an `operationId`; there is no separate MCP-only business implementation.
 
-The production MCP exposes exactly nine tools:
+The production MCP exposes exactly 23 tools:
 
 | Tool | Required scope | Boundary |
 | --- | --- | --- |
@@ -46,11 +45,25 @@ The production MCP exposes exactly nine tools:
 | `content_list` | `content:read` | Bounded published-article summaries; Daily AI News is selected by category. |
 | `content_search` | `content:read` | Bounded search over published summaries. |
 | `article_get` | `content:read` | One published article by public slug. |
+| `videos_list` | `content:read` | Bounded published external-video summaries. |
+| `video_get` | `content:read` | One published external-video record. |
 | `article_manage_list` | `content:write` | Read-only operation over private management metadata. |
 | `article_manage_get` | `content:write` | Read-only operation over one managed article and its translations. |
 | `article_publish` | `content:write` | Atomic trilingual publish with a unique `operationId`. |
 | `article_update` | `content:write` | Destructive-annotated CAS update with `expectedUpdatedAt` and `operationId`. |
 | `article_delete` | `content:delete` | Permanent deletion with CAS, a unique `operationId`, and literal `confirm: true`. |
+| `video_manage_list` | `content:write` | Bounded private video-management summaries. |
+| `video_manage_get` | `content:write` | One managed external-video record. |
+| `video_publish` | `content:write` | Atomic external-video publish with a unique `operationId`. |
+| `video_update` | `content:write` | CAS update with `expectedUpdatedAt` and `operationId`. |
+| `video_refresh_metadata` | `content:write` | Bounded provider metadata refresh with persisted error state. |
+| `video_delete` | `content:delete` | Confirmed CAS deletion with a unique `operationId`. |
+| `game_browser_pair` | `games:play` | Redeem one owner/client-bound browser pairing code. |
+| `game_browser_observe` | `games:play` | Read a bounded semantic snapshot and current revision. |
+| `game_browser_actions` | `games:play` | Read current opaque semantic action tokens. |
+| `game_browser_act` | `games:play` | Execute one revision-bound opaque action with receipt replay. |
+| `game_browser_pause` | `games:play` | Pause AI control; only the owner browser may resume. |
+| `game_browser_close` | `games:play` | Confirmed close and browser unlock. |
 
 Keep client-side tool approval enabled for all mutations. The service-side scopes, active-admin recheck, CAS, idempotency, and delete confirmation are mandatory safeguards, but they do not replace a human review of publish/update/delete arguments.
 
@@ -64,7 +77,7 @@ npm.cmd install
 
 The checked-in `OAUTH_KV` ID is the existing production namespace. Do not create a second namespace during routine deploys. Disaster recovery or a separate environment must use its own namespace and reviewed config change. Do not use `wrangler secret put` as a shortcut around release gates: that command can create and immediately deploy a Worker version before the intended reviewed release.
 
-Validate locally and complete the dry run before any reviewed redeploy. Run the remote migration only when the release actually contains a new approved Production D1 change; the migration used by accepted version `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` has already completed.
+Validate locally and complete the dry run before any reviewed redeploy. Run the remote migration only when the release actually contains a new approved Production D1 change; migrations required by current version `377d494b-8f90-40ad-998f-863d209e1978` have already completed. This heartbeat hotfix is Pages-only and must not redeploy the Worker.
 
 ```powershell
 npm.cmd run check

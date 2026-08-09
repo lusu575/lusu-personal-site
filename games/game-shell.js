@@ -260,6 +260,7 @@
   let browserAgentFrameWrap = null;
   let browserAgentShield = null;
   let browserAgentPollTimer = null;
+  let browserAgentPingTimer = null;
   let browserAgentExpiryTimer = null;
   let browserAgentLastRevision = null;
   let browserAgentLoadGeneration = 0;
@@ -267,6 +268,8 @@
   let browserAgentFrameTabIndex = null;
   const cloudRequestTimeoutMs = 7000;
   const browserAgentMaxMessageBytes = 96 * 1024;
+  const browserAgentPingIntervalMs = 8 * 1000;
+  const browserAgentPingStates = new Set(["connecting", "awaiting-pair", "active", "paused"]);
   const sessionStorageFallback = new Map();
   const tabStorageFallback = new Map();
 
@@ -1337,6 +1340,7 @@
           observation: snapshot.observation,
           actions: snapshot.actions
         });
+        startBrowserAgentPing();
       } catch (error) {
         failBrowserAgentConnection(error);
       }
@@ -1360,6 +1364,7 @@
   }
 
   function handleBrowserAgentMessage(raw) {
+    if (raw === "pong") return;
     if (typeof raw !== "string" || new TextEncoder().encode(raw).byteLength > browserAgentMaxMessageBytes) {
       throw browserAgentError("GAME_RELAY_MESSAGE_INVALID", "Relay message is invalid.");
     }
@@ -1542,6 +1547,33 @@
     browserAgentPollTimer = null;
   }
 
+  function startBrowserAgentPing() {
+    stopBrowserAgentPing();
+    sendBrowserAgentPing();
+    browserAgentPingTimer = window.setInterval(
+      () => {
+        try {
+          sendBrowserAgentPing();
+        } catch (error) {
+          failBrowserAgentConnection(error);
+        }
+      },
+      browserAgentPingIntervalMs
+    );
+  }
+
+  function sendBrowserAgentPing() {
+    if (!browserAgentSocket
+      || browserAgentSocket.readyState !== WebSocket.OPEN
+      || !browserAgentPingStates.has(browserAgentState)) return;
+    browserAgentSocket.send("ping");
+  }
+
+  function stopBrowserAgentPing() {
+    if (browserAgentPingTimer) window.clearInterval(browserAgentPingTimer);
+    browserAgentPingTimer = null;
+  }
+
   function pauseBrowserAgentByUser() {
     if (browserAgentState !== "active") return;
     pauseBrowserAgent(true);
@@ -1584,6 +1616,7 @@
   function closeBrowserAgentConnection(options = {}) {
     const socket = browserAgentSocket;
     browserAgentSocket = null;
+    stopBrowserAgentPing();
     if (socket && options.notify !== false && socket.readyState === WebSocket.OPEN) {
       try {
         socket.send(JSON.stringify({ type: "user_close", protocolVersion: 1 }));
@@ -1616,6 +1649,7 @@
   }
 
   function resetBrowserAgentAfterDisconnect(message) {
+    stopBrowserAgentPing();
     stopBrowserAgentSnapshotPolling();
     if (browserAgentExpiryTimer) window.clearTimeout(browserAgentExpiryTimer);
     browserAgentExpiryTimer = null;

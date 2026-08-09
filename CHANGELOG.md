@@ -4,6 +4,10 @@
 
 ## 2026-08-09
 
+- 发布浏览器游戏 MCP 的窄范围 Pages 连接保活修复，解决 2048 生产候选点检在完成配对、语义动作、revision CAS 与暂停后，等待玩家恢复期间因空闲 WebSocket 断开而出现 `GAME_BROWSER_DISCONNECTED` 的问题：当前生产 Worker 已配置 Cloudflare Hibernation `setWebSocketAutoResponse("ping", "pong")`，游戏页面每 8 秒发送精确应用层文本 `ping` 并忽略精确 `pong`。该流量不唤醒 Durable Object、不读取 provider、不产生 observation／action、不改变 revision，也不写中继存储；暂停仍拒绝动作，只有玩家可以恢复。
+- 本次发布只更新 Pages 心跳资源，当前生产站长 Worker 保持 `377d494b-8f90-40ad-998f-863d209e1978`。2048 候选只完成到暂停与撤销；精确 Pages commit 的线上字节确认后，四款游戏的配对／动作／暂停／玩家恢复／确认关闭真实闭环必须绑定这一 Worker／Pages 组合逐款重跑。registry 的游戏 `availableTransports` 保持为空，Kittens Game 继续 `NO_AGENT`。曾包含暂停观察实验和未验收可用性 promotion 的 `f9951348-5a68-417c-8875-9817faa192fd` 已回滚，不作为当前版本或验收依据；后续最终 promotion 若生成新 Worker，视频与游戏都须对该新 bundle 完整重验。
+- 外链视频管理已在精确生产 bundle `377d494b-8f90-40ad-998f-863d209e1978` 完成规范化、原子发布、同载荷幂等重放、管理读取、元数据刷新、CAS 隐藏、确认删除、公开缺失回读、RFC 7009 撤销与旧令牌 401 点检，临时记录已删除；该证据不能跨 bundle 复用，最终 availability promotion 与新 bundle 复验前，视频条目的 `availableTransports` 继续不包含 `remote-mcp`。真实 R2 视频文件上传仍未实现。
+- 原位更新三语 `site-updates` 记录 `seed-update-2026-08-09-game-video-mcp-candidate`、完整 fallback、Home 最新五条投影、Functions seed 与 schema seed；公开 API、文章 seed、主模块和 Home 数据缓存统一改为 `20260809-game-video-mcp-heartbeat-r1`，文章 ID／slug 与日期不变。融合主线时必须保留后续新增的公开更新项。保活修复不触碰共享 registry 或 Quick Transfer 受管路径，也不再次升版 Quick Transfer；本发布继承主线当前 v1.0.10，互传业务版本和独立缓存不由本热修滚动。
 - 全站按压反馈采用 140ms 有重量的按下与 90ms 快速松开，不再让按钮、Knowledge 卡片和壁纸选择环以对称时长显得黏滞；键盘触发仍立即提交。壁纸四套装饰特效只在 Home 首次需要时加载并预解码，非 Home／Transfer 不再承担额外图片请求；冷缓存手动选择以显式 pending request 保持乐观档位和最终持久化，时钟、focus、pageshow 与跨标签同步不会把选择环拉回或抢走提交。
 
 - 修复站长 OAuth RFC 7009 刷新令牌撤销只删除 provider KV grant、却让 D1 授权账本继续显示 `active` 的治理缺口：Worker 以固定 provider 版本的 O(1) grant 记录精确核对 current／previous refresh-token SHA-256，并在调用 provider 前先把 grant 级、确定性且幂等的 `pending` 撤销意图写入强一致 D1；provider 的 RFC 7009 响应成功后仍显式执行幂等的整 grant 删除，确认并发 refresh 轮换没有把标准 200 变成空操作，再用单个 D1 batch 同时把 grant 标成 `revoked` 并把审计完成为 `success`。单独撤销 access token 时 grant 与 D1 保持 active；若 provider 已完成撤销但 D1 首次同步失败，响应稳定返回 `OAUTH_REVOCATION_LEDGER_SYNC_FAILED`，同一请求从 D1 intent 恢复，不能依赖最终一致 KV 反查、虚报 200 或泄露 token／client secret／原始表单。

@@ -103,8 +103,9 @@ test("the game/video MCP update leads the five-item projection while wallpaper a
   }
 });
 
-test("public motion, wallpaper imagery, and Quick Transfer keep independent cache versions", () => {
+test("public motion, MCP heartbeat content, wallpaper imagery, and Quick Transfer keep independent cache versions", () => {
   const publicVersion = "20260809-motion-polish-r2";
+  const heartbeatVersion = "20260809-game-video-mcp-heartbeat-r1";
   const wallpaperAssetVersion = "20260809-wallpaper-time-switch-r2";
   const transferVersion = "20260809-transfer-motion-r2";
   const index = read("index.html");
@@ -117,18 +118,18 @@ test("public motion, wallpaper imagery, and Quick Transfer keep independent cach
     "/css/mobile-ios-shell.css",
     "/css/motion-system.css",
     "/js/mobile-shell.js",
-    "/js/ui-motion.js",
-    "/js/main.js"
+    "/js/ui-motion.js"
   ]) {
     assert.ok(index.includes(`${asset}?v=${publicVersion}`), `${asset} should use ${publicVersion}`);
   }
+  assert.ok(index.includes(`/js/main.js?v=${heartbeatVersion}`));
   for (const asset of ["time-track.png", "time-selector.png"]) {
     assert.ok(index.includes(`/assets/images/wallpaper-switch/${asset}?v=${wallpaperAssetVersion}`));
   }
   assert.ok(main.includes(`const routeStyleVersion = "${publicVersion}"`));
   assert.ok(main.includes(`./core/i18n.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./core/wallpaper-time.mjs?v=${publicVersion}`));
-  assert.ok(main.includes(`./data/home-content.mjs?v=${publicVersion}`));
+  assert.ok(main.includes(`./data/home-content.mjs?v=${heartbeatVersion}`));
   assert.ok(main.includes(`./features/account.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/knowledge.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/chatroom.mjs?v=${publicVersion}`));

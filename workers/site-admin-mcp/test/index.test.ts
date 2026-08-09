@@ -166,6 +166,8 @@ function deferred<T = void>(): {
 type RelayConnection = {
   socket: WebSocket;
   messages: Array<Record<string, any>>;
+  rawMessages: string[];
+  closed: Promise<{ code: number; reason: string }>;
 };
 
 function randomPairingCode(): string {
@@ -191,16 +193,23 @@ async function openGameRelay(pairingCode: string): Promise<RelayConnection> {
   expect(response.webSocket).not.toBeNull();
   const socket = response.webSocket!;
   const messages: Array<Record<string, any>> = [];
+  const rawMessages: string[] = [];
   socket.addEventListener("message", (event) => {
     if (typeof event.data !== "string") return;
+    rawMessages.push(event.data);
     try {
       messages.push(JSON.parse(event.data) as Record<string, any>);
     } catch {
       // Invalid frames are asserted by the relay and are not useful to this queue.
     }
   });
+  const closed = new Promise<{ code: number; reason: string }>((resolve) => {
+    socket.addEventListener("close", (event) => {
+      resolve({ code: event.code, reason: event.reason });
+    }, { once: true });
+  });
   socket.accept();
-  return { socket, messages };
+  return { socket, messages, rawMessages, closed };
 }
 
 async function waitForRelayMessage(
@@ -216,6 +225,21 @@ async function waitForRelayMessage(
     await new Promise((resolve) => setTimeout(resolve, 10));
   }
   throw new Error(`Timed out waiting for relay message: ${type}`);
+}
+
+async function waitForRelayRawMessage(
+  connection: RelayConnection,
+  value: string,
+  afterIndex = 0,
+  timeoutMs = 2_000
+): Promise<string> {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < timeoutMs) {
+    const message = connection.rawMessages.slice(afterIndex).find((item) => item === value);
+    if (message) return message;
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+  throw new Error(`Timed out waiting for raw relay message: ${value}`);
 }
 
 async function authorizeTestClient(
@@ -1311,6 +1335,44 @@ describe("owner browser game relay", () => {
     });
   });
 
+  it("auto-responds only to the exact ping heartbeat without semantic relay traffic", async () => {
+    const validConnection = await openGameRelay(randomPairingCode());
+    const validRawIndex = validConnection.rawMessages.length;
+    const validSemanticIndex = validConnection.messages.length;
+    validConnection.socket.send("ping");
+    await expect(waitForRelayRawMessage(validConnection, "pong", validRawIndex)).resolves.toBe("pong");
+    expect(validConnection.messages).toHaveLength(validSemanticIndex);
+    validConnection.socket.send(JSON.stringify({
+      type: "hello",
+      protocolVersion: 1,
+      gameId: "2048",
+      browserSessionId: `browser_${"H".repeat(22)}`,
+      revision: 0,
+      observation: { score: 0 },
+      actions: []
+    }));
+    await expect(waitForRelayMessage(validConnection, "relay_ready")).resolves.toMatchObject({
+      state: "awaiting_pair"
+    });
+    expect(validConnection.messages.some((message) => message.type === "relay_error")).toBe(false);
+
+    const malformedPingConnection = await openGameRelay(randomPairingCode());
+    malformedPingConnection.socket.send("ping ");
+    await expect(malformedPingConnection.closed).resolves.toMatchObject({
+      code: 1007,
+      reason: "invalid_json"
+    });
+
+    const unsupportedJsonConnection = await openGameRelay(randomPairingCode());
+    unsupportedJsonConnection.socket.send(JSON.stringify({
+      type: "heartbeat",
+      protocolVersion: 1
+    }));
+    await expect(waitForRelayMessage(unsupportedJsonConnection, "relay_error")).resolves.toMatchObject({
+      code: "GAME_RELAY_MESSAGE_UNSUPPORTED"
+    });
+  });
+
   it("round-trips only opaque action tokens with CAS, receipts, pause, and close", async () => {
     const accessToken = await authorizeTestClient(["games:play"]);
     const pairingCode = randomPairingCode();
@@ -1564,6 +1626,27 @@ describe("owner browser game relay", () => {
       state: "paused"
     });
     await waitForRelayMessage(connection, "pause", pauseStartIndex);
+
+    const pausedPingMessageIndex = connection.messages.length;
+    const pausedPingRawIndex = connection.rawMessages.length;
+    connection.socket.send("ping");
+    await expect(waitForRelayRawMessage(connection, "pong", pausedPingRawIndex)).resolves.toBe("pong");
+    const pausedObserve = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_observe",
+      arguments: { sessionId }
+    });
+    expect(structuredToolResult(pausedObserve.body)).toMatchObject({
+      sessionId,
+      state: "paused",
+      revision: 1,
+      observation: nextObservation,
+      actions: [],
+      stale: true
+    });
+    expect(connection.messages.slice(pausedPingMessageIndex)
+      .some((message) => message.type === "relay_error")).toBe(false);
+    expect(connection.messages.slice(pausedPingMessageIndex)
+      .some((message) => message.type === "observe")).toBe(false);
 
     await installGameOutcomeAuditFailure("error");
     const whilePausedAuditFailed = await ownerMcpRequest(accessToken, "tools/call", {

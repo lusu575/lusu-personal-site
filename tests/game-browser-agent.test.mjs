@@ -181,6 +181,12 @@ test("game shells expose explicit safe pairing for four games and license-gate K
   assert.match(shell, /import\("\/games\/game-agent-host\.mjs\?v=20260809-browser-game-agent-v1"\)/);
   assert.match(shell, /new URL\("\/mcp\/browser-games\/connect", window\.location\.origin\)/);
   assert.match(shell, /new WebSocket\(relayUrl\.href, \["lusu-game-v1", `pair\.\$\{browserAgentPairCode\}`\]\)/);
+  assert.match(shell, /const browserAgentPingIntervalMs = 8 \* 1000;/);
+  assert.match(shell, /new Set\(\["connecting", "awaiting-pair", "active", "paused"\]\)/);
+  assert.match(shell, /if \(raw === "pong"\) return;/);
+  assert.match(shell, /browserAgentSocket\.send\("ping"\);/);
+  assert.match(shell, /function closeBrowserAgentConnection[\s\S]*?stopBrowserAgentPing\(\);/);
+  assert.match(shell, /function resetBrowserAgentAfterDisconnect[\s\S]*?stopBrowserAgentPing\(\);/);
   assert.match(shell, /\^\[A-Z2-7\]\{26\}\$/);
   assert.match(shell, /frame\.inert = true;[\s\S]*?frame\.blur\(\);/);
   assert.match(shell, /type: "user_resume",[\s\S]*?revision: snapshot\.revision,[\s\S]*?actions: snapshot\.actions/);

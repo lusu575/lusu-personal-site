@@ -839,7 +839,7 @@ const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
 const whiteboardReleaseVersion = "20260806-agent-capabilities-quick-transfer-r1";
-const gameVideoMcpCandidateReleaseVersion = "20260809-game-video-mcp-candidate-r2";
+const gameVideoMcpCandidateReleaseVersion = "20260809-game-video-mcp-heartbeat-r1";
 const motionPolishReleaseVersion = "20260809-motion-polish-r2";
 const wallpaperTimeSwitchAssetVersion = "20260809-wallpaper-time-switch-r2";
 const transferReleaseVersion = "20260809-transfer-motion-r2";
@@ -902,7 +902,7 @@ for (const route of lazyPublicRoutes) {
 for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
-  ["./data/home-content.mjs", motionPolishReleaseVersion],
+  ["./data/home-content.mjs", gameVideoMcpCandidateReleaseVersion],
   ["./features/account.mjs", motionPolishReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", transferReleaseVersion]
@@ -2910,10 +2910,10 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = motionPolishReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = motionPolishReleaseVersion;
+const currentMainVersion = gameVideoMcpCandidateReleaseVersion;
 const currentCssVersion = motionPolishReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
-const currentGameShellVersion = "20260809-browser-game-agent-v1";
+const currentGameShellVersion = "20260809-browser-game-heartbeat-v1";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
 const currentLifeRestartMobileTouchVersion = "20260726-life-mobile-touch-r1";
 
@@ -4327,7 +4327,7 @@ const finalUpdateSlug = "2026-08-09-game-video-mcp-candidate";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Browser Game Control and Video MCP Candidate Enters Acceptance";
+const finalTitleEn = "Game MCP Heartbeat Fix Candidate and Video Lifecycle Check";
 const finalPublishedAt = "2026-08-09T09:30:00.000Z";
 const supportingReleaseUpdateIds = [
   "seed-update-2026-08-09-wallpaper-time-switch",

@@ -4,7 +4,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260809-motion-polish-r2";
-import { homeContent } from "./data/home-content.mjs?v=20260809-motion-polish-r2";
+import { homeContent } from "./data/home-content.mjs?v=20260809-game-video-mcp-heartbeat-r1";
 import {
   WALLPAPER_TIME_THEMES,
   createWallpaperTimeOverride,

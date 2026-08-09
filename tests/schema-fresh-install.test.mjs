@@ -142,8 +142,8 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.deepEqual(gameVideoMcpCandidateTranslations.map(({ lang }) => lang), ["en", "ja", "zh"]);
     for (const { content_markdown: contentMarkdown } of gameVideoMcpCandidateTranslations) {
       assert.match(contentMarkdown, /Quick Transfer/);
-      assert.match(contentMarkdown, /v1\.0\.8/);
-      assert.match(contentMarkdown, /v1\.0\.9/);
+      assert.match(contentMarkdown, /v1\.0\.10/);
+      assert.doesNotMatch(contentMarkdown, /not deployed|尚未部署|未展開/);
     }
     assert.equal(
       db.prepare("select count(*) as count from articles where article_id = ? and category = 'site-updates'").get(motionPolishUpdateId).count,
@@ -189,7 +189,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260809-motion-polish-r2"
+      "20260809-game-video-mcp-heartbeat-r1"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),

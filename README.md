@@ -15,7 +15,7 @@
 
 ## 临时互传
 
-- 当前独立版本为 `1.0.6`；版本、更新日志和 AI 维护约定位于 `docs/transfer/`。本次版本来自 Phase 5 共享 Agent 能力基础设施，互传协议、精确同源、登录态、CSRF、加密、私有 R2 与 24 小时生命周期均未改变。
+- 当前独立版本为 `1.0.10`；版本、更新日志和 AI 维护约定位于 `docs/transfer/`。本次心跳热修不触碰其受管路径或再次升版，互传协议、精确同源、登录态、CSRF、加密、私有 R2 与 24 小时生命周期均未改变。
 - 工具区（English `Tools` / 日本語 `ツール`，内部 route 仍为 `resources`）提供登录限定的“临时互传 / Quick Transfer / 一時転送”，支持 24 小时房间、加密文字、私有 R2 文件和 Range 视频播放。
 - 工具区中的临时互传与日语学习卡片使用一致的网格宽度和卡片节奏；互传入口、登录、房间、消息、上传任务、文件预览与输入区已适配窄竖屏、短屏、软键盘和手机横屏。
 - 相册、通用文件、拖放与粘贴附件都会先进入输入区待发送托盘，再由“发送”统一启动上传；手机提供独立的多选相册入口，文字失败时附件仍可重试。
@@ -30,12 +30,12 @@
 - 第一阶段建立了统一能力注册表 `lib/capabilities/registry.mjs`。`transport` 表示长期目标接入面，`availableTransports` 才表示当前已实现且允许客户端调用的接入面；两者不得混用。
 - 已实现的本地入口为 `cli/lusu.mjs` 和 `mcp/local/server.mjs`。它们可读取能力目录、文章／每日 AI 新闻、视频详情、三项真实工具、五个游戏的安全目录，以及日语潜台词 5 个等级／250 关；也可对授权后的 Quick Transfer 与在线画板执行受限操作，并运行隔离的本地 2048／人生重开 Agent 会话。Hextris 隔离会话继续由独立 GPL 进程提供。两个通用入口复用业务适配层；网络能力向 `SiteClient` 注入站点共享的代理感知 fetch，不输出代理值或凭据。可用 `npm.cmd run lusu -- --help` 查看 CLI，用 `npm.cmd run mcp:local` 启动 stdio MCP。
 - 本地机器客户端通过网站设备码页面由账号持有者确认，令牌按 `content:read`、Transfer 与 Whiteboard 的最小 scope 授权；删除和画板 scope 均非默认。机器 Bearer 令牌不能获得管理员权限；房间口令不放进命令行、URL、日志或分析数据，Transfer 文字密钥始终在本地派生。
-- 既有本地 CLI／MCP 游戏会话仍与已打开的浏览器隔离；当前仓库的下一阶段候选另为 2048、Hextris、A Dark Room 与人生重开补齐受审计语义 bridge，并准备 `game_browser_pair`／`observe`／`actions`／`act`／`pause`／`close`。页面只接受当前 revision 给出的不透明 `actionId`，不接受选择器、脚本、原始按键、坐标或 URL；Kittens Game 因 WET PAWS LICENSE 保持 `NO_AGENT`。
-- 生产远程 MCP 已由独立 `workers/site-admin-mcp/` Worker `lusu-site-admin-mcp` 部署到 `https://lusu575.com/mcp`；2026-08-09 完成真实站长浏览器 OAuth 验收的 version ID 为 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b`。Production D1 migration 已完成，OAuth metadata、DCR、未鉴权 401 challenge、Origin 与 pathname 线上 smoke 已通过。
-- 生产面共有 9 个工具：`site_capabilities`、`content_list`、`content_search`、`article_get`，以及站长专用的 `article_manage_list`、`article_manage_get`、`article_publish`、`article_update`、`article_delete`。读取使用 `content:read`；管理查看／发布／更新使用非默认 `content:write`；永久删除使用独立 `content:delete`，并继续要求最新 CAS、唯一 `operationId` 和 `confirm: true`。客户端应保留写入／删除逐次确认。
-- 同一下一阶段本地候选还增加公开视频 `videos_list`／`video_get`，并准备站长外链管理列表／详情、原子发布、CAS 更新、元数据刷新和确认删除；全部只处理 YouTube／Bilibili／b23.tv 记录。它不读取本机路径、Base64 或视频字节，真实文件上传尚未配置；未来托管文件必须走独立私有 R2 数据面。这批视频与游戏工具都尚未部署或生产验收，视频 read 与游戏 control 的远程 `availableTransports` 仍为空，生产 `site_capabilities` 继续只发现历史四项文章能力。
-- `workers/site-mcp/` 保留为四个公开读取工具的复用注册层和独立无 OAuth 目标，不是 canonical 生产入口；仓库内新增的游戏浏览器控制与视频管理代码只是下一 bundle 的本地候选，画板、Transfer、日语进度等能力也没有因此扩展到公网远程 MCP。
-- 该验收版本已由站长在普通浏览器 OAuth 页面手动 Allow，并通过 9 个工具、4 项公开 capability、受控文章原子发布、同载荷幂等重放、管理回读、CAS 更新、zh／en／ja 公开回读、确认删除、三语删除后 404 与 grant 撤销，临时文章已删除。该结论只绑定上述精确 Worker bundle；新的游戏／视频 bundle 仍须完成 D1 migration、Worker 发布、真实 OAuth、Durable Object 配对和浏览器完整闭环，不能复用历史验收。能力盘点与本地边界见 `docs/agent-capabilities/README.md`，外部 AI 接入步骤见 `docs/agent-capabilities/REMOTE_MCP_CONNECT.md`。
+- 既有本地 CLI／MCP 游戏会话仍与已打开的浏览器隔离；生产候选浏览器面为 2048、Hextris、A Dark Room 与人生重开提供受审计语义 bridge 以及 `game_browser_pair`／`observe`／`actions`／`act`／`pause`／`close`。页面只接受当前 revision 给出的不透明 `actionId`，不接受选择器、脚本、原始按键、坐标或 URL；Kittens Game 因 WET PAWS LICENSE 保持 `NO_AGENT`。
+- 生产远程 MCP 已由独立 `workers/site-admin-mcp/` Worker `lusu-site-admin-mcp` 部署到 `https://lusu575.com/mcp`；当前精确 version ID 为 `377d494b-8f90-40ad-998f-863d209e1978`。Production D1 migration 已完成，OAuth metadata、DCR、未鉴权 401 challenge、Origin 与 pathname 线上 smoke 已通过。
+- 当前 Worker 的 `tools/list` 精确包含 23 个工具：9 项文章、8 项外链视频与 6 项浏览器游戏工具；`site_capabilities` 仍只发现已晋级的 4 项公开文章能力。视频和游戏工具虽已部署在该 bundle，视频项的 `availableTransports` 仍未包含 `remote-mcp`，游戏项的 `availableTransports` 仍为空，不能据工具存在提前宣告远程可用。
+- YouTube／Bilibili／b23.tv 外链视频管理已在该精确 bundle 通过生产闭环；测试视频 `OpwviOTPYTU` 的发布、同载荷重放、三面回读、元数据刷新、CAS 隐藏、确认删除、最终不存在与 RFC 7009 撤销均完成，临时记录已清理。远程 MCP 不读取本机路径、Base64 或视频字节；真实 R2 文件上传仍未配置。
+- 浏览器游戏生产点检在 2048 的配对、动作、CAS 与暂停后暴露空闲 WebSocket 断线。本次 Pages 发布给游戏壳加入严格 8 秒 `ping`／`pong` 保活；当前 Worker 已有 Cloudflare 边缘自动应答，无需随本热修重新部署。精确 Pages commit 上线后仍须逐款重跑四游戏闭环；在此之前不能晋级 registry。
+- 历史 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` 的九工具文章验收与当前 `377d...` 的视频验收都只绑定各自精确 bundle。每个新生产 Worker 必须重新完成适用的真实 OAuth／D1／DO／浏览器闭环，不能复用历史证据。能力盘点见 `docs/agent-capabilities/README.md`，外部 AI 接入步骤见 `docs/agent-capabilities/REMOTE_MCP_CONNECT.md`。
 
 鲁肃的个人站，一个保留 Windows XP + Pixel Art + Y2K 桌面识别度、同时提供原创移动虚拟 OS 的个人空间。
 
@@ -114,7 +114,7 @@ Cloudflare Pages Git 部署必须与仓库契约保持一致：框架预设 `Non
 - 匿名聊天室公开侧保持纯文本渲染，后台可隐藏、恢复、删除消息，并按隐藏访客 ID 或 IP hash 禁言。
 - 游戏区只保留可在本站本地打开的静态游戏入口，不做外部跳转入口。
 - 工具区提供多人实时在线画板，支持公共房、密码房、实时鼠标与临时名字、成员列表、图片、PNG/SVG 导出、自动重连、只读状态和手机触控。
-- 站点 AI 能力层已提供本地 CLI、stdio MCP、设备码授权、Quick Transfer、受限画板追加／导出、隔离游戏会话，以及视频详情、真实工具、五个游戏和 250 个日语关卡的安全只读目录；生产远程 MCP 已上线 4 个公开文章读取工具和 5 个站长知识库工具。仓库本地候选已增加四款游戏的浏览器语义 bridge 与视频外链原子管理，但尚未部署／生产验收；Kittens、真实视频文件上传、聊天、画板／Transfer 和日语进度仍未开放到该远程面。
+- 站点 AI 能力层已提供本地 CLI、stdio MCP、设备码授权、Quick Transfer、受限画板追加／导出、隔离游戏会话，以及视频详情、真实工具、五个游戏和 250 个日语关卡的安全只读目录；生产远程 MCP 的 `tools/list` 现有 23 项文章／外链视频／浏览器游戏工具，但公开能力发现仍只晋级 4 项文章读取。视频远程可用性 promotion、四游戏真实闭环、Kittens、真实视频文件上传、聊天、画板／Transfer 和日语进度仍未开放。
 - 工具区提供独立工具“日语的言外之意 / Behind the Japanese / 日本語の裏側”：当前应用版本 `1.0.3`、内容兼容版本 `1.0.2`，包含 5 个难度、250 个 N3–N1 潜台词训练关卡，支持纯听/日语/双语模式、逐句与词块离线语音、月历打卡、本地进度和账号云同步；每关配有响应式黑白四格场景图，维护规则见 `tools/japanese-subtext/MAINTENANCE.md`。
 
 ## 维护备注

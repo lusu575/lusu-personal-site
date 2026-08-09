@@ -7,9 +7,10 @@ public-content services; it does not call the public website over HTTP.
 This standalone unauthenticated target is not the canonical production endpoint
 and does not implement OAuth. Its public tool registrar is reused by the
 production owner-only `workers/site-admin-mcp/` server, which supplies its own
-MCP SDK instance and OAuth boundary at `https://lusu575.com/mcp`. The deployed
-owner Worker acceptance version `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` exposes these four
-read tools behind `content:read`, alongside five owner article tools. Only
+MCP SDK instance and OAuth boundary at `https://lusu575.com/mcp`. Deployed owner
+Worker version `377d494b-8f90-40ad-998f-863d209e1978` exposes all six public read
+tools behind `content:read`, alongside article, external-video, and browser-game
+owner tools. Only
 already-public, read-only operations belong in this project. Transfer room
 passwords, local files, account saves, chat writes, whiteboard writes,
 publishing, and administrator operations must not be added to this unauthenticated
@@ -29,23 +30,19 @@ The MCP surface currently contains:
   optional category.
 - `content_search`: searches bounded published article summaries.
 - `article_get`: reads one bounded published article by public slug.
+- `videos_list`: lists bounded published YouTube/Bilibili external-video summaries.
+- `video_get`: reads one bounded published external-video record.
 - `lusu://articles/{slug}{?lang}`: resource template for one published article.
 
-The repository's next-bundle candidate also implements two bounded public video
-reads, `videos_list` and `video_get`, over published YouTube/Bilibili external-link
-records. They are **not deployed or production-accepted** and
-`content.videos.list/get.availableTransports` intentionally does not include
-`remote-mcp`; the accepted production `site_capabilities` therefore still
-discovers only the four article capabilities above.
-
-The accepted reusable registrar contributes only the four article tools above
-to the production OAuth server; the standalone resource template is not
-included there. A future reviewed bundle may add the two video reads only after
-fresh OAuth and production readback acceptance. The five
-production owner tools (`article_manage_list`, `article_manage_get`,
-`article_publish`, `article_update`, and `article_delete`) remain implemented in
-`workers/site-admin-mcp/` and must never be moved into this unauthenticated
-target.
+The current owner Worker deploys both video reads, and the `OpwviOTPYTU`
+publish/replay/readback/refresh/hide/delete lifecycle passed for that exact
+bundle. Registry `content.videos.list/get.availableTransports` still omits
+`remote-mcp`, so `site_capabilities` continues to discover only the four promoted
+article capabilities. The reusable registrar contributes all six tools to the
+owner server; the standalone resource template is not included there. Five
+article-management tools, six video-management tools, and six browser-game tools
+remain implemented only in `workers/site-admin-mcp/` and must never be moved into
+this unauthenticated target.
 
 The registry capability `content.daily-ai-news.get` is implemented as a
 composition: call `content_list` with `category: "daily-ai-news"` (or search a
@@ -96,12 +93,13 @@ cookie or raw bearer tokens. High-risk and publishing capabilities remain in
 that separate owner-only server.
 
 Production D1 migration and OAuth metadata/DCR/401/origin/path smoke checks are
-complete. The exact owner Worker bundle above also passed real owner-browser
-OAuth acceptance for all nine tools, four public capabilities, publish/replay,
-management reads, CAS update, trilingual readback, confirmed delete/404, and
-grant revocation; its temporary article was deleted. This unauthenticated target
-must never bypass owner consent. Every new production owner Worker bundle must
-repeat the complete real-browser lifecycle rather than reuse that historical
-acceptance. Browser-game pairing/control and public video reads now have local
-next-bundle candidates, but remain unavailable on the accepted production
-bundle; whole-site remote MCP is still incomplete.
+complete. Current owner Worker `377d...` exposes 23 tools while public capability
+discovery remains four promoted article reads. External-video production
+acceptance is complete for that exact bundle, including owner/public MCP and
+public HTTP agreement, metadata refresh, CAS hide, confirmed delete, final
+absence, and RFC 7009 revocation. Browser-game control remains a production
+candidate: this Pages release adds an eight-second heartbeat while the current
+Worker already provides edge `ping`/`pong` auto-response; all four real game pages
+must still pass pair/action/pause/player-resume/close acceptance. This
+unauthenticated target must never bypass owner consent, and no historical result
+may promote a new Worker bundle.
