@@ -9,6 +9,10 @@ import {
   isAgentArticlesApiPath
 } from "./agent-articles.mjs";
 import {
+  handleAgentVideosApi,
+  isAgentVideosApiPath
+} from "./agent-videos.mjs";
+import {
   JapaneseSubtextAgentEvaluationError,
   canonicalJapaneseSubtextAgentPayload,
   evaluateJapaneseSubtextAgentAttempt,
@@ -35,7 +39,7 @@ import {
   toPublicArticle
 } from "./public-content-service.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260809-remote-mcp-oauth-r2";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260809-game-video-mcp-candidate-r2";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
 const PUBLIC_RELEASE_DATE = "2026-08-07";
@@ -86,11 +90,12 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260809-remote-mcp-oauth-r2";
+const ARTICLE_SEED_VERSION = "20260809-game-video-mcp-candidate-r2";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AGENT_AUDIT_RETENTION_DAYS = 180;
 const AGENT_ARTICLE_RECEIPT_RETENTION_DAYS = 180;
+const AGENT_VIDEO_RECEIPT_RETENTION_DAYS = 180;
 const JAPANESE_SUBTEXT_AGENT_RETENTION_DAYS = 180;
 const JAPANESE_SUBTEXT_AGENT_ATTEMPT_RATE_LIMITS = Object.freeze({
   token: Object.freeze({ limit: 120, windowMs: 60 * 1000, backoffMs: 60 * 1000, maxBackoffMs: 15 * 60 * 1000 }),
@@ -272,6 +277,11 @@ export async function onRequest(context) {
       await ensureArticleSchema(env);
       await seedArticleTestData(env);
       return await handleAgentArticlesApi(context, parts);
+    }
+
+    if (isAgentVideosApiPath(parts)) {
+      await ensureVideoSchema(env);
+      return await handleAgentVideosApi(context, parts);
     }
 
     const adminSession = parts[0] === "admin"
@@ -5229,6 +5239,46 @@ async function ensureVideoSchema(env) {
         created_at text not null,
         primary key (video_id, category_id)
       )
+    `),
+    env.DB.prepare(`
+      create table if not exists agent_video_receipts (
+        receipt_id text primary key,
+        user_id text not null,
+        operation_id text not null,
+        action text not null,
+        payload_hash text not null,
+        video_id text not null default '',
+        response_json text not null,
+        created_at text not null,
+        unique(user_id, operation_id)
+      )
+    `),
+    env.DB.prepare(`
+      create table if not exists video_upload_sessions (
+        upload_session_id text primary key,
+        user_id text not null references users(id) on delete cascade,
+        operation_id text not null,
+        payload_hash text not null,
+        video_id text not null default '',
+        filename text not null,
+        mime_type text not null,
+        size_bytes integer not null,
+        sha256 text not null,
+        upload_token_hash text not null default '',
+        object_key text not null default '',
+        r2_upload_id text not null default '',
+        part_size_bytes integer not null default 0,
+        expected_parts integer not null default 0,
+        uploaded_bytes integer not null default 0,
+        status text not null default 'pending',
+        expires_at text not null,
+        created_at text not null,
+        updated_at text not null,
+        completed_at text not null default '',
+        aborted_at text not null default '',
+        last_error text not null default '',
+        unique(user_id, operation_id)
+      )
     `)
   ]);
   const addedVideoColumns = await ensureTableColumns(env, "videos", [
@@ -5255,7 +5305,10 @@ async function ensureVideoSchema(env) {
     env.DB.prepare("create index if not exists videos_public_queue_idx on videos(status, pinned, pinned_sort_order, sort_order, published_at)"),
     env.DB.prepare("create index if not exists videos_platform_external_idx on videos(platform, external_id)"),
     env.DB.prepare("create index if not exists video_categories_enabled_idx on video_categories(enabled, sort_order)"),
-    env.DB.prepare("create index if not exists video_category_relations_category_idx on video_category_relations(category_id, sort_order)")
+    env.DB.prepare("create index if not exists video_category_relations_category_idx on video_category_relations(category_id, sort_order)"),
+    env.DB.prepare("create index if not exists agent_video_receipts_created_idx on agent_video_receipts(created_at)"),
+    env.DB.prepare("create index if not exists video_upload_sessions_user_status_idx on video_upload_sessions(user_id, status, updated_at)"),
+    env.DB.prepare("create index if not exists video_upload_sessions_status_expires_idx on video_upload_sessions(status, expires_at)")
   ]);
   await seedDefaultVideoCategories(env, { hadVideoCategoriesTable });
   videoSchemaReady = true;
@@ -5854,6 +5907,24 @@ async function runPeriodicDataCleanup(env) {
       `).bind(
         new Date(
           now.getTime() - AGENT_ARTICLE_RECEIPT_RETENTION_DAYS * 24 * 60 * 60 * 1000
+        ).toISOString(),
+        DATA_CLEANUP_DELETE_LIMIT
+      )
+    );
+  }
+  if (await tableExists(env, "agent_video_receipts")) {
+    statements.push(
+      env.DB.prepare(`
+        delete from agent_video_receipts
+        where rowid in (
+          select rowid from agent_video_receipts
+          where created_at < ?
+          order by created_at asc
+          limit ?
+        )
+      `).bind(
+        new Date(
+          now.getTime() - AGENT_VIDEO_RECEIPT_RETENTION_DAYS * 24 * 60 * 60 * 1000
         ).toISOString(),
         DATA_CLEANUP_DELETE_LIMIT
       )
@@ -7281,6 +7352,116 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-08-09-game-video-mcp-candidate',
+        '2026-08-09-game-video-mcp-candidate',
+        'site-updates',
+        '["网站更新","AI 能力","游戏","视频区","MCP","安全"]',
+        '', 'published', 0, 0,
+        '2026-08-09T09:30:00.000Z',
+        '2026-08-09T09:30:00.000Z',
+        '2026-08-09T09:30:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-08-09-game-video-mcp-candidate", {
+      zh: {
+        title: "游戏浏览器接管与视频 MCP 候选进入验收",
+        summary: "本地候选已为 2048、Hextris、A Dark Room 与人生重开补齐语义浏览器 bridge，并准备站长 OAuth 下的配对、观察、动作、暂停与关闭工具；视频第一阶段只管理并原子发布 YouTube／Bilibili 外链记录。新 Worker 尚未部署或生产验收，Kittens Game 与真实视频文件上传仍不开放。",
+        content_markdown: `# 游戏浏览器接管与视频 MCP 候选进入验收
+
+仓库中的下一阶段能力已经形成一套本地候选，但尚未部署到正式 Worker，也没有完成生产 OAuth、Durable Object 和真实浏览器闭环验收。
+
+## 游戏浏览器接管候选
+
+- 2048、Hextris、A Dark Room 与人生重开现在各自提供受审计的语义 bridge。AI 只能使用页面在当前 revision 明确给出的不透明 \`actionId\`，不能提交选择器、脚本、原始按键、坐标、URL 或任意 DOM 指令。
+- 候选远程工具覆盖 \`game_browser_pair\`、\`game_browser_observe\`、\`game_browser_actions\`、\`game_browser_act\`、\`game_browser_pause\` 与 \`game_browser_close\`。它们要求独立 \`games:play\` scope、当前管理员复核、一次性浏览器配对和 revision CAS；页面一次只接受一个待处理命令，并向玩家提供可见的锁定、暂停、收回和关闭控制。
+- 这些工具目前仍没有加入 \`availableTransports\`。只有新 Worker 部署、生产 OAuth 同意、Durable Object 中继和真实浏览器全链路验收全部完成后，才能对外宣告可用。
+- Kittens Game 继续保持 \`NO_AGENT\`：WET PAWS LICENSE 需要先取得明确许可或法律确认，不能因为其他四款游戏已经接入就绕过许可证边界。
+
+## 视频 MCP 第一阶段
+
+候选视频工具提供管理列表、单条读取、原子发布、CAS 更新、元数据刷新和确认删除，只接受 YouTube、Bilibili 与 b23.tv 的外链记录。发布、更新和删除继续使用唯一 \`operationId\`、持久幂等收据、审计和当前管理员复核；更新／删除要求 \`expectedUpdatedAt\`，删除还要求字面值 \`confirm: true\`。
+
+这不是视频文件托管。远程 MCP 不读取本机路径、Base64、原始字节或 MCP 客户端所在机器的文件；真实文件上传尚未配置。后续若启用托管上传，必须另建私有 R2 二进制数据面和独立的分片、配额、扫描、提交与清理协议。
+
+## 共享 Quick Transfer 治理版本
+
+这次共享 \`lib/capabilities/registry.mjs\` 变化命中 Quick Transfer 的受管路径，因此子项目按规则从 v1.0.8 精确升至 v1.0.9，并同步页面可见版本与懒加载缓存。该升版只记录共享能力面的治理影响；互传房间、口令派生、AES-GCM 文字、私有 R2 文件、配额、Multipart、鉴权和发布完成后 24 小时生命周期均未改变。
+
+## 上线边界
+
+2026-08-09 已通过的九工具知识库验收只绑定历史 Worker bundle \`fa295db6-302a-4a20-a2b1-ffe1ddafd75b\`，不能覆盖这次候选。当前结论仅表示仓库实现进入本地检查；在 D1 迁移、新 Worker 发布、生产 OAuth、DO 配对和真实浏览器操作／暂停／关闭闭环完成前，游戏远程工具和视频管理工具都不能标记为生产可用。`
+      },
+      en: {
+        title: "Browser Game Control and Video MCP Candidate Enters Acceptance",
+        summary: "The local candidate adds semantic browser bridges for 2048, Hextris, A Dark Room, and Life Restart, plus owner-OAuth pairing, observation, action, pause, and close tools. Video phase one only manages and atomically publishes YouTube/Bilibili external-link records. The new Worker is not deployed or production-accepted; Kittens Game and real video-file upload remain unavailable.",
+        content_markdown: `# Browser Game Control and Video MCP Candidate Enters Acceptance
+
+The repository now contains a local candidate for the next capability phase. It has not been deployed to the production Worker and has not completed production OAuth, Durable Object, or real-browser end-to-end acceptance.
+
+## Browser game-control candidate
+
+- 2048, Hextris, A Dark Room, and Life Restart now each expose an audited semantic bridge. AI clients may use only opaque \`actionId\` values offered by the page at the current revision; selectors, scripts, raw keys, coordinates, URLs, and arbitrary DOM commands are rejected.
+- Candidate remote tools cover \`game_browser_pair\`, \`game_browser_observe\`, \`game_browser_actions\`, \`game_browser_act\`, \`game_browser_pause\`, and \`game_browser_close\`. They require a separate \`games:play\` scope, a current administrator recheck, one-time browser pairing, and revision CAS. The page accepts only one pending command at a time and gives the player visible lock, pause, take-back, and close controls.
+- These tools are not yet present in \`availableTransports\`. They can be declared available only after the new Worker is deployed and production OAuth consent, Durable Object relay, and real-browser end-to-end acceptance all pass.
+- Kittens Game remains \`NO_AGENT\`. Its WET PAWS LICENSE requires explicit permission or legal confirmation, and the four other bridges do not justify bypassing that boundary.
+
+## Video MCP phase one
+
+The candidate video tools provide management list/get, atomic publish, CAS update, metadata refresh, and confirmed delete for YouTube, Bilibili, and b23.tv external-link records only. Publish, update, and delete retain unique \`operationId\` values, durable idempotency receipts, audit records, and a current administrator recheck. Update/delete require \`expectedUpdatedAt\`, and delete also requires literal \`confirm: true\`.
+
+This is not hosted video-file upload. The remote MCP does not read local paths, Base64, raw bytes, or files from the MCP client's machine, and true file upload is not configured. A future hosted-upload phase needs a separate private R2 binary data plane with bounded multipart, quota, scanning, commit, and cleanup protocols.
+
+## Shared Quick Transfer governance version
+
+The shared \`lib/capabilities/registry.mjs\` change falls within Quick Transfer's governed paths, so the subproject advances exactly from v1.0.8 to v1.0.9 and refreshes its visible version and lazy-load cache chain. This patch records governance impact from the shared capability surface only; rooms, password derivation, AES-GCM text, private R2 files, quotas, multipart, authorization, and the 24-hour post-publication lifecycle are unchanged.
+
+## Release boundary
+
+The nine-tool knowledge acceptance completed on 2026-08-09 applies only to historical Worker bundle \`fa295db6-302a-4a20-a2b1-ffe1ddafd75b\`; it cannot cover this candidate. The current result means only that the repository implementation has entered local checks. Game remote tools and video management tools must not be marked production-available until the D1 migration, new Worker deployment, production OAuth, DO pairing, and real-browser act/pause/close lifecycle all pass.`
+      },
+      ja: {
+        title: "ブラウザーゲーム操作と動画 MCP 候補が検証段階へ",
+        summary: "ローカル候補では 2048、Hextris、A Dark Room、Life Restart に意味操作ブラウザーブリッジを追加し、所有者 OAuth によるペアリング、観察、操作、停止、終了ツールを準備しました。動画第1段階は YouTube／Bilibili 外部リンク記録の管理と原子的公開だけです。新 Worker は未展開・本番未検証で、Kittens Game と実動画ファイルのアップロードは利用できません。",
+        content_markdown: `# ブラウザーゲーム操作と動画 MCP 候補が検証段階へ
+
+次段階の機能はリポジトリ内のローカル候補としてまとまりましたが、本番 Worker には未展開で、本番 OAuth、Durable Object、実ブラウザーのエンドツーエンド検証も未完了です。
+
+## ブラウザーゲーム操作候補
+
+- 2048、Hextris、A Dark Room、Life Restart は、それぞれ監査可能な意味操作ブリッジを備えます。AI が使えるのは現在の revision でページが提示した不透明な \`actionId\` だけで、セレクター、スクリプト、生キー入力、座標、URL、任意の DOM 命令は受け付けません。
+- 候補のリモートツールは \`game_browser_pair\`、\`game_browser_observe\`、\`game_browser_actions\`、\`game_browser_act\`、\`game_browser_pause\`、\`game_browser_close\` です。独立した \`games:play\` scope、現在の管理者権限再確認、1回限りのブラウザーペアリング、revision CAS を要求します。ページは待機中コマンドを1件に制限し、プレイヤーにロック、停止、操作の取り戻し、終了を明示します。
+- これらはまだ \`availableTransports\` に含まれません。新 Worker の展開、本番 OAuth 同意、Durable Object 中継、実ブラウザーの全工程検証がすべて完了してから利用可能と宣言できます。
+- Kittens Game は引き続き \`NO_AGENT\` です。WET PAWS LICENSE について明示的な許可または法的確認が必要で、ほか4作品の対応を理由にこの境界を迂回できません。
+
+## 動画 MCP 第1段階
+
+候補の動画ツールは、YouTube、Bilibili、b23.tv の外部リンク記録だけを対象に、管理一覧・取得、原子的公開、CAS 更新、メタデータ更新、確認付き削除を提供します。公開・更新・削除では一意な \`operationId\`、永続的な冪等レシート、監査、現在の管理者権限再確認を維持し、更新・削除には \`expectedUpdatedAt\`、削除にはさらにリテラルの \`confirm: true\` が必要です。
+
+これは動画ファイルのホスティングではありません。リモート MCP はローカルパス、Base64、生バイト、MCP クライアント端末上のファイルを読み取らず、実ファイルアップロードも未設定です。将来ホスト型アップロードを有効にする場合は、分割、容量、検査、確定、消去を制御する独立した非公開 R2 バイナリデータ面が必要です。
+
+## Quick Transfer の共有ガバナンス版
+
+共有 \`lib/capabilities/registry.mjs\` の変更は Quick Transfer の管理対象パスに含まれるため、子プロジェクトを規則どおり v1.0.8 から v1.0.9 へ正確に更新し、画面上の版表示と遅延読込キャッシュも同期します。これは共有機能面のガバナンス影響だけを記録する更新であり、部屋、合言葉の導出、AES-GCM テキスト、非公開 R2 ファイル、容量制限、Multipart、認可、公開完了後24時間のライフサイクルは変わりません。
+
+## リリース境界
+
+2026-08-09 に完了した9ツールの知識ベース検証は、過去の Worker bundle \`fa295db6-302a-4a20-a2b1-ffe1ddafd75b\` だけに適用され、この候補を保証しません。現時点の結論はリポジトリ実装がローカル検査へ入ったということだけです。D1 migration、新 Worker 展開、本番 OAuth、DO ペアリング、実ブラウザーでの操作・停止・終了の全工程に合格するまで、ゲームのリモートツールと動画管理ツールを本番利用可能としてはいけません。`
+      }
+    }, "2026-08-09T09:30:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,

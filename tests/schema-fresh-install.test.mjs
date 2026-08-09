@@ -27,6 +27,7 @@ const japaneseAgentProgressUpdateId = "seed-update-2026-08-06-japanese-agent-pro
 const hextrisAgentUpdateId = "seed-update-2026-08-07-hextris-agent";
 const lifeRestartAgentUpdateId = "seed-update-2026-08-07-life-restart-agent";
 const remoteMcpOauthUpdateId = "seed-update-2026-08-07-remote-mcp-oauth";
+const gameVideoMcpCandidateUpdateId = "seed-update-2026-08-09-game-video-mcp-candidate";
 
 test("D1 schema initializes an empty database and remains idempotent", () => {
   const db = new DatabaseSync(":memory:");
@@ -124,6 +125,23 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       db.prepare("select count(*) as count from article_translations where article_id = ?").get(remoteMcpOauthUpdateId).count,
       3
     );
+    assert.equal(
+      db.prepare("select count(*) as count from articles where article_id = ? and category = 'site-updates'").get(gameVideoMcpCandidateUpdateId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(gameVideoMcpCandidateUpdateId).count,
+      3
+    );
+    const gameVideoMcpCandidateTranslations = db.prepare(
+      "select lang, content_markdown from article_translations where article_id = ? order by lang"
+    ).all(gameVideoMcpCandidateUpdateId);
+    assert.deepEqual(gameVideoMcpCandidateTranslations.map(({ lang }) => lang), ["en", "ja", "zh"]);
+    for (const { content_markdown: contentMarkdown } of gameVideoMcpCandidateTranslations) {
+      assert.match(contentMarkdown, /Quick Transfer/);
+      assert.match(contentMarkdown, /v1\.0\.8/);
+      assert.match(contentMarkdown, /v1\.0\.9/);
+    }
     const trafficSettings = JSON.parse(
       db.prepare("select value from site_runtime_state where key = 'traffic_control_settings_v1'").get().value
     );
@@ -133,7 +151,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260809-remote-mcp-oauth-r2"
+      "20260809-game-video-mcp-candidate-r2"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),
@@ -183,6 +201,23 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       ]
     );
     assert.deepEqual(
+      db.prepare("pragma table_info(agent_video_receipts)").all().map((column) => column.name),
+      [
+        "receipt_id", "user_id", "operation_id", "action", "payload_hash",
+        "video_id", "response_json", "created_at"
+      ]
+    );
+    assert.deepEqual(
+      db.prepare("pragma table_info(video_upload_sessions)").all().map((column) => column.name),
+      [
+        "upload_session_id", "user_id", "operation_id", "payload_hash", "video_id",
+        "filename", "mime_type", "size_bytes", "sha256", "upload_token_hash",
+        "object_key", "r2_upload_id", "part_size_bytes", "expected_parts",
+        "uploaded_bytes", "status", "expires_at", "created_at", "updated_at",
+        "completed_at", "aborted_at", "last_error"
+      ]
+    );
+    assert.deepEqual(
       db.prepare("pragma table_info(mcp_oauth_grants)").all().map((column) => column.name),
       [
         "grant_ref", "user_id", "client_id", "client_name", "resource",
@@ -225,10 +260,13 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
           'agent_access_tokens_user_idx',
           'agent_access_tokens_expires_idx',
           'agent_audit_created_idx',
-          'agent_article_receipts_created_idx'
+          'agent_article_receipts_created_idx',
+          'agent_video_receipts_created_idx',
+          'video_upload_sessions_user_status_idx',
+          'video_upload_sessions_status_expires_idx'
         )
       `).get().count,
-      6
+      9
     );
     assert.equal(db.prepare("select count(*) as count from agent_access_tokens").get().count, 0);
     assert.deepEqual(

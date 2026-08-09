@@ -17,6 +17,9 @@ Local implementation and changes:
 
 - The site capability layer adds an isolated deterministic state machine,
   bounded persistent state, semantic actions, and current-life replay checks.
+- A browser-side semantic bridge added on 2026-08-09 maps only audited,
+  named Laya view controls and progression methods. It does not accept raw
+  keys, coordinates, selectors, or scripts.
 - The adapter loads only the pinned Chinese Custom-mode data bytes whose
   SHA-256 values are declared in the adapter source.
 - The full upstream MIT license is preserved in `source/LICENSE.txt`.

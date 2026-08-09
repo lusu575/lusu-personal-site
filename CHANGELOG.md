@@ -4,6 +4,12 @@
 
 ## 2026-08-09
 
+- 新增“游戏浏览器接管 + 视频 MCP 第一阶段”的本地候选，明确不等同生产上线：2048、Hextris、A Dark Room 与人生重开补齐同一受审计语义 bridge，页面只接受当前 revision 返回的不透明 `actionId`，拒绝选择器、脚本、原始按键、坐标、URL 与任意 DOM 指令；候选站长 OAuth 工具为 `game_browser_pair`／`observe`／`actions`／`act`／`pause`／`close`，要求独立 `games:play`、管理员实时复核、一次性配对、revision CAS、单一 pending command 和玩家可见的锁定／暂停／收回／关闭。对应 registry 条目继续保持空 `availableTransports`，必须完成新 Worker 发布、Production OAuth、Durable Object 中继与真实浏览器闭环后才能标记远程可用。Kittens Game 因 WET PAWS LICENSE 保持 `NO_AGENT`，未经明确许可或法律确认不得接入。
+- 游戏动作工具现在把调用结果审计纳入完成语义：`success`、`pending` 与 `error` 必须分别持久记录，结果审计失败时稳定返回 `MCP_OAUTH_AUDIT_FAILED`，绝不能向 AI 报告动作成功。相同 `clientActionId` 的安全重试继续命中 Durable Object 收据，不会让浏览器重复执行已经完成的动作。
+- 视频第一阶段候选只读取／管理 YouTube／Bilibili／b23.tv 外链记录：新增候选公开读 `videos_list`／`video_get`，并提供站长管理列表／详情、原子发布、CAS 更新、元数据刷新和确认删除。八项工具都未部署，视频 read 的远程 `availableTransports` 也继续为空，既有生产 `site_capabilities` 仍只发现四项文章能力；写操作复用管理员复核、D1 审计、持久 `operationId` 幂等收据，更新／删除要求 `expectedUpdatedAt`，删除另要求 `confirm: true`。真实视频文件上传仍未配置，远程 MCP 明确不读取本机路径、Base64、原始字节或客户端文件；后续托管上传须另建私有 R2 二进制数据面和独立分片／配额／扫描／提交／清理协议。
+- 新增三语 `site-updates` 候选记录 `seed-update-2026-08-09-game-video-mcp-candidate`，同步 `js/data/content.mjs` 完整 fallback、Home 最新五条无正文投影、Functions seed 与 schema seed；公开 API、文章 seed、主模块与 Home 数据缓存版本更新为 `20260809-game-video-mcp-candidate-r2`。共享 `lib/capabilities/registry.mjs` 命中 Quick Transfer 受管路径，因此该子项目按治理规则从 v1.0.8 精确升至 v1.0.9，并同步 fragment 可见版本、工具目录版本及其真实懒加载缓存链；互传协议、房间、口令、AES-GCM、私有 R2、配额、Multipart、鉴权和 24 小时生命周期均未改变，在线画板版本与独立缓存不滚动。该记录明确说明历史九工具生产验收只绑定 Worker bundle `fa295db6-302a-4a20-a2b1-ffe1ddafd75b`，本地候选尚未部署或生产验收。
+- 本地文档／seed 收口验证通过：`article-seed-bindings`、`interface-audit-fixes`、`schema-fresh-install`、`public-assets-network` 与 `d1-remote-migration` 共 27／27 项通过，`node scripts/build-check.mjs` 与 `git diff --check` 通过。该结果只证明当前工作树的本地候选与四路 seed 一致，不替代 Production D1、Worker、OAuth、DO 或真实浏览器验收。
+- 修复独立 Hextris Agent 的 Windows 发布门禁：完整 GPLv3 文本与两份副本仍按固定 SHA-256 和逐字一致性校验，但测试先只把 Git checkout 可能产生的 CRLF 规范成 LF；不改许可证正文，也不允许其他字节差异借换行兼容绕过完整性检查。
 - 完成站长远程 MCP 的真实生产验收：站长在浏览器中完成 OAuth 同意后，版本 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` 依次通过 9 个工具发现、4 项公开只读能力发现、文章原子发布、相同载荷幂等重放、管理列表／详情回读、`expectedUpdatedAt` CAS 更新、zh／en／ja 公开回读、`confirm: true` 永久删除、三语删除后 404 与令牌撤销；临时文章、动态客户端和活动点检授权均已清理。生产问题修复同时固化重复同意 POST 的完成收据回放、每个 flow 独立的 CSRF Cookie、与收据同寿命的短期 Cookie，以及只向精确注册 callback origin 放行的 CSP `form-action`。后续每个新生产 Worker bundle 仍必须重新跑完整真实闭环，不能复用本次历史证据。
 
 ## 2026-08-07

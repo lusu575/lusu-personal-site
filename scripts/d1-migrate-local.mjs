@@ -239,18 +239,18 @@ export async function migrateLocalD1() {
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260809-remote-mcp-oauth-r2'
+    where key = 'article_seed_version' and value = '20260809-game-video-mcp-candidate-r2'
     union all
-    select 'remote-mcp-oauth-update-article',
+    select 'game-video-mcp-candidate-update-article',
       case when count(*) = 1 then 1 else 0 end
     from articles
-    where article_id = 'seed-update-2026-08-07-remote-mcp-oauth'
-      and slug = '2026-08-07-remote-mcp-oauth'
+    where article_id = 'seed-update-2026-08-09-game-video-mcp-candidate'
+      and slug = '2026-08-09-game-video-mcp-candidate'
       and category = 'site-updates'
       and status = 'published'
-      and published_at = '2026-08-09T01:00:00.000Z'
+      and published_at = '2026-08-09T09:30:00.000Z'
     union all
-    select 'remote-mcp-oauth-update-translations',
+    select 'game-video-mcp-candidate-update-translations',
       case
         when count(*) = 3
           and count(distinct lang) = 3
@@ -263,7 +263,7 @@ export async function migrateLocalD1() {
         then 1 else 0
       end
     from article_translations
-    where article_id = 'seed-update-2026-08-07-remote-mcp-oauth'
+    where article_id = 'seed-update-2026-08-09-game-video-mcp-candidate'
     union all
     select 'whiteboard-agent-images-update-article', count(*)
     from articles where article_id = 'seed-update-2026-08-06-whiteboard-agent-images'

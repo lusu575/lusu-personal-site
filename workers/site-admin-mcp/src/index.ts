@@ -5,6 +5,7 @@ import {
 
 import { oauthDefaultHandler } from "./auth-handler";
 import { oauthApiHandler } from "./article-tools";
+import { handleBrowserGameRelayRequest } from "./browser-game-handler";
 import {
   MAX_CLIENT_REGISTRATION_BYTES,
   consumeClientRegistrationAttempt,
@@ -15,6 +16,7 @@ import {
   AUTHORIZE_PATH,
   CANONICAL_ISSUER,
   CLIENT_REGISTRATION_TTL_SECONDS,
+  GAME_RELAY_PATH,
   MCP_PATH,
   MCP_RESOURCE,
   OWNER_SCOPES,
@@ -55,7 +57,7 @@ export const oauthProviderOptions = {
   resourceMetadata: {
     resource: MCP_RESOURCE,
     authorization_servers: [CANONICAL_ISSUER],
-    scopes_supported: ["content:read"],
+    scopes_supported: [...OWNER_SCOPES],
     bearer_methods_supported: ["header"],
     resource_name: "LuSu site owner MCP"
   },
@@ -87,6 +89,9 @@ const worker = {
     try {
       assertTrustedRequestBoundary(request);
       const pathname = new URL(request.url).pathname;
+      if (pathname === GAME_RELAY_PATH) {
+        return await handleBrowserGameRelayRequest(request, env);
+      }
       if (!ROUTED_PATHS.has(pathname)) {
         return jsonResponse({ error: "Not found.", code: "NOT_FOUND" }, 404);
       }
@@ -142,3 +147,4 @@ async function prepareClientRegistrationRequest(
 }
 
 export default worker;
+export { GameRelaySession } from "./game-relay";

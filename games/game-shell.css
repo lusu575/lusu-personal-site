@@ -87,7 +87,7 @@ input {
 
 .game-frame-card {
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto minmax(0, 1fr);
   border: 3px solid #0645b7;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.94);
@@ -359,6 +359,136 @@ input {
   font-weight: 900;
 }
 
+.game-agent-panel {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(280px, 1.2fr) auto;
+  gap: 8px 12px;
+  align-items: center;
+  min-width: 0;
+  padding: 8px 10px;
+  border-bottom: 2px solid var(--line);
+  background: linear-gradient(180deg, #fffef4, #fff3c5);
+}
+
+.game-agent-panel:focus-visible {
+  outline: 3px solid #ffdc3d;
+  outline-offset: -3px;
+}
+
+.game-agent-heading {
+  display: contents;
+}
+
+.game-agent-heading h2,
+.game-agent-heading p,
+.game-agent-status {
+  margin: 0;
+}
+
+.game-agent-heading h2 {
+  color: #6b3c00;
+  font-size: 15px;
+}
+
+.game-agent-heading p,
+.game-agent-status {
+  margin-top: 2px;
+  color: #765a32;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.game-agent-status {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 800;
+}
+
+.game-agent-code-box {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: auto minmax(260px, auto) minmax(200px, 1fr) auto;
+  gap: 5px 10px;
+  align-items: center;
+  padding: 7px 8px;
+  border: 2px inset #d7b95d;
+  background: #fff;
+  font-size: 12px;
+}
+
+.game-agent-code-box[hidden] {
+  display: none;
+}
+
+.game-agent-code-box code {
+  user-select: all;
+  color: #0c3d88;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  overflow-wrap: anywhere;
+}
+
+.game-agent-code-expiry {
+  color: #765a32;
+  font-weight: 800;
+}
+
+.game-agent-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.game-agent-controls .tool-button {
+  min-height: 44px;
+  padding: 7px 10px;
+  font-size: 12px;
+  white-space: normal;
+}
+
+.game-agent-controls .game-agent-take-back {
+  border-color: #9d2d24;
+  color: #7f1d18;
+  background: linear-gradient(180deg, #fff8f7 0%, #ffd4cf 48%, #ed8d82 100%);
+}
+
+.game-agent-controls button:disabled {
+  border-color: #8b98ab;
+  color: #687386;
+  background: linear-gradient(180deg, #f4f5f6, #d7dce3);
+  cursor: not-allowed;
+}
+
+.game-agent-frame-wrap {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.game-agent-input-shield {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12px;
+  color: #fff;
+  background: rgba(4, 22, 66, 0.14);
+  font-size: 13px;
+  font-weight: 900;
+  text-shadow: 1px 1px 0 #06357d;
+  pointer-events: auto;
+}
+
+.game-agent-frame-wrap.is-agent-controlled .game-agent-input-shield {
+  display: flex;
+}
+
 .game-frame {
   display: block;
   width: 100%;
@@ -419,6 +549,22 @@ input {
     max-height: 72px;
     overflow: auto;
     font-size: 12px;
+  }
+
+  .game-agent-panel {
+    grid-template-columns: 1fr auto;
+    gap: 6px 8px;
+    max-height: 156px;
+    overflow: auto;
+    padding: 6px 8px;
+  }
+
+  .game-agent-heading {
+    display: block;
+  }
+
+  .game-agent-code-box {
+    grid-template-columns: 1fr;
   }
 
 }
@@ -529,6 +675,21 @@ input {
     padding: 6px 8px;
   }
 
+  .game-agent-panel {
+    grid-template-columns: 1fr;
+    max-height: 184px;
+  }
+
+  .game-agent-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
+  }
+
+  .game-agent-controls .tool-button {
+    width: 100%;
+  }
+
 }
 
 @media (pointer: coarse) {
@@ -538,6 +699,10 @@ input {
   .back-link,
   .cloud-login input,
   .cloud-actions .tool-button {
+    min-height: 44px;
+  }
+
+  .game-agent-controls .tool-button {
     min-height: 44px;
   }
 }
@@ -600,6 +765,26 @@ input {
   .license-panel {
     max-height: 36px;
     padding: 5px 8px;
+  }
+
+  .game-agent-panel {
+    grid-template-columns: minmax(200px, 1fr) minmax(250px, 1.2fr) auto;
+    max-height: 96px;
+    padding: 5px 7px;
+  }
+
+  .game-agent-heading p {
+    display: none;
+  }
+
+  .game-agent-code-box {
+    position: absolute;
+    z-index: 6;
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    grid-template-columns: auto minmax(250px, auto) 1fr auto;
+    box-shadow: 3px 4px 0 rgba(0, 35, 120, 0.25);
   }
 
 }

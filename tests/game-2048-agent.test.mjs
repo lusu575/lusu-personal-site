@@ -195,7 +195,7 @@ test("2048 browser entry retains save compatibility and installs a frozen agent 
   assert.match(source, /from "\.\/engine\.mjs\?v=20260806-whiteboard-2048-agent-r1"/);
   assert.doesNotMatch(source, /\.\.\/\.\.\/\.\.\/lib\//);
   assert.doesNotMatch(source, /querySelector\(request|eval\(|new Function\(/);
-  assert.match(html, /<script type="module" src="game\.js\?v=20260806-whiteboard-2048-agent-r1"><\/script>/);
+  assert.match(html, /<script type="module" src="game\.js\?v=20260809-browser-game-agent-v1"><\/script>/);
 });
 
 function stateWithGrid(grid, overrides = {}) {

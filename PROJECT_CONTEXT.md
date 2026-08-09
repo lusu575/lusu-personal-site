@@ -1,5 +1,16 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-09 游戏浏览器接管与视频 MCP 本地候选
+
+- 当前仓库候选为 2048、Hextris、A Dark Room 与人生重开补齐受审计的浏览器语义 bridge。页面只把当前 revision 的不透明 `actionId` 交给 Agent；禁止选择器、脚本、原始按键、坐标、URL、任意 DOM 调用或原始存档注入。共享浏览器宿主负责显式玩家配对、一次只保留一个 pending command、revision CAS、超时和断线失效，并提供可见的锁定、暂停、收回控制与关闭入口；玩家暂停／收回／关闭或页面断线后必须立即释放控制，AI 不能自行恢复。
+- 下一版站长 OAuth Worker 的本地候选注册 `game_browser_pair`、`game_browser_observe`、`game_browser_actions`、`game_browser_act`、`game_browser_pause` 与 `game_browser_close`。所有工具要求独立非默认 `games:play` scope、active grant 与当前管理员角色；中继状态由 Durable Object 承担，配对码一次性、短时、绑定站长和 OAuth client。registry 中 `games.browser.*` 的目标 transport 包含远程 MCP／browser adapter，但 `availableTransports` 继续为空：未完成新 Worker 部署、Production OAuth 同意、DO 配对和真实浏览器完整闭环前，不得对外宣称可用。
+- 游戏命令的持久 outcome 审计属于命令完成语义，而不只是附加日志。调用尝试与最终结果必须分开记录，`success`、`pending`、`error` 使用各自状态；结果审计写入失败时工具必须返回 `MCP_OAUTH_AUDIT_FAILED`，不得把动作报告为成功。调用方可用同一 `clientActionId` 重试，DO 收据会复用既有结果而不会重复执行浏览器动作。
+- Kittens Game 因 WET PAWS LICENSE 继续保持 `agentControl.enabled = false`／`NO_AGENT`。除非取得上游明确许可或完成法律确认，不得为它增加语义 bridge、配对或任何 Agent 控制；另外四款游戏的许可和实现不能用于推导 Kittens 可控。
+- 视频 MCP 第一阶段的本地候选只覆盖 YouTube、Bilibili 与 b23.tv 外链记录：新增候选公开读 `videos_list`／`video_get`，并准备站长管理列表／详情、原子发布、CAS 更新、受限元数据刷新和确认删除。八项工具都未部署；`content.videos.list/get` 也继续不把 `remote-mcp` 加入 `availableTransports`，因此既有生产 `site_capabilities` 仍只发现四项文章能力。发布／更新／删除继续要求当前管理员复核、唯一 `operationId`、canonical payload hash、持久 D1 幂等收据与审计；更新／删除携带 `expectedUpdatedAt`，删除另需 `confirm: true`。这不是视频文件上传或托管，远程 MCP 不接受也不读取本机路径、Base64、原始字节或客户端文件。
+- schema 中的 `agent_video_receipts` 用于候选视频原子操作的持久收据；`video_upload_sessions` 只为将来独立文件数据面保留持久结构，不表示上传 API、R2 bucket 或远程 MCP 上传已经配置。真实文件上传必须另建私有 R2 二进制数据面，完成分片、内容哈希、配额、扫描、提交、超时中止和孤儿清理后再改变 registry 的空 `availableTransports`。
+- 本阶段仍是本地候选，未提交、未部署、未做 Production D1 migration，也没有生产 OAuth／DO／真实浏览器验收。2026-08-09 通过的九工具知识库闭环只绑定既有 Worker bundle `fa295db6-302a-4a20-a2b1-ffe1ddafd75b`，不能作为新候选的验收证据。公开候选记录为 `seed-update-2026-08-09-game-video-mcp-candidate`，公开 API／文章 seed／主模块与 Home 数据缓存版本为 `20260809-game-video-mcp-candidate-r2`。共享能力注册表命中 Quick Transfer 受管路径，因此 Quick Transfer 从 1.0.8 精确升至 1.0.9，并同步 fragment、工具目录与懒加载缓存链；这只是共享 registry 治理升版，未改变互传协议、房间、口令、加密、私有 R2、配额、Multipart、鉴权或 24 小时生命周期。在线画板版本与独立缓存不随本候选滚动。
+- Windows checkout 可能只把 GPL 文本换行为 CRLF。Hextris Agent 的许可证门禁先把 CRLF 规范为 LF，再核对固定 GPLv3 SHA-256、完整标题和 Agent／浏览器 source 两份全文一致；除换行外的任何正文变化仍会失败关闭。
+
 ## 2026-08-09 站长远程 MCP OAuth 生产写闭环验收
 
 - 独立生产 Worker `lusu-site-admin-mcp` 已部署，canonical resource 为 `https://lusu575.com/mcp`，2026-08-09 完成真实站长浏览器 OAuth 验收的 version ID 为 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b`。它用标准 OAuth 2.1 authorization code + PKCE S256、精确 RFC 8707 resource、动态注册／CIMD 和 `content:read`／`content:write`／`content:delete` 最小 scope 暴露九个工具：`site_capabilities`、`content_list`、`content_search`、`article_get`、`article_manage_list`、`article_manage_get`、`article_publish`、`article_update`、`article_delete`。它不接受站点设备 Bearer，不传递 `lusu_session`，也不把 OAuth token、code、state、cookie、IP、回调或文章正文写入日志。

@@ -31,8 +31,17 @@ The MCP surface currently contains:
 - `article_get`: reads one bounded published article by public slug.
 - `lusu://articles/{slug}{?lang}`: resource template for one published article.
 
-The reusable registrar contributes only the four tools above to the production
-OAuth server; the standalone resource template is not included there. The five
+The repository's next-bundle candidate also implements two bounded public video
+reads, `videos_list` and `video_get`, over published YouTube/Bilibili external-link
+records. They are **not deployed or production-accepted** and
+`content.videos.list/get.availableTransports` intentionally does not include
+`remote-mcp`; the accepted production `site_capabilities` therefore still
+discovers only the four article capabilities above.
+
+The accepted reusable registrar contributes only the four article tools above
+to the production OAuth server; the standalone resource template is not
+included there. A future reviewed bundle may add the two video reads only after
+fresh OAuth and production readback acceptance. The five
 production owner tools (`article_manage_list`, `article_manage_get`,
 `article_publish`, `article_update`, and `article_delete`) remain implemented in
 `workers/site-admin-mcp/` and must never be moved into this unauthenticated
@@ -93,5 +102,6 @@ management reads, CAS update, trilingual readback, confirmed delete/404, and
 grant revocation; its temporary article was deleted. This unauthenticated target
 must never bypass owner consent. Every new production owner Worker bundle must
 repeat the complete real-browser lifecycle rather than reuse that historical
-acceptance. Whole-site remote MCP and browser-game pairing/control remain
-unimplemented.
+acceptance. Browser-game pairing/control and public video reads now have local
+next-bundle candidates, but remain unavailable on the accepted production
+bundle; whole-site remote MCP is still incomplete.

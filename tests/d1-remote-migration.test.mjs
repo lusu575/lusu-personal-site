@@ -254,6 +254,77 @@ test("remote D1 runner fails closed when the MCP OAuth persistence schema is abs
   }
 });
 
+test("remote D1 runner fails closed when the Agent video persistence schema is absent", async () => {
+  const db = new DatabaseSync(":memory:");
+  const events = [];
+  const adapter = createAdapter(db, events);
+  const executeFile = adapter.executeFile;
+  try {
+    adapter.executeFile = async (file) => {
+      await executeFile(file);
+      if (file === "cloudflare/schema-indexes.sql") {
+        db.exec(`
+          drop table agent_video_receipts;
+          drop table video_upload_sessions;
+        `);
+      }
+    };
+
+    await assert.rejects(
+      migrateRemoteD1(adapter),
+      (error) => {
+        const message = String(error?.message || error);
+        for (const item of [
+          "agent-video-receipts-table",
+          "agent-video-receipts-all-columns",
+          "video-upload-sessions-table",
+          "video-upload-sessions-all-columns",
+          "agent-video-receipts-created-index",
+          "video-upload-sessions-user-status-index",
+          "video-upload-sessions-status-expires-index"
+        ]) {
+          assert.match(message, new RegExp(item));
+        }
+        return true;
+      }
+    );
+  } finally {
+    db.close();
+  }
+});
+
+test("remote D1 runner fails closed on an Agent video column or index gap", async () => {
+  const db = new DatabaseSync(":memory:");
+  const events = [];
+  const adapter = createAdapter(db, events);
+  const executeFile = adapter.executeFile;
+  try {
+    adapter.executeFile = async (file) => {
+      await executeFile(file);
+      if (file === "cloudflare/schema-indexes.sql") {
+        db.exec(`
+          alter table video_upload_sessions drop column last_error;
+          drop index agent_video_receipts_created_idx;
+        `);
+      }
+    };
+
+    await assert.rejects(
+      migrateRemoteD1(adapter),
+      (error) => {
+        const message = String(error?.message || error);
+        assert.match(message, /video-upload-sessions-all-columns/);
+        assert.match(message, /agent-video-receipts-created-index/);
+        assert.doesNotMatch(message, /agent-video-receipts-table/);
+        assert.doesNotMatch(message, /video-upload-sessions-table/);
+        return true;
+      }
+    );
+  } finally {
+    db.close();
+  }
+});
+
 test("remote D1 runner replaces the legacy whiteboard partial ban index idempotently", async () => {
   const db = new DatabaseSync(":memory:");
   const events = [];
@@ -345,6 +416,26 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_article_receipts/);
   assert.match(verificationSql, /agent_article_receipts_created_idx/);
   for (const identifier of [
+    "agent_video_receipts",
+    "video_upload_sessions",
+    "agent-video-receipts-all-columns",
+    "video-upload-sessions-all-columns",
+    "agent_video_receipts_created_idx",
+    "video_upload_sessions_user_status_idx",
+    "video_upload_sessions_status_expires_idx"
+  ]) {
+    assert.ok(verificationSql.includes(identifier), `missing remote verification for ${identifier}`);
+  }
+  for (const column of [
+    "receipt_id", "user_id", "operation_id", "action", "payload_hash",
+    "video_id", "response_json", "created_at", "upload_session_id", "filename",
+    "mime_type", "size_bytes", "sha256", "upload_token_hash", "object_key",
+    "r2_upload_id", "part_size_bytes", "expected_parts", "uploaded_bytes",
+    "status", "expires_at", "updated_at", "completed_at", "aborted_at", "last_error"
+  ]) {
+    assert.ok(verificationSql.includes(`'${column}'`), `missing Agent video column ${column}`);
+  }
+  for (const identifier of [
     "mcp_oauth_grants",
     "mcp_oauth_audit_log",
     "mcp_oauth_registration_limits",
@@ -376,7 +467,8 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
-  assert.match(verificationSql, /slug = '2026-08-07-remote-mcp-oauth'/);
+  assert.match(verificationSql, /article_seed_version' and value = '20260809-game-video-mcp-candidate-r2'/);
+  assert.match(verificationSql, /slug = '2026-08-09-game-video-mcp-candidate'/);
   assert.match(verificationSql, /category = 'site-updates'/);
   assert.match(verificationSql, /status = 'published'/);
   assert.match(verificationSql, /count\(distinct lang\) = 3/);

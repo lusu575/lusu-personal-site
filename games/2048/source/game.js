@@ -238,14 +238,19 @@ function inspectPlainJson(root, options) {
       throw new GameProtocolError(`${options.label} contains a non-JSON value.`, "GAME_JSON_INVALID");
     }
     const prototype = Object.getPrototypeOf(value);
-    if (prototype !== Object.prototype && prototype !== Array.prototype && prototype !== null) {
+    const objectTag = Object.prototype.toString.call(value);
+    const isArray = Array.isArray(value);
+    const isCrossRealmPlainObject = !isArray
+      && objectTag === "[object Object]"
+      && (prototype === null || Object.getPrototypeOf(prototype) === null);
+    if (!isArray && !isCrossRealmPlainObject) {
       throw new GameProtocolError(`${options.label} contains a non-plain object.`, "GAME_JSON_INVALID");
     }
     if (ancestors.has(value)) {
       throw new GameProtocolError(`${options.label} contains a cycle.`, "GAME_JSON_INVALID");
     }
     ancestors.add(value);
-    if (Array.isArray(value)) {
+    if (isArray) {
       if (value.length > options.maxNodes) {
         throw new GameProtocolError(`${options.label} contains an oversized array.`, "GAME_JSON_TOO_COMPLEX");
       }
@@ -285,6 +290,7 @@ const langKey = "lusu.2048.lang";
 const adapter = createBrowser2048Adapter();
 const bridgeSessionId = createGameSessionId(adapter.gameId);
 const bridgeDedupe = [];
+let agentControlMode = false;
 
 const dict = {
   zh: {
@@ -361,6 +367,7 @@ function draw() {
 }
 
 function move(direction) {
+  if (agentControlMode) return { status: "noop", reason: "agent-control-active" };
   const outcome = adapter.act(state, { type: "move", direction });
   if (outcome.status !== "applied") return outcome;
   state = outcome.state;
@@ -370,6 +377,7 @@ function move(direction) {
 }
 
 function resetGame() {
+  if (agentControlMode) return { status: "noop", reason: "agent-control-active" };
   const outcome = adapter.act(state, { type: "reset", confirm: true });
   state = outcome.state;
   overlay.hidden = true;
@@ -516,13 +524,19 @@ function safeSetStorageItem(key, value) {
   }
 }
 
+function setAgentControlMode(value) {
+  agentControlMode = value === true;
+  touchStart = null;
+}
+
 const agentBridge = Object.freeze({
   protocolVersion: GAME_AGENT_PROTOCOL_VERSION,
   gameId: adapter.gameId,
   sessionId: bridgeSessionId,
   observe: bridgeObserve,
   actions: bridgeActions,
-  act: bridgeAct
+  act: bridgeAct,
+  setControlMode: setAgentControlMode
 });
 
 window.gamePage = Object.freeze({ save, agent: agentBridge });
@@ -531,6 +545,7 @@ draw();
 
 document.getElementById("new-game").addEventListener("click", resetGame);
 document.getElementById("keep-playing").addEventListener("click", () => {
+  if (agentControlMode) return;
   if (adapter.observe(state).terminal) {
     resetGame();
   } else {
@@ -539,6 +554,7 @@ document.getElementById("keep-playing").addEventListener("click", () => {
 });
 
 window.addEventListener("keydown", (event) => {
+  if (agentControlMode) return;
   const map = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" };
   if (map[event.key]) {
     event.preventDefault();
@@ -548,11 +564,13 @@ window.addEventListener("keydown", (event) => {
 
 let touchStart = null;
 boardEl.addEventListener("touchstart", (event) => {
+  if (agentControlMode) return;
   const touch = event.touches[0];
   touchStart = { x: touch.clientX, y: touch.clientY };
 }, { passive: true });
 
 boardEl.addEventListener("touchend", (event) => {
+  if (agentControlMode) return;
   if (!touchStart) return;
   const touch = event.changedTouches[0];
   const dx = touch.clientX - touchStart.x;

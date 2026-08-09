@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-09-game-video-mcp-candidate",
+      "slug": "2026-08-09-game-video-mcp-candidate",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "游戏", "视频区", "MCP", "安全"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-09T09:30:00.000Z",
+      "updated_at": "2026-08-09T09:30:00.000Z",
+      "published_at": "2026-08-09T09:30:00.000Z",
+      "fallbackOnly": true,
+      "icon": "games",
+      "date": "2026.08.09",
+      "title": {
+        "zh": "游戏浏览器接管与视频 MCP 候选进入验收",
+        "en": "Browser Game Control and Video MCP Candidate Enters Acceptance",
+        "ja": "ブラウザーゲーム操作と動画 MCP 候補が検証段階へ"
+      },
+      "summary": {
+        "zh": "本地候选已为 2048、Hextris、A Dark Room 与人生重开补齐语义浏览器 bridge，并准备站长 OAuth 下的配对、观察、动作、暂停与关闭工具；视频第一阶段只管理并原子发布 YouTube／Bilibili 外链记录。新 Worker 尚未部署或生产验收，Kittens Game 与真实视频文件上传仍不开放。",
+        "en": "The local candidate adds semantic browser bridges for 2048, Hextris, A Dark Room, and Life Restart, plus owner-OAuth pairing, observation, action, pause, and close tools. Video phase one only manages and atomically publishes YouTube/Bilibili external-link records. The new Worker is not deployed or production-accepted; Kittens Game and real video-file upload remain unavailable.",
+        "ja": "ローカル候補では 2048、Hextris、A Dark Room、Life Restart に意味操作ブラウザーブリッジを追加し、所有者 OAuth によるペアリング、観察、操作、停止、終了ツールを準備しました。動画第1段階は YouTube／Bilibili 外部リンク記録の管理と原子的公開だけです。新 Worker は未展開・本番未検証で、Kittens Game と実動画ファイルのアップロードは利用できません。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-07-remote-mcp-oauth",
       "slug": "2026-08-07-remote-mcp-oauth",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "本地 CLI／stdio MCP 可上传、下载并在当前房追加真实图片；生产热修已让精确图片上传与 Yjs 场景更新进入完整 Agent 鉴权，其他来源、路径、方法与 MIME 继续拒绝，远程 MCP 仍未部署。",
         "en": "The local CLI and stdio MCP can upload, download, and append real images in the current room. Production fixes now pass only exact image uploads and Yjs scene updates into full Agent authorization; other origins, paths, methods, and MIME types remain rejected, and remote MCP remains undeployed.",
         "ja": "ローカル CLI／stdio MCP から現在のルームへ実画像をアップロード・取得・追記できます。本番修正により正確な画像アップロードと Yjs シーン更新だけが完全な Agent 認可へ進み、他の送信元・パス・メソッド・MIME は拒否されます。リモート MCP は未展開です。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-06-agent-auth-form-origin",
-      "slug": "2026-08-06-agent-auth-form-origin",
-      "category": "site-updates",
-      "tags": ["网站更新", "AI 能力", "设备授权", "安全", "CLI", "MCP", "临时互传"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-06T12:00:00.000Z",
-      "updated_at": "2026-08-06T12:00:00.000Z",
-      "published_at": "2026-08-06T12:00:00.000Z",
-      "fallbackOnly": true,
-      "icon": "resources",
-      "date": "2026.08.06",
-      "title": {
-        "zh": "AI／CLI 授权确认页恢复正常",
-        "en": "AI and CLI Authorization Forms Restored",
-        "ja": "AI／CLI 認証フォームを復旧"
-      },
-      "summary": {
-        "zh": "修复浏览器点击 Allow 时被 no-referrer 变成 Origin:null 而误拒绝的问题；授权与令牌管理表单恢复，精确同源、登录态和 CSRF 边界不变。",
-        "en": "Fixes browser Allow submissions that no-referrer turned into Origin:null; authorization and token-management forms work again while exact-origin, session, and CSRF checks remain unchanged.",
-        "ja": "no-referrer により Allow 送信の Origin が null となり拒否される問題を修正しました。認証・トークン管理フォームを復旧し、厳密な同一オリジン、セッション、CSRF 検査は維持します。"
       }
     }
   ]

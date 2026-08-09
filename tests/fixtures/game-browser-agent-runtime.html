@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Browser game agent runtime smoke</title>
+</head>
+<body>
+  <iframe id="game" title="runtime smoke"></iframe>
+  <pre id="result">pending</pre>
+  <script type="module">
+    const definitions = {
+      "2048": "/games/2048/source/index.html?lang=en",
+      "hextris": "/games/hextris/source/index.html?lang=en",
+      "a-dark-room": "/games/a-dark-room/source/index.html?lang=en&ignorebrowser=true",
+      "life-restart": "/games/life-restart/source/index.html?language=en-us"
+    };
+    const gameId = new URLSearchParams(location.search).get("game");
+    const frame = document.getElementById("game");
+    const output = document.getElementById("result");
+    if (!definitions[gameId]) {
+      output.textContent = JSON.stringify({ ok: false, error: "unknown-game" });
+    } else {
+      frame.addEventListener("load", async () => {
+        try {
+          const { createBrowserGameAgentHost } = await import("/games/game-agent-host.mjs");
+          const host = await createBrowserGameAgentHost({ frame, gameId, timeoutMs: 20_000 });
+          const before = host.snapshot();
+          host.setControlActive(true);
+          let controlled = host.snapshot();
+          let selected = controlled.actions.find((action) => action.requiresConfirmation !== true);
+          const actionDeadline = Date.now() + 20_000;
+          while (!selected && Date.now() < actionDeadline) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            controlled = host.snapshot();
+            selected = controlled.actions.find((action) => action.requiresConfirmation !== true);
+          }
+          if (!selected) {
+            const gameWindow = frame.contentWindow;
+            const currentView = gameWindow.$ui?.currentView;
+            throw new Error(`no-safe-action:${JSON.stringify({
+              revision: controlled.revision,
+              observation: controlled.observation,
+              actions: controlled.actions,
+              currentViewConstructor: currentView?.constructor?.name,
+              currentViewKeys: Object.keys(currentView || {}).sort().slice(0, 100),
+              currentViewChildren: Array.from(currentView?._childs || []).map((child) => child?.name).filter(Boolean).slice(0, 100)
+            })}`);
+          }
+          const result = host.act({
+            expectedRevision: controlled.revision,
+            clientActionId: `runtime.${gameId}:1`,
+            actionId: selected.actionId
+          });
+          const after = host.snapshot();
+          host.setControlActive(false);
+          output.textContent = JSON.stringify({
+            ok: true,
+            gameId,
+            providerFrozen: Object.isFrozen(frame.contentWindow.gamePage.agent),
+            semanticId: selected.id,
+            actionIdOpaque: /^act_[A-Za-z0-9_-]{22}$/.test(selected.actionId),
+            beforeRevision: before.revision,
+            controlledRevision: controlled.revision,
+            resultStatus: result.status,
+            afterRevision: after.revision,
+            actionCount: after.actions.length
+          });
+        } catch (error) {
+          output.textContent = JSON.stringify({
+            ok: false,
+            gameId,
+            code: error?.code || "RUNTIME_ERROR",
+            error: String(error?.message || error)
+          });
+        }
+      }, { once: true });
+      frame.src = definitions[gameId];
+    }
+  </script>
+</body>
+</html>

@@ -63,6 +63,11 @@ let best = Number(localStorage.getItem(bestKey) || "0");
 let running = true;
 let lastTime = 0;
 let spawnTimer = 0;
+let agentControlMode = false;
+let agentRevision = 0;
+let agentFingerprint = "";
+const agentSessionId = `game_hextris_${secureHex(16)}`;
+const agentReceipts = [];
 
 function text(key) {
   return dict[lang][key] || dict.zh[key] || key;
@@ -128,7 +133,7 @@ function spawn() {
 }
 
 function step(delta) {
-  if (!running) return;
+  if (!running || agentControlMode) return;
   spawnTimer += delta;
   if (spawnTimer > 850) {
     spawn();
@@ -149,6 +154,197 @@ function step(delta) {
       save();
     }
   }
+}
+
+function colorId(value) {
+  const index = colors.indexOf(value);
+  return index >= 0 ? index : null;
+}
+
+function currentAgentFingerprint() {
+  return JSON.stringify({
+    agentControlMode,
+    lanes: lanes.map((lane) => lane.map(colorId)),
+    active: active ? { lane: active.lane, color: colorId(active.color) } : null,
+    rotation,
+    score,
+    best,
+    running
+  });
+}
+
+function syncAgentRevision() {
+  const next = currentAgentFingerprint();
+  if (agentFingerprint && next !== agentFingerprint) agentRevision += 1;
+  agentFingerprint = next;
+  return agentRevision;
+}
+
+function agentObservation() {
+  syncAgentRevision();
+  return Object.freeze({
+    protocolVersion: 1,
+    gameId: "hextris",
+    sessionId: agentSessionId,
+    revision: agentRevision,
+    phase: running ? "active" : "over",
+    terminal: !running,
+    score: Object.freeze({ current: score, best }),
+    state: Object.freeze({
+      mode: agentControlMode ? "semantic-step" : "realtime",
+      lanes: Object.freeze(lanes.map((lane) => Object.freeze(lane.map(colorId)))),
+      heights: Object.freeze(lanes.map((lane) => lane.length)),
+      active: active ? Object.freeze({
+        sourceLane: active.lane,
+        displayedLane: (active.lane + rotation) % 6,
+        colorId: colorId(active.color)
+      }) : null,
+      rotation,
+      availableLanes: Object.freeze(running ? [0, 1, 2, 3, 4, 5] : [])
+    })
+  });
+}
+
+function agentActions() {
+  const observation = agentObservation();
+  const actions = observation.terminal ? [] : [0, 1, 2, 3, 4, 5].map((lane) => Object.freeze({
+    id: `place-lane-${lane}`,
+    label: `Place the current color in lane ${lane}`,
+    group: "board",
+    description: `Commit the current falling color to semantic lane ${lane}.`,
+    action: Object.freeze({ type: "place", lane }),
+    risk: "low",
+    requiresConfirmation: false
+  }));
+  actions.push(Object.freeze({
+    id: "reset",
+    label: "Start a new Hextris game",
+    group: "game",
+    description: "Clear the current board and score.",
+    action: Object.freeze({ type: "reset", confirm: true }),
+    risk: "high",
+    requiresConfirmation: true
+  }));
+  return Object.freeze({
+    protocolVersion: 1,
+    gameId: "hextris",
+    sessionId: agentSessionId,
+    revision: observation.revision,
+    actions: Object.freeze(actions)
+  });
+}
+
+function normalizeAgentRequest(request) {
+  if (!request || typeof request !== "object" || Array.isArray(request)
+    || Object.keys(request).sort().join(",") !== "action,clientActionId,expectedRevision") {
+    throw agentError("GAME_ACTION_REQUEST_INVALID", "Invalid Hextris action request.");
+  }
+  const expectedRevision = Number(request.expectedRevision);
+  const clientActionId = String(request.clientActionId || "");
+  if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0
+    || !/^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$/.test(clientActionId)) {
+    throw agentError("GAME_ACTION_REQUEST_INVALID", "Invalid Hextris action identity.");
+  }
+  const action = request.action;
+  if (!action || typeof action !== "object" || Array.isArray(action)) {
+    throw agentError("GAME_ACTION_INVALID", "Invalid Hextris semantic action.");
+  }
+  const keys = Object.keys(action).sort().join(",");
+  if (action.type === "place" && keys === "lane,type"
+    && Number.isInteger(action.lane) && action.lane >= 0 && action.lane < 6) {
+    return { expectedRevision, clientActionId, action: { type: "place", lane: action.lane } };
+  }
+  if (action.type === "reset" && keys === "confirm,type" && action.confirm === true) {
+    return { expectedRevision, clientActionId, action: { type: "reset", confirm: true } };
+  }
+  throw agentError("GAME_ACTION_UNSUPPORTED", "Unsupported Hextris semantic action.");
+}
+
+function agentAct(request) {
+  const normalized = normalizeAgentRequest(request);
+  const fingerprint = JSON.stringify({
+    expectedRevision: normalized.expectedRevision,
+    action: normalized.action
+  });
+  const prior = agentReceipts.find((entry) => entry.clientActionId === normalized.clientActionId);
+  if (prior) {
+    if (prior.fingerprint !== fingerprint) {
+      throw agentError("GAME_CLIENT_ACTION_ID_REUSED", "The client action id was reused.");
+    }
+    return Object.freeze({ ...prior.result, deduplicated: true });
+  }
+
+  const beforeRevision = syncAgentRevision();
+  let status = "rejected";
+  let reason = "revision-conflict";
+  let events = [];
+  if (normalized.expectedRevision === beforeRevision) {
+    if (normalized.action.type === "reset") {
+      newGame();
+      status = "applied";
+      reason = "reset";
+      events = [{ type: "game_reset" }];
+    } else if (!running) {
+      reason = "game-over";
+    } else {
+      if (!active) spawn();
+      const placedColor = active.color;
+      rotation = (normalized.action.lane - active.lane + 6) % 6;
+      lanes[normalized.action.lane].push(placedColor);
+      active = null;
+      clearMatches();
+      if (lanes.some((lane) => lane.length > 8)) {
+        running = false;
+        overlay.hidden = false;
+        events.push({ type: "game_over", score });
+      } else {
+        spawn();
+      }
+      save();
+      draw();
+      status = "applied";
+      reason = "placed";
+      events.unshift({ type: "color_placed", lane: normalized.action.lane, colorId: colorId(placedColor) });
+    }
+  }
+
+  if (status === "applied") agentRevision = beforeRevision + 1;
+  agentFingerprint = currentAgentFingerprint();
+  const observation = agentObservation();
+  const result = Object.freeze({
+    protocolVersion: 1,
+    gameId: "hextris",
+    sessionId: agentSessionId,
+    clientActionId: normalized.clientActionId,
+    status,
+    reason,
+    beforeRevision,
+    revision: observation.revision,
+    deduplicated: false,
+    events: Object.freeze(events.map((event) => Object.freeze(event))),
+    observation
+  });
+  agentReceipts.push({ clientActionId: normalized.clientActionId, fingerprint, result });
+  if (agentReceipts.length > 128) agentReceipts.splice(0, agentReceipts.length - 128);
+  return result;
+}
+
+function setAgentControlMode(value) {
+  agentControlMode = value === true;
+  if (agentControlMode && running && !active) spawn();
+  syncAgentRevision();
+  draw();
+}
+
+function secureHex(length) {
+  const bytes = crypto.getRandomValues(new Uint8Array(length));
+  return [...bytes].map((value) => value.toString(16).padStart(2, "0")).join("");
+}
+
+function agentError(code, message) {
+  const error = new Error(message);
+  error.code = code;
+  return error;
 }
 
 function clearMatches() {
@@ -244,19 +440,30 @@ function loop(time) {
   requestAnimationFrame(loop);
 }
 
-window.gamePage = { save };
 applyLang();
 load();
 if (!running) overlay.hidden = false;
 draw();
+agentFingerprint = currentAgentFingerprint();
+const agentBridge = Object.freeze({
+  protocolVersion: 1,
+  gameId: "hextris",
+  sessionId: agentSessionId,
+  observe: agentObservation,
+  actions: agentActions,
+  act: agentAct,
+  setControlMode: setAgentControlMode
+});
+window.gamePage = Object.freeze({ save, agent: agentBridge });
 requestAnimationFrame(loop);
 
-document.getElementById("rotate-left").addEventListener("click", () => rotate(-1));
-document.getElementById("rotate-right").addEventListener("click", () => rotate(1));
-document.getElementById("new-game").addEventListener("click", newGame);
-document.getElementById("restart").addEventListener("click", newGame);
+document.getElementById("rotate-left").addEventListener("click", () => { if (!agentControlMode) rotate(-1); });
+document.getElementById("rotate-right").addEventListener("click", () => { if (!agentControlMode) rotate(1); });
+document.getElementById("new-game").addEventListener("click", () => { if (!agentControlMode) newGame(); });
+document.getElementById("restart").addEventListener("click", () => { if (!agentControlMode) newGame(); });
 
 window.addEventListener("keydown", (event) => {
+  if (agentControlMode) return;
   if (["ArrowLeft", "a", "A"].includes(event.key)) {
     event.preventDefault();
     rotate(-1);
@@ -269,11 +476,13 @@ window.addEventListener("keydown", (event) => {
 
 let touchStart = null;
 canvas.addEventListener("touchstart", (event) => {
+  if (agentControlMode) return;
   const touch = event.touches[0];
   touchStart = { x: touch.clientX, y: touch.clientY };
 }, { passive: true });
 
 canvas.addEventListener("touchend", (event) => {
+  if (agentControlMode) return;
   if (!touchStart) return;
   const touch = event.changedTouches[0];
   const dx = touch.clientX - touchStart.x;

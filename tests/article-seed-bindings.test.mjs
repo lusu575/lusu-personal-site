@@ -16,7 +16,9 @@ const HEXTRIS_AGENT_UPDATE_ID = "seed-update-2026-08-07-hextris-agent";
 const LIFE_RESTART_AGENT_UPDATE_ID = "seed-update-2026-08-07-life-restart-agent";
 const REMOTE_MCP_OAUTH_UPDATE_ID = "seed-update-2026-08-07-remote-mcp-oauth";
 const REMOTE_MCP_OAUTH_ACCEPTED_AT = "2026-08-09T01:00:00.000Z";
-const ARTICLE_SEED_VERSION = "20260809-remote-mcp-oauth-r2";
+const GAME_VIDEO_MCP_CANDIDATE_UPDATE_ID = "seed-update-2026-08-09-game-video-mcp-candidate";
+const GAME_VIDEO_MCP_CANDIDATE_PUBLISHED_AT = "2026-08-09T09:30:00.000Z";
+const ARTICLE_SEED_VERSION = "20260809-game-video-mcp-candidate-r2";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -345,6 +347,49 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /local stdio MCP|本地 stdio MCP|ローカル stdio MCP/);
     assert.match(params[5], /not complete|尚未完成|未完成/);
     assert.match(params[5], /game|游戏|ゲーム/);
+  }
+
+  const gameVideoMcpCandidateSeed = seedBatch.find(({ sql }) => (
+    sql.includes(`'${GAME_VIDEO_MCP_CANDIDATE_UPDATE_ID}'`)
+    && /on conflict\(article_id\) do update/i.test(normalizedSql(sql))
+  ));
+  assert.ok(gameVideoMcpCandidateSeed, "the game and video MCP candidate update metadata must be seeded");
+  assert.match(
+    normalizedSql(gameVideoMcpCandidateSeed.sql),
+    new RegExp(`${GAME_VIDEO_MCP_CANDIDATE_PUBLISHED_AT}.*${GAME_VIDEO_MCP_CANDIDATE_PUBLISHED_AT}`),
+    "the candidate update must use one consistent local-release timestamp"
+  );
+  const gameVideoMcpCandidateTranslations = boundStatements.filter(({ params }) => (
+    params[1] === GAME_VIDEO_MCP_CANDIDATE_UPDATE_ID
+    && ["zh", "en", "ja"].includes(params[2])
+  ));
+  assert.equal(gameVideoMcpCandidateTranslations.length, 3, "the game and video MCP candidate update must include three translations");
+  for (const { params } of gameVideoMcpCandidateTranslations) {
+    assert.equal(params[6], GAME_VIDEO_MCP_CANDIDATE_PUBLISHED_AT, `${params[2]} translation created_at must match`);
+    assert.equal(params[7], GAME_VIDEO_MCP_CANDIDATE_PUBLISHED_AT, `${params[2]} translation updated_at must match`);
+    assert.match(params[5], /2048/);
+    assert.match(params[5], /Hextris/);
+    assert.match(params[5], /A Dark Room/);
+    assert.match(params[5], /Life Restart|人生重开|Life Restart/);
+    assert.match(params[5], /Kittens Game/);
+    assert.match(params[5], /WET PAWS LICENSE/);
+    assert.match(params[5], /NO_AGENT/);
+    assert.match(params[5], /actionId/);
+    assert.match(params[5], /games:play/);
+    assert.match(params[5], /availableTransports/);
+    assert.match(params[5], /YouTube/);
+    assert.match(params[5], /Bilibili/);
+    assert.match(params[5], /operationId/);
+    assert.match(params[5], /expectedUpdatedAt/);
+    assert.match(params[5], /confirm: true/);
+    assert.match(params[5], /Base64/);
+    assert.match(params[5], /local paths|本机路径|ローカルパス/);
+    assert.match(params[5], /R2/);
+    assert.match(params[5], /Quick Transfer/);
+    assert.match(params[5], /v1\.0\.8/);
+    assert.match(params[5], /v1\.0\.9/);
+    assert.match(params[5], /not been deployed|尚未部署|未展開/);
+    assert.match(params[5], /production|生产|本番/);
   }
 
   const pinRepair = seedBatch.find(({ sql, params }) => (

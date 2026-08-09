@@ -831,9 +831,8 @@ const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
 const whiteboardReleaseVersion = "20260806-agent-capabilities-quick-transfer-r1";
-const remoteMcpOauthReleaseVersion = "20260809-remote-mcp-oauth-r2";
-const whiteboardAgentImagesReleaseVersion = "20260807-remote-mcp-oauth-r1";
-const transferReleaseVersion = "20260807-remote-mcp-oauth-r1";
+const gameVideoMcpCandidateReleaseVersion = "20260809-game-video-mcp-candidate-r2";
+const transferReleaseVersion = "20260809-game-video-mcp-candidate-r2";
 const resourcesRouteVersion = transferReleaseVersion;
 const routeStyleVersion = knowledgeReaderVersion;
 const publicRouteVersion = (route) => route === "knowledge"
@@ -887,9 +886,9 @@ for (const route of lazyPublicRoutes) {
 
 for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", whiteboardReleaseVersion],
-  ["./data/home-content.mjs", remoteMcpOauthReleaseVersion],
+  ["./data/home-content.mjs", gameVideoMcpCandidateReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
-  ["./data/resources-content.mjs", whiteboardAgentImagesReleaseVersion]
+  ["./data/resources-content.mjs", transferReleaseVersion]
 ]) {
   const versions = assetQueryVersions(mainEntryJs, modulePath);
   if (versions.length !== 1 || versions[0] !== expectedVersion) {
@@ -2887,10 +2886,10 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = "20260726-security-reliability-r1";
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = remoteMcpOauthReleaseVersion;
+const currentMainVersion = gameVideoMcpCandidateReleaseVersion;
 const currentCssVersion = trustSafetyStatusVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
-const currentGameShellVersion = "20260726-game-network-resilience-r1";
+const currentGameShellVersion = "20260809-browser-game-agent-v1";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
 const currentLifeRestartMobileTouchVersion = "20260726-life-mobile-touch-r1";
 
@@ -4240,13 +4239,13 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-07-remote-mcp-oauth";
-const finalUpdateSlug = "2026-08-07-remote-mcp-oauth";
+const finalUpdateId = "seed-update-2026-08-09-game-video-mcp-candidate";
+const finalUpdateSlug = "2026-08-09-game-video-mcp-candidate";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Remote MCP OAuth and Atomic Knowledge Tools Pass Production Acceptance";
-const finalPublishedAt = "2026-08-09T01:00:00.000Z";
+const finalTitleEn = "Browser Game Control and Video MCP Candidate Enters Acceptance";
+const finalPublishedAt = "2026-08-09T09:30:00.000Z";
 const finalTranslationMinimums = {
   title: 8,
   summary: 24,
@@ -4275,6 +4274,7 @@ const changelog20260729Section = markdownSection(changelog, "## 2026-07-29");
 const changelog20260801Section = markdownSection(changelog, "## 2026-08-01");
 const changelog20260806Section = markdownSection(changelog, "## 2026-08-06");
 const changelog20260807Section = markdownSection(changelog, "## 2026-08-07");
+const changelog20260809Section = markdownSection(changelog, "## 2026-08-09");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4466,7 +4466,7 @@ if (finalUpdateStarted) {
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260807Section.includes(token)) {
+    if (!changelog20260809Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
