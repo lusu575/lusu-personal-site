@@ -1373,6 +1373,57 @@ describe("owner browser game relay", () => {
     });
   });
 
+  it("fails a paused observe closed when its browser socket disconnects", async () => {
+    const accessToken = await authorizeTestClient(["games:play"]);
+    const pairingCode = randomPairingCode();
+    const connection = await openGameRelay(pairingCode);
+    connection.socket.send(JSON.stringify({
+      type: "hello",
+      protocolVersion: 1,
+      gameId: "2048",
+      browserSessionId: `browser_${"J".repeat(22)}`,
+      revision: 3,
+      observation: { board: [[2, 2], [0, 0]], score: 8 },
+      actions: []
+    }));
+    const ready = await waitForRelayMessage(connection, "relay_ready");
+    const sessionId = String(ready.sessionId || "");
+    const paired = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_pair",
+      arguments: { pairingCode }
+    });
+    expect(paired.body.result?.isError, JSON.stringify(paired.body)).not.toBe(true);
+    await waitForRelayMessage(connection, "controller_connected");
+
+    const pauseMessageIndex = connection.messages.length;
+    const paused = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_pause",
+      arguments: { sessionId }
+    });
+    expect(structuredToolResult(paused.body)).toMatchObject({
+      ok: true,
+      sessionId,
+      state: "paused"
+    });
+    await waitForRelayMessage(connection, "pause", pauseMessageIndex);
+
+    connection.socket.send("ping ");
+    await expect(connection.closed).resolves.toMatchObject({
+      code: 1007,
+      reason: "invalid_json"
+    });
+    const rawMessageCount = connection.rawMessages.length;
+    const disconnectedObserve = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_observe",
+      arguments: { sessionId }
+    });
+    expect(disconnectedObserve.body.result?.isError).toBe(true);
+    expect(structuredToolResult(disconnectedObserve.body)).toMatchObject({
+      code: "GAME_BROWSER_DISCONNECTED"
+    });
+    expect(connection.rawMessages).toHaveLength(rawMessageCount);
+  });
+
   it("round-trips only opaque action tokens with CAS, receipts, pause, and close", async () => {
     const accessToken = await authorizeTestClient(["games:play"]);
     const pairingCode = randomPairingCode();
@@ -1627,15 +1678,15 @@ describe("owner browser game relay", () => {
     });
     await waitForRelayMessage(connection, "pause", pauseStartIndex);
 
-    const pausedPingMessageIndex = connection.messages.length;
-    const pausedPingRawIndex = connection.rawMessages.length;
-    connection.socket.send("ping");
-    await expect(waitForRelayRawMessage(connection, "pong", pausedPingRawIndex)).resolves.toBe("pong");
+    const pausedMessageIndex = connection.messages.length;
+    const firstPausedRawIndex = connection.rawMessages.length;
     const pausedObserve = await ownerMcpRequest(accessToken, "tools/call", {
       name: "game_browser_observe",
       arguments: { sessionId }
     });
-    expect(structuredToolResult(pausedObserve.body)).toMatchObject({
+    await expect(waitForRelayRawMessage(connection, "pong", firstPausedRawIndex)).resolves.toBe("pong");
+    const firstPausedSnapshot = structuredToolResult(pausedObserve.body);
+    expect(firstPausedSnapshot).toMatchObject({
       sessionId,
       state: "paused",
       revision: 1,
@@ -1643,9 +1694,27 @@ describe("owner browser game relay", () => {
       actions: [],
       stale: true
     });
-    expect(connection.messages.slice(pausedPingMessageIndex)
+    const secondPausedRawIndex = connection.rawMessages.length;
+    const secondPausedObserve = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_observe",
+      arguments: { sessionId }
+    });
+    await expect(waitForRelayRawMessage(connection, "pong", secondPausedRawIndex)).resolves.toBe("pong");
+    const secondPausedSnapshot = structuredToolResult(secondPausedObserve.body);
+    expect({
+      state: secondPausedSnapshot.state,
+      revision: secondPausedSnapshot.revision,
+      observation: secondPausedSnapshot.observation,
+      actions: secondPausedSnapshot.actions
+    }).toEqual({
+      state: firstPausedSnapshot.state,
+      revision: firstPausedSnapshot.revision,
+      observation: firstPausedSnapshot.observation,
+      actions: firstPausedSnapshot.actions
+    });
+    expect(connection.messages.slice(pausedMessageIndex)
       .some((message) => message.type === "relay_error")).toBe(false);
-    expect(connection.messages.slice(pausedPingMessageIndex)
+    expect(connection.messages.slice(pausedMessageIndex)
       .some((message) => message.type === "observe")).toBe(false);
 
     await installGameOutcomeAuditFailure("error");

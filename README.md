@@ -34,7 +34,7 @@
 - 生产远程 MCP 已由独立 `workers/site-admin-mcp/` Worker `lusu-site-admin-mcp` 部署到 `https://lusu575.com/mcp`；当前精确 version ID 为 `377d494b-8f90-40ad-998f-863d209e1978`。Production D1 migration 已完成，OAuth metadata、DCR、未鉴权 401 challenge、Origin 与 pathname 线上 smoke 已通过。
 - 当前 Worker 的 `tools/list` 精确包含 23 个工具：9 项文章、8 项外链视频与 6 项浏览器游戏工具；`site_capabilities` 仍只发现已晋级的 4 项公开文章能力。视频和游戏工具虽已部署在该 bundle，视频项的 `availableTransports` 仍未包含 `remote-mcp`，游戏项的 `availableTransports` 仍为空，不能据工具存在提前宣告远程可用。
 - YouTube／Bilibili／b23.tv 外链视频管理已在该精确 bundle 通过生产闭环；测试视频 `OpwviOTPYTU` 的发布、同载荷重放、三面回读、元数据刷新、CAS 隐藏、确认删除、最终不存在与 RFC 7009 撤销均完成，临时记录已清理。远程 MCP 不读取本机路径、Base64 或视频字节；真实 R2 文件上传仍未配置。
-- 浏览器游戏生产点检在 2048 的配对、动作、CAS 与暂停后暴露空闲 WebSocket 断线。本次 Pages 发布给游戏壳加入严格 8 秒 `ping`／`pong` 保活；当前 Worker 已有 Cloudflare 边缘自动应答，无需随本热修重新部署。精确 Pages commit 上线后仍须逐款重跑四游戏闭环；在此之前不能晋级 registry。
+- 浏览器游戏生产点检在 2048 的配对、动作、CAS 与暂停后暴露空闲 WebSocket 断线。Pages 游戏壳的严格 8 秒 `ping`／`pong` 心跳已经上线并核验精确字节，但 Chrome 标签在后台约 5 分钟后受到强计时器节流，真实验收仍断线。下一 owner Worker 候选只在已鉴权、owner／grant 绑定且持续轮询的 paused `observe` 中向 browser socket 发送精确原始 `pong`，随后返回缓存快照；它不更新浏览器活跃时间、不读取 provider、不执行动作、不改变 revision，也不是服务端定时器，停止轮询不保证保活，玩家仍须亲自恢复。该候选尚未部署／验收，当前生产仍为 `377d...`，四游戏与 registry 均未晋级。
 - 历史 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` 的九工具文章验收与当前 `377d...` 的视频验收都只绑定各自精确 bundle。每个新生产 Worker 必须重新完成适用的真实 OAuth／D1／DO／浏览器闭环，不能复用历史证据。能力盘点见 `docs/agent-capabilities/README.md`，外部 AI 接入步骤见 `docs/agent-capabilities/REMOTE_MCP_CONNECT.md`。
 
 鲁肃的个人站，一个保留 Windows XP + Pixel Art + Y2K 桌面识别度、同时提供原创移动虚拟 OS 的个人空间。
