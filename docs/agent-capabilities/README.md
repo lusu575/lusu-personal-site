@@ -1,6 +1,6 @@
 # AI 能力层：架构与运行手册
 
-本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前七阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道（含真实图片闭环）、2048 与人生重开模拟器的集成式游戏适配器、独立 GPL 进程边界内的 Hextris 游戏适配器、知识库文章的管理员原子发布／CAS 更新／确认删除、视频／工具／游戏／日语题库的公开只读目录，以及日语账号进度读取与受控答题。生产 OAuth remote MCP 现已在 `https://lusu575.com/mcp` 上线四个公开文章读取工具与五个站长知识库工具；2026-08-09，真实站长浏览器 OAuth 同意后的完整写闭环已对精确验收 bundle 通过。当前仓库另有“4 款游戏浏览器语义接管 + 外链视频原子管理”的本地下一 bundle 候选，但它未部署、未生产验收，registry 的对应远程 `availableTransports` 仍为空；这仍不是“全站所有功能已经接入”或“浏览器游戏已经可从生产 MCP 接管”的声明。
+本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前七阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道（含真实图片闭环）、2048 与人生重开模拟器的集成式游戏适配器、独立 GPL 进程边界内的 Hextris 游戏适配器、知识库文章的管理员原子发布／CAS 更新／确认删除、视频／工具／游戏／日语题库的公开只读目录，以及日语账号进度读取与受控答题。生产 OAuth remote MCP 位于 `https://lusu575.com/mcp`，当前精确 Worker version 为 `377d494b-8f90-40ad-998f-863d209e1978`；它已通过外链视频管理的 bundle-specific 生命周期，但四款浏览器游戏真实闭环尚未完成。视频条目的 `availableTransports` 尚未包含 `remote-mcp`，游戏条目的 `availableTransports` 仍为空；公开 `site_capabilities` 继续只列已晋级的四项文章读取能力。这不是“全站所有功能已经接入”或“浏览器游戏已经可从生产 MCP 接管”的声明。
 
 ## 1. 先看能力注册表，不要靠猜
 
@@ -219,7 +219,9 @@ CLI 和 MCP 下载都不覆盖已有文件。目标文件以独占创建方式�
 
 ## 7. 游戏隔离会话、页面桥与许可证边界
 
-当前仓库的浏览器接管候选与下述隔离会话是两条不同的数据面。候选页面桥覆盖 2048、Hextris、A Dark Room 与人生重开，并共享冻结的语义协议：页面只返回有界 observation、current revision 和不透明 `actionId`；调用方不能提交选择器、脚本、原始按键、坐标、URL、任意 DOM 命令或原始存档。浏览器必须由玩家显式生成一次性配对码并保留可见的锁定、暂停、收回／断开和关闭控制；同一页面一次只允许一个 pending command，revision 不匹配、超时、断线或玩家收回后都失败关闭。该候选尚未部署，中继与远程工具仍不在 `availableTransports`。
+浏览器接管候选与下述隔离会话是两条不同的数据面。候选页面桥覆盖 2048、Hextris、A Dark Room 与人生重开，并共享冻结的语义协议：页面只返回有界 observation、current revision 和不透明 `actionId`；调用方不能提交选择器、脚本、原始按键、坐标、URL、任意 DOM 命令或原始存档。浏览器必须由玩家显式生成一次性配对码并保留可见的锁定、暂停、收回／断开和关闭控制；同一页面一次只允许一个 pending command，revision 不匹配、超时、断线或玩家收回后都失败关闭。当前生产候选 bundle 已承载这些工具，但四游戏真实闭环未通过，远程工具仍不在 `availableTransports`。
+
+2048 点检在暂停后等待玩家恢复时出现空闲 WebSocket 断线。当前生产 Worker `377d...` 已配置 Cloudflare Hibernation 的 `setWebSocketAutoResponse("ping", "pong")`；本次窄 Pages 发布只让页面每 8 秒发送精确应用层文本 `ping` 并忽略精确 `pong`。该自动响应不唤醒 Durable Object、不调用 provider snapshot、不生成 observation／action、不改变 revision，也不写中继存储；精确 `pong` 只证明连接活性，不能算作游戏观察。精确 Pages commit 上线核验后，仍须把验收绑定到这一 Worker／Pages 组合，并对四款游戏逐一重跑配对、动作、暂停、玩家恢复、确认关闭和 grant 撤销。
 
 主能力层的集成式游戏适配器支持 `2048` 与 `life-restart`。`game_create` 创建本机隔离会话，之后按 `observe -> actions -> act` 协议执行：
 
@@ -261,11 +263,11 @@ Hextris 使用相同的语义动作原则，但保持独立 GPL 进程边界：
 
 ## 10. 远程 Cloudflare MCP：生产 OAuth 入口与公开注册层
 
-生产 Worker `lusu-site-admin-mcp` 已部署到 canonical resource `https://lusu575.com/mcp`；2026-08-09 完成真实站长浏览器 OAuth 验收的 version ID 为 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b`。生产 `OAUTH_KV` 已绑定，Production D1 migration 已完成；正式域名 protected-resource／authorization-server metadata、DCR、未鉴权 `401 WWW-Authenticate` challenge、浏览器 Origin 拒绝和非 allowlist pathname 拒绝的线上 smoke 已通过。
+生产 Worker `lusu-site-admin-mcp` 已部署到 canonical resource `https://lusu575.com/mcp`；当前精确 version ID 为 `377d494b-8f90-40ad-998f-863d209e1978`。生产 `OAUTH_KV` 已绑定，Production D1 migration 已完成；正式域名 protected-resource／authorization-server metadata、DCR、未鉴权 `401 WWW-Authenticate` challenge、浏览器 Origin 拒绝和非 allowlist pathname 拒绝的线上 smoke 已通过。
 
-站长已在普通顶层浏览器 OAuth 页面核对 client、回调、resource 与 scope 并手动点击 Allow。该精确 bundle 的验收确认 `tools/list` 九个工具、`site_capabilities` 四项公开能力、受控普通文章原子发布、同载荷幂等重放、管理列表／详情读取、最新 revision CAS 更新、zh／en／ja 三语公开回读、`confirm: true` 删除、三语删除后 404 与 grant 撤销均通过，临时文章已删除。以后每个新的生产 Worker bundle 都必须重新完成真实浏览器 OAuth 和同等完整闭环，不得用这次历史验收替代当前版本证据。
+历史 Worker `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` 曾由站长在普通顶层浏览器完成 OAuth Allow，并通过九工具知识库完整生命周期；该证据不能跨 bundle 复用。当前 `377d...` 内部注册 23 项候选工具（9 项文章、8 项外链视频、6 项浏览器游戏）：外链视频规范化、原子发布、同载荷重放、管理回读、元数据刷新、CAS、确认删除、公开缺失与 grant 撤销已通过；四游戏闭环仍未通过。以后每个新的生产 Worker bundle 都必须重新完成真实浏览器 OAuth 和对应完整闭环，不得用任一历史验收替代当前版本证据。
 
-生产端点共暴露九个工具：
+九项文章工具构成已验证的基础工具集：
 
 | 工具 | scope | 当前边界 |
 | --- | --- | --- |
@@ -279,9 +281,9 @@ Hextris 使用相同的语义动作原则，但保持独立 GPL 进程边界：
 | `article_update` | `content:write` | 以 `expectedUpdatedAt` 和新 `operationId` 做 CAS 更新。 |
 | `article_delete` | `content:delete` | 永久删除；还必须有最新 CAS、新 `operationId` 和字面值 `confirm: true`。 |
 
-### 下一 bundle 的本地候选（尚不可连接）
+### 当前生产候选 bundle（尚未晋级远程可用面）
 
-当前仓库在同一 OAuth Worker 中准备了以下游戏工具，但新 Worker 未部署、Production D1／Durable Object 未验收、真实站长 OAuth 和浏览器闭环未完成。它们要求独立非默认 `games:play`、active grant 与当前管理员复核；registry 的 `games.browser.*.availableTransports` 仍为空。
+当前生产 `377d...` 在同一 OAuth Worker 中承载以下游戏工具。Production D1／Durable Object 和 OAuth 基础链路已用于候选点检，但四款真实浏览器的配对／动作／暂停／玩家恢复／关闭完整验收未完成；它们要求独立非默认 `games:play`、active grant 与当前管理员复核，registry 的 `games.browser.*.availableTransports` 仍为空。Worker 已有精确 ping／pong 边缘自动应答，本次 Pages 发布只在游戏壳发送保活帧；该 Pages commit 上线核验后必须与当前 Worker 组合重新验收。
 
 | 候选工具 | 作用 | 关键边界 |
 | --- | --- | --- |
@@ -294,7 +296,7 @@ Hextris 使用相同的语义动作原则，但保持独立 GPL 进程边界：
 
 候选 bridge 只覆盖 2048、Hextris、A Dark Room 与人生重开。Kittens Game 因 WET PAWS LICENSE 保持 `NO_AGENT`，未经明确许可／法律确认不得加入语义 bridge 或控制面。
 
-同一下一 bundle 还增加候选公开视频读 `videos_list`／`video_get`，并准备六项站长工具：`video_manage_list`、`video_manage_get`、`video_publish`、`video_update`、`video_refresh_metadata`、`video_delete`。八项都未部署；`content.videos.list/get` 继续不把 remote MCP 放进 `availableTransports`，因此已验收生产 `site_capabilities` 仍只列出四项文章能力。第一阶段只处理 YouTube、Bilibili 与 b23.tv 外链记录；`video_publish` 把记录与审计／幂等收据原子提交，更新和删除要求 `expectedUpdatedAt`，删除另需 `confirm: true`，所有写操作都要求唯一 `operationId`、active grant 和当前管理员复核。
+同一 `377d...` bundle 还承载候选公开视频读 `videos_list`／`video_get`，以及六项站长工具：`video_manage_list`、`video_manage_get`、`video_publish`、`video_update`、`video_refresh_metadata`、`video_delete`。这八项的外链记录生产生命周期已经对该精确 bundle 通过，但 `content.videos.list/get` 继续不把 remote MCP 放进 `availableTransports`，因此生产 `site_capabilities` 仍只列出四项文章能力；最终 availability promotion 所在的新 bundle 必须重验。第一阶段只处理 YouTube、Bilibili 与 b23.tv 外链记录；`video_publish` 把记录与审计／幂等收据原子提交，更新和删除要求 `expectedUpdatedAt`，删除另需 `confirm: true`，所有写操作都要求唯一 `operationId`、active grant 和当前管理员复核。
 
 视频候选不接受文件内容。远程 MCP 不读取本机路径、Base64、原始字节或客户端机器上的文件；真实托管上传尚未配置。`video_upload_sessions` 只是为未来独立数据面预留的 schema，不表示上传 API 或 R2 已可用。后续如启用，必须建立私有 R2 二进制数据面，并独立完成分片、配额、内容哈希、扫描、提交、中止、过期与孤儿清理验收。
 
@@ -333,8 +335,8 @@ npm.cmd run check
 ## 11. 仍是 inventory / planned 的能力
 
 - 白板读取、图片上传／下载、高层追加和本地导出、主能力层的隔离 2048／人生重开模拟器会话，以及专用 GPL 进程中的隔离 Hextris 会话已经在本地 CLI／stdio MCP 可用；它们不表示公网远程 MCP 写入、白板任意编辑／删除，或浏览器游戏接管已经完成。
-- 五个游戏的安全目录已经可读，其中 2048 与人生重开模拟器是集成式本地会话适配器、Hextris 是独立进程适配器。浏览器候选已为 2048、Hextris、A Dark Room 与人生重开补齐语义 bridge，但 `game_browser_pair`／`observe`／`actions`／`act`／`pause`／`close` 仍须新 Worker、`games:play` OAuth、Durable Object 和真实浏览器验收后才能进入 `availableTransports`。Kittens Game 的 WET PAWS 条款继续阻止接入，必须先取得明确许可／法律确认；游戏云存档通用写入也仍需单独适配与授权。
-- 外链视频管理的站点 API 已有本地候选，远程 Worker 也准备了六项管理工具，但未部署／生产验收，因此远程面仍不可用。真视频文件上传没有配置；schema 预留、文件名、R2 设计或未来工具 ID 都不能被解释为当前可以上传本机文件。
+- 五个游戏的安全目录已经可读，其中 2048 与人生重开模拟器是集成式本地会话适配器、Hextris 是独立进程适配器。生产候选已为 2048、Hextris、A Dark Room 与人生重开补齐语义 bridge；本次 Pages 发布加入 ping／pong 保活，但 `game_browser_pair`／`observe`／`actions`／`act`／`pause`／`close` 仍须以当前 `377d...` Worker 与精确 Pages commit 完成 `games:play` OAuth、Durable Object 和四游戏真实浏览器验收后才能进入 `availableTransports`。Kittens Game 的 WET PAWS 条款继续阻止接入，必须先取得明确许可／法律确认；游戏云存档通用写入也仍需单独适配与授权。
+- 外链视频管理已在精确候选 bundle `377d...` 完成生产生命周期，但 registry 远程面仍未晋级，最终 availability promotion bundle 必须重验。真视频文件上传没有配置；schema 预留、文件名、R2 设计或未来工具 ID 都不能被解释为当前可以上传本机文件。
 - 日语等级／关卡公开内容和账号进度闭环已经可用；聊天写入、任意完整进度快照写入、游戏存档写入等条目仍只是既有 API 的 inventory 或受限入口，没有通用 CLI/MCP 写适配器。
 - Daily AI News、Tool Radar 的生产发布能力是 `restricted`，不会出现在公开远程 MCP 或通用本地 MCP 中。
 
@@ -382,7 +384,7 @@ npm.cmd run check
 部署边界：
 
 - 个人站的正常发布路径仍是合并到 GitHub `main` 后由 Cloudflare Pages 自动部署；不要把手工 Wrangler Pages 部署当成常规路径。
-- `workers/site-mcp` 是第一阶段保留下来的独立公开注册层／无 OAuth 目标；canonical 生产地址由已经部署的 `workers/site-admin-mcp` 承载。生产 D1、KV、Secret、精确路由、OAuth metadata、DCR、401、Origin 和 pathname smoke 已完成，version `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` 的真实站长手动 Allow 与完整九工具知识库写闭环也已验收。该结论不得跨 Worker bundle 复用；包含游戏／视频候选的新 bundle 还必须完成新增 D1 回读、DO binding／迁移、OAuth `games:play`、真实配对和四款浏览器生命周期、视频原子操作与撤销，再取得新的精确 version 证据。Pages 仍由 GitHub `main` 自动部署，不能用站长 Worker 的 Wrangler 发布代替 Pages 发布。
+- `workers/site-mcp` 是第一阶段保留下来的独立公开注册层／无 OAuth 目标；canonical 生产地址由已经部署的 `workers/site-admin-mcp` 承载。生产 D1、KV、Secret、精确路由、OAuth metadata、DCR、401、Origin 和 pathname smoke 已完成；当前 version 是 `377d494b-8f90-40ad-998f-863d209e1978`，其视频候选生命周期通过而四游戏生命周期未完成。历史 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` 的九工具知识库验收不得跨 bundle 复用；本次 ping／pong 是 Pages-only 发布，须以当前 Worker 与精确 Pages commit 完成 OAuth `games:play`、真实配对和四款浏览器生命周期。随后 availability promotion 会生成新的 Worker bundle，届时还必须重跑文章／视频／游戏对应闭环并取得新的精确 version 证据。Pages 仍由 GitHub `main` 自动部署，不能用站长 Worker 的 Wrangler 发布代替 Pages 发布。
 - 本地 CLI 与 stdio MCP 本身不需要服务器部署；它们调用的 Agent Auth／Transfer／Whiteboard API 必须先存在于目标站点。白板 Pages Agent 路由依赖新的 Durable Object 协议，因此发布时必须先部署并验证兼容 Worker，再让 Pages 使用新路由。
 - Hextris 专用 Agent 也只从源码仓库在本机启动；生产构建整目录排除 `games/hextris/agent/`，不会把其 Node 包、会话存储或 stdio 服务复制到 Pages `dist`。浏览器 Hextris 与 `games/hextris/source/COPYING` 继续作为静态站点内容发布。
 - 任何验证命令都不得使用生产凭据、生产房间口令或 `--remote` D1。

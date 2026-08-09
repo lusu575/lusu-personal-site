@@ -13,7 +13,7 @@ const gameEntries = [
   "games/kittens-game/index.html",
   "games/life-restart/index.html"
 ].map((path) => [path, read(path)]);
-const shellCacheVersion = "20260809-browser-game-agent-v1";
+const shellCacheVersion = "20260809-browser-game-heartbeat-v1";
 
 function mediaBlock(css, query, nextQuery = null) {
   const start = css.indexOf(`@media ${query}`);

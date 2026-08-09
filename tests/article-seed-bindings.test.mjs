@@ -23,7 +23,7 @@ const MOTION_POLISH_UPDATE_ID = "seed-update-2026-08-09-motion-polish";
 const MOTION_POLISH_PUBLISHED_AT = "2026-08-09T02:50:00.000Z";
 const WALLPAPER_TIME_SWITCH_UPDATE_ID = "seed-update-2026-08-09-wallpaper-time-switch";
 const WALLPAPER_TIME_SWITCH_PUBLISHED_AT = "2026-08-09T05:40:00.000Z";
-const ARTICLE_SEED_VERSION = "20260809-motion-polish-r2";
+const ARTICLE_SEED_VERSION = "20260809-game-video-mcp-heartbeat-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -443,9 +443,14 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /local paths|本机路径|ローカルパス/);
     assert.match(params[5], /R2/);
     assert.match(params[5], /Quick Transfer/);
-    assert.match(params[5], /v1\.0\.8/);
-    assert.match(params[5], /v1\.0\.9/);
-    assert.match(params[5], /not been deployed|尚未部署|未展開/);
+    assert.match(params[5], /v1\.0\.10/);
+    assert.match(params[5], /This release adds|本次发布加入|今回の公開は/);
+    assert.doesNotMatch(params[5], /not deployed|尚未部署|未展開/);
+    assert.match(params[5], /setWebSocketAutoResponse/);
+    assert.match(params[5], /ping/);
+    assert.match(params[5], /pong/);
+    assert.match(params[5], /377d494b-8f90-40ad-998f-863d209e1978/);
+    assert.match(params[5], /GAME_BROWSER_DISCONNECTED/);
     assert.match(params[5], /production|生产|本番/);
   }
 

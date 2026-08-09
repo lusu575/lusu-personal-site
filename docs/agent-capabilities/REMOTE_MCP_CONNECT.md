@@ -10,13 +10,13 @@
 https://lusu575.com/mcp
 ```
 
-截至 2026-08-09，生产 Worker `lusu-site-admin-mcp` 已部署；完成真实站长浏览器 OAuth 验收的 version ID 为 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b`，Production D1 migration 已完成。正式域名的 OAuth protected-resource／authorization-server metadata、Dynamic Client Registration、未鉴权 `401 WWW-Authenticate` challenge、浏览器 Origin 拒绝和精确 pathname 拒绝均已完成线上 smoke。
+截至 2026-08-09，生产 Worker `lusu-site-admin-mcp` 已部署；当前精确 version ID 为 `377d494b-8f90-40ad-998f-863d209e1978`，Production D1 migration 已完成。正式域名的 OAuth protected-resource／authorization-server metadata、Dynamic Client Registration、未鉴权 `401 WWW-Authenticate` challenge、浏览器 Origin 拒绝和精确 pathname 拒绝均已完成线上 smoke。
 
 该地址是无状态 Streamable HTTP 端点，不提供旧式 `/sse`，也不接受网站设备码令牌、`lusu_session` Cookie 或 URL 查询参数中的 Bearer token。客户端必须通过该 resource 发现并完成站点 OAuth 2.1 授权。
 
-真实站长已在普通顶层浏览器 OAuth 页面核对并手动点击 Allow。该精确 bundle 的生产验收已通过 9 个工具、4 项公开 capability、受控测试文章原子发布、同载荷幂等重试、管理列表／详情读取、CAS 更新、zh／en／ja 公开回读、确认删除、三语删除后 404 与 grant 撤销；临时文章已删除。该结果只适用于上述精确 Worker bundle，每个新生产 bundle 都必须重新执行真实浏览器 OAuth 与同等闭环，不能用历史验收替代。全站所有能力的远程 MCP 和浏览器游戏配对／接管仍未实现。
+当前 Worker 的 `tools/list` 精确包含 23 个工具，`site_capabilities` 仍只发现已晋级的 4 项公开文章能力。历史 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` 已通过九工具文章闭环；当前 `377d...` 已用 `OpwviOTPYTU` 通过外链视频发布、同载荷重放、管理／公开 MCP／公开 HTTP 回读、元数据刷新、CAS 隐藏、确认删除、最终不存在与 RFC 7009 撤销，临时记录已清理。视频条目的 `availableTransports` 尚未包含 `remote-mcp`，六项游戏条目的 `availableTransports` 仍为空。游戏点检在 2048 暂停后等待玩家恢复时暴露空闲 WebSocket 断线；本次 Pages 发布加入严格 8 秒保活，但必须等精确 Pages commit 上线后逐款重验四游戏。每个新生产 Worker bundle 都必须重新执行适用的真实浏览器 OAuth 与完整闭环，不能复用历史证据。
 
-## 生产 MCP 的 9 个工具
+## 当前 Worker 的 23 个工具
 
 | 工具 | 所需 scope | 作用与安全属性 |
 | --- | --- | --- |
@@ -24,13 +24,27 @@ https://lusu575.com/mcp
 | `content_list` | `content:read` | 按语言／分类列出已发布文章摘要；Daily AI News 用 `category: "daily-ai-news"` 查询。 |
 | `content_search` | `content:read` | 在已发布文章摘要中做有界搜索。 |
 | `article_get` | `content:read` | 按公开 slug 读取一篇已发布文章的有界 Markdown。 |
+| `videos_list` | `content:read` | 有界列出已发布的 YouTube／Bilibili 外链视频记录。 |
+| `video_get` | `content:read` | 读取一条已发布外链视频记录。 |
 | `article_manage_list` | `content:write` | 列出草稿、已发布或归档的管理视图；虽为只读调用，但会看到非公开管理数据。 |
 | `article_manage_get` | `content:write` | 读取一篇管理文章及全部现有翻译；虽为只读调用，但属于站长管理面。 |
 | `article_publish` | `content:write` | 原子发布完整 zh／en／ja 普通知识库文章；需唯一 `operationId`，受治理分类会被拒绝。 |
 | `article_update` | `content:write` | 以最新 `expectedUpdatedAt` 做 CAS 更新，并以新 `operationId` 保证精确重试。 |
 | `article_delete` | `content:delete` | 永久删除普通文章；必须同时提供最新 CAS、唯一 `operationId` 和字面值 `confirm: true`。 |
+| `video_manage_list` | `content:write` | 有界列出站长视频管理记录。 |
+| `video_manage_get` | `content:write` | 读取一条站长视频管理记录。 |
+| `video_publish` | `content:write` | 原子发布一条外链视频记录并持久化幂等收据。 |
+| `video_update` | `content:write` | 以 `expectedUpdatedAt` 与唯一 `operationId` 做 CAS 更新。 |
+| `video_refresh_metadata` | `content:write` | 有界刷新 provider 元数据，失败原因也会持久化。 |
+| `video_delete` | `content:delete` | 以最新 CAS、唯一 `operationId` 与 `confirm: true` 删除。 |
+| `game_browser_pair` | `games:play` | 兑换玩家页面产生的一次性、owner/client 绑定配对码。 |
+| `game_browser_observe` | `games:play` | 读取有界语义快照和当前 revision；保活与语义观察严格分离。 |
+| `game_browser_actions` | `games:play` | 读取当前 revision 给出的不透明 `actionId`。 |
+| `game_browser_act` | `games:play` | 以 revision CAS 执行一个不透明语义动作并支持收据重放。 |
+| `game_browser_pause` | `games:play` | 由 AI 暂停接管；只有玩家页面可恢复。 |
+| `game_browser_close` | `games:play` | 以 `confirm: true` 关闭接管并释放页面。 |
 
-远程 MCP 不提供 `article_publish_files`：云端 Worker 不能读取 AI 客户端机器上的本地路径；调用方应把三语 Markdown 正文作为受限结构化参数交给 `article_publish`。`site-updates`、`daily-ai-news`、`tool-radar` 继续走各自受治理的发布通道，通用文章 MCP 无权创建、改写或删除这些分类。
+远程 MCP 不提供 `article_publish_files`，也不提供真实视频字节上传：云端 Worker 不能读取 AI 客户端机器上的本地路径、Base64 或原始文件。调用方应把三语 Markdown 正文作为受限结构化参数交给 `article_publish`；视频第一阶段只接受 YouTube／Bilibili／b23.tv 外链。`site-updates`、`daily-ai-news`、`tool-radar` 继续走各自受治理的发布通道。游戏工具虽已出现在 `tools/list`，但四游戏生产闭环与 registry promotion 尚未完成，不应设为无人审批的日常工具。
 
 ## 首次授权
 
@@ -45,15 +59,18 @@ https://lusu575.com/mcp
 
 | Scope | 用途 | 建议 |
 | --- | --- | --- |
-| `content:read` | 读取已公开文章、知识库和 Daily AI News | 首次连接的最小权限。 |
-| `content:write` | 查看管理文章、三语原子发布和 CAS 更新 | 仅站长账号；确需写入时再授权。 |
-| `content:delete` | 永久删除普通知识库文章 | 独立高风险权限；仅在明确删除任务中临时授权。 |
+| `content:read` | 读取已公开文章、知识库、Daily AI News 与外链视频 | 首次连接的最小权限。 |
+| `content:write` | 查看管理文章／视频、三语原子发布、外链视频发布和 CAS 更新 | 仅站长账号；确需写入时再授权。 |
+| `content:delete` | 永久删除普通文章或外链视频记录 | 独立高风险权限；仅在明确删除任务中临时授权。 |
+| `games:play` | 与已打开的四款受支持游戏配对并执行语义动作 | 非默认；只在玩家主动发起接管和点检时授权。 |
 
 服务端 scope、管理员实时复核、CAS、幂等和 `confirm: true` 是强制边界，但不能替代客户端的人类确认。连接后应保留客户端的工具审批：
 
 - `article_publish` 调用前逐项检查 slug、分类、三语标题／正文、公开时间和 `operationId`。
 - `article_update` 调用前先用 `article_manage_get` 取得最新 `updatedAt`，展示差异并让站长确认。
 - `article_delete` 不得设为“始终允许”；每次都要展示文章 ID／slug、最新 revision 和永久删除后果，再由站长明确批准。
+- `video_publish`／`video_update`／`video_delete` 逐次核对规范化 URL、标题、当前 CAS 与公开状态；删除始终要求独立确认。
+- `game_browser_act` 只使用当前 revision 返回的不透明 `actionId`；暂停后必须由玩家页面恢复，关闭要求 `confirm: true`。
 - scope 不足时重新走 OAuth 增量授权，不得要求用户粘贴 token。
 
 ## 常见客户端

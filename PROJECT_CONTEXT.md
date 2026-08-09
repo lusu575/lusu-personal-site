@@ -1,6 +1,15 @@
 # PROJECT_CONTEXT.md
 
-## 2026-08-09 游戏浏览器接管与视频 MCP 本地候选
+## 2026-08-09 游戏 MCP 保活热修与视频生产点检
+
+- 当前生产站长 OAuth Worker 的精确 version ID 是 `377d494b-8f90-40ad-998f-863d209e1978`。它承载 9 项文章、8 项外链视频和 6 项浏览器游戏工具候选，但视频条目的 `availableTransports` 尚未包含 `remote-mcp`，游戏条目的 `availableTransports` 仍为空；公开 `site_capabilities` 继续只返回已验收的四项文章读取能力。工具存在于候选 bundle 不等于已对外宣告可用。一次包含暂停观察实验和未验收 registry promotion 的 `f9951348-5a68-417c-8875-9817faa192fd` 发布已回滚，不能作为当前生产或验收证据。
+- `377d494b-8f90-40ad-998f-863d209e1978` 已完成外链视频管理的 bundle-specific 生产点检：YouTube／Bilibili／b23.tv 规范化、原子发布、同 `operationId` 同载荷重放、管理列表／详情、元数据刷新、`expectedUpdatedAt` CAS、`confirm: true` 删除、公开缺失回读、RFC 7009 grant 撤销与旧 access token 401 均通过，临时视频记录已删除。该证据只绑定这一精确 bundle；在最终可用性 promotion 和新 bundle 复验前，视频条目的 `availableTransports` 继续不包含 `remote-mcp`。
+- 2048 的生产候选点检已通过玩家一次性配对、语义 `actionId`、revision CAS、暂停和 grant 撤销，但暂停后等待玩家点击恢复期间，空闲 WebSocket 断开并以 `GAME_BROWSER_DISCONNECTED` 结束。四款游戏的完整配对／动作／暂停／玩家恢复／确认关闭闭环因此仍未验收通过，不能改变 registry 可用面。
+- 当前生产 Worker 已配置 Cloudflare WebSocket Hibernation 的 `setWebSocketAutoResponse("ping", "pong")`。保活热修候选只改 Pages 游戏客户端：页面每 8 秒发送精确应用层文本 `ping`，并忽略边缘返回的精确 `pong`。该自动响应不唤醒 Durable Object、不读取游戏 provider、不产生 observation／action、不改变 revision，也不写 DO 存储；不能把保活描述成观察或状态持久化。
+- 本次 Pages 发布加入游戏壳心跳资源，生产 Worker 保持 `377d494b-8f90-40ad-998f-863d209e1978`。精确 Pages commit 上线字节核验后，必须把四款游戏的真实 OAuth／DO／浏览器验收绑定到这一 Worker／Pages 组合；后续最终 availability promotion 会产生新 Worker，届时视频与游戏闭环都须对新 bundle 独立重验。Kittens Game 继续受 WET PAWS LICENSE 约束并保持 `NO_AGENT`，真实视频文件上传仍需独立私有 R2 二进制数据面。
+- 公开更新继续沿用 `seed-update-2026-08-09-game-video-mcp-candidate` 与同一 slug，三语正文原位改为当前生产事实；公开 API、文章 seed、主模块与 Home 数据缓存版本为 `20260809-game-video-mcp-heartbeat-r1`。融合主线时必须保留后续新增的更新项并继续让 Home 只投影最新五项。本热修不修改共享 registry 或 Quick Transfer 受管路径，也不再次升版 Quick Transfer；本发布继承主线当前 v1.0.10，互传协议和独立缓存不由本热修滚动。
+
+## 2026-08-09 游戏浏览器接管与视频 MCP 初始本地候选（历史阶段）
 
 - 新 bundle 在上线前补齐 RFC 7009 refresh-token 撤销与 D1 grant／审计的原子同步。固定 provider 版本的 O(1) grant 记录只用于在删除前精确核对 current／previous refresh-token hash；调用 provider 前必须先写 grant 级、确定性的 D1 `pending` intent，RFC 7009 返回成功后仍须显式确认幂等的整 grant 删除完成，防止并发 refresh 轮换让标准 200 成为空操作，最后再以同一 D1 batch 记录 `rfc7009-refresh-token` 并把唯一审计完成为 `success`。access-token-only 撤销不得误撤整个 D1 grant；provider 已删除、D1 首次失败时从强一致 intent 返回稳定失败并允许同请求恢复，不能依赖最终一致 KV 的删除后反查，也不能把 token、client secret 或原始撤销表单写入响应或日志。
 - 当前仓库候选为 2048、Hextris、A Dark Room 与人生重开补齐受审计的浏览器语义 bridge。页面只把当前 revision 的不透明 `actionId` 交给 Agent；禁止选择器、脚本、原始按键、坐标、URL、任意 DOM 调用或原始存档注入。共享浏览器宿主负责显式玩家配对、一次只保留一个 pending command、revision CAS、超时和断线失效，并提供可见的锁定、暂停、收回控制与关闭入口；玩家暂停／收回／关闭或页面断线后必须立即释放控制，AI 不能自行恢复。

@@ -8,7 +8,18 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const knownGames = ["2048", "hextris", "a-dark-room", "life-restart"];
-const timeoutMs = 45_000;
+const requestedRealPausedPingWaitMs = Number.parseInt(
+  process.env.GAME_AGENT_REAL_PAUSED_PING_WAIT_MS || "0",
+  10
+);
+const realPausedPingWaitMs = Number.isSafeInteger(requestedRealPausedPingWaitMs)
+  ? requestedRealPausedPingWaitMs
+  : 0;
+assert.ok(
+  realPausedPingWaitMs === 0 || (realPausedPingWaitMs >= 40_000 && realPausedPingWaitMs <= 120_000),
+  "GAME_AGENT_REAL_PAUSED_PING_WAIT_MS must be 0 or between 40000 and 120000"
+);
+const timeoutMs = Math.max(45_000, realPausedPingWaitMs + 30_000);
 const requested = process.argv.slice(2);
 const games = requested.length ? requested : knownGames;
 games.forEach((gameId) => assert.ok(knownGames.includes(gameId), `unknown game: ${gameId}`));
@@ -206,6 +217,47 @@ async function auditShellRelayLifecycle(serverPort) {
       screenHeight: 844
     });
     await client.send("Page.addScriptToEvaluateOnNewDocument", { source: `(() => {
+      const realPausedPingWaitMs = ${realPausedPingWaitMs};
+      window.__lusuRealPausedPingWaitMs = realPausedPingWaitMs;
+      const nativeSetInterval = window.setInterval.bind(window);
+      const nativeClearInterval = window.clearInterval.bind(window);
+      const pingIntervals = new Map();
+      let nextPingIntervalId = 1000000;
+      window.__lusuPingTimers = {
+        active: () => pingIntervals.size,
+        fire: () => {
+          const entries = [...pingIntervals.values()];
+          let fired = 0;
+          entries.forEach(({ callback, args, native }) => {
+            if (native) return;
+            callback(...args);
+            fired += 1;
+          });
+          return fired;
+        }
+      };
+      window.setInterval = (callback, delay, ...args) => {
+        if (delay === 8000) {
+          if (realPausedPingWaitMs > 0) {
+            const id = nativeSetInterval(callback, delay, ...args);
+            pingIntervals.set(id, { native: true });
+            return id;
+          }
+          const id = nextPingIntervalId++;
+          pingIntervals.set(id, { callback, args });
+          return id;
+        }
+        return nativeSetInterval(callback, delay, ...args);
+      };
+      window.clearInterval = (id) => {
+        const entry = pingIntervals.get(id);
+        if (entry) {
+          pingIntervals.delete(id);
+          if (entry.native) nativeClearInterval(id);
+          return;
+        }
+        nativeClearInterval(id);
+      };
       class FakeWebSocket extends EventTarget {
         static CONNECTING = 0;
         static OPEN = 1;
@@ -217,13 +269,22 @@ async function auditShellRelayLifecycle(serverPort) {
           this.protocols = Array.from(protocols || []);
           this.readyState = FakeWebSocket.CONNECTING;
           this.messages = [];
+          this.frames = [];
           window.__lusuFakeGameSocket = this;
           queueMicrotask(() => {
             this.readyState = FakeWebSocket.OPEN;
             this.dispatchEvent(new Event('open'));
           });
         }
-        send(value) { this.messages.push(JSON.parse(String(value))); }
+        send(value) {
+          const frame = String(value);
+          this.frames.push(frame);
+          if (frame === 'ping') {
+            this.dispatchEvent(new MessageEvent('message', { data: 'pong' }));
+            return;
+          }
+          this.messages.push(JSON.parse(frame));
+        }
         close() {
           if (this.readyState === FakeWebSocket.CLOSED) return;
           this.readyState = FakeWebSocket.CLOSED;
@@ -258,6 +319,9 @@ async function auditShellRelayLifecycle(serverPort) {
       document.querySelector('.game-agent-allow').click();
       await wait(() => window.__lusuFakeGameSocket?.messages.some((item) => item.type === 'hello'), 'hello');
       const socket = window.__lusuFakeGameSocket;
+      const pingCount = () => socket.frames.filter((item) => item === 'ping').length;
+      const openPingCount = pingCount();
+      const openPingTimerCount = window.__lusuPingTimers.active();
       const codeBeforeAck = code.textContent;
       const hello = socket.messages.find((item) => item.type === 'hello');
       socket.server({
@@ -269,8 +333,14 @@ async function auditShellRelayLifecycle(serverPort) {
       });
       await wait(() => code.textContent.length > 0, 'pair-code');
       const codeAfterAck = code.textContent;
+      const awaitingPairBefore = pingCount();
+      const awaitingPairFired = window.__lusuRealPausedPingWaitMs > 0 ? 0 : window.__lusuPingTimers.fire();
+      const awaitingPairPings = pingCount() - awaitingPairBefore;
       socket.server({ type: 'controller_connected', protocolVersion: 1, sessionId: 'relay_session_0001' });
       await wait(() => frame.inert === true && panel.dataset.state === 'active', 'active');
+      const activeBefore = pingCount();
+      const activeFired = window.__lusuRealPausedPingWaitMs > 0 ? 0 : window.__lusuPingTimers.fire();
+      const activePings = pingCount() - activeBefore;
       const snapshot = [...socket.messages].reverse().find((item) => item.type === 'snapshot');
       const action = snapshot.actions.find((item) => item.requiresConfirmation !== true);
       socket.server({
@@ -287,11 +357,41 @@ async function auditShellRelayLifecycle(serverPort) {
       socket.server({ type: 'pause', protocolVersion: 1, commandId: 'cmd_pause_0000001' });
       await wait(() => panel.dataset.state === 'paused' && frame.inert === false, 'remote-pause');
       const pauseOutbound = socket.messages.slice(beforePauseCount);
+      const pausedBefore = pingCount();
+      if (window.__lusuRealPausedPingWaitMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, window.__lusuRealPausedPingWaitMs));
+      }
+      const pausedFired = window.__lusuRealPausedPingWaitMs > 0 ? 0 : window.__lusuPingTimers.fire();
+      const pausedPings = pingCount() - pausedBefore;
+      const pausedStateAfterWait = panel.dataset.state;
       document.querySelector('.game-agent-resume').click();
       await wait(() => panel.dataset.state === 'active' && frame.inert === true && socket.messages.some((item) => item.type === 'user_resume'), 'user-resume');
       const resume = [...socket.messages].reverse().find((item) => item.type === 'user_resume');
-      socket.serverClose();
+      const explicitCloseBefore = pingCount();
+      document.querySelector('.game-agent-take-back').click();
+      await wait(() => panel.dataset.state === 'ready' && socket.readyState === WebSocket.CLOSED, 'explicit-close');
+      const explicitCloseTimerCount = window.__lusuPingTimers.active();
+      const explicitCloseFired = window.__lusuPingTimers.fire();
+      const explicitClosePings = pingCount() - explicitCloseBefore;
+
+      document.querySelector('.game-agent-allow').click();
+      await wait(() => window.__lusuFakeGameSocket !== socket && window.__lusuFakeGameSocket.messages.some((item) => item.type === 'hello'), 'reconnect-hello');
+      const disconnectedSocket = window.__lusuFakeGameSocket;
+      disconnectedSocket.server({
+        type: 'relay_ready',
+        protocolVersion: 1,
+        sessionId: 'relay_session_0002',
+        state: 'awaiting_pair',
+        pairExpiresAt: new Date(Date.now() + 300000).toISOString()
+      });
+      disconnectedSocket.server({ type: 'controller_connected', protocolVersion: 1, sessionId: 'relay_session_0002' });
+      await wait(() => panel.dataset.state === 'active', 'reconnect-active');
+      const disconnectBefore = disconnectedSocket.frames.filter((item) => item === 'ping').length;
+      disconnectedSocket.serverClose();
       await wait(() => panel.dataset.state === 'ready' && frame.inert === false, 'disconnect-unlock');
+      const disconnectTimerCount = window.__lusuPingTimers.active();
+      const disconnectFired = window.__lusuPingTimers.fire();
+      const disconnectPings = disconnectedSocket.frames.filter((item) => item === 'ping').length - disconnectBefore;
       const panelRect = panel.getBoundingClientRect();
       const controls = [...panel.querySelectorAll('.game-agent-controls .tool-button')];
       return {
@@ -303,6 +403,23 @@ async function auditShellRelayLifecycle(serverPort) {
         actionResult,
         pauseOutbound,
         resume,
+        ping: {
+          openPingCount,
+          openPingTimerCount,
+          awaitingPairFired,
+          awaitingPairPings,
+          activeFired,
+          activePings,
+          pausedFired,
+          pausedPings,
+          pausedStateAfterWait,
+          explicitCloseTimerCount,
+          explicitCloseFired,
+          explicitClosePings,
+          disconnectTimerCount,
+          disconnectFired,
+          disconnectPings
+        },
         disconnectedUnlocked: !frame.inert && !frame.hasAttribute('aria-disabled'),
         panelState: panel.dataset.state,
         layout: {
@@ -327,12 +444,39 @@ async function auditShellRelayLifecycle(serverPort) {
     assert.ok(result.actionResult.observation && Array.isArray(result.actionResult.actions));
     assert.deepEqual(result.pauseOutbound, [], "remote pause must not send an untracked commandId snapshot");
     assert.ok(result.resume && Array.isArray(result.resume.actions));
+    assert.equal(result.ping.openPingCount, 1);
+    assert.equal(result.ping.openPingTimerCount, 1);
+    assert.equal(result.ping.pausedStateAfterWait, "paused");
+    if (realPausedPingWaitMs > 0) {
+      assert.equal(result.ping.awaitingPairFired, 0);
+      assert.equal(result.ping.awaitingPairPings, 0);
+      assert.equal(result.ping.activeFired, 0);
+      assert.equal(result.ping.activePings, 0);
+      assert.equal(result.ping.pausedFired, 0);
+      assert.ok(
+        result.ping.pausedPings >= Math.floor(realPausedPingWaitMs / 8_000),
+        `expected real paused pings for ${realPausedPingWaitMs}ms, received ${result.ping.pausedPings}`
+      );
+    } else {
+      assert.equal(result.ping.awaitingPairFired, 1);
+      assert.equal(result.ping.awaitingPairPings, 1);
+      assert.equal(result.ping.activeFired, 1);
+      assert.equal(result.ping.activePings, 1);
+      assert.equal(result.ping.pausedFired, 1);
+      assert.equal(result.ping.pausedPings, 1);
+    }
+    assert.equal(result.ping.explicitCloseTimerCount, 0);
+    assert.equal(result.ping.explicitCloseFired, 0);
+    assert.equal(result.ping.explicitClosePings, 0);
+    assert.equal(result.ping.disconnectTimerCount, 0);
+    assert.equal(result.ping.disconnectFired, 0);
+    assert.equal(result.ping.disconnectPings, 0);
     assert.equal(result.disconnectedUnlocked, true);
     assert.equal(result.panelState, "ready");
     assert.ok(result.layout.scrollWidth <= result.layout.viewportWidth + 1);
     assert.ok(result.layout.panelLeft >= -1 && result.layout.panelRight <= result.layout.viewportWidth + 1);
     assert.ok(result.layout.minControlHeight >= 44);
-    console.log("game-shell: action, pause/resume, disconnect unlock, pair privacy, and 390px layout passed");
+    console.log("game-shell: ping/pong lifecycle, action, pause/resume, disconnect unlock, pair privacy, and 390px layout passed");
   } finally {
     client?.close();
     if (browser?.exitCode === null) {
