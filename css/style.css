@@ -527,8 +527,8 @@ body[data-route="home"] .site-shell::after {
     0 8px 18px rgba(0, 20, 72, 0.12);
 }
 
-/* The four illustrations and the moving lens are generated image assets.
-   CSS owns only layout, hit targets, focus, and state positioning. */
+/* Imagegen supplies every sky, marker, atmosphere, frame, and celestial.
+   CSS only composes the generated layers and preserves the 44px controls. */
 .wallpaper-time-switch {
   position: relative;
   isolation: isolate;
@@ -541,21 +541,100 @@ body[data-route="home"] .site-shell::after {
   touch-action: manipulation;
 }
 
-.wallpaper-time-track {
+.wallpaper-time-viewport {
   position: absolute;
   z-index: 0;
-  top: 50%;
-  left: 0;
+  inset: 0;
+  display: block;
   width: 176px;
-  height: auto;
+  height: 44px;
+  overflow: hidden;
+  border-radius: 999px;
   pointer-events: none;
   user-select: none;
-  transform: translateY(-50%);
+}
+
+.wallpaper-time-scene,
+.wallpaper-time-atmosphere,
+.wallpaper-time-celestial {
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.wallpaper-time-scene {
+  position: absolute;
+  inset: 0;
+  width: 176px;
+  height: 44px;
+  opacity: 0;
+}
+
+.wallpaper-time-scene-atlas,
+.wallpaper-time-atmosphere-atlas,
+.wallpaper-time-marker-atlas,
+.wallpaper-time-node-atlas {
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.wallpaper-time-scene-atlas {
+  width: 176px;
+  height: 176px;
+}
+
+.wallpaper-time-scene-atlas[data-atlas-cell="morning"] { transform: translate3d(0, 0, 0); }
+.wallpaper-time-scene-atlas[data-atlas-cell="day"] { transform: translate3d(0, -44px, 0); }
+.wallpaper-time-scene-atlas[data-atlas-cell="dusk"] { transform: translate3d(0, -88px, 0); }
+.wallpaper-time-scene-atlas[data-atlas-cell="night"] { transform: translate3d(0, -132px, 0); }
+
+.wallpaper-time-atmospheres {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.wallpaper-time-atmosphere {
+  position: absolute;
+  top: -7px;
+  left: 0;
+  width: 176px;
+  height: 59px;
+  opacity: 0;
+}
+
+.wallpaper-time-atmosphere-atlas {
+  width: 176px;
+  height: 176px;
+}
+
+.wallpaper-time-atmosphere-atlas[data-atlas-cell="far"] { transform: translate3d(0, 0, 0); }
+.wallpaper-time-atmosphere-atlas[data-atlas-cell="mid"] { transform: translate3d(0, -58.6667px, 0); }
+.wallpaper-time-atmosphere-atlas[data-atlas-cell="accent"] { transform: translate3d(0, -117.3333px, 0); }
+
+.wallpaper-time-frame {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: block;
+  width: 176px;
+  height: 44px;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
 }
 
 .wallpaper-time-option {
   position: relative;
-  z-index: 3;
+  z-index: 5;
+  display: grid;
+  place-items: center;
   box-sizing: border-box;
   width: 44px;
   min-width: 44px;
@@ -580,77 +659,70 @@ body[data-route="home"] .site-shell::after {
   cursor: default;
 }
 
-.wallpaper-time-effects {
+.wallpaper-time-marker {
+  display: block;
+  width: 18px;
+  height: 12px;
+  overflow: hidden;
+  user-select: none;
+}
+
+.wallpaper-time-marker-atlas {
+  width: 18px;
+  height: 48px;
+}
+
+.wallpaper-time-marker-atlas[data-atlas-cell="morning"] { transform: translate3d(0, 0, 0); }
+.wallpaper-time-marker-atlas[data-atlas-cell="day"] { transform: translate3d(0, -12px, 0); }
+.wallpaper-time-marker-atlas[data-atlas-cell="dusk"] { transform: translate3d(0, -24px, 0); }
+.wallpaper-time-marker-atlas[data-atlas-cell="night"] { transform: translate3d(0, -36px, 0); }
+
+.wallpaper-time-thumb {
   position: absolute;
-  z-index: 1;
-  top: 3px;
+  z-index: 4;
+  top: 6px;
   left: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 44px);
-  width: 176px;
-  height: 38px;
-  overflow: hidden;
-  border-radius: 999px;
+  display: block;
+  width: 32px;
+  height: 32px;
   pointer-events: none;
+  transform: translate3d(6px, 0, 0);
+  transform-origin: center;
 }
 
-.wallpaper-time-effect {
-  position: relative;
-  display: block;
-  width: 44px;
-  height: 38px;
-  overflow: hidden;
-}
-
-.wallpaper-time-effect-layer {
+.wallpaper-time-celestial {
   position: absolute;
-  top: 0;
-  left: 3px;
-  display: block;
-  width: 38px;
-  height: 38px;
-  object-fit: contain;
+  inset: 0;
+  width: 32px;
+  height: 32px;
   opacity: 0;
   transform-origin: center;
-  user-select: none;
 }
 
-.wallpaper-time-effect-layer.is-upper {
-  clip-path: inset(0 0 66.666% 0);
+.wallpaper-time-node-atlas {
+  width: 32px;
+  height: 128px;
 }
 
-.wallpaper-time-effect-layer.is-middle {
-  clip-path: inset(33.333% 0 33.333% 0);
+.wallpaper-time-node-atlas[data-atlas-cell="morning"] { transform: translate3d(0, 0, 0); }
+.wallpaper-time-node-atlas[data-atlas-cell="day"] { transform: translate3d(0, -32px, 0); }
+.wallpaper-time-node-atlas[data-atlas-cell="dusk"] { transform: translate3d(0, -64px, 0); }
+.wallpaper-time-node-atlas[data-atlas-cell="night"] { transform: translate3d(0, -96px, 0); }
+
+.wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-thumb { transform: translate3d(6px, 0, 0); }
+.wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-thumb { transform: translate3d(50px, 0, 0); }
+.wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-thumb { transform: translate3d(94px, 0, 0); }
+.wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-thumb { transform: translate3d(138px, 0, 0); }
+
+.wallpaper-time-switch[data-visual-theme="morning"] [data-switch-theme="morning"],
+.wallpaper-time-switch[data-visual-theme="day"] [data-switch-theme="day"],
+.wallpaper-time-switch[data-visual-theme="dusk"] [data-switch-theme="dusk"],
+.wallpaper-time-switch[data-visual-theme="night"] [data-switch-theme="night"] {
+  opacity: 1;
 }
 
-.wallpaper-time-effect-layer.is-lower {
-  clip-path: inset(66.666% 0 0 0);
-}
-
-.wallpaper-time-selector {
-  position: absolute;
-  z-index: 2;
-  top: 8px;
-  left: 0;
-  display: block;
-  width: 28px;
-  height: 28px;
-  pointer-events: none;
-  transform: translate3d(8px, 0, 0);
-  transform-origin: center;
-}
-
-html[data-time-theme="morning"] .wallpaper-time-selector { transform: translate3d(8px, 0, 0); }
-html[data-time-theme="day"] .wallpaper-time-selector { transform: translate3d(52px, 0, 0); }
-html[data-time-theme="dusk"] .wallpaper-time-selector { transform: translate3d(96px, 0, 0); }
-html[data-time-theme="night"] .wallpaper-time-selector { transform: translate3d(140px, 0, 0); }
-
-.wallpaper-time-selector img {
-  display: block;
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-  user-select: none;
+.wallpaper-time-option[aria-checked="true"] .wallpaper-time-marker {
+  opacity: 0;
 }
 
 .account-widget {

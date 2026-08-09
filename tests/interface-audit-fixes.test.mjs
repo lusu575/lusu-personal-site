@@ -34,8 +34,9 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the game/video MCP update leads the five-item projection while wallpaper and motion updates remain visible", async () => {
-  const updateId = "seed-update-2026-08-09-game-video-mcp-candidate";
+test("the wallpaper switch redesign leads the exact five-item projection without losing MCP or motion history", async () => {
+  const updateId = "seed-update-2026-08-09-wallpaper-switch-scene-redesign";
+  const gameVideoMcpUpdateId = "seed-update-2026-08-09-game-video-mcp-candidate";
   const wallpaperTimeUpdateId = "seed-update-2026-08-09-wallpaper-time-switch";
   const motionPolishUpdateId = "seed-update-2026-08-09-motion-polish";
   const remoteMcpOauthUpdateId = "seed-update-2026-08-07-remote-mcp-oauth";
@@ -61,22 +62,23 @@ test("the game/video MCP update leads the five-item projection while wallpaper a
 
   assert.equal(content.updates[0].article_id, updateId);
   assert.equal(homeContent.updates[0].article_id, updateId);
-  assert.equal(content.updates[1].article_id, wallpaperTimeUpdateId);
-  assert.equal(homeContent.updates[1].article_id, wallpaperTimeUpdateId);
-  assert.equal(content.updates[2].article_id, motionPolishUpdateId);
-  assert.equal(homeContent.updates[2].article_id, motionPolishUpdateId);
-  assert.equal(content.updates[3].article_id, remoteMcpOauthUpdateId);
-  assert.equal(homeContent.updates[3].article_id, remoteMcpOauthUpdateId);
-  assert.equal(content.updates[4].article_id, lifeRestartAgentUpdateId);
-  assert.equal(homeContent.updates[4].article_id, lifeRestartAgentUpdateId);
-  assert.equal(content.updates[5].article_id, hextrisAgentUpdateId);
-  assert.equal(content.updates[6].article_id, whiteboardAgentImagesUpdateId);
-  assert.equal(content.updates[7].article_id, agentAuthFormOriginUpdateId);
-  assert.equal(content.updates[8].article_id, japaneseProgressUpdateId);
-  assert.equal(content.updates[9].article_id, agentReadBreadthUpdateId);
-  assert.equal(content.updates[10].article_id, whiteboard2048UpdateId);
-  assert.equal(content.updates[11].article_id, firstPhaseUpdateId);
-  assert.equal(content.updates[12].article_id, websiteGuideUpdateId);
+  assert.equal(content.updates[1].article_id, gameVideoMcpUpdateId);
+  assert.equal(homeContent.updates[1].article_id, gameVideoMcpUpdateId);
+  assert.equal(content.updates[2].article_id, wallpaperTimeUpdateId);
+  assert.equal(homeContent.updates[2].article_id, wallpaperTimeUpdateId);
+  assert.equal(content.updates[3].article_id, motionPolishUpdateId);
+  assert.equal(homeContent.updates[3].article_id, motionPolishUpdateId);
+  assert.equal(content.updates[4].article_id, remoteMcpOauthUpdateId);
+  assert.equal(homeContent.updates[4].article_id, remoteMcpOauthUpdateId);
+  assert.equal(content.updates[5].article_id, lifeRestartAgentUpdateId);
+  assert.equal(content.updates[6].article_id, hextrisAgentUpdateId);
+  assert.equal(content.updates[7].article_id, whiteboardAgentImagesUpdateId);
+  assert.equal(content.updates[8].article_id, agentAuthFormOriginUpdateId);
+  assert.equal(content.updates[9].article_id, japaneseProgressUpdateId);
+  assert.equal(content.updates[10].article_id, agentReadBreadthUpdateId);
+  assert.equal(content.updates[11].article_id, whiteboard2048UpdateId);
+  assert.equal(content.updates[12].article_id, firstPhaseUpdateId);
+  assert.equal(content.updates[13].article_id, websiteGuideUpdateId);
   assert.ok(content.updates.some((update) => update.article_id === trafficUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === calmWhiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === reliableWhiteboardUpdateId));
@@ -94,7 +96,7 @@ test("the game/video MCP update leads the five-item projection while wallpaper a
 
   for (const path of ["functions/api/[[route]].js", "cloudflare/schema.sql"]) {
     const source = read(path);
-    for (const seededUpdateId of [updateId, wallpaperTimeUpdateId, motionPolishUpdateId]) {
+    for (const seededUpdateId of [updateId, gameVideoMcpUpdateId, wallpaperTimeUpdateId, motionPolishUpdateId, remoteMcpOauthUpdateId]) {
       assert.ok(source.includes(seededUpdateId), `${path} should include ${seededUpdateId}`);
     }
     for (const title of Object.values(content.updates[0].title)) {
@@ -103,10 +105,10 @@ test("the game/video MCP update leads the five-item projection while wallpaper a
   }
 });
 
-test("public motion, MCP heartbeat content, wallpaper imagery, and Quick Transfer keep independent cache versions", () => {
+test("wallpaper switch scene, retained motion modules, MCP heartbeat content, and Quick Transfer keep independent cache versions", () => {
   const publicVersion = "20260809-motion-polish-r2";
-  const heartbeatVersion = "20260809-game-video-mcp-heartbeat-r1";
-  const wallpaperAssetVersion = "20260809-wallpaper-time-switch-r2";
+  const switchSceneVersion = "20260809-wallpaper-switch-scene-r1";
+  const wallpaperAssetVersion = "20260809-wallpaper-time-switch-r3";
   const transferVersion = "20260809-transfer-motion-r2";
   const index = read("index.html");
   const main = read("js/main.js");
@@ -114,22 +116,49 @@ test("public motion, MCP heartbeat content, wallpaper imagery, and Quick Transfe
   const resources = read("js/routes/resources.mjs");
 
   for (const asset of [
-    "/css/style.css",
     "/css/mobile-ios-shell.css",
-    "/css/motion-system.css",
     "/js/mobile-shell.js",
     "/js/ui-motion.js"
   ]) {
     assert.ok(index.includes(`${asset}?v=${publicVersion}`), `${asset} should use ${publicVersion}`);
   }
-  assert.ok(index.includes(`/js/main.js?v=${heartbeatVersion}`));
-  for (const asset of ["time-track.png", "time-selector.png"]) {
+  for (const asset of ["/css/style.css", "/css/motion-system.css", "/js/main.js"]) {
+    assert.ok(index.includes(`${asset}?v=${switchSceneVersion}`), `${asset} should use ${switchSceneVersion}`);
+  }
+  const switchContentAssets = [
+    ...["morning", "day", "dusk", "night"].map((theme) => `scene-${theme}.png`),
+    "frame.png",
+    ...["morning", "day", "dusk", "night"].map((theme) => `node-${theme}.png`),
+    ...["morning", "day", "dusk", "night"].map((theme) => `marker-${theme}.png`),
+    ...["morning", "day", "dusk", "night"].flatMap((theme) => ["far", "mid", "accent"].map((depth) => `atmosphere-${theme}-${depth}.png`))
+  ];
+  const switchRuntimeAssets = [
+    "scene-atlas.png",
+    "marker-atlas.png",
+    "node-atlas.png",
+    ...["morning", "day", "dusk", "night"].map((theme) => `atmosphere-${theme}-atlas.png`),
+    "frame.png"
+  ];
+  for (const asset of switchRuntimeAssets) {
     assert.ok(index.includes(`/assets/images/wallpaper-switch/${asset}?v=${wallpaperAssetVersion}`));
   }
+  assert.equal(switchContentAssets.length, 25);
+  assert.equal(switchRuntimeAssets.length, 8);
+  const switchRuntimePaths = [...index.matchAll(/(?:src|data-src)="(\/assets\/images\/wallpaper-switch\/[^?"]+\.png)\?v=20260809-wallpaper-time-switch-r3"/g)]
+    .map((match) => match[1]);
+  assert.deepEqual(
+    [...new Set(switchRuntimePaths)].sort(),
+    switchRuntimeAssets.map((asset) => `/assets/images/wallpaper-switch/${asset}`).sort()
+  );
+  for (const asset of switchContentAssets) {
+    if (asset === "frame.png") continue;
+    assert.ok(!index.includes(`/assets/images/wallpaper-switch/${asset}?`), `${asset} should remain a manifest content source, not a runtime request`);
+  }
+  assert.doesNotMatch(index, /wallpaper-switch\/(?:time-track|time-selector|fx-(?:morning|day|dusk|night)|node-inactive|atmosphere-(?:morning|day|dusk|night)-ambient)\.png/);
   assert.ok(main.includes(`const routeStyleVersion = "${publicVersion}"`));
   assert.ok(main.includes(`./core/i18n.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./core/wallpaper-time.mjs?v=${publicVersion}`));
-  assert.ok(main.includes(`./data/home-content.mjs?v=${heartbeatVersion}`));
+  assert.ok(main.includes(`./data/home-content.mjs?v=${switchSceneVersion}`));
   assert.ok(main.includes(`./features/account.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/knowledge.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/chatroom.mjs?v=${publicVersion}`));

@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-09-wallpaper-switch-scene-redesign",
+      "slug": "2026-08-09-wallpaper-switch-scene-redesign",
+      "category": "site-updates",
+      "tags": ["网站更新", "壁纸", "动效", "Image2", "无障碍"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-09T11:15:00.000Z",
+      "updated_at": "2026-08-09T11:15:00.000Z",
+      "published_at": "2026-08-09T11:15:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.09",
+      "title": {
+        "zh": "四时段壁纸开关场景重做",
+        "en": "Four-Stage Wallpaper Switch Scene Redesign",
+        "ja": "4段階壁紙スイッチのシーン再設計"
+      },
+      "summary": {
+        "zh": "四时段壁纸开关改为单场景椭圆：整条轨道始终只显示当前天空，四个节点常驻，活跃节点分别呈现半露朝阳、完整太阳、低位落日或月亮；只有当前时段的云、光芒、星星与行星分层进入。全部视觉使用 Image2 生成位图，并保留自动边界、手动到下一边界、键盘与减弱／关闭动效降级。",
+        "en": "The four-stage wallpaper switch is now a single-scene oval: the whole track shows only the current sky while four persistent stops remain visible. The active stop carries a partly risen morning sun, full daytime sun, low setting sun, or moon, and only the current period's clouds, rays, stars, and planet enter in layers. All visuals are Image2-generated bitmaps, with automatic boundaries, manual overrides until the next boundary, keyboard access, and reduced/off-motion fallbacks.",
+        "ja": "4段階の壁紙スイッチを、現在の空だけを楕円全体に映す単一シーンへ再設計しました。4つのノードは常時表示し、選択中のノードは半分見える朝日、真昼の太陽、低い夕日、月に切り替わります。雲、光、星、惑星は現在の時間帯だけ段階的に現れます。ビジュアルはすべて Image2 生成ビットマップで、時刻境界の自動切り替え、次の境界までの手動選択、キーボード、モーション低減／オフ時のフォールバックに対応します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-09-game-video-mcp-candidate",
       "slug": "2026-08-09-game-video-mcp-candidate",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "正式域名端到端生产验收已通过：OAuth Allow 后精确发现 9 项工具与 4 项公开能力，并完成原子发布、同载荷重放、管理读取、CAS 更新、三语公开回读、确认删除、删除后 404、令牌撤销和临时数据清理；文件发布仍仅限本地，全站工具及游戏远程接管尚未完成。",
         "en": "End-to-end production acceptance on the live domain has passed: OAuth Allow exposed exactly 9 tools and 4 public capabilities, followed by atomic publish, same-payload replay, management reads, CAS update, zh/en/ja public readback, confirmed delete, post-delete 404, token revocation, and temporary-data cleanup. File publishing remains local, while whole-site tool and game takeover is not complete.",
         "ja": "本番ドメインのエンドツーエンド検証が完了しました。OAuth Allow 後に9ツールと4つの公開機能を正確に確認し、原子的公開、同一ペイロード再実行、管理一覧・取得、CAS 更新、zh／en／ja 公開再取得、確認付き削除、削除後404、トークン失効、一時データ消去まで合格しています。ファイル公開はローカル限定で、サイト全体のツールやゲームの遠隔操作は未完成です。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-07-life-restart-agent",
-      "slug": "2026-08-07-life-restart-agent",
-      "category": "site-updates",
-      "tags": ["网站更新", "AI 能力", "知识库", "原子发布", "MCP", "CLI", "人生重开模拟器", "安全"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-07T08:00:00.000Z",
-      "updated_at": "2026-08-07T08:00:00.000Z",
-      "published_at": "2026-08-07T08:00:00.000Z",
-      "fallbackOnly": true,
-      "icon": "knowledge",
-      "date": "2026.08.07",
-      "title": {
-        "zh": "知识库原子发布 MCP 与人生重开语义会话上线",
-        "en": "Atomic Knowledge Publishing MCP and Life Restart Sessions",
-        "ja": "知識ベース原子公開 MCP と Life Restart セッションを追加"
-      },
-      "summary": {
-        "zh": "本地 stdio MCP 现已支持三语知识库文章的原子发布、Markdown 文件发布、CAS 更新和确认删除，并继续提供可复现的人生重开游戏会话；写入仅接受管理员批准的独立 scope。",
-        "en": "The local stdio MCP now atomically publishes trilingual knowledge articles, publishes Markdown files, performs CAS updates and confirmed deletes, and also runs reproducible Life Restart sessions. Writes require separately administrator-approved scopes.",
-        "ja": "ローカル stdio MCP で、3言語の知識記事の原子的公開、Markdown ファイル公開、CAS 更新、確認付き削除に対応し、再現可能な Life Restart セッションも利用できます。書き込みには管理者が別途承認した scope が必要です。"
       }
     }
   ]

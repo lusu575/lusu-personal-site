@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { content } from "../js/data/content.mjs";
+import { homeContent } from "../js/data/home-content.mjs";
 
 const FRAME_PIPELINE_SEED_ID = "seed-update-2026-07-18-frame-pipeline-low-performance";
 const FRAME_PIPELINE_SEED_TIME = "2026-07-17T21:12:00.000Z";
@@ -23,7 +24,9 @@ const MOTION_POLISH_UPDATE_ID = "seed-update-2026-08-09-motion-polish";
 const MOTION_POLISH_PUBLISHED_AT = "2026-08-09T02:50:00.000Z";
 const WALLPAPER_TIME_SWITCH_UPDATE_ID = "seed-update-2026-08-09-wallpaper-time-switch";
 const WALLPAPER_TIME_SWITCH_PUBLISHED_AT = "2026-08-09T05:40:00.000Z";
-const ARTICLE_SEED_VERSION = "20260809-game-video-mcp-heartbeat-r1";
+const WALLPAPER_SWITCH_SCENE_UPDATE_ID = "seed-update-2026-08-09-wallpaper-switch-scene-redesign";
+const WALLPAPER_SWITCH_SCENE_PUBLISHED_AT = "2026-08-09T11:15:00.000Z";
+const ARTICLE_SEED_VERSION = "20260809-wallpaper-switch-scene-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -314,6 +317,69 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /clientActionId/);
     assert.match(params[5], /browserBridge/);
     assert.match(params[5], /undeployed|未部署|未展開/);
+  }
+
+  const wallpaperSwitchSceneContent = content.updates.find(({ article_id: articleId }) => (
+    articleId === WALLPAPER_SWITCH_SCENE_UPDATE_ID
+  ));
+  assert.ok(wallpaperSwitchSceneContent, "the public fallback must include the redesigned wallpaper-switch scene");
+  assert.equal(content.updates[0]?.article_id, WALLPAPER_SWITCH_SCENE_UPDATE_ID);
+  assert.deepEqual(
+    homeContent.updates.map(({ article_id: articleId }) => articleId),
+    [
+      WALLPAPER_SWITCH_SCENE_UPDATE_ID,
+      GAME_VIDEO_MCP_CANDIDATE_UPDATE_ID,
+      WALLPAPER_TIME_SWITCH_UPDATE_ID,
+      MOTION_POLISH_UPDATE_ID,
+      REMOTE_MCP_OAUTH_UPDATE_ID
+    ],
+    "Home must project exactly the newest five public updates in release order"
+  );
+  const wallpaperSwitchSceneHome = homeContent.updates[0];
+  const { content_markdown: _sceneBody, ...wallpaperSwitchSceneProjection } = wallpaperSwitchSceneContent;
+  assert.deepEqual(
+    wallpaperSwitchSceneHome,
+    wallpaperSwitchSceneProjection,
+    "the Home projection must match every non-body field from the full fallback"
+  );
+  assert.equal(wallpaperSwitchSceneContent.slug, "2026-08-09-wallpaper-switch-scene-redesign");
+  assert.equal(wallpaperSwitchSceneContent.category, "site-updates");
+  assert.equal(wallpaperSwitchSceneContent.status, "published");
+  assert.equal(wallpaperSwitchSceneContent.is_pinned, 0);
+  assert.equal(wallpaperSwitchSceneContent.cover_image, "");
+  assert.equal(wallpaperSwitchSceneContent.fallbackOnly, true);
+  assert.deepEqual(wallpaperSwitchSceneContent.title, {
+    zh: "四时段壁纸开关场景重做",
+    en: "Four-Stage Wallpaper Switch Scene Redesign",
+    ja: "4段階壁紙スイッチのシーン再設計"
+  });
+
+  const wallpaperSwitchSceneSeed = seedBatch.find(({ sql }) => (
+    sql.includes(`'${WALLPAPER_SWITCH_SCENE_UPDATE_ID}'`)
+    && /on conflict\(article_id\) do update/i.test(normalizedSql(sql))
+  ));
+  assert.ok(wallpaperSwitchSceneSeed, "the redesigned wallpaper-switch scene metadata must be seeded");
+  assert.match(
+    normalizedSql(wallpaperSwitchSceneSeed.sql),
+    new RegExp(`${WALLPAPER_SWITCH_SCENE_PUBLISHED_AT}.*${WALLPAPER_SWITCH_SCENE_PUBLISHED_AT}.*${WALLPAPER_SWITCH_SCENE_PUBLISHED_AT}`),
+    "the redesigned scene must use one consistent create, update, and publish timestamp"
+  );
+  assert.match(normalizedSql(wallpaperSwitchSceneSeed.sql), /'', 'published', 0, 0/);
+  const wallpaperSwitchSceneTranslations = boundStatements.filter(({ params }) => (
+    params[1] === WALLPAPER_SWITCH_SCENE_UPDATE_ID
+    && ["zh", "en", "ja"].includes(params[2])
+  ));
+  assert.equal(wallpaperSwitchSceneTranslations.length, 3, "the redesigned scene must include three translations");
+  for (const { params } of wallpaperSwitchSceneTranslations) {
+    const lang = params[2];
+    assert.equal(params[3], wallpaperSwitchSceneContent.title[lang], `${lang} title must match the public fallback`);
+    assert.equal(params[4], wallpaperSwitchSceneContent.summary[lang], `${lang} summary must match the public fallback`);
+    assert.equal(params[5], wallpaperSwitchSceneContent.content_markdown[lang], `${lang} body must match the public fallback`);
+    assert.equal(params[6], WALLPAPER_SWITCH_SCENE_PUBLISHED_AT, `${lang} translation created_at must match publication`);
+    assert.equal(params[7], WALLPAPER_SWITCH_SCENE_PUBLISHED_AT, `${lang} translation updated_at must match publication`);
+    assert.match(params[5], /Image2/);
+    assert.match(params[5], /keyboard|键盘|キーボード/i);
+    assert.match(params[5], /reduced.motion|reduced motion|モーション低減/i);
   }
 
   const wallpaperTimeSwitchContent = content.updates.find(({ article_id: articleId }) => (

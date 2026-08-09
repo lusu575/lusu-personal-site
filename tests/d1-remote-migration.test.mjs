@@ -467,7 +467,10 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
-  assert.match(verificationSql, /article_seed_version' and value = '20260809-game-video-mcp-heartbeat-r1'/);
+  assert.match(verificationSql, /article_seed_version' and value = '20260809-wallpaper-switch-scene-r1'/);
+  assert.match(verificationSql, /slug = '2026-08-09-wallpaper-switch-scene-redesign'/);
+  assert.match(verificationSql, /published_at = '2026-08-09T11:15:00.000Z'/);
+  assert.match(verificationSql, /wallpaper-switch-scene-redesign-update-translations/);
   assert.match(verificationSql, /slug = '2026-08-09-game-video-mcp-candidate'/);
   assert.match(verificationSql, /category = 'site-updates'/);
   assert.match(verificationSql, /status = 'published'/);

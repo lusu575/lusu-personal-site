@@ -961,6 +961,116 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-08-09-wallpaper-switch-scene-redesign',
+  '2026-08-09-wallpaper-switch-scene-redesign',
+  'site-updates',
+  '["网站更新","壁纸","动效","Image2","无障碍"]',
+  '', 'published', 0, 0,
+  '2026-08-09T11:15:00.000Z',
+  '2026-08-09T11:15:00.000Z',
+  '2026-08-09T11:15:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-09-wallpaper-switch-scene-redesign-zh',
+    'seed-update-2026-08-09-wallpaper-switch-scene-redesign',
+    'zh',
+    '四时段壁纸开关场景重做',
+    '四时段壁纸开关改为单场景椭圆：整条轨道始终只显示当前天空，四个节点常驻，活跃节点分别呈现半露朝阳、完整太阳、低位落日或月亮；只有当前时段的云、光芒、星星与行星分层进入。全部视觉使用 Image2 生成位图，并保留自动边界、手动到下一边界、键盘与减弱／关闭动效降级。',
+    '# 四时段壁纸开关场景重做
+
+网站右上角的四段壁纸开关改为一条完整的椭圆天空场景，不再同时铺开四种时段画面。
+
+## 一条轨道，一个当前天空
+
+- 整条椭圆始终只呈现当前时段的完整天空，切换时整条轨道一起进入目标主题。
+- 早上、中午、下午和晚上四个节点常驻；当前节点分别使用半露朝阳、完整太阳、低位落日或月亮作为主体。
+- 只有当前时段的云、光芒、星星与行星会分层进入，其他三个节点保持安静、可见并可选择。
+
+## Image2 位图与时间行为
+
+轨道天空、四种节点主体和分层装饰全部使用 Image2 生成的项目内位图。开关继续按设备本地时间在真实边界自动切换；用户手动选择后，目标壁纸立即生效，并只覆盖到下一个真实时间边界。
+
+## 键盘与动效降级
+
+四个节点支持键盘选择。键盘操作立即提交，不等待空间位移；reduced-motion 只保留短暂透明度变化，站内关闭动效时立即切换，不播放装饰入场。',
+    '2026-08-09T11:15:00.000Z',
+    '2026-08-09T11:15:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-09-wallpaper-switch-scene-redesign-en',
+    'seed-update-2026-08-09-wallpaper-switch-scene-redesign',
+    'en',
+    'Four-Stage Wallpaper Switch Scene Redesign',
+    'The four-stage wallpaper switch is now a single-scene oval: the whole track shows only the current sky while four persistent stops remain visible. The active stop carries a partly risen morning sun, full daytime sun, low setting sun, or moon, and only the current period''s clouds, rays, stars, and planet enter in layers. All visuals are Image2-generated bitmaps, with automatic boundaries, manual overrides until the next boundary, keyboard access, and reduced/off-motion fallbacks.',
+    '# Four-Stage Wallpaper Switch Scene Redesign
+
+The four-stage wallpaper switch at the site''s upper right is now one complete oval sky scene instead of four time-of-day scenes shown at once.
+
+## One track, one current sky
+
+- The entire oval always presents the complete sky for the current period, and the whole track changes together when another period is selected.
+- Four persistent stops remain for morning, day, dusk, and night. The active stop uses a partly risen morning sun, full daytime sun, low setting sun, or moon.
+- Only the current period''s clouds, rays, stars, and planet enter in layers. The other three stops stay quiet, visible, and selectable.
+
+## Image2 bitmaps and time behavior
+
+The track skies, four celestial subjects, and layered decorations are all project-local bitmaps generated with Image2. The switch continues to follow real device-local time boundaries automatically. A manual selection applies its wallpaper immediately and lasts only until the next real boundary.
+
+## Keyboard and motion fallbacks
+
+All four stops support keyboard selection. Keyboard input commits immediately without waiting for spatial travel; reduced motion keeps only a short opacity change, while the site''s motion-off mode switches immediately without decorative entrances.',
+    '2026-08-09T11:15:00.000Z',
+    '2026-08-09T11:15:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-09-wallpaper-switch-scene-redesign-ja',
+    'seed-update-2026-08-09-wallpaper-switch-scene-redesign',
+    'ja',
+    '4段階壁紙スイッチのシーン再設計',
+    '4段階の壁紙スイッチを、現在の空だけを楕円全体に映す単一シーンへ再設計しました。4つのノードは常時表示し、選択中のノードは半分見える朝日、真昼の太陽、低い夕日、月に切り替わります。雲、光、星、惑星は現在の時間帯だけ段階的に現れます。ビジュアルはすべて Image2 生成ビットマップで、時刻境界の自動切り替え、次の境界までの手動選択、キーボード、モーション低減／オフ時のフォールバックに対応します。',
+    '# 4段階壁紙スイッチのシーン再設計
+
+サイト右上の4段階壁紙スイッチを、4つの時間帯を同時に並べる表示から、一つの完全な楕円形の空へ作り直しました。
+
+## 一つのトラックに、現在の空だけ
+
+- 楕円全体は常に現在の時間帯の空だけを表示し、別の時間帯を選ぶとトラック全体が対象テーマへ切り替わります。
+- 朝・昼・夕方・夜の4ノードは常時表示します。選択中のノードは、半分見える朝日、真昼の太陽、低い夕日、月をそれぞれ主体にします。
+- 雲、光、星、惑星は現在の時間帯だけ段階的に現れます。ほかの3ノードは静かなまま見えており、選択できます。
+
+## Image2 ビットマップと時刻の動作
+
+トラックの空、4種類の天体、レイヤー装飾はすべて Image2 で生成したプロジェクト内ビットマップです。スイッチは引き続き端末のローカル時刻にある実際の境界で自動切り替えします。手動で選ぶと対象壁紙がすぐ反映され、次の実際の境界までだけ維持されます。
+
+## キーボードとモーションのフォールバック
+
+4ノードはキーボードで選択できます。キーボード操作は空間移動を待たず即時確定します。モーション低減時は短い透明度変化だけを残し、サイト内のモーションオフでは装飾の入場を行わず即時切り替えします。',
+    '2026-08-09T11:15:00.000Z',
+    '2026-08-09T11:15:00.000Z'
+  )
+on conflict(translation_id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-08-09-game-video-mcp-candidate',
   '2026-08-09-game-video-mcp-candidate',
   'site-updates',
@@ -13205,7 +13315,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260809-game-video-mcp-heartbeat-r1', '2026-08-09T09:30:00.000Z')
+values ('article_seed_version', '20260809-wallpaper-switch-scene-r1', '2026-08-09T11:15:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

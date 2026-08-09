@@ -23,9 +23,10 @@
 
 ## 2026-08-09 四时段壁纸开关
 
-- 主站右上角提供 morning／day／dusk／night 四段壁纸开关，保留 176×44 椭圆轨道；轨道、28×28 内嵌选择环及四套切换特效都使用项目内生成式图像素材，不以 CSS／代码绘制日月云等主体视觉。四段必须保留各自可辨认的晨光、日间、暮色与夜空层次；morning 为朝阳与云朵、day 为日光与白云、dusk 为落日云带、night 为月亮／行星／星光。选择环四周保留 8px 内边距，完整位于轨道内，不能压出外框或遮住相邻时段。
+- 主站右上角提供 morning／day／dusk／night 四段壁纸开关，固定为 176×44 椭圆。整条轨道在任一时刻只显示当前时段的一幅完整场景，严禁恢复成四张缩略景并排的拼轨。四个节点始终可见：未激活节点使用各时段独有、安静而有实体感的 18×12 标记；激活节点换成 32×32 实心天体，依次为半露晨日、正午全日、低位落日和月亮，top 为 6px，四档 left 为 6／50／94／138px。不得使用通用透明圆环。
 - 默认状态继续按访问设备本地时间的四个真实边界切换：05:00 morning、11:00 day、17:00 dusk、20:00 night。用户手动选择时立即切换，并只覆盖到下一真实时段边界；边界到达后清除覆盖并恢复自动时间状态。覆盖优先写入 `localStorage`，不可用时使用 `sessionStorage` 兜底，刷新后可恢复；成功写入本地存储的覆盖通过 `storage` 事件同步其他标签页。URL `?wallpaper=` 仍是显式预览优先级，不改写持久覆盖。
-- 细指针操作的选择器位移为 220ms strong ease-in-out；每次实际换档时，对应时段的生成式特效以三段裁切层 0／28／56ms 错峰、约 280ms transform／opacity 入场，再与选择环落位形成一组动作。底图与动态云层作为同一场景执行 300ms generation-safe crossfade；快速连续选择只允许最后一次 generation 提交，遵循 last-request-wins。自动边界、跨标签状态和手动选择都先预解码目标场景，手动覆盖期限以点击瞬间的最近真实边界为准，不因解码跨点延长。键盘操作与站内 motion-off 即时提交；`prefers-reduced-motion` 取消选择器位移、装饰特效与环境循环，但保留 140ms 纯透明度场景过渡，低性能档也跳过装饰特效。桌面端控件位于顶栏右侧，移动端只在 Home 的顶栏下方右侧显示。壁纸图像 token 为 `20260809-wallpaper-time-switch-r2`，公共模块与 seed token 为 `20260809-motion-polish-r2`。该功能完全位于公开前端与浏览器存储，不接入 D1、MCP、能力注册、CLI 或远程 Worker。
+- 每个主题由一幅完整场景和 far／mid／accent 三个不同的氛围内容组成，不能复制同一视觉区域冒充三层。允许把不同的 Image2 内容 cell 机械打包到同一 delivery atlas，再按声明的 cell 取用；这不等于重复裁切。morning 使用晨光射线与云，day 使用白云，dusk 使用落日云带，night 使用更丰富的星群与行星；night 三层按 3／5／6px 上升并以 0／35／70ms 错峰。开关是可快速重复触发的状态控件，场景、天体和氛围层只用可重定向的 transition 做 transform／opacity，不使用 keyframes；快速连续选择遵守 last-request-wins。目标场景必须预解码，手动覆盖期限仍按点击瞬间的下一真实边界计算，不因解码跨点延长。
+- 25 个不同的视觉内容源均由 Image2／imagegen 生成并由 `wallpaper-time-switch.source.json` 锁定真实尺寸、SHA-256、来源图与机械处理过程；发布时把其中 24 个内容按声明顺序机械纵向打包为 7 张 delivery atlas，`frame.png` 独立，运行时只请求 8 个唯一文件。机械处理仅为官方 chroma key、等分裁切、alpha 边界裁切、透明补边、Lanczos 缩放、PNG 优化和不同 cell 的无重采样打包，没有用代码绘制日月、云、星、行星、标记或边框，也不得重复一个 cell 代替其他语义层。键盘操作与站内 motion-off 即时提交；`prefers-reduced-motion` 只允许不超过 140ms 的纯 opacity 过渡，低性能档直接显示目标静态状态。桌面端控件位于顶栏右侧，移动端只在 Home 的顶栏下方右侧显示。壁纸图像 token 为 `20260809-wallpaper-time-switch-r3`，公开资源与 seed token 为 `20260809-wallpaper-switch-scene-r1`。该功能完全位于公开前端与浏览器存储，不接入 D1、MCP、能力注册、CLI 或远程 Worker。
 
 ## 2026-08-09 主站、Android 移动壳与后台动效精修
 

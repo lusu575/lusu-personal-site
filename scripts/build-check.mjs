@@ -23,6 +23,46 @@ const API_RUNTIME_SECRETS = Object.freeze({
   CHAT_IP_HASH_SALT: "build-check-chat-ip-hash-secret-000000001",
   ANALYTICS_IP_HASH_SALT: "build-check-analytics-ip-hash-secret-00001"
 });
+const wallpaperSwitchAssetExpectations = Object.freeze({
+  "scene-morning.png": [880, 220, "ed0f0b42223e1b9347739f59bae3b00518b251207f62c5c6c37a9dc2fc979393"],
+  "scene-day.png": [880, 220, "00bb13527a6d3fdb15a779dc9579bcd5175904b373c696b05c4167c3745d537a"],
+  "scene-dusk.png": [880, 220, "f72219f3b62351a9bfe9b1afb116249b78a8987e2f1e9eac79b6750d238b6ba5"],
+  "scene-night.png": [880, 220, "d020eec6d9253cbf8588a681abd71bd20d6bfa58d9e079df898cb94f091e6758"],
+  "frame.png": [880, 220, "34d03206c9277953ae2710695c57e8bfd059f185db5c9d861fe6ecdb8cbe5c46"],
+  "node-morning.png": [192, 192, "dfade5d678756845c855182f4249feff0bfd42e0b2cdfdac84dbb2c84c9e6c73"],
+  "node-day.png": [192, 192, "0003d44d137a2f03c10a90b8034ce3b00679805df2d549561ae81812ce2b2fa0"],
+  "node-dusk.png": [192, 192, "bb90046a011d1091d081c02048cf8a159bc29adc36702c979a1c74df75da4f9f"],
+  "node-night.png": [192, 192, "175b6f108f711aa7f0c2095c0e528bb002158fa4ef88238aa66fcb8a3349e295"],
+  "marker-morning.png": [144, 96, "c0af964bd10b9e30871aef87a46319e3f9642ca84564caae3bbf04a0d9310937"],
+  "marker-day.png": [144, 96, "9a183cbaee3270b04b22aa0ab2b9ed183c8ead354624ec4d45ffae1e0c469767"],
+  "marker-dusk.png": [144, 96, "be4ee00780f9ae289f470fd34ded431f634a8c75c351224d0e9a4cc63c0af4b4"],
+  "marker-night.png": [144, 96, "b1047f56ab1e8e8a5835b1718b8265d2ac02984d4a548b4cf56a0d1b2f9b289e"],
+  "atmosphere-morning-far.png": [480, 160, "8974fff8f730abf1712e580058951e4aca524e4cbe0f7a4df66beb50e1dfb597"],
+  "atmosphere-morning-mid.png": [480, 160, "fe06df84c2cc35c1776c37673f70c231d35e54962f50bb99c4ffbe37d8ea2e57"],
+  "atmosphere-morning-accent.png": [480, 160, "8bc6674767df6e7d08aac573f181cfd8d3356d77a385a29667f10b9155c8f790"],
+  "atmosphere-day-far.png": [480, 160, "37aff340e4ca71ec14515b6c4f88fc30c858858da807ba0a9bbe339c0e621db5"],
+  "atmosphere-day-mid.png": [480, 160, "f0e1c700f25a34882300204587440bfc3f794f98411d1ab0371ecf0091ed4540"],
+  "atmosphere-day-accent.png": [480, 160, "00d58ec520258b586f2ba9d5d9bda811f0371a4a398ffefa2c3af703c9752e1d"],
+  "atmosphere-dusk-far.png": [480, 160, "0c6a8c6c73bef4920ea6e26092331a06ba2b01750bef5f53c5bf76c2f86b4f23"],
+  "atmosphere-dusk-mid.png": [480, 160, "041d8f11bf2e135f1993c92208cf0ada19c4d2e2b566b3bcc11a052e09385385"],
+  "atmosphere-dusk-accent.png": [480, 160, "95aa78d8a0d8ef328f27f9dce70d734cc77319f403256290a17c46a33a5ef930"],
+  "atmosphere-night-far.png": [480, 160, "26cc237f451ff60ede8cacf9ba6db763b3655e214e21f239f64e5cb1ee68f603"],
+  "atmosphere-night-mid.png": [480, 160, "a8c8ba878eafad8376dfd8f1484119b5e200a5182a76ce1c9f474dc8e07681ba"],
+  "atmosphere-night-accent.png": [480, 160, "12c4b24711673952298d7e5d38da9ce43b814969e65c312a5da05a571f0b6df4"]
+});
+const wallpaperSwitchAssetPaths = Object.keys(wallpaperSwitchAssetExpectations)
+  .map((file) => `assets/images/wallpaper-switch/${file}`);
+const wallpaperSwitchDeliveryExpectations = Object.freeze({
+  "scene-atlas.png": [880, 880, "e6ac37ea24ea01dfe963b9c7fa924eab724e6a2d08ee92b788488acb1937527c", ["scene-morning.png", "scene-day.png", "scene-dusk.png", "scene-night.png"]],
+  "marker-atlas.png": [144, 384, "7607e9ae777f4fdfa359e28e85bc567a56f797a9fb6488c6e1ae52aaaa4b279b", ["marker-morning.png", "marker-day.png", "marker-dusk.png", "marker-night.png"]],
+  "node-atlas.png": [192, 768, "a16d8d5264f5c69be8e5bc5aae40309294dc5f450e2ef7a14da4e776890f4262", ["node-morning.png", "node-day.png", "node-dusk.png", "node-night.png"]],
+  "atmosphere-morning-atlas.png": [480, 480, "8164b84c4193f15bd5a00861c9b3591dbc43406f19d49f014ee463adc7ba6150", ["atmosphere-morning-far.png", "atmosphere-morning-mid.png", "atmosphere-morning-accent.png"]],
+  "atmosphere-day-atlas.png": [480, 480, "e443b5cb2bcfc20279994ced87529a3640269e6b9c5bef00dbc163301f884839", ["atmosphere-day-far.png", "atmosphere-day-mid.png", "atmosphere-day-accent.png"]],
+  "atmosphere-dusk-atlas.png": [480, 480, "06d1f2e2b9bbdd0094cc1a3d1f0aa7905bf274d06751d78786920870421059b1", ["atmosphere-dusk-far.png", "atmosphere-dusk-mid.png", "atmosphere-dusk-accent.png"]],
+  "atmosphere-night-atlas.png": [480, 480, "33677b5f579c2f4a99caf11279d8053926d3a9341e586d98dc6385ddcd2a1583", ["atmosphere-night-far.png", "atmosphere-night-mid.png", "atmosphere-night-accent.png"]]
+});
+const wallpaperSwitchDeliveryPaths = Object.keys(wallpaperSwitchDeliveryExpectations)
+  .map((file) => `assets/images/wallpaper-switch/${file}`);
 
 function apiEnv(DB) {
   return { DB, ...API_RUNTIME_SECRETS };
@@ -64,8 +104,8 @@ const requiredFiles = [
   "assets/images/mobile-wallpapers/day.webp",
   "assets/images/mobile-wallpapers/dusk.webp",
   "assets/images/mobile-wallpapers/night.webp",
-  "assets/images/wallpaper-switch/time-track.png",
-  "assets/images/wallpaper-switch/time-selector.png",
+  ...wallpaperSwitchAssetPaths,
+  ...wallpaperSwitchDeliveryPaths,
   "assets/images/wallpaper-switch/wallpaper-time-switch.source.json",
   "assets/images/generated-icons/whiteboard.png",
   "assets/images/generated-icons/whiteboard.source.json",
@@ -738,8 +778,8 @@ for (const file of [
   "assets/images/mobile-wallpapers/day.webp",
   "assets/images/mobile-wallpapers/dusk.webp",
   "assets/images/mobile-wallpapers/night.webp",
-  "assets/images/wallpaper-switch/time-track.png",
-  "assets/images/wallpaper-switch/time-selector.png",
+  ...wallpaperSwitchAssetPaths,
+  ...wallpaperSwitchDeliveryPaths,
   "assets/images/wallpaper-switch/wallpaper-time-switch.source.json",
   "css/mobile-ios-shell.css",
   "css/motion-system.css",
@@ -771,6 +811,7 @@ const schemaIndexesSql = readRequired("cloudflare/schema-indexes.sql");
 const d1MigrateLocalJs = readRequired("scripts/d1-migrate-local.mjs");
 const testRunnerJs = readRequired("scripts/run-tests.mjs");
 const indexHtml = readRequired("index.html");
+const wallpaperSwitchManifest = readRequiredJson("assets/images/wallpaper-switch/wallpaper-time-switch.source.json");
 const mobileIosShellCss = readRequired("css/mobile-ios-shell.css");
 const motionSystemCss = readRequired("css/motion-system.css");
 const styleCss = readRequired("css/style.css");
@@ -841,7 +882,8 @@ const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
 const whiteboardReleaseVersion = "20260806-agent-capabilities-quick-transfer-r1";
 const gameVideoMcpCandidateReleaseVersion = "20260809-game-video-mcp-heartbeat-r1";
 const motionPolishReleaseVersion = "20260809-motion-polish-r2";
-const wallpaperTimeSwitchAssetVersion = "20260809-wallpaper-time-switch-r2";
+const wallpaperSwitchSceneReleaseVersion = "20260809-wallpaper-switch-scene-r1";
+const wallpaperTimeSwitchAssetVersion = "20260809-wallpaper-time-switch-r3";
 const transferReleaseVersion = "20260809-transfer-motion-r2";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
 const resourcesRouteVersion = transferReleaseVersion;
@@ -851,6 +893,141 @@ const publicRouteVersion = (route) => route === "knowledge" || route === "chatro
   : (route === "resources" ? resourcesRouteVersion : routeLazyVersion);
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
 const chatroomIconVersion = "20260726-chatroom-icon-redraw-r2";
+
+const wallpaperSwitchThemes = ["morning", "day", "dusk", "night"];
+const wallpaperSwitchDepths = ["far", "mid", "accent"];
+const wallpaperSwitchExpectedNames = Object.keys(wallpaperSwitchAssetExpectations).sort();
+const wallpaperSwitchManifestEntries = Array.isArray(wallpaperSwitchManifest.generated_assets)
+  ? wallpaperSwitchManifest.generated_assets
+  : [];
+const wallpaperSwitchManifestNames = wallpaperSwitchManifestEntries.map((entry) => entry?.file).sort();
+const wallpaperSwitchDeliveryEntries = Array.isArray(wallpaperSwitchManifest.delivery_atlases)
+  ? wallpaperSwitchManifest.delivery_atlases
+  : [];
+const wallpaperSwitchDeliveryNames = wallpaperSwitchDeliveryEntries.map((entry) => entry?.file).sort();
+if (wallpaperSwitchManifest.schema_version !== 2
+  || wallpaperSwitchManifest.generator !== "imagegen"
+  || wallpaperSwitchManifest.asset_version !== wallpaperTimeSwitchAssetVersion
+  || canonicalJson(wallpaperSwitchManifestNames) !== canonicalJson(wallpaperSwitchExpectedNames)) {
+  fail("wallpaper switch source manifest must identify imagegen schema v2 and exactly the 25 r3 production assets");
+}
+if (canonicalJson(wallpaperSwitchManifest.visual_contract?.control_size_css_px) !== canonicalJson([176, 44])
+  || canonicalJson(wallpaperSwitchManifest.visual_contract?.active_node_css_px) !== canonicalJson([32, 32])
+  || wallpaperSwitchManifest.visual_contract?.active_node_top_css_px !== 6
+  || canonicalJson(wallpaperSwitchManifest.visual_contract?.active_node_left_by_theme_css_px)
+    !== canonicalJson({ morning: 6, day: 50, dusk: 94, night: 138 })
+  || canonicalJson(wallpaperSwitchManifest.visual_contract?.inactive_marker_css_px) !== canonicalJson([18, 12])
+  || canonicalJson(wallpaperSwitchManifest.visual_contract?.atmosphere_roles) !== canonicalJson(wallpaperSwitchDepths)) {
+  fail("wallpaper switch manifest must preserve the 176x44 whole-scene, four-stop, 32px active-node and 18x12 marker geometry");
+}
+const wallpaperSwitchProhibitedText = (wallpaperSwitchManifest.visual_contract?.prohibited_regressions || []).join(" ");
+if (!/four time-of-day thumbnails shown side by side/i.test(wallpaperSwitchProhibitedText)
+  || !/generic transparent selector ring/i.test(wallpaperSwitchProhibitedText)
+  || !/same visual region or atlas cell duplicated and clipped/i.test(wallpaperSwitchProhibitedText)
+  || !/packing distinct Image2-generated cells into a delivery atlas is permitted/i.test(wallpaperSwitchProhibitedText)
+  || !/keyframe animations/i.test(wallpaperSwitchProhibitedText)
+  || !/CSS, Canvas, SVG path, or code geometry/i.test(wallpaperSwitchProhibitedText)) {
+  fail("wallpaper switch manifest must retain the explicit visual-regression prohibitions");
+}
+if (!Array.isArray(wallpaperSwitchManifest.generation_sources)
+  || wallpaperSwitchManifest.generation_sources.length !== 10
+  || wallpaperSwitchManifest.generation_sources.some((source) => !/^exec-[a-f0-9-]+\.png$/.test(source?.imagegen_output || "") || !source?.prompt_summary)) {
+  fail("wallpaper switch manifest must retain all ten Image2/imagegen source groups, including the corrected full-size dusk node, and purpose prompts");
+}
+const wallpaperSwitchPipelineText = (wallpaperSwitchManifest.mechanical_pipeline?.steps || []).join(" ");
+if (wallpaperSwitchManifest.mechanical_pipeline?.pipeline_id !== "imagegen-chroma-crop-resize-atlas-png-v3"
+  || !/remove_chroma_key\.py/i.test(wallpaperSwitchPipelineText)
+  || !/equal cells/i.test(wallpaperSwitchPipelineText)
+  || !/alpha bounding box/i.test(wallpaperSwitchPipelineText)
+  || !/Lanczos/i.test(wallpaperSwitchPipelineText)
+  || !/25 distinct content files were byte-locked/i.test(wallpaperSwitchPipelineText)
+  || !/seven vertical delivery atlases/i.test(wallpaperSwitchPipelineText)
+  || !/Transparent source pixels are copied as straight RGBA/i.test(wallpaperSwitchPipelineText)
+  || !/no cell is resampled, repeated, blended with another cell, or repurposed/i.test(wallpaperSwitchPipelineText)
+  || !/No celestial body, cloud, star, planet, frame, marker, ray, or scene artwork was drawn or synthesized in code/.test(wallpaperSwitchPipelineText)) {
+  fail("wallpaper switch manifest must record the mechanical Image2 chroma/crop/pad/resize/distinct-cell atlas pipeline without claiming code-drawn art");
+}
+
+for (const [file, [expectedWidth, expectedHeight, expectedHash]] of Object.entries(wallpaperSwitchAssetExpectations)) {
+  const entry = wallpaperSwitchManifestEntries.find((candidate) => candidate?.file === file);
+  if (!entry
+    || entry.final_png?.width !== expectedWidth
+    || entry.final_png?.height !== expectedHeight
+    || entry.final_png?.sha256 !== expectedHash) {
+    fail(`wallpaper switch manifest metadata drifted for ${file}`);
+    continue;
+  }
+  const bytes = readFileSync(resolve(root, `assets/images/wallpaper-switch/${file}`));
+  const isPng = bytes.length >= 24
+    && bytes.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+  const width = isPng ? bytes.readUInt32BE(16) : 0;
+  const height = isPng ? bytes.readUInt32BE(20) : 0;
+  const hash = createHash("sha256").update(bytes).digest("hex");
+  if (!isPng || width !== expectedWidth || height !== expectedHeight || hash !== expectedHash) {
+    fail(`wallpaper switch production bytes drifted for ${file}`);
+  }
+}
+
+const wallpaperSwitchExpectedDeliveryNames = Object.keys(wallpaperSwitchDeliveryExpectations).sort();
+const wallpaperSwitchRuntimeFiles = [...wallpaperSwitchExpectedDeliveryNames, "frame.png"].sort();
+const wallpaperSwitchDeclaredRuntimeFiles = Array.isArray(wallpaperSwitchManifest.delivery_contract?.runtime_files)
+  ? [...wallpaperSwitchManifest.delivery_contract.runtime_files].sort()
+  : [];
+if (wallpaperSwitchManifest.delivery_contract?.content_asset_count !== 25
+  || wallpaperSwitchManifest.delivery_contract?.delivery_atlas_count !== 7
+  || wallpaperSwitchManifest.delivery_contract?.unique_runtime_request_count !== 8
+  || canonicalJson(wallpaperSwitchManifest.delivery_contract?.standalone_delivery_files) !== canonicalJson(["frame.png"])
+  || canonicalJson(wallpaperSwitchDeclaredRuntimeFiles) !== canonicalJson(wallpaperSwitchRuntimeFiles)
+  || canonicalJson(wallpaperSwitchDeliveryNames) !== canonicalJson(wallpaperSwitchExpectedDeliveryNames)
+  || !/different byte-locked Image2-generated content asset/.test(wallpaperSwitchManifest.delivery_contract?.packaging_rule || "")
+  || !/must never duplicate one cell or visual region/.test(wallpaperSwitchManifest.delivery_contract?.packaging_rule || "")) {
+  fail("wallpaper switch manifest must declare 25 distinct content assets packaged as seven atlases plus frame for exactly eight runtime requests");
+}
+const wallpaperSwitchPackedCells = wallpaperSwitchDeliveryEntries.flatMap((entry) => entry?.cells || []);
+const wallpaperSwitchExpectedPackedCells = wallpaperSwitchExpectedNames.filter((file) => file !== "frame.png").sort();
+if (new Set(wallpaperSwitchPackedCells).size !== 24
+  || canonicalJson([...wallpaperSwitchPackedCells].sort()) !== canonicalJson(wallpaperSwitchExpectedPackedCells)) {
+  fail("wallpaper switch delivery atlases must package each of the 24 non-frame content assets exactly once");
+}
+for (const [file, [expectedWidth, expectedHeight, expectedHash, expectedCells]] of Object.entries(wallpaperSwitchDeliveryExpectations)) {
+  const entry = wallpaperSwitchDeliveryEntries.find((candidate) => candidate?.file === file);
+  const expectedCellHeight = expectedHeight / expectedCells.length;
+  if (!entry
+    || entry.layout !== "vertical"
+    || entry.cell_width !== expectedWidth
+    || entry.cell_height !== expectedCellHeight
+    || canonicalJson(entry.cells) !== canonicalJson(expectedCells)
+    || entry.final_png?.width !== expectedWidth
+    || entry.final_png?.height !== expectedHeight
+    || entry.final_png?.sha256 !== expectedHash) {
+    fail(`wallpaper switch delivery-atlas metadata drifted for ${file}`);
+    continue;
+  }
+  const bytes = readFileSync(resolve(root, `assets/images/wallpaper-switch/${file}`));
+  const isPng = bytes.length >= 24
+    && bytes.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+  const width = isPng ? bytes.readUInt32BE(16) : 0;
+  const height = isPng ? bytes.readUInt32BE(20) : 0;
+  const hash = createHash("sha256").update(bytes).digest("hex");
+  if (!isPng || width !== expectedWidth || height !== expectedHeight || hash !== expectedHash) {
+    fail(`wallpaper switch delivery-atlas bytes drifted for ${file}`);
+  }
+}
+
+const supersededWallpaperSwitchAssets = [
+  "time-track.png",
+  "time-selector.png",
+  "node-inactive.png",
+  ...wallpaperSwitchThemes.map((theme) => `fx-${theme}.png`),
+  ...wallpaperSwitchThemes.map((theme) => `atmosphere-${theme}-ambient.png`)
+];
+for (const file of supersededWallpaperSwitchAssets) {
+  if (wallpaperSwitchManifestNames.includes(file)
+    || existsSync(resolve(root, `assets/images/wallpaper-switch/${file}`))) {
+    fail(`superseded wallpaper switch asset must be removed: ${file}`);
+  }
+}
+
 const transferAtlasReferences = [];
 for (const { path, source } of repositoryRuntimeSources()) {
   if (path === "scripts/build-check.mjs") continue;
@@ -902,7 +1079,7 @@ for (const route of lazyPublicRoutes) {
 for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
-  ["./data/home-content.mjs", gameVideoMcpCandidateReleaseVersion],
+  ["./data/home-content.mjs", wallpaperSwitchSceneReleaseVersion],
   ["./features/account.mjs", motionPolishReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", transferReleaseVersion]
@@ -2910,8 +3087,8 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = motionPolishReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = gameVideoMcpCandidateReleaseVersion;
-const currentCssVersion = motionPolishReleaseVersion;
+const currentMainVersion = wallpaperSwitchSceneReleaseVersion;
+const currentCssVersion = wallpaperSwitchSceneReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260809-browser-game-heartbeat-v1";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
@@ -2943,8 +3120,8 @@ if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== mot
 }
 
 const motionCssVersions = assetQueryVersions(indexHtml, "/css/motion-system.css");
-if (motionCssVersions.length !== 1 || motionCssVersions[0] !== motionPolishReleaseVersion) {
-  fail(`index.html /css/motion-system.css query should appear once as ${motionPolishReleaseVersion}`);
+if (motionCssVersions.length !== 1 || motionCssVersions[0] !== wallpaperSwitchSceneReleaseVersion) {
+  fail(`index.html /css/motion-system.css query should appear once as ${wallpaperSwitchSceneReleaseVersion}`);
 }
 
 if (countLiteral(quickTransferLoaderJs, transferLazyVersion) !== 1) {
@@ -3871,48 +4048,79 @@ if (!hasPattern(mainJs, /function\s+updateWallpaperMotionState[\s\S]*document\.d
 if (!hasPattern(motionSystemCss, /--motion-press:\s*140ms;[\s\S]*--motion-release:\s*90ms;/)
   || !hasPattern(motionSystemCss, /transform\s+var\(--motion-release\)\s+var\(--motion-ease-out\)[\s\S]*transition-duration:\s*var\(--motion-press\)/)
   || !hasPattern(lazyRouteCssSources.knowledge, /#knowledge\s+\.article-card[\s\S]*transform\s+var\(--motion-release\)[\s\S]*transition-duration:\s*var\(--motion-press\)/)
-  || !hasPattern(motionSystemCss, /\.wallpaper-time-selector img[\s\S]*transform\s+var\(--motion-release\)[\s\S]*\.wallpaper-time-option:active\s*~\s*\.wallpaper-time-selector img[\s\S]*transition-duration:\s*var\(--motion-press\)/)) {
+  || !hasPattern(motionSystemCss, /\.wallpaper-time-marker\s*\{[\s\S]*transform\s+var\(--motion-release\)\s+var\(--motion-ease-out\)[\s\S]*\.wallpaper-time-option\[aria-checked=["']false["']\]:active\s+\.wallpaper-time-marker\s*\{[\s\S]*transition-duration:\s*var\(--motion-press\)/)) {
   fail("public press feedback must use a deliberate 140ms press and faster 90ms release without layout animation");
 }
 
 const wallpaperSwitchOptions = [...indexHtml.matchAll(/<button\b[^>]*\bdata-wallpaper-time=["'](morning|day|dusk|night)["'][^>]*>/g)];
+const wallpaperSwitchRuntimePaths = [...indexHtml.matchAll(/(?:src|data-src)=["'](\/assets\/images\/wallpaper-switch\/[^?"']+\.png)\?v=20260809-wallpaper-time-switch-r3["']/g)]
+  .map((match) => match[1]);
+const wallpaperSwitchUniqueRuntimePaths = [...new Set(wallpaperSwitchRuntimePaths)].sort();
+const wallpaperSwitchExpectedRuntimePaths = [
+  ...Object.keys(wallpaperSwitchDeliveryExpectations),
+  "frame.png"
+].map((file) => `/assets/images/wallpaper-switch/${file}`).sort();
 if (!hasPattern(indexHtml, /id=["']wallpaper-time-switch["'][^>]*role=["']radiogroup["']/)
   || wallpaperSwitchOptions.length !== 4
   || new Set(wallpaperSwitchOptions.map((match) => match[1])).size !== 4
-  || !indexHtml.includes(`/assets/images/wallpaper-switch/time-track.png?v=${wallpaperTimeSwitchAssetVersion}`)
-  || !indexHtml.includes(`/assets/images/wallpaper-switch/time-selector.png?v=${wallpaperTimeSwitchAssetVersion}`)
-  || !["morning", "day", "dusk", "night"].every((theme) => (
-    indexHtml.includes(`data-src="/assets/images/wallpaper-switch/fx-${theme}.png?v=${wallpaperTimeSwitchAssetVersion}"`)
-  ))) {
-  fail("index.html wallpaper switch must use four semantic radio options and all six versioned generated image assets");
+  || !hasPattern(indexHtml, /id=["']wallpaper-time-switch["'][^>]*data-visual-theme=["']morning["']/)
+  || !indexHtml.includes(`/assets/images/wallpaper-switch/frame.png?v=${wallpaperTimeSwitchAssetVersion}`)
+  || canonicalJson(wallpaperSwitchUniqueRuntimePaths) !== canonicalJson(wallpaperSwitchExpectedRuntimePaths)
+  || wallpaperSwitchUniqueRuntimePaths.length !== 8
+  || !wallpaperSwitchThemes.every((theme) => (
+    hasPattern(indexHtml, new RegExp(`wallpaper-time-scene["'][^>]*data-switch-theme=["']${theme}["'][\\s\\S]{0,360}?wallpaper-time-scene-atlas["'][^>]*data-atlas-cell=["']${theme}["'][^>]*data-src=["']/assets/images/wallpaper-switch/scene-atlas\\.png\\?v=${wallpaperTimeSwitchAssetVersion}["']`))
+    && hasPattern(indexHtml, new RegExp(`data-wallpaper-time=["']${theme}["'][\\s\\S]{0,500}?wallpaper-time-marker-atlas["'][^>]*data-atlas-cell=["']${theme}["'][^>]*(?:src|data-src)=["']/assets/images/wallpaper-switch/marker-atlas\\.png\\?v=${wallpaperTimeSwitchAssetVersion}["']`))
+    && hasPattern(indexHtml, new RegExp(`wallpaper-time-celestial["'][^>]*data-switch-theme=["']${theme}["'][\\s\\S]{0,360}?wallpaper-time-node-atlas["'][^>]*data-atlas-cell=["']${theme}["'][^>]*data-src=["']/assets/images/wallpaper-switch/node-atlas\\.png\\?v=${wallpaperTimeSwitchAssetVersion}["']`))
+    && wallpaperSwitchDepths.every((depth) => hasPattern(indexHtml, new RegExp(`wallpaper-time-atmosphere["'][^>]*data-atmosphere-depth=["']${depth}["'][^>]*data-switch-theme=["']${theme}["'][\\s\\S]{0,360}?wallpaper-time-atmosphere-atlas["'][^>]*data-atlas-cell=["']${depth}["'][^>]*data-src=["']/assets/images/wallpaper-switch/atmosphere-${theme}-atlas\\.png\\?v=${wallpaperTimeSwitchAssetVersion}["']`)))
+  ))
+  || wallpaperSwitchExpectedNames.some((file) => file !== "frame.png" && indexHtml.includes(`/assets/images/wallpaper-switch/${file}?`))) {
+  fail("index.html wallpaper switch must map 24 distinct semantic cells onto seven delivery atlases plus frame, for exactly eight unique image requests");
 }
 
 if (!hasPattern(styleCss, /\.wallpaper-time-switch\s*\{[\s\S]*grid-template-columns:\s*repeat\(4,\s*44px\)[\s\S]*width:\s*176px[\s\S]*height:\s*44px/)
   || !hasPattern(styleCss, /\.wallpaper-time-option\s*\{[\s\S]*width:\s*44px[\s\S]*height:\s*44px/)
-  || !hasPattern(styleCss, /\.wallpaper-time-selector\s*\{[\s\S]*top:\s*8px[\s\S]*width:\s*28px[\s\S]*height:\s*28px[\s\S]*transform:\s*translate3d\(8px,\s*0,\s*0\)/)
-  || !hasPattern(styleCss, /data-time-theme=["']day["'][\s\S]*translate3d\(52px,[\s\S]*data-time-theme=["']dusk["'][\s\S]*translate3d\(96px,[\s\S]*data-time-theme=["']night["'][\s\S]*translate3d\(140px,/)
-  || !indexHtml.includes("8 + selectedIndex * 44")
-  || !mainEntryJs.includes("8 + selectedIndex * 44")
-  || !hasPattern(motionSystemCss, /\.wallpaper-time-selector\s*\{[\s\S]*transition:\s*transform\s+var\(--motion-window\)\s+var\(--motion-ease-in-out\)/)
-  || !hasPattern(mainEntryJs, /function\s+playWallpaperTimeEffect[\s\S]*dataset\.effectTheme\s*=\s*theme[\s\S]*380/)
-  || !hasPattern(mainEntryJs, /effectAssetsReady\s*!==\s*["']true["'][\s\S]*ensureWallpaperTimeEffectAssets\(group\)[\s\S]*return[\s\S]*dataset\.motion\s*!==\s*["']full["'][\s\S]*document\.hidden[\s\S]*dataset\.route\s*!==\s*["']home["']/)
-  || hasPattern(mainEntryJs, /ensureWallpaperTimeEffectAssets\(group\)\.then/)
-  || !hasPattern(mainEntryJs, /function\s+ensureWallpaperTimeEffectAssets[\s\S]*wallpaper-time-effect-layer\[data-src\][\s\S]*\.decode\(\)[\s\S]*effectAssetsReady\s*=\s*["']true["']/)
-  || !hasPattern(mainEntryJs, /if\s*\(nextRoute\s*===\s*["']home["']\)\s*void\s+ensureWallpaperTimeEffectAssets\(\)/)
-  || !hasPattern(mainEntryJs, /if\s*\(immediate\)[\s\S]*dataset\.immediate\s*=\s*["']true["'][\s\S]*else\s*\{[\s\S]*delete\s+group\.dataset\.immediate/)
-  || !["morning", "day", "dusk", "night"].every((theme) => (
-    motionSystemCss.includes(`@keyframes wallpaper-effect-${theme}`)
-  ))
-  || !hasPattern(motionSystemCss, /data-immediate=["']true["'][\s\S]*data-input-method=["']keyboard["'][\s\S]*data-motion=["']reduced["'][\s\S]*transition:\s*none\s*!important/)) {
-  fail("wallpaper switch geometry must keep four 44px targets, a 28px inset selector, and generated staggered transform-only theme effects");
+  || !hasPattern(styleCss, /\.wallpaper-time-viewport\s*\{[\s\S]*width:\s*176px[\s\S]*height:\s*44px[\s\S]*overflow:\s*hidden[\s\S]*border-radius:\s*999px/)
+  || !hasPattern(styleCss, /\.wallpaper-time-scene\s*\{[\s\S]*width:\s*176px[\s\S]*height:\s*44px[\s\S]*opacity:\s*0/)
+  || !hasPattern(styleCss, /\.wallpaper-time-marker\s*\{[\s\S]*width:\s*18px[\s\S]*height:\s*12px/)
+  || !hasPattern(styleCss, /\.wallpaper-time-thumb\s*\{[\s\S]*top:\s*6px[\s\S]*width:\s*32px[\s\S]*height:\s*32px[\s\S]*transform:\s*translate3d\(6px,\s*0,\s*0\)/)
+  || !hasPattern(styleCss, /\.wallpaper-time-scene-atlas\s*\{[\s\S]*width:\s*176px[\s\S]*height:\s*176px[\s\S]*data-atlas-cell=["']day["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-44px,[\s\S]*data-atlas-cell=["']dusk["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-88px,[\s\S]*data-atlas-cell=["']night["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-132px,/)
+  || !hasPattern(styleCss, /\.wallpaper-time-marker-atlas\s*\{[\s\S]*width:\s*18px[\s\S]*height:\s*48px[\s\S]*data-atlas-cell=["']day["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-12px,[\s\S]*data-atlas-cell=["']dusk["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-24px,[\s\S]*data-atlas-cell=["']night["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-36px,/)
+  || !hasPattern(styleCss, /\.wallpaper-time-node-atlas\s*\{[\s\S]*width:\s*32px[\s\S]*height:\s*128px[\s\S]*data-atlas-cell=["']day["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-32px,[\s\S]*data-atlas-cell=["']dusk["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-64px,[\s\S]*data-atlas-cell=["']night["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-96px,/)
+  || !hasPattern(styleCss, /\.wallpaper-time-atmosphere-atlas\s*\{[\s\S]*width:\s*176px[\s\S]*height:\s*176px[\s\S]*data-atlas-cell=["']mid["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-58\.6667px,[\s\S]*data-atlas-cell=["']accent["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-117\.3333px,/)
+  || !hasPattern(styleCss, /data-visual-theme=["']morning["'][^\{]*\.wallpaper-time-thumb\s*\{\s*transform:\s*translate3d\(6px,[\s\S]*data-visual-theme=["']day["'][^\{]*\.wallpaper-time-thumb\s*\{\s*transform:\s*translate3d\(50px,[\s\S]*data-visual-theme=["']dusk["'][^\{]*\.wallpaper-time-thumb\s*\{\s*transform:\s*translate3d\(94px,[\s\S]*data-visual-theme=["']night["'][^\{]*\.wallpaper-time-thumb\s*\{\s*transform:\s*translate3d\(138px,/)
+  || !hasPattern(styleCss, /\.wallpaper-time-option\[aria-checked=["']true["']\]\s+\.wallpaper-time-marker\s*\{[\s\S]*opacity:\s*0/)
+  || !hasPattern(motionSystemCss, /\.wallpaper-time-thumb\s*\{[\s\S]*transition:\s*transform\s+220ms\s+var\(--motion-ease-in-out\)/)
+  || !hasPattern(motionSystemCss, /\.wallpaper-time-atmosphere\s*\{[\s\S]*transition-property:\s*opacity,\s*transform/)
+  || !hasPattern(motionSystemCss, /data-switch-theme=["']night["']\]\[data-atmosphere-depth=["']far["']\]\s*\{\s*transform:\s*translate3d\(0,\s*3px,[\s\S]*data-switch-theme=["']night["']\]\[data-atmosphere-depth=["']mid["']\]\s*\{\s*transform:\s*translate3d\(0,\s*5px,[\s\S]*data-switch-theme=["']night["']\]\[data-atmosphere-depth=["']accent["']\]\s*\{\s*transform:\s*translate3d\(0,\s*6px,/)
+  || !hasPattern(motionSystemCss, /data-visual-theme=["']night["'][^\{]*data-atmosphere-depth=["']mid["']\]\s*\{[\s\S]*transition-delay:\s*35ms[\s\S]*data-visual-theme=["']night["'][^\{]*data-atmosphere-depth=["']accent["']\]\s*\{[\s\S]*transition-delay:\s*70ms/)
+  || !hasPattern(motionSystemCss, /data-motion=["']reduced["'][\s\S]*\.wallpaper-time-scene[\s\S]*transition:\s*opacity\s+140ms[\s\S]*data-immediate=["']true["'][\s\S]*data-motion=["']off["'][\s\S]*data-performance-tier=["']low["'][\s\S]*transition:\s*none\s*!important/)
+  || hasPattern(motionSystemCss, /@keyframes\s+(?:wallpaper-time|wallpaper-switch|wallpaper-effect)/i)
+  || !hasPattern(mainEntryJs, /function\s+loadWallpaperTimeSwitchAssets[\s\S]*assetsByUrl\s*=\s*new\s+Map[\s\S]*assetsByUrl\.has\(url\)[\s\S]*Promise\.allSettled\([\s\S]*assetsByUrl\.keys\(\)[\s\S]*urlAssets\.forEach\(\(asset\)\s*=>\s*asset\.setAttribute\(["']src["'],\s*url\)\)/)
+  || !hasPattern(mainEntryJs, /function\s+ensureWallpaperTimeSwitchThemeAssets[\s\S]*data-switch-theme=\"\$\{theme\}\"\]\s+\[data-src\][\s\S]*loadWallpaperTimeSwitchAssets/)
+  || !hasPattern(mainEntryJs, /function\s+ensureWallpaperTimeSwitchAssets[\s\S]*querySelectorAll\(["']\[data-src\]["']\)[\s\S]*visualAssetsReady\s*=\s*["']true["']/)
+  || !hasPattern(mainEntryJs, /function\s+syncWallpaperTimeSwitch[\s\S]*dataset\.motion\s*===\s*["']off["'][\s\S]*dataset\.inputMethod\s*===\s*["']keyboard["'][\s\S]*dataset\.performanceTier\s*===\s*["']low["'][\s\S]*dataset\.visualTheme\s*=\s*state\.theme/)
+  || !hasPattern(mainEntryJs, /if\s*\(nextRoute\s*===\s*["']home["']\)\s*void\s+ensureWallpaperTimeSwitchAssets\(\)/)) {
+  fail("wallpaper switch must compose one current generated scene with four persistent markers, distinct 32px celestials, retargetable three-layer transitions, and immediate accessibility fallbacks");
+}
+
+const wallpaperSwitchRuntimeSources = [indexHtml, styleCss, motionSystemCss, mainEntryJs].join("\n");
+for (const obsoleteAsset of supersededWallpaperSwitchAssets) {
+  if (wallpaperSwitchRuntimeSources.includes(`/assets/images/wallpaper-switch/${obsoleteAsset}`)) {
+    fail(`wallpaper switch runtime must not reference superseded asset ${obsoleteAsset}`);
+  }
+}
+if (/wallpaper-time-(?:track|selector|effect(?:-layer)?)/.test(wallpaperSwitchRuntimeSources)
+  || /8\s*\+\s*selectedIndex\s*\*\s*44/.test(wallpaperSwitchRuntimeSources)) {
+  fail("wallpaper switch runtime must not restore the four-scene strip, transparent selector, or duplicated clipped-effect implementation");
 }
 
 if (!hasPattern(mainEntryJs, /lusu-wallpaper-time-override-v1/)
   || !hasPattern(mainEntryJs, /function\s+scheduleWallpaperTimeBoundary[\s\S]*nextWallpaperTimeBoundary[\s\S]*warmWallpaperTheme\(upcomingTheme\)[\s\S]*setTimeout[\s\S]*reconcileWallpaperTimeTheme/)
   || !hasPattern(mainEntryJs, /function\s+selectWallpaperTimeTheme[\s\S]*createWallpaperTimeOverride\(theme,\s*selectedAt\)[\s\S]*warmWallpaperTheme[\s\S]*record\.expiresAt[\s\S]*updateHomeTimeTheme/)
   || !hasPattern(mainEntryJs, /addEventListener\(\s*["']storage["'][\s\S]*wallpaperTimeOverrideStorageKey[\s\S]*reconcileWallpaperTimeTheme/)
-  || !hasPattern(mainEntryJs, /invalidatePendingSelection[\s\S]*wallpaperTimeSelectionRequest\s*\+=\s*1[\s\S]*wallpaperTimePreparingTheme\s*=\s*["']["'][\s\S]*wallpaperTimePreparingPromise\s*=\s*null/)
-  || !hasPattern(mainEntryJs, /function\s+selectWallpaperTimeTheme[\s\S]*previousOverride\s*=\s*wallpaperTimeOverride[\s\S]*wallpaperTimeOverride\s*=\s*record[\s\S]*await\s+warmWallpaperTheme[\s\S]*if\s*\(!loaded\)[\s\S]*wallpaperTimeOverride\s*=\s*previousOverride/)
+  || !hasPattern(mainEntryJs, /if\s*\(options\.invalidatePendingSelection\)[\s\S]*wallpaperTimeSelectionRequest\s*\+=\s*1[\s\S]*wallpaperTimePreparingTheme\s*=\s*["']["'][\s\S]*wallpaperTimePreparingPromise\s*=\s*null/)
+  || !hasPattern(mainEntryJs, /function\s+selectWallpaperTimeTheme[\s\S]*committedOverride\s*=\s*readWallpaperTimeOverride\(selectedAt\)[\s\S]*wallpaperTimeOverride\s*=\s*record[\s\S]*await\s+warmWallpaperTheme[\s\S]*if\s*\(!loaded\)[\s\S]*wallpaperTimeOverride\s*=\s*committedOverride/)
+  || !hasPattern(mainEntryJs, /function\s+selectWallpaperTimeTheme[\s\S]*ensureWallpaperTimeSwitchThemeAssets\(theme,\s*group\)[\s\S]*syncWallpaperTimeSwitch/)
   || !hasPattern(mainEntryJs, /wallpaperTimePendingManualTheme\s*===\s*state\.theme\s*&&\s*wallpaperTimePendingManualPromise[\s\S]*return\s+wallpaperTimePendingManualPromise/)
   || !hasPattern(mainEntryJs, /wallpaperTimePendingManualTheme\s*=\s*theme[\s\S]*wallpaperTimePendingManualPromise\s*=\s*selection[\s\S]*return\s+await\s+selection[\s\S]*wallpaperTimePendingManualPromise\s*===\s*selection/)
   || !hasPattern(mainEntryJs, /function\s+prepareWallpaperThemeCrossfade[\s\S]*freezeWallpaperOverlays[\s\S]*wallpaper-theme-scene-overlay[\s\S]*frozenTransform[\s\S]*function\s+runWallpaperThemeCrossfade[\s\S]*wallpaperThemeTransitionGeneration/)
@@ -4322,16 +4530,18 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-09-game-video-mcp-candidate";
-const finalUpdateSlug = "2026-08-09-game-video-mcp-candidate";
+const finalUpdateId = "seed-update-2026-08-09-wallpaper-switch-scene-redesign";
+const finalUpdateSlug = "2026-08-09-wallpaper-switch-scene-redesign";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Game MCP Heartbeat Fix Candidate and Video Lifecycle Check";
-const finalPublishedAt = "2026-08-09T09:30:00.000Z";
+const finalTitleEn = "Four-Stage Wallpaper Switch Scene Redesign";
+const finalPublishedAt = "2026-08-09T11:15:00.000Z";
 const supportingReleaseUpdateIds = [
+  "seed-update-2026-08-09-game-video-mcp-candidate",
   "seed-update-2026-08-09-wallpaper-time-switch",
-  "seed-update-2026-08-09-motion-polish"
+  "seed-update-2026-08-09-motion-polish",
+  "seed-update-2026-08-07-remote-mcp-oauth"
 ];
 const finalTranslationMinimums = {
   title: 6,
@@ -4397,7 +4607,7 @@ if (finalUpdateStarted) {
   const projectedUpdateIndexes = projectedUpdateIds.map((updateId) => homeContentModuleJs.indexOf(updateId));
   if (projectedUpdateIndexes.some((index) => index < 0)
     || !projectedUpdateIndexes.every((index, offset, list) => offset === 0 || list[offset - 1] < index)) {
-    fail("js/data/home-content.mjs should order game/video MCP, wallpaper time, and motion polish by descending publication time");
+    fail("js/data/home-content.mjs should order wallpaper switch redesign, game/video heartbeat, wallpaper time, motion polish, and remote MCP by descending publication time");
   }
 
   for (const token of [
@@ -4558,7 +4768,7 @@ if (finalUpdateStarted) {
     '<time id="top-updated" datetime="2026-08-09">2026.08.09</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${motionPolishReleaseVersion}`,
-    `/css/motion-system.css?v=${motionPolishReleaseVersion}`,
+    `/css/motion-system.css?v=${wallpaperSwitchSceneReleaseVersion}`,
     `/js/mobile-shell.js?v=${motionPolishReleaseVersion}`,
     `/js/ui-motion.js?v=${motionPolishReleaseVersion}`,
     `/js/main.js?v=${finalMainVersion}`

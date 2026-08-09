@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
@@ -16,6 +17,43 @@ import {
 const root = new URL("../", import.meta.url);
 const themes = ["morning", "day", "dusk", "night"];
 const widths = [960, 1440, 1920];
+const wallpaperSwitchAssetVersion = "20260809-wallpaper-time-switch-r3";
+const wallpaperSwitchAssets = new Map([
+  ["scene-morning.png", [880, 220, "ed0f0b42223e1b9347739f59bae3b00518b251207f62c5c6c37a9dc2fc979393"]],
+  ["scene-day.png", [880, 220, "00bb13527a6d3fdb15a779dc9579bcd5175904b373c696b05c4167c3745d537a"]],
+  ["scene-dusk.png", [880, 220, "f72219f3b62351a9bfe9b1afb116249b78a8987e2f1e9eac79b6750d238b6ba5"]],
+  ["scene-night.png", [880, 220, "d020eec6d9253cbf8588a681abd71bd20d6bfa58d9e079df898cb94f091e6758"]],
+  ["frame.png", [880, 220, "34d03206c9277953ae2710695c57e8bfd059f185db5c9d861fe6ecdb8cbe5c46"]],
+  ["node-morning.png", [192, 192, "dfade5d678756845c855182f4249feff0bfd42e0b2cdfdac84dbb2c84c9e6c73"]],
+  ["node-day.png", [192, 192, "0003d44d137a2f03c10a90b8034ce3b00679805df2d549561ae81812ce2b2fa0"]],
+  ["node-dusk.png", [192, 192, "bb90046a011d1091d081c02048cf8a159bc29adc36702c979a1c74df75da4f9f"]],
+  ["node-night.png", [192, 192, "175b6f108f711aa7f0c2095c0e528bb002158fa4ef88238aa66fcb8a3349e295"]],
+  ["marker-morning.png", [144, 96, "c0af964bd10b9e30871aef87a46319e3f9642ca84564caae3bbf04a0d9310937"]],
+  ["marker-day.png", [144, 96, "9a183cbaee3270b04b22aa0ab2b9ed183c8ead354624ec4d45ffae1e0c469767"]],
+  ["marker-dusk.png", [144, 96, "be4ee00780f9ae289f470fd34ded431f634a8c75c351224d0e9a4cc63c0af4b4"]],
+  ["marker-night.png", [144, 96, "b1047f56ab1e8e8a5835b1718b8265d2ac02984d4a548b4cf56a0d1b2f9b289e"]],
+  ["atmosphere-morning-far.png", [480, 160, "8974fff8f730abf1712e580058951e4aca524e4cbe0f7a4df66beb50e1dfb597"]],
+  ["atmosphere-morning-mid.png", [480, 160, "fe06df84c2cc35c1776c37673f70c231d35e54962f50bb99c4ffbe37d8ea2e57"]],
+  ["atmosphere-morning-accent.png", [480, 160, "8bc6674767df6e7d08aac573f181cfd8d3356d77a385a29667f10b9155c8f790"]],
+  ["atmosphere-day-far.png", [480, 160, "37aff340e4ca71ec14515b6c4f88fc30c858858da807ba0a9bbe339c0e621db5"]],
+  ["atmosphere-day-mid.png", [480, 160, "f0e1c700f25a34882300204587440bfc3f794f98411d1ab0371ecf0091ed4540"]],
+  ["atmosphere-day-accent.png", [480, 160, "00d58ec520258b586f2ba9d5d9bda811f0371a4a398ffefa2c3af703c9752e1d"]],
+  ["atmosphere-dusk-far.png", [480, 160, "0c6a8c6c73bef4920ea6e26092331a06ba2b01750bef5f53c5bf76c2f86b4f23"]],
+  ["atmosphere-dusk-mid.png", [480, 160, "041d8f11bf2e135f1993c92208cf0ada19c4d2e2b566b3bcc11a052e09385385"]],
+  ["atmosphere-dusk-accent.png", [480, 160, "95aa78d8a0d8ef328f27f9dce70d734cc77319f403256290a17c46a33a5ef930"]],
+  ["atmosphere-night-far.png", [480, 160, "26cc237f451ff60ede8cacf9ba6db763b3655e214e21f239f64e5cb1ee68f603"]],
+  ["atmosphere-night-mid.png", [480, 160, "a8c8ba878eafad8376dfd8f1484119b5e200a5182a76ce1c9f474dc8e07681ba"]],
+  ["atmosphere-night-accent.png", [480, 160, "12c4b24711673952298d7e5d38da9ce43b814969e65c312a5da05a571f0b6df4"]]
+]);
+const wallpaperSwitchDeliveryAtlases = new Map([
+  ["scene-atlas.png", [880, 880, "e6ac37ea24ea01dfe963b9c7fa924eab724e6a2d08ee92b788488acb1937527c", ["scene-morning.png", "scene-day.png", "scene-dusk.png", "scene-night.png"]]],
+  ["marker-atlas.png", [144, 384, "7607e9ae777f4fdfa359e28e85bc567a56f797a9fb6488c6e1ae52aaaa4b279b", ["marker-morning.png", "marker-day.png", "marker-dusk.png", "marker-night.png"]]],
+  ["node-atlas.png", [192, 768, "a16d8d5264f5c69be8e5bc5aae40309294dc5f450e2ef7a14da4e776890f4262", ["node-morning.png", "node-day.png", "node-dusk.png", "node-night.png"]]],
+  ["atmosphere-morning-atlas.png", [480, 480, "8164b84c4193f15bd5a00861c9b3591dbc43406f19d49f014ee463adc7ba6150", ["atmosphere-morning-far.png", "atmosphere-morning-mid.png", "atmosphere-morning-accent.png"]]],
+  ["atmosphere-day-atlas.png", [480, 480, "e443b5cb2bcfc20279994ced87529a3640269e6b9c5bef00dbc163301f884839", ["atmosphere-day-far.png", "atmosphere-day-mid.png", "atmosphere-day-accent.png"]]],
+  ["atmosphere-dusk-atlas.png", [480, 480, "06d1f2e2b9bbdd0094cc1a3d1f0aa7905bf274d06751d78786920870421059b1", ["atmosphere-dusk-far.png", "atmosphere-dusk-mid.png", "atmosphere-dusk-accent.png"]]],
+  ["atmosphere-night-atlas.png", [480, 480, "33677b5f579c2f4a99caf11279d8053926d3a9341e586d98dc6385ddcd2a1583", ["atmosphere-night-far.png", "atmosphere-night-mid.png", "atmosphere-night-accent.png"]]]
+]);
 
 async function asset(path) {
   const url = new URL(path, root);
@@ -110,6 +148,131 @@ test("responsive wallpaper and window assets stay below the per-file budget", as
         }
       }
     }
+  }
+});
+
+test("wallpaper switch manifest locks the 25 generated scene assets", async () => {
+  const manifestUrl = new URL("assets/images/wallpaper-switch/wallpaper-time-switch.source.json", root);
+  const manifest = JSON.parse(await readFile(manifestUrl, "utf8"));
+  assert.equal(manifest.schema_version, 2);
+  assert.equal(manifest.generator, "imagegen");
+  assert.equal(manifest.asset_version, wallpaperSwitchAssetVersion);
+  assert.deepEqual(manifest.visual_contract.control_size_css_px, [176, 44]);
+  assert.deepEqual(manifest.visual_contract.active_node_css_px, [32, 32]);
+  assert.deepEqual(manifest.visual_contract.inactive_marker_css_px, [18, 12]);
+  assert.deepEqual(manifest.visual_contract.atmosphere_roles, ["far", "mid", "accent"]);
+  assert.ok(
+    manifest.generation_sources.every((source) => /^exec-[a-f0-9-]+\.png$/.test(source.imagegen_output)),
+    "every current visual group must retain its original Image2/imagegen output"
+  );
+  assert.match(
+    manifest.mechanical_pipeline.steps.join(" "),
+    /No celestial body, cloud, star, planet, frame, marker, ray, or scene artwork was drawn or synthesized in code/
+  );
+
+  const manifestNames = manifest.generated_assets.map(({ file }) => file);
+  assert.deepEqual([...manifestNames].sort(), [...wallpaperSwitchAssets.keys()].sort());
+  assert.equal(new Set(manifestNames).size, 25);
+  assert.equal(
+    new Set(manifest.generated_assets.map(({ final_png: { sha256 } }) => sha256)).size,
+    25,
+    "every Image2 content source must remain byte-distinct"
+  );
+
+  for (const entry of manifest.generated_assets) {
+    const [expectedWidth, expectedHeight, expectedHash] = wallpaperSwitchAssets.get(entry.file);
+    assert.deepEqual(
+      [entry.final_png.width, entry.final_png.height, entry.final_png.sha256],
+      [expectedWidth, expectedHeight, expectedHash],
+      `${entry.file} manifest metadata drifted`
+    );
+    const url = new URL(`assets/images/wallpaper-switch/${entry.file}`, root);
+    const bytes = await readFile(url);
+    const metadata = await sharp(bytes).metadata();
+    assert.deepEqual([metadata.width, metadata.height], [expectedWidth, expectedHeight], `${entry.file} dimensions drifted`);
+    assert.equal(metadata.format, "png");
+    if (entry.file.startsWith("scene-")) {
+      assert.equal(metadata.hasAlpha, false, `${entry.file} is the intentionally opaque complete sky scene`);
+      assert.equal(metadata.channels, 3, `${entry.file} must decode as RGB`);
+    } else {
+      assert.equal(metadata.hasAlpha, true, `${entry.file} must preserve its generated alpha channel`);
+      assert.equal(metadata.channels, 4, `${entry.file} must decode as RGBA`);
+    }
+    assert.equal(createHash("sha256").update(bytes).digest("hex"), expectedHash, `${entry.file} bytes drifted`);
+  }
+
+  const duskNodeBounds = alphaBounds(await rgba("assets/images/wallpaper-switch/node-dusk.png"));
+  assert.ok(duskNodeBounds.width >= 174 && duskNodeBounds.width <= 182, "dusk node must nearly fill the 32px active thumb");
+  assert.ok(duskNodeBounds.height >= 174 && duskNodeBounds.height <= 182, "dusk node must match the other active nodes' visual weight");
+  assert.ok(
+    duskNodeBounds.left >= 5
+      && duskNodeBounds.top >= 5
+      && duskNodeBounds.right <= 186
+      && duskNodeBounds.bottom <= 186,
+    "dusk node must retain a transparent safety inset on every edge"
+  );
+
+  assert.equal(manifest.delivery_contract.content_asset_count, 25);
+  assert.equal(manifest.delivery_contract.delivery_atlas_count, 7);
+  assert.equal(manifest.delivery_contract.unique_runtime_request_count, 8);
+  assert.deepEqual(manifest.delivery_contract.standalone_delivery_files, ["frame.png"]);
+  assert.deepEqual(
+    [...manifest.delivery_contract.runtime_files].sort(),
+    [...wallpaperSwitchDeliveryAtlases.keys(), "frame.png"].sort()
+  );
+  assert.match(manifest.delivery_contract.packaging_rule, /Every atlas cell is a different byte-locked Image2-generated content asset/);
+  assert.match(manifest.delivery_contract.packaging_rule, /must never duplicate one cell or visual region/);
+  const packedCells = manifest.delivery_atlases.flatMap(({ cells }) => cells);
+  assert.equal(new Set(packedCells).size, 24);
+  assert.deepEqual(
+    [...packedCells].sort(),
+    [...wallpaperSwitchAssets.keys()].filter((file) => file !== "frame.png").sort()
+  );
+
+  for (const entry of manifest.delivery_atlases) {
+    const [expectedWidth, expectedHeight, expectedHash, expectedCells] = wallpaperSwitchDeliveryAtlases.get(entry.file);
+    assert.equal(entry.layout, "vertical");
+    assert.deepEqual(entry.cells, expectedCells);
+    assert.deepEqual([entry.cell_width, entry.cell_height], [expectedWidth, expectedHeight / expectedCells.length]);
+    assert.deepEqual(
+      [entry.final_png.width, entry.final_png.height, entry.final_png.sha256],
+      [expectedWidth, expectedHeight, expectedHash],
+      `${entry.file} delivery metadata drifted`
+    );
+    const atlasUrl = new URL(`assets/images/wallpaper-switch/${entry.file}`, root);
+    const atlasBytes = await readFile(atlasUrl);
+    const atlasMetadata = await sharp(atlasBytes).metadata();
+    assert.deepEqual([atlasMetadata.width, atlasMetadata.height], [expectedWidth, expectedHeight]);
+    assert.equal(createHash("sha256").update(atlasBytes).digest("hex"), expectedHash, `${entry.file} bytes drifted`);
+    for (const [cellIndex, sourceFile] of expectedCells.entries()) {
+      const [, cellHeight] = wallpaperSwitchAssets.get(sourceFile);
+      const packedCell = await sharp(atlasBytes)
+        .extract({ left: 0, top: cellIndex * cellHeight, width: expectedWidth, height: cellHeight })
+        .ensureAlpha()
+        .raw()
+        .toBuffer();
+      const sourceCell = await sharp(fileURLToPath(new URL(`assets/images/wallpaper-switch/${sourceFile}`, root)))
+        .ensureAlpha()
+        .raw()
+        .toBuffer();
+      assert.deepEqual(packedCell, sourceCell, `${entry.file} cell ${cellIndex} must exactly preserve ${sourceFile}`);
+    }
+  }
+
+  const superseded = [
+    "time-track.png",
+    "time-selector.png",
+    "node-inactive.png",
+    ...themes.map((theme) => `fx-${theme}.png`),
+    ...themes.map((theme) => `atmosphere-${theme}-ambient.png`)
+  ];
+  for (const file of superseded) {
+    assert.ok(!manifestNames.includes(file), `${file} must not remain in the current manifest`);
+    await assert.rejects(
+      stat(new URL(`assets/images/wallpaper-switch/${file}`, root)),
+      { code: "ENOENT" },
+      `${file} must not remain as a production asset`
+    );
   }
 });
 
@@ -269,7 +432,7 @@ test("JSON resource cache still coalesces callers that share the same scope", as
 });
 
 test("cacheable API JSON emits a stable ETag and honors If-None-Match", async () => {
-  assert.equal(PUBLIC_API_REPRESENTATION_VERSION, "20260809-game-video-mcp-heartbeat-r1");
+  assert.equal(PUBLIC_API_REPRESENTATION_VERSION, "20260809-wallpaper-switch-scene-r1");
   const first = await cacheableJson(new Request("https://example.test/api/articles"), { articles: [] });
   const etag = first.headers.get("ETag");
   assert.match(etag, /^"sha256-[a-f0-9]{64}"$/);
