@@ -34,8 +34,9 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the remote MCP OAuth release leads the five-item trilingual projection while older updates remain archived", async () => {
-  const updateId = "seed-update-2026-08-07-remote-mcp-oauth";
+test("the game and video MCP candidate leads the five-item trilingual projection while older updates remain archived", async () => {
+  const updateId = "seed-update-2026-08-09-game-video-mcp-candidate";
+  const remoteMcpOauthUpdateId = "seed-update-2026-08-07-remote-mcp-oauth";
   const lifeRestartAgentUpdateId = "seed-update-2026-08-07-life-restart-agent";
   const hextrisAgentUpdateId = "seed-update-2026-08-07-hextris-agent";
   const whiteboardAgentImagesUpdateId = "seed-update-2026-08-06-whiteboard-agent-images";
@@ -58,19 +59,20 @@ test("the remote MCP OAuth release leads the five-item trilingual projection whi
 
   assert.equal(content.updates[0].article_id, updateId);
   assert.equal(homeContent.updates[0].article_id, updateId);
-  assert.equal(content.updates[1].article_id, lifeRestartAgentUpdateId);
-  assert.equal(homeContent.updates[1].article_id, lifeRestartAgentUpdateId);
-  assert.equal(content.updates[2].article_id, hextrisAgentUpdateId);
-  assert.equal(homeContent.updates[2].article_id, hextrisAgentUpdateId);
-  assert.equal(content.updates[3].article_id, whiteboardAgentImagesUpdateId);
-  assert.equal(homeContent.updates[3].article_id, whiteboardAgentImagesUpdateId);
-  assert.equal(content.updates[4].article_id, agentAuthFormOriginUpdateId);
-  assert.equal(homeContent.updates[4].article_id, agentAuthFormOriginUpdateId);
-  assert.equal(content.updates[5].article_id, japaneseProgressUpdateId);
-  assert.equal(content.updates[6].article_id, agentReadBreadthUpdateId);
-  assert.equal(content.updates[7].article_id, whiteboard2048UpdateId);
-  assert.equal(content.updates[8].article_id, firstPhaseUpdateId);
-  assert.equal(content.updates[9].article_id, websiteGuideUpdateId);
+  assert.equal(content.updates[1].article_id, remoteMcpOauthUpdateId);
+  assert.equal(homeContent.updates[1].article_id, remoteMcpOauthUpdateId);
+  assert.equal(content.updates[2].article_id, lifeRestartAgentUpdateId);
+  assert.equal(homeContent.updates[2].article_id, lifeRestartAgentUpdateId);
+  assert.equal(content.updates[3].article_id, hextrisAgentUpdateId);
+  assert.equal(homeContent.updates[3].article_id, hextrisAgentUpdateId);
+  assert.equal(content.updates[4].article_id, whiteboardAgentImagesUpdateId);
+  assert.equal(homeContent.updates[4].article_id, whiteboardAgentImagesUpdateId);
+  assert.equal(content.updates[5].article_id, agentAuthFormOriginUpdateId);
+  assert.equal(content.updates[6].article_id, japaneseProgressUpdateId);
+  assert.equal(content.updates[7].article_id, agentReadBreadthUpdateId);
+  assert.equal(content.updates[8].article_id, whiteboard2048UpdateId);
+  assert.equal(content.updates[9].article_id, firstPhaseUpdateId);
+  assert.equal(content.updates[10].article_id, websiteGuideUpdateId);
   assert.ok(content.updates.some((update) => update.article_id === trafficUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === calmWhiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === reliableWhiteboardUpdateId));
@@ -99,9 +101,8 @@ test("Knowledge Markdown links use a fresh cache version without invalidating un
   const stableVersion = "20260726-security-reliability-r1";
   const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
   const agentCapabilitiesVersion = "20260806-agent-capabilities-quick-transfer-r1";
-  const remoteMcpOauthVersion = "20260809-remote-mcp-oauth-r2";
-  const whiteboardAgentImagesVersion = "20260807-remote-mcp-oauth-r1";
-  const transferVersion = "20260807-remote-mcp-oauth-r1";
+  const gameVideoMcpCandidateVersion = "20260809-game-video-mcp-candidate-r2";
+  const transferVersion = "20260809-game-video-mcp-candidate-r2";
   const index = read("index.html");
   const main = read("js/main.js");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");
@@ -116,13 +117,13 @@ test("Knowledge Markdown links use a fresh cache version without invalidating un
     assert.ok(index.includes(`${asset}?v=${stableVersion}`), `${asset} should use ${stableVersion}`);
   }
   assert.ok(index.includes(`/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`));
-  assert.ok(index.includes(`/js/main.js?v=${remoteMcpOauthVersion}`));
+  assert.ok(index.includes(`/js/main.js?v=${gameVideoMcpCandidateVersion}`));
   assert.ok(main.includes(`const routeStyleVersion = "${knowledgeReaderVersion}"`));
   assert.ok(main.includes(`./core/i18n.mjs?v=${agentCapabilitiesVersion}`));
-  assert.ok(main.includes(`./data/home-content.mjs?v=${remoteMcpOauthVersion}`));
+  assert.ok(main.includes(`./data/home-content.mjs?v=${gameVideoMcpCandidateVersion}`));
   assert.ok(main.includes(`./routes/knowledge.mjs?v=${agentCapabilitiesVersion}`));
   assert.ok(main.includes(`./routes/resources.mjs?v=${transferVersion}`));
-  assert.ok(main.includes(`./data/resources-content.mjs?v=${whiteboardAgentImagesVersion}`));
+  assert.ok(main.includes(`./data/resources-content.mjs?v=${transferVersion}`));
   for (const token of [
     '"AI 能力": { zh: "AI 能力", en: "AI capabilities", ja: "AI 機能" }',
     '"CLI": { zh: "CLI", en: "CLI", ja: "CLI" }',

@@ -9,6 +9,7 @@ import {
   OWNER_SCOPES
 } from "../src/constants";
 import { oauthProviderOptions } from "../src/index";
+import { handleOAuthRevocationWithLedgerSync } from "../src/oauth-revocation";
 import { hmacSha256Hex, sha256Hex } from "../src/security";
 
 const testEnv = env as unknown as {
@@ -162,9 +163,69 @@ function deferred<T = void>(): {
   return { promise, resolve, reject };
 }
 
+type RelayConnection = {
+  socket: WebSocket;
+  messages: Array<Record<string, any>>;
+};
+
+function randomPairingCode(): string {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  const bytes = crypto.getRandomValues(new Uint8Array(26));
+  return [...bytes].map((byte) => alphabet[byte & 31]).join("");
+}
+
+async function openGameRelay(pairingCode: string): Promise<RelayConnection> {
+  const response = await SELF.fetch(`${CANONICAL_ISSUER}/mcp/browser-games/connect`, {
+    headers: {
+      Cookie: `lusu_session=${SESSION_TOKEN}`,
+      Host: "lusu575.com",
+      Origin: CANONICAL_ISSUER,
+      "Sec-Fetch-Site": "same-origin",
+      Upgrade: "websocket",
+      "Sec-WebSocket-Protocol": `lusu-game-v1, pair.${pairingCode}`,
+      "Sec-WebSocket-Version": "13"
+    }
+  });
+  expect(response.status).toBe(101);
+  expect(response.headers.get("sec-websocket-protocol")).toBe("lusu-game-v1");
+  expect(response.webSocket).not.toBeNull();
+  const socket = response.webSocket!;
+  const messages: Array<Record<string, any>> = [];
+  socket.addEventListener("message", (event) => {
+    if (typeof event.data !== "string") return;
+    try {
+      messages.push(JSON.parse(event.data) as Record<string, any>);
+    } catch {
+      // Invalid frames are asserted by the relay and are not useful to this queue.
+    }
+  });
+  socket.accept();
+  return { socket, messages };
+}
+
+async function waitForRelayMessage(
+  connection: RelayConnection,
+  type: string,
+  afterIndex = 0,
+  timeoutMs = 2_000
+): Promise<Record<string, any>> {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < timeoutMs) {
+    const message = connection.messages.slice(afterIndex).find((item) => item.type === type);
+    if (message) return message;
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+  throw new Error(`Timed out waiting for relay message: ${type}`);
+}
+
 async function authorizeTestClient(
   scopes: string[],
-  forcedGrantRef = ""
+  forcedGrantRef = "",
+  captureTokens?: (value: {
+    clientId: string;
+    accessToken: string;
+    refreshToken: string;
+  }) => void
 ): Promise<string> {
   const redirectUri = "http://127.0.0.1:43110/callback";
   const registration = await SELF.fetch(`${CANONICAL_ISSUER}/oauth/register`, {
@@ -265,6 +326,9 @@ async function authorizeTestClient(
   expect(tokenPayload.token_type).toBe("bearer");
   const accessToken = String(tokenPayload.access_token || "");
   expect(accessToken).not.toBe("");
+  const refreshToken = String(tokenPayload.refresh_token || "");
+  expect(refreshToken).not.toBe("");
+  captureTokens?.({ clientId, accessToken, refreshToken });
   return accessToken;
 }
 
@@ -307,6 +371,24 @@ function structuredToolResult(body: Record<string, any>): Record<string, any> {
   return result?.result ?? result ?? {};
 }
 
+async function installGameOutcomeAuditFailure(
+  result: "pending" | "success" | "error"
+): Promise<void> {
+  await testEnv.DB.prepare("drop trigger if exists fail_game_outcome_audit").run();
+  await testEnv.DB.prepare(`
+    create trigger fail_game_outcome_audit
+    before insert on mcp_oauth_audit_log
+    when new.tool_name = 'game_browser_act' and new.result = '${result}'
+    begin
+      select raise(abort, 'forced game outcome audit failure');
+    end
+  `).run();
+}
+
+async function clearGameOutcomeAuditFailure(): Promise<void> {
+  await testEnv.DB.prepare("drop trigger if exists fail_game_outcome_audit").run();
+}
+
 function publishInput(operationId: string, slug: string): Record<string, unknown> {
   return {
     operationId,
@@ -335,6 +417,7 @@ function publishInput(operationId: string, slug: string): Record<string, unknown
 
 beforeEach(async () => {
   await clearOAuthKv();
+  await clearGameOutcomeAuditFailure();
   await testEnv.DB.batch([
     testEnv.DB.prepare(`create table if not exists users (
       id text primary key,
@@ -479,7 +562,7 @@ describe("OAuth discovery metadata", () => {
     expect(oauthProviderOptions.scopesSupported).toEqual([...OWNER_SCOPES]);
   });
 
-  it("keeps protected-resource discovery at the baseline read scope", async () => {
+  it("advertises every owner scope in protected-resource discovery", async () => {
     const response = await SELF.fetch(
       `${CANONICAL_ISSUER}/.well-known/oauth-protected-resource/mcp`
     );
@@ -487,7 +570,7 @@ describe("OAuth discovery metadata", () => {
     await expect(response.json()).resolves.toMatchObject({
       resource: MCP_RESOURCE,
       authorization_servers: [CANONICAL_ISSUER],
-      scopes_supported: ["content:read"],
+      scopes_supported: [...OWNER_SCOPES],
       bearer_methods_supported: ["header"]
     });
   });
@@ -723,7 +806,7 @@ describe("owner consent page", () => {
             responseType: "code",
             clientId: "loopback-client",
             redirectUri,
-            scope: ["content:read", "content:write"],
+            scope: ["content:read", "content:write", "content:delete", "games:play"],
             state: "consent-state",
             codeChallenge: "C".repeat(43),
             codeChallengeMethod: "S256",
@@ -765,6 +848,11 @@ describe("owner consent page", () => {
     expect(html).toContain(redirectUri);
     expect(html).toContain("content:read");
     expect(html).toContain("content:write");
+    expect(html).toContain("content:delete");
+    expect(html).toContain("games:play");
+    expect(html).toContain("knowledge articles and video records");
+    expect(html).toContain("ordinary article or video record");
+    expect(html).toContain("Read and control a currently open game after explicit pairing");
   });
 
   it("adds only the exact registered HTTPS callback origin to consent form-action", async () => {
@@ -1141,6 +1229,488 @@ describe("owner consent page", () => {
   });
 });
 
+describe("owner browser game relay", () => {
+  it("requires exact same-origin WebSocket pairing and an active admin session", async () => {
+    const pairingCode = randomPairingCode();
+    const baseHeaders = {
+      Host: "lusu575.com",
+      Upgrade: "websocket",
+      "Sec-WebSocket-Protocol": `lusu-game-v1, pair.${pairingCode}`,
+      "Sec-WebSocket-Version": "13"
+    };
+    const missingOrigin = await SELF.fetch(
+      `${CANONICAL_ISSUER}/mcp/browser-games/connect`,
+      { headers: { ...baseHeaders, Cookie: `lusu_session=${SESSION_TOKEN}` } }
+    );
+    expect(missingOrigin.status).toBe(403);
+    await expect(missingOrigin.json()).resolves.toMatchObject({
+      code: "GAME_RELAY_ORIGIN_REJECTED"
+    });
+
+    const foreignOrigin = await SELF.fetch(
+      `${CANONICAL_ISSUER}/mcp/browser-games/connect`,
+      {
+        headers: {
+          ...baseHeaders,
+          Cookie: `lusu_session=${SESSION_TOKEN}`,
+          Origin: "https://attacker.example"
+        }
+      }
+    );
+    expect(foreignOrigin.status).toBe(403);
+    await expect(foreignOrigin.json()).resolves.toMatchObject({
+      code: "REQUEST_ORIGIN_REJECTED"
+    });
+
+    const missingSession = await SELF.fetch(
+      `${CANONICAL_ISSUER}/mcp/browser-games/connect`,
+      { headers: { ...baseHeaders, Origin: CANONICAL_ISSUER } }
+    );
+    expect(missingSession.status).toBe(401);
+    await expect(missingSession.json()).resolves.toMatchObject({
+      code: "OAUTH_LOGIN_REQUIRED"
+    });
+
+    const invalidProtocol = await SELF.fetch(
+      `${CANONICAL_ISSUER}/mcp/browser-games/connect`,
+      {
+        headers: {
+          ...baseHeaders,
+          Cookie: `lusu_session=${SESSION_TOKEN}`,
+          Origin: CANONICAL_ISSUER,
+          "Sec-WebSocket-Protocol": `lusu-game-v1, pair.${pairingCode.slice(1)}`
+        }
+      }
+    );
+    expect(invalidProtocol.status).toBe(422);
+    await expect(invalidProtocol.json()).resolves.toMatchObject({
+      code: "GAME_PAIRING_CODE_INVALID"
+    });
+  });
+
+  it("rejects browser action descriptors that expose raw control fields", async () => {
+    const connection = await openGameRelay(randomPairingCode());
+    connection.socket.send(JSON.stringify({
+      type: "hello",
+      protocolVersion: 1,
+      gameId: "2048",
+      browserSessionId: `browser_${"C".repeat(22)}`,
+      revision: 0,
+      observation: { score: 0 },
+      actions: [{
+        actionId: `act_${"D".repeat(22)}`,
+        id: "move-left",
+        label: "Move left",
+        risk: "low",
+        requiresConfirmation: false,
+        selector: "#game-board"
+      }]
+    }));
+    await expect(waitForRelayMessage(connection, "relay_error")).resolves.toMatchObject({
+      code: "GAME_RELAY_ACTIONS_INVALID"
+    });
+  });
+
+  it("round-trips only opaque action tokens with CAS, receipts, pause, and close", async () => {
+    const accessToken = await authorizeTestClient(["games:play"]);
+    const pairingCode = randomPairingCode();
+    const connection = await openGameRelay(pairingCode);
+    const actionId = `act_${"A".repeat(22)}`;
+    const initialObservation = { board: [[2, 0], [0, 0]], score: 0 };
+    const actions = [{
+      actionId,
+      id: "move-left",
+      label: "Move left",
+      group: "move",
+      description: "Slide every tile left.",
+      risk: "low",
+      requiresConfirmation: false
+    }];
+    connection.socket.send(JSON.stringify({
+      type: "hello",
+      protocolVersion: 1,
+      gameId: "2048",
+      browserSessionId: `browser_${"B".repeat(22)}`,
+      revision: 0,
+      observation: initialObservation,
+      actions
+    }));
+    const ready = await waitForRelayMessage(connection, "relay_ready");
+    expect(ready).toMatchObject({
+      protocolVersion: 1,
+      state: "awaiting_pair"
+    });
+    const sessionId = String(ready.sessionId || "");
+    expect(sessionId).toMatch(/^[a-f0-9]{64}$/);
+
+    const paired = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_pair",
+      arguments: { pairingCode: pairingCode.toLowerCase().match(/.{1,5}/g)?.join("-") }
+    });
+    expect(paired.response.status, JSON.stringify(paired.body)).toBe(200);
+    expect(paired.body.result?.isError, JSON.stringify(paired.body)).not.toBe(true);
+    expect(structuredToolResult(paired.body)).toMatchObject({
+      ok: true,
+      paired: true,
+      sessionId,
+      gameId: "2048",
+      revision: 0,
+      actions: [],
+      stale: true
+    });
+    await waitForRelayMessage(connection, "controller_connected");
+
+    const pairReplay = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_pair",
+      arguments: { pairingCode }
+    });
+    expect(structuredToolResult(pairReplay.body)).toMatchObject({
+      ok: true,
+      paired: true,
+      sessionId,
+      actions: [],
+      stale: true
+    });
+
+    const immediateOldAction = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_act",
+      arguments: {
+        sessionId,
+        expectedRevision: 0,
+        clientActionId: "opaque-action-before-observe-0001",
+        actionId
+      }
+    });
+    expect(immediateOldAction.body.result?.isError).toBe(true);
+    expect(structuredToolResult(immediateOldAction.body)).toMatchObject({
+      code: "GAME_ACTIONS_STALE"
+    });
+
+    const secondToken = await authorizeTestClient(["games:play"]);
+    const stolenPair = await ownerMcpRequest(secondToken, "tools/call", {
+      name: "game_browser_pair",
+      arguments: { pairingCode }
+    });
+    expect(stolenPair.body.result?.isError).toBe(true);
+    expect(structuredToolResult(stolenPair.body)).toMatchObject({
+      code: "GAME_PAIRING_CODE_USED"
+    });
+
+    const firstObserveIndex = connection.messages.length;
+    const observePromise = ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_observe",
+      arguments: { sessionId }
+    });
+    const firstObserve = await waitForRelayMessage(connection, "observe", firstObserveIndex);
+    connection.socket.send(JSON.stringify({
+      type: "snapshot",
+      protocolVersion: 1,
+      commandId: firstObserve.commandId,
+      revision: 0,
+      observation: initialObservation,
+      actions
+    }));
+    const observed = await observePromise;
+    expect(structuredToolResult(observed.body)).toMatchObject({
+      sessionId,
+      gameId: "2048",
+      revision: 0,
+      observation: initialObservation
+    });
+
+    const observeStartIndex = connection.messages.length;
+    const actionsPromise = ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_actions",
+      arguments: { sessionId }
+    });
+    const observeCommand = await waitForRelayMessage(
+      connection,
+      "observe",
+      observeStartIndex
+    );
+    expect(Object.keys(observeCommand).sort()).toEqual([
+      "commandId", "protocolVersion", "type"
+    ]);
+    connection.socket.send(JSON.stringify({
+      type: "snapshot",
+      protocolVersion: 1,
+      commandId: observeCommand.commandId,
+      revision: 0,
+      observation: initialObservation,
+      actions
+    }));
+    const listedActions = await actionsPromise;
+    expect(structuredToolResult(listedActions.body)).toMatchObject({
+      sessionId,
+      revision: 0,
+      actions: [{ actionId, id: "move-left" }]
+    });
+    expect(JSON.stringify(structuredToolResult(listedActions.body))).not.toContain("selector");
+
+    const clientActionId = "opaque-action-roundtrip-0001";
+    const actionStartIndex = connection.messages.length;
+    const actionPromise = ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_act",
+      arguments: {
+        sessionId,
+        expectedRevision: 0,
+        clientActionId,
+        actionId
+      }
+    });
+    const actionCommand = await waitForRelayMessage(
+      connection,
+      "action",
+      actionStartIndex
+    );
+    expect(actionCommand).toEqual({
+      type: "action",
+      protocolVersion: 1,
+      commandId: expect.stringMatching(/^[A-Za-z0-9_-]{16,128}$/),
+      expectedRevision: 0,
+      clientActionId,
+      actionId
+    });
+    expect(actionCommand).not.toHaveProperty("action");
+    expect(actionCommand).not.toHaveProperty("selector");
+    const nextObservation = { board: [[2, 0], [0, 0]], score: 4 };
+    await installGameOutcomeAuditFailure("success");
+    connection.socket.send(JSON.stringify({
+      type: "action_result",
+      protocolVersion: 1,
+      commandId: actionCommand.commandId,
+      clientActionId,
+      ok: true,
+      revision: 1,
+      observation: nextObservation,
+      actions,
+      actionResult: {
+        protocolVersion: 1,
+        gameId: "2048",
+        sessionId: `game_2048_${"c".repeat(32)}`,
+        clientActionId,
+        status: "applied",
+        reason: "moved",
+        beforeRevision: 0,
+        revision: 1,
+        deduplicated: false,
+        events: [],
+        observation: nextObservation
+      }
+    }));
+    const acted = await actionPromise;
+    expect(acted.body.result?.isError, JSON.stringify(acted.body)).toBe(true);
+    expect(structuredToolResult(acted.body)).toMatchObject({
+      code: "MCP_OAUTH_AUDIT_FAILED"
+    });
+    await clearGameOutcomeAuditFailure();
+
+    const beforeReplayMessages = connection.messages.length;
+    const replayed = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_act",
+      arguments: {
+        sessionId,
+        expectedRevision: 0,
+        clientActionId,
+        actionId
+      }
+    });
+    expect(structuredToolResult(replayed.body)).toMatchObject({
+      ok: true,
+      replayed: true,
+      revision: 1,
+      clientActionId
+    });
+    expect(connection.messages.slice(beforeReplayMessages)
+      .some((message) => message.type === "action")).toBe(false);
+
+    const reused = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_act",
+      arguments: {
+        sessionId,
+        expectedRevision: 1,
+        clientActionId,
+        actionId
+      }
+    });
+    expect(reused.body.result?.isError).toBe(true);
+    expect(structuredToolResult(reused.body)).toMatchObject({
+      code: "GAME_CLIENT_ACTION_ID_REUSED"
+    });
+
+    const stale = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_act",
+      arguments: {
+        sessionId,
+        expectedRevision: 0,
+        clientActionId: "opaque-action-roundtrip-0002",
+        actionId
+      }
+    });
+    expect(stale.body.result?.isError).toBe(true);
+    expect(structuredToolResult(stale.body)).toMatchObject({
+      code: "GAME_REVISION_CONFLICT",
+      details: { currentRevision: 1 }
+    });
+
+    const pauseStartIndex = connection.messages.length;
+    const paused = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_pause",
+      arguments: { sessionId }
+    });
+    expect(structuredToolResult(paused.body)).toMatchObject({
+      ok: true,
+      sessionId,
+      state: "paused"
+    });
+    await waitForRelayMessage(connection, "pause", pauseStartIndex);
+
+    await installGameOutcomeAuditFailure("error");
+    const whilePausedAuditFailed = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_act",
+      arguments: {
+        sessionId,
+        expectedRevision: 1,
+        clientActionId: "opaque-action-roundtrip-0003",
+        actionId
+      }
+    });
+    expect(whilePausedAuditFailed.body.result?.isError).toBe(true);
+    expect(structuredToolResult(whilePausedAuditFailed.body)).toMatchObject({
+      code: "MCP_OAUTH_AUDIT_FAILED"
+    });
+    await clearGameOutcomeAuditFailure();
+
+    const whilePaused = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_act",
+      arguments: {
+        sessionId,
+        expectedRevision: 1,
+        clientActionId: "opaque-action-roundtrip-0003",
+        actionId
+      }
+    });
+    expect(whilePaused.body.result?.isError).toBe(true);
+    expect(structuredToolResult(whilePaused.body)).toMatchObject({
+      code: "GAME_SESSION_PAUSED"
+    });
+
+    connection.socket.send(JSON.stringify({
+      type: "user_resume",
+      protocolVersion: 1,
+      revision: 1,
+      observation: nextObservation,
+      actions
+    }));
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    const resumedObserveIndex = connection.messages.length;
+    const resumedObservePromise = ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_observe",
+      arguments: { sessionId }
+    });
+    const resumedObserve = await waitForRelayMessage(
+      connection,
+      "observe",
+      resumedObserveIndex
+    );
+    connection.socket.send(JSON.stringify({
+      type: "snapshot",
+      protocolVersion: 1,
+      commandId: resumedObserve.commandId,
+      revision: 1,
+      observation: nextObservation,
+      actions
+    }));
+    expect(structuredToolResult((await resumedObservePromise).body)).toMatchObject({
+      sessionId,
+      state: "active",
+      revision: 1
+    });
+
+    const pendingClientActionId = "opaque-action-pending-0001";
+    const pendingActionStartIndex = connection.messages.length;
+    const pendingActionPromise = ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_act",
+      arguments: {
+        sessionId,
+        expectedRevision: 1,
+        clientActionId: pendingClientActionId,
+        actionId
+      }
+    });
+    await waitForRelayMessage(connection, "action", pendingActionStartIndex);
+    const pendingAction = await pendingActionPromise;
+    expect(pendingAction.body.result?.isError, JSON.stringify(pendingAction.body)).not.toBe(true);
+    expect(structuredToolResult(pendingAction.body)).toMatchObject({
+      ok: true,
+      status: "pending",
+      sessionId,
+      retryable: true
+    });
+    const pendingAudit = await testEnv.DB.prepare(`
+      select result
+      from mcp_oauth_audit_log
+      where tool_name = 'game_browser_act' and operation_id = ? and result <> 'attempt'
+      order by created_at desc
+      limit 1
+    `).bind(pendingClientActionId).first<{ result: string }>();
+    expect(pendingAudit?.result).toBe("pending");
+
+    const closeStartIndex = connection.messages.length;
+    const closed = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_close",
+      arguments: { sessionId, confirm: true }
+    });
+    expect(structuredToolResult(closed.body)).toMatchObject({
+      ok: true,
+      sessionId,
+      state: "closed"
+    });
+    await waitForRelayMessage(connection, "close", closeStartIndex);
+
+    const auditRows = (await testEnv.DB.prepare(`
+      select capability_id, tool_name, operation_id, result
+      from mcp_oauth_audit_log
+      where tool_name like 'game_browser_%'
+      order by created_at asc
+    `).all()).results || [];
+    expect(auditRows.some((row) => (
+      row.capability_id === "games.browser.act"
+      && row.tool_name === "game_browser_act"
+      && row.operation_id === clientActionId
+      && row.result === "success"
+    ))).toBe(true);
+    const auditedCapabilities = new Set(auditRows.map((row) => String(row.capability_id)));
+    expect([
+        "games.browser.pair",
+        "games.browser.observe",
+        "games.browser.actions",
+        "games.browser.act",
+        "games.browser.pause",
+        "games.browser.close"
+      ].every((capabilityId) => auditedCapabilities.has(capabilityId))).toBe(true);
+  });
+
+  it("keeps game tools visible but challenges tokens without games:play", async () => {
+    const accessToken = await authorizeTestClient(["content:read"]);
+    const listedTools = await ownerMcpRequest(accessToken, "tools/list");
+    const tools = listedTools.body.result.tools as Array<Record<string, any>>;
+    expect(tools.map((tool) => tool.name)).toContain("game_browser_pair");
+
+    const denied = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "game_browser_pair",
+      arguments: { pairingCode: randomPairingCode() }
+    });
+    expect(denied.body.result?.isError).toBe(true);
+    expect(structuredToolResult(denied.body)).toMatchObject({
+      code: "MCP_OAUTH_SCOPE_REQUIRED"
+    });
+    expect(denied.body.result?._meta?.["mcp/www_authenticate"]?.[0]).toContain(
+      'scope="games:play"'
+    );
+  });
+});
+
 describe("complete owner OAuth MCP flow", () => {
   it("registers, authorizes, lists tools, and completes the atomic article lifecycle", async () => {
     const accessToken = await authorizeTestClient([
@@ -1157,20 +1727,49 @@ describe("complete owner OAuth MCP flow", () => {
       "content_list",
       "content_search",
       "article_get",
+      "videos_list",
+      "video_get",
       "article_manage_list",
       "article_manage_get",
       "article_publish",
       "article_update",
-      "article_delete"
+      "article_delete",
+      "game_browser_pair",
+      "game_browser_observe",
+      "game_browser_actions",
+      "game_browser_act",
+      "game_browser_pause",
+      "game_browser_close",
+      "video_manage_list",
+      "video_manage_get",
+      "video_publish",
+      "video_update",
+      "video_refresh_metadata",
+      "video_delete"
     ]);
     const toolsByName = new Map(tools.map((tool) => [tool.name, tool]));
     expect(toolsByName.get("content_list")?._meta?.securitySchemes).toEqual([
+      { type: "oauth2", scopes: ["content:read"] }
+    ]);
+    expect(toolsByName.get("videos_list")?._meta?.securitySchemes).toEqual([
+      { type: "oauth2", scopes: ["content:read"] }
+    ]);
+    expect(toolsByName.get("video_get")?._meta?.securitySchemes).toEqual([
       { type: "oauth2", scopes: ["content:read"] }
     ]);
     expect(toolsByName.get("article_publish")?._meta?.securitySchemes).toEqual([
       { type: "oauth2", scopes: ["content:write"] }
     ]);
     expect(toolsByName.get("article_delete")?._meta?.securitySchemes).toEqual([
+      { type: "oauth2", scopes: ["content:delete"] }
+    ]);
+    expect(toolsByName.get("game_browser_act")?._meta?.securitySchemes).toEqual([
+      { type: "oauth2", scopes: ["games:play"] }
+    ]);
+    expect(toolsByName.get("video_publish")?._meta?.securitySchemes).toEqual([
+      { type: "oauth2", scopes: ["content:write"] }
+    ]);
+    expect(toolsByName.get("video_delete")?._meta?.securitySchemes).toEqual([
       { type: "oauth2", scopes: ["content:delete"] }
     ]);
 
@@ -1416,5 +2015,370 @@ describe("complete owner OAuth MCP flow", () => {
     expect(afterRevocation.response.headers.get("www-authenticate")).toContain(
       'error="invalid_token"'
     );
+  });
+
+  it("synchronizes RFC 7009 refresh revocation to D1 exactly once", async () => {
+    let credentials: {
+      clientId: string;
+      accessToken: string;
+      refreshToken: string;
+    } | undefined;
+    await authorizeTestClient(
+      ["content:read", "content:write"],
+      "",
+      (value) => { credentials = value; }
+    );
+    expect(credentials).toBeDefined();
+    if (!credentials) throw new Error("Missing OAuth test credentials");
+    const revocationBody = new URLSearchParams({
+      token: credentials.refreshToken,
+      token_type_hint: "refresh_token",
+      client_id: credentials.clientId
+    }).toString();
+
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const revoked = await SELF.fetch(`${CANONICAL_ISSUER}/oauth/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: revocationBody
+      });
+      expect(revoked.status).toBe(200);
+      expect(await revoked.text()).toBe("");
+    }
+
+    const grant = await testEnv.DB.prepare(`
+      select status, revoked_reason from mcp_oauth_grants limit 1
+    `).first<{ status: string; revoked_reason: string }>();
+    expect(grant).toEqual({
+      status: "revoked",
+      revoked_reason: "rfc7009-refresh-token"
+    });
+    const audit = await testEnv.DB.prepare(`
+      select count(*) as count from mcp_oauth_audit_log
+      where action = 'mcp-oauth-grant-revoked'
+    `).first<{ count: number }>();
+    expect(Number(audit?.count || 0)).toBe(1);
+
+    const oldAccess = await ownerMcpRequest(credentials.accessToken, "tools/list");
+    expect(oldAccess.response.status).toBe(401);
+  });
+
+  it("keeps the D1 grant active when RFC 7009 revokes only an access token", async () => {
+    let credentials: {
+      clientId: string;
+      accessToken: string;
+      refreshToken: string;
+    } | undefined;
+    await authorizeTestClient(
+      ["content:read", "content:write"],
+      "",
+      (value) => { credentials = value; }
+    );
+    expect(credentials).toBeDefined();
+    if (!credentials) throw new Error("Missing OAuth test credentials");
+
+    const refreshParts = credentials.refreshToken.split(":");
+    expect(refreshParts).toHaveLength(3);
+    const invalidSameGrantToken = `${refreshParts[0]}:${refreshParts[1]}:invalid-refresh-token`;
+    const invalid = await SELF.fetch(`${CANONICAL_ISSUER}/oauth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        token: invalidSameGrantToken,
+        token_type_hint: "refresh_token",
+        client_id: credentials.clientId
+      }).toString()
+    });
+    expect(invalid.status).toBe(200);
+
+    const wrongClient = await SELF.fetch(`${CANONICAL_ISSUER}/oauth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        token: credentials.refreshToken,
+        token_type_hint: "refresh_token",
+        client_id: "unregistered-client"
+      }).toString()
+    });
+    expect([200, 400, 401]).toContain(wrongClient.status);
+
+    const revoked = await SELF.fetch(`${CANONICAL_ISSUER}/oauth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        token: credentials.accessToken,
+        client_id: credentials.clientId
+      }).toString()
+    });
+    expect(revoked.status).toBe(200);
+
+    const grant = await testEnv.DB.prepare(`
+      select status, revoked_reason from mcp_oauth_grants limit 1
+    `).first<{ status: string; revoked_reason: string }>();
+    expect(grant).toEqual({ status: "active", revoked_reason: "" });
+    const audit = await testEnv.DB.prepare(`
+      select count(*) as count from mcp_oauth_audit_log
+      where action = 'mcp-oauth-grant-revoked'
+    `).first<{ count: number }>();
+    expect(Number(audit?.count || 0)).toBe(0);
+
+    const oldAccess = await ownerMcpRequest(credentials.accessToken, "tools/list");
+    expect(oldAccess.response.status).toBe(401);
+  });
+
+  it("deletes the verified provider grant when RFC 7009 returns 200 after a refresh rotation", async () => {
+    await authorizeTestClient(["content:read", "content:write"]);
+    const ledger = await testEnv.DB.prepare(`
+      select grant_ref, client_id from mcp_oauth_grants limit 1
+    `).first<{ grant_ref: string; client_id: string }>();
+    expect(ledger).not.toBeNull();
+    if (!ledger) throw new Error("Missing OAuth ledger test grant");
+
+    const providerGrantId = "provider-grant-rotated-1";
+    const refreshToken = `owner-1:${providerGrantId}:refresh-token-before-rotation`;
+    const providerGrantKey = `grant:owner-1:${providerGrantId}`;
+    await testEnv.OAUTH_KV.put(providerGrantKey, JSON.stringify({
+      id: providerGrantId,
+      clientId: ledger.client_id,
+      userId: "owner-1",
+      scope: ["content:read", "content:write"],
+      metadata: {
+        grantRef: ledger.grant_ref,
+        resource: MCP_RESOURCE
+      },
+      encryptedProps: "test-only",
+      createdAt: Date.now(),
+      refreshTokenId: await sha256Hex(refreshToken)
+    }));
+    let revokeGrantCalls = 0;
+    const oauthApi = {
+      async unwrapToken() {
+        return null;
+      },
+      async revokeGrant(grantId: string, userId: string) {
+        revokeGrantCalls += 1;
+        expect(grantId).toBe(providerGrantId);
+        expect(userId).toBe("owner-1");
+        await testEnv.OAUTH_KV.delete(providerGrantKey);
+      }
+    } as any;
+    const request = new Request(`${CANONICAL_ISSUER}/oauth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        token: refreshToken,
+        token_type_hint: "refresh_token",
+        client_id: ledger.client_id
+      }).toString()
+    });
+
+    const response = await handleOAuthRevocationWithLedgerSync({
+      request,
+      env: testEnv as unknown as Env,
+      oauthApi,
+      // A concurrent rotation makes the provider treat the submitted token as
+      // invalid, so RFC 7009 returns 200 without deleting the grant.
+      providerFetch: async () => new Response("", { status: 200 })
+    });
+    expect(response?.status).toBe(200);
+    expect(revokeGrantCalls).toBe(1);
+    expect(await testEnv.OAUTH_KV.get(providerGrantKey)).toBeNull();
+    const grant = await testEnv.DB.prepare(`
+      select status, revoked_reason from mcp_oauth_grants where grant_ref = ?
+    `).bind(ledger.grant_ref).first<{ status: string; revoked_reason: string }>();
+    expect(grant).toEqual({
+      status: "revoked",
+      revoked_reason: "rfc7009-refresh-token"
+    });
+  });
+
+  it("keeps the D1 revocation pending when explicit provider grant deletion fails", async () => {
+    await authorizeTestClient(["content:read", "content:write"]);
+    const ledger = await testEnv.DB.prepare(`
+      select grant_ref, client_id from mcp_oauth_grants limit 1
+    `).first<{ grant_ref: string; client_id: string }>();
+    expect(ledger).not.toBeNull();
+    if (!ledger) throw new Error("Missing OAuth ledger test grant");
+
+    const providerGrantId = "provider-grant-delete-failure-1";
+    const refreshToken = `owner-1:${providerGrantId}:refresh-token-delete-failure`;
+    const providerGrantKey = `grant:owner-1:${providerGrantId}`;
+    await testEnv.OAUTH_KV.put(providerGrantKey, JSON.stringify({
+      id: providerGrantId,
+      clientId: ledger.client_id,
+      userId: "owner-1",
+      scope: ["content:read", "content:write"],
+      metadata: {
+        grantRef: ledger.grant_ref,
+        resource: MCP_RESOURCE
+      },
+      encryptedProps: "test-only",
+      createdAt: Date.now(),
+      refreshTokenId: await sha256Hex(refreshToken)
+    }));
+    let revokeGrantCalls = 0;
+    const oauthApi = {
+      async unwrapToken() {
+        return null;
+      },
+      async revokeGrant() {
+        revokeGrantCalls += 1;
+        if (revokeGrantCalls === 1) {
+          throw new Error("TEST_PROVIDER_GRANT_DELETE_FAILURE");
+        }
+        await testEnv.OAUTH_KV.delete(providerGrantKey);
+      }
+    } as any;
+    const createRequest = () => new Request(`${CANONICAL_ISSUER}/oauth/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          token: refreshToken,
+          token_type_hint: "refresh_token",
+          client_id: ledger.client_id
+        }).toString()
+      });
+    const response = await handleOAuthRevocationWithLedgerSync({
+      request: createRequest(),
+      env: testEnv as unknown as Env,
+      oauthApi,
+      providerFetch: async () => new Response("", { status: 200 })
+    });
+    expect(response?.status).toBe(503);
+    expect(await response?.json()).toMatchObject({
+      code: "OAUTH_REVOCATION_LEDGER_SYNC_FAILED"
+    });
+    const grant = await testEnv.DB.prepare(`
+      select status, revoked_reason from mcp_oauth_grants where grant_ref = ?
+    `).bind(ledger.grant_ref).first<{ status: string; revoked_reason: string }>();
+    expect(grant).toEqual({ status: "active", revoked_reason: "" });
+    const audit = await testEnv.DB.prepare(`
+      select result from mcp_oauth_audit_log
+      where action = 'mcp-oauth-grant-revoked' and grant_ref = ?
+    `).bind(ledger.grant_ref).first<{ result: string }>();
+    expect(audit).toEqual({ result: "pending" });
+
+    const recovered = await handleOAuthRevocationWithLedgerSync({
+      request: createRequest(),
+      env: testEnv as unknown as Env,
+      oauthApi,
+      providerFetch: async () => new Response("", { status: 200 })
+    });
+    expect(recovered?.status).toBe(200);
+    expect(revokeGrantCalls).toBe(2);
+    expect(await testEnv.OAUTH_KV.get(providerGrantKey)).toBeNull();
+    const completedGrant = await testEnv.DB.prepare(`
+      select status, revoked_reason from mcp_oauth_grants where grant_ref = ?
+    `).bind(ledger.grant_ref).first<{ status: string; revoked_reason: string }>();
+    expect(completedGrant).toEqual({
+      status: "revoked",
+      revoked_reason: "rfc7009-refresh-token"
+    });
+    const completedAudit = await testEnv.DB.prepare(`
+      select result from mcp_oauth_audit_log
+      where action = 'mcp-oauth-grant-revoked' and grant_ref = ?
+    `).bind(ledger.grant_ref).first<{ result: string }>();
+    expect(completedAudit).toEqual({ result: "success" });
+  });
+
+  it("recovers D1 revocation sync after the provider grant is already gone", async () => {
+    await authorizeTestClient(["content:read", "content:write"]);
+    const ledger = await testEnv.DB.prepare(`
+      select grant_ref, client_id from mcp_oauth_grants limit 1
+    `).first<{ grant_ref: string; client_id: string }>();
+    expect(ledger).not.toBeNull();
+    if (!ledger) throw new Error("Missing OAuth ledger test grant");
+
+    const providerGrantId = "provider-grant-recovery-1";
+    const refreshToken = `owner-1:${providerGrantId}:refresh-token-recovery`;
+    const providerGrantKey = `grant:owner-1:${providerGrantId}`;
+    await testEnv.OAUTH_KV.put(providerGrantKey, JSON.stringify({
+      id: providerGrantId,
+      clientId: ledger.client_id,
+      userId: "owner-1",
+      scope: ["content:read", "content:write"],
+      metadata: {
+        grantRef: ledger.grant_ref,
+        resource: MCP_RESOURCE
+      },
+      encryptedProps: "test-only",
+      createdAt: Date.now(),
+      refreshTokenId: await sha256Hex(refreshToken)
+    }));
+    let revokeGrantCalls = 0;
+    const oauthApi = {
+      async unwrapToken() {
+        return null;
+      },
+      async revokeGrant(grantId: string, userId: string) {
+        revokeGrantCalls += 1;
+        expect(grantId).toBe(providerGrantId);
+        expect(userId).toBe("owner-1");
+        await testEnv.OAUTH_KV.delete(providerGrantKey);
+      }
+    } as any;
+    let batchCalls = 0;
+    const flakyDb = {
+      prepare: (sql: string) => testEnv.DB.prepare(sql),
+      async batch(statements: D1PreparedStatement[]) {
+        batchCalls += 1;
+        if (batchCalls === 2) throw new Error("TEST_D1_SYNC_FAILURE");
+        return testEnv.DB.batch(statements);
+      }
+    } as unknown as D1Database;
+    const syncEnv = {
+      DB: flakyDb,
+      OAUTH_KV: testEnv.OAUTH_KV
+    } as unknown as Env;
+    const createRequest = () => new Request(`${CANONICAL_ISSUER}/oauth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        token: refreshToken,
+        token_type_hint: "refresh_token",
+        client_id: ledger.client_id
+      }).toString()
+    });
+    const providerFetch = async () => {
+      return new Response("", {
+        status: 200,
+        headers: { "Access-Control-Allow-Origin": "https://client.example" }
+      });
+    };
+
+    const first = await handleOAuthRevocationWithLedgerSync({
+      request: createRequest(),
+      env: syncEnv,
+      oauthApi,
+      providerFetch
+    });
+    expect(first?.status).toBe(503);
+    expect(await first?.json()).toMatchObject({
+      code: "OAUTH_REVOCATION_LEDGER_SYNC_FAILED"
+    });
+    expect(first?.headers.get("access-control-allow-origin")).toBe("https://client.example");
+    expect(revokeGrantCalls).toBe(1);
+    expect(await testEnv.OAUTH_KV.get(providerGrantKey)).toBeNull();
+
+    const recovered = await handleOAuthRevocationWithLedgerSync({
+      request: createRequest(),
+      env: syncEnv,
+      oauthApi,
+      providerFetch
+    });
+    expect(recovered?.status).toBe(200);
+    expect(revokeGrantCalls).toBe(2);
+    const grant = await testEnv.DB.prepare(`
+      select status, revoked_reason from mcp_oauth_grants where grant_ref = ?
+    `).bind(ledger.grant_ref).first<{ status: string; revoked_reason: string }>();
+    expect(grant).toEqual({
+      status: "revoked",
+      revoked_reason: "rfc7009-refresh-token"
+    });
+    const audit = await testEnv.DB.prepare(`
+      select count(*) as count from mcp_oauth_audit_log
+      where action = 'mcp-oauth-grant-revoked' and grant_ref = ?
+    `).bind(ledger.grant_ref).first<{ count: number }>();
+    expect(Number(audit?.count || 0)).toBe(1);
   });
 });

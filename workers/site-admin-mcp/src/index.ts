@@ -1,10 +1,12 @@
 import {
+  getOAuthApi,
   OAuthProvider,
   type OAuthProviderOptions
 } from "@cloudflare/workers-oauth-provider";
 
 import { oauthDefaultHandler } from "./auth-handler";
 import { oauthApiHandler } from "./article-tools";
+import { handleBrowserGameRelayRequest } from "./browser-game-handler";
 import {
   MAX_CLIENT_REGISTRATION_BYTES,
   consumeClientRegistrationAttempt,
@@ -15,6 +17,7 @@ import {
   AUTHORIZE_PATH,
   CANONICAL_ISSUER,
   CLIENT_REGISTRATION_TTL_SECONDS,
+  GAME_RELAY_PATH,
   MCP_PATH,
   MCP_RESOURCE,
   OWNER_SCOPES,
@@ -23,6 +26,7 @@ import {
   TOKEN_PATH
 } from "./constants";
 import { validateExplicitTokenResource } from "./oauth-policy";
+import { handleOAuthRevocationWithLedgerSync } from "./oauth-revocation";
 import {
   WorkerHttpError,
   assertTrustedRequestBoundary,
@@ -55,7 +59,7 @@ export const oauthProviderOptions = {
   resourceMetadata: {
     resource: MCP_RESOURCE,
     authorization_servers: [CANONICAL_ISSUER],
-    scopes_supported: ["content:read"],
+    scopes_supported: [...OWNER_SCOPES],
     bearer_methods_supported: ["header"],
     resource_name: "LuSu site owner MCP"
   },
@@ -87,6 +91,9 @@ const worker = {
     try {
       assertTrustedRequestBoundary(request);
       const pathname = new URL(request.url).pathname;
+      if (pathname === GAME_RELAY_PATH) {
+        return await handleBrowserGameRelayRequest(request, env);
+      }
       if (!ROUTED_PATHS.has(pathname)) {
         return jsonResponse({ error: "Not found.", code: "NOT_FOUND" }, 404);
       }
@@ -96,7 +103,15 @@ const worker = {
       if (providerRequest instanceof Response) return providerRequest;
       const tokenPolicyResponse = await validateExplicitTokenResource(providerRequest);
       if (tokenPolicyResponse) return tokenPolicyResponse;
-      return await createOAuthProvider(env).fetch(providerRequest, env, ctx);
+      const provider = createOAuthProvider(env);
+      const revocationResponse = await handleOAuthRevocationWithLedgerSync({
+        request: providerRequest,
+        env,
+        oauthApi: getOAuthApi(oauthProviderOptions, env),
+        providerFetch: () => provider.fetch(providerRequest, env, ctx)
+      });
+      if (revocationResponse) return revocationResponse;
+      return await provider.fetch(providerRequest, env, ctx);
     } catch (error) {
       const status = error instanceof WorkerHttpError ? error.status : 500;
       const code = error instanceof WorkerHttpError ? error.code : "INTERNAL_ERROR";
@@ -142,3 +157,4 @@ async function prepareClientRegistrationRequest(
 }
 
 export default worker;
+export { GameRelaySession } from "./game-relay";

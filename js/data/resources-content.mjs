@@ -50,13 +50,13 @@ export const resourcesContent = Object.freeze({
       "capabilityDomain": "transfer",
       "action": "quick-transfer",
       "iconSrc": "assets/images/generated-icons/quick-transfer.png?v=20260719-content-experience-fixes-r1",
-      "version": "v1.0.8",
+      "version": "v1.0.9",
       "retention": {
         "zh": "24 小时",
         "en": "24 hours",
         "ja": "24時間"
       },
-      "updated": "2026.08.07",
+      "updated": "2026.08.09",
       "external": false,
       "title": {
         "zh": "临时互传",

@@ -115,24 +115,32 @@ test("public game projection distinguishes integrated and dedicated Agent sessio
   });
   assert.deepEqual(catalog.games.find((game) => game.id === "hextris").agent, {
     localSession: true,
-    browserBridge: false,
+    browserBridge: true,
     browserPairing: false,
     surface: "dedicated-process",
     contentLanguages: []
   });
   assert.deepEqual(catalog.games.find((game) => game.id === "life-restart").agent, {
     localSession: true,
-    browserBridge: false,
+    browserBridge: true,
     browserPairing: false,
     surface: "integrated",
     contentLanguages: ["zh"]
   });
-  assert.ok(catalog.games.filter((game) => !["2048", "hextris", "life-restart"].includes(game.id)).every((game) => (
-    game.agent.localSession === false
-    && game.agent.browserBridge === false
-    && game.agent.browserPairing === false
-    && game.agent.surface === "none"
-  )));
+  assert.deepEqual(catalog.games.find((game) => game.id === "a-dark-room").agent, {
+    localSession: false,
+    browserBridge: true,
+    browserPairing: false,
+    surface: "integrated",
+    contentLanguages: []
+  });
+  assert.deepEqual(catalog.games.find((game) => game.id === "kittens-game").agent, {
+    localSession: false,
+    browserBridge: false,
+    browserPairing: false,
+    surface: "none",
+    contentLanguages: []
+  });
   assert.deepEqual(projectPublicGameCatalog(payload, { agentOnly: true }).games.map((game) => game.id), [
     "2048",
     "hextris",

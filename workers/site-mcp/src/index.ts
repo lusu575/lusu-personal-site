@@ -37,6 +37,28 @@ type PublicArticle = {
   content_markdown?: unknown;
 };
 
+type PublicVideoRow = {
+  video_id?: unknown;
+  platform?: unknown;
+  original_url?: unknown;
+  external_id?: unknown;
+  embed_url?: unknown;
+  title?: unknown;
+  description?: unknown;
+  thumbnail_url?: unknown;
+  author_name?: unknown;
+  published_at?: unknown;
+  status?: unknown;
+};
+
+type PublicVideoCategoryRow = {
+  video_id?: unknown;
+  slug?: unknown;
+  name_zh?: unknown;
+  name_en?: unknown;
+  name_ja?: unknown;
+};
+
 export type SiteMcpServerOptions = {
   toolMeta?: Readonly<Record<string, unknown>>;
   includeResources?: boolean;
@@ -50,6 +72,11 @@ const SEARCH_RESULT_LIMIT = 20;
 const SEARCH_SUMMARY_LIMIT = 1_200;
 const ARTICLE_CONTENT_LIMIT = 48_000;
 const ARTICLE_TAG_LIMIT = 32;
+const VIDEO_RESULT_LIMIT = 80;
+const VIDEO_CATEGORY_FILTER_LIMIT = 20;
+const VIDEO_CATEGORY_RESULT_LIMIT = 20;
+const VIDEO_DESCRIPTION_LIMIT = 4_000;
+const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
 
 const LanguageSchema = z.enum(["zh", "en", "ja"]);
 const CapabilitySchema = z.object({
@@ -99,6 +126,30 @@ const ArticleSchema = ArticleSummarySchema.extend({
   content_markdown: z.string().max(ARTICLE_CONTENT_LIMIT),
   content_truncated: z.boolean(),
   source_content_chars: z.number().int().nonnegative()
+});
+
+const VideoIdSchema = z.string().trim()
+  .regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,179}$/);
+const VideoCategoryFilterSchema = z.string().trim()
+  .regex(/^[a-z0-9][a-z0-9-]{0,79}$/);
+const VideoPlatformSchema = z.enum(["youtube", "bilibili"]);
+const PublicVideoCategorySchema = z.object({
+  slug: VideoCategoryFilterSchema,
+  name: z.string().max(160)
+});
+const PublicVideoSchema = z.object({
+  video_id: VideoIdSchema,
+  platform: VideoPlatformSchema,
+  original_url: z.string().max(2_048),
+  external_id: z.string().max(200),
+  embed_url: z.string().max(2_048),
+  title: z.string().max(300),
+  description: z.string().max(VIDEO_DESCRIPTION_LIMIT),
+  thumbnail_url: z.string().max(2_048),
+  author_name: z.string().max(300),
+  published_at: z.string().max(64),
+  status: z.literal("published"),
+  categories: z.array(PublicVideoCategorySchema).max(VIDEO_CATEGORY_RESULT_LIMIT)
 });
 
 const ReadOnlyAnnotations = Object.freeze({
@@ -153,6 +204,190 @@ function toBoundedArticle(article: PublicArticle | null) {
     content_truncated: rawContent.length > ARTICLE_CONTENT_LIMIT,
     source_content_chars: rawContent.length
   };
+}
+
+function normalizedHost(url: URL): string {
+  return url.hostname.toLowerCase().replace(/^www\./, "");
+}
+
+function safePublicUrl(
+  value: unknown,
+  allowed: (url: URL, host: string) => boolean
+): string {
+  const raw = String(value ?? "").trim();
+  if (!raw || raw.length > 2_048) return "";
+  try {
+    const url = new URL(raw);
+    if (
+      url.protocol !== "https:"
+      || url.username
+      || url.password
+      || (url.port && url.port !== "443")
+      || !allowed(url, normalizedHost(url))
+    ) {
+      return "";
+    }
+    url.hash = "";
+    const normalized = url.toString();
+    return normalized.length <= 2_048 ? normalized : "";
+  } catch {
+    return "";
+  }
+}
+
+function safeOriginalVideoUrl(
+  value: unknown,
+  platform: z.infer<typeof VideoPlatformSchema>
+): string {
+  return safePublicUrl(value, (_url, host) => platform === "youtube"
+    ? host === "youtube.com" || host === "youtu.be"
+    : host === "bilibili.com" || host.endsWith(".bilibili.com") || host === "b23.tv");
+}
+
+function safeEmbedVideoUrl(
+  value: unknown,
+  platform: z.infer<typeof VideoPlatformSchema>
+): string {
+  return safePublicUrl(value, (url, host) => platform === "youtube"
+    ? host === "youtube.com" && url.pathname.startsWith("/embed/")
+    : host === "player.bilibili.com" && url.pathname === "/player.html");
+}
+
+function safeThumbnailUrl(
+  row: PublicVideoRow,
+  platform: z.infer<typeof VideoPlatformSchema>
+): string {
+  const raw = String(row.thumbnail_url ?? "").trim();
+  if (/^data:image\/(?:avif|jpe?g|png|webp);base64,/i.test(raw)) {
+    const videoId = boundedText(row.video_id, 180);
+    if (!VideoIdSchema.safeParse(videoId).success) return "";
+    return new URL(
+      `/api/videos/${encodeURIComponent(videoId)}/thumbnail`,
+      PUBLIC_SITE_ORIGIN
+    ).toString();
+  }
+  return safePublicUrl(raw, (_url, host) => platform === "youtube"
+    ? host === "i.ytimg.com" || host === "img.youtube.com"
+    : new Set([
+      "i0.hdslb.com",
+      "i1.hdslb.com",
+      "i2.hdslb.com",
+      "archive.biliimg.com"
+    ]).has(host));
+}
+
+function localizedCategoryName(
+  row: PublicVideoCategoryRow,
+  lang: z.infer<typeof LanguageSchema>
+): string {
+  if (lang === "en") {
+    return boundedText(row.name_en || row.name_zh, 160);
+  }
+  if (lang === "ja") {
+    return boundedText(row.name_ja || row.name_zh, 160);
+  }
+  return boundedText(row.name_zh, 160);
+}
+
+function toPublicVideo(
+  row: PublicVideoRow,
+  categories: PublicVideoCategoryRow[],
+  lang: z.infer<typeof LanguageSchema>
+): z.infer<typeof PublicVideoSchema> {
+  const platform = row.platform === "bilibili" ? "bilibili" : "youtube";
+  return {
+    video_id: boundedText(row.video_id, 180),
+    platform,
+    original_url: safeOriginalVideoUrl(row.original_url, platform),
+    external_id: boundedText(row.external_id, 200),
+    embed_url: safeEmbedVideoUrl(row.embed_url, platform),
+    title: boundedText(row.title, 300),
+    description: boundedText(row.description, VIDEO_DESCRIPTION_LIMIT),
+    thumbnail_url: safeThumbnailUrl(row, platform),
+    author_name: boundedText(row.author_name, 300),
+    published_at: boundedText(row.published_at, 64),
+    status: "published",
+    categories: categories
+      .slice(0, VIDEO_CATEGORY_RESULT_LIMIT)
+      .map((category) => ({
+        slug: boundedText(category.slug, 80),
+        name: localizedCategoryName(category, lang)
+      }))
+  };
+}
+
+function normalizedVideoQuery(value: unknown): string {
+  return String(value ?? "").normalize("NFKC").trim().toLocaleLowerCase();
+}
+
+async function queryPublishedVideoRows(env: Env): Promise<PublicVideoRow[]> {
+  const result = await env.DB.prepare(`
+    select
+      video_id, platform, original_url, external_id, embed_url, title,
+      description, thumbnail_url, author_name, published_at, status
+    from videos
+    where status = 'published'
+      and platform in ('youtube', 'bilibili')
+    order by
+      pinned desc,
+      case when pinned = 1 then pinned_sort_order else sort_order end desc,
+      case when pinned = 1 then sort_order else 0 end desc,
+      coalesce(published_at, created_at) desc,
+      created_at desc
+    limit ?
+  `).bind(VIDEO_RESULT_LIMIT).all<PublicVideoRow>();
+  return result.results || [];
+}
+
+async function queryPublishedVideoRow(
+  env: Env,
+  videoId: string
+): Promise<PublicVideoRow | null> {
+  return env.DB.prepare(`
+    select
+      video_id, platform, original_url, external_id, embed_url, title,
+      description, thumbnail_url, author_name, published_at, status
+    from videos
+    where video_id = ?
+      and status = 'published'
+      and platform in ('youtube', 'bilibili')
+    limit 1
+  `).bind(videoId).first<PublicVideoRow>();
+}
+
+async function queryPublicVideoCategories(
+  env: Env,
+  videoIds: string[]
+): Promise<Map<string, PublicVideoCategoryRow[]>> {
+  const categoriesByVideo = new Map<string, PublicVideoCategoryRow[]>();
+  for (const videoId of videoIds) categoriesByVideo.set(videoId, []);
+  if (videoIds.length === 0) return categoriesByVideo;
+
+  const placeholders = videoIds.map(() => "?").join(", ");
+  const result = await env.DB.prepare(`
+    select
+      video_category_relations.video_id,
+      video_categories.slug,
+      video_categories.name_zh,
+      video_categories.name_en,
+      video_categories.name_ja
+    from video_category_relations
+    join video_categories
+      on video_categories.category_id = video_category_relations.category_id
+    where video_category_relations.video_id in (${placeholders})
+      and video_categories.enabled = 1
+    order by
+      video_category_relations.sort_order asc,
+      video_categories.sort_order desc,
+      video_categories.slug asc
+  `).bind(...videoIds).all<PublicVideoCategoryRow>();
+
+  for (const category of result.results || []) {
+    const videoId = boundedText(category.video_id, 180);
+    const list = categoriesByVideo.get(videoId);
+    if (list && list.length < VIDEO_CATEGORY_RESULT_LIMIT) list.push(category);
+  }
+  return categoriesByVideo;
 }
 
 function successfulToolResult(output: Record<string, unknown>) {
@@ -373,6 +608,103 @@ export function registerSiteMcpSurface<T extends SiteMcpRegistrar>(
       } catch (error) {
         logFailure("article_get", error);
         return failedToolResult("Published article lookup is temporarily unavailable.");
+      }
+    }
+  );
+
+  server.registerTool(
+    "videos_list",
+    {
+      title: "List public videos",
+      description: "Lists a bounded, optionally filtered projection of published LuSu video records. Local cover bytes and management fields are never returned.",
+      inputSchema: z.object({
+        lang: LanguageSchema.default("zh"),
+        query: z.string().trim().max(300).optional(),
+        categories: z.array(VideoCategoryFilterSchema)
+          .max(VIDEO_CATEGORY_FILTER_LIMIT)
+          .default([]),
+        limit: z.number().int().min(1).max(VIDEO_RESULT_LIMIT).default(VIDEO_RESULT_LIMIT)
+      }).strict(),
+      outputSchema: z.object({
+        lang: LanguageSchema,
+        count: z.number().int().min(0).max(VIDEO_RESULT_LIMIT),
+        videos: z.array(PublicVideoSchema).max(VIDEO_RESULT_LIMIT)
+      }),
+      annotations: ReadOnlyAnnotations,
+      ...(options.toolMeta ? { _meta: { ...options.toolMeta } } : {})
+    },
+    async ({ lang, query, categories, limit }) => {
+      try {
+        const rows = await queryPublishedVideoRows(env);
+        const videoIds = rows.map((row) => boundedText(row.video_id, 180));
+        const categoriesByVideo = await queryPublicVideoCategories(env, videoIds);
+        const normalizedQuery = normalizedVideoQuery(query);
+        const categoryFilters = new Set(categories);
+        const videos = rows
+          .map((row) => {
+            const videoId = boundedText(row.video_id, 180);
+            return toPublicVideo(row, categoriesByVideo.get(videoId) || [], lang);
+          })
+          .filter((video) => {
+            if (normalizedQuery) {
+              const haystack = [
+                video.title,
+                video.description,
+                video.author_name,
+                video.platform
+              ].join("\n").normalize("NFKC").toLocaleLowerCase();
+              if (!haystack.includes(normalizedQuery)) return false;
+            }
+            if (
+              categoryFilters.size > 0
+              && !video.categories.some((category) => categoryFilters.has(category.slug))
+            ) {
+              return false;
+            }
+            return true;
+          })
+          .slice(0, limit);
+        return successfulToolResult({
+          lang,
+          count: videos.length,
+          videos
+        });
+      } catch (error) {
+        logFailure("videos_list", error);
+        return failedToolResult("Published video listing is temporarily unavailable.");
+      }
+    }
+  );
+
+  server.registerTool(
+    "video_get",
+    {
+      title: "Read one public video",
+      description: "Reads one published video by stable site id. Draft, hidden, management, and local cover-byte fields are never returned.",
+      inputSchema: z.object({
+        videoId: VideoIdSchema
+      }).strict(),
+      outputSchema: z.object({
+        found: z.boolean(),
+        video: PublicVideoSchema.nullable()
+      }),
+      annotations: ReadOnlyAnnotations,
+      ...(options.toolMeta ? { _meta: { ...options.toolMeta } } : {})
+    },
+    async ({ videoId }) => {
+      try {
+        const row = await queryPublishedVideoRow(env, videoId);
+        if (!row) {
+          return successfulToolResult({ found: false, video: null });
+        }
+        const categoriesByVideo = await queryPublicVideoCategories(env, [videoId]);
+        return successfulToolResult({
+          found: true,
+          video: toPublicVideo(row, categoriesByVideo.get(videoId) || [], "zh")
+        });
+      } catch (error) {
+        logFailure("video_get", error);
+        return failedToolResult("Published video lookup is temporarily unavailable.");
       }
     }
   );

@@ -30,6 +30,20 @@
       "id": "5a159320e9444346a8c67bd8ac358c52"
     }
   ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "GAME_RELAY",
+        "class_name": "GameRelaySession"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["GameRelaySession"]
+    }
+  ],
   "secrets": {
     "required": ["ANALYTICS_IP_HASH_SALT"]
   },

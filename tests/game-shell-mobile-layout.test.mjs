@@ -13,7 +13,7 @@ const gameEntries = [
   "games/kittens-game/index.html",
   "games/life-restart/index.html"
 ].map((path) => [path, read(path)]);
-const shellCacheVersion = "20260726-game-network-resilience-r1";
+const shellCacheVersion = "20260809-browser-game-agent-v1";
 
 function mediaBlock(css, query, nextQuery = null) {
   const start = css.indexOf(`@media ${query}`);
@@ -28,7 +28,7 @@ test("shared game shell owns exactly one viewport and gives remaining space to t
   assert.match(gameShellCss, /body\s*\{[\s\S]*?height:\s*100vh;[\s\S]*?min-height:\s*0;[\s\S]*?overflow:\s*hidden;/);
   assert.match(gameShellCss, /@supports\s*\(height:\s*100dvh\)\s*\{[\s\S]*?body\s*\{[\s\S]*?height:\s*100dvh;/);
   assert.match(gameShellCss, /\.game-shell\s*\{[\s\S]*?grid-template-rows:\s*auto minmax\(0,\s*1fr\);[\s\S]*?min-height:\s*0;/);
-  assert.match(gameShellCss, /\.game-frame-card\s*\{[\s\S]*?grid-template-rows:\s*auto auto minmax\(0,\s*1fr\);/);
+  assert.match(gameShellCss, /\.game-frame-card\s*\{[\s\S]*?grid-template-rows:\s*auto auto auto minmax\(0,\s*1fr\);/);
   assert.match(gameShellCss, /\.game-frame-card\s*\{[\s\S]*?height:\s*calc\(100%\s*-\s*20px\);[\s\S]*?min-height:\s*0;/);
   assert.match(gameShellCss, /\.game-frame\s*\{[\s\S]*?height:\s*100%;[\s\S]*?min-height:\s*0;/);
   assert.doesNotMatch(gameShellCss, /\.game-frame\s*\{[^}]*min-height:\s*(?:260|360|420|620)px/);

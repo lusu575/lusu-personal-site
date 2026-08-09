@@ -67,10 +67,13 @@ test("standalone Hextris Agent carries the audited complete GPLv3 text", async (
     readFile(new URL("../COPYING", import.meta.url)),
     readFile(new URL("../../source/COPYING", import.meta.url))
   ]);
+  const canonicalLicense = (value) => value.toString("utf8").replace(/\r\n/g, "\n");
   const digest = (value) => createHash("sha256").update(value).digest("hex");
-  assert.match(agentCopying.toString("utf8"), /^GNU GENERAL PUBLIC LICENSE\n=+\n\nVersion 3, 29 June 2007/m);
-  assert.equal(digest(agentCopying), GPL_V3_TEXT_SHA256);
-  assert.equal(digest(agentCopying), digest(sourceCopying));
+  const agentText = canonicalLicense(agentCopying);
+  const sourceText = canonicalLicense(sourceCopying);
+  assert.match(agentText, /^GNU GENERAL PUBLIC LICENSE\n=+\n\nVersion 3, 29 June 2007/m);
+  assert.equal(digest(agentText), GPL_V3_TEXT_SHA256);
+  assert.equal(digest(agentText), digest(sourceText));
 });
 
 test("standalone Hextris MCP registers only the bounded isolated session tools", () => {

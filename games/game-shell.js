@@ -63,7 +63,27 @@
       loadedCloud: "游戏已加载，云端存档会自动同步。",
       loadedLocal: "游戏已加载，本地存档会保存在当前浏览器。",
       gameLoadFailed: "游戏加载失败",
-      invalidGameSource: "游戏启动路径无效"
+      invalidGameSource: "游戏启动路径无效",
+      agentTitle: "AI 游戏接管",
+      agentDescription: "只允许已审计的游戏语义动作；不会接受脚本、选择器、按键或坐标。",
+      agentAllow: "允许 AI 接管",
+      agentCancel: "取消配对",
+      agentPause: "暂停 AI",
+      agentResume: "恢复 AI",
+      agentTakeBack: "收回控制",
+      agentPreparing: "正在检查游戏的语义控制桥…",
+      agentReady: "可创建一次性配对码。只有你主动允许后 AI 才能控制。",
+      agentConnecting: "正在建立同源加密配对通道…",
+      agentPairPrompt: "在 AI 客户端的 game_browser_pair 工具中输入此一次性配对码。",
+      agentCodeLabel: "一次性配对码",
+      agentExpires: "有效至 {time}",
+      agentPaired: "AI 已接管。你可随时暂停或收回控制。",
+      agentPaused: "AI 已暂停；你现在可以手动操作。只有此网页能恢复 AI。",
+      agentDisconnected: "连接已断开，已立即恢复手动控制。",
+      agentUnavailable: "此游戏暂不提供 AI 接管。",
+      agentLicenseBlocked: "Kittens Game 尚未取得允许衍生控制适配的书面许可，因此不会生成配对码。",
+      agentControlledShield: "AI 正在控制游戏",
+      agentError: "AI 接管不可用：{message}"
     },
     en: {
       backToGames: "Back to Games",
@@ -116,7 +136,27 @@
       loadedCloud: "Game loaded. Cloud saves will sync automatically.",
       loadedLocal: "Game loaded. Local saves stay in this browser.",
       gameLoadFailed: "Game failed to load",
-      invalidGameSource: "Invalid game launch path"
+      invalidGameSource: "Invalid game launch path",
+      agentTitle: "AI Game Control",
+      agentDescription: "Only audited semantic game actions are allowed; scripts, selectors, raw keys, and coordinates are never accepted.",
+      agentAllow: "Allow AI Control",
+      agentCancel: "Cancel Pairing",
+      agentPause: "Pause AI",
+      agentResume: "Resume AI",
+      agentTakeBack: "Take Back Control",
+      agentPreparing: "Checking the game's semantic control bridge…",
+      agentReady: "A one-time pairing code can be created. AI cannot control the game until you explicitly allow it.",
+      agentConnecting: "Opening the encrypted same-origin pairing channel…",
+      agentPairPrompt: "Enter this one-time code in the AI client's game_browser_pair tool.",
+      agentCodeLabel: "One-time pairing code",
+      agentExpires: "Expires at {time}",
+      agentPaired: "AI is controlling the game. You can pause or take back control at any time.",
+      agentPaused: "AI is paused and manual play is unlocked. Only this page can resume AI.",
+      agentDisconnected: "The connection ended and manual control was restored immediately.",
+      agentUnavailable: "AI control is not available for this game.",
+      agentLicenseBlocked: "Kittens Game does not yet have written permission for a derivative control adapter, so no pairing code is generated.",
+      agentControlledShield: "AI is controlling the game",
+      agentError: "AI control unavailable: {message}"
     },
     ja: {
       backToGames: "ゲーム一覧へ戻る",
@@ -169,7 +209,27 @@
       loadedCloud: "ゲームを読み込みました。クラウドセーブは自動同期されます。",
       loadedLocal: "ゲームを読み込みました。ローカルセーブはこのブラウザーに保存されます。",
       gameLoadFailed: "ゲームの読み込みに失敗しました",
-      invalidGameSource: "ゲーム起動パスが無効です"
+      invalidGameSource: "ゲーム起動パスが無効です",
+      agentTitle: "AI ゲーム操作",
+      agentDescription: "監査済みの意味的なゲーム操作だけを許可し、スクリプト・セレクター・生のキー入力・座標は受け付けません。",
+      agentAllow: "AI 操作を許可",
+      agentCancel: "ペアリングを中止",
+      agentPause: "AI を一時停止",
+      agentResume: "AI を再開",
+      agentTakeBack: "操作を取り戻す",
+      agentPreparing: "ゲームの意味操作ブリッジを確認しています…",
+      agentReady: "一回限りのペアリングコードを作成できます。明示的に許可するまで AI は操作できません。",
+      agentConnecting: "同一オリジンの暗号化ペアリング経路に接続しています…",
+      agentPairPrompt: "AI クライアントの game_browser_pair ツールに、この一回限りのコードを入力してください。",
+      agentCodeLabel: "一回限りのペアリングコード",
+      agentExpires: "有効期限 {time}",
+      agentPaired: "AI がゲームを操作中です。いつでも一時停止または操作を取り戻せます。",
+      agentPaused: "AI を一時停止し、手動操作を有効にしました。AI を再開できるのはこのページだけです。",
+      agentDisconnected: "接続が終了したため、ただちに手動操作へ戻しました。",
+      agentUnavailable: "このゲームでは AI 操作を利用できません。",
+      agentLicenseBlocked: "Kittens Game は派生操作アダプターの書面許可が未確認のため、ペアリングコードを生成しません。",
+      agentControlledShield: "AI がゲームを操作中です",
+      agentError: "AI 操作を利用できません: {message}"
     }
   };
   const languageNames = {
@@ -190,7 +250,23 @@
   let localStorageWarningShown = false;
   let cloudRetryPending = false;
   let cloudRetryMessage = "";
+  let browserAgentHost = null;
+  let browserAgentSocket = null;
+  let browserAgentState = "idle";
+  let browserAgentPairCode = "";
+  let browserAgentSessionId = "";
+  let browserAgentRelaySessionId = "";
+  let browserAgentUi = null;
+  let browserAgentFrameWrap = null;
+  let browserAgentShield = null;
+  let browserAgentPollTimer = null;
+  let browserAgentExpiryTimer = null;
+  let browserAgentLastRevision = null;
+  let browserAgentLoadGeneration = 0;
+  let browserAgentModulePromise = null;
+  let browserAgentFrameTabIndex = null;
   const cloudRequestTimeoutMs = 7000;
+  const browserAgentMaxMessageBytes = 96 * 1024;
   const sessionStorageFallback = new Map();
   const tabStorageFallback = new Map();
 
@@ -1117,6 +1193,581 @@
     frame.contentWindow.location.reload();
   }
 
+  function ensureBrowserAgentPanel(game) {
+    if (!browserAgentUi) {
+      const panel = document.createElement("section");
+      panel.className = "game-agent-panel";
+      panel.setAttribute("aria-labelledby", "game-agent-title");
+      panel.tabIndex = -1;
+
+      const heading = document.createElement("div");
+      heading.className = "game-agent-heading";
+      const headingText = document.createElement("div");
+      const agentTitle = textElement("h2", t("agentTitle"));
+      agentTitle.id = "game-agent-title";
+      const description = textElement("p", t("agentDescription"));
+      headingText.append(agentTitle, description);
+      const agentStatus = textElement("p", "", "game-agent-status");
+      agentStatus.setAttribute("role", "status");
+      agentStatus.setAttribute("aria-live", "polite");
+      heading.append(headingText, agentStatus);
+
+      const codeBox = document.createElement("div");
+      codeBox.className = "game-agent-code-box";
+      codeBox.hidden = true;
+      const codeLabel = textElement("strong", t("agentCodeLabel"));
+      const code = textElement("code", "");
+      code.setAttribute("aria-label", t("agentCodeLabel"));
+      const codeHelp = textElement("span", t("agentPairPrompt"));
+      const codeExpiry = textElement("span", "", "game-agent-code-expiry");
+      codeBox.append(codeLabel, code, codeHelp, codeExpiry);
+
+      const controls = document.createElement("div");
+      controls.className = "game-agent-controls";
+      const allow = textElement("button", t("agentAllow"), "tool-button game-agent-allow");
+      allow.type = "button";
+      const cancel = textElement("button", t("agentCancel"), "tool-button subtle");
+      cancel.type = "button";
+      const pause = textElement("button", t("agentPause"), "tool-button subtle");
+      pause.type = "button";
+      const resume = textElement("button", t("agentResume"), "tool-button game-agent-resume");
+      resume.type = "button";
+      const takeBack = textElement("button", t("agentTakeBack"), "tool-button game-agent-take-back");
+      takeBack.type = "button";
+      controls.append(allow, cancel, pause, resume, takeBack);
+      panel.append(heading, codeBox, controls);
+
+      browserAgentFrameWrap = document.createElement("div");
+      browserAgentFrameWrap.className = "game-agent-frame-wrap";
+      browserAgentShield = textElement("div", t("agentControlledShield"), "game-agent-input-shield");
+      browserAgentShield.setAttribute("aria-hidden", "true");
+      frame.before(panel, browserAgentFrameWrap);
+      browserAgentFrameWrap.append(frame, browserAgentShield);
+
+      browserAgentUi = { panel, agentStatus, codeBox, code, codeExpiry, allow, cancel, pause, resume, takeBack };
+      allow.addEventListener("click", startBrowserAgentPairing);
+      cancel.addEventListener("click", () => closeBrowserAgentConnection({ notify: true, message: t("agentReady") }));
+      pause.addEventListener("click", pauseBrowserAgentByUser);
+      resume.addEventListener("click", resumeBrowserAgentByUser);
+      takeBack.addEventListener("click", () => closeBrowserAgentConnection({ notify: true, message: t("agentDisconnected") }));
+    }
+
+    if (game.agentControl?.enabled === true) {
+      setBrowserAgentUiState("preparing", t("agentPreparing"));
+    } else {
+      const message = game.agentControl?.reason === "license-review-required"
+        ? t("agentLicenseBlocked")
+        : t("agentUnavailable");
+      setBrowserAgentUiState("unavailable", message);
+    }
+  }
+
+  function setBrowserAgentUiState(nextState, message) {
+    if (!browserAgentUi) return;
+    browserAgentState = nextState;
+    browserAgentUi.panel.dataset.state = nextState;
+    browserAgentUi.agentStatus.textContent = message || "";
+    const canPair = nextState === "ready";
+    browserAgentUi.allow.hidden = !["ready", "unavailable", "preparing"].includes(nextState);
+    browserAgentUi.allow.disabled = !canPair;
+    browserAgentUi.cancel.hidden = !["connecting", "awaiting-pair"].includes(nextState);
+    browserAgentUi.pause.hidden = nextState !== "active";
+    browserAgentUi.resume.hidden = nextState !== "paused";
+    browserAgentUi.takeBack.hidden = !["active", "paused"].includes(nextState);
+    if (nextState !== "awaiting-pair") {
+      browserAgentUi.codeBox.hidden = true;
+      browserAgentUi.code.textContent = "";
+      browserAgentUi.codeExpiry.textContent = "";
+    }
+  }
+
+  async function initializeBrowserGameAgent(game) {
+    const generation = ++browserAgentLoadGeneration;
+    closeBrowserAgentConnection({ notify: true, preserveUi: true });
+    browserAgentHost = null;
+    ensureBrowserAgentPanel(game);
+    if (game.agentControl?.enabled !== true) return;
+
+    try {
+      browserAgentModulePromise ||= import("/games/game-agent-host.mjs?v=20260809-browser-game-agent-v1");
+      const module = await browserAgentModulePromise;
+      const host = await module.createBrowserGameAgentHost({ frame, gameId: game.id });
+      if (generation !== browserAgentLoadGeneration) {
+        host.setControlActive(false);
+        return;
+      }
+      browserAgentHost = host;
+      setBrowserAgentUiState("ready", t("agentReady"));
+    } catch (error) {
+      if (generation !== browserAgentLoadGeneration) return;
+      browserAgentHost = null;
+      setBrowserAgentUiState("unavailable", t("agentError", { message: boundedAgentMessage(error?.message) }));
+    }
+  }
+
+  function startBrowserAgentPairing() {
+    if (!browserAgentHost || browserAgentState !== "ready" || browserAgentSocket) return;
+    let socket;
+    try {
+      browserAgentPairCode = createBrowserAgentPairingCode();
+      browserAgentSessionId = createBrowserAgentSessionId();
+      browserAgentRelaySessionId = "";
+      browserAgentLastRevision = null;
+      setBrowserAgentUiState("connecting", t("agentConnecting"));
+      const relayUrl = new URL("/mcp/browser-games/connect", window.location.origin);
+      relayUrl.protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      socket = new WebSocket(relayUrl.href, ["lusu-game-v1", `pair.${browserAgentPairCode}`]);
+    } catch (error) {
+      resetBrowserAgentAfterDisconnect(t("agentError", { message: boundedAgentMessage(error?.message) }));
+      return;
+    }
+    browserAgentSocket = socket;
+
+    socket.addEventListener("open", () => {
+      if (browserAgentSocket !== socket) return;
+      try {
+        const snapshot = browserAgentHost.snapshot();
+        browserAgentLastRevision = snapshot.revision;
+        sendBrowserAgentMessage({
+          type: "hello",
+          protocolVersion: 1,
+          gameId: currentGame.id,
+          browserSessionId: browserAgentSessionId,
+          revision: snapshot.revision,
+          observation: snapshot.observation,
+          actions: snapshot.actions
+        });
+      } catch (error) {
+        failBrowserAgentConnection(error);
+      }
+    });
+    socket.addEventListener("message", (event) => {
+      if (browserAgentSocket !== socket) return;
+      try {
+        handleBrowserAgentMessage(event.data);
+      } catch (error) {
+        failBrowserAgentConnection(error);
+      }
+    });
+    socket.addEventListener("close", () => {
+      if (browserAgentSocket !== socket) return;
+      browserAgentSocket = null;
+      resetBrowserAgentAfterDisconnect(t("agentDisconnected"));
+    });
+    socket.addEventListener("error", () => {
+      if (browserAgentSocket === socket && socket.readyState !== WebSocket.CLOSED) socket.close(1002, "relay error");
+    });
+  }
+
+  function handleBrowserAgentMessage(raw) {
+    if (typeof raw !== "string" || new TextEncoder().encode(raw).byteLength > browserAgentMaxMessageBytes) {
+      throw browserAgentError("GAME_RELAY_MESSAGE_INVALID", "Relay message is invalid.");
+    }
+    let message;
+    try {
+      message = JSON.parse(raw);
+    } catch {
+      throw browserAgentError("GAME_RELAY_MESSAGE_INVALID", "Relay message is not valid JSON.");
+    }
+    if (!message || typeof message !== "object" || Array.isArray(message) || message.protocolVersion !== 1) {
+      throw browserAgentError("GAME_RELAY_MESSAGE_INVALID", "Relay protocol version is invalid.");
+    }
+
+    if (message.type === "relay_ready") {
+      assertBrowserAgentKeys(message, ["type", "protocolVersion", "sessionId", "state", "pairExpiresAt"]);
+      const sessionId = normalizeBrowserRelayId(message.sessionId);
+      if (message.state !== "awaiting_pair") {
+        throw browserAgentError("GAME_RELAY_STATE_INVALID", "Relay pairing state is invalid.");
+      }
+      const expiry = new Date(message.pairExpiresAt);
+      if (!Number.isFinite(expiry.getTime())) {
+        throw browserAgentError("GAME_RELAY_EXPIRY_INVALID", "Relay pairing expiry is invalid.");
+      }
+      browserAgentRelaySessionId = sessionId;
+      setBrowserAgentUiState("awaiting-pair", t("agentPairPrompt"));
+      browserAgentUi.code.textContent = formatBrowserAgentPairingCode(browserAgentPairCode);
+      browserAgentUi.codeExpiry.textContent = t("agentExpires", { time: expiry.toLocaleTimeString() });
+      browserAgentUi.codeBox.hidden = false;
+      if (browserAgentExpiryTimer) window.clearTimeout(browserAgentExpiryTimer);
+      const waitMs = Math.max(0, Math.min(expiry.getTime() - Date.now(), 15 * 60 * 1000));
+      browserAgentExpiryTimer = window.setTimeout(() => {
+        closeBrowserAgentConnection({ notify: true, message: t("agentDisconnected") });
+      }, waitMs);
+      return;
+    }
+
+    if (message.type === "controller_connected") {
+      assertBrowserAgentKeys(message, ["type", "protocolVersion", "sessionId"]);
+      const sessionId = normalizeBrowserRelayId(message.sessionId);
+      if (!browserAgentRelaySessionId || sessionId !== browserAgentRelaySessionId
+        || !["awaiting-pair", "connecting"].includes(browserAgentState)) {
+        throw browserAgentError("GAME_RELAY_STATE_INVALID", "Controller connection is out of sequence.");
+      }
+      if (browserAgentExpiryTimer) window.clearTimeout(browserAgentExpiryTimer);
+      browserAgentExpiryTimer = null;
+      browserAgentPairCode = "";
+      browserAgentHost.setPaused(false);
+      browserAgentHost.setControlActive(true);
+      setGameInputLocked(true);
+      setBrowserAgentUiState("active", t("agentPaired"));
+      sendBrowserAgentSnapshot();
+      startBrowserAgentSnapshotPolling();
+      return;
+    }
+
+    if (message.type === "observe") {
+      assertBrowserAgentKeys(message, ["type", "protocolVersion", "commandId"]);
+      sendBrowserAgentSnapshot(normalizeBrowserCommandId(message.commandId));
+      return;
+    }
+
+    if (message.type === "action") {
+      assertBrowserAgentKeys(message, ["type", "protocolVersion", "commandId", "expectedRevision", "clientActionId", "actionId"]);
+      handleBrowserAgentAction(message);
+      return;
+    }
+
+    if (message.type === "pause") {
+      assertBrowserAgentKeys(message, ["type", "protocolVersion", "commandId"]);
+      normalizeBrowserCommandId(message.commandId);
+      pauseBrowserAgent(false);
+      return;
+    }
+
+    if (message.type === "close") {
+      assertBrowserAgentKeys(message, ["type", "protocolVersion", "commandId"]);
+      normalizeBrowserCommandId(message.commandId);
+      closeBrowserAgentConnection({ notify: false, message: t("agentDisconnected") });
+      return;
+    }
+
+    throw browserAgentError("GAME_RELAY_MESSAGE_INVALID", "Unsupported relay message type.");
+  }
+
+  function handleBrowserAgentAction(message) {
+    const commandId = normalizeBrowserCommandId(message.commandId);
+    const clientActionId = normalizeBrowserClientActionId(message.clientActionId);
+    const actionId = String(message.actionId || "");
+    const expectedRevision = Number(message.expectedRevision);
+    if (!/^act_[A-Za-z0-9_-]{22}$/.test(actionId)
+      || !Number.isSafeInteger(expectedRevision) || expectedRevision < 0 || expectedRevision > 1_000_000_000) {
+      throw browserAgentError("GAME_ACTION_REQUEST_INVALID", "Relay action identity is invalid.");
+    }
+    if (browserAgentState !== "active") {
+      sendBrowserAgentActionError(commandId, clientActionId, browserAgentError("GAME_CONTROL_NOT_ACTIVE", "AI control is paused."));
+      return;
+    }
+    try {
+      const actionResult = browserAgentHost.act({ expectedRevision, clientActionId, actionId });
+      const snapshot = browserAgentHost.snapshot();
+      browserAgentLastRevision = snapshot.revision;
+      sendBrowserAgentMessage({
+        type: "action_result",
+        protocolVersion: 1,
+        commandId,
+        clientActionId,
+        ok: true,
+        revision: snapshot.revision,
+        observation: snapshot.observation,
+        actions: snapshot.actions,
+        actionResult
+      });
+    } catch (error) {
+      sendBrowserAgentActionError(commandId, clientActionId, error);
+    }
+  }
+
+  function sendBrowserAgentActionError(commandId, clientActionId, error) {
+    const message = {
+      type: "action_result",
+      protocolVersion: 1,
+      commandId,
+      clientActionId,
+      ok: false,
+      error: {
+        code: normalizeBrowserAgentErrorCode(error?.code),
+        message: boundedAgentMessage(error?.message)
+      }
+    };
+    try {
+      const snapshot = browserAgentHost.snapshot();
+      message.revision = snapshot.revision;
+      message.observation = snapshot.observation;
+      message.actions = snapshot.actions;
+      browserAgentLastRevision = snapshot.revision;
+    } catch {
+      // A failed provider cannot safely contribute a partial snapshot.
+    }
+    sendBrowserAgentMessage(message);
+  }
+
+  function sendBrowserAgentSnapshot(commandId) {
+    if (!browserAgentHost || !browserAgentSocket || browserAgentSocket.readyState !== WebSocket.OPEN) return;
+    const snapshot = browserAgentHost.snapshot();
+    browserAgentLastRevision = snapshot.revision;
+    const message = {
+      type: "snapshot",
+      protocolVersion: 1,
+      revision: snapshot.revision,
+      observation: snapshot.observation,
+      actions: snapshot.actions
+    };
+    if (commandId !== undefined) message.commandId = normalizeBrowserCommandId(commandId);
+    sendBrowserAgentMessage(message);
+  }
+
+  function startBrowserAgentSnapshotPolling() {
+    stopBrowserAgentSnapshotPolling();
+    browserAgentPollTimer = window.setInterval(() => {
+      if (browserAgentState !== "active" || !browserAgentHost) return;
+      try {
+        const snapshot = browserAgentHost.snapshot();
+        if (snapshot.revision === browserAgentLastRevision) return;
+        browserAgentLastRevision = snapshot.revision;
+        sendBrowserAgentMessage({
+          type: "snapshot",
+          protocolVersion: 1,
+          revision: snapshot.revision,
+          observation: snapshot.observation,
+          actions: snapshot.actions
+        });
+      } catch (error) {
+        failBrowserAgentConnection(error);
+      }
+    }, 1000);
+  }
+
+  function stopBrowserAgentSnapshotPolling() {
+    if (browserAgentPollTimer) window.clearInterval(browserAgentPollTimer);
+    browserAgentPollTimer = null;
+  }
+
+  function pauseBrowserAgentByUser() {
+    if (browserAgentState !== "active") return;
+    pauseBrowserAgent(true);
+  }
+
+  function pauseBrowserAgent(notifyController) {
+    if (!browserAgentHost || !["active", "paused"].includes(browserAgentState)) return;
+    browserAgentHost.setControlActive(false);
+    browserAgentHost.setPaused(true);
+    setGameInputLocked(false);
+    stopBrowserAgentSnapshotPolling();
+    setBrowserAgentUiState("paused", t("agentPaused"));
+    if (notifyController) {
+      sendBrowserAgentMessage({ type: "user_pause", protocolVersion: 1 });
+    }
+  }
+
+  function resumeBrowserAgentByUser() {
+    if (!browserAgentHost || browserAgentState !== "paused") return;
+    try {
+      browserAgentHost.setPaused(false);
+      browserAgentHost.setControlActive(true);
+      const snapshot = browserAgentHost.snapshot();
+      browserAgentLastRevision = snapshot.revision;
+      sendBrowserAgentMessage({
+        type: "user_resume",
+        protocolVersion: 1,
+        revision: snapshot.revision,
+        observation: snapshot.observation,
+        actions: snapshot.actions
+      });
+      setGameInputLocked(true);
+      setBrowserAgentUiState("active", t("agentPaired"));
+      startBrowserAgentSnapshotPolling();
+    } catch (error) {
+      failBrowserAgentConnection(error);
+    }
+  }
+
+  function closeBrowserAgentConnection(options = {}) {
+    const socket = browserAgentSocket;
+    browserAgentSocket = null;
+    if (socket && options.notify !== false && socket.readyState === WebSocket.OPEN) {
+      try {
+        socket.send(JSON.stringify({ type: "user_close", protocolVersion: 1 }));
+      } catch {
+        // The local unlock below is authoritative even if the final notice cannot be sent.
+      }
+    }
+    if (socket && socket.readyState < WebSocket.CLOSING) {
+      try { socket.close(1000, "browser closed"); } catch { /* already closing */ }
+    }
+    stopBrowserAgentSnapshotPolling();
+    if (browserAgentExpiryTimer) window.clearTimeout(browserAgentExpiryTimer);
+    browserAgentExpiryTimer = null;
+    browserAgentPairCode = "";
+    browserAgentSessionId = "";
+    browserAgentRelaySessionId = "";
+    browserAgentLastRevision = null;
+    setGameInputLocked(false);
+    if (browserAgentHost) {
+      try {
+        browserAgentHost.setControlActive(false);
+        browserAgentHost.setPaused(false);
+      } catch {
+        browserAgentHost = null;
+      }
+    }
+    if (!options.preserveUi && browserAgentUi) {
+      setBrowserAgentUiState(browserAgentHost ? "ready" : "unavailable", options.message || t("agentDisconnected"));
+    }
+  }
+
+  function resetBrowserAgentAfterDisconnect(message) {
+    stopBrowserAgentSnapshotPolling();
+    if (browserAgentExpiryTimer) window.clearTimeout(browserAgentExpiryTimer);
+    browserAgentExpiryTimer = null;
+    browserAgentPairCode = "";
+    browserAgentSessionId = "";
+    browserAgentRelaySessionId = "";
+    browserAgentLastRevision = null;
+    setGameInputLocked(false);
+    if (browserAgentHost) {
+      try {
+        browserAgentHost.setControlActive(false);
+        browserAgentHost.setPaused(false);
+      } catch {
+        browserAgentHost = null;
+      }
+    }
+    setBrowserAgentUiState(browserAgentHost ? "ready" : "unavailable", message || t("agentDisconnected"));
+  }
+
+  function failBrowserAgentConnection(error) {
+    closeBrowserAgentConnection({
+      notify: true,
+      message: t("agentError", { message: boundedAgentMessage(error?.message) })
+    });
+  }
+
+  function setGameInputLocked(locked) {
+    if (!browserAgentFrameWrap || !browserAgentShield) return;
+    browserAgentFrameWrap.classList.toggle("is-agent-controlled", locked);
+    browserAgentShield.setAttribute("aria-hidden", locked ? "false" : "true");
+    if (locked) {
+      if (browserAgentFrameTabIndex === null) {
+        browserAgentFrameTabIndex = {
+          hadAttribute: frame.hasAttribute("tabindex"),
+          value: frame.getAttribute("tabindex")
+        };
+      }
+      frame.inert = true;
+      frame.blur();
+      frame.setAttribute("tabindex", "-1");
+      frame.setAttribute("aria-disabled", "true");
+      browserAgentUi?.panel.focus({ preventScroll: true });
+    } else {
+      frame.inert = false;
+      frame.removeAttribute("aria-disabled");
+      if (browserAgentFrameTabIndex) {
+        if (browserAgentFrameTabIndex.hadAttribute) frame.setAttribute("tabindex", browserAgentFrameTabIndex.value);
+        else frame.removeAttribute("tabindex");
+      }
+      browserAgentFrameTabIndex = null;
+    }
+  }
+
+  function sendBrowserAgentMessage(message) {
+    if (!browserAgentSocket || browserAgentSocket.readyState !== WebSocket.OPEN) {
+      throw browserAgentError("GAME_RELAY_DISCONNECTED", "The game relay is disconnected.");
+    }
+    const serialized = JSON.stringify(message);
+    if (new TextEncoder().encode(serialized).byteLength > browserAgentMaxMessageBytes) {
+      throw browserAgentError("GAME_RELAY_MESSAGE_TOO_LARGE", "The game relay message is too large.");
+    }
+    browserAgentSocket.send(serialized);
+  }
+
+  function createBrowserAgentPairingCode() {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    let value = 0;
+    let bits = 0;
+    let result = "";
+    bytes.forEach((byte) => {
+      value = (value << 8) | byte;
+      bits += 8;
+      while (bits >= 5) {
+        result += alphabet[(value >>> (bits - 5)) & 31];
+        bits -= 5;
+      }
+    });
+    if (bits > 0) result += alphabet[(value << (5 - bits)) & 31];
+    if (!/^[A-Z2-7]{26}$/.test(result)) {
+      throw browserAgentError("GAME_PAIR_CODE_INVALID", "A secure pairing code could not be created.");
+    }
+    return result;
+  }
+
+  function formatBrowserAgentPairingCode(code) {
+    if (!/^[A-Z2-7]{26}$/.test(code)) return "";
+    return `${code.slice(0, 5)}-${code.slice(5, 10)}-${code.slice(10, 15)}-${code.slice(15, 20)}-${code.slice(20)}`;
+  }
+
+  function createBrowserAgentSessionId() {
+    let value = "";
+    do {
+      const bytes = crypto.getRandomValues(new Uint8Array(16));
+      let binary = "";
+      bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+      value = btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/u, "");
+    } while (!/^[A-Za-z0-9][A-Za-z0-9_-]{15,127}$/.test(value));
+    return value;
+  }
+
+  function normalizeBrowserRelayId(value) {
+    const normalized = String(value || "");
+    if (!/^[A-Za-z0-9][A-Za-z0-9_-]{15,127}$/.test(normalized)) {
+      throw browserAgentError("GAME_RELAY_SESSION_INVALID", "Relay session id is invalid.");
+    }
+    return normalized;
+  }
+
+  function normalizeBrowserCommandId(value) {
+    const normalized = String(value || "");
+    if (!/^[A-Za-z0-9][A-Za-z0-9_-]{15,127}$/.test(normalized)) {
+      throw browserAgentError("GAME_COMMAND_ID_INVALID", "Relay command id is invalid.");
+    }
+    return normalized;
+  }
+
+  function normalizeBrowserClientActionId(value) {
+    const normalized = String(value || "");
+    if (!/^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$/.test(normalized)) {
+      throw browserAgentError("GAME_CLIENT_ACTION_ID_INVALID", "Client action id is invalid.");
+    }
+    return normalized;
+  }
+
+  function assertBrowserAgentKeys(value, expectedKeys) {
+    const actual = Object.keys(value).sort();
+    const expected = [...expectedKeys].sort();
+    if (actual.length !== expected.length || actual.some((key, index) => key !== expected[index])) {
+      throw browserAgentError("GAME_RELAY_MESSAGE_INVALID", "Relay message contains unsupported fields.");
+    }
+  }
+
+  function normalizeBrowserAgentErrorCode(value) {
+    const code = String(value || "GAME_ACTION_FAILED").toUpperCase();
+    return /^[A-Z][A-Z0-9_]{0,63}$/.test(code) ? code : "GAME_ACTION_FAILED";
+  }
+
+  function boundedAgentMessage(value) {
+    return String(value || "Unknown error")
+      .replace(/[\u0000-\u001F\u007F]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 240);
+  }
+
+  function browserAgentError(code, message) {
+    const error = new Error(message);
+    error.code = code;
+    return error;
+  }
+
   try {
     const catalog = await loadCatalog();
     const game = catalog.games.find((item) => item.id === slug);
@@ -1131,6 +1782,7 @@
     subtitle.textContent = `${game.title} · ${formatLanguageSupport(game)}`;
     frame.setAttribute("title", displayTitle);
     renderLicensePanel(game);
+    ensureBrowserAgentPanel(game);
 
     applyStorageDefaults(game);
     applyLanguagePreference(game);
@@ -1140,10 +1792,12 @@
         : authUser
           ? t("loadedCloud")
           : t("loadedLocal"));
+      void initializeBrowserGameAgent(game);
     });
     frame.src = buildEntry(game);
     renderCloudPanel();
     window.addEventListener("beforeunload", flushGameSave);
+    window.addEventListener("pagehide", () => closeBrowserAgentConnection({ notify: true, preserveUi: true }));
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden") {
         flushGameSave();

@@ -97,6 +97,48 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     from sqlite_master where type = 'index' and name = 'agent_article_receipts_created_idx'
   `,
   `
+    select 'agent-video-receipts-table' as item, count(*) as present
+    from sqlite_master where type = 'table' and name = 'agent_video_receipts'
+    union all
+    select 'agent-video-receipts-all-columns',
+      case
+        when count(*) = 8
+          and sum(case when name in (
+            'receipt_id', 'user_id', 'operation_id', 'action',
+            'payload_hash', 'video_id', 'response_json', 'created_at'
+          ) then 1 else 0 end) = 8
+        then 1 else 0
+      end
+    from pragma_table_info('agent_video_receipts')
+    union all
+    select 'video-upload-sessions-table', count(*)
+    from sqlite_master where type = 'table' and name = 'video_upload_sessions'
+    union all
+    select 'video-upload-sessions-all-columns',
+      case
+        when count(*) = 22
+          and sum(case when name in (
+            'upload_session_id', 'user_id', 'operation_id', 'payload_hash',
+            'video_id', 'filename', 'mime_type', 'size_bytes', 'sha256',
+            'upload_token_hash', 'object_key', 'r2_upload_id', 'part_size_bytes',
+            'expected_parts', 'uploaded_bytes', 'status', 'expires_at',
+            'created_at', 'updated_at', 'completed_at', 'aborted_at', 'last_error'
+          ) then 1 else 0 end) = 22
+        then 1 else 0
+      end
+    from pragma_table_info('video_upload_sessions')
+  `,
+  `
+    select 'agent-video-receipts-created-index' as item, count(*) as present
+    from sqlite_master where type = 'index' and name = 'agent_video_receipts_created_idx'
+    union all
+    select 'video-upload-sessions-user-status-index', count(*)
+    from sqlite_master where type = 'index' and name = 'video_upload_sessions_user_status_idx'
+    union all
+    select 'video-upload-sessions-status-expires-index', count(*)
+    from sqlite_master where type = 'index' and name = 'video_upload_sessions_status_expires_idx'
+  `,
+  `
     select 'mcp-oauth-grants-table' as item, count(*) as present
     from sqlite_master where type = 'table' and name = 'mcp_oauth_grants'
     union all
@@ -212,18 +254,18 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260809-remote-mcp-oauth-r2'
+    where key = 'article_seed_version' and value = '20260809-game-video-mcp-candidate-r2'
     union all
-    select 'remote-mcp-oauth-update-article',
+    select 'game-video-mcp-candidate-update-article',
       case when count(*) = 1 then 1 else 0 end
     from articles
-    where article_id = 'seed-update-2026-08-07-remote-mcp-oauth'
-      and slug = '2026-08-07-remote-mcp-oauth'
+    where article_id = 'seed-update-2026-08-09-game-video-mcp-candidate'
+      and slug = '2026-08-09-game-video-mcp-candidate'
       and category = 'site-updates'
       and status = 'published'
-      and published_at = '2026-08-09T01:00:00.000Z'
+      and published_at = '2026-08-09T09:30:00.000Z'
     union all
-    select 'remote-mcp-oauth-update-translations',
+    select 'game-video-mcp-candidate-update-translations',
       case
         when count(*) = 3
           and count(distinct lang) = 3
@@ -236,7 +278,7 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
         then 1 else 0
       end
     from article_translations
-    where article_id = 'seed-update-2026-08-07-remote-mcp-oauth'
+    where article_id = 'seed-update-2026-08-09-game-video-mcp-candidate'
     union all
     select 'whiteboard-agent-images-update-article', count(*)
     from articles where article_id = 'seed-update-2026-08-06-whiteboard-agent-images'

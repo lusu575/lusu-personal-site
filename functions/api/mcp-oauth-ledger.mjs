@@ -252,6 +252,178 @@ export async function revokeMcpOAuthGrant({
   return { revoked: changes(result) === 1 };
 }
 
+export async function findMcpOAuthRevocationIntent({
+  env,
+  userId,
+  clientId,
+  providerGrantId,
+  tokenRefHash
+}) {
+  await ensureMcpOAuthLedgerSchema(env);
+  const normalizedUserId = normalizeText(userId, "userId", 128);
+  const normalizedClientId = normalizeText(clientId, "clientId", 2048);
+  const normalizedProviderGrantId = normalizeText(providerGrantId, "providerGrantId", 256);
+  const normalizedTokenRefHash = normalizeSha256(tokenRefHash, "tokenRefHash");
+  const targetIdHash = await sha256Hex(`mcp-audit-target:${normalizedProviderGrantId}`);
+  const row = await env.DB.prepare(`
+    select event_id, grant_ref, result
+    from mcp_oauth_audit_log
+    where user_id = ? and client_id = ? and token_ref_hash = ?
+      and target_type = 'oauth-provider-grant' and target_id_hash = ?
+      and action = 'mcp-oauth-grant-revoked' and result in ('pending', 'success')
+    limit 1
+  `).bind(
+    normalizedUserId,
+    normalizedClientId,
+    normalizedTokenRefHash,
+    targetIdHash
+  ).first();
+  return row ? {
+    eventId: String(row.event_id || ""),
+    grantRef: normalizeGrantRef(row.grant_ref),
+    result: String(row.result || "")
+  } : null;
+}
+
+export async function createMcpOAuthRevocationIntent({
+  env,
+  grantRef,
+  userId,
+  clientId,
+  providerGrantId,
+  tokenRefHash,
+  createdAt = new Date().toISOString()
+}) {
+  await ensureMcpOAuthLedgerSchema(env);
+  const normalizedGrantRef = normalizeGrantRef(grantRef);
+  const normalizedUserId = normalizeText(userId, "userId", 128);
+  const normalizedClientId = normalizeText(clientId, "clientId", 2048);
+  const normalizedProviderGrantId = normalizeText(providerGrantId, "providerGrantId", 256);
+  const normalizedTokenRefHash = normalizeSha256(tokenRefHash, "tokenRefHash");
+  const normalizedCreatedAt = normalizeTimestamp(createdAt, "createdAt");
+  const eventId = `mcp-rfc7009-${await sha256Hex(`mcp-rfc7009:${normalizedGrantRef}`)}`;
+  const targetIdHash = await sha256Hex(`mcp-audit-target:${normalizedProviderGrantId}`);
+  const grant = await getMcpOAuthGrant(env, normalizedGrantRef);
+  if (!grant || grant.userId !== normalizedUserId || grant.clientId !== normalizedClientId) {
+    throw new McpOAuthLedgerError(
+      "The OAuth grant ledger entry does not match the revocation request.",
+      500,
+      "MCP_OAUTH_REVOCATION_GRANT_MISMATCH"
+    );
+  }
+  if (grant.status === "revoked") {
+    return {
+      eventId,
+      grantRef: normalizedGrantRef,
+      result: "success",
+      alreadyRevoked: true
+    };
+  }
+
+  await env.DB.prepare(`
+    insert into mcp_oauth_audit_log (
+      event_id, user_id, client_id, grant_ref, token_ref_hash, resource,
+      capability_id, tool_name, operation_id, target_type, target_id_hash,
+      requested_scopes, effective_scopes, action, result, error_code,
+      ip_hash, created_at
+    )
+    select ?, user_id, client_id, grant_ref, ?, resource,
+      '', '', '', 'oauth-provider-grant', ?, authorized_scopes, authorized_scopes,
+      'mcp-oauth-grant-revoked', 'pending', '', '', ?
+    from mcp_oauth_grants
+    where grant_ref = ? and user_id = ? and client_id = ? and status <> 'revoked'
+    on conflict(event_id) do nothing
+  `).bind(
+    eventId,
+    normalizedTokenRefHash,
+    targetIdHash,
+    normalizedCreatedAt,
+    normalizedGrantRef,
+    normalizedUserId,
+    normalizedClientId
+  ).run();
+  const row = await env.DB.prepare(`
+    select grant_ref, token_ref_hash, target_id_hash, result
+    from mcp_oauth_audit_log
+    where event_id = ? and action = 'mcp-oauth-grant-revoked'
+    limit 1
+  `).bind(eventId).first();
+  if (!row
+    || String(row.grant_ref || "") !== normalizedGrantRef
+    || String(row.token_ref_hash || "") !== normalizedTokenRefHash
+    || String(row.target_id_hash || "") !== targetIdHash
+    || !["pending", "success"].includes(String(row.result || ""))) {
+    throw new McpOAuthLedgerError(
+      "A different refresh token already owns this revocation intent.",
+      409,
+      "MCP_OAUTH_REVOCATION_INTENT_CONFLICT"
+    );
+  }
+  return {
+    eventId,
+    grantRef: normalizedGrantRef,
+    result: String(row.result),
+    alreadyRevoked: String(row.result) === "success"
+  };
+}
+
+export async function completeMcpOAuthRevocationIntent({
+  env,
+  grantRef,
+  eventId,
+  reason = "rfc7009-refresh-token",
+  completedAt = new Date().toISOString()
+}) {
+  await ensureMcpOAuthLedgerSchema(env);
+  const normalizedGrantRef = normalizeGrantRef(grantRef);
+  const normalizedEventId = normalizeText(eventId, "eventId", 128);
+  const normalizedReason = normalizeText(reason, "reason", 160);
+  const normalizedCompletedAt = normalizeTimestamp(completedAt, "completedAt");
+  const results = await env.DB.batch([
+    env.DB.prepare(`
+      update mcp_oauth_grants
+      set status = 'revoked', revoked_at = ?, revoked_reason = ?
+      where grant_ref = ? and status <> 'revoked'
+        and exists (
+          select 1 from mcp_oauth_audit_log
+          where event_id = ? and grant_ref = ?
+            and action = 'mcp-oauth-grant-revoked'
+            and result in ('pending', 'success')
+        )
+    `).bind(
+      normalizedCompletedAt,
+      normalizedReason,
+      normalizedGrantRef,
+      normalizedEventId,
+      normalizedGrantRef
+    ),
+    env.DB.prepare(`
+      update mcp_oauth_audit_log
+      set result = 'success', error_code = '', created_at = ?
+      where event_id = ? and grant_ref = ?
+        and action = 'mcp-oauth-grant-revoked' and result = 'pending'
+    `).bind(normalizedCompletedAt, normalizedEventId, normalizedGrantRef)
+  ]);
+  if (changes(results?.[1]) !== 1) {
+    const existing = await env.DB.prepare(`
+      select result from mcp_oauth_audit_log
+      where event_id = ? and grant_ref = ? and action = 'mcp-oauth-grant-revoked'
+      limit 1
+    `).bind(normalizedEventId, normalizedGrantRef).first();
+    if (String(existing?.result || "") !== "success") {
+      throw new McpOAuthLedgerError(
+        "The OAuth revocation intent could not be completed.",
+        500,
+        "MCP_OAUTH_REVOCATION_INTENT_INCOMPLETE"
+      );
+    }
+  }
+  return {
+    revoked: changes(results?.[0]) === 1,
+    completed: true
+  };
+}
+
 export async function getMcpOAuthGrant(env, grantRef) {
   await ensureMcpOAuthLedgerSchema(env);
   const row = await env.DB.prepare(`
@@ -471,6 +643,14 @@ function normalizeGrantRef(value) {
   const normalized = String(value || "").trim();
   if (!GRANT_REF_PATTERN.test(normalized)) {
     throw new McpOAuthLedgerError("Invalid OAuth grant reference.", 400, "MCP_OAUTH_GRANT_REF_INVALID");
+  }
+  return normalized;
+}
+
+function normalizeSha256(value, field) {
+  const normalized = String(value || "").toLowerCase();
+  if (!SHA256_PATTERN.test(normalized)) {
+    throw new McpOAuthLedgerError(`Invalid ${field}.`, 400, "MCP_OAUTH_HASH_INVALID", { field });
   }
   return normalized;
 }

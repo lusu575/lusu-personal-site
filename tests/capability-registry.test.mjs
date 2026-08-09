@@ -73,6 +73,46 @@ test("registry list, get, and filter APIs expose only matching capabilities", ()
   assert.ok(remoteReads.every(({ readOnly, status }) => readOnly && status === "available"));
   assert.equal(remoteReads.some(({ id }) => id === "content.videos.list"), false);
 
+  const availableVideoManagement = filterCapabilities({
+    domain: "video-management",
+    status: "available"
+  });
+  assert.deepEqual(
+    availableVideoManagement.map(({ id }) => id),
+    [
+      "content.videos.manage-list",
+      "content.videos.manage-get",
+      "content.videos.publish",
+      "content.videos.update",
+      "content.videos.refresh",
+      "content.videos.delete"
+    ]
+  );
+  assert.ok(
+    availableVideoManagement
+      .every(({ availableTransports }) => availableTransports.includes("site-api"))
+  );
+  assert.ok(
+    filterCapabilities({ domain: "video-management" })
+      .every(({ availableTransports }) => !availableTransports.includes("remote-mcp"))
+  );
+  assert.equal(getCapability("content.videos.publish")?.idempotent, true);
+  assert.equal(getCapability("content.videos.delete")?.destructive, true);
+  assert.deepEqual(
+    filterCapabilities({ domain: "video-management", status: "adapter-planned" })
+      .map(({ id }) => id),
+    [
+      "content.videos.upload-begin",
+      "content.videos.upload-status",
+      "content.videos.upload-commit",
+      "content.videos.upload-abort"
+    ]
+  );
+  assert.ok(
+    filterCapabilities({ domain: "video-management", status: "adapter-planned" })
+      .every(({ availableTransports }) => availableTransports.length === 0)
+  );
+
   assert.deepEqual(
     filterCapabilities({ domain: "transfer", destructive: true }).map(({ id }) => id),
     ["transfer.items.delete"]
@@ -108,6 +148,27 @@ test("registry list, get, and filter APIs expose only matching capabilities", ()
       "games.session.close"
     ]
   );
+  assert.deepEqual(
+    filterCapabilities({ domain: "games", availableTransports: "browser-adapter" }),
+    []
+  );
+  assert.deepEqual(
+    filterCapabilities({ domain: "games", availableTransports: "remote-mcp" }),
+    []
+  );
+  assert.deepEqual(
+    filterCapabilities({ domain: "games", status: "adapter-planned" }).map(({ id }) => id),
+    [
+      "games.browser.connect",
+      "games.browser.pair",
+      "games.browser.observe",
+      "games.browser.actions",
+      "games.browser.act",
+      "games.browser.pause",
+      "games.browser.close"
+    ]
+  );
+  assert.deepEqual(getCapability("games.session.act")?.transport, ["local-mcp", "cli"]);
   assert.ok(filterCapabilities({ risk: ["high", "critical"] }).length > 0);
   assert.throws(() => filterCapabilities({ unknown: true }), /Unsupported capability filter/);
 

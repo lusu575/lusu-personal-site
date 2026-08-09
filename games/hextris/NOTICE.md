@@ -28,6 +28,9 @@ Local implementation and changes:
 - A separate deterministic Agent engine, dedicated CLI, and dedicated stdio MCP
   server were added on 2026-08-07 under `agent/`. They run as a standalone GPL
   process and do not import the site's general CLI or MCP implementation.
+- The browser source gained an audited semantic-control bridge on 2026-08-09.
+  While AI control is active it freezes real-time falling and accepts only
+  revision-bound lane placement or confirmed reset actions.
 
 The preferred source for modification is the unminified source in this public
 repository: https://github.com/lusu575/lusu-personal-site/tree/main/games/hextris

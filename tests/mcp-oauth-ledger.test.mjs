@@ -7,8 +7,11 @@ import {
   McpOAuthLedgerError,
   activateMcpOAuthGrant,
   assertActiveMcpOAuthGrant,
+  completeMcpOAuthRevocationIntent,
   createPendingMcpOAuthGrant,
+  createMcpOAuthRevocationIntent,
   ensureMcpOAuthLedgerSchema,
+  findMcpOAuthRevocationIntent,
   mcpOAuthAuditIpHash,
   recordMcpOAuthAudit,
   revokeMcpOAuthGrant
@@ -170,6 +173,81 @@ test("admin downgrade and grant revocation take effect on the next call", async 
     assertActiveMcpOAuthGrant({ env, principal: principal(), requiredScopes: ["content:read"], now }),
     (error) => error instanceof McpOAuthLedgerError && error.code === "MCP_OAUTH_GRANT_INACTIVE"
   );
+});
+
+test("RFC 7009 grant revocation updates the ledger and records one atomic audit", async () => {
+  const env = createFixture();
+  await createGrant(env);
+  await activateMcpOAuthGrant({ env, grantRef, activatedAt: now });
+  const tokenRefHash = "a".repeat(64);
+  const intent = await createMcpOAuthRevocationIntent({
+    env,
+    grantRef,
+    userId: "owner-1",
+    clientId: "https://client.example.test/oauth.json",
+    providerGrantId: "provider-grant-test-1",
+    tokenRefHash,
+    createdAt: now
+  });
+  assert.deepEqual(intent, {
+    eventId: intent.eventId,
+    grantRef,
+    result: "pending",
+    alreadyRevoked: false
+  });
+  const found = await findMcpOAuthRevocationIntent({
+    env,
+    userId: "owner-1",
+    clientId: "https://client.example.test/oauth.json",
+    providerGrantId: "provider-grant-test-1",
+    tokenRefHash
+  });
+  assert.deepEqual(found, {
+    eventId: intent.eventId,
+    grantRef,
+    result: "pending"
+  });
+  await assert.rejects(
+    createMcpOAuthRevocationIntent({
+      env,
+      grantRef,
+      userId: "owner-1",
+      clientId: "https://client.example.test/oauth.json",
+      providerGrantId: "provider-grant-test-1",
+      tokenRefHash: "b".repeat(64),
+      createdAt: now
+    }),
+    (error) => error instanceof McpOAuthLedgerError
+      && error.code === "MCP_OAUTH_REVOCATION_INTENT_CONFLICT"
+  );
+
+  const first = await completeMcpOAuthRevocationIntent({
+    env,
+    grantRef,
+    eventId: intent.eventId,
+    completedAt: now
+  });
+  assert.deepEqual(first, { revoked: true, completed: true });
+  const replay = await completeMcpOAuthRevocationIntent({
+    env,
+    grantRef,
+    eventId: intent.eventId,
+    completedAt: now
+  });
+  assert.deepEqual(replay, { revoked: false, completed: true });
+
+  const grant = env.DB.sqlite.prepare(`
+    select status, revoked_reason from mcp_oauth_grants where grant_ref = ?
+  `).get(grantRef);
+  assert.equal(grant.status, "revoked");
+  assert.equal(grant.revoked_reason, "rfc7009-refresh-token");
+  const audits = env.DB.sqlite.prepare(`
+    select action, result, token_ref_hash from mcp_oauth_audit_log where event_id = ?
+  `).all(intent.eventId);
+  assert.equal(audits.length, 1);
+  assert.equal(audits[0].action, "mcp-oauth-grant-revoked");
+  assert.equal(audits[0].result, "success");
+  assert.equal(audits[0].token_ref_hash, tokenRefHash);
 });
 
 test("activating a replacement grant revokes the previous grant for the same client", async () => {

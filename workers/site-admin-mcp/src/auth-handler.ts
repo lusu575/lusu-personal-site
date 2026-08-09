@@ -86,7 +86,7 @@ const StoredConsentCompletionSchema = z.object({
 
 type StoredConsentCompletion = z.infer<typeof StoredConsentCompletionSchema>;
 
-type BrowserSession = {
+export type BrowserSession = {
   tokenHash: string;
   user: {
     id: string;
@@ -515,7 +515,7 @@ async function recordConsentAudit(
   });
 }
 
-async function requireOwnerSession(request: Request, env: Env): Promise<BrowserSession> {
+export async function requireOwnerSession(request: Request, env: Env): Promise<BrowserSession> {
   const sessionToken = readCookie(request, SESSION_COOKIE);
   if (!sessionToken) {
     throw new WorkerHttpError("Sign in before authorizing this client.", 401, "OAUTH_LOGIN_REQUIRED");

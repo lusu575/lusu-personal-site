@@ -8,6 +8,16 @@ The production Worker `lusu-site-admin-mcp` is deployed. Version `fa295db6-302a-
 
 For that exact bundle, the owner reviewed the OAuth page in a normal top-level browser and clicked Allow. Acceptance verified all nine tools, four public capabilities, atomic publish, same-payload replay, management list/get, CAS update, zh/en/ja public readback, confirmed delete, three-language 404 readback, and grant revocation; the temporary article was deleted. This acceptance is bundle-specific: every new production Worker bundle must repeat the real browser OAuth and the same complete lifecycle, never reuse historical acceptance as current evidence. Whole-site remote MCP and browser-game pairing/control remain outside the implemented boundary.
 
+## Local next-bundle candidate: games and external videos
+
+The current repository also contains a next-bundle candidate that is **not deployed and not production-accepted**. The canonical production endpoint still exposes only the exact nine tools listed below. Do not advertise any candidate tool as available until its new Worker version, Production D1 migration, OAuth consent, Durable Object relay, and complete real-browser lifecycle have independently passed.
+
+Candidate browser-game tools are `game_browser_pair`, `game_browser_observe`, `game_browser_actions`, `game_browser_act`, `game_browser_pause`, and `game_browser_close`. They require the non-default `games:play` scope, an active grant, a current administrator recheck, an explicit one-time owner/client-bound pairing code, and revision CAS. The relay accepts only opaque `actionId` values offered by the current semantic snapshot; selectors, scripts, raw keys, coordinates, URLs, screenshots, and DOM access are outside the protocol. Only one command may be pending, and the browser player retains visible lock, pause, take-back, close, and disconnect-unlock controls.
+
+The corresponding semantic browser bridges currently cover 2048, Hextris, A Dark Room, and Life Restart. Kittens Game remains `NO_AGENT` because the WET PAWS LICENSE requires explicit permission or legal confirmation before any control bridge is added. Registry entries for remote pairing/control intentionally keep empty `availableTransports` until production acceptance.
+
+The next-bundle candidate adds public `videos_list` and `video_get` reads plus owner-only `video_manage_list`, `video_manage_get`, `video_publish`, `video_update`, `video_refresh_metadata`, and `video_delete`. All eight remain undeployed; `content.videos.list/get` also stay out of remote `availableTransports`, so `site_capabilities` on the accepted production bundle still discovers only the historical four article capabilities. Phase one handles only YouTube, Bilibili, and b23.tv external-link records. Publish/update/delete use active-admin rechecks, audit records, durable `operationId` receipts, and canonical payload hashes; update/delete require `expectedUpdatedAt`, while delete also requires literal `confirm: true`. The remote MCP never reads local paths, Base64, raw video bytes, or files from the AI client's machine. True hosted upload is not configured; a future upload phase requires a separate private R2 binary data plane with bounded multipart, quotas, scanning, commit, abort, expiry, and orphan cleanup.
+
 ## What another AI connects to
 
 Give a remote-MCP-capable AI client this server URL:
@@ -23,6 +33,8 @@ Scopes:
 - `content:read`: public capabilities and published article retrieval. This baseline is always included.
 - `content:write`: list/get managed articles, atomic trilingual publish, and CAS update.
 - `content:delete`: confirmed, idempotent, CAS-protected permanent deletion.
+
+`games:play` is reserved for the undeployed browser-game candidate above. It is not a scope offered by the currently accepted nine-tool production bundle.
 
 All tools remain visible so a client can perform incremental authorization. Each tool advertises `_meta.securitySchemes`; an insufficient grant returns `_meta["mcp/www_authenticate"]` with the exact required scope. Publishing uses the shared article service and requires an `operationId`; there is no separate MCP-only business implementation.
 
@@ -98,7 +110,7 @@ Use a purpose-specific value for `ANALYTICS_IP_HASH_SALT`; do not reuse an appli
 - Provider grants are backed by the D1 authorization ledger. Write/delete calls re-check the current admin role and active grant on every operation.
 - The provider token is unwrapped through the provider's public API, then the Worker independently verifies expiry, the exact audience, client, granted scopes, and active D1 grant before creating MCP `authInfo`.
 - Provider errors log only stable code/status/category fields. Tokens, cookies, raw IP addresses, callbacks, article bodies, and provider free-text reasons are not logged.
-- RFC 7009 revocation is served by the provider on `/oauth/token`.
+- RFC 7009 revocation is served on `/oauth/token`. Access-token-only revocation leaves the D1 grant active. For refresh tokens, the pinned provider grant record is read once by exact key to verify the current/previous token hash, then a grant-scoped deterministic `pending` intent is persisted in D1 before the provider deletes anything. After the RFC 7009 response succeeds, the Worker explicitly confirms an idempotent whole-grant deletion so a concurrent refresh rotation cannot turn the standard success into a no-op; only then does one D1 batch mark the grant revoked and complete the same audit event. Retries recover from the strong D1 intent rather than an eventually-consistent post-delete KV read. Raw tokens are never persisted.
 - Persistent Worker observability stays disabled so OAuth authorization queries and state are not retained by platform request logs; the query-safe routes are narrowed again by an exact pathname allowlist in code.
 
 ## Local verification

@@ -26,7 +26,9 @@ import {
   SERVER_VERSION,
   type OwnerScope
 } from "./constants";
+import { registerGameOwnerTools } from "./game-tools";
 import { safeErrorCode } from "./security";
+import { registerVideoOwnerTools } from "./video-tools";
 
 type OAuthArticlePrincipal = {
   authType: "oauth";
@@ -262,6 +264,18 @@ export async function createOwnerMcpServer(
     includeResources: false
   });
   registerArticleOwnerTools(
+    server,
+    env,
+    principal,
+    requestContext.requestInfo || new Request(MCP_RESOURCE)
+  );
+  registerGameOwnerTools(
+    server,
+    env,
+    principal,
+    requestContext.requestInfo || new Request(MCP_RESOURCE)
+  );
+  registerVideoOwnerTools(
     server,
     env,
     principal,

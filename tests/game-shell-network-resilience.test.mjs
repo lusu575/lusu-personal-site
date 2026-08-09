@@ -7,10 +7,10 @@ const gameShell = readFileSync(new URL("../games/game-shell.js", import.meta.url
 
 function productionApiFetch() {
   const match = gameShell.match(
-    /  async function apiFetch\(path, options = \{\}\) \{[\s\S]*?\n  \}\n\n  async function loadAuthSession/
+    /  async function apiFetch\(path, options = \{\}\) \{[\s\S]*?\r?\n  \}\r?\n\r?\n  async function loadAuthSession/
   );
   assert.ok(match, "production apiFetch should remain extractable for the hanging-request regression");
-  return match[0].replace(/\n\n  async function loadAuthSession[\s\S]*$/, "");
+  return match[0].replace(/\r?\n\r?\n  async function loadAuthSession[\s\S]*$/, "");
 }
 
 test("a hanging cloud request is aborted by the production timeout helper", async () => {
