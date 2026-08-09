@@ -17,42 +17,31 @@ import {
 const root = new URL("../", import.meta.url);
 const themes = ["morning", "day", "dusk", "night"];
 const widths = [960, 1440, 1920];
-const wallpaperSwitchAssetVersion = "20260809-wallpaper-time-switch-r3";
+const wallpaperSwitchAssetVersion = "20260809-wallpaper-time-switch-r4";
 const wallpaperSwitchAssets = new Map([
-  ["scene-morning.png", [880, 220, "ed0f0b42223e1b9347739f59bae3b00518b251207f62c5c6c37a9dc2fc979393"]],
-  ["scene-day.png", [880, 220, "00bb13527a6d3fdb15a779dc9579bcd5175904b373c696b05c4167c3745d537a"]],
-  ["scene-dusk.png", [880, 220, "f72219f3b62351a9bfe9b1afb116249b78a8987e2f1e9eac79b6750d238b6ba5"]],
-  ["scene-night.png", [880, 220, "d020eec6d9253cbf8588a681abd71bd20d6bfa58d9e079df898cb94f091e6758"]],
-  ["frame.png", [880, 220, "34d03206c9277953ae2710695c57e8bfd059f185db5c9d861fe6ecdb8cbe5c46"]],
-  ["node-morning.png", [192, 192, "dfade5d678756845c855182f4249feff0bfd42e0b2cdfdac84dbb2c84c9e6c73"]],
-  ["node-day.png", [192, 192, "0003d44d137a2f03c10a90b8034ce3b00679805df2d549561ae81812ce2b2fa0"]],
-  ["node-dusk.png", [192, 192, "bb90046a011d1091d081c02048cf8a159bc29adc36702c979a1c74df75da4f9f"]],
-  ["node-night.png", [192, 192, "175b6f108f711aa7f0c2095c0e528bb002158fa4ef88238aa66fcb8a3349e295"]],
-  ["marker-morning.png", [144, 96, "c0af964bd10b9e30871aef87a46319e3f9642ca84564caae3bbf04a0d9310937"]],
-  ["marker-day.png", [144, 96, "9a183cbaee3270b04b22aa0ab2b9ed183c8ead354624ec4d45ffae1e0c469767"]],
-  ["marker-dusk.png", [144, 96, "be4ee00780f9ae289f470fd34ded431f634a8c75c351224d0e9a4cc63c0af4b4"]],
-  ["marker-night.png", [144, 96, "b1047f56ab1e8e8a5835b1718b8265d2ac02984d4a548b4cf56a0d1b2f9b289e"]],
-  ["atmosphere-morning-far.png", [480, 160, "8974fff8f730abf1712e580058951e4aca524e4cbe0f7a4df66beb50e1dfb597"]],
-  ["atmosphere-morning-mid.png", [480, 160, "fe06df84c2cc35c1776c37673f70c231d35e54962f50bb99c4ffbe37d8ea2e57"]],
-  ["atmosphere-morning-accent.png", [480, 160, "8bc6674767df6e7d08aac573f181cfd8d3356d77a385a29667f10b9155c8f790"]],
-  ["atmosphere-day-far.png", [480, 160, "37aff340e4ca71ec14515b6c4f88fc30c858858da807ba0a9bbe339c0e621db5"]],
-  ["atmosphere-day-mid.png", [480, 160, "f0e1c700f25a34882300204587440bfc3f794f98411d1ab0371ecf0091ed4540"]],
-  ["atmosphere-day-accent.png", [480, 160, "00d58ec520258b586f2ba9d5d9bda811f0371a4a398ffefa2c3af703c9752e1d"]],
-  ["atmosphere-dusk-far.png", [480, 160, "0c6a8c6c73bef4920ea6e26092331a06ba2b01750bef5f53c5bf76c2f86b4f23"]],
-  ["atmosphere-dusk-mid.png", [480, 160, "041d8f11bf2e135f1993c92208cf0ada19c4d2e2b566b3bcc11a052e09385385"]],
-  ["atmosphere-dusk-accent.png", [480, 160, "95aa78d8a0d8ef328f27f9dce70d734cc77319f403256290a17c46a33a5ef930"]],
-  ["atmosphere-night-far.png", [480, 160, "26cc237f451ff60ede8cacf9ba6db763b3655e214e21f239f64e5cb1ee68f603"]],
-  ["atmosphere-night-mid.png", [480, 160, "a8c8ba878eafad8376dfd8f1484119b5e200a5182a76ce1c9f474dc8e07681ba"]],
-  ["atmosphere-night-accent.png", [480, 160, "12c4b24711673952298d7e5d38da9ce43b814969e65c312a5da05a571f0b6df4"]]
+  ["scene-morning.png", [880, 220, "f65a6382325b591613aab257cab1591f1dd492c2cf936aa22d0c76835142261a"]],
+  ["scene-day.png", [880, 220, "4f863bf841682eb14aeb72a63d74e18f5db7ef62a4508968937850576e9fc4d5"]],
+  ["scene-dusk.png", [880, 220, "cfa774d59070edd42960c62d866b93d4b03accc91d00826a0a2cb252831d105a"]],
+  ["scene-night.png", [880, 220, "24954dfba76914225f2feb702fd9f1a50a3cb036a3da6177eed26b728f85fb2b"]],
+  ["marker-morning.png", [144, 144, "1187f1dcd42d48c0544a7443cda053002161b4c8639a217ca6190a551ceadbb3"]],
+  ["marker-day.png", [144, 144, "fe4f496fd1a0acc7e1e275efc1f721c528c90e12c926f971fed5f8b81e3b6dd6"]],
+  ["marker-dusk.png", [144, 144, "35ec71df2e7dea2c81574135b48c9acbffbdb6f95375a2b46e9994c15400fad8"]],
+  ["marker-night.png", [144, 144, "84e30849783f970b4fe8c96803bdf2f6f93accd60bfe715b4aaf7949d6704882"]],
+  ["node-morning.png", [192, 192, "5257c540b8ff174bdf3e0bf09faaf0891e365a732350942ebde8a24bf98e05f1"]],
+  ["node-day.png", [192, 192, "7d4509b71dcfe0c13276405a186af3e12ef6a546107252163ea9f5d094f6e21a"]],
+  ["node-dusk.png", [192, 192, "db837f373de95d06ba83ecbba010acfdda691ea89f0a5060fbd0ad268a991e46"]],
+  ["node-night.png", [192, 192, "380dc95628a4b1acbde73dfe929e130d24d762be625522fe8246c69445437045"]],
+  ["accent-morning.png", [480, 160, "aa93ce40aca8267a60ea2d369acd88c7a8ab07217dbd3910abb14c5c9dbbc14d"]],
+  ["accent-day.png", [480, 160, "f975882040b482fa0be47ef1f5659b75f13ecf44118b6ef814038a155b654363"]],
+  ["accent-dusk.png", [480, 160, "5b42caea5cdb299a782d76d611f114ac9938fcae5ab5433c11597844e4eb4bbc"]],
+  ["accent-night.png", [480, 160, "88ce460cfb915d0b0c4567ddbc51b750a64959efa849eeea0eb8de5e3e4a3d05"]],
+  ["frame.png", [880, 220, "87df31d6535b46b2f32774f8a1d7d97f36c84f9a4a33706e672b9685b1e07147"]]
 ]);
 const wallpaperSwitchDeliveryAtlases = new Map([
-  ["scene-atlas.png", [880, 880, "e6ac37ea24ea01dfe963b9c7fa924eab724e6a2d08ee92b788488acb1937527c", ["scene-morning.png", "scene-day.png", "scene-dusk.png", "scene-night.png"]]],
-  ["marker-atlas.png", [144, 384, "7607e9ae777f4fdfa359e28e85bc567a56f797a9fb6488c6e1ae52aaaa4b279b", ["marker-morning.png", "marker-day.png", "marker-dusk.png", "marker-night.png"]]],
-  ["node-atlas.png", [192, 768, "a16d8d5264f5c69be8e5bc5aae40309294dc5f450e2ef7a14da4e776890f4262", ["node-morning.png", "node-day.png", "node-dusk.png", "node-night.png"]]],
-  ["atmosphere-morning-atlas.png", [480, 480, "8164b84c4193f15bd5a00861c9b3591dbc43406f19d49f014ee463adc7ba6150", ["atmosphere-morning-far.png", "atmosphere-morning-mid.png", "atmosphere-morning-accent.png"]]],
-  ["atmosphere-day-atlas.png", [480, 480, "e443b5cb2bcfc20279994ced87529a3640269e6b9c5bef00dbc163301f884839", ["atmosphere-day-far.png", "atmosphere-day-mid.png", "atmosphere-day-accent.png"]]],
-  ["atmosphere-dusk-atlas.png", [480, 480, "06d1f2e2b9bbdd0094cc1a3d1f0aa7905bf274d06751d78786920870421059b1", ["atmosphere-dusk-far.png", "atmosphere-dusk-mid.png", "atmosphere-dusk-accent.png"]]],
-  ["atmosphere-night-atlas.png", [480, 480, "33677b5f579c2f4a99caf11279d8053926d3a9341e586d98dc6385ddcd2a1583", ["atmosphere-night-far.png", "atmosphere-night-mid.png", "atmosphere-night-accent.png"]]]
+  ["scene-atlas.png", [880, 880, "4b0215a84bfc498fbde7494b8ab10ff9e0822956edd01f938fb75afe11f8bd2e", ["scene-morning.png", "scene-day.png", "scene-dusk.png", "scene-night.png"]]],
+  ["marker-atlas.png", [144, 576, "aabf4cf0c48685812729242cd8af320180aeff2bdf9a90c46ca7cd3cec925975", ["marker-morning.png", "marker-day.png", "marker-dusk.png", "marker-night.png"]]],
+  ["node-atlas.png", [192, 768, "9e5f1cc5f3e70812ff128404d7a85a6fcd202084a6805adcfefa17919e01e8de", ["node-morning.png", "node-day.png", "node-dusk.png", "node-night.png"]]],
+  ["accent-atlas.png", [480, 640, "a1af92a465eeeeb6e7a47ac61bb62dc27cbca115e90b54fa0be325b98968169c", ["accent-morning.png", "accent-day.png", "accent-dusk.png", "accent-night.png"]]]
 ]);
 
 async function asset(path) {
@@ -105,7 +94,7 @@ function opaqueMagentaKeyRatio(image) {
   return opaqueMagentaPixels / pixelCount;
 }
 
-function alphaBounds(image) {
+function alphaBounds(image, threshold = 1) {
   let left = image.info.width;
   let top = image.info.height;
   let right = -1;
@@ -113,7 +102,7 @@ function alphaBounds(image) {
   let visiblePixels = 0;
   for (let y = 0; y < image.info.height; y += 1) {
     for (let x = 0; x < image.info.width; x += 1) {
-      if (image.data[(y * image.info.width + x) * 4 + 3] === 0) continue;
+      if (image.data[(y * image.info.width + x) * 4 + 3] < threshold) continue;
       visiblePixels += 1;
       left = Math.min(left, x);
       top = Math.min(top, y);
@@ -130,6 +119,18 @@ function alphaBounds(image) {
     height: bottom - top + 1,
     visibleRatio: visiblePixels / (image.info.width * image.info.height)
   };
+}
+
+function greenDominantPixelCount(image, threshold = 8) {
+  let count = 0;
+  for (let offset = 0; offset < image.data.length; offset += 4) {
+    const red = image.data[offset];
+    const green = image.data[offset + 1];
+    const blue = image.data[offset + 2];
+    const alpha = image.data[offset + 3];
+    if (alpha >= threshold && green > red + 18 && green > blue + 18) count += 1;
+  }
+  return count;
 }
 
 test("responsive wallpaper and window assets stay below the per-file budget", async () => {
@@ -151,7 +152,7 @@ test("responsive wallpaper and window assets stay below the per-file budget", as
   }
 });
 
-test("wallpaper switch manifest locks the 25 generated scene assets", async () => {
+test("wallpaper switch manifest locks the 17 calm Image2 content assets and five runtime files", async () => {
   const manifestUrl = new URL("assets/images/wallpaper-switch/wallpaper-time-switch.source.json", root);
   const manifest = JSON.parse(await readFile(manifestUrl, "utf8"));
   assert.equal(manifest.schema_version, 2);
@@ -159,23 +160,115 @@ test("wallpaper switch manifest locks the 25 generated scene assets", async () =
   assert.equal(manifest.asset_version, wallpaperSwitchAssetVersion);
   assert.deepEqual(manifest.visual_contract.control_size_css_px, [176, 44]);
   assert.deepEqual(manifest.visual_contract.active_node_css_px, [32, 32]);
-  assert.deepEqual(manifest.visual_contract.inactive_marker_css_px, [18, 12]);
-  assert.deepEqual(manifest.visual_contract.atmosphere_roles, ["far", "mid", "accent"]);
+  assert.deepEqual(manifest.visual_contract.inactive_marker_css_px, [20, 20]);
+  assert.match(manifest.visual_contract.accent_model, /^Exactly one sparse Image2-generated accent layer per theme:/);
+  assert.equal(manifest.generation_sources.length, 17);
   assert.ok(
     manifest.generation_sources.every((source) => /^exec-[a-f0-9-]+\.png$/.test(source.imagegen_output)),
     "every current visual group must retain its original Image2/imagegen output"
   );
   assert.match(
     manifest.mechanical_pipeline.steps.join(" "),
-    /No celestial body, cloud, star, planet, frame, marker, ray, or scene artwork was drawn or synthesized in code/
+    /No celestial body, cloud, star, frame, marker, ray, horizon, glow band, or scene artwork was drawn or synthesized in code/
   );
+  const finalSourceRoles = new Map(manifest.generation_sources.map((source) => [source.role, source]));
+  assert.equal(finalSourceRoles.size, 17);
+  assert.equal(finalSourceRoles.get("scene_day")?.imagegen_output, "exec-89b74651-1def-4494-a72a-100e48bfbe72.png");
+  assert.equal(finalSourceRoles.get("scene_night")?.imagegen_output, "exec-15b635b1-348a-4de1-abc5-9353ff6ea2ad.png");
+  assert.match(finalSourceRoles.get("scene_day")?.prompt_summary || "", /all clouds and semantic weather removed/);
+  assert.match(finalSourceRoles.get("scene_night")?.prompt_summary || "", /every star and celestial subject removed/);
+  assert.equal(manifest.refinement_provenance.image2_source_call_count_before_refinement, 14);
+  assert.equal(manifest.refinement_provenance.image2_source_call_count_this_refinement, 6);
+  assert.equal(manifest.refinement_provenance.image2_source_call_count_total, 20);
+  assert.equal(manifest.refinement_provenance.generation_calls.length, 6);
+  assert.deepEqual(
+    manifest.refinement_provenance.generation_calls.map(({ imagegen_output }) => imagegen_output),
+    [
+      "exec-e384a283-df12-4e1a-9cad-57a42dee21c3.png",
+      "exec-1ee61603-b412-43f0-aded-524745dae773.png",
+      "exec-a55d99c1-b462-491f-b145-744c9ebb0c6f.png",
+      "exec-cdce41cb-28ca-4113-8955-db7b79fdaa1c.png",
+      "exec-947e4489-95ed-4758-8466-31f8a36190ae.png",
+      "exec-dc111d55-c3f3-4340-ac30-c6181ccc9195.png"
+    ]
+  );
+  assert.deepEqual(
+    manifest.refinement_provenance.generation_calls.map(({ prompt_sha256 }) => prompt_sha256),
+    [
+      "b0ef86f842e96e8f8f711681d130377f57199d3a508ecff0edc436d1b084b350",
+      "ee80c707e5556cf926bfaf72c7d2e5baf7d0744756d3934613c219c7ef283edd",
+      "0b81b87cf04c25a1a1f6e072d1a640ac39923b88bb206ea4034d395a6933204d",
+      "54b9568f30f212206252642947971a5a60287dc6dab6bd31867e153c72741ef8",
+      "2ed9e5c0260099d93f57152630bf28b4798afcad6fb372e3a6072e5a8c19bdf1",
+      "9bc7468395ba49f886d255ea7090102bb522f4ec625d2c9b6f368eeb313c4a5c"
+    ]
+  );
+  const discardedDusk = manifest.refinement_provenance.generation_calls.find(({ role }) => role === "accent_dusk_green_key_draft");
+  assert.equal(discardedDusk.adopted, false);
+  assert.match(discardedDusk.rejection_reason, /yellow-green outer halo/);
+  assert.equal(finalSourceRoles.get("accent_dusk")?.imagegen_output, "exec-dc111d55-c3f3-4340-ac30-c6181ccc9195.png");
+  assert.match(finalSourceRoles.get("accent_dusk")?.prompt_summary || "", /magenta key/);
+
+  const placementCorrection = manifest.placement_correction;
+  assert.equal(placementCorrection.source_record, "output/wallpaper-switch-calm-refine/result.json#placementCorrection");
+  assert.equal(placementCorrection.new_image2_calls, 0);
+  assert.equal(placementCorrection.cumulative_image2_source_calls, 20);
+  assert.equal(placementCorrection.resampled, false);
+  assert.equal(placementCorrection.recolored, false);
+  assert.match(placementCorrection.operation, /Integer-pixel translation/);
+  assert.match(placementCorrection.content_invariant, /only transparent-canvas position changed/);
+  const placementExpectations = new Map([
+    ["accent-morning", {
+      translation: [-15, -32],
+      beforeHash: "4fba52840157517f282c7b5ede7b597d872a4aed02393987efc8d0acc8345eec",
+      afterHash: "aa93ce40aca8267a60ea2d369acd88c7a8ab07217dbd3910abb14c5c9dbbc14d",
+      beforeBbox: [45, 50, 95, 66],
+      afterBbox: [30, 18, 80, 34],
+      cropHash: "cd8a11f62b4e01d2924136412b4a6fb7dd63fd42eab68615772b8cbb0ffd1057",
+      alphaPixels: [169, 169]
+    }],
+    ["accent-day", {
+      translation: [35, -12],
+      beforeHash: "24711954701c788d869bcb51f445d11d219d7d0cec414f6f1d8e994973b2ae35",
+      afterHash: "f975882040b482fa0be47ef1f5659b75f13ecf44118b6ef814038a155b654363",
+      beforeBbox: [165, 60, 229, 80],
+      afterBbox: [200, 48, 264, 68],
+      cropHash: "580669e2e4ca31a7df18d28cfba9fd8bbf6c98fdb9cfeb34ba82f2017fa4c8f3",
+      alphaPixels: [909, 909]
+    }],
+    ["accent-dusk", {
+      translation: [34, -13],
+      beforeHash: "4b0c0266e313cac84fbba66818cdcf96acb58cae291c990cfda6ef21ded25524",
+      afterHash: "5b42caea5cdb299a782d76d611f114ac9938fcae5ab5433c11597844e4eb4bbc",
+      beforeBbox: [274, 87, 348, 91],
+      afterBbox: [308, 74, 382, 78],
+      cropHash: "da248bf95646cc9d4a07311fdcc83282943769a31505d175b7278199826c5299",
+      alphaPixels: [264, 264]
+    }]
+  ]);
+  for (const [role, expectation] of placementExpectations) {
+    const correction = placementCorrection.assets[role];
+    assert.deepEqual(correction.translation_xy, expectation.translation);
+    assert.equal(correction.before_sha256, expectation.beforeHash);
+    assert.equal(correction.after_sha256, expectation.afterHash);
+    assert.deepEqual(correction.before_bbox_alpha_8, expectation.beforeBbox);
+    assert.deepEqual(correction.after_bbox_alpha_8, expectation.afterBbox);
+    assert.equal(correction.rgba_crop_sha256_before, expectation.cropHash);
+    assert.equal(correction.rgba_crop_sha256_after, expectation.cropHash);
+    assert.deepEqual(correction.alpha_ge_8_pixels_before_after, expectation.alphaPixels);
+    assert.equal(correction.green_dominant_pixels_alpha_8, 0);
+  }
+  assert.deepEqual(placementCorrection.assets["accent-dusk"].before_bbox_alpha_1, [271, 87, 349, 91]);
+  assert.deepEqual(placementCorrection.assets["accent-dusk"].after_bbox_alpha_1, [305, 74, 383, 78]);
+  assert.equal(placementCorrection.validation_previews.after.sha256, "d66b8b8b3fc38290d620c02fbd5fda52bf77716fd14bd11e58338c55250c1ca3");
+  assert.equal(placementCorrection.validation_previews.before_after.sha256, "9e57ec9175da1d651aa25733c9fccbe11f85e3bea464ba5997504aab7b37dfc2");
 
   const manifestNames = manifest.generated_assets.map(({ file }) => file);
   assert.deepEqual([...manifestNames].sort(), [...wallpaperSwitchAssets.keys()].sort());
-  assert.equal(new Set(manifestNames).size, 25);
+  assert.equal(new Set(manifestNames).size, 17);
   assert.equal(
     new Set(manifest.generated_assets.map(({ final_png: { sha256 } }) => sha256)).size,
-    25,
+    17,
     "every Image2 content source must remain byte-distinct"
   );
 
@@ -202,28 +295,57 @@ test("wallpaper switch manifest locks the 25 generated scene assets", async () =
   }
 
   const duskNodeBounds = alphaBounds(await rgba("assets/images/wallpaper-switch/node-dusk.png"));
-  assert.ok(duskNodeBounds.width >= 174 && duskNodeBounds.width <= 182, "dusk node must nearly fill the 32px active thumb");
-  assert.ok(duskNodeBounds.height >= 174 && duskNodeBounds.height <= 182, "dusk node must match the other active nodes' visual weight");
+  assert.ok(duskNodeBounds.width >= 160 && duskNodeBounds.width <= 172, "dusk node must fill the active thumb with a restrained safety inset");
+  assert.ok(duskNodeBounds.height >= 164 && duskNodeBounds.height <= 174, "dusk node must match the other active nodes' visual weight");
   assert.ok(
-    duskNodeBounds.left >= 5
-      && duskNodeBounds.top >= 5
-      && duskNodeBounds.right <= 186
-      && duskNodeBounds.bottom <= 186,
+    duskNodeBounds.left >= 10
+      && duskNodeBounds.top >= 10
+      && duskNodeBounds.right <= 181
+      && duskNodeBounds.bottom <= 181,
     "dusk node must retain a transparent safety inset on every edge"
   );
 
-  assert.equal(manifest.delivery_contract.content_asset_count, 25);
-  assert.equal(manifest.delivery_contract.delivery_atlas_count, 7);
-  assert.equal(manifest.delivery_contract.unique_runtime_request_count, 8);
+  const refinedAlphaExpectations = new Map([
+    ["marker-day.png", { bbox: [26, 26, 118, 117], size: [92, 91], minCoverage: 0.04, maxCoverage: 0.065 }],
+    ["marker-night.png", { bbox: [36, 26, 108, 118], size: [72, 92], minCoverage: 0.04, maxCoverage: 0.065 }],
+    ["accent-morning.png", { bbox: [30, 18, 80, 34], size: [50, 16], minCoverage: 0.001, maxCoverage: 0.004 }],
+    ["accent-day.png", { bbox: [200, 48, 264, 68], size: [64, 20], minCoverage: 0.009, maxCoverage: 0.014 }],
+    ["accent-dusk.png", { bbox: [308, 74, 382, 78], size: [74, 4], minCoverage: 0.002, maxCoverage: 0.005 }]
+  ]);
+  for (const [file, expectation] of refinedAlphaExpectations) {
+    const image = await rgba(`assets/images/wallpaper-switch/${file}`);
+    const bounds = alphaBounds(image, 8);
+    const manifestEntry = manifest.generated_assets.find((entry) => entry.file === file);
+    assert.deepEqual(
+      [bounds.left, bounds.top, bounds.right + 1, bounds.bottom + 1],
+      expectation.bbox,
+      `${file} alpha>=8 bounds drifted`
+    );
+    assert.deepEqual([bounds.width, bounds.height], expectation.size, `${file} sparse content size drifted`);
+    assert.ok(
+      bounds.visibleRatio >= expectation.minCoverage && bounds.visibleRatio <= expectation.maxCoverage,
+      `${file} should remain visually sparse`
+    );
+    assert.deepEqual(manifestEntry.alpha_report.bbox, expectation.bbox, `${file} manifest alpha bounds drifted`);
+    assert.deepEqual(manifestEntry.alpha_report.bbox_size, expectation.size, `${file} manifest alpha size drifted`);
+    assert.equal(manifestEntry.alpha_report.threshold, 8);
+    assert.ok(Math.abs(manifestEntry.alpha_report.coverage - bounds.visibleRatio) < 1e-12);
+    assert.equal(greenDominantPixelCount(image, 8), 0, `${file} must not retain a green-key fringe`);
+    assert.equal(manifestEntry.alpha_report.green_dominant_pixels, 0);
+  }
+
+  assert.equal(manifest.delivery_contract.content_asset_count, 17);
+  assert.equal(manifest.delivery_contract.delivery_atlas_count, 4);
+  assert.equal(manifest.delivery_contract.unique_runtime_request_count, 5);
   assert.deepEqual(manifest.delivery_contract.standalone_delivery_files, ["frame.png"]);
   assert.deepEqual(
     [...manifest.delivery_contract.runtime_files].sort(),
     [...wallpaperSwitchDeliveryAtlases.keys(), "frame.png"].sort()
   );
   assert.match(manifest.delivery_contract.packaging_rule, /Every atlas cell is a different byte-locked Image2-generated content asset/);
-  assert.match(manifest.delivery_contract.packaging_rule, /must never duplicate one cell or visual region/);
+  assert.match(manifest.delivery_contract.packaging_rule, /must never duplicate (?:one|a) cell or visual region/);
   const packedCells = manifest.delivery_atlases.flatMap(({ cells }) => cells);
-  assert.equal(new Set(packedCells).size, 24);
+  assert.equal(new Set(packedCells).size, 16);
   assert.deepEqual(
     [...packedCells].sort(),
     [...wallpaperSwitchAssets.keys()].filter((file) => file !== "frame.png").sort()
@@ -264,7 +386,13 @@ test("wallpaper switch manifest locks the 25 generated scene assets", async () =
     "time-selector.png",
     "node-inactive.png",
     ...themes.map((theme) => `fx-${theme}.png`),
-    ...themes.map((theme) => `atmosphere-${theme}-ambient.png`)
+    ...themes.map((theme) => `atmosphere-${theme}-ambient.png`),
+    ...themes.flatMap((theme) => [
+      `atmosphere-${theme}-far.png`,
+      `atmosphere-${theme}-mid.png`,
+      `atmosphere-${theme}-accent.png`,
+      `atmosphere-${theme}-atlas.png`
+    ])
   ];
   for (const file of superseded) {
     assert.ok(!manifestNames.includes(file), `${file} must not remain in the current manifest`);
@@ -432,7 +560,7 @@ test("JSON resource cache still coalesces callers that share the same scope", as
 });
 
 test("cacheable API JSON emits a stable ETag and honors If-None-Match", async () => {
-  assert.equal(PUBLIC_API_REPRESENTATION_VERSION, "20260809-wallpaper-switch-scene-r1");
+  assert.equal(PUBLIC_API_REPRESENTATION_VERSION, "20260810-wallpaper-switch-calm-r1");
   const first = await cacheableJson(new Request("https://example.test/api/articles"), { articles: [] });
   const etag = first.headers.get("ETag");
   assert.match(etag, /^"sha256-[a-f0-9]{64}"$/);

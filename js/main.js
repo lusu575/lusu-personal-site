@@ -4,7 +4,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260809-motion-polish-r2";
-import { homeContent } from "./data/home-content.mjs?v=20260809-wallpaper-switch-scene-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260810-wallpaper-switch-calm-r1";
 import {
   WALLPAPER_TIME_THEMES,
   createWallpaperTimeOverride,
@@ -2597,7 +2597,7 @@ function wallpaperTimeSwitchPerformanceTier() {
   return wallpaperTimeSwitchHardwareLow || connection?.saveData === true ? "low" : "normal";
 }
 
-function wallpaperTimeSwitchAtmosphereAllowed() {
+function wallpaperTimeSwitchAccentAllowed() {
   return wallpaperTimeSwitchPerformanceTier() === "normal";
 }
 
@@ -2611,7 +2611,7 @@ function syncWallpaperTimeSwitchPerformanceTier() {
 
 function tagWallpaperTimeSwitchAssetRoles(group) {
   group.querySelectorAll("[data-src]").forEach((asset) => {
-    asset.dataset.role = asset.closest(".wallpaper-time-atmosphere") ? "atmosphere" : "core";
+    asset.dataset.role = asset.closest(".wallpaper-time-accent") ? "accent" : "core";
   });
 }
 
@@ -2628,11 +2628,11 @@ function syncWallpaperTimeSwitchBusy(group = document.getElementById("wallpaper-
 function ensureWallpaperTimeSwitchThemeAssets(theme, group = document.getElementById("wallpaper-time-switch")) {
   if (!group || !WALLPAPER_TIME_THEMES.includes(theme)) return Promise.resolve();
   tagWallpaperTimeSwitchAssetRoles(group);
-  const includeAtmosphere = wallpaperTimeSwitchAtmosphereAllowed();
-  const requestKey = `${theme}:${includeAtmosphere ? "full" : "core"}`;
+  const includeAccent = wallpaperTimeSwitchAccentAllowed();
+  const requestKey = `${theme}:${includeAccent ? "full" : "core"}`;
   if (wallpaperTimeSwitchWarmRequests.has(requestKey)) return wallpaperTimeSwitchWarmRequests.get(requestKey);
   const assets = Array.from(group.querySelectorAll(`[data-switch-theme="${theme}"] [data-src]`))
-    .filter((asset) => includeAtmosphere || asset.dataset.role !== "atmosphere");
+    .filter((asset) => includeAccent || asset.dataset.role !== "accent");
   const request = loadWallpaperTimeSwitchAssets(assets).then(({ ready }) => {
     if (!ready) wallpaperTimeSwitchWarmRequests.delete(requestKey);
     return ready;
@@ -2643,39 +2643,50 @@ function ensureWallpaperTimeSwitchThemeAssets(theme, group = document.getElement
 
 function ensureWallpaperTimeSwitchAssets(group = document.getElementById("wallpaper-time-switch")) {
   if (!group) return Promise.resolve(false);
-  const includeAtmosphere = wallpaperTimeSwitchAtmosphereAllowed();
+  const includeAccent = wallpaperTimeSwitchAccentAllowed();
   const coreReady = group.dataset.visualCoreAssetsReady === "true";
-  const atmosphereReady = group.dataset.visualAtmosphereAssetsReady === "true";
-  if (coreReady && (!includeAtmosphere || atmosphereReady)) {
+  const accentReady = group.dataset.visualAccentAssetsReady === "true";
+  if (coreReady && (!includeAccent || accentReady)) {
     group.dataset.visualAssetsReady = "true";
     return Promise.resolve(true);
   }
   if (wallpaperTimeSwitchAssetsPromise) {
     return wallpaperTimeSwitchAssetsPromise.then((ready) => {
       if (!ready) return false;
-      const atmosphereNowRequired = wallpaperTimeSwitchAtmosphereAllowed();
+      const accentNowRequired = wallpaperTimeSwitchAccentAllowed();
       const stillNeedsAssets = group.dataset.visualCoreAssetsReady !== "true"
-        || (atmosphereNowRequired && group.dataset.visualAtmosphereAssetsReady !== "true");
+        || (accentNowRequired && group.dataset.visualAccentAssetsReady !== "true");
       return stillNeedsAssets ? ensureWallpaperTimeSwitchAssets(group) : true;
     });
   }
   tagWallpaperTimeSwitchAssetRoles(group);
   const allAssets = Array.from(group.querySelectorAll("[data-src]"));
   const assets = allAssets.filter((asset) => {
-    if (!includeAtmosphere) return asset.dataset.role !== "atmosphere";
-    if (coreReady) return asset.dataset.role === "atmosphere";
+    if (!includeAccent) return asset.dataset.role !== "accent";
+    if (coreReady) return asset.dataset.role === "accent";
     return true;
   });
-  group.dataset.visualAssetsReady = "loading";
-  group.dataset.atlasBusy = "true";
-  syncWallpaperTimeSwitchBusy(group);
-  group.querySelectorAll("[data-wallpaper-time]").forEach((button) => {
-    button.disabled = true;
-  });
-  delete group.dataset.visualAssetsError;
+  const blocksControl = !coreReady;
+  if (blocksControl) {
+    group.dataset.visualAssetsReady = "loading";
+    group.dataset.atlasBusy = "true";
+    syncWallpaperTimeSwitchBusy(group);
+    group.querySelectorAll("[data-wallpaper-time]").forEach((button) => {
+      button.disabled = true;
+    });
+    delete group.dataset.visualAssetsError;
+  } else {
+    group.dataset.visualAccentAssetsReady = "loading";
+    delete group.dataset.visualAccentAssetsError;
+  }
   let request;
   request = loadWallpaperTimeSwitchAssets(assets).then(({ ready }) => {
     if (!ready) {
+      if (!blocksControl) {
+        group.dataset.visualAccentAssetsReady = "error";
+        group.dataset.visualAccentAssetsError = "true";
+        return false;
+      }
       group.dataset.visualAssetsReady = "error";
       group.dataset.visualAssetsError = "true";
       const state = resolvedWallpaperTimeState();
@@ -2685,13 +2696,18 @@ function ensureWallpaperTimeSwitchAssets(group = document.getElementById("wallpa
       return false;
     }
     group.dataset.visualCoreAssetsReady = "true";
-    if (includeAtmosphere) group.dataset.visualAtmosphereAssetsReady = "true";
+    if (includeAccent) {
+      group.dataset.visualAccentAssetsReady = "true";
+      delete group.dataset.visualAccentAssetsError;
+    }
     group.dataset.visualAssetsReady = "true";
     syncWallpaperTimeSwitch(resolvedWallpaperTimeState(), { immediate: true });
     return true;
   }).finally(() => {
-    delete group.dataset.atlasBusy;
-    syncWallpaperTimeSwitchBusy(group);
+    if (blocksControl) {
+      delete group.dataset.atlasBusy;
+      syncWallpaperTimeSwitchBusy(group);
+    }
     if (wallpaperTimeSwitchAssetsPromise === request) wallpaperTimeSwitchAssetsPromise = null;
   });
   wallpaperTimeSwitchAssetsPromise = request;
@@ -2703,7 +2719,6 @@ function syncWallpaperTimeSwitch(state = resolvedWallpaperTimeState(), options =
   if (!group) return;
   const immediate = Boolean(options.immediate
     || document.documentElement.dataset.motion === "off"
-    || document.documentElement.dataset.inputMethod === "keyboard"
     || document.documentElement.dataset.performanceTier === "low"
     || document.hidden
     || document.body.dataset.route !== "home");
@@ -2916,7 +2931,6 @@ function wallpaperThemeCrossfadeAllowed(options = {}) {
   return !options.immediate
     && renderedHomeTimeTheme
     && document.documentElement.dataset.motion !== "off"
-    && document.documentElement.dataset.inputMethod !== "keyboard"
     && document.documentElement.dataset.performanceTier !== "low"
     && !document.hidden
     && document.body.dataset.route === "home"
@@ -3061,8 +3075,8 @@ function initWallpaperTimeSwitch() {
   group.dataset.initialized = "true";
   wallpaperTimeOverride = readWallpaperTimeOverride();
   tagWallpaperTimeSwitchAssetRoles(group);
-  if (!wallpaperTimeSwitchAtmosphereAllowed()) {
-    group.querySelectorAll('[data-role="atmosphere"]').forEach((asset) => asset.removeAttribute("src"));
+  if (!wallpaperTimeSwitchAccentAllowed()) {
+    group.querySelectorAll('[data-role="accent"]').forEach((asset) => asset.removeAttribute("src"));
   }
   const initialRouteIsHome = !window.location.pathname.startsWith("/articles/")
     && (!window.location.hash || window.location.hash === "#home");
@@ -3120,7 +3134,10 @@ function initWallpaperTimeSwitch() {
   window.addEventListener("pageshow", () => void reconcileWallpaperTimeTheme({ source: "pageshow", immediate: true }));
   window.addEventListener("focus", () => void reconcileWallpaperTimeTheme({ source: "focus", immediate: true }));
   window.addEventListener("online", () => {
-    if (document.body.dataset.route === "home" && group.dataset.visualAssetsReady !== "true") {
+    const coreMissing = group.dataset.visualCoreAssetsReady !== "true";
+    const accentMissing = wallpaperTimeSwitchAccentAllowed()
+      && group.dataset.visualAccentAssetsReady !== "true";
+    if (document.body.dataset.route === "home" && (coreMissing || accentMissing)) {
       void ensureWallpaperTimeSwitchAssets(group);
     }
   });
@@ -3210,8 +3227,8 @@ function updateWallpaperMotionState() {
       button.disabled = state.mode === "preview" || assetsPreparing;
     });
     if (document.body.dataset.route === "home"
-      && wallpaperTimeSwitchAtmosphereAllowed()
-      && switchControl.dataset.visualAtmosphereAssetsReady !== "true") {
+      && wallpaperTimeSwitchAccentAllowed()
+      && switchControl.dataset.visualAccentAssetsReady !== "true") {
       void ensureWallpaperTimeSwitchAssets(switchControl);
     }
   }
@@ -3262,8 +3279,7 @@ function updateHomeTimeTheme(options = {}) {
   const state = resolvedWallpaperTimeState(now);
   const theme = state.theme;
   const immediate = Boolean(options.immediate
-    || document.documentElement.dataset.motion === "off"
-    || document.documentElement.dataset.inputMethod === "keyboard");
+    || document.documentElement.dataset.motion === "off");
   syncWallpaperTimeSwitch(state, {
     immediate: immediate || !renderedHomeTimeTheme,
     announce: options.announce

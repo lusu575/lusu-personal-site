@@ -70,10 +70,10 @@ function pngDimensions(buffer) {
 }
 
 function runSwitchFirstPaint({ saveData = false, hardwareConcurrency = 8, deviceMemory = 8 } = {}) {
-  const makeAsset = (name, atmosphere = false) => ({
+  const makeAsset = (name, accent = false) => ({
     dataset: { src: `/${name}.png` },
     src: "",
-    closest: (selector) => selector === ".wallpaper-time-atmosphere" && atmosphere ? {} : null,
+    closest: (selector) => selector === ".wallpaper-time-accent" && accent ? {} : null,
     setAttribute(attributeName, value) {
       if (attributeName === "src") this.src = value;
     }
@@ -81,7 +81,7 @@ function runSwitchFirstPaint({ saveData = false, hardwareConcurrency = 8, device
   const assets = {
     marker: makeAsset("marker"),
     scene: makeAsset("scene"),
-    atmosphere: makeAsset("atmosphere", true)
+    accent: makeAsset("accent", true)
   };
   const buttons = WALLPAPER_TIME_THEMES.map((theme) => ({
     dataset: { wallpaperTime: theme },
@@ -106,10 +106,10 @@ function runSwitchFirstPaint({ saveData = false, hardwareConcurrency = 8, device
   return { assets, group };
 }
 
-function createSwitchAtmospherePolicy({ saveData, hardwareConcurrency, deviceMemory }) {
+function createSwitchAccentPolicy({ saveData, hardwareConcurrency, deviceMemory }) {
   const policyStart = mainJs.indexOf("const wallpaperTimeSwitchHardwareLow =");
   const policyEnd = mainJs.indexOf("function tagWallpaperTimeSwitchAssetRoles", policyStart);
-  assert.ok(policyStart >= 0 && policyEnd > policyStart, "switch atmosphere policy must remain extractable");
+  assert.ok(policyStart >= 0 && policyEnd > policyStart, "switch accent policy must remain extractable");
   const connection = { saveData };
   const context = {
     Number,
@@ -118,14 +118,14 @@ function createSwitchAtmospherePolicy({ saveData, hardwareConcurrency, deviceMem
   };
   runInNewContext(
     `${mainJs.slice(policyStart, policyEnd)}\n`
-      + "globalThis.switchAtmosphereAllowed = wallpaperTimeSwitchAtmosphereAllowed;\n"
+      + "globalThis.switchAccentAllowed = wallpaperTimeSwitchAccentAllowed;\n"
       + "globalThis.syncSwitchPerformanceTier = syncWallpaperTimeSwitchPerformanceTier;",
     context
   );
   return {
     connection,
     root: context.document.documentElement,
-    allowed: context.switchAtmosphereAllowed,
+    allowed: context.switchAccentAllowed,
     syncPerformanceTier: context.syncSwitchPerformanceTier
   };
 }
@@ -214,46 +214,42 @@ test("top-bar switch exposes four localized radios with one roving tab stop", ()
   );
   assert.equal(options.filter((option) => attribute(option, "aria-checked") === "true").length, 1);
   assert.equal(options.filter((option) => attribute(option, "tabindex") === "0").length, 1);
-  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/scene-atlas\.png\?v=20260809-wallpaper-time-switch-r3"/g)].length, 4);
-  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/marker-atlas\.png\?v=20260809-wallpaper-time-switch-r3"/g)].length, 4);
-  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/node-atlas\.png\?v=20260809-wallpaper-time-switch-r3"/g)].length, 4);
-  for (const theme of WALLPAPER_TIME_THEMES) {
-    assert.equal([...groupMarkup.matchAll(new RegExp(`data-src="/assets/images/wallpaper-switch/atmosphere-${theme}-atlas\\.png\\?v=20260809-wallpaper-time-switch-r3"`, "g"))].length, 3);
-  }
+  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/scene-atlas\.png\?v=20260809-wallpaper-time-switch-r4"/g)].length, 4);
+  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/marker-atlas\.png\?v=20260809-wallpaper-time-switch-r4"/g)].length, 4);
+  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/node-atlas\.png\?v=20260809-wallpaper-time-switch-r4"/g)].length, 4);
+  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/accent-atlas\.png\?v=20260809-wallpaper-time-switch-r4"/g)].length, 4);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-scene"/g)].length, 4);
-  assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-atmosphere"/g)].length, 12);
+  assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-accents"/g)].length, 1);
+  assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-accent"/g)].length, 4);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-marker"/g)].length, 4);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-celestial"/g)].length, 4);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-scene-atlas"/g)].length, 4);
-  assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-atmosphere-atlas"/g)].length, 12);
+  assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-accent-atlas"/g)].length, 4);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-marker-atlas"/g)].length, 4);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-node-atlas"/g)].length, 4);
-  assert.match(groupMarkup, /frame\.png\?v=20260809-wallpaper-time-switch-r3/);
+  assert.match(groupMarkup, /frame\.png\?v=20260809-wallpaper-time-switch-r4/);
   const runtimeUrls = new Set(
-    [...groupMarkup.matchAll(/(?:src|data-src)="(\/assets\/images\/wallpaper-switch\/[^"?]+\.png\?v=20260809-wallpaper-time-switch-r3)"/g)]
+    [...groupMarkup.matchAll(/(?:src|data-src)="(\/assets\/images\/wallpaper-switch\/[^"?]+\.png\?v=20260809-wallpaper-time-switch-r4)"/g)]
       .map((match) => match[1])
   );
   assert.deepEqual([...runtimeUrls].sort(), [
-    "/assets/images/wallpaper-switch/atmosphere-day-atlas.png?v=20260809-wallpaper-time-switch-r3",
-    "/assets/images/wallpaper-switch/atmosphere-dusk-atlas.png?v=20260809-wallpaper-time-switch-r3",
-    "/assets/images/wallpaper-switch/atmosphere-morning-atlas.png?v=20260809-wallpaper-time-switch-r3",
-    "/assets/images/wallpaper-switch/atmosphere-night-atlas.png?v=20260809-wallpaper-time-switch-r3",
-    "/assets/images/wallpaper-switch/frame.png?v=20260809-wallpaper-time-switch-r3",
-    "/assets/images/wallpaper-switch/marker-atlas.png?v=20260809-wallpaper-time-switch-r3",
-    "/assets/images/wallpaper-switch/node-atlas.png?v=20260809-wallpaper-time-switch-r3",
-    "/assets/images/wallpaper-switch/scene-atlas.png?v=20260809-wallpaper-time-switch-r3"
+    "/assets/images/wallpaper-switch/accent-atlas.png?v=20260809-wallpaper-time-switch-r4",
+    "/assets/images/wallpaper-switch/frame.png?v=20260809-wallpaper-time-switch-r4",
+    "/assets/images/wallpaper-switch/marker-atlas.png?v=20260809-wallpaper-time-switch-r4",
+    "/assets/images/wallpaper-switch/node-atlas.png?v=20260809-wallpaper-time-switch-r4",
+    "/assets/images/wallpaper-switch/scene-atlas.png?v=20260809-wallpaper-time-switch-r4"
   ]);
   assert.match(groupOpeningTag, /data-visual-theme="morning"/);
   assert.match(groupOpeningTag, /data-visual-assets-ready="false"/);
-  assert.doesNotMatch(groupMarkup, /time-track|time-selector|fx-|wallpaper-time-effect|is-upper|is-middle|is-lower|(?:scene|node|marker)-(?:morning|day|dusk|night)\.png|atmosphere-(?:morning|day|dusk|night)-(?:far|mid|accent)\.png/);
+  assert.doesNotMatch(groupMarkup, /time-track|time-selector|fx-|wallpaper-time-effect|wallpaper-time-atmosphere|data-atmosphere-depth|is-upper|is-middle|is-lower|(?:scene|node|marker|accent)-(?:morning|day|dusk|night)\.png|atmosphere-(?:morning|day|dusk|night)-(?:far|mid|accent)\.png/);
   assert.match(groupMarkup, /id="wallpaper-time-status"[^>]*aria-live="polite"[^>]*aria-atomic="true"/);
 });
 
-test("cold first paint never requests atmosphere atlases in Save-Data or hardware-low modes", () => {
+test("cold first paint skips the accent atlas in Save-Data or hardware-low modes", () => {
   const normal = runSwitchFirstPaint();
   assert.equal(normal.assets.marker.src, "/marker.png");
   assert.equal(normal.assets.scene.src, "/scene.png");
-  assert.equal(normal.assets.atmosphere.src, "/atmosphere.png");
+  assert.equal(normal.assets.accent.src, "/accent.png");
   assert.equal(normal.group.dataset.visualTheme, "night");
 
   for (const constrained of [
@@ -263,7 +259,7 @@ test("cold first paint never requests atmosphere atlases in Save-Data or hardwar
   ]) {
     assert.equal(constrained.assets.marker.src, "/marker.png");
     assert.equal(constrained.assets.scene.src, "/scene.png");
-    assert.equal(constrained.assets.atmosphere.src, "");
+    assert.equal(constrained.assets.accent.src, "");
   }
   assert.doesNotMatch(firstPaintSource, /dataset\.performanceTier/);
 });
@@ -283,24 +279,24 @@ test("switch geometry preserves four 44px targets, a contained 32px thumb, and g
   assert.match(thumbRule, /width:\s*32px/);
   assert.match(thumbRule, /height:\s*32px/);
   assert.match(thumbRule, /transform:\s*translate3d\(6px,\s*0,\s*0\)/);
-  assert.match(markerRule, /width:\s*18px/);
-  assert.match(markerRule, /height:\s*12px/);
+  assert.match(markerRule, /width:\s*20px/);
+  assert.match(markerRule, /height:\s*20px/);
   assert.match(markerRule, /overflow:\s*hidden/);
-  assert.match(styleCss, /\.wallpaper-time-scene,\s*\.wallpaper-time-atmosphere,\s*\.wallpaper-time-celestial\s*\{[\s\S]*?overflow:\s*hidden/);
+  assert.match(styleCss, /\.wallpaper-time-scene,\s*\.wallpaper-time-accent,\s*\.wallpaper-time-celestial\s*\{[\s\S]*?overflow:\s*hidden/);
   for (const x of [6, 50, 94, 138]) {
     assert.match(styleCss, new RegExp(`wallpaper-time-thumb \\{ transform: translate3d\\(${x}px, 0, 0\\)`));
   }
   assert.match(styleCss, /wallpaper-time-scene-atlas\[data-atlas-cell="night"\][^\n]*translate3d\(0, -132px, 0\)/);
-  assert.match(styleCss, /wallpaper-time-marker-atlas\[data-atlas-cell="night"\][^\n]*translate3d\(0, -36px, 0\)/);
+  assert.match(styleCss, /wallpaper-time-marker-atlas\[data-atlas-cell="night"\][^\n]*translate3d\(0, -60px, 0\)/);
   assert.match(styleCss, /wallpaper-time-node-atlas\[data-atlas-cell="night"\][^\n]*translate3d\(0, -96px, 0\)/);
-  assert.match(styleCss, /wallpaper-time-atmosphere-atlas\[data-atlas-cell="accent"\][^\n]*translate3d\(0, -117\.3333px, 0\)/);
-  assert.doesNotMatch(motionCss, /wallpaper-time-(?:scene|atmosphere|marker|node)-atlas/);
+  assert.match(styleCss, /wallpaper-time-accent-atlas\[data-atlas-cell="night"\][^\n]*translate3d\(0, -176px, 0\)/);
+  assert.doesNotMatch(motionCss, /wallpaper-time-(?:scene|accent|marker|node)-atlas/);
 
   const expectedRuntimeAssets = [
     { file: "scene-atlas.png", width: 880, height: 880 },
-    { file: "marker-atlas.png", width: 144, height: 384 },
+    { file: "marker-atlas.png", width: 144, height: 576 },
     { file: "node-atlas.png", width: 192, height: 768 },
-    ...WALLPAPER_TIME_THEMES.map((theme) => ({ file: `atmosphere-${theme}-atlas.png`, width: 480, height: 480 })),
+    { file: "accent-atlas.png", width: 480, height: 640 },
     { file: "frame.png", width: 880, height: 220 },
   ];
   const runtimeMetadata = new Map(sourceRecord.delivery_atlases.map((asset) => [asset.file, asset]));
@@ -318,9 +314,13 @@ test("switch geometry preserves four 44px targets, a contained 32px thumb, and g
   assert.equal(sourceRecord.date, "2026-08-09");
   assert.equal(sourceRecord.generator, "imagegen");
   assert.equal(sourceRecord.schema_version, 2);
-  assert.equal(sourceRecord.generated_assets.length, 25);
-  assert.equal(sourceRecord.delivery_atlases.length, 7);
-  assert.equal(sourceRecord.delivery_contract.unique_runtime_request_count, 8);
+  assert.equal(sourceRecord.asset_version, "20260809-wallpaper-time-switch-r4");
+  assert.equal(sourceRecord.generated_assets.length, 17);
+  assert.equal(sourceRecord.generation_sources.length, 17);
+  assert.equal(sourceRecord.delivery_atlases.length, 4);
+  assert.equal(sourceRecord.delivery_contract.content_asset_count, 17);
+  assert.equal(sourceRecord.delivery_contract.delivery_atlas_count, 4);
+  assert.equal(sourceRecord.delivery_contract.unique_runtime_request_count, 5);
   assert.deepEqual(sourceRecord.delivery_contract.runtime_files, expectedRuntimeAssets.map((asset) => asset.file));
   const sourceRoles = new Map(sourceRecord.generation_sources.map((source) => [source.role, source]));
   assert.ok(sourceRoles.size > 0);
@@ -328,7 +328,12 @@ test("switch geometry preserves four 44px targets, a contained 32px thumb, and g
   assert.ok(sourceRecord.generated_assets.every((asset) => sourceRoles.has(asset.source_role)));
   assert.ok(Array.isArray(sourceRecord.mechanical_pipeline?.steps));
   assert.ok(sourceRecord.mechanical_pipeline.steps.length > 0);
-  assert.doesNotMatch(JSON.stringify(sourceRecord), /time-track|time-selector|fx-|node-inactive|atmosphere-.*-ambient/);
+  assert.match(sourceRecord.visual_contract.accent_model, /^Exactly one sparse Image2-generated accent layer per theme:/);
+  assert.deepEqual(sourceRecord.visual_contract.inactive_marker_css_px, [20, 20]);
+  assert.doesNotMatch(
+    JSON.stringify(sourceRecord),
+    /"file":"(?:time-track|time-selector|node-inactive|fx-[^"]+|atmosphere-[^"]+)\.png"/
+  );
 });
 
 test("switch motion is retargetable, theme-specific, and quiet in accessibility modes", () => {
@@ -340,15 +345,19 @@ test("switch motion is retargetable, theme-specific, and quiet in accessibility 
   assert.match(motionCss, /wallpaper-time-scene\[data-switch-theme="night"\][\s\S]*?transition-duration:\s*180ms/);
   assert.match(motionCss, /\.wallpaper-time-celestial\s*\{[\s\S]*?opacity 90ms[\s\S]*?transform 90ms/);
   assert.match(motionCss, /wallpaper-time-celestial\[data-switch-theme="night"\][\s\S]*?transition-duration:\s*140ms/);
-  assert.match(motionCss, /data-switch-theme="morning"\]\[data-atmosphere-depth="far"\][^\n]*translate3d\(-4px, 0, 0\)/);
-  assert.match(motionCss, /data-switch-theme="day"\]\[data-atmosphere-depth="mid"\][^\n]*translate3d\(0, -4px, 0\)/);
-  assert.match(motionCss, /data-switch-theme="dusk"\]\[data-atmosphere-depth="far"\][^\n]*translate3d\(4px, 0, 0\)/);
-  assert.match(motionCss, /data-visual-theme="night"[\s\S]*?data-atmosphere-depth="mid"[\s\S]*?transition-delay:\s*35ms/);
-  assert.match(motionCss, /data-visual-theme="night"[\s\S]*?data-atmosphere-depth="accent"[\s\S]*?transition-delay:\s*70ms/);
-  assert.doesNotMatch(motionCss, /data-visual-theme\]\s+\.wallpaper-time-atmosphere\[data-atmosphere-depth/);
+  assert.match(motionCss, /wallpaper-time-accent\[data-switch-theme="morning"\][^\n]*translate3d\(0, 4px, 0\) scale\(\.98\)/);
+  assert.match(motionCss, /wallpaper-time-accent\[data-switch-theme="day"\][^\n]*translate3d\(-5px, 0, 0\)/);
+  assert.match(motionCss, /wallpaper-time-accent\[data-switch-theme="dusk"\][^\n]*translate3d\(0, 2px, 0\) scaleX\(\.94\)/);
+  assert.match(motionCss, /wallpaper-time-accent\[data-switch-theme="night"\][^\n]*translate3d\(0, 5px, 0\)/);
+  assert.match(motionCss, /data-visual-theme="morning"[\s\S]*?wallpaper-time-accent\[data-switch-theme="morning"\][\s\S]*?transition-duration:\s*200ms/);
+  assert.match(motionCss, /data-visual-theme="day"[\s\S]*?wallpaper-time-accent\[data-switch-theme="day"\][\s\S]*?transition-duration:\s*210ms/);
+  assert.match(motionCss, /data-visual-theme="dusk"[\s\S]*?wallpaper-time-accent\[data-switch-theme="dusk"\][\s\S]*?transition-duration:\s*190ms/);
+  assert.match(motionCss, /data-visual-theme="night"[\s\S]*?wallpaper-time-accent\[data-switch-theme="night"\][\s\S]*?transition-duration:\s*220ms/);
+  assert.match(motionCss, /\.wallpaper-time-accent\s*\{[\s\S]*?transition-delay:\s*0ms/);
+  assert.doesNotMatch(motionCss, /data-atmosphere-depth|wallpaper-time-atmosphere|transition-delay:\s*(?:35|70)ms/);
   assert.match(motionCss, /data-motion="reduced"[\s\S]*?wallpaper-time-thumb[\s\S]*?transition:\s*none !important/);
-  assert.match(motionCss, /data-motion="reduced"[\s\S]*?wallpaper-time-atmosphere[\s\S]*?transition:\s*opacity 140ms/);
-  assert.match(motionCss, /data-performance-tier="low"[\s\S]*?wallpaper-time-atmosphere[\s\S]*?opacity:\s*0 !important/);
+  assert.match(motionCss, /data-motion="reduced"[\s\S]*?wallpaper-time-accent[\s\S]*?transition:\s*opacity 140ms/);
+  assert.match(motionCss, /data-performance-tier="low"[\s\S]*?wallpaper-time-accent[\s\S]*?opacity:\s*0 !important/);
   assert.match(mainJs, /async function loadWallpaperTimeSwitchAssets\(assets\)[\s\S]*?const assetsByUrl = new Map\(\)[\s\S]*?Promise\.allSettled\([\s\S]*?\.\.\.assetsByUrl\.keys\(\)[\s\S]*?decodeWallpaperTimeSwitchUrl/);
   assert.match(mainJs, /results\.every\(\(result\) => result\.status === "fulfilled"[\s\S]*?image\.complete[\s\S]*?image\.naturalWidth > 0/);
   assert.match(mainJs, /function ensureWallpaperTimeSwitchAssets[\s\S]*?querySelectorAll\("\[data-src\]"\)[\s\S]*?loadWallpaperTimeSwitchAssets[\s\S]*?if \(!ready\)[\s\S]*?visualAssetsReady = "error"[\s\S]*?visualAssetsError = "true"[\s\S]*?visualCoreAssetsReady = "true"[\s\S]*?visualAssetsReady = "true"[\s\S]*?\.finally[\s\S]*?delete group\.dataset\.atlasBusy[\s\S]*?syncWallpaperTimeSwitchBusy\(group\)[\s\S]*?wallpaperTimeSwitchAssetsPromise = null/);
@@ -375,7 +384,7 @@ test("atlas readiness fails closed and remains retryable after a decode race", (
   assert.match(loaderRuntime, /result\.status === "fulfilled"[\s\S]*?image\.complete[\s\S]*?image\.naturalWidth > 0/);
   assert.match(loaderRuntime, /if \(ready\) \{[\s\S]*?asset\.setAttribute\("src", url\)/);
   assert.match(loaderRuntime, /if \(!ready\) \{[\s\S]*?visualAssetsReady = "error"[\s\S]*?visualAssetsError = "true"[\s\S]*?\.finally[\s\S]*?delete group\.dataset\.atlasBusy[\s\S]*?syncWallpaperTimeSwitchBusy\(group\)[\s\S]*?wallpaperTimeSwitchAssetsPromise = null/);
-  assert.match(mainJs, /window\.addEventListener\("online"[\s\S]*?visualAssetsReady !== "true"[\s\S]*?ensureWallpaperTimeSwitchAssets\(group\)/);
+  assert.match(mainJs, /window\.addEventListener\("online"[\s\S]*?const coreMissing = group\.dataset\.visualCoreAssetsReady !== "true"[\s\S]*?const accentMissing = wallpaperTimeSwitchAccentAllowed\(\)[\s\S]*?group\.dataset\.visualAccentAssetsReady !== "true"[\s\S]*?coreMissing \|\| accentMissing[\s\S]*?ensureWallpaperTimeSwitchAssets\(group\)/);
 });
 
 test("switch atlas decode has a ten-second deadline and clears it on every settle path", () => {
@@ -415,31 +424,34 @@ test("atlas loading and manual selection share composite aria-busy ownership", (
   assert.match(selectionRuntime, /wallpaperTimePendingManualPromise === selection[\s\S]*?delete group\.dataset\.manualBusy;[\s\S]*?syncWallpaperTimeSwitchBusy\(group\)/);
 });
 
-test("low-tier and Save-Data readiness skips atmosphere atlases and upgrades on demand", () => {
+test("low-tier and Save-Data readiness skips the accent atlas and upgrades on demand", () => {
   const loaderRuntime = mainJs.slice(
     mainJs.indexOf("const wallpaperTimeSwitchHardwareLow ="),
     mainJs.indexOf("function syncWallpaperTimeSwitch(")
   );
   assert.match(loaderRuntime, /const wallpaperTimeSwitchHardwareLow = \(\(\) => \{[\s\S]*?hardwareConcurrency > 0 && hardwareConcurrency <= 2[\s\S]*?deviceMemory > 0 && deviceMemory <= 2/);
   assert.match(loaderRuntime, /return wallpaperTimeSwitchHardwareLow \|\| connection\?\.saveData === true \? "low" : "normal"/);
-  assert.match(loaderRuntime, /function wallpaperTimeSwitchAtmosphereAllowed\(\) \{\s*return wallpaperTimeSwitchPerformanceTier\(\) === "normal"/);
-  assert.match(loaderRuntime, /asset\.dataset\.role = asset\.closest\("\.wallpaper-time-atmosphere"\) \? "atmosphere" : "core"/);
-  assert.match(loaderRuntime, /if \(!includeAtmosphere\) return asset\.dataset\.role !== "atmosphere"/);
-  assert.match(loaderRuntime, /if \(coreReady\) return asset\.dataset\.role === "atmosphere"/);
-  assert.match(loaderRuntime, /visualCoreAssetsReady = "true";[\s\S]*?if \(includeAtmosphere\) group\.dataset\.visualAtmosphereAssetsReady = "true"/);
+  assert.match(loaderRuntime, /function wallpaperTimeSwitchAccentAllowed\(\) \{\s*return wallpaperTimeSwitchPerformanceTier\(\) === "normal"/);
+  assert.match(loaderRuntime, /asset\.dataset\.role = asset\.closest\("\.wallpaper-time-accent"\) \? "accent" : "core"/);
+  assert.match(loaderRuntime, /if \(!includeAccent\)\s*\{?\s*return asset\.dataset\.role !== "accent"/);
+  assert.match(loaderRuntime, /if \(coreReady\) return asset\.dataset\.role === "accent"/);
+  assert.match(loaderRuntime, /visualCoreAssetsReady = "true";[\s\S]*?if \(includeAccent\)\s*\{[\s\S]*?visualAccentAssetsReady = "true"/);
+  assert.match(loaderRuntime, /const blocksControl = !coreReady;[\s\S]*?if \(blocksControl\) \{[\s\S]*?visualAssetsReady = "loading"[\s\S]*?atlasBusy = "true"[\s\S]*?button\.disabled = true/);
+  assert.match(loaderRuntime, /if \(!blocksControl\) \{[\s\S]*?visualAccentAssetsReady = "error"[\s\S]*?visualAccentAssetsError = "true"[\s\S]*?return false/);
+  assert.match(loaderRuntime, /\.finally\(\(\) => \{[\s\S]*?if \(blocksControl\) \{[\s\S]*?delete group\.dataset\.atlasBusy/);
 
   const initRuntime = mainJs.slice(
     mainJs.indexOf("function initWallpaperTimeSwitch"),
     mainJs.indexOf("function measureHomeViewportLayout")
   );
-  assert.match(initRuntime, /if \(!wallpaperTimeSwitchAtmosphereAllowed\(\)\) \{[\s\S]*?querySelectorAll\('\[data-role="atmosphere"\]'\)[\s\S]*?removeAttribute\("src"\)/);
+  assert.match(initRuntime, /if \(!wallpaperTimeSwitchAccentAllowed\(\)\) \{[\s\S]*?querySelectorAll\('\[data-role="accent"\]'\)[\s\S]*?removeAttribute\("src"\)/);
   assert.match(initRuntime, /connection\?\.addEventListener\?\.\("change", \(\) => \{[\s\S]*?ownedPerformanceTierMutation = syncWallpaperTimeSwitchPerformanceTier\(\);[\s\S]*?updateWallpaperMotionState\(\)/);
   assert.match(initRuntime, /new MutationObserver\(\(\) => \{[\s\S]*?dataset\.performanceTier === ownedPerformanceTierMutation[\s\S]*?return;[\s\S]*?updateWallpaperMotionState\(\)[\s\S]*?attributeFilter: \["data-performance-tier"\]/);
-  assert.match(mainJs, /wallpaperTimeSwitchAtmosphereAllowed\(\)[\s\S]*?visualAtmosphereAssetsReady !== "true"[\s\S]*?ensureWallpaperTimeSwitchAssets\(switchControl\)/);
+  assert.match(mainJs, /wallpaperTimeSwitchAccentAllowed\(\)[\s\S]*?visualAccentAssetsReady !== "true"[\s\S]*?ensureWallpaperTimeSwitchAssets\(switchControl\)/);
 });
 
-test("turning Save-Data off enables atmosphere loading without overriding genuine hardware-low", () => {
-  const staleSaveDataTier = createSwitchAtmospherePolicy({
+test("turning Save-Data off enables accent loading without overriding genuine hardware-low", () => {
+  const staleSaveDataTier = createSwitchAccentPolicy({
     saveData: true,
     hardwareConcurrency: 8,
     deviceMemory: 8
@@ -450,7 +462,7 @@ test("turning Save-Data off enables atmosphere loading without overriding genuin
   assert.equal(staleSaveDataTier.root.dataset.performanceTier, "normal");
   assert.equal(staleSaveDataTier.allowed(), true);
 
-  const lowCpu = createSwitchAtmospherePolicy({
+  const lowCpu = createSwitchAccentPolicy({
     saveData: true,
     hardwareConcurrency: 2,
     deviceMemory: 8
@@ -460,7 +472,7 @@ test("turning Save-Data off enables atmosphere loading without overriding genuin
   assert.equal(lowCpu.root.dataset.performanceTier, "low");
   assert.equal(lowCpu.allowed(), false);
 
-  const lowMemory = createSwitchAtmospherePolicy({
+  const lowMemory = createSwitchAccentPolicy({
     saveData: true,
     hardwareConcurrency: 8,
     deviceMemory: 2

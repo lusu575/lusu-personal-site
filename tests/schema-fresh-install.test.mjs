@@ -31,6 +31,7 @@ const remoteMcpOauthUpdateId = "seed-update-2026-08-07-remote-mcp-oauth";
 const gameVideoMcpCandidateUpdateId = "seed-update-2026-08-09-game-video-mcp-candidate";
 const motionPolishUpdateId = "seed-update-2026-08-09-motion-polish";
 const wallpaperTimeSwitchUpdateId = "seed-update-2026-08-09-wallpaper-time-switch";
+const wallpaperSwitchCalmUpdateId = "seed-update-2026-08-10-wallpaper-switch-calm-redesign";
 const wallpaperSwitchSceneUpdateId = "seed-update-2026-08-09-wallpaper-switch-scene-redesign";
 
 test("D1 schema initializes an empty database and remains idempotent", () => {
@@ -151,6 +152,50 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
         select count(*) as count
         from articles
         where article_id = ?
+          and slug = '2026-08-10-wallpaper-switch-calm-redesign'
+          and category = 'site-updates'
+          and status = 'published'
+          and is_pinned = 0
+          and cover_image = ''
+          and created_at = '2026-08-09T16:00:00.000Z'
+          and updated_at = '2026-08-09T16:00:00.000Z'
+          and published_at = '2026-08-09T16:00:00.000Z'
+      `).get(wallpaperSwitchCalmUpdateId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(wallpaperSwitchCalmUpdateId).count,
+      3
+    );
+    const wallpaperSwitchCalmContent = content.updates.find(({ article_id: articleId }) => (
+      articleId === wallpaperSwitchCalmUpdateId
+    ));
+    assert.ok(wallpaperSwitchCalmContent);
+    assert.deepEqual(wallpaperSwitchCalmContent.title, {
+      zh: "四时段壁纸开关轻量重做",
+      en: "Four-Stage Wallpaper Switch Calm Redesign",
+      ja: "4段階壁紙スイッチの穏やかな再設計"
+    });
+    for (const lang of ["zh", "en", "ja"]) {
+      const translation = db.prepare(`
+        select title, summary, content_markdown, created_at, updated_at
+        from article_translations
+        where article_id = ? and lang = ?
+      `).get(wallpaperSwitchCalmUpdateId, lang);
+      assert.equal(translation.title, wallpaperSwitchCalmContent.title[lang]);
+      assert.equal(translation.summary, wallpaperSwitchCalmContent.summary[lang]);
+      assert.equal(
+        translation.content_markdown.replace(/\r\n/g, "\n"),
+        wallpaperSwitchCalmContent.content_markdown[lang]
+      );
+      assert.equal(translation.created_at, "2026-08-09T16:00:00.000Z");
+      assert.equal(translation.updated_at, "2026-08-09T16:00:00.000Z");
+    }
+    assert.equal(
+      db.prepare(`
+        select count(*) as count
+        from articles
+        where article_id = ?
           and slug = '2026-08-09-wallpaper-switch-scene-redesign'
           and category = 'site-updates'
           and status = 'published'
@@ -234,7 +279,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260809-wallpaper-switch-scene-r1"
+      "20260810-wallpaper-switch-calm-r1"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),

@@ -1,5 +1,10 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-10 四时段壁纸开关平静版发布契约
+
+- 尚未上线的 calm redesign 跨日后统一使用 `seed-update-2026-08-10-wallpaper-switch-calm-redesign` 与 slug `2026-08-10-wallpaper-switch-calm-redesign`，发布时间固定为 `2026-08-09T16:00:00.000Z`。公开 CSS／JS、API 表示、文章 seed 与 Home 数据缓存统一使用 `20260810-wallpaper-switch-calm-r1`，顶栏最近更新日期为 2026-08-10。
+- 发布标识不因这次位置校准改写：17 个 Image2／imagegen 最终内容源、4 张纵向 atlas、独立 `frame.png` 和固定 5 个运行时图片请求继续沿用。为避免稳定态过素，morning／day／dusk 三张既有 RGBA accent 只在 480×160 透明画布上做整数像素位移；裁切 SHA 与 alpha 像素数前后完全一致，没有新增 Image2 调用、重采样、改色或重绘，累计仍为 20 次，accent atlas SHA-256 更新为 `a1af92a465eeeeb6e7a47ac61bb62dc27cbca115e90b54fa0be325b98968169c`。PNG 图像 token 保持 `20260809-wallpaper-time-switch-r4`；8 月 9 日记录中的旧 calm ID／公开 token 只表示未上线草稿历史，最终发布事实以上述 8 月 10 日契约为准。
+
 ## 2026-08-09 游戏 MCP 暂停保活发布与待验收状态
 
 - 当前生产站长 OAuth Worker 的精确 version ID 是 `849d8328-87db-4ac8-819a-ce725fc06349`，内部版本 `0.3.1`，当前承接 100% 流量。它承载 9 项文章、8 项外链视频和 6 项浏览器游戏工具候选，但视频条目的 `availableTransports` 尚未包含 `remote-mcp`，游戏条目的 `availableTransports` 仍为空；公开 `site_capabilities` 继续只返回已晋级的四项文章读取能力。工具存在于生产 bundle 不等于对应生命周期已经验收或可用性已经晋级。一次包含暂停观察实验和未验收 registry promotion 的 `f9951348-5a68-417c-8875-9817faa192fd` 发布已回滚，不能作为当前生产或验收证据。
@@ -23,10 +28,10 @@
 
 ## 2026-08-09 四时段壁纸开关
 
-- 主站右上角提供 morning／day／dusk／night 四段壁纸开关，固定为 176×44 椭圆。整条轨道在任一时刻只显示当前时段的一幅完整场景，严禁恢复成四张缩略景并排的拼轨。四个节点始终可见：未激活节点使用各时段独有、安静而有实体感的 18×12 标记；激活节点换成 32×32 实心天体，依次为半露晨日、正午全日、低位落日和月亮，top 为 6px，四档 left 为 6／50／94／138px。不得使用通用透明圆环。
+- 主站右上角提供 morning／day／dusk／night 四段壁纸开关，固定为 176×44 椭圆。整条轨道在任一时刻只显示当前时段的一幅安静色场，严禁恢复成四张缩略景并排的拼轨。四个节点始终可见：未激活节点使用各时段独有的 20×20 低对比浮雕语义标记，不得退回空白珍珠、通用圆点或透明圆环；激活节点换成 32×32 实心天体，依次为半露晨日、正午全日、低位落日和月亮，top 为 6px，四档 left 为 6／50／94／138px。
 - 默认状态继续按访问设备本地时间的四个真实边界切换：05:00 morning、11:00 day、17:00 dusk、20:00 night。用户手动选择时立即切换，并只覆盖到下一真实时段边界；边界到达后清除覆盖并恢复自动时间状态。覆盖优先写入 `localStorage`，不可用时使用 `sessionStorage` 兜底，刷新后可恢复；成功写入本地存储的覆盖通过 `storage` 事件同步其他标签页。URL `?wallpaper=` 仍是显式预览优先级，不改写持久覆盖。
-- 每个主题由一幅完整场景和 far／mid／accent 三个不同的氛围内容组成，不能复制同一视觉区域冒充三层。允许把不同的 Image2 内容 cell 机械打包到同一 delivery atlas，再按声明的 cell 取用；这不等于重复裁切。morning 使用晨光射线与云，day 使用白云，dusk 使用落日云带，night 使用更丰富的星群与行星；night 三层按 3／5／6px 上升并以 0／35／70ms 错峰。开关是可快速重复触发的状态控件，场景、天体和氛围层只用可重定向的 transition 做 transform／opacity，不使用 keyframes；快速连续选择遵守 last-request-wins。目标场景必须预解码，手动覆盖期限仍按点击瞬间的下一真实边界计算，不因解码跨点延长。
-- 25 个不同的视觉内容源均由 Image2／imagegen 生成并由 `wallpaper-time-switch.source.json` 锁定真实尺寸、SHA-256、来源图与机械处理过程；发布时把其中 24 个内容按声明顺序机械纵向打包为 7 张 delivery atlas，`frame.png` 独立，运行时只请求 8 个唯一文件。机械处理仅为官方 chroma key、等分裁切、alpha 边界裁切、透明补边、Lanczos 缩放、PNG 优化和不同 cell 的无重采样打包，没有用代码绘制日月、云、星、行星、标记或边框，也不得重复一个 cell 代替其他语义层。键盘操作与站内 motion-off 即时提交；`prefers-reduced-motion` 只允许不超过 140ms 的纯 opacity 过渡，低性能档直接显示目标静态状态。桌面端控件位于顶栏右侧，移动端只在 Home 的顶栏下方右侧显示。壁纸图像 token 为 `20260809-wallpaper-time-switch-r3`，公开资源与 seed token 为 `20260809-wallpaper-switch-scene-r1`。该功能完全位于公开前端与浏览器存储，不接入 D1、MCP、能力注册、CLI 或远程 Worker。
+- 每个主题只允许一层稀疏 accent：morning 是四根分离的短晨光，day 是一朵矮小云，dusk 是一条极薄短余晖，night 是七颗稀疏小星。day 与 night 的基础 scene 已分别通过额外 Image2 修正为无云、无星的纯净色场，语义天气只在选中后由单层 accent 出现；不得恢复 far／mid／accent 堆叠、行星、密集景物或 0／35／70ms 错峰。选择器使用 220ms transform，当前场景使用 180ms 淡入；morning／day／dusk／night 的单层 accent 分别用 200／210／190／220ms 的轻微上浮、横移、展开或升起，但全部 `transition-delay: 0ms`。所有换档只用可中断、可重定向的 transform／opacity transition，不使用 keyframes，并遵守 last-request-wins。
+- 当前 17 个不同的最终视觉内容源均由 Image2／imagegen 生成并由 `wallpaper-time-switch.source.json` 锁定真实尺寸、SHA-256、来源图与机械处理过程：4 张 880×220 scene、4 张 144×144 marker、4 张 192×192 node、4 张 480×160 accent 和 1 张 880×220 frame。此次精修记录 6 次 Image2 来源调用，累计调用从 14 增至 20；旧绿键 dusk 草稿因源图自带黄绿色外晕而明确弃用，采用洋红键 v2，官方 chroma helper 后只允许 alpha bounds、透明定位和机械缩放。night marker 与 dusk accent 使用预乘 alpha Bilinear 避免 Lanczos 下采样绿偏，其他精修图保留 Lanczos；不允许代码重绘或改色。随后为避免单层稳定态过素，只把 morning／day／dusk 的既有 RGBA 裁切在透明画布上做整数像素位移；三者裁切 SHA 与 alpha≥8 像素数均前后相同，没有新增 Image2 调用、重采样、改色或重绘，累计仍为 20。发布时把 16 个非 frame 内容按声明顺序机械纵向打包为 `scene-atlas.png` 880×880、`marker-atlas.png` 144×576、`node-atlas.png` 192×768、`accent-atlas.png` 480×640，`frame.png` 独立，运行时固定 5 个唯一图片请求；最终 accent atlas SHA-256 为 `a1af92a465eeeeb6e7a47ac61bb62dc27cbca115e90b54fa0be325b98968169c`。不同 cell 不得重采样、混合、重复或跨语义复用，也不得用 CSS／Canvas／SVG path／代码几何绘制视觉主体。键盘与 motion-off 即时提交；reduced 只保留不超过 140ms 的纯 opacity；low performance／Save-Data 跳过 accent，但保持完整色场、四个语义节点和时间行为。图像 token 为 `20260809-wallpaper-time-switch-r4`；当日 `20260809-wallpaper-switch-calm-r1` 只是未上线草稿公开 token，最终由上方 8 月 10 日契约取代。该功能完全位于公开前端与浏览器存储，不接入 D1、MCP、能力注册、CLI 或远程 Worker。
 
 ## 2026-08-09 主站、Android 移动壳与后台动效精修
 

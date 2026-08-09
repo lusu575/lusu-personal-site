@@ -516,7 +516,7 @@ html[data-ui-shell="desktop"] .desktop-icon[aria-pressed="true"] {
 }
 
 .wallpaper-time-option[aria-checked="false"]:active .wallpaper-time-marker {
-  transform: scale(.94);
+  transform: scale(.97);
   transition-duration: var(--motion-press);
 }
 
@@ -527,25 +527,17 @@ html[data-ui-shell="desktop"] .desktop-icon[aria-pressed="true"] {
     transform 90ms var(--motion-ease-out);
 }
 
-.wallpaper-time-atmosphere {
+.wallpaper-time-accent {
   transition-property: opacity, transform;
   transition-duration: 90ms;
   transition-timing-function: var(--motion-ease-out);
   transition-delay: 0ms;
 }
 
-.wallpaper-time-atmosphere[data-switch-theme="morning"][data-atmosphere-depth="far"] { transform: translate3d(-4px, 0, 0); }
-.wallpaper-time-atmosphere[data-switch-theme="morning"][data-atmosphere-depth="mid"] { transform: translate3d(0, 4px, 0); }
-.wallpaper-time-atmosphere[data-switch-theme="morning"][data-atmosphere-depth="accent"] { transform: translate3d(0, 5px, 0); }
-.wallpaper-time-atmosphere[data-switch-theme="day"][data-atmosphere-depth="far"] { transform: translate3d(0, -3px, 0); }
-.wallpaper-time-atmosphere[data-switch-theme="day"][data-atmosphere-depth="mid"] { transform: translate3d(0, -4px, 0); }
-.wallpaper-time-atmosphere[data-switch-theme="day"][data-atmosphere-depth="accent"] { transform: scale(.94); }
-.wallpaper-time-atmosphere[data-switch-theme="dusk"][data-atmosphere-depth="far"] { transform: translate3d(4px, 0, 0); }
-.wallpaper-time-atmosphere[data-switch-theme="dusk"][data-atmosphere-depth="mid"] { transform: translate3d(-4px, 0, 0); }
-.wallpaper-time-atmosphere[data-switch-theme="dusk"][data-atmosphere-depth="accent"] { transform: translate3d(0, 5px, 0); }
-.wallpaper-time-atmosphere[data-switch-theme="night"][data-atmosphere-depth="far"] { transform: translate3d(0, 3px, 0); }
-.wallpaper-time-atmosphere[data-switch-theme="night"][data-atmosphere-depth="mid"] { transform: translate3d(0, 5px, 0); }
-.wallpaper-time-atmosphere[data-switch-theme="night"][data-atmosphere-depth="accent"] { transform: translate3d(0, 6px, 0); }
+.wallpaper-time-accent[data-switch-theme="morning"] { transform: translate3d(0, 4px, 0) scale(.98); }
+.wallpaper-time-accent[data-switch-theme="day"] { transform: translate3d(-5px, 0, 0); }
+.wallpaper-time-accent[data-switch-theme="dusk"] { transform: translate3d(0, 2px, 0) scaleX(.94); }
+.wallpaper-time-accent[data-switch-theme="night"] { transform: translate3d(0, 5px, 0); }
 
 .wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-scene[data-switch-theme="morning"],
 .wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-scene[data-switch-theme="day"],
@@ -562,42 +554,27 @@ html[data-ui-shell="desktop"] .desktop-icon[aria-pressed="true"] {
   transition-duration: 140ms;
 }
 
-.wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-atmosphere[data-switch-theme="morning"],
-.wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-atmosphere[data-switch-theme="day"],
-.wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-atmosphere[data-switch-theme="dusk"],
-.wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-atmosphere[data-switch-theme="night"] {
+.wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-accent[data-switch-theme="morning"],
+.wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-accent[data-switch-theme="day"],
+.wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-accent[data-switch-theme="dusk"],
+.wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-accent[data-switch-theme="night"] {
   transform: translate3d(0, 0, 0) scale(1);
 }
 
-.wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-atmosphere[data-switch-theme="morning"][data-atmosphere-depth="far"],
-.wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-atmosphere[data-switch-theme="day"][data-atmosphere-depth="far"],
-.wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-atmosphere[data-switch-theme="dusk"][data-atmosphere-depth="far"],
-.wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-atmosphere[data-switch-theme="night"][data-atmosphere-depth="far"] {
-  transition-duration: 180ms;
-}
-
-.wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-atmosphere[data-switch-theme="morning"][data-atmosphere-depth="mid"],
-.wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-atmosphere[data-switch-theme="day"][data-atmosphere-depth="mid"],
-.wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-atmosphere[data-switch-theme="dusk"][data-atmosphere-depth="mid"],
-.wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-atmosphere[data-switch-theme="night"][data-atmosphere-depth="mid"] {
+.wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-accent[data-switch-theme="morning"] {
   transition-duration: 200ms;
-  transition-delay: 20ms;
 }
 
-.wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-atmosphere[data-switch-theme="morning"][data-atmosphere-depth="accent"],
-.wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-atmosphere[data-switch-theme="day"][data-atmosphere-depth="accent"],
-.wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-atmosphere[data-switch-theme="dusk"][data-atmosphere-depth="accent"],
-.wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-atmosphere[data-switch-theme="night"][data-atmosphere-depth="accent"] {
+.wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-accent[data-switch-theme="day"] {
+  transition-duration: 210ms;
+}
+
+.wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-accent[data-switch-theme="dusk"] {
+  transition-duration: 190ms;
+}
+
+.wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-accent[data-switch-theme="night"] {
   transition-duration: 220ms;
-  transition-delay: 40ms;
-}
-
-.wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-atmosphere[data-switch-theme="night"][data-atmosphere-depth="mid"] {
-  transition-delay: 35ms;
-}
-
-.wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-atmosphere[data-switch-theme="night"][data-atmosphere-depth="accent"] {
-  transition-delay: 70ms;
 }
 
 html[data-motion="reduced"] .wallpaper-time-thumb,
@@ -609,11 +586,11 @@ body[data-motion="reduced"] .wallpaper-time-thumb {
 html[data-motion="reduced"] .wallpaper-time-scene,
 html[data-motion="reduced"] .wallpaper-time-marker,
 html[data-motion="reduced"] .wallpaper-time-celestial,
-html[data-motion="reduced"] .wallpaper-time-atmosphere,
+html[data-motion="reduced"] .wallpaper-time-accent,
 body[data-motion="reduced"] .wallpaper-time-scene,
 body[data-motion="reduced"] .wallpaper-time-marker,
 body[data-motion="reduced"] .wallpaper-time-celestial,
-body[data-motion="reduced"] .wallpaper-time-atmosphere {
+body[data-motion="reduced"] .wallpaper-time-accent {
   transform: none !important;
   transition: opacity 140ms var(--motion-ease-out) !important;
 }
@@ -622,38 +599,33 @@ body[data-motion="reduced"] .wallpaper-time-atmosphere {
 .wallpaper-time-switch[data-immediate="true"] .wallpaper-time-scene,
 .wallpaper-time-switch[data-immediate="true"] .wallpaper-time-marker,
 .wallpaper-time-switch[data-immediate="true"] .wallpaper-time-celestial,
-.wallpaper-time-switch[data-immediate="true"] .wallpaper-time-atmosphere,
+.wallpaper-time-switch[data-immediate="true"] .wallpaper-time-accent,
 .wallpaper-time-switch[data-static="true"] .wallpaper-time-thumb,
 .wallpaper-time-switch[data-static="true"] .wallpaper-time-scene,
 .wallpaper-time-switch[data-static="true"] .wallpaper-time-marker,
 .wallpaper-time-switch[data-static="true"] .wallpaper-time-celestial,
-.wallpaper-time-switch[data-static="true"] .wallpaper-time-atmosphere,
-html[data-input-method="keyboard"] .wallpaper-time-thumb,
-html[data-input-method="keyboard"] .wallpaper-time-scene,
-html[data-input-method="keyboard"] .wallpaper-time-marker,
-html[data-input-method="keyboard"] .wallpaper-time-celestial,
-html[data-input-method="keyboard"] .wallpaper-time-atmosphere,
+.wallpaper-time-switch[data-static="true"] .wallpaper-time-accent,
 html[data-motion="off"] .wallpaper-time-thumb,
 html[data-motion="off"] .wallpaper-time-scene,
 html[data-motion="off"] .wallpaper-time-marker,
 html[data-motion="off"] .wallpaper-time-celestial,
-html[data-motion="off"] .wallpaper-time-atmosphere,
+html[data-motion="off"] .wallpaper-time-accent,
 body[data-motion="off"] .wallpaper-time-thumb,
 body[data-motion="off"] .wallpaper-time-scene,
 body[data-motion="off"] .wallpaper-time-marker,
 body[data-motion="off"] .wallpaper-time-celestial,
-body[data-motion="off"] .wallpaper-time-atmosphere,
+body[data-motion="off"] .wallpaper-time-accent,
 html[data-performance-tier="low"] .wallpaper-time-thumb,
 html[data-performance-tier="low"] .wallpaper-time-scene,
 html[data-performance-tier="low"] .wallpaper-time-marker,
 html[data-performance-tier="low"] .wallpaper-time-celestial,
-html[data-performance-tier="low"] .wallpaper-time-atmosphere {
+html[data-performance-tier="low"] .wallpaper-time-accent {
   transition: none !important;
   will-change: auto;
 }
 
-.wallpaper-time-switch[data-static="true"] .wallpaper-time-atmosphere,
-html[data-performance-tier="low"] .wallpaper-time-atmosphere {
+.wallpaper-time-switch[data-static="true"] .wallpaper-time-accent,
+html[data-performance-tier="low"] .wallpaper-time-accent {
   opacity: 0 !important;
 }
 

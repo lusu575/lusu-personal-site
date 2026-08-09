@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-10-wallpaper-switch-calm-redesign",
+      "slug": "2026-08-10-wallpaper-switch-calm-redesign",
+      "category": "site-updates",
+      "tags": ["网站更新", "壁纸", "动效", "Image2", "无障碍"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-09T16:00:00.000Z",
+      "updated_at": "2026-08-09T16:00:00.000Z",
+      "published_at": "2026-08-09T16:00:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.10",
+      "title": {
+        "zh": "四时段壁纸开关轻量重做",
+        "en": "Four-Stage Wallpaper Switch Calm Redesign",
+        "ja": "4段階壁紙スイッチの穏やかな再設計"
+      },
+      "summary": {
+        "zh": "四时段壁纸开关再次轻量重做：Image2 重新生成极简色场、四个语义浮雕节点，以及每个主题唯一一层点题内容；移除多层风景、行星与错峰装饰。选择器可随快速操作中断并重定向，键盘和 motion-off 即时完成；reduced-motion 只保留淡化，low／Save-Data 跳过 accent 层。",
+        "en": "The four-stage wallpaper switch has been rebuilt around a calmer, lighter system. Image2 regenerated four minimal color fields, four semantic embossed stops, and one accent layer per theme; layered scenery, planets, and staggered decoration are removed. The selector stays interruptible and retargetable, keyboard and motion-off changes are immediate, reduced motion keeps only a fade, and low/Save-Data skips the accent layer.",
+        "ja": "4段階壁紙スイッチを、より穏やかで軽量な構成に再設計しました。Image2 で最小限の色面4種、意味の異なる浮き彫りノード4種、各テーマ一層の accent を生成し直し、多層の風景、惑星、時間差装飾を削除しました。selector は中断・再設定可能で、keyboard／motion-off は即時、reduced-motion はフェードのみ、low／Save-Data では accent を読み込みません。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-09-wallpaper-switch-scene-redesign",
       "slug": "2026-08-09-wallpaper-switch-scene-redesign",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "主站弹层、窗口切换与移动 Dock 采用更快且可中断的动效；知识库骨架屏、阅读进度和聊天室未读提示改用低成本合成路径，键盘操作即时完成，reduced-motion 保留必要的淡入与颜色反馈。",
         "en": "Public popovers, window changes, and the mobile Dock now use faster, interruptible motion. Knowledge skeletons, reading progress, and chat unread feedback use cheaper compositor paths, while keyboard actions complete instantly and reduced motion keeps only helpful fades and color cues.",
         "ja": "公開サイトのポップオーバー、ウィンドウ切り替え、モバイル Dock をより速く中断可能な動きに調整しました。Knowledge のスケルトン、読書進捗、Chat の未読表示は軽量な合成処理を使い、キーボード操作は即時、視差軽減時は必要なフェードと色だけを残します。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-07-remote-mcp-oauth",
-      "slug": "2026-08-07-remote-mcp-oauth",
-      "category": "site-updates",
-      "tags": ["网站更新", "AI 能力", "知识库", "MCP", "安全"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-07T10:10:00.000Z",
-      "updated_at": "2026-08-09T01:00:00.000Z",
-      "published_at": "2026-08-09T01:00:00.000Z",
-      "fallbackOnly": true,
-      "icon": "knowledge",
-      "date": "2026.08.09",
-      "title": {
-        "zh": "远程 MCP OAuth 与知识库原子工具完成生产验收",
-        "en": "Remote MCP OAuth and Atomic Knowledge Tools Pass Production Acceptance",
-        "ja": "リモート MCP OAuth と知識ベース原子ツールの本番検証完了"
-      },
-      "summary": {
-        "zh": "正式域名端到端生产验收已通过：OAuth Allow 后精确发现 9 项工具与 4 项公开能力，并完成原子发布、同载荷重放、管理读取、CAS 更新、三语公开回读、确认删除、删除后 404、令牌撤销和临时数据清理；文件发布仍仅限本地，全站工具及游戏远程接管尚未完成。",
-        "en": "End-to-end production acceptance on the live domain has passed: OAuth Allow exposed exactly 9 tools and 4 public capabilities, followed by atomic publish, same-payload replay, management reads, CAS update, zh/en/ja public readback, confirmed delete, post-delete 404, token revocation, and temporary-data cleanup. File publishing remains local, while whole-site tool and game takeover is not complete.",
-        "ja": "本番ドメインのエンドツーエンド検証が完了しました。OAuth Allow 後に9ツールと4つの公開機能を正確に確認し、原子的公開、同一ペイロード再実行、管理一覧・取得、CAS 更新、zh／en／ja 公開再取得、確認付き削除、削除後404、トークン失効、一時データ消去まで合格しています。ファイル公開はローカル限定で、サイト全体のツールやゲームの遠隔操作は未完成です。"
       }
     }
   ]

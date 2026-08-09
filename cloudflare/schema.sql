@@ -961,6 +961,118 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-08-10-wallpaper-switch-calm-redesign',
+  '2026-08-10-wallpaper-switch-calm-redesign',
+  'site-updates',
+  '["网站更新","壁纸","动效","Image2","无障碍"]',
+  '', 'published', 0, 0,
+  '2026-08-09T16:00:00.000Z',
+  '2026-08-09T16:00:00.000Z',
+  '2026-08-09T16:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-10-wallpaper-switch-calm-redesign-zh',
+    'seed-update-2026-08-10-wallpaper-switch-calm-redesign',
+    'zh',
+    '四时段壁纸开关轻量重做',
+    '四时段壁纸开关再次轻量重做：Image2 重新生成极简色场、四个语义浮雕节点，以及每个主题唯一一层点题内容；移除多层风景、行星与错峰装饰。选择器可随快速操作中断并重定向，键盘和 motion-off 即时完成；reduced-motion 只保留淡化，low／Save-Data 跳过 accent 层。',
+    '# 四时段壁纸开关轻量重做
+
+经过多轮视觉复核，网站右上角的 176×44 四时段椭圆开关改为更安静、更轻量的版本，自动时段与手动到下一时间边界的行为不变。
+
+## 更安静的 Image2 视觉
+
+- Image2 重新生成早上、中午、下午和夜晚四组极简色场，整条轨道始终只呈现当前主题。
+- 未选中位不再使用突兀的空白圆点，而是四个低对比、语义各异的浮雕节点；当前位继续使用对应天体主体。
+- 每个主题只保留一层点题 accent，移除了多层风景、行星、密集元素和错峰入场。
+
+## 流畅且可中断的切换
+
+选择器只用 transform 移动，快速连续选择时可从当前帧中断并转向最新目标。整条场景使用简短交叉淡化，只让当前主题的单层 accent 进入，不再等待多层错峰。
+
+## 键盘与性能降级
+
+键盘操作和站内 motion-off 会立即提交目标状态。reduced-motion 只保留短暂透明度变化；low 性能档和 Save-Data 直接跳过 accent，仍保留完整色场、语义节点和时间切换功能。',
+    '2026-08-09T16:00:00.000Z',
+    '2026-08-09T16:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-10-wallpaper-switch-calm-redesign-en',
+    'seed-update-2026-08-10-wallpaper-switch-calm-redesign',
+    'en',
+    'Four-Stage Wallpaper Switch Calm Redesign',
+    'The four-stage wallpaper switch has been rebuilt around a calmer, lighter system. Image2 regenerated four minimal color fields, four semantic embossed stops, and one accent layer per theme; layered scenery, planets, and staggered decoration are removed. The selector stays interruptible and retargetable, keyboard and motion-off changes are immediate, reduced motion keeps only a fade, and low/Save-Data skips the accent layer.',
+    '# Four-Stage Wallpaper Switch Calm Redesign
+
+After several visual reviews, the 176×44 four-stage oval switch at the upper right has been rebuilt as a calmer, lighter control. Its automatic schedule and manual override until the next real time boundary are unchanged.
+
+## Calmer Image2 visuals
+
+- Image2 regenerated minimal morning, day, dusk, and night color fields. The whole track always presents only the current theme.
+- Unselected positions no longer use stark blank dots. They use four distinct, low-contrast embossed semantic stops, while the active position keeps its matching celestial subject.
+- Each theme keeps exactly one accent layer. Layered scenery, planets, dense decoration, and staggered entrances have been removed.
+
+## Smooth, interruptible switching
+
+The selector moves only with transform and can be interrupted from its current frame and retargeted to the latest choice during rapid input. The full scene uses a short crossfade, and only the current theme''s single accent enters; there is no multi-layer stagger to wait for.
+
+## Keyboard and performance fallbacks
+
+Keyboard input and the site''s motion-off mode commit the target state immediately. Reduced motion keeps only a short opacity change. The low-performance and Save-Data modes skip the accent while retaining the complete color field, semantic stops, and time-switching behavior.',
+    '2026-08-09T16:00:00.000Z',
+    '2026-08-09T16:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-10-wallpaper-switch-calm-redesign-ja',
+    'seed-update-2026-08-10-wallpaper-switch-calm-redesign',
+    'ja',
+    '4段階壁紙スイッチの穏やかな再設計',
+    '4段階壁紙スイッチを、より穏やかで軽量な構成に再設計しました。Image2 で最小限の色面4種、意味の異なる浮き彫りノード4種、各テーマ一層の accent を生成し直し、多層の風景、惑星、時間差装飾を削除しました。selector は中断・再設定可能で、keyboard／motion-off は即時、reduced-motion はフェードのみ、low／Save-Data では accent を読み込みません。',
+    '# 4段階壁紙スイッチの穏やかな再設計
+
+複数回のビジュアル検証を受け、右上の 176×44 の4段階楕円スイッチを、より穏やかで軽量なコントロールに作り直しました。時刻による自動切り替えと、次の実際の時間境界まで維持する手動選択は変わりません。
+
+## 穏やかな Image2 ビジュアル
+
+- Image2 で朝・昼・夕方・夜の最小限の色面を再生成し、トラック全体は常に現在のテーマだけを表示します。
+- 未選択位置の目立つ空白ドットをやめ、意味の異なる低コントラストの浮き彫りノード4種に変更しました。選択中の位置は対応する天体を保ちます。
+- 各テーマに残す accent は一層だけです。多層の風景、惑星、密集した装飾、時間差入場を削除しました。
+
+## 滑らかで中断可能な切り替え
+
+selector は transform だけで移動し、素早い連続操作でも現在のフレームから中断し、最新の選択へ再設定できます。シーン全体は短くクロスフェードし、現在のテーマの一層の accent だけが入ります。
+
+## キーボードと性能フォールバック
+
+keyboard 操作とサイト内 motion-off は目標状態を即時に確定します。reduced-motion は短い透明度変化だけを残します。low モードと Save-Data では accent を読み込まず、色面、意味ノード、時間切り替えの機能はそのまま保ちます。',
+    '2026-08-09T16:00:00.000Z',
+    '2026-08-09T16:00:00.000Z'
+  )
+on conflict(translation_id) do update set
+  article_id = excluded.article_id,
+  lang = excluded.lang,
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-08-09-wallpaper-switch-scene-redesign',
   '2026-08-09-wallpaper-switch-scene-redesign',
   'site-updates',
@@ -13315,7 +13427,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260809-wallpaper-switch-scene-r1', '2026-08-09T11:15:00.000Z')
+values ('article_seed_version', '20260810-wallpaper-switch-calm-r1', '2026-08-09T16:00:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

@@ -2,10 +2,10 @@
   "schema_version": 2,
   "date": "2026-08-09",
   "generator": "imagegen",
-  "asset_version": "20260809-wallpaper-time-switch-r3",
+  "asset_version": "20260809-wallpaper-time-switch-r4",
   "visual_contract": {
     "control_size_css_px": [176, 44],
-    "scene_model": "The whole oval shows exactly one current time-of-day scene. Four persistent theme markers remain visible; the active stop replaces its marker with a theme-specific solid celestial subject.",
+    "scene_model": "The whole oval shows exactly one restrained current time-of-day field. Four semantic embossed markers remain visible; the active stop replaces its marker with a solid theme-specific celestial medallion.",
     "active_node_css_px": [32, 32],
     "active_node_top_css_px": 6,
     "active_node_left_by_theme_css_px": {
@@ -14,104 +14,312 @@
       "dusk": 94,
       "night": 138
     },
-    "inactive_marker_css_px": [18, 12],
-    "atmosphere_roles": ["far", "mid", "accent"],
+    "inactive_marker_css_px": [20, 20],
+    "accent_model": "Exactly one sparse Image2-generated accent layer per theme: four short dawn rays, one daytime cloud, one dusk afterglow band, or seven night stars.",
     "prohibited_regressions": [
       "four time-of-day thumbnails shown side by side in one track",
-      "a generic transparent selector ring",
-      "the same visual region or atlas cell duplicated and clipped into multiple semantic layers; mechanically packing distinct Image2-generated cells into a delivery atlas is permitted",
+      "a generic transparent selector ring, blank white pearl, or generic inactive dot",
+      "mountains, water, reflections, trees, cities, flowers, dense cloud banks, planets, galaxies, dense starfields, or other landscape clutter inside the switch scene",
+      "far, mid, and accent atmosphere stacks, staggered decorative delays, or more than one accent layer per theme",
+      "the same visual region or atlas cell duplicated and clipped into multiple semantic roles; mechanically packing distinct Image2-generated cells into a delivery atlas is permitted",
       "keyframe animations on the rapidly-triggered wallpaper toggle",
-      "CSS, Canvas, SVG path, or code geometry used to draw the celestial, cloud, star, or planet artwork"
+      "CSS, Canvas, SVG path, or code geometry used to draw the celestial, cloud, star, marker, frame, ray, or scene artwork"
     ]
   },
   "generation_sources": [
     {
-      "role": "concept_sheet",
-      "imagegen_output": "exec-cba8ee62-cf52-43b3-9fa3-c4b18b5a001c.png",
-      "prompt_summary": "Four-row production concept for a four-stop website wallpaper switch. Each row presents one complete oval sky theme across the whole track, four persistent stops, one active theme-specific celestial subject, and a polished Windows XP pixel-art and Y2K glass finish. The concept intentionally rejects a four-thumbnail strip."
+      "role": "scene_morning",
+      "imagegen_output": "exec-78efa041-8b93-442d-ba57-a43b7485ddf4.png",
+      "source_original": "output/wallpaper-switch-calm-assets/source-originals/source-morning.png",
+      "source_sha256": "207a2ab8bbcced3b36ef875c49a43b76180b26855cc90940aa4c56a0355de3d9",
+      "working_copy": "output/wallpaper-switch-calm-assets/scenes/calm-scene-morning.png",
+      "prompt_summary": "Calm two-tone cream-to-muted-peach dawn field with only one extremely faint low horizon glow; no objects, scenery, clouds, sun, or decorative clutter."
     },
     {
-      "role": "scene_atlas",
-      "imagegen_output": "exec-0057ff88-e684-4bef-9b70-fa6dfe3f4052.png",
-      "working_copy": "output/imagegen/wallpaper-switch-r3/background-atlas-chroma.png",
-      "prompt_summary": "Image-generation edit of the approved concept into four separate full-width morning, day, dusk, and night oval backgrounds. All stop markers and celestial controls were removed while each row kept one coherent sky scene, a champagne pixel-glass rim, and a flat green exterior for keying."
+      "role": "scene_day",
+      "imagegen_output": "exec-89b74651-1def-4494-a72a-100e48bfbe72.png",
+      "source_original": "output/wallpaper-switch-calm-assets/source-originals/source-day-pure-r4.png",
+      "source_sha256": "6faf024cf23d8abe77cb45f3ca978567e9e9eedd8a15524c18779181bfee7dfe",
+      "working_copy": "output/wallpaper-switch-calm-assets/scenes/calm-scene-day.png",
+      "prompt_summary": "Corrected calm two-tone cyan and powder-blue daylight field with all clouds and semantic weather removed; the single day cloud exists only in accent-day.png."
     },
     {
-      "role": "active_node_atlas",
-      "imagegen_output": "exec-763d4a72-f3b1-4499-936a-818940373d34.png",
-      "working_copy": "output/imagegen/wallpaper-switch-r3/node-atlas-chroma.png",
-      "prompt_summary": "Five standalone pixel-glass control sprites on flat green: one small pearl study plus a partly risen morning sun, a full daytime sun, an initial low setting dusk study, and a crescent moon. Morning, day, and night remain the production crops from this atlas; the pearl study is not published and the undersized dusk study was replaced by the dedicated Image2 correction below."
+      "role": "scene_dusk",
+      "imagegen_output": "exec-e87b8177-a544-4d04-9335-e4617220a73f.png",
+      "source_original": "output/wallpaper-switch-calm-assets/source-originals/source-dusk.png",
+      "source_sha256": "af0ed564fa14fb8064fe3969bee98e0446faba39b188893f1cec1a69e0c06fd7",
+      "working_copy": "output/wallpaper-switch-calm-assets/scenes/calm-scene-dusk.png",
+      "prompt_summary": "Muted dusty-rose-to-apricot dusk field with exactly one thin low afterglow band; no clouds, sun, landscape, or decoration."
     },
     {
-      "role": "active_node_dusk_redesign",
-      "imagegen_output": "exec-13632a0a-3425-41c8-8063-7c694b06a2d2.png",
-      "working_copy": "output/imagegen/wallpaper-switch-r3/node-dusk-redesign-alpha.png",
-      "prompt_summary": "Dedicated Image2 correction of the dusk node: a centered full-size champagne pixel-glass badge with a low half-submerged setting sun, magenta-coral sky, and water reflection on a flat green exterior. The prompt explicitly removed the prior stray cyan line and matched the visible weight of the other three active nodes."
+      "role": "scene_night",
+      "imagegen_output": "exec-15b635b1-348a-4de1-abc5-9353ff6ea2ad.png",
+      "source_original": "output/wallpaper-switch-calm-assets/source-originals/source-night-pure-r4.png",
+      "source_sha256": "07fce20bb71d2f7f3d443840335c4afdb038bff13f347b434b18a57036c42807",
+      "working_copy": "output/wallpaper-switch-calm-assets/scenes/calm-scene-night.png",
+      "prompt_summary": "Corrected calm navy-to-indigo night field with every star and celestial subject removed; all seven stars exist only in accent-night.png."
+    },
+    {
+      "role": "node_morning",
+      "imagegen_output": "exec-6ae4e2bd-69e6-47f8-a047-3b5e395c4e46.png",
+      "source_original": "output/wallpaper-switch-calm-assets/source-originals/active-morning-exec-6ae4e2bd-69e6-47f8-a047-3b5e395c4e46.png",
+      "source_sha256": "7db3e087b0d1dddda227c425ac8ea75a87d64d9ec189eab98e1bd991e938eadc",
+      "working_copy": "output/wallpaper-switch-calm-assets/controls/calm-node-morning.png",
+      "prompt_summary": "Antique-cream and champagne pixel-enamel active medallion containing an unmistakable half-risen dawn sun and three short quiet rays."
+    },
+    {
+      "role": "node_day",
+      "imagegen_output": "exec-636a2290-e6bf-4684-af5c-5103a5978085.png",
+      "source_original": "output/wallpaper-switch-calm-assets/source-originals/active-day-exec-636a2290-e6bf-4684-af5c-5103a5978085.png",
+      "source_sha256": "97d14924f31f80d20392bbb45eaacd64b1b9735d51b0257667a80327b9560dcf",
+      "working_copy": "output/wallpaper-switch-calm-assets/controls/calm-node-day.png",
+      "prompt_summary": "Matching pixel-enamel active medallion containing one complete high midday sun with eight restrained rays."
+    },
+    {
+      "role": "node_dusk",
+      "imagegen_output": "exec-39370965-890c-433a-87e0-104b5ad9112b.png",
+      "source_original": "output/wallpaper-switch-calm-assets/source-originals/active-dusk-exec-39370965-890c-433a-87e0-104b5ad9112b.png",
+      "source_sha256": "ac0e79bb9f1917706163ef3f8f3776a6ca61a7e9658d6367d221f1ae165cff38",
+      "working_copy": "output/wallpaper-switch-calm-assets/controls/calm-node-dusk.png",
+      "prompt_summary": "Matching pixel-enamel active medallion containing a low half-submerged setting sun with restrained coral-apricot light."
+    },
+    {
+      "role": "node_night",
+      "imagegen_output": "exec-a6f1309e-3fbb-47f9-82d3-4f87ab0626e6.png",
+      "source_original": "output/wallpaper-switch-calm-assets/source-originals/active-night-exec-a6f1309e-3fbb-47f9-82d3-4f87ab0626e6.png",
+      "source_sha256": "cc883aa2c7db56b212b476254031700fff118a75f62c12e1bb33624238c97fe4",
+      "working_copy": "output/wallpaper-switch-calm-assets/controls/calm-node-night.png",
+      "prompt_summary": "Matching pixel-enamel active medallion containing one quiet crescent moon without stars, planets, or an empty ring."
+    },
+    {
+      "role": "marker_morning",
+      "imagegen_output": "exec-9e2f6af2-9752-448f-88b2-ba8b59b4340c.png",
+      "source_original": "output/wallpaper-switch-calm-assets/source-originals/marker-morning-exec-9e2f6af2-9752-448f-88b2-ba8b59b4340c.png",
+      "source_sha256": "cf769849321471843b4023ed9ddb8d20162b68b1bcb489bfb5d0347633c1b7eb",
+      "working_copy": "output/wallpaper-switch-calm-assets/controls/calm-marker-morning.png",
+      "prompt_summary": "Small low-contrast embossed morning marker using a semantic sunrise horizon, never a blank bead, empty ring, or generic dot."
+    },
+    {
+      "role": "marker_day",
+      "imagegen_output": "exec-e384a283-df12-4e1a-9cad-57a42dee21c3.png",
+      "source_original": "output/wallpaper-switch-calm-refine/source-originals/marker-day-exec-e384a283-df12-4e1a-9cad-57a42dee21c3.png",
+      "source_sha256": "b2c13d456e6e865c04690aa925425223c4b3d7096fa1a41afcc1728e46f9bfce",
+      "working_copy": "output/wallpaper-switch-calm-refine/final/marker-day.png",
+      "prompt_summary": "One delicate, empty-centered thin-outline daytime sun with eight short slim rays; explicitly no filled disc, pearl, medallion, gear, cog, chunky teeth, cloud, or decorative clutter."
+    },
+    {
+      "role": "marker_dusk",
+      "imagegen_output": "exec-662e0c74-1005-4533-bf7f-98237679b189.png",
+      "source_original": "output/wallpaper-switch-calm-assets/source-originals/marker-dusk-exec-662e0c74-1005-4533-bf7f-98237679b189.png",
+      "source_sha256": "e87c34d0c0ac5c377ce6d43b04a75e0a7ef8d4369ce00ec6fc0c6f62c6de8bde",
+      "working_copy": "output/wallpaper-switch-calm-assets/controls/calm-marker-dusk.png",
+      "prompt_summary": "Small low-contrast embossed dusk marker using a double-horizon sunset, never a blank bead, empty ring, or generic dot."
+    },
+    {
+      "role": "marker_night",
+      "imagegen_output": "exec-1ee61603-b412-43f0-aded-524745dae773.png",
+      "source_original": "output/wallpaper-switch-calm-refine/source-originals/marker-night-exec-1ee61603-b412-43f0-aded-524745dae773.png",
+      "source_sha256": "1c07a99cdde07148d821ee6bd5189309eebfee99eadebed5565dda2a3757435f",
+      "working_copy": "output/wallpaper-switch-calm-refine/final/marker-night.png",
+      "prompt_summary": "One graceful narrow crescent described only by a thin continuous outline with transparent interior; explicitly no filled moon, pearl, bead, ring, star, planet, glow, or medallion."
+    },
+    {
+      "role": "accent_morning",
+      "imagegen_output": "exec-a55d99c1-b462-491f-b145-744c9ebb0c6f.png",
+      "source_original": "output/wallpaper-switch-calm-refine/source-originals/accent-morning-exec-a55d99c1-b462-491f-b145-744c9ebb0c6f.png",
+      "source_sha256": "9eb198cc2d5607ac44e97043edc8dbdd6b6fd538adb5b8af1e4a747501583ef4",
+      "working_copy": "output/wallpaper-switch-calm-refine/final/accent-morning.png",
+      "prompt_summary": "Exactly four separate, short, softly tapered dawn rays in one tiny shallow fan; no sun, cloud, glow bloom, particles, landscape, or second cluster."
+    },
+    {
+      "role": "accent_day",
+      "imagegen_output": "exec-cdce41cb-28ca-4113-8955-db7b79fdaa1c.png",
+      "source_original": "output/wallpaper-switch-calm-refine/source-originals/accent-day-exec-cdce41cb-28ca-4113-8955-db7b79fdaa1c.png",
+      "source_sha256": "5597a6bad1d48c03c257c69453a80e9a6a1705f798b6028ebcf204ddf17b19d9",
+      "working_copy": "output/wallpaper-switch-calm-refine/final/accent-day.png",
+      "prompt_summary": "Exactly one very small, low-profile cloud with three shallow lobes and a short underside; no sun, rays, second cloud, cloud bank, thick base, horizon, or decorative subject."
+    },
+    {
+      "role": "accent_dusk",
+      "imagegen_output": "exec-dc111d55-c3f3-4340-ac30-c6181ccc9195.png",
+      "source_original": "output/wallpaper-switch-calm-refine/source-originals/accent-dusk-magenta-exec-dc111d55-c3f3-4340-ac30-c6181ccc9195.png",
+      "source_sha256": "893c23fa5bac478cc451765915481a88210172ac421c63f08e788424ae79a604",
+      "working_copy": "output/wallpaper-switch-calm-refine/final/accent-dusk.png",
+      "prompt_summary": "Exactly one compact, thin, softly tapered apricot-cream afterglow band on a magenta key; no green or olive fringe, horizon, second band, sun, cloud, landscape, bloom, or particles."
+    },
+    {
+      "role": "accent_night",
+      "imagegen_output": "exec-14205359-82d8-49e8-afce-c589ae98c12d.png",
+      "source_original": "F:/lusu575个人站/output/wallpaper-switch-calm-assets/fx-frame/originals/calm-accent-night-chroma.png",
+      "source_sha256": "0f7f8ae54dced1f95c2ac71908f51a43a3b59c19a258fe973b35d6279f646055",
+      "working_copy": "F:/lusu575个人站/output/wallpaper-switch-calm-assets/fx-frame/calm-accent-night.png",
+      "prompt_summary": "Exactly seven tiny separated night stars without moon, planet, galaxy, nebula, constellation lines, or dense starfield."
     },
     {
       "role": "frame",
-      "imagegen_output": "exec-76b094c5-6061-45d4-9992-aa49242ec461.png",
-      "working_copy": "output/imagegen/wallpaper-switch-r3/frame-chroma.png",
-      "prompt_summary": "Standalone thin champagne, ivory, and pixel-chrome oval frame matching the approved switch, with both the exterior and interior on flat green so the production overlay can be keyed cleanly."
-    },
-    {
-      "role": "theme_marker_atlas",
-      "imagegen_output": "exec-adfcdd61-5fbd-44fa-8a67-5f8d5a3cf976.png",
-      "working_copy": "output/imagegen/wallpaper-switch-r3/marker-atlas-source.png",
-      "prompt_summary": "Four quiet but tangible inactive markers for morning, day, dusk, and night. Each is a small solid pixel-glass miniature with a theme-colored horizon and restrained champagne rim, readable as a persistent stop without looking like a generic transparent ring."
-    },
-    {
-      "role": "morning_atmosphere_atlas",
-      "imagegen_output": "exec-fc6a3458-5af5-4eb6-9ff3-ab27b4d06aff.png",
-      "working_copy": "output/imagegen/wallpaper-switch-r3/motion-morning-atlas-source.png",
-      "prompt_summary": "Three separate morning atmosphere bands on flat green: distant slim peach-white cloud streaks, fuller sunrise clouds, and warm dawn rays with glints. The layers are composed independently for far, mid, and accent transition roles."
-    },
-    {
-      "role": "day_atmosphere_atlas",
-      "imagegen_output": "exec-7aeabf12-b372-49da-9c8d-3501e1274191.png",
-      "working_copy": "output/imagegen/wallpaper-switch-r3/motion-day-atlas-source.png",
-      "prompt_summary": "Three separate daytime atmosphere bands on flat green: distant thin white-blue clouds, substantial bright cumulus clouds, and cool blue-white glints. The cloud forms are richer than the previous minimal effect and remain independent far, mid, and accent layers."
-    },
-    {
-      "role": "dusk_atmosphere_atlas",
-      "imagegen_output": "exec-da3e8d0a-584d-4556-8328-3d5a704fe1f8.png",
-      "working_copy": "output/imagegen/wallpaper-switch-r3/motion-dusk-atlas-source.png",
-      "prompt_summary": "Three separate dusk atmosphere bands on flat green: long coral cloud ribbons, fuller pink-orange sunset clouds, and low golden horizon shimmers with glints, assigned to far, mid, and accent transition roles."
-    },
-    {
-      "role": "night_atmosphere_atlas",
-      "imagegen_output": "exec-7afa635e-6e5f-4735-8d09-c0eb5f77cbd0.png",
-      "working_copy": "output/imagegen/wallpaper-switch-r3/motion-night-atlas-source.png",
-      "prompt_summary": "Three separate night atmosphere bands on flat green: a sparse small-star field, a brighter blue and lavender star field, and a ringed lavender planet with varied surrounding stars. The richer layers avoid repeating one clipped effect image."
+      "imagegen_output": "exec-24400959-301b-4f05-a6a8-591804d4c5a6.png",
+      "source_original": "F:/lusu575个人站/output/wallpaper-switch-calm-assets/fx-frame/originals/calm-frame-chroma.png",
+      "source_sha256": "df9f18204157ca32add22d338f5827979523a0d97fd3a2db630fac2a3ed64a90",
+      "working_copy": "F:/lusu575个人站/output/wallpaper-switch-calm-assets/fx-frame/calm-frame.png",
+      "prompt_summary": "One slim cream-enamel pill rim with a restrained hairline brass edge and fully open center; no stacked bezel, shadow, or ornament."
     }
   ],
-  "mechanical_pipeline": {
-    "pipeline_id": "imagegen-chroma-crop-resize-atlas-png-v3",
-    "steps": [
-      "Copied the original Image2/imagegen outputs into the ignored output/imagegen/wallpaper-switch-r3 working directory without changing their visual content.",
-      "Removed the flat green exterior with the installed imagegen scripts/remove_chroma_key.py helper using border auto-key, soft matte, transparency thresholds, and despill.",
-      "Split each generated atlas into its documented equal cells, cropped each cell to its alpha bounding box, and added transparent padding where the target aspect ratio required it.",
-      "Resized the keyed crops with Lanczos resampling to the declared production dimensions and saved optimized PNG files; transparent overlays retain RGBA while the four complete scene crops are intentionally opaque RGB.",
-      "After the 25 distinct content files were byte-locked, mechanically stacked the 24 non-frame files at their native cell dimensions into seven vertical delivery atlases in the declared order. Transparent source pixels are copied as straight RGBA so partially transparent artwork remains visually equivalent; no cell is resampled, repeated, blended with another cell, or repurposed for another semantic layer. frame.png remains a standalone delivery file.",
-      "No celestial body, cloud, star, planet, frame, marker, ray, or scene artwork was drawn or synthesized in code. Code was used only for the mechanical copy, chroma removal, equal-cell crop, alpha-bounds crop, transparent padding, resize, PNG optimization, and distinct-cell vertical atlas packaging steps."
+  "refinement_provenance": {
+    "source_record": "output/wallpaper-switch-calm-refine/result.json",
+    "image2_source_call_count_before_refinement": 14,
+    "image2_source_call_count_this_refinement": 6,
+    "image2_source_call_count_total": 20,
+    "generation_calls": [
+      {
+        "role": "marker_day",
+        "adopted": true,
+        "imagegen_output": "exec-e384a283-df12-4e1a-9cad-57a42dee21c3.png",
+        "source_original": "output/wallpaper-switch-calm-refine/source-originals/marker-day-exec-e384a283-df12-4e1a-9cad-57a42dee21c3.png",
+        "source_size": [1254, 1254],
+        "source_sha256": "b2c13d456e6e865c04690aa925425223c4b3d7096fa1a41afcc1728e46f9bfce",
+        "prompt_sha256": "b0ef86f842e96e8f8f711681d130377f57199d3a508ecff0edc436d1b084b350",
+        "prompt_summary": "One centered, thin-outline, empty-centered sun with eight short rays on a perfectly flat green key; reject any filled disc, pearl, medallion, cog, chunky teeth, cloud, glow, or clutter."
+      },
+      {
+        "role": "marker_night",
+        "adopted": true,
+        "imagegen_output": "exec-1ee61603-b412-43f0-aded-524745dae773.png",
+        "source_original": "output/wallpaper-switch-calm-refine/source-originals/marker-night-exec-1ee61603-b412-43f0-aded-524745dae773.png",
+        "source_size": [1254, 1254],
+        "source_sha256": "1c07a99cdde07148d821ee6bd5189309eebfee99eadebed5565dda2a3757435f",
+        "prompt_sha256": "ee80c707e5556cf926bfaf72c7d2e5baf7d0744756d3934613c219c7ef283edd",
+        "prompt_summary": "One centered, graceful, thin-outline crescent with transparent interior on a perfectly flat green key; reject filled moons, pearls, rings, stars, planets, glow, or clutter."
+      },
+      {
+        "role": "accent_morning",
+        "adopted": true,
+        "imagegen_output": "exec-a55d99c1-b462-491f-b145-744c9ebb0c6f.png",
+        "source_original": "output/wallpaper-switch-calm-refine/source-originals/accent-morning-exec-a55d99c1-b462-491f-b145-744c9ebb0c6f.png",
+        "source_size": [1254, 1254],
+        "source_sha256": "9eb198cc2d5607ac44e97043edc8dbdd6b6fd538adb5b8af1e4a747501583ef4",
+        "prompt_sha256": "0b81b87cf04c25a1a1f6e072d1a640ac39923b88bb206ea4034d395a6933204d",
+        "prompt_summary": "Exactly four separate short dawn rays in one tiny fan on a perfectly flat green key; reject sun, cloud, horizon, bloom, particles, landscape, or extra clusters."
+      },
+      {
+        "role": "accent_day",
+        "adopted": true,
+        "imagegen_output": "exec-cdce41cb-28ca-4113-8955-db7b79fdaa1c.png",
+        "source_original": "output/wallpaper-switch-calm-refine/source-originals/accent-day-exec-cdce41cb-28ca-4113-8955-db7b79fdaa1c.png",
+        "source_size": [1254, 1254],
+        "source_sha256": "5597a6bad1d48c03c257c69453a80e9a6a1705f798b6028ebcf204ddf17b19d9",
+        "prompt_sha256": "54b9568f30f212206252642947971a5a60287dc6dab6bd31867e153c72741ef8",
+        "prompt_summary": "Exactly one very small, thin, low-profile three-lobe cloud on a perfectly flat green key; reject sun, rays, cloud bank, tall cumulus, thick base, horizon, or clutter."
+      },
+      {
+        "role": "accent_dusk_green_key_draft",
+        "adopted": false,
+        "imagegen_output": "exec-947e4489-95ed-4758-8466-31f8a36190ae.png",
+        "source_original": "output/wallpaper-switch-calm-refine/source-originals/accent-dusk-exec-947e4489-95ed-4758-8466-31f8a36190ae.png",
+        "source_size": [1536, 1024],
+        "source_sha256": "a88fd280a79b50599dcc82d3c095c0c16f7cd8d9fffddd8e3cd566a32d2e5510",
+        "prompt_sha256": "2ed9e5c0260099d93f57152630bf28b4798afcad6fb372e3a6072e5a8c19bdf1",
+        "prompt_summary": "One short afterglow band on a flat green key.",
+        "rejection_reason": "The Image2 source contained an opaque yellow-green outer halo. Official helper retries could not remove it without degrading the band, so the draft was discarded; no code recoloring was used."
+      },
+      {
+        "role": "accent_dusk",
+        "adopted": true,
+        "imagegen_output": "exec-dc111d55-c3f3-4340-ac30-c6181ccc9195.png",
+        "source_original": "output/wallpaper-switch-calm-refine/source-originals/accent-dusk-magenta-exec-dc111d55-c3f3-4340-ac30-c6181ccc9195.png",
+        "source_size": [1536, 1024],
+        "source_sha256": "893c23fa5bac478cc451765915481a88210172ac421c63f08e788424ae79a604",
+        "prompt_sha256": "9bc7468395ba49f886d255ea7090102bb522f4ec625d2c9b6f368eeb313c4a5c",
+        "prompt_summary": "Regenerated one short, thin afterglow band on a perfectly flat magenta key, explicitly excluding green, olive, yellow-green and every extra subject."
+      }
     ]
   },
+  "mechanical_pipeline": {
+    "pipeline_id": "imagegen-calm-chroma-resize-atlas-png-v4",
+    "chroma_helper": "C:/Users/lusu/.codex/skills/.system/imagegen/scripts/remove_chroma_key.py",
+    "default_helper_parameters": ["--auto-key", "border", "--soft-matte", "--transparent-threshold", "12", "--opaque-threshold", "220", "--despill"],
+    "refined_asset_finalization": {
+      "marker_day": { "filter": "Lanczos", "resized_content": [92, 91], "canvas": [144, 144], "paste_xy": [26, 26] },
+      "marker_night": { "filter": "premultiplied-alpha Bilinear", "resized_content": [72, 92], "canvas": [144, 144], "paste_xy": [36, 26] },
+      "accent_morning": { "filter": "Lanczos", "resized_content": [50, 16], "canvas": [480, 160], "paste_xy": [30, 18] },
+      "accent_day": { "filter": "Lanczos", "resized_content": [64, 20], "canvas": [480, 160], "paste_xy": [200, 48] },
+      "accent_dusk": { "filter": "premultiplied-alpha Bilinear", "resized_content": [78, 4], "canvas": [480, 160], "paste_xy": [305, 74] }
+    },
+    "filter_note": "Lanczos was retained where it introduced no color-channel overshoot. Marker-night and accent-dusk use premultiplied-alpha Bilinear because Lanczos created 14 and 1 green-dominant edge pixels respectively after strong downsampling; Bilinear reduced both to zero without drawing or recoloring.",
+    "steps": [
+      "Each of the 17 final semantic content assets has its own built-in Image2/imagegen output ID, source bytes, prompt intent, and SHA-256. The day and night base fields use the two later correction calls recorded in result.json sceneCorrectionCalls, replacing their decorated draft outputs.",
+      "Resized each complete scene source mechanically to 880x220 with Lanczos and encoded an opaque RGB PNG; no crop, compositing, color adjustment, or visual drawing was applied.",
+      "Removed each declared flat green or magenta background from markers, nodes, accents, and frame with the installed imagegen scripts/remove_chroma_key.py helper using border auto-key, soft matte, transparent-threshold 12, opaque-threshold 220, and despill.",
+      "Applied only alpha-bounds crop, aspect-preserving mechanical resize, transparent placement, and optimized PNG encoding to the keyed content. Lanczos is the default; marker-night and accent-dusk alone use premultiplied-alpha Bilinear to prevent downsampling color-channel overshoot without recoloring. Marker canvases are 144x144, node canvases are 192x192, accents are 480x160, and frame is 880x220.",
+      "To keep each stable state slightly richer without restoring multi-layer decoration, translated the existing morning, day, and dusk RGBA crops by whole pixels on their 480x160 transparent canvases. The crop SHA-256 values and alpha>=8 pixel counts remain identical before and after; no Image2 call, resampling, recoloring, redrawing, or compositing was added.",
+      "After the resulting 17 content files were byte-locked, mechanically stacked the 16 non-frame files at their native cell dimensions into four vertical delivery atlases in the declared order. Transparent pixels are copied as straight RGBA; no cell is resampled, repeated, blended, or repurposed during atlas packaging. frame.png remains standalone.",
+      "No celestial body, cloud, star, frame, marker, ray, horizon, glow band, or scene artwork was drawn or synthesized in code. Code was used only for the declared mechanical key removal, crop, padding, resize, encoding, hashing, verification, and distinct-cell atlas packaging."
+    ]
+  },
+  "placement_correction": {
+    "source_record": "output/wallpaper-switch-calm-refine/result.json#placementCorrection",
+    "completed_at": "2026-08-10",
+    "reason": "Keep each stable state slightly richer without restoring multi-layer, planetary, or full-track decoration.",
+    "operation": "Integer-pixel translation on the existing 480x160 transparent canvases only.",
+    "new_image2_calls": 0,
+    "cumulative_image2_source_calls": 20,
+    "resampled": false,
+    "recolored": false,
+    "content_invariant": "For every translated accent, the RGBA crop SHA-256 and alpha>=8 pixel count are identical before and after; only transparent-canvas position changed.",
+    "assets": {
+      "accent-morning": {
+        "translation_xy": [-15, -32],
+        "before_sha256": "4fba52840157517f282c7b5ede7b597d872a4aed02393987efc8d0acc8345eec",
+        "after_sha256": "aa93ce40aca8267a60ea2d369acd88c7a8ab07217dbd3910abb14c5c9dbbc14d",
+        "before_bbox_alpha_8": [45, 50, 95, 66],
+        "after_bbox_alpha_8": [30, 18, 80, 34],
+        "rgba_crop_sha256_before": "cd8a11f62b4e01d2924136412b4a6fb7dd63fd42eab68615772b8cbb0ffd1057",
+        "rgba_crop_sha256_after": "cd8a11f62b4e01d2924136412b4a6fb7dd63fd42eab68615772b8cbb0ffd1057",
+        "alpha_ge_8_pixels_before_after": [169, 169],
+        "green_dominant_pixels_alpha_8": 0
+      },
+      "accent-day": {
+        "translation_xy": [35, -12],
+        "before_sha256": "24711954701c788d869bcb51f445d11d219d7d0cec414f6f1d8e994973b2ae35",
+        "after_sha256": "f975882040b482fa0be47ef1f5659b75f13ecf44118b6ef814038a155b654363",
+        "before_bbox_alpha_8": [165, 60, 229, 80],
+        "after_bbox_alpha_8": [200, 48, 264, 68],
+        "rgba_crop_sha256_before": "580669e2e4ca31a7df18d28cfba9fd8bbf6c98fdb9cfeb34ba82f2017fa4c8f3",
+        "rgba_crop_sha256_after": "580669e2e4ca31a7df18d28cfba9fd8bbf6c98fdb9cfeb34ba82f2017fa4c8f3",
+        "alpha_ge_8_pixels_before_after": [909, 909],
+        "green_dominant_pixels_alpha_8": 0
+      },
+      "accent-dusk": {
+        "translation_xy": [34, -13],
+        "before_sha256": "4b0c0266e313cac84fbba66818cdcf96acb58cae291c990cfda6ef21ded25524",
+        "after_sha256": "5b42caea5cdb299a782d76d611f114ac9938fcae5ab5433c11597844e4eb4bbc",
+        "before_bbox_alpha_1": [271, 87, 349, 91],
+        "after_bbox_alpha_1": [305, 74, 383, 78],
+        "before_bbox_alpha_8": [274, 87, 348, 91],
+        "after_bbox_alpha_8": [308, 74, 382, 78],
+        "rgba_crop_sha256_before": "da248bf95646cc9d4a07311fdcc83282943769a31505d175b7278199826c5299",
+        "rgba_crop_sha256_after": "da248bf95646cc9d4a07311fdcc83282943769a31505d175b7278199826c5299",
+        "alpha_ge_8_pixels_before_after": [264, 264],
+        "green_dominant_pixels_alpha_8": 0
+      }
+    },
+    "validation_previews": {
+      "after": { "path": "output/wallpaper-switch-calm-refine/validation/placement-correction-preview.png", "sha256": "d66b8b8b3fc38290d620c02fbd5fda52bf77716fd14bd11e58338c55250c1ca3" },
+      "before_after": { "path": "output/wallpaper-switch-calm-refine/validation/placement-correction-before-after.png", "sha256": "9e57ec9175da1d651aa25733c9fccbe11f85e3bea464ba5997504aab7b37dfc2" }
+    }
+  },
   "delivery_contract": {
-    "content_asset_count": 25,
-    "delivery_atlas_count": 7,
+    "content_asset_count": 17,
+    "delivery_atlas_count": 4,
     "standalone_delivery_files": ["frame.png"],
-    "unique_runtime_request_count": 8,
+    "unique_runtime_request_count": 5,
     "runtime_files": [
       "scene-atlas.png",
       "marker-atlas.png",
       "node-atlas.png",
-      "atmosphere-morning-atlas.png",
-      "atmosphere-day-atlas.png",
-      "atmosphere-dusk-atlas.png",
-      "atmosphere-night-atlas.png",
+      "accent-atlas.png",
       "frame.png"
     ],
-    "packaging_rule": "Every atlas cell is a different byte-locked Image2-generated content asset. Runtime cropping may select a declared distinct cell; it must never duplicate one cell or visual region to stand in for another theme, depth, marker, or celestial."
+    "packaging_rule": "Every atlas cell is a different byte-locked Image2-generated content asset. Runtime cropping selects one declared distinct cell and must never duplicate a cell or visual region for another theme, marker, celestial, or accent."
   },
   "delivery_atlases": [
     {
@@ -120,15 +328,15 @@
       "cell_width": 880,
       "cell_height": 220,
       "cells": ["scene-morning.png", "scene-day.png", "scene-dusk.png", "scene-night.png"],
-      "final_png": { "width": 880, "height": 880, "sha256": "e6ac37ea24ea01dfe963b9c7fa924eab724e6a2d08ee92b788488acb1937527c" }
+      "final_png": { "width": 880, "height": 880, "sha256": "4b0215a84bfc498fbde7494b8ab10ff9e0822956edd01f938fb75afe11f8bd2e" }
     },
     {
       "file": "marker-atlas.png",
       "layout": "vertical",
       "cell_width": 144,
-      "cell_height": 96,
+      "cell_height": 144,
       "cells": ["marker-morning.png", "marker-day.png", "marker-dusk.png", "marker-night.png"],
-      "final_png": { "width": 144, "height": 384, "sha256": "7607e9ae777f4fdfa359e28e85bc567a56f797a9fb6488c6e1ae52aaaa4b279b" }
+      "final_png": { "width": 144, "height": 576, "sha256": "aabf4cf0c48685812729242cd8af320180aeff2bdf9a90c46ca7cd3cec925975" }
     },
     {
       "file": "node-atlas.png",
@@ -136,66 +344,34 @@
       "cell_width": 192,
       "cell_height": 192,
       "cells": ["node-morning.png", "node-day.png", "node-dusk.png", "node-night.png"],
-      "final_png": { "width": 192, "height": 768, "sha256": "a16d8d5264f5c69be8e5bc5aae40309294dc5f450e2ef7a14da4e776890f4262" }
+      "final_png": { "width": 192, "height": 768, "sha256": "9e5f1cc5f3e70812ff128404d7a85a6fcd202084a6805adcfefa17919e01e8de" }
     },
     {
-      "file": "atmosphere-morning-atlas.png",
+      "file": "accent-atlas.png",
       "layout": "vertical",
       "cell_width": 480,
       "cell_height": 160,
-      "cells": ["atmosphere-morning-far.png", "atmosphere-morning-mid.png", "atmosphere-morning-accent.png"],
-      "final_png": { "width": 480, "height": 480, "sha256": "8164b84c4193f15bd5a00861c9b3591dbc43406f19d49f014ee463adc7ba6150" }
-    },
-    {
-      "file": "atmosphere-day-atlas.png",
-      "layout": "vertical",
-      "cell_width": 480,
-      "cell_height": 160,
-      "cells": ["atmosphere-day-far.png", "atmosphere-day-mid.png", "atmosphere-day-accent.png"],
-      "final_png": { "width": 480, "height": 480, "sha256": "e443b5cb2bcfc20279994ced87529a3640269e6b9c5bef00dbc163301f884839" }
-    },
-    {
-      "file": "atmosphere-dusk-atlas.png",
-      "layout": "vertical",
-      "cell_width": 480,
-      "cell_height": 160,
-      "cells": ["atmosphere-dusk-far.png", "atmosphere-dusk-mid.png", "atmosphere-dusk-accent.png"],
-      "final_png": { "width": 480, "height": 480, "sha256": "06d1f2e2b9bbdd0094cc1a3d1f0aa7905bf274d06751d78786920870421059b1" }
-    },
-    {
-      "file": "atmosphere-night-atlas.png",
-      "layout": "vertical",
-      "cell_width": 480,
-      "cell_height": 160,
-      "cells": ["atmosphere-night-far.png", "atmosphere-night-mid.png", "atmosphere-night-accent.png"],
-      "final_png": { "width": 480, "height": 480, "sha256": "33677b5f579c2f4a99caf11279d8053926d3a9341e586d98dc6385ddcd2a1583" }
+      "cells": ["accent-morning.png", "accent-day.png", "accent-dusk.png", "accent-night.png"],
+      "final_png": { "width": 480, "height": 640, "sha256": "a1af92a465eeeeb6e7a47ac61bb62dc27cbca115e90b54fa0be325b98968169c" }
     }
   ],
   "generated_assets": [
-    { "file": "scene-morning.png", "source_role": "scene_atlas", "crop_role": "morning", "final_png": { "width": 880, "height": 220, "sha256": "ed0f0b42223e1b9347739f59bae3b00518b251207f62c5c6c37a9dc2fc979393" } },
-    { "file": "scene-day.png", "source_role": "scene_atlas", "crop_role": "day", "final_png": { "width": 880, "height": 220, "sha256": "00bb13527a6d3fdb15a779dc9579bcd5175904b373c696b05c4167c3745d537a" } },
-    { "file": "scene-dusk.png", "source_role": "scene_atlas", "crop_role": "dusk", "final_png": { "width": 880, "height": 220, "sha256": "f72219f3b62351a9bfe9b1afb116249b78a8987e2f1e9eac79b6750d238b6ba5" } },
-    { "file": "scene-night.png", "source_role": "scene_atlas", "crop_role": "night", "final_png": { "width": 880, "height": 220, "sha256": "d020eec6d9253cbf8588a681abd71bd20d6bfa58d9e079df898cb94f091e6758" } },
-    { "file": "frame.png", "source_role": "frame", "crop_role": "frame", "final_png": { "width": 880, "height": 220, "sha256": "34d03206c9277953ae2710695c57e8bfd059f185db5c9d861fe6ecdb8cbe5c46" } },
-    { "file": "node-morning.png", "source_role": "active_node_atlas", "crop_role": "morning", "final_png": { "width": 192, "height": 192, "sha256": "dfade5d678756845c855182f4249feff0bfd42e0b2cdfdac84dbb2c84c9e6c73" } },
-    { "file": "node-day.png", "source_role": "active_node_atlas", "crop_role": "day", "final_png": { "width": 192, "height": 192, "sha256": "0003d44d137a2f03c10a90b8034ce3b00679805df2d549561ae81812ce2b2fa0" } },
-    { "file": "node-dusk.png", "source_role": "active_node_dusk_redesign", "crop_role": "dusk", "final_png": { "width": 192, "height": 192, "sha256": "bb90046a011d1091d081c02048cf8a159bc29adc36702c979a1c74df75da4f9f" } },
-    { "file": "node-night.png", "source_role": "active_node_atlas", "crop_role": "night", "final_png": { "width": 192, "height": 192, "sha256": "175b6f108f711aa7f0c2095c0e528bb002158fa4ef88238aa66fcb8a3349e295" } },
-    { "file": "marker-morning.png", "source_role": "theme_marker_atlas", "crop_role": "morning", "final_png": { "width": 144, "height": 96, "sha256": "c0af964bd10b9e30871aef87a46319e3f9642ca84564caae3bbf04a0d9310937" } },
-    { "file": "marker-day.png", "source_role": "theme_marker_atlas", "crop_role": "day", "final_png": { "width": 144, "height": 96, "sha256": "9a183cbaee3270b04b22aa0ab2b9ed183c8ead354624ec4d45ffae1e0c469767" } },
-    { "file": "marker-dusk.png", "source_role": "theme_marker_atlas", "crop_role": "dusk", "final_png": { "width": 144, "height": 96, "sha256": "be4ee00780f9ae289f470fd34ded431f634a8c75c351224d0e9a4cc63c0af4b4" } },
-    { "file": "marker-night.png", "source_role": "theme_marker_atlas", "crop_role": "night", "final_png": { "width": 144, "height": 96, "sha256": "b1047f56ab1e8e8a5835b1718b8265d2ac02984d4a548b4cf56a0d1b2f9b289e" } },
-    { "file": "atmosphere-morning-far.png", "source_role": "morning_atmosphere_atlas", "crop_role": "far", "final_png": { "width": 480, "height": 160, "sha256": "8974fff8f730abf1712e580058951e4aca524e4cbe0f7a4df66beb50e1dfb597" } },
-    { "file": "atmosphere-morning-mid.png", "source_role": "morning_atmosphere_atlas", "crop_role": "mid", "final_png": { "width": 480, "height": 160, "sha256": "fe06df84c2cc35c1776c37673f70c231d35e54962f50bb99c4ffbe37d8ea2e57" } },
-    { "file": "atmosphere-morning-accent.png", "source_role": "morning_atmosphere_atlas", "crop_role": "accent", "final_png": { "width": 480, "height": 160, "sha256": "8bc6674767df6e7d08aac573f181cfd8d3356d77a385a29667f10b9155c8f790" } },
-    { "file": "atmosphere-day-far.png", "source_role": "day_atmosphere_atlas", "crop_role": "far", "final_png": { "width": 480, "height": 160, "sha256": "37aff340e4ca71ec14515b6c4f88fc30c858858da807ba0a9bbe339c0e621db5" } },
-    { "file": "atmosphere-day-mid.png", "source_role": "day_atmosphere_atlas", "crop_role": "mid", "final_png": { "width": 480, "height": 160, "sha256": "f0e1c700f25a34882300204587440bfc3f794f98411d1ab0371ecf0091ed4540" } },
-    { "file": "atmosphere-day-accent.png", "source_role": "day_atmosphere_atlas", "crop_role": "accent", "final_png": { "width": 480, "height": 160, "sha256": "00d58ec520258b586f2ba9d5d9bda811f0371a4a398ffefa2c3af703c9752e1d" } },
-    { "file": "atmosphere-dusk-far.png", "source_role": "dusk_atmosphere_atlas", "crop_role": "far", "final_png": { "width": 480, "height": 160, "sha256": "0c6a8c6c73bef4920ea6e26092331a06ba2b01750bef5f53c5bf76c2f86b4f23" } },
-    { "file": "atmosphere-dusk-mid.png", "source_role": "dusk_atmosphere_atlas", "crop_role": "mid", "final_png": { "width": 480, "height": 160, "sha256": "041d8f11bf2e135f1993c92208cf0ada19c4d2e2b566b3bcc11a052e09385385" } },
-    { "file": "atmosphere-dusk-accent.png", "source_role": "dusk_atmosphere_atlas", "crop_role": "accent", "final_png": { "width": 480, "height": 160, "sha256": "95aa78d8a0d8ef328f27f9dce70d734cc77319f403256290a17c46a33a5ef930" } },
-    { "file": "atmosphere-night-far.png", "source_role": "night_atmosphere_atlas", "crop_role": "far", "final_png": { "width": 480, "height": 160, "sha256": "26cc237f451ff60ede8cacf9ba6db763b3655e214e21f239f64e5cb1ee68f603" } },
-    { "file": "atmosphere-night-mid.png", "source_role": "night_atmosphere_atlas", "crop_role": "mid", "final_png": { "width": 480, "height": 160, "sha256": "a8c8ba878eafad8376dfd8f1484119b5e200a5182a76ce1c9f474dc8e07681ba" } },
-    { "file": "atmosphere-night-accent.png", "source_role": "night_atmosphere_atlas", "crop_role": "accent", "final_png": { "width": 480, "height": 160, "sha256": "12c4b24711673952298d7e5d38da9ce43b814969e65c312a5da05a571f0b6df4" } }
+    { "file": "scene-morning.png", "source_role": "scene_morning", "crop_role": "morning", "final_png": { "width": 880, "height": 220, "sha256": "f65a6382325b591613aab257cab1591f1dd492c2cf936aa22d0c76835142261a" } },
+    { "file": "scene-day.png", "source_role": "scene_day", "crop_role": "day", "final_png": { "width": 880, "height": 220, "sha256": "4f863bf841682eb14aeb72a63d74e18f5db7ef62a4508968937850576e9fc4d5" } },
+    { "file": "scene-dusk.png", "source_role": "scene_dusk", "crop_role": "dusk", "final_png": { "width": 880, "height": 220, "sha256": "cfa774d59070edd42960c62d866b93d4b03accc91d00826a0a2cb252831d105a" } },
+    { "file": "scene-night.png", "source_role": "scene_night", "crop_role": "night", "final_png": { "width": 880, "height": 220, "sha256": "24954dfba76914225f2feb702fd9f1a50a3cb036a3da6177eed26b728f85fb2b" } },
+    { "file": "marker-morning.png", "source_role": "marker_morning", "crop_role": "morning", "final_png": { "width": 144, "height": 144, "sha256": "1187f1dcd42d48c0544a7443cda053002161b4c8639a217ca6190a551ceadbb3" } },
+    { "file": "marker-day.png", "source_role": "marker_day", "crop_role": "day", "final_png": { "width": 144, "height": 144, "sha256": "fe4f496fd1a0acc7e1e275efc1f721c528c90e12c926f971fed5f8b81e3b6dd6" }, "alpha_report": { "threshold": 8, "bbox": [26, 26, 118, 117], "bbox_size": [92, 91], "coverage": 0.05454282407407408, "green_dominant_pixels": 0 } },
+    { "file": "marker-dusk.png", "source_role": "marker_dusk", "crop_role": "dusk", "final_png": { "width": 144, "height": 144, "sha256": "35ec71df2e7dea2c81574135b48c9acbffbdb6f95375a2b46e9994c15400fad8" } },
+    { "file": "marker-night.png", "source_role": "marker_night", "crop_role": "night", "final_png": { "width": 144, "height": 144, "sha256": "84e30849783f970b4fe8c96803bdf2f6f93accd60bfe715b4aaf7949d6704882" }, "alpha_report": { "threshold": 8, "bbox": [36, 26, 108, 118], "bbox_size": [72, 92], "coverage": 0.050443672839506175, "green_dominant_pixels": 0 } },
+    { "file": "node-morning.png", "source_role": "node_morning", "crop_role": "morning", "final_png": { "width": 192, "height": 192, "sha256": "5257c540b8ff174bdf3e0bf09faaf0891e365a732350942ebde8a24bf98e05f1" } },
+    { "file": "node-day.png", "source_role": "node_day", "crop_role": "day", "final_png": { "width": 192, "height": 192, "sha256": "7d4509b71dcfe0c13276405a186af3e12ef6a546107252163ea9f5d094f6e21a" } },
+    { "file": "node-dusk.png", "source_role": "node_dusk", "crop_role": "dusk", "final_png": { "width": 192, "height": 192, "sha256": "db837f373de95d06ba83ecbba010acfdda691ea89f0a5060fbd0ad268a991e46" } },
+    { "file": "node-night.png", "source_role": "node_night", "crop_role": "night", "final_png": { "width": 192, "height": 192, "sha256": "380dc95628a4b1acbde73dfe929e130d24d762be625522fe8246c69445437045" } },
+    { "file": "accent-morning.png", "source_role": "accent_morning", "crop_role": "morning", "final_png": { "width": 480, "height": 160, "sha256": "aa93ce40aca8267a60ea2d369acd88c7a8ab07217dbd3910abb14c5c9dbbc14d" }, "alpha_report": { "threshold": 8, "bbox": [30, 18, 80, 34], "bbox_size": [50, 16], "coverage": 0.0022005208333333334, "connected_components": 4, "green_dominant_pixels": 0 } },
+    { "file": "accent-day.png", "source_role": "accent_day", "crop_role": "day", "final_png": { "width": 480, "height": 160, "sha256": "f975882040b482fa0be47ef1f5659b75f13ecf44118b6ef814038a155b654363" }, "alpha_report": { "threshold": 8, "bbox": [200, 48, 264, 68], "bbox_size": [64, 20], "coverage": 0.0118359375, "green_dominant_pixels": 0 } },
+    { "file": "accent-dusk.png", "source_role": "accent_dusk", "crop_role": "dusk", "final_png": { "width": 480, "height": 160, "sha256": "5b42caea5cdb299a782d76d611f114ac9938fcae5ab5433c11597844e4eb4bbc" }, "alpha_report": { "threshold": 8, "bbox": [308, 74, 382, 78], "bbox_size": [74, 4], "coverage": 0.0034375, "green_dominant_pixels": 0 } },
+    { "file": "accent-night.png", "source_role": "accent_night", "crop_role": "night", "final_png": { "width": 480, "height": 160, "sha256": "88ce460cfb915d0b0c4567ddbc51b750a64959efa849eeea0eb8de5e3e4a3d05" } },
+    { "file": "frame.png", "source_role": "frame", "crop_role": "frame", "final_png": { "width": 880, "height": 220, "sha256": "87df31d6535b46b2f32774f8a1d7d97f36c84f9a4a33706e672b9685b1e07147" } }
   ]
 }
