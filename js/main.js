@@ -3,14 +3,21 @@ import {
   isI18nNodeInScope,
   normalizeLanguage,
   translationFor
-} from "./core/i18n.mjs?v=20260806-agent-capabilities-quick-transfer-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260809-game-video-mcp-candidate-r2";
+} from "./core/i18n.mjs?v=20260809-motion-polish-r2";
+import { homeContent } from "./data/home-content.mjs?v=20260809-motion-polish-r2";
+import {
+  WALLPAPER_TIME_THEMES,
+  createWallpaperTimeOverride,
+  nextWallpaperTimeBoundary,
+  parseWallpaperTimeOverride,
+  wallpaperTimeThemeAt
+} from "./core/wallpaper-time.mjs?v=20260809-motion-polish-r2";
 import { blogManifest } from "./data/blog-manifest.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteModuleRegistry } from "./core/route-modules.mjs?v=20260718-resource-icons-layout-r1";
 import { createJsonResourceCache } from "./core/content-cache.mjs?v=20260718-resource-icons-layout-r1";
-import { createAccountFeature } from "./features/account.mjs?v=20260726-security-reliability-r1";
+import { createAccountFeature } from "./features/account.mjs?v=20260809-motion-polish-r2";
 import { createConnectionStatus } from "./features/connection-status.mjs?v=20260726-security-reliability-r1";
 
 const pageParams = new URLSearchParams(window.location.search);
@@ -399,7 +406,16 @@ function safeStorageSet(key, value) {
   }
 }
 
-const routeStyleVersion = "20260728-knowledge-archive-r1";
+function safeStorageRemove(key) {
+  try {
+    localStorage.removeItem(key);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const routeStyleVersion = "20260809-motion-polish-r2";
 const routeStyleHrefs = Object.freeze({
   knowledge: `/css/routes/knowledge.css?v=${routeStyleVersion}`,
   videos: `/css/routes/videos.css?v=${routeStyleVersion}`,
@@ -456,6 +472,15 @@ function safeSessionSet(key, value) {
   }
 }
 
+function safeSessionRemove(key) {
+  try {
+    sessionStorage.removeItem(key);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function loadStyledRoute(route, moduleLoader, instantiate) {
   return Promise.all([ensureRouteStylesheet(route), moduleLoader()])
     .then(([, routeModule]) => instantiate(routeModule));
@@ -463,19 +488,19 @@ function loadStyledRoute(route, moduleLoader, instantiate) {
 
 const routeModuleRegistry = createRouteModuleRegistry({
   loaders: {
-    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260806-agent-capabilities-quick-transfer-r1"),
+    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260809-motion-polish-r2"),
       ({ createKnowledgeRoute }) => instantiateKnowledgeRoute(createKnowledgeRoute)),
     videos: () => loadStyledRoute("videos", () => Promise.all([
       import("./routes/videos.mjs?v=20260726-security-reliability-r1"),
       import("./data/videos-content.mjs?v=20260718-resource-icons-layout-r1")
     ]), ([{ createVideosRoute }, { videosContent }]) => instantiateVideosRoute(createVideosRoute, videosContent)),
     resources: () => Promise.all([
-      import("./routes/resources.mjs?v=20260809-game-video-mcp-candidate-r2"),
-      import("./data/resources-content.mjs?v=20260809-game-video-mcp-candidate-r2")
+      import("./routes/resources.mjs?v=20260809-transfer-motion-r2"),
+      import("./data/resources-content.mjs?v=20260809-transfer-motion-r2")
     ]).then(([{ createResourcesRoute }, { resourcesContent }]) => instantiateResourcesRoute(createResourcesRoute, resourcesContent)),
     games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260726-security-reliability-r1"),
       ({ createGamesRoute }) => instantiateGamesRoute(createGamesRoute)),
-    chatroom: () => loadStyledRoute("chatroom", () => import("./routes/chatroom.mjs?v=20260726-security-reliability-r1"),
+    chatroom: () => loadStyledRoute("chatroom", () => import("./routes/chatroom.mjs?v=20260809-motion-polish-r2"),
       ({ createChatroomRoute }) => instantiateChatroomRoute(createChatroomRoute))
   },
   onStatus({ route, status, error }) {
@@ -1187,6 +1212,7 @@ function setLanguage(lang, options = {}) {
 
   renderLatestUpdateDate();
   updateWelcomeGreeting();
+  syncWallpaperTimeSwitch(resolvedWallpaperTimeState(), { immediate: true });
   renderAccountWidget();
   siteConnectionStatus.syncLanguage();
   if (previousLanguage !== nextLanguage) syncActiveRouteLanguage(activeRoute, nextLanguage);
@@ -1310,6 +1336,7 @@ function navigate(route, options = {}) {
   const isSameRouteNoop = previousRoute === nextRoute
     && !(nextRoute === "knowledge" && (options.articleSlug || articleState.currentSlug));
   if (isSameRouteNoop) {
+    if (nextRoute === "home") void ensureWallpaperTimeEffectAssets();
     transitionRouteLifecycle(nextRoute, "same-route");
     updateNavigationState(nextRoute);
     if (options.updateUrl !== false && options.updateHash !== false) {
@@ -1368,6 +1395,7 @@ function navigate(route, options = {}) {
       page.classList.toggle("active", page.id === nextRoute);
     });
     document.body.dataset.route = nextRoute;
+    if (nextRoute === "home") void ensureWallpaperTimeEffectAssets();
     updateWallpaperMotionState();
     localizeRouteLanguage(nextRoute);
     transitionRouteLifecycle(nextRoute, options.lifecycleReason || "navigation");
@@ -2249,8 +2277,13 @@ function cancelSurfaceClose(surface) {
   }
   surfaceCloseRequests.delete(surface);
   surface.removeAttribute("data-ui-closing");
+  if (window.LusuUiMotion?.resumeSurfaceOpen) {
+    window.LusuUiMotion.resumeSurfaceOpen(surface);
+    return;
+  }
   const target = surfaceMotionTarget(surface);
   target?.getAnimations?.().forEach((animation) => animation.cancel());
+  surface.querySelector?.(".modal-backdrop")?.getAnimations?.().forEach((animation) => animation.cancel());
 }
 
 function runSurfaceClose(surface, options, commit) {
@@ -2274,10 +2307,12 @@ function runSurfaceClose(surface, options, commit) {
   surfaceCloseRequests.set(surface, request);
   surface.setAttribute("data-ui-closing", "true");
   if (options?.motion === false || !window.LusuUiMotion?.run) {
+    window.LusuUiMotion?.cancelSurfaceTransition?.(surface);
     commitOnce();
     return;
   }
   window.LusuUiMotion.run("modal-close", {
+    surface,
     target: surfaceMotionTarget(surface),
     originRect: origin?.getBoundingClientRect() || null,
     deferCommit: true
@@ -2379,13 +2414,35 @@ function trapDialogFocus(event) {
 const wallpaperMotionMedia = typeof window.matchMedia === "function"
   ? window.matchMedia("(prefers-reduced-motion: reduce)")
   : null;
-const wallpaperPreviewTheme = ["morning", "day", "dusk", "night"].includes(pageParams.get("wallpaper"))
+const wallpaperPreviewTheme = WALLPAPER_TIME_THEMES.includes(pageParams.get("wallpaper"))
   ? pageParams.get("wallpaper")
   : "";
-const initialTimeTheme = ["morning", "day", "dusk", "night"].includes(document.documentElement.dataset.timeTheme)
+const initialTimeTheme = WALLPAPER_TIME_THEMES.includes(document.documentElement.dataset.timeTheme)
   ? document.documentElement.dataset.timeTheme
   : "";
+const wallpaperTimeOverrideStorageKey = "lusu-wallpaper-time-override-v1";
+const wallpaperTimeLabelKeys = Object.freeze({
+  morning: "wallpaperTimeMorning",
+  day: "wallpaperTimeDay",
+  dusk: "wallpaperTimeDusk",
+  night: "wallpaperTimeNight"
+});
 let renderedHomeTimeTheme = "";
+let wallpaperTimeOverride = null;
+let wallpaperTimeBoundaryTimer = 0;
+let wallpaperTimeBoundaryTarget = 0;
+let wallpaperTimeSwitchSyncGeneration = 0;
+let wallpaperTimeSelectorAnimation = null;
+let wallpaperTimeEffectGeneration = 0;
+let wallpaperTimeEffectTimer = 0;
+let wallpaperTimeEffectAssetsPromise = null;
+let wallpaperTimeSelectionRequest = 0;
+let wallpaperTimePendingManualTheme = "";
+let wallpaperTimePendingManualPromise = null;
+let wallpaperTimePreparingTheme = "";
+let wallpaperTimePreparingPromise = null;
+let wallpaperThemeTransitionGeneration = 0;
+const wallpaperWarmRequests = new Map();
 const wallpaperCloudLayers = Object.freeze({
   morning: Object.freeze(["top-left", "high-left", "top-right", "upper-right", "left-mid", "center-mid", "right-mid"]),
   day: Object.freeze(["top-left", "top-center", "top-right", "mid-left", "mid-right"]),
@@ -2394,17 +2451,580 @@ const wallpaperCloudLayers = Object.freeze({
 });
 
 function currentTimeTheme(date = new Date()) {
-  const minutes = date.getHours() * 60 + date.getMinutes();
-  if (minutes >= 5 * 60 && minutes < 11 * 60) {
-    return "morning";
+  return wallpaperTimeThemeAt(date);
+}
+
+function readWallpaperTimeOverride(now = new Date()) {
+  const candidates = [
+    [safeStorageGet(wallpaperTimeOverrideStorageKey), safeStorageRemove],
+    [safeSessionGet(wallpaperTimeOverrideStorageKey), safeSessionRemove]
+  ];
+  for (const [rawValue, remove] of candidates) {
+    if (!rawValue) continue;
+    const record = parseWallpaperTimeOverride(rawValue, now);
+    if (record) return record;
+    remove(wallpaperTimeOverrideStorageKey);
   }
-  if (minutes >= 11 * 60 && minutes < 17 * 60) {
-    return "day";
+  return null;
+}
+
+function writeWallpaperTimeOverride(record) {
+  const serialized = JSON.stringify(record);
+  if (safeStorageSet(wallpaperTimeOverrideStorageKey, serialized)) {
+    safeSessionRemove(wallpaperTimeOverrideStorageKey);
+    return true;
   }
-  if (minutes >= 17 * 60 && minutes < 20 * 60) {
-    return "dusk";
+  return safeSessionSet(wallpaperTimeOverrideStorageKey, serialized);
+}
+
+function clearWallpaperTimeOverride() {
+  wallpaperTimeOverride = null;
+  safeStorageRemove(wallpaperTimeOverrideStorageKey);
+  safeSessionRemove(wallpaperTimeOverrideStorageKey);
+}
+
+function activeWallpaperTimeOverride(now = new Date()) {
+  if (!wallpaperTimeOverride) {
+    wallpaperTimeOverride = readWallpaperTimeOverride(now);
   }
-  return "night";
+  if (wallpaperTimeOverride && wallpaperTimeOverride.expiresAt <= now.getTime()) {
+    clearWallpaperTimeOverride();
+  }
+  return wallpaperTimeOverride;
+}
+
+function resolvedWallpaperTimeState(now = new Date()) {
+  const manual = activeWallpaperTimeOverride(now);
+  if (wallpaperPreviewTheme) {
+    return Object.freeze({ theme: wallpaperPreviewTheme, mode: "preview", override: manual });
+  }
+  if (manual) {
+    return Object.freeze({ theme: manual.theme, mode: "manual", override: manual });
+  }
+  return Object.freeze({ theme: currentTimeTheme(now) || initialTimeTheme || "day", mode: "auto", override: null });
+}
+
+function wallpaperTimeLabel(theme) {
+  return t(wallpaperTimeLabelKeys[theme] || wallpaperTimeLabelKeys.day);
+}
+
+function formatWallpaperBoundaryTime(value) {
+  const locale = currentLang === "zh" ? "zh-CN" : currentLang === "ja" ? "ja-JP" : "en";
+  return new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", hour12: false }).format(value);
+}
+
+function wallpaperTimeStatusText(state) {
+  const theme = wallpaperTimeLabel(state.theme);
+  if (state.mode === "preview") {
+    return t("wallpaperTimePreviewStatus").replace("{theme}", theme);
+  }
+  if (state.mode === "manual" && state.override) {
+    return t("wallpaperTimeManualStatus")
+      .replace("{theme}", theme)
+      .replace("{time}", formatWallpaperBoundaryTime(new Date(state.override.expiresAt)));
+  }
+  return t("wallpaperTimeAutoStatus").replace("{theme}", theme);
+}
+
+function wallpaperTimeSelectorTranslateX(selector, fallback) {
+  const transform = window.getComputedStyle(selector).transform;
+  if (!transform || transform === "none") return fallback;
+  const values = transform
+    .slice(transform.indexOf("(") + 1, -1)
+    .split(",")
+    .map((value) => Number.parseFloat(value.trim()));
+  if (transform.startsWith("matrix3d(") && Number.isFinite(values[12])) return values[12];
+  if (transform.startsWith("matrix(") && Number.isFinite(values[4])) return values[4];
+  return fallback;
+}
+
+function moveWallpaperTimeSelector(selector, targetX, immediate) {
+  const currentX = wallpaperTimeSelectorTranslateX(selector, targetX);
+  const activeAnimation = wallpaperTimeSelectorAnimation;
+  if (activeAnimation) {
+    wallpaperTimeSelectorAnimation = null;
+    activeAnimation.cancel();
+  }
+  selector.style.transform = `translate3d(${targetX}px, 0, 0)`;
+  const delta = targetX - currentX;
+  if (immediate || Math.abs(delta) < 0.5 || typeof selector.animate !== "function") return;
+
+  const overshootX = targetX + Math.sign(delta) * 2;
+  const animation = selector.animate(
+    [
+      {
+        transform: `translate3d(${currentX}px, 0, 0)`,
+        offset: 0,
+        easing: "cubic-bezier(0.77, 0, 0.175, 1)"
+      },
+      {
+        transform: `translate3d(${overshootX}px, -1px, 0)`,
+        offset: 0.78,
+        easing: "cubic-bezier(0.23, 1, 0.32, 1)"
+      },
+      { transform: `translate3d(${targetX}px, 0, 0)`, offset: 1 }
+    ],
+    { duration: 220 }
+  );
+  wallpaperTimeSelectorAnimation = animation;
+  const release = () => {
+    if (wallpaperTimeSelectorAnimation === animation) wallpaperTimeSelectorAnimation = null;
+  };
+  animation.addEventListener("finish", release, { once: true });
+  animation.addEventListener("cancel", release, { once: true });
+}
+
+function stopWallpaperTimeEffect(group) {
+  wallpaperTimeEffectGeneration += 1;
+  clearTimeout(wallpaperTimeEffectTimer);
+  wallpaperTimeEffectTimer = 0;
+  delete group.dataset.effectTheme;
+  group.querySelectorAll(".wallpaper-time-effect-layer").forEach((layer) => {
+    layer.getAnimations?.().forEach((animation) => animation.cancel());
+  });
+}
+
+function ensureWallpaperTimeEffectAssets(group = document.getElementById("wallpaper-time-switch")) {
+  if (!group) return Promise.resolve();
+  if (wallpaperTimeEffectAssetsPromise) return wallpaperTimeEffectAssetsPromise;
+  const layers = Array.from(group.querySelectorAll(".wallpaper-time-effect-layer[data-src]"));
+  layers.forEach((layer) => {
+    if (!layer.getAttribute("src")) layer.setAttribute("src", layer.dataset.src);
+  });
+  wallpaperTimeEffectAssetsPromise = Promise.allSettled(layers.map((layer) => (
+    typeof layer.decode === "function" ? layer.decode() : Promise.resolve()
+  ))).then(() => {
+    group.dataset.effectAssetsReady = "true";
+  });
+  return wallpaperTimeEffectAssetsPromise;
+}
+
+function playWallpaperTimeEffect(group, theme) {
+  stopWallpaperTimeEffect(group);
+  if (group.dataset.effectAssetsReady !== "true") {
+    void ensureWallpaperTimeEffectAssets(group);
+    return;
+  }
+  if (document.documentElement.dataset.motion !== "full"
+    || document.documentElement.dataset.inputMethod === "keyboard"
+    || document.documentElement.dataset.performanceTier === "low"
+    || document.hidden
+    || document.body.dataset.route !== "home") return;
+  const generation = wallpaperTimeEffectGeneration;
+  group.getBoundingClientRect();
+  group.dataset.effectTheme = theme;
+  wallpaperTimeEffectTimer = window.setTimeout(() => {
+    if (generation !== wallpaperTimeEffectGeneration) return;
+    delete group.dataset.effectTheme;
+    wallpaperTimeEffectTimer = 0;
+  }, 380);
+}
+
+function syncWallpaperTimeSwitch(state = resolvedWallpaperTimeState(), options = {}) {
+  const group = document.getElementById("wallpaper-time-switch");
+  if (!group) return;
+  const selector = group.querySelector(".wallpaper-time-selector");
+  const selectedIndex = Math.max(0, WALLPAPER_TIME_THEMES.indexOf(state.theme));
+  const previousTheme = group.querySelector('[data-wallpaper-time][aria-checked="true"]')?.dataset.wallpaperTime || "";
+  const immediate = Boolean(options.immediate
+    || document.documentElement.dataset.motion !== "full"
+    || document.documentElement.dataset.inputMethod === "keyboard");
+  const syncGeneration = ++wallpaperTimeSwitchSyncGeneration;
+  if (immediate) {
+    group.dataset.immediate = "true";
+  } else {
+    delete group.dataset.immediate;
+  }
+  if (selector) {
+    moveWallpaperTimeSelector(selector, 8 + selectedIndex * 44, immediate);
+  }
+  if (immediate) {
+    stopWallpaperTimeEffect(group);
+  } else if (previousTheme && previousTheme !== state.theme) {
+    playWallpaperTimeEffect(group, state.theme);
+  }
+  group.dataset.mode = state.mode;
+  group.setAttribute("aria-label", t("wallpaperTimeSwitchAria"));
+  group.setAttribute("aria-disabled", String(state.mode === "preview"));
+  const statusText = wallpaperTimeStatusText(state);
+  group.title = statusText;
+  group.querySelectorAll("[data-wallpaper-time]").forEach((button) => {
+    const selected = button.dataset.wallpaperTime === state.theme;
+    button.setAttribute("aria-checked", String(selected));
+    button.setAttribute("aria-label", wallpaperTimeLabel(button.dataset.wallpaperTime));
+    button.title = wallpaperTimeLabel(button.dataset.wallpaperTime);
+    button.tabIndex = selected ? 0 : -1;
+    button.disabled = state.mode === "preview";
+  });
+  if (options.announce) {
+    const live = document.getElementById("wallpaper-time-status");
+    if (live) live.textContent = statusText;
+  }
+  if (immediate) {
+    group.getBoundingClientRect();
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (syncGeneration === wallpaperTimeSwitchSyncGeneration) {
+        delete group.dataset.immediate;
+      }
+    }));
+  }
+}
+
+function scheduleWallpaperTimeBoundary(state = resolvedWallpaperTimeState(), now = new Date()) {
+  if (wallpaperPreviewTheme) {
+    clearTimeout(wallpaperTimeBoundaryTimer);
+    wallpaperTimeBoundaryTimer = 0;
+    wallpaperTimeBoundaryTarget = 0;
+    return;
+  }
+  const boundary = state.mode === "manual" && state.override
+    ? new Date(state.override.expiresAt)
+    : nextWallpaperTimeBoundary(now);
+  const target = boundary?.getTime() || 0;
+  if (!target || target === wallpaperTimeBoundaryTarget) return;
+  clearTimeout(wallpaperTimeBoundaryTimer);
+  wallpaperTimeBoundaryTarget = target;
+  const upcomingTheme = wallpaperTimeThemeAt(boundary);
+  if (upcomingTheme && upcomingTheme !== state.theme) {
+    void warmWallpaperTheme(upcomingTheme);
+  }
+  wallpaperTimeBoundaryTimer = window.setTimeout(() => {
+    wallpaperTimeBoundaryTimer = 0;
+    wallpaperTimeBoundaryTarget = 0;
+    if (wallpaperTimeOverride && wallpaperTimeOverride.expiresAt <= Date.now()) {
+      clearWallpaperTimeOverride();
+    }
+    void reconcileWallpaperTimeTheme({ source: "schedule", announce: true });
+  }, Math.max(16, Math.min(2147483647, target - now.getTime() + 24)));
+}
+
+function wallpaperAssetWidth() {
+  const saveData = (navigator.connection || navigator.mozConnection || navigator.webkitConnection)?.saveData === true;
+  return saveData || window.innerWidth <= 960 ? 960 : window.innerWidth <= 1440 ? 1440 : 1920;
+}
+
+function wallpaperAssetCandidates(theme) {
+  const mobile = document.documentElement.dataset.uiShell === "mobile"
+    || window.matchMedia?.("(max-width: 760px), (max-height: 520px) and (pointer: coarse)")?.matches;
+  if (mobile) {
+    return [`/assets/images/mobile-wallpapers/${theme}.webp?v=20260711-calm-motion-r13`];
+  }
+  const width = wallpaperAssetWidth();
+  const staticWallpaper = document.documentElement.dataset.motion !== "full";
+  const folder = staticWallpaper ? "wallpapers/optimized" : `wallpaper-dynamic/${theme}/optimized`;
+  const stem = staticWallpaper ? theme : "base";
+  return [
+    `/assets/images/${folder}/${stem}-${width}.avif`,
+    `/assets/images/${folder}/${stem}-${width}.webp`
+  ];
+}
+
+function wallpaperCloudAssetCandidates(theme) {
+  const mobile = document.documentElement.dataset.uiShell === "mobile"
+    || window.matchMedia?.("(max-width: 760px), (max-height: 520px) and (pointer: coarse)")?.matches;
+  if (mobile || document.documentElement.dataset.motion !== "full") return [];
+  return (wallpaperCloudLayers[theme] || []).map((name) => (
+    `/assets/images/wallpaper-dynamic/${theme}/cloud-${name}.png?v=20260615-all-clouds-natural`
+  ));
+}
+
+function decodeWallpaperAsset(url) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    let settled = false;
+    let timeoutId = 0;
+    const finish = (callback, value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeoutId);
+      callback(value);
+    };
+    image.decoding = "async";
+    image.onload = () => finish(resolve, true);
+    image.onerror = () => finish(reject, new TypeError(`Unable to load wallpaper asset: ${url}`));
+    timeoutId = window.setTimeout(() => {
+      finish(reject, new TypeError(`Wallpaper asset timed out: ${url}`));
+    }, 10000);
+    image.src = url;
+    if (typeof image.decode === "function") {
+      image.decode().then(() => finish(resolve, true)).catch(() => {});
+    }
+  });
+}
+
+function warmWallpaperTheme(theme, options = {}) {
+  if (!WALLPAPER_TIME_THEMES.includes(theme)) return Promise.resolve(false);
+  const saveData = (navigator.connection || navigator.mozConnection || navigator.webkitConnection)?.saveData === true;
+  if (saveData && !options.intent) return Promise.resolve(true);
+  const baseUrls = wallpaperAssetCandidates(theme);
+  const cloudUrls = wallpaperCloudAssetCandidates(theme);
+  const key = [...baseUrls, ...cloudUrls].join("|");
+  if (wallpaperWarmRequests.has(key)) return wallpaperWarmRequests.get(key);
+  const request = (async () => {
+    let baseLoaded = false;
+    for (const url of baseUrls) {
+      try {
+        await decodeWallpaperAsset(url);
+        baseLoaded = true;
+        break;
+      } catch {
+        // The image-set WebP fallback remains valid when AVIF decoding fails.
+      }
+    }
+    if (!baseLoaded) return false;
+    const cloudResults = await Promise.allSettled(cloudUrls.map((url) => decodeWallpaperAsset(url)));
+    return cloudResults.every((result) => result.status === "fulfilled");
+  })();
+  wallpaperWarmRequests.set(key, request);
+  request.then((loaded) => {
+    if (!loaded) wallpaperWarmRequests.delete(key);
+  });
+  return request;
+}
+
+async function reconcileWallpaperTimeTheme(options = {}) {
+  if (options.invalidatePendingSelection) {
+    wallpaperTimeSelectionRequest += 1;
+    wallpaperTimePendingManualTheme = "";
+    wallpaperTimePendingManualPromise = null;
+    wallpaperTimePreparingTheme = "";
+    wallpaperTimePreparingPromise = null;
+  }
+  const state = resolvedWallpaperTimeState(new Date());
+  if (wallpaperTimePendingManualTheme === state.theme && wallpaperTimePendingManualPromise) {
+    return wallpaperTimePendingManualPromise;
+  }
+  const group = document.getElementById("wallpaper-time-switch");
+  group?.removeAttribute("aria-busy");
+  if (!renderedHomeTimeTheme || state.theme === renderedHomeTimeTheme) {
+    updateHomeTimeTheme(options);
+    return true;
+  }
+  if (wallpaperTimePreparingTheme === state.theme && wallpaperTimePreparingPromise) {
+    return wallpaperTimePreparingPromise;
+  }
+
+  const requestId = ++wallpaperTimeSelectionRequest;
+  const preparation = (async () => {
+    const loaded = await warmWallpaperTheme(state.theme, { intent: true });
+    if (requestId !== wallpaperTimeSelectionRequest) return false;
+    const latestState = resolvedWallpaperTimeState(new Date());
+    if (latestState.theme !== state.theme) {
+      return reconcileWallpaperTimeTheme(options);
+    }
+    if (!loaded) {
+      syncWallpaperTimeSwitch(
+        Object.freeze({ theme: renderedHomeTimeTheme, mode: latestState.mode, override: latestState.override }),
+        { immediate: true }
+      );
+      if (options.announce) {
+        announceWallpaperTimeMessage(t("wallpaperTimeLoadError").replace("{theme}", wallpaperTimeLabel(state.theme)));
+      }
+      return false;
+    }
+    updateHomeTimeTheme({ ...options, assetsReady: true });
+    return true;
+  })();
+  wallpaperTimePreparingTheme = state.theme;
+  wallpaperTimePreparingPromise = preparation;
+  try {
+    return await preparation;
+  } finally {
+    if (wallpaperTimePreparingPromise === preparation) {
+      wallpaperTimePreparingTheme = "";
+      wallpaperTimePreparingPromise = null;
+    }
+  }
+}
+
+function wallpaperThemeCrossfadeAllowed(options = {}) {
+  return !options.immediate
+    && renderedHomeTimeTheme
+    && document.documentElement.dataset.motion !== "off"
+    && document.documentElement.dataset.inputMethod !== "keyboard"
+    && document.documentElement.dataset.performanceTier !== "low"
+    && !document.hidden
+    && document.body.dataset.route === "home"
+    && typeof Element.prototype.animate === "function";
+}
+
+function freezeWallpaperOverlays(overlays) {
+  overlays.forEach((layer) => {
+    const opacity = getComputedStyle(layer).opacity;
+    layer.getAnimations?.().forEach((animation) => animation.cancel());
+    layer.style.opacity = opacity;
+  });
+}
+
+function prepareWallpaperThemeCrossfade(options = {}) {
+  if (!wallpaperThemeCrossfadeAllowed(options)) return null;
+  const stage = document.getElementById("wallpaper-stage");
+  const base = stage?.querySelector(":scope > .wallpaper-base");
+  if (!stage || !base) return null;
+  const existing = [...stage.querySelectorAll(":scope > .wallpaper-theme-scene-overlay")];
+  freezeWallpaperOverlays(existing);
+
+  const sceneSnapshot = document.createElement("div");
+  sceneSnapshot.className = "wallpaper-theme-scene-overlay";
+  sceneSnapshot.style.opacity = "1";
+  const computed = getComputedStyle(base);
+  const baseSnapshot = document.createElement("div");
+  baseSnapshot.className = "wallpaper-base wallpaper-theme-scene-base";
+  baseSnapshot.style.setProperty("background-image", computed.backgroundImage, "important");
+  baseSnapshot.style.backgroundColor = computed.backgroundColor;
+  sceneSnapshot.appendChild(baseSnapshot);
+
+  const liveClouds = [...stage.querySelectorAll(":scope > [data-wallpaper-dynamic-layer]")];
+  liveClouds.forEach((cloud) => {
+    const cloudStyle = getComputedStyle(cloud);
+    const frozenTransform = cloudStyle.transform;
+    const frozenOpacity = cloudStyle.opacity;
+    cloud.style.display = "block";
+    cloud.style.animation = "none";
+    cloud.style.transform = frozenTransform;
+    cloud.style.opacity = frozenOpacity;
+    delete cloud.dataset.wallpaperDynamicLayer;
+    sceneSnapshot.appendChild(cloud);
+  });
+
+  stage.insertBefore(sceneSnapshot, existing[0] || stage.querySelector(".wallpaper-tree-canopy"));
+  return [...stage.querySelectorAll(":scope > .wallpaper-theme-scene-overlay")];
+}
+
+function clearWallpaperThemeCrossfade() {
+  wallpaperThemeTransitionGeneration += 1;
+  document.querySelectorAll(".wallpaper-theme-scene-overlay, .wallpaper-theme-overlay, .wallpaper-theme-cloud-overlay, .wallpaper-mobile-theme-overlay").forEach((layer) => {
+    layer.getAnimations?.().forEach((animation) => animation.cancel());
+    layer.remove();
+  });
+}
+
+function runWallpaperThemeCrossfade(overlays) {
+  if (!overlays?.length) return;
+  const generation = ++wallpaperThemeTransitionGeneration;
+  const rootStyle = getComputedStyle(document.documentElement);
+  const reduced = document.documentElement.dataset.motion === "reduced";
+  const duration = reduced
+    ? 140
+    : Math.max(1, Number.parseFloat(rootStyle.getPropertyValue("--motion-scene")) || 300);
+  const easing = rootStyle.getPropertyValue(reduced ? "--motion-ease-out" : "--motion-ease-in-out").trim()
+    || (reduced ? "cubic-bezier(0.16, 1, 0.3, 1)" : "cubic-bezier(0.77, 0, 0.175, 1)");
+  const animations = overlays.map((layer) => {
+    const fromOpacity = Number.parseFloat(getComputedStyle(layer).opacity) || 0;
+    return layer.animate(
+      [{ opacity: fromOpacity }, { opacity: 0 }],
+      { duration, easing, fill: "forwards" }
+    );
+  });
+  Promise.allSettled(animations.map((animation) => animation.finished)).then(() => {
+    if (generation !== wallpaperThemeTransitionGeneration) return;
+    overlays.forEach((layer) => layer.remove());
+  });
+}
+
+function announceWallpaperTimeMessage(message) {
+  const live = document.getElementById("wallpaper-time-status");
+  if (live) live.textContent = message;
+}
+
+async function selectWallpaperTimeTheme(theme, options = {}) {
+  if (!WALLPAPER_TIME_THEMES.includes(theme) || wallpaperPreviewTheme) return;
+  const selectedAt = new Date();
+  const record = createWallpaperTimeOverride(theme, selectedAt);
+  if (!record) return;
+  const previousOverride = wallpaperTimeOverride;
+  const requestId = ++wallpaperTimeSelectionRequest;
+  wallpaperTimeOverride = record;
+  const group = document.getElementById("wallpaper-time-switch");
+  group?.setAttribute("aria-busy", "true");
+  syncWallpaperTimeSwitch(
+    Object.freeze({ theme, mode: "manual", override: record }),
+    { immediate: Boolean(options.immediate) }
+  );
+  const selection = (async () => {
+    const loaded = await warmWallpaperTheme(theme, { intent: true });
+    if (requestId !== wallpaperTimeSelectionRequest) return false;
+    group?.removeAttribute("aria-busy");
+    if (!loaded) {
+      wallpaperTimeOverride = previousOverride;
+      syncWallpaperTimeSwitch(resolvedWallpaperTimeState(), { immediate: true });
+      announceWallpaperTimeMessage(t("wallpaperTimeLoadError").replace("{theme}", wallpaperTimeLabel(theme)));
+      return false;
+    }
+    if (Date.now() >= record.expiresAt) {
+      syncWallpaperTimeSwitch(resolvedWallpaperTimeState(), { immediate: true });
+      void reconcileWallpaperTimeTheme({ source: "manual-boundary", announce: true });
+      return false;
+    }
+    writeWallpaperTimeOverride(record);
+    updateHomeTimeTheme({
+      source: "manual",
+      trigger: options.trigger,
+      immediate: Boolean(options.immediate),
+      announce: true
+    });
+    return true;
+  })();
+  wallpaperTimePendingManualTheme = theme;
+  wallpaperTimePendingManualPromise = selection;
+  try {
+    return await selection;
+  } finally {
+    if (wallpaperTimePendingManualPromise === selection) {
+      wallpaperTimePendingManualTheme = "";
+      wallpaperTimePendingManualPromise = null;
+    }
+  }
+}
+
+function initWallpaperTimeSwitch() {
+  const group = document.getElementById("wallpaper-time-switch");
+  if (!group || group.dataset.initialized === "true") return;
+  group.dataset.initialized = "true";
+  wallpaperTimeOverride = readWallpaperTimeOverride();
+  const optionFromEvent = (event) => event.target.closest?.("[data-wallpaper-time]");
+  group.addEventListener("pointerover", (event) => {
+    const option = optionFromEvent(event);
+    if (option) void warmWallpaperTheme(option.dataset.wallpaperTime);
+  });
+  group.addEventListener("pointerdown", (event) => {
+    const option = optionFromEvent(event);
+    if (option) void warmWallpaperTheme(option.dataset.wallpaperTime, { intent: true });
+  });
+  group.addEventListener("focusin", (event) => {
+    const option = optionFromEvent(event);
+    if (option) void warmWallpaperTheme(option.dataset.wallpaperTime, { intent: true });
+  });
+  group.addEventListener("click", (event) => {
+    const option = optionFromEvent(event);
+    if (!option || option.disabled) return;
+    const immediate = event.detail === 0 || document.documentElement.dataset.inputMethod === "keyboard";
+    void selectWallpaperTimeTheme(option.dataset.wallpaperTime, { trigger: option, immediate });
+  });
+  group.addEventListener("keydown", (event) => {
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
+    const active = optionFromEvent(event);
+    if (!active || active.disabled) return;
+    event.preventDefault();
+    const currentIndex = Math.max(0, WALLPAPER_TIME_THEMES.indexOf(active.dataset.wallpaperTime));
+    const nextIndex = event.key === "Home"
+      ? 0
+      : event.key === "End"
+        ? WALLPAPER_TIME_THEMES.length - 1
+        : (currentIndex + (event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 1) + WALLPAPER_TIME_THEMES.length)
+          % WALLPAPER_TIME_THEMES.length;
+    const nextTheme = WALLPAPER_TIME_THEMES[nextIndex];
+    const nextOption = group.querySelector(`[data-wallpaper-time="${nextTheme}"]`);
+    nextOption?.focus({ preventScroll: true });
+    void selectWallpaperTimeTheme(nextTheme, { trigger: nextOption, immediate: true });
+  });
+  window.addEventListener("storage", (event) => {
+    if (event.key !== wallpaperTimeOverrideStorageKey) return;
+    wallpaperTimeOverride = readWallpaperTimeOverride();
+    void reconcileWallpaperTimeTheme({ source: "storage", invalidatePendingSelection: true });
+  });
+  window.addEventListener("pageshow", () => void reconcileWallpaperTimeTheme({ source: "pageshow", immediate: true }));
+  window.addEventListener("focus", () => void reconcileWallpaperTimeTheme({ source: "focus", immediate: true }));
 }
 
 function measureHomeViewportLayout() {
@@ -2460,6 +3080,9 @@ function updateWallpaperMotionState() {
     : wallpaperMotionMedia?.matches ? "reduced" : "full";
   root.dataset.paused = document.hidden ? "true" : "false";
   root.dataset.previewMotion = wallpaperPreviewTheme ? "true" : "false";
+  if (root.dataset.motion === "off" || document.hidden || document.body.dataset.route !== "home") {
+    clearWallpaperThemeCrossfade();
+  }
   syncDynamicWallpaperLayers();
 }
 
@@ -2479,7 +3102,7 @@ function syncDynamicWallpaperLayers() {
   const active = Boolean(theme) && dynamicWallpaperIsActive(root);
   const mountedTheme = stage.dataset.cloudTheme || "";
   if (active && mountedTheme === theme) return;
-  stage.querySelectorAll("[data-wallpaper-dynamic-layer]").forEach((layer) => layer.remove());
+  stage.querySelectorAll(":scope > [data-wallpaper-dynamic-layer]").forEach((layer) => layer.remove());
   delete stage.dataset.cloudTheme;
   if (!active) return;
 
@@ -2494,18 +3117,33 @@ function syncDynamicWallpaperLayers() {
   stage.dataset.cloudTheme = theme;
 }
 
-function updateHomeTimeTheme() {
+function updateHomeTimeTheme(options = {}) {
   const home = document.getElementById("home");
   const root = document.getElementById("wallpaper-root");
   if (!home) {
     return;
   }
-  const theme = wallpaperPreviewTheme || (!renderedHomeTimeTheme && initialTimeTheme) || currentTimeTheme();
+  const now = new Date();
+  const state = resolvedWallpaperTimeState(now);
+  const theme = state.theme;
+  const immediate = Boolean(options.immediate
+    || document.documentElement.dataset.motion === "off"
+    || document.documentElement.dataset.inputMethod === "keyboard");
+  syncWallpaperTimeSwitch(state, {
+    immediate: immediate || !renderedHomeTimeTheme,
+    announce: options.announce
+  });
+  scheduleWallpaperTimeBoundary(state, now);
   if (theme === renderedHomeTimeTheme) {
     return;
   }
 
+  const overlays = prepareWallpaperThemeCrossfade({ immediate });
+  let applied = false;
+
   const applyTheme = () => {
+    if (applied) return;
+    applied = true;
     renderedHomeTimeTheme = theme;
     document.documentElement.dataset.timeTheme = theme;
     home.dataset.timeTheme = theme;
@@ -2515,10 +3153,19 @@ function updateHomeTimeTheme() {
     }
     layoutWallpaperStage();
     updateWallpaperMotionState();
+    if (overlays?.length) {
+      runWallpaperThemeCrossfade(overlays);
+    } else {
+      clearWallpaperThemeCrossfade();
+    }
   };
 
   if (renderedHomeTimeTheme && window.LusuUiMotion?.run) {
-    window.LusuUiMotion.run("theme", { theme }, applyTheme).catch(applyTheme);
+    window.LusuUiMotion.run("theme", {
+      theme,
+      trigger: options.trigger,
+      immediate
+    }, applyTheme).catch(applyTheme);
     return;
   }
   applyTheme();
@@ -2530,7 +3177,7 @@ function updateWelcomeGreeting() {
     return;
   }
   const now = new Date();
-  const theme = currentTimeTheme(now);
+  const theme = resolvedWallpaperTimeState(now).theme;
   const greetingKey = theme === "morning"
     ? "greetingMorning"
     : theme === "day"
@@ -2604,7 +3251,12 @@ function updateClock() {
       node.setAttribute("datetime", now.toISOString());
     }
   });
-  updateHomeTimeTheme();
+  const timeState = resolvedWallpaperTimeState(now);
+  if (!renderedHomeTimeTheme || timeState.theme === renderedHomeTimeTheme) {
+    updateHomeTimeTheme();
+  } else {
+    void reconcileWallpaperTimeTheme({ source: "clock" });
+  }
 }
 
 const accountFeature = createAccountFeature({
@@ -2842,20 +3494,34 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
+function isKeyboardActivation(event) {
+  if (Number(event?.detail) !== 0) {
+    return false;
+  }
+  if (event?.isTrusted !== false) {
+    return true;
+  }
+  return document.documentElement.dataset.inputMethod !== "pointer";
+}
+
 document.addEventListener("click", (event) => {
   const target = event.target instanceof Element ? event.target : event.target?.parentElement;
   if (!target) {
     return;
   }
+  const keyboardActivation = isKeyboardActivation(event);
 
   if (!target.closest("#account-widget")) {
     const popover = document.getElementById("account-popover");
-    closeAccountPopover({ restoreFocus: Boolean(popover?.contains(document.activeElement)) });
+    closeAccountPopover({
+      restoreFocus: Boolean(popover?.contains(document.activeElement)),
+      motion: keyboardActivation ? false : undefined
+    });
   }
 
   const accountToggle = target.closest("[data-account-toggle]");
   if (accountToggle) {
-    toggleAccountPopover(accountToggle);
+    toggleAccountPopover(accountToggle, { motion: keyboardActivation ? false : undefined });
     return;
   }
 
@@ -2996,7 +3662,7 @@ document.addEventListener("click", (event) => {
   }
 
   if (target.closest("[data-article-scroll-top]")) {
-    scrollArticleToTop();
+    scrollArticleToTop({ immediate: keyboardActivation });
     return;
   }
 
@@ -3051,12 +3717,14 @@ document.addEventListener("click", (event) => {
 
   const videoButton = target.closest("[data-video-index]");
   if (videoButton) {
+    if (keyboardActivation) window.LusuUiMotion?.skipNextSurfaceMotion?.(document.getElementById("video-modal"));
     openVideo(Number(videoButton.dataset.videoIndex), { trigger: videoButton });
     return;
   }
 
   const managedVideoButton = target.closest("[data-video-id]");
   if (managedVideoButton) {
+    if (keyboardActivation) window.LusuUiMotion?.skipNextSurfaceMotion?.(document.getElementById("video-modal"));
     openVideo(managedVideoButton.dataset.videoId, { trigger: managedVideoButton });
     return;
   }
@@ -3067,12 +3735,12 @@ document.addEventListener("click", (event) => {
   }
 
   if (target.closest("[data-close-modal]")) {
-    closeVideo();
+    closeVideo({ motion: keyboardActivation ? false : undefined });
     return;
   }
 
   if (target.closest("[data-close-welcome]")) {
-    closeWelcome();
+    closeWelcome({ motion: keyboardActivation ? false : undefined });
     return;
   }
 
@@ -3089,7 +3757,11 @@ document.addEventListener("click", (event) => {
             && routeButton.matches(".taskbar-tabs button, .start-button, .mobile-home-button")
             ? "mobile-tab"
             : "route";
-    navigate(routeButton.dataset.route, { trigger: routeButton, motionKind });
+    navigate(routeButton.dataset.route, {
+      trigger: routeButton,
+      motionKind,
+      motion: keyboardActivation ? false : undefined
+    });
     closeWelcome({ restoreFocus: false, motion: false });
     return;
   }
@@ -3107,11 +3779,11 @@ window.addEventListener("keydown", (event) => {
       return;
     }
     if (videoModal && !videoModal.hidden) {
-      closeVideo();
+      closeVideo({ motion: false });
       return;
     }
     if (welcomeModal && !welcomeModal.hidden) {
-      closeWelcome();
+      closeWelcome({ motion: false });
       return;
     }
     const privateRoomForm = document.getElementById("chat-private-room-form");
@@ -3119,7 +3791,7 @@ window.addEventListener("keydown", (event) => {
       hideChatPrivateRoomForm();
       return;
     }
-    closeAccountPopover();
+    closeAccountPopover({ motion: false });
   }
 });
 
@@ -3150,6 +3822,9 @@ document.querySelector(".skip-link")?.addEventListener("click", (event) => {
 });
 
 document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    void reconcileWallpaperTimeTheme({ source: "visibility", immediate: true });
+  }
   updateWallpaperMotionState();
 });
 
@@ -3211,6 +3886,7 @@ const initialLang = initialLanguage();
 syncOptionalRouteEntries();
 setLanguage(initialLang);
 initAccountWidget();
+initWallpaperTimeSwitch();
 siteConnectionStatus.start();
 updateClock();
 setInterval(updateClock, 1000);

@@ -31,6 +31,66 @@ export const content = {
       }
     },
     {
+      "article_id": "seed-update-2026-08-09-wallpaper-time-switch",
+      "slug": "2026-08-09-wallpaper-time-switch",
+      "category": "site-updates",
+      "tags": ["网站更新", "壁纸", "动效", "无障碍", "移动端"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-09T05:40:00.000Z",
+      "updated_at": "2026-08-09T05:40:00.000Z",
+      "published_at": "2026-08-09T05:40:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.09",
+      "title": {
+        "zh": "四时段壁纸开关",
+        "en": "Four-Stage Wallpaper Time Switch",
+        "ja": "4段階の壁紙時間スイッチ"
+      },
+      "summary": {
+        "zh": "网站右上角新增由生成素材组成的早上、中午、下午和晚上四段壁纸开关；它默认按本地时间自动切换，手动选择会保留到下一个真实时段边界，并用可中断的选择环移动与壁纸交叉淡化完成过渡。",
+        "en": "A generated-art four-stage wallpaper switch now sits at the site's upper right for morning, noon, afternoon, and night. It follows local time by default; a manual choice lasts until the next real schedule boundary, with an interruptible moving lens and wallpaper crossfade.",
+        "ja": "サイト右上に、生成素材で作った朝・昼・夕方・夜の4段階壁紙スイッチを追加しました。通常はローカル時刻に従い、手動選択は次の実際の時間境界まで維持され、中断可能なレンズ移動と壁紙のクロスフェードで切り替わります。"
+      },
+      "content_markdown": {
+        "zh": "# 四时段壁纸开关\n\n网站右上角现在有一个与桌面壁纸同步的四段开关，可直接选择早上、中午、下午和晚上。\n\n## 自动时间与手动选择\n\n- 默认继续使用设备本地时间：05:00、11:00、17:00 和 20:00 分别进入下一个壁纸时段。\n- 手动选择会立即切换壁纸，并保留到下一个真实边界；到点后会自动回到对应的本地时段。\n- 刷新和同浏览器标签会继续识别有效的手动选择，过期或被篡改的记录会被丢弃。\n\n## 素材与动效\n\n四幅时段插画和移动选择环都是生成的图像素材，CSS 只负责 44 像素触控分段和布局。选择环以强 ease-in-out 在四档之间移动，壁纸使用可快速重定向的交叉淡化。\n\n## 键盘与减少动效\n\n方向键、Home 和 End 可以操作四段单选组。键盘触发、reduced-motion 和站内关闭动效模式下不进行空间移动；移动端仅在 Home 右上角显示，不挤压账户与语言控件。",
+        "en": "# Four-Stage Wallpaper Time Switch\n\nThe site's upper-right corner now contains a four-stage control synchronized with the desktop wallpaper: morning, noon, afternoon, and night.\n\n## Automatic time and manual choice\n\n- The default remains device-local time, with the next wallpaper period beginning at 05:00, 11:00, 17:00, and 20:00.\n- A manual selection changes the wallpaper immediately and remains active only until the next real boundary, when local-time automation resumes.\n- Refreshes and sibling browser tabs recognize a valid choice; expired or tampered records are discarded.\n\n## Artwork and motion\n\nThe four period illustrations and moving lens are generated image assets. CSS only supplies the four 44-pixel hit areas and layout. The shared lens moves between positions with a strong ease-in-out curve, while the wallpaper uses a rapidly retargetable crossfade.\n\n## Keyboard and reduced motion\n\nArrow keys, Home, and End operate the four-radio group. Keyboard activation, reduced motion, and the site's motion-off mode commit without spatial travel. On mobile the control appears only at Home's upper right, outside the crowded account and language row.",
+        "ja": "# 4段階の壁紙時間スイッチ\n\nサイト右上に、デスクトップ壁紙と同期する朝・昼・夕方・夜の4段階コントロールを追加しました。\n\n## 自動時刻と手動選択\n\n- 通常はデバイスのローカル時刻を使い、05:00、11:00、17:00、20:00 に次の壁紙時間帯へ進みます。\n- 手動選択はすぐに反映され、次の実際の境界までだけ維持された後、ローカル時刻の自動モードに戻ります。\n- 再読み込みや同じブラウザの別タブでも有効な選択を引き継ぎ、期限切れや改ざんされた記録は破棄します。\n\n## 素材とモーション\n\n4つの時間帯イラストと移動レンズは生成画像素材です。CSS は44ピクセルの操作領域と配置だけを担当します。共通レンズは強い ease-in-out で移動し、壁紙は途中からでも素早く向きを変えられるクロスフェードを使います。\n\n## キーボードとモーション低減\n\n矢印キー、Home、End で4段階のラジオグループを操作できます。キーボード操作、モーション低減、サイトのモーションオフでは空間移動を行いません。モバイルでは Home の右上だけに表示し、アカウントと言語操作を圧迫しません。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-08-09-motion-polish",
+      "slug": "2026-08-09-motion-polish",
+      "category": "site-updates",
+      "tags": ["网站更新", "界面", "动效", "移动端", "无障碍"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-09T02:50:00.000Z",
+      "updated_at": "2026-08-09T02:50:00.000Z",
+      "published_at": "2026-08-09T02:50:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.09",
+      "title": {
+        "zh": "主站动效与移动交互精修",
+        "en": "Public-Site Motion and Mobile Interaction Polish",
+        "ja": "公開サイトのモーションとモバイル操作を改善"
+      },
+      "summary": {
+        "zh": "主站弹层、窗口切换与移动 Dock 采用更快且可中断的动效；知识库骨架屏、阅读进度和聊天室未读提示改用低成本合成路径，键盘操作即时完成，reduced-motion 保留必要的淡入与颜色反馈。",
+        "en": "Public popovers, window changes, and the mobile Dock now use faster, interruptible motion. Knowledge skeletons, reading progress, and chat unread feedback use cheaper compositor paths, while keyboard actions complete instantly and reduced motion keeps only helpful fades and color cues.",
+        "ja": "公開サイトのポップオーバー、ウィンドウ切り替え、モバイル Dock をより速く中断可能な動きに調整しました。Knowledge のスケルトン、読書進捗、Chat の未読表示は軽量な合成処理を使い、キーボード操作は即時、視差軽減時は必要なフェードと色だけを残します。"
+      },
+      "content_markdown": {
+        "zh": "# 主站动效与移动交互精修\n\n这次更新按照清晰、快速、可打断的原则统一整理公开主站的交互反馈，不改变路由、内容结构或数据接口。\n\n## 弹层与窗口\n\n- 账户弹层以及视频、欢迎窗口改为从当前画面继续的可中断过渡；关闭途中再次打开时会从当前帧反向衔接。\n- 账户弹层从右上触发点展开，桌面窗口保持居中，移动窗口从底部进入。\n- 键盘触发的打开、关闭、切换和 Escape 操作立即完成，不等待动画。\n\n## 移动与内容反馈\n\n- 移动 Dock 的选中底板固定为 48 像素，只更新自身 transform 和 opacity；折叠把手也不再改变宽度。\n- Knowledge 骨架屏从多节点背景扫描改为每张卡片一层合成扫光；低性能与减弱动效模式保持静态。\n- 阅读进度直接跟随滚动，不再拖尾；聊天室未读提示只在首次出现时做一次可中断的短入场，计数变化不会重播。\n\n## 辅助功能\n\nreduced-motion 移除位移，只保留短暂的透明度和颜色提示；站内“关闭动效”仍会完全停止动画与平滑滚动。所有界面动效都控制在 300 毫秒以内。",
+        "en": "# Public-Site Motion and Mobile Interaction Polish\n\nThis update unifies public-site feedback around motion that is clear, fast, and interruptible without changing routes, content structure, or data APIs.\n\n## Popovers and windows\n\n- The account popover, video window, and welcome window now retarget from their current visual state, so reversing a close does not restart from zero.\n- The account popover grows from its top-right trigger, desktop windows remain centered, and mobile sheets enter from the bottom.\n- Keyboard-initiated opening, closing, switching, and Escape actions complete immediately.\n\n## Mobile and content feedback\n\n- The mobile Dock uses a fixed 48-pixel selection surface and updates only its own transform and opacity; the collapse handle no longer changes width.\n- Knowledge skeletons replace many background scans with one compositor sweep per card and stay static on low-performance or reduced-motion devices.\n- Reading progress follows scrolling without a delayed trail. The chat unread notice uses one short, interruptible entrance and does not replay when only its count changes.\n\n## Accessibility\n\nReduced motion removes spatial travel while retaining short opacity and color cues. The site's motion-off setting still disables animation and smooth scrolling completely. Every UI transition remains below 300 milliseconds.",
+        "ja": "# 公開サイトのモーションとモバイル操作を改善\n\n今回の更新では、ルート、コンテンツ構造、データ API を変えずに、公開サイトの反応を明確・高速・中断可能な動きへ統一しました。\n\n## ポップオーバーとウィンドウ\n\n- アカウント表示、動画ウィンドウ、ウェルカム画面は現在の見た目から再接続するため、閉じる途中で開き直しても最初からやり直しません。\n- アカウント表示は右上の起点から、デスクトップのウィンドウは中央から、モバイルのシートは下端から動きます。\n- キーボードによる開閉、切り替え、Escape 操作はアニメーションを待たず即時に完了します。\n\n## モバイルとコンテンツの反応\n\n- モバイル Dock の選択面を 48 ピクセルに固定し、要素自身の transform と opacity だけを更新します。折りたたみハンドルも幅を変更しません。\n- Knowledge のスケルトンは多数の背景走査をやめ、カードごとに一つの合成レイヤーだけを動かします。低性能端末と視差軽減時は静止します。\n- 読書進捗はスクロールへ遅れず追従します。Chat の未読表示は初回だけ短く中断可能に入り、件数だけの更新では再生しません。\n\n## アクセシビリティ\n\n視差軽減時は移動を外し、短い透明度と色の変化だけを残します。サイト内のモーション無効設定では、アニメーションとスムーズスクロールを完全に停止します。すべての UI 遷移は 300 ミリ秒未満です。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-07-remote-mcp-oauth",
       "slug": "2026-08-07-remote-mcp-oauth",
       "category": "site-updates",

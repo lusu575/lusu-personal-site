@@ -383,11 +383,7 @@ export function createKnowledgeRoute({
       const skeleton = document.createElement("div");
       skeleton.className = "article-card article-card-skeleton";
       skeleton.setAttribute("aria-hidden", "true");
-      skeleton.append(
-        Object.assign(document.createElement("span"), { className: "skeleton-title" }),
-        Object.assign(document.createElement("span"), { className: "skeleton-copy" }),
-        Object.assign(document.createElement("span"), { className: "skeleton-meta" })
-      );
+      skeleton.append(Object.assign(document.createElement("span"), { className: "skeleton-lines" }));
       return skeleton;
     });
     list.replaceChildren(label, ...skeletons);
@@ -911,7 +907,8 @@ export function createKnowledgeRoute({
         setArticleSummaryControlLabel(false);
         return;
       }
-      const canExpand = summary.scrollHeight > summary.clientHeight + 1;
+      const expandedHeight = Math.ceil(summary.scrollHeight);
+      const canExpand = expandedHeight > summary.clientHeight + 1;
       toggle.hidden = !canExpand;
       summary.classList.toggle("is-collapsible", canExpand);
       const nextExpanded = canExpand && expanded;
@@ -1207,12 +1204,12 @@ export function createKnowledgeRoute({
     scheduleArticleReadProgressUpdate();
   }
 
-  function scrollArticleToTop() {
+  function scrollArticleToTop({ immediate = false } = {}) {
     const detail = document.getElementById("article-detail");
     if (!detail || detail.hidden) {
       return;
     }
-    detail.scrollTo({ top: 0, behavior: motionScrollBehavior() });
+    detail.scrollTo({ top: 0, behavior: immediate ? "auto" : motionScrollBehavior() });
     document.getElementById("article-detail-title")?.focus({ preventScroll: true });
     scheduleArticleReadProgressUpdate();
   }

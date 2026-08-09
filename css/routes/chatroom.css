@@ -258,7 +258,7 @@ html[data-ui-shell="mobile"] .chat-private-room-panel .chat-private-safety[open]
   height: auto;
   min-height: 0;
   margin: 0 16px;
-  padding: 16px;
+  padding: 16px 16px 66px;
   overflow: auto;
   border: 2px inset #acb3bd;
   background:
@@ -266,10 +266,6 @@ html[data-ui-shell="mobile"] .chat-private-room-panel .chat-private-safety[open]
     repeating-linear-gradient(0deg, #fdfdfd 0 31px, #f3f6fa 31px 32px);
   scrollbar-color: #8db7ef #e9eef7;
   overscroll-behavior: contain;
-}
-
-.chatroom-log.has-unread {
-  padding-bottom: 66px;
 }
 
 .chat-unread-button {
@@ -286,8 +282,35 @@ html[data-ui-shell="mobile"] .chat-private-room-panel .chat-private-safety[open]
   overflow-wrap: anywhere;
 }
 
+.chat-unread-button:not([hidden]) {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 180ms cubic-bezier(.23, 1, .32, 1),
+    transform 180ms cubic-bezier(.23, 1, .32, 1);
+}
+
 .chat-unread-button[hidden] {
   display: none;
+}
+
+@starting-style {
+  .chat-unread-button:not([hidden]) {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+}
+
+html[data-motion="reduced"] .chat-unread-button:not([hidden]),
+body[data-motion="reduced"] .chat-unread-button:not([hidden]) {
+  transform: none !important;
+  transition: opacity 140ms cubic-bezier(.23, 1, .32, 1) !important;
+}
+
+html[data-motion="off"] .chat-unread-button:not([hidden]),
+body[data-motion="off"] .chat-unread-button:not([hidden]) {
+  transform: none !important;
+  transition: none !important;
 }
 
 .chat-system-message {

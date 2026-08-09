@@ -12,6 +12,21 @@
 - 本阶段仍是本地候选，未提交、未部署、未做 Production D1 migration，也没有生产 OAuth／DO／真实浏览器验收。2026-08-09 通过的九工具知识库闭环只绑定既有 Worker bundle `fa295db6-302a-4a20-a2b1-ffe1ddafd75b`，不能作为新候选的验收证据。公开候选记录为 `seed-update-2026-08-09-game-video-mcp-candidate`，公开 API／文章 seed／主模块与 Home 数据缓存版本为 `20260809-game-video-mcp-candidate-r2`。共享能力注册表命中 Quick Transfer 受管路径，因此 Quick Transfer 从 1.0.8 精确升至 1.0.9，并同步 fragment、工具目录与懒加载缓存链；这只是共享 registry 治理升版，未改变互传协议、房间、口令、加密、私有 R2、配额、Multipart、鉴权或 24 小时生命周期。在线画板版本与独立缓存不随本候选滚动。
 - Windows checkout 可能只把 GPL 文本换行为 CRLF。Hextris Agent 的许可证门禁先把 CRLF 规范为 LF，再核对固定 GPLv3 SHA-256、完整标题和 Agent／浏览器 source 两份全文一致；除换行外的任何正文变化仍会失败关闭。
 
+## 2026-08-09 四时段壁纸开关
+
+- 主站右上角提供 morning／day／dusk／night 四段壁纸开关，保留 176×44 椭圆轨道；轨道、28×28 内嵌选择环及四套切换特效都使用项目内生成式图像素材，不以 CSS／代码绘制日月云等主体视觉。四段必须保留各自可辨认的晨光、日间、暮色与夜空层次；morning 为朝阳与云朵、day 为日光与白云、dusk 为落日云带、night 为月亮／行星／星光。选择环四周保留 8px 内边距，完整位于轨道内，不能压出外框或遮住相邻时段。
+- 默认状态继续按访问设备本地时间的四个真实边界切换：05:00 morning、11:00 day、17:00 dusk、20:00 night。用户手动选择时立即切换，并只覆盖到下一真实时段边界；边界到达后清除覆盖并恢复自动时间状态。覆盖优先写入 `localStorage`，不可用时使用 `sessionStorage` 兜底，刷新后可恢复；成功写入本地存储的覆盖通过 `storage` 事件同步其他标签页。URL `?wallpaper=` 仍是显式预览优先级，不改写持久覆盖。
+- 细指针操作的选择器位移为 220ms strong ease-in-out；每次实际换档时，对应时段的生成式特效以三段裁切层 0／28／56ms 错峰、约 280ms transform／opacity 入场，再与选择环落位形成一组动作。底图与动态云层作为同一场景执行 300ms generation-safe crossfade；快速连续选择只允许最后一次 generation 提交，遵循 last-request-wins。自动边界、跨标签状态和手动选择都先预解码目标场景，手动覆盖期限以点击瞬间的最近真实边界为准，不因解码跨点延长。键盘操作与站内 motion-off 即时提交；`prefers-reduced-motion` 取消选择器位移、装饰特效与环境循环，但保留 140ms 纯透明度场景过渡，低性能档也跳过装饰特效。桌面端控件位于顶栏右侧，移动端只在 Home 的顶栏下方右侧显示。壁纸图像 token 为 `20260809-wallpaper-time-switch-r2`，公共模块与 seed token 为 `20260809-motion-polish-r2`。该功能完全位于公开前端与浏览器存储，不接入 D1、MCP、能力注册、CLI 或远程 Worker。
+
+## 2026-08-09 主站、Android 移动壳与后台动效精修
+
+- 公共按钮、Knowledge 卡片与壁纸选择环统一使用 140ms 按下、90ms 松开的非对称节奏；键盘输入不等待按压、滚动或状态退场。四套壁纸换档特效只在 Home 首次进入时加载并预解码，非 Home 路由不产生这些装饰资源请求；手动选档使用显式 pending promise 保留乐观状态和最终持久化所有权，clock／focus／pageshow 只能复用同一请求，跨标签更新会使旧请求失效并重新协调。
+
+- 公开主站统一采用短促 strong ease-out 进入、strong ease-in-out 的 FLIP 位移和可中断的浮层状态机。账户 popover 从右上展开，桌面 modal 居中、移动 sheet 从底部展开；重复开关会从当前计算帧继续，关闭副作用只提交一次。账户登录／注册／已登录状态只做低频 opacity + 4px 过渡，键盘触发不等待动画。
+- Android／窄屏移动壳保持既定方向滑动与共享 Dock 选中底板，底板只通过 transform／opacity 移动，收起把手使用 scaleX；Home 左右滑动按真实移动距离与速度判定。Knowledge 的搜索、分类、回顶和卡片反馈在键盘、reduced、off 模式下不触发空间跳动，骨架屏使用单层 transform 扫光；Chat 只在用户不在底部时显示可中断的未读提示。
+- `prefers-reduced-motion` 只保留短促 opacity／颜色语义并移除位移，站内 motion-off 硬停；键盘 click、Enter／Space、Escape 立即提交，hover 动效仅在支持 hover 的细指针设备启用。后台同步了触发按钮级 busy／`aria-busy`、压力条、移动抽屉／遮罩、对话框、地图 tooltip 与 Quick Transfer 请求反馈；后台私有细节记录在 `admin/docs/`，没有写入公开更新正文。
+- 公共缓存 token 为 `20260809-motion-polish-r2`，后台为 `20260809-admin-motion-polish-r2`，Transfer 管理为 `20260809-transfer-motion-r2`；公开更新 `seed-update-2026-08-09-motion-polish` 同步 fallback、Home 五条投影、Functions 和 schema seed。Quick Transfer 在最新 1.0.9 之上精确升级至 1.0.10，但业务协议、口令、AES-GCM、私有 R2、滚动配额、鉴权与发布后 24 小时生命周期不变。本轮没有修改 MCP／能力注册、CLI、远程 Worker 或其维护文档。
+
 ## 2026-08-09 站长远程 MCP OAuth 生产写闭环验收
 
 - 独立生产 Worker `lusu-site-admin-mcp` 已部署，canonical resource 为 `https://lusu575.com/mcp`，2026-08-09 完成真实站长浏览器 OAuth 验收的 version ID 为 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b`。它用标准 OAuth 2.1 authorization code + PKCE S256、精确 RFC 8707 resource、动态注册／CIMD 和 `content:read`／`content:write`／`content:delete` 最小 scope 暴露九个工具：`site_capabilities`、`content_list`、`content_search`、`article_get`、`article_manage_list`、`article_manage_get`、`article_publish`、`article_update`、`article_delete`。它不接受站点设备 Bearer，不传递 `lusu_session`，也不把 OAuth token、code、state、cookie、IP、回调或文章正文写入日志。

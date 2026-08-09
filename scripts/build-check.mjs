@@ -64,6 +64,9 @@ const requiredFiles = [
   "assets/images/mobile-wallpapers/day.webp",
   "assets/images/mobile-wallpapers/dusk.webp",
   "assets/images/mobile-wallpapers/night.webp",
+  "assets/images/wallpaper-switch/time-track.png",
+  "assets/images/wallpaper-switch/time-selector.png",
+  "assets/images/wallpaper-switch/wallpaper-time-switch.source.json",
   "assets/images/generated-icons/whiteboard.png",
   "assets/images/generated-icons/whiteboard.source.json",
   "css/mobile-ios-shell.css",
@@ -96,6 +99,7 @@ const requiredFiles = [
   "js/mobile-shell.js",
   "js/main.js",
   "js/core/i18n.mjs",
+  "js/core/wallpaper-time.mjs",
   "js/core/route-lifecycle.mjs",
   "js/core/route-modules.mjs",
   "js/data/content.mjs",
@@ -734,6 +738,9 @@ for (const file of [
   "assets/images/mobile-wallpapers/day.webp",
   "assets/images/mobile-wallpapers/dusk.webp",
   "assets/images/mobile-wallpapers/night.webp",
+  "assets/images/wallpaper-switch/time-track.png",
+  "assets/images/wallpaper-switch/time-selector.png",
+  "assets/images/wallpaper-switch/wallpaper-time-switch.source.json",
   "css/mobile-ios-shell.css",
   "css/motion-system.css",
   "design-system/MASTER.md",
@@ -741,6 +748,7 @@ for (const file of [
   "design-system/pages/mobile-shell.md",
   "js/mobile-shell.js",
   "js/core/i18n.mjs",
+  "js/core/wallpaper-time.mjs",
   "js/core/route-modules.mjs",
   "js/data/content.mjs",
   "js/ui-motion.js"
@@ -832,11 +840,14 @@ const trustSafetyStatusVersion = "20260726-security-reliability-r1";
 const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
 const whiteboardReleaseVersion = "20260806-agent-capabilities-quick-transfer-r1";
 const gameVideoMcpCandidateReleaseVersion = "20260809-game-video-mcp-candidate-r2";
-const transferReleaseVersion = "20260809-game-video-mcp-candidate-r2";
+const motionPolishReleaseVersion = "20260809-motion-polish-r2";
+const wallpaperTimeSwitchAssetVersion = "20260809-wallpaper-time-switch-r2";
+const transferReleaseVersion = "20260809-transfer-motion-r2";
+const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
 const resourcesRouteVersion = transferReleaseVersion;
-const routeStyleVersion = knowledgeReaderVersion;
-const publicRouteVersion = (route) => route === "knowledge"
-  ? whiteboardReleaseVersion
+const routeStyleVersion = motionPolishReleaseVersion;
+const publicRouteVersion = (route) => route === "knowledge" || route === "chatroom"
+  ? motionPolishReleaseVersion
   : (route === "resources" ? resourcesRouteVersion : routeLazyVersion);
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
 const chatroomIconVersion = "20260726-chatroom-icon-redraw-r2";
@@ -859,6 +870,10 @@ for (const expectedPath of ["admin/transfer.css", "css/style.css", "css/transfer
 const adminTransferStyleVersions = assetQueryVersions(adminTransferHtml, "/admin/transfer.css");
 if (adminTransferStyleVersions.length !== 1 || adminTransferStyleVersions[0] !== transferAtlasVersion) {
   fail(`admin/transfer.html stylesheet query should appear once as ${transferAtlasVersion}`);
+}
+if (!adminTransferHtml.includes(`/admin/transfer.css?v=${transferAtlasVersion};admin=${transferReleaseVersion}`)
+  || !adminTransferHtml.includes(`/admin/transfer.js?v=${transferReleaseVersion}`)) {
+  fail(`admin/transfer.html motion assets should use ${transferReleaseVersion}`);
 }
 if (!adminTransferCss.includes(`quick-transfer-icons.png?v=${transferAtlasVersion}`)) {
   fail(`admin/transfer.css should use the shared Quick Transfer atlas query ${transferAtlasVersion}`);
@@ -885,8 +900,10 @@ for (const route of lazyPublicRoutes) {
 }
 
 for (const [modulePath, expectedVersion] of [
-  ["./core/i18n.mjs", whiteboardReleaseVersion],
-  ["./data/home-content.mjs", gameVideoMcpCandidateReleaseVersion],
+  ["./core/i18n.mjs", motionPolishReleaseVersion],
+  ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
+  ["./data/home-content.mjs", motionPolishReleaseVersion],
+  ["./features/account.mjs", motionPolishReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", transferReleaseVersion]
 ]) {
@@ -1961,8 +1978,8 @@ for (const asset of ["admin.css", "admin.js"]) {
   }
 }
 
-const adminSafetyCacheVersion = "20260801-service-reliability-r1";
-const adminPublicContentVersion = "20260802-traffic-budget-r1";
+const adminSafetyCacheVersion = adminMotionPolishVersion;
+const adminPublicContentVersion = adminMotionPolishVersion;
 if (!adminHtml.includes(`/admin/admin.css?v=${adminSafetyCacheVersion}`)
   || !adminHtml.includes(`/admin/admin.js?v=${adminPublicContentVersion}`)) {
   fail("admin CSS and JS must use their current cache versions");
@@ -2180,6 +2197,11 @@ for (const obsoleteMapPattern of [
 
 if (/\.map-city-marker::(?:before|after)/.test(adminCss)) {
   fail("admin SVG city markers must use real circle nodes instead of CSS pseudo geometry");
+}
+
+if (!hasPattern(adminCss, /body\[data-input-method=["']keyboard["']\]\s+\.map-city-marker circle,[\s\S]*body\[data-input-method=["']keyboard["']\]\s+\.traffic-pressure-track span[\s\S]*transition:\s*none\s*!important/)
+  || !hasPattern(adminCss, /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*\.traffic-pressure-track span,[\s\S]*\.map-city-marker circle,[\s\S]*transition:\s*none\s*!important/)) {
+  fail("admin map markers and traffic pressure updates must remain immediate for keyboard and reduced-motion input");
 }
 
 const cityQueryMarker = "select country, region, city, count(*) as pv, count(distinct visitor_id) as uv";
@@ -2515,8 +2537,10 @@ if (!hasPattern(uiMotionJs, /transition\.ready\s*&&\s*typeof\s+transition\.ready
   fail("js/ui-motion.js should consume skipped View Transition ready rejections without leaking page errors");
 }
 
-if (!hasPattern(uiMotionJs, /if\s*\(\s*!canUseFullMotion\(\)\s*\)\s*\{\s*try\s*\{\s*var\s+immediateResult\s*=\s*commitOnce\(\)[\s\S]*cleanup\(\)[\s\S]*Promise\.resolve\(immediateResult\)/)) {
-  fail("js/ui-motion.js reduced/off mode should commit modal closes immediately");
+if (!hasPattern(uiMotionJs, /var\s+immediate\s*=\s*Boolean\([\s\S]*context\.motion\s*===\s*false[\s\S]*state\.mode\s*===\s*["']reduced["'][\s\S]*snapshot\.inputMethod\s*===\s*["']keyboard["'][\s\S]*if\s*\(immediate\s*\|\|\s*\(!canUseFullMotion\(\)[\s\S]*canUseSemanticMotion\(\)/)
+  || !hasPattern(uiMotionJs, /function\s+transitionSurface[\s\S]*var\s+reduced\s*=\s*!canUseFullMotion\(\)[\s\S]*transform:\s*reduced\s*\?\s*["']none["']/)
+  || !hasPattern(uiMotionJs, /function\s+canUseSemanticMotion[\s\S]*state\.mode\s*!==\s*["']off["']/)) {
+  fail("js/ui-motion.js should commit keyboard/off actions immediately while reduced surfaces keep opacity-only feedback");
 }
 
 if (!hasPattern(uiMotionJs, /function\s+enterAnimation[\s\S]*transformOrigin:\s*["']center center["'][\s\S]*function\s+exitAnimation[\s\S]*transformOrigin:\s*["']center center["']/)) {
@@ -2883,11 +2907,11 @@ const mobileScrollRecoveryVersion = "20260718-mobile-scroll-recovery-r1";
 const mobileScrollRecoveryCssVersion = "20260718-mobile-scroll-recovery-css-r1";
 const mobileViewportKeyboardVersion = "20260718-mobile-viewport-keyboard-r1";
 const mobileViewportKeyboardCssVersion = routeLazyVersion;
-const publicModulesVersion = "20260726-security-reliability-r1";
+const publicModulesVersion = motionPolishReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = gameVideoMcpCandidateReleaseVersion;
-const currentCssVersion = trustSafetyStatusVersion;
+const currentMainVersion = motionPolishReleaseVersion;
+const currentCssVersion = motionPolishReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260809-browser-game-agent-v1";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
@@ -2914,13 +2938,13 @@ if (styleVersions.length !== 1 || styleVersions[0] !== currentCssVersion) {
 }
 
 const mobileShellStyleVersions = assetQueryVersions(indexHtml, "/css/mobile-ios-shell.css");
-if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== knowledgeReaderVersion) {
-  fail(`index.html /css/mobile-ios-shell.css query should appear once as ${knowledgeReaderVersion}`);
+if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== motionPolishReleaseVersion) {
+  fail(`index.html /css/mobile-ios-shell.css query should appear once as ${motionPolishReleaseVersion}`);
 }
 
 const motionCssVersions = assetQueryVersions(indexHtml, "/css/motion-system.css");
-if (motionCssVersions.length !== 1 || motionCssVersions[0] !== mobileViewportKeyboardCssVersion) {
-  fail(`index.html /css/motion-system.css query should appear once as ${mobileViewportKeyboardCssVersion}`);
+if (motionCssVersions.length !== 1 || motionCssVersions[0] !== motionPolishReleaseVersion) {
+  fail(`index.html /css/motion-system.css query should appear once as ${motionPolishReleaseVersion}`);
 }
 
 if (countLiteral(quickTransferLoaderJs, transferLazyVersion) !== 1) {
@@ -3378,7 +3402,7 @@ for (const token of [
   'popover.setAttribute("aria-labelledby", "account-popover-title")',
   'title.id = "account-popover-title"',
   "function syncAccountPopoverState",
-  'toggle.setAttribute("aria-expanded", String(!popover.hidden))',
+  'toggle.setAttribute("aria-expanded", String(expanded))',
   "modalFocusState",
   "restoreModalFocus",
   'profileAvatarAlt: "鲁肃头像"',
@@ -3707,7 +3731,7 @@ if (/input\.disabled\s*=\s*sending/.test(chatSendingStateContract)) {
   fail("js/routes/chatroom.mjs must not disable the composer or dismiss the soft keyboard while a send is in flight");
 }
 
-if (!hasPattern(mainJs, /const\s+routeButton[\s\S]*if\s*\(routeButton\)\s*\{[\s\S]*const\s+motionKind\s*=\s*routeButton\.matches\(\s*["']\.minimize-button["']\s*\)[\s\S]*["']window-minimize["'][\s\S]*routeButton\.matches\(\s*["']\.close-button["']\s*\)[\s\S]*["']window-close["'][\s\S]*navigate\(\s*routeButton\.dataset\.route\s*,\s*\{\s*trigger:\s*routeButton\s*,\s*motionKind\s*\}\s*\)\s*;\s*closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*,\s*motion:\s*false\s*\}\s*\)/)) {
+if (!hasPattern(mainJs, /const\s+routeButton[\s\S]*if\s*\(routeButton\)\s*\{[\s\S]*const\s+motionKind\s*=\s*routeButton\.matches\(\s*["']\.minimize-button["']\s*\)[\s\S]*["']window-minimize["'][\s\S]*routeButton\.matches\(\s*["']\.close-button["']\s*\)[\s\S]*["']window-close["'][\s\S]*navigate\(\s*routeButton\.dataset\.route\s*,\s*\{\s*trigger:\s*routeButton\s*,\s*motionKind\s*,\s*motion:\s*keyboardActivation\s*\?\s*false\s*:\s*undefined\s*\}\s*\)\s*;\s*closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*,\s*motion:\s*false\s*\}\s*\)/)) {
   fail("js/main.js route click branch should classify minimize/close motion, pass its trigger, and close welcome without restoring stale modal focus");
 }
 
@@ -3769,14 +3793,15 @@ if (!hasPattern(mainJs, /function\s+showArticle\(slug,\s*options\s*=\s*\{\}\)[\s
 
 if (!hasPattern(mainJs, /function\s+openAccountPopover[\s\S]*popover\.hidden\s*=\s*false[\s\S]*syncAccountPopoverState\(popover\)/)
   || !hasPattern(mainJs, /function\s+closeAccountPopover[\s\S]*popover\.hidden\s*=\s*true[\s\S]*syncAccountPopoverState\(popover\)[\s\S]*returnFocus\.focus/)
-  || !hasPattern(mainJs, /if\s*\(!target\.closest\(\s*["']#account-widget["']\s*\)\)[\s\S]*closeAccountPopover\(\{\s*restoreFocus:\s*Boolean\(popover\?\.contains\(document\.activeElement\)\)\s*\}\)/)
-  || !hasPattern(mainJs, /event\.key\s*===\s*["']Escape["'][\s\S]*closeAccountPopover\(\)/)) {
+  || !hasPattern(mainJs, /if\s*\(!target\.closest\(\s*["']#account-widget["']\s*\)\)[\s\S]*closeAccountPopover\(\{\s*restoreFocus:\s*Boolean\(popover\?\.contains\(document\.activeElement\)\)[\s\S]*motion:\s*keyboardActivation\s*\?\s*false\s*:\s*undefined/)
+  || !hasPattern(mainJs, /event\.key\s*===\s*["']Escape["'][\s\S]*closeAccountPopover\(\{\s*motion:\s*false\s*\}\)/)) {
   fail("js/main.js account disclosure should synchronize semantics, close on outside click or Escape, and restore its trigger");
 }
 
 if (!hasPattern(mainJs, /function\s+motionScrollBehavior[\s\S]*managedMode\s*===\s*["']reduced["']\s*\|\|\s*managedMode\s*===\s*["']off["'][\s\S]*return\s+["']auto["'][\s\S]*prefers-reduced-motion:\s*reduce/)
   || !hasPattern(mainJs, /function\s+scrollToArticleHeading\([^)]*\{\s*behavior\s*=\s*motionScrollBehavior\(\)[\s\S]*detail\.scrollTo\(\s*\{\s*top:\s*targetTop\s*,\s*behavior\s*\}\s*\)/)
-  || !hasPattern(mainJs, /detail\.scrollTo\(\s*\{\s*top:\s*0\s*,\s*behavior:\s*motionScrollBehavior\(\)\s*\}\s*\)/)) {
+  || !hasPattern(mainJs, /function\s+scrollArticleToTop\(\s*\{\s*immediate\s*=\s*false\s*\}\s*=\s*\{\}\s*\)[\s\S]*detail\.scrollTo\(\s*\{\s*top:\s*0\s*,\s*behavior:\s*immediate\s*\?\s*["']auto["']\s*:\s*motionScrollBehavior\(\)\s*\}\s*\)/)
+  || !hasPattern(mainEntryJs, /data-article-scroll-top[\s\S]*scrollArticleToTop\(\s*\{\s*immediate:\s*keyboardActivation\s*\}\s*\)/)) {
   fail("js/main.js article scrolling should honor reduced and off motion modes");
 }
 
@@ -3837,10 +3862,62 @@ if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.desktop-i
 }
 
 if (!hasPattern(mainJs, /function\s+updateWallpaperMotionState[\s\S]*document\.documentElement\.dataset\.motion[\s\S]*\[\s*["']full["']\s*,\s*["']reduced["']\s*,\s*["']off["']\s*\]\.includes\(managedMode\)/)
-  || !hasPattern(mainJs, /LusuUiMotion\.run\(\s*["']theme["']\s*,\s*\{\s*theme\s*\}\s*,\s*applyTheme\s*\)/)
+  || !hasPattern(mainJs, /LusuUiMotion\.run\(\s*["']theme["']\s*,\s*\{[\s\S]{0,220}?\btheme\b[\s\S]{0,220}?\bimmediate\b[\s\S]{0,120}?\}\s*,\s*applyTheme\s*\)/)
   || !hasPattern(uiMotionJs, /context\.useViewTransition\s*&&\s*kind\s*!==\s*["']theme["']/)
   || hasPattern(mainJs, /function\s+updateHomeTimeTheme[\s\S]*useViewTransition/)) {
   fail("js/main.js wallpaper should share the canonical motion mode and settle without a root View Transition snapshot");
+}
+
+if (!hasPattern(motionSystemCss, /--motion-press:\s*140ms;[\s\S]*--motion-release:\s*90ms;/)
+  || !hasPattern(motionSystemCss, /transform\s+var\(--motion-release\)\s+var\(--motion-ease-out\)[\s\S]*transition-duration:\s*var\(--motion-press\)/)
+  || !hasPattern(lazyRouteCssSources.knowledge, /#knowledge\s+\.article-card[\s\S]*transform\s+var\(--motion-release\)[\s\S]*transition-duration:\s*var\(--motion-press\)/)
+  || !hasPattern(motionSystemCss, /\.wallpaper-time-selector img[\s\S]*transform\s+var\(--motion-release\)[\s\S]*\.wallpaper-time-option:active\s*~\s*\.wallpaper-time-selector img[\s\S]*transition-duration:\s*var\(--motion-press\)/)) {
+  fail("public press feedback must use a deliberate 140ms press and faster 90ms release without layout animation");
+}
+
+const wallpaperSwitchOptions = [...indexHtml.matchAll(/<button\b[^>]*\bdata-wallpaper-time=["'](morning|day|dusk|night)["'][^>]*>/g)];
+if (!hasPattern(indexHtml, /id=["']wallpaper-time-switch["'][^>]*role=["']radiogroup["']/)
+  || wallpaperSwitchOptions.length !== 4
+  || new Set(wallpaperSwitchOptions.map((match) => match[1])).size !== 4
+  || !indexHtml.includes(`/assets/images/wallpaper-switch/time-track.png?v=${wallpaperTimeSwitchAssetVersion}`)
+  || !indexHtml.includes(`/assets/images/wallpaper-switch/time-selector.png?v=${wallpaperTimeSwitchAssetVersion}`)
+  || !["morning", "day", "dusk", "night"].every((theme) => (
+    indexHtml.includes(`data-src="/assets/images/wallpaper-switch/fx-${theme}.png?v=${wallpaperTimeSwitchAssetVersion}"`)
+  ))) {
+  fail("index.html wallpaper switch must use four semantic radio options and all six versioned generated image assets");
+}
+
+if (!hasPattern(styleCss, /\.wallpaper-time-switch\s*\{[\s\S]*grid-template-columns:\s*repeat\(4,\s*44px\)[\s\S]*width:\s*176px[\s\S]*height:\s*44px/)
+  || !hasPattern(styleCss, /\.wallpaper-time-option\s*\{[\s\S]*width:\s*44px[\s\S]*height:\s*44px/)
+  || !hasPattern(styleCss, /\.wallpaper-time-selector\s*\{[\s\S]*top:\s*8px[\s\S]*width:\s*28px[\s\S]*height:\s*28px[\s\S]*transform:\s*translate3d\(8px,\s*0,\s*0\)/)
+  || !hasPattern(styleCss, /data-time-theme=["']day["'][\s\S]*translate3d\(52px,[\s\S]*data-time-theme=["']dusk["'][\s\S]*translate3d\(96px,[\s\S]*data-time-theme=["']night["'][\s\S]*translate3d\(140px,/)
+  || !indexHtml.includes("8 + selectedIndex * 44")
+  || !mainEntryJs.includes("8 + selectedIndex * 44")
+  || !hasPattern(motionSystemCss, /\.wallpaper-time-selector\s*\{[\s\S]*transition:\s*transform\s+var\(--motion-window\)\s+var\(--motion-ease-in-out\)/)
+  || !hasPattern(mainEntryJs, /function\s+playWallpaperTimeEffect[\s\S]*dataset\.effectTheme\s*=\s*theme[\s\S]*380/)
+  || !hasPattern(mainEntryJs, /effectAssetsReady\s*!==\s*["']true["'][\s\S]*ensureWallpaperTimeEffectAssets\(group\)[\s\S]*return[\s\S]*dataset\.motion\s*!==\s*["']full["'][\s\S]*document\.hidden[\s\S]*dataset\.route\s*!==\s*["']home["']/)
+  || hasPattern(mainEntryJs, /ensureWallpaperTimeEffectAssets\(group\)\.then/)
+  || !hasPattern(mainEntryJs, /function\s+ensureWallpaperTimeEffectAssets[\s\S]*wallpaper-time-effect-layer\[data-src\][\s\S]*\.decode\(\)[\s\S]*effectAssetsReady\s*=\s*["']true["']/)
+  || !hasPattern(mainEntryJs, /if\s*\(nextRoute\s*===\s*["']home["']\)\s*void\s+ensureWallpaperTimeEffectAssets\(\)/)
+  || !hasPattern(mainEntryJs, /if\s*\(immediate\)[\s\S]*dataset\.immediate\s*=\s*["']true["'][\s\S]*else\s*\{[\s\S]*delete\s+group\.dataset\.immediate/)
+  || !["morning", "day", "dusk", "night"].every((theme) => (
+    motionSystemCss.includes(`@keyframes wallpaper-effect-${theme}`)
+  ))
+  || !hasPattern(motionSystemCss, /data-immediate=["']true["'][\s\S]*data-input-method=["']keyboard["'][\s\S]*data-motion=["']reduced["'][\s\S]*transition:\s*none\s*!important/)) {
+  fail("wallpaper switch geometry must keep four 44px targets, a 28px inset selector, and generated staggered transform-only theme effects");
+}
+
+if (!hasPattern(mainEntryJs, /lusu-wallpaper-time-override-v1/)
+  || !hasPattern(mainEntryJs, /function\s+scheduleWallpaperTimeBoundary[\s\S]*nextWallpaperTimeBoundary[\s\S]*warmWallpaperTheme\(upcomingTheme\)[\s\S]*setTimeout[\s\S]*reconcileWallpaperTimeTheme/)
+  || !hasPattern(mainEntryJs, /function\s+selectWallpaperTimeTheme[\s\S]*createWallpaperTimeOverride\(theme,\s*selectedAt\)[\s\S]*warmWallpaperTheme[\s\S]*record\.expiresAt[\s\S]*updateHomeTimeTheme/)
+  || !hasPattern(mainEntryJs, /addEventListener\(\s*["']storage["'][\s\S]*wallpaperTimeOverrideStorageKey[\s\S]*reconcileWallpaperTimeTheme/)
+  || !hasPattern(mainEntryJs, /invalidatePendingSelection[\s\S]*wallpaperTimeSelectionRequest\s*\+=\s*1[\s\S]*wallpaperTimePreparingTheme\s*=\s*["']["'][\s\S]*wallpaperTimePreparingPromise\s*=\s*null/)
+  || !hasPattern(mainEntryJs, /function\s+selectWallpaperTimeTheme[\s\S]*previousOverride\s*=\s*wallpaperTimeOverride[\s\S]*wallpaperTimeOverride\s*=\s*record[\s\S]*await\s+warmWallpaperTheme[\s\S]*if\s*\(!loaded\)[\s\S]*wallpaperTimeOverride\s*=\s*previousOverride/)
+  || !hasPattern(mainEntryJs, /wallpaperTimePendingManualTheme\s*===\s*state\.theme\s*&&\s*wallpaperTimePendingManualPromise[\s\S]*return\s+wallpaperTimePendingManualPromise/)
+  || !hasPattern(mainEntryJs, /wallpaperTimePendingManualTheme\s*=\s*theme[\s\S]*wallpaperTimePendingManualPromise\s*=\s*selection[\s\S]*return\s+await\s+selection[\s\S]*wallpaperTimePendingManualPromise\s*===\s*selection/)
+  || !hasPattern(mainEntryJs, /function\s+prepareWallpaperThemeCrossfade[\s\S]*freezeWallpaperOverlays[\s\S]*wallpaper-theme-scene-overlay[\s\S]*frozenTransform[\s\S]*function\s+runWallpaperThemeCrossfade[\s\S]*wallpaperThemeTransitionGeneration/)
+  || !hasPattern(mainEntryJs, /function\s+wallpaperCloudAssetCandidates[\s\S]*cloud-\$\{name\}\.png[\s\S]*Promise\.allSettled\(cloudUrls/)) {
+  fail("js/main.js wallpaper switch must preload, expire at exact boundaries, synchronize storage, and retarget crossfades safely");
 }
 
 if (!hasPattern(mobileShellJs, /function\s+cycleLanguage[\s\S]*CustomEvent\(\s*["']lusu:language-request["'][\s\S]*detail:\s*\{\s*lang:\s*nextLang\s*\}[\s\S]*\}\s*\)/)
@@ -3849,7 +3926,8 @@ if (!hasPattern(mobileShellJs, /function\s+cycleLanguage[\s\S]*CustomEvent\(\s*[
   fail("mobile language cycle should request one shared language change without synthesizing a second tracked click");
 }
 
-if (!hasPattern(motionSystemCss, /html\[data-motion="reduced"\]\s+\.page[\s\S]*html\[data-motion="off"\]\s+\.desktop-icon[\s\S]*animation:\s*none\s*!important/)) {
+if (!hasPattern(motionSystemCss, /html\[data-motion="reduced"\]\s+\.page[\s\S]*body\[data-motion="reduced"\]\s+\.desktop-icon[\s\S]*animation:\s*none\s*!important/)
+  || !hasPattern(motionSystemCss, /html\[data-motion="off"\]\s*,[\s\S]*html\[data-motion="off"\]\s+\*[\s\S]*animation:\s*none\s*!important;[\s\S]*transition:\s*none\s*!important/)) {
   fail("css/motion-system.css should disable legacy page/icon animations in reduced and off modes");
 }
 
@@ -3900,15 +3978,15 @@ if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.mobile-do
   || !hasPattern(mobileShellJs, /function\s+measureDockLayout[\s\S]*getBoundingClientRect[\s\S]*reveal\s*=/)
   || !hasPattern(mobileShellJs, /function\s+mutateDockLayout[\s\S]*measurement\.reveal[\s\S]*scrollIntoView[\s\S]*behavior:/)
   || !hasPattern(indexHtml, /class=["'][^"']*\bmobile-dock-selection\b[^"']*["'][^>]*aria-hidden=["']true["']/)
-  || !hasPattern(mobileIosShellCss, /\.mobile-dock-selection\s*\{[\s\S]*width:\s*var\(--mobile-dock-selection-width/)
-  || !hasPattern(mobileIosShellCss, /\.mobile-dock-selection\s*\{[\s\S]*transform:\s*translate3d\(var\(--mobile-dock-selection-x/)
-  || !hasPattern(mobileShellJs, /function\s+mutateDockLayout[\s\S]*setProperty\(\s*["']--mobile-dock-selection-x["']/)
-  || !hasPattern(mobileShellJs, /function\s+mutateDockLayout[\s\S]*setProperty\(\s*["']--mobile-dock-selection-width["']/)
+  || !hasPattern(mobileIosShellCss, /\.mobile-dock-selection\s*\{[\s\S]*width:\s*48px[\s\S]*transform:\s*translate3d\(8px/)
+  || !hasPattern(mobileShellJs, /function\s+mutateDockLayout[\s\S]*indicator\.style\.opacity\s*=[\s\S]*indicator\.style\.transform\s*=/)
+  || mobileIosShellCss.includes("--mobile-dock-selection-width")
+  || mobileShellJs.includes("--mobile-dock-selection-width")
   || !hasPattern(indexHtml, /data-route="blog"\s+data-mobile-dock-excluded/)
   || !hasPattern(indexHtml, /data-route="about"\s+data-mobile-dock-excluded/)
   || !hasPattern(mobileIosShellCss, /taskbar-tabs\s+button\[data-mobile-dock-excluded\]\s*\{\s*display:\s*none/)
   || !hasPattern(mobileIosShellCss, /@media\s*\(min-width:\s*375px\)[\s\S]*mobile-dock-scroll\s*\{\s*justify-content:\s*center/)
-  || !hasPattern(mobileShellJs, /dockRouteElements[\s\S]*:not\(\[data-mobile-dock-excluded\]\)[\s\S]*has-no-dock-route/)
+  || !hasPattern(mobileShellJs, /function\s+dockRouteElements[\s\S]*:not\(\[data-mobile-dock-excluded\]\)[\s\S]*mobile-dock-selection/)
   || !hasPattern(mobileShellJs, /function\s+syncDockLayout[\s\S]*framePipeline\.schedule\(\s*["']mobile-shell:dock-layout["']/)
   || !hasPattern(indexHtml, /data-mobile-dock-toggle[\s\S]*aria-expanded="true"/)
   || !hasPattern(mobileIosShellCss, /body:not\(\[data-route="home"\]\)\s+\.page\.active\s*>\s*\.xp-window\s*>\s*\.window-titlebar\s*\{\s*display:\s*none/)) {
@@ -4062,7 +4140,7 @@ if (!hasPattern(mainJs, /if\s*\(\s*!target\.closest\(\s*["']#account-widget["']\
   fail("js/main.js outside-click account closure should only restore focus when focus would otherwise remain inside the hidden popover");
 }
 
-if (!hasPattern(mainJs, /if\s*\(videoModal\s*&&\s*!videoModal\.hidden\)\s*\{[\s\S]*closeVideo\(\)[\s\S]*return;[\s\S]*if\s*\(welcomeModal\s*&&\s*!welcomeModal\.hidden\)\s*\{[\s\S]*closeWelcome\(\)[\s\S]*return;/)) {
+if (!hasPattern(mainJs, /if\s*\(videoModal\s*&&\s*!videoModal\.hidden\)\s*\{[\s\S]*closeVideo\(\{\s*motion:\s*false\s*\}\)[\s\S]*return;[\s\S]*if\s*\(welcomeModal\s*&&\s*!welcomeModal\.hidden\)\s*\{[\s\S]*closeWelcome\(\{\s*motion:\s*false\s*\}\)[\s\S]*return;/)) {
   fail("js/main.js Escape handling should only close open dialogs before falling back to the account popover");
 }
 
@@ -4125,8 +4203,13 @@ for (const functionName of ["openAccountPopover", "closeAccountPopover"]) {
 }
 
 const toggleAccountPopoverBody = objectBlockAfterMarker(mainJs, "function toggleAccountPopover");
-if (!hasPattern(toggleAccountPopoverBody, /if\s*\(popover\.hidden\)[\s\S]*openAccountPopover\(\)[\s\S]*else[\s\S]*closeAccountPopover\(\)/)) {
-  fail("js/main.js toggleAccountPopover should delegate to the shared accessible open/close paths");
+if (!hasPattern(toggleAccountPopoverBody, /const\s+closing\s*=\s*popover\.getAttribute\(["']data-ui-closing["']\)\s*===\s*["']true["'][\s\S]*if\s*\(popover\.hidden\s*\|\|\s*closing\)[\s\S]*openAccountPopover\(options\)[\s\S]*else[\s\S]*closeAccountPopover\(options\)/)) {
+  fail("js/main.js toggleAccountPopover should reverse an in-flight close and delegate to the shared accessible open/close paths");
+}
+
+const openAccountPopoverBody = objectBlockAfterMarker(mainJs, "function openAccountPopover");
+if (!hasPattern(openAccountPopoverBody, /const\s+wasClosing[\s\S]*accountPopoverCloseGeneration\s*\+=\s*1[\s\S]*cancelSurfaceClose\(popover\)[\s\S]*popover\.hidden\s*=\s*false[\s\S]*popover\.inert\s*=\s*false/)) {
+  fail("js/main.js openAccountPopover should cancel an in-flight close before restoring the popover from its current frame");
 }
 
 for (const [label, pattern] of [
@@ -4246,8 +4329,12 @@ const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
 const finalTitleEn = "Browser Game Control and Video MCP Candidate Enters Acceptance";
 const finalPublishedAt = "2026-08-09T09:30:00.000Z";
+const supportingReleaseUpdateIds = [
+  "seed-update-2026-08-09-wallpaper-time-switch",
+  "seed-update-2026-08-09-motion-polish"
+];
 const finalTranslationMinimums = {
-  title: 8,
+  title: 6,
   summary: 24,
   content_markdown: 160
 };
@@ -4293,6 +4380,26 @@ if (!finalUpdateStarted) {
 }
 
 if (finalUpdateStarted) {
+  for (const updateId of supportingReleaseUpdateIds) {
+    for (const [path, source] of [
+      ["js/data/content.mjs", contentModuleJs],
+      ["js/data/home-content.mjs", homeContentModuleJs],
+      ["functions/api/[[route]].js", apiJs],
+      ["cloudflare/schema.sql", schemaSql]
+    ]) {
+      if (!source.includes(updateId)) {
+        fail(`${path} final release should preserve supporting update ${updateId}`);
+      }
+    }
+  }
+
+  const projectedUpdateIds = [finalUpdateId, ...supportingReleaseUpdateIds];
+  const projectedUpdateIndexes = projectedUpdateIds.map((updateId) => homeContentModuleJs.indexOf(updateId));
+  if (projectedUpdateIndexes.some((index) => index < 0)
+    || !projectedUpdateIndexes.every((index, offset, list) => offset === 0 || list[offset - 1] < index)) {
+    fail("js/data/home-content.mjs should order game/video MCP, wallpaper time, and motion polish by descending publication time");
+  }
+
   for (const token of [
     'date: "2026.06.23"',
     'date: "2026.06.24"',
@@ -4450,7 +4557,10 @@ if (finalUpdateStarted) {
   for (const token of [
     '<time id="top-updated" datetime="2026-08-09">2026.08.09</time>',
     `/css/style.css?v=${finalCssVersion}`,
-    `/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`,
+    `/css/mobile-ios-shell.css?v=${motionPolishReleaseVersion}`,
+    `/css/motion-system.css?v=${motionPolishReleaseVersion}`,
+    `/js/mobile-shell.js?v=${motionPolishReleaseVersion}`,
+    `/js/ui-motion.js?v=${motionPolishReleaseVersion}`,
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {
@@ -4460,7 +4570,10 @@ if (finalUpdateStarted) {
 
   for (const token of [
     finalMainVersion,
+    adminMotionPolishVersion,
+    transferReleaseVersion,
     finalUpdateId,
+    ...supportingReleaseUpdateIds,
     "site-updates",
     "fallback",
     "Functions seed",

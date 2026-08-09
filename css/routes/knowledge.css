@@ -66,20 +66,26 @@
   color: inherit;
   text-decoration: none;
   cursor: pointer;
-  transition:
-    border-color var(--motion-fast, 140ms) ease,
-    box-shadow var(--motion-fast, 140ms) ease,
-    transform var(--motion-fast, 140ms) ease;
+  transform: translate3d(0, 0, 0);
+  transition: transform var(--motion-release) var(--motion-ease-out);
 }
 
-#knowledge .article-card:hover,
 #knowledge .article-card:focus-visible {
   border-color: #2d78d7;
   box-shadow: inset 1px 1px 0 #fff, 3px 3px 0 rgba(0, 60, 158, 0.22);
 }
 
-#knowledge .article-card:active {
-  transform: translate(1px, 1px);
+#knowledge .article-card:active,
+#knowledge .article-card.is-ui-pressed {
+  transform: scale(0.99);
+  transition-duration: var(--motion-press);
+}
+
+html[data-input-method="keyboard"] #knowledge .article-card,
+html[data-motion="reduced"] #knowledge .article-card,
+body[data-motion="reduced"] #knowledge .article-card {
+  transform: none !important;
+  transition: none !important;
 }
 
 .article-card-cta {
@@ -155,6 +161,20 @@
   cursor: default;
 }
 
+.article-card-skeleton::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: -18%;
+  bottom: -18%;
+  left: 0;
+  width: 32%;
+  background: linear-gradient(105deg, transparent 12%, rgba(111, 184, 255, 0.22) 38%, rgba(255, 255, 255, 0.76) 50%, rgba(111, 184, 255, 0.18) 62%, transparent 88%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(-330%, 0, 0);
+}
+
 .article-card-skeleton::after {
   content: "";
   position: absolute;
@@ -165,30 +185,40 @@
   background: #2d78d7;
   box-shadow: -11px 0 0 #ffd65a, -22px 0 0 #73c991;
   opacity: 0.72;
+  z-index: 3;
 }
 
-.article-card-skeleton > span {
+.article-card-skeleton > .skeleton-lines {
+  position: relative;
+  z-index: 1;
   display: block;
-  border: 1px solid #c4d5ee;
-  border-radius: 4px;
+  width: 100%;
+  height: 112px;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.8), transparent 48%),
-    linear-gradient(180deg, #edf5ff, #dce9f8);
+    linear-gradient(180deg, #edf5ff, #dce9f8) left top / min(420px, 68%) 24px no-repeat,
+    linear-gradient(180deg, #edf5ff, #dce9f8) left 38px / 92% 46px no-repeat,
+    linear-gradient(180deg, #edf5ff, #dce9f8) left 98px / min(360px, 58%) 14px no-repeat;
+  animation: none !important;
 }
 
-.article-card-skeleton .skeleton-title {
-  width: min(420px, 68%);
-  height: 24px;
+html[data-motion="full"]:not([data-performance-tier="low"]) .article-card-skeleton::before {
+  opacity: 0.72;
+  animation: knowledge-skeleton-sweep 1.8s linear infinite;
+  will-change: transform;
 }
 
-.article-card-skeleton .skeleton-copy {
-  width: 92%;
-  height: 46px;
+@keyframes knowledge-skeleton-sweep {
+  from { transform: translate3d(-330%, 0, 0); }
+  to { transform: translate3d(420%, 0, 0); }
 }
 
-.article-card-skeleton .skeleton-meta {
-  width: min(360px, 58%);
-  height: 22px;
+html[data-performance-tier="low"] .article-card-skeleton::before,
+html[data-motion="reduced"] .article-card-skeleton::before,
+html[data-motion="off"] .article-card-skeleton::before,
+body[data-motion="reduced"] .article-card-skeleton::before,
+body[data-motion="off"] .article-card-skeleton::before {
+  opacity: 0;
+  animation: none !important;
 }
 
 #knowledge .xp-window {
@@ -465,7 +495,7 @@ body.is-article-reading #knowledge .article-read-progress {
   inset: 0;
   transform: scaleX(0);
   transform-origin: left center;
-  transition: transform var(--motion-fast, 140ms) ease;
+  transition: none;
   background:
     repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0 10px, transparent 10px 18px),
     linear-gradient(90deg, #0759d6, #0b70ff);

@@ -51,8 +51,8 @@ test("admin safely switches independent Daily AI News and Tool Radar delivery co
   assert.match(html, /自动公开默认关闭/);
   assert.match(html, /本机定时任务 ai-7-8 已启用，每日 07:00 开始/);
   assert.match(html, /时区：Asia\/Shanghai；每个栏目的开关、自动公开和凭证彼此独立/);
-  assert.match(html, /admin\.css\?v=20260801-service-reliability-r1/);
-  assert.match(html, /admin\.js\?v=20260802-traffic-budget-r1/);
+  assert.match(html, /admin\.css\?v=20260809-admin-motion-polish-r2/);
+  assert.match(html, /admin\.js\?v=20260809-admin-motion-polish-r2/);
   assert.doesNotMatch(html, /本轮只准备入口，不创建定时任务/);
   for (const id of [
     "automation-channel-select",
@@ -133,4 +133,28 @@ test("admin traffic panel monitors D1 pressure and saves telemetry controls with
   assert.match(styles, /\.traffic-control-grid\s*\{/);
   assert.match(styles, /\.traffic-mode-badge\[data-mode="hard"\]/);
   assert.match(styles, /@media \(max-width:\s*680px\)[\s\S]*\.traffic-control-form \.xp-button[\s\S]*min-height:\s*44px/);
+});
+
+test("admin motion keeps keyboard actions immediate and rapid dialogs race-safe", () => {
+  const source = read("admin/admin.js");
+  const styles = read("admin/admin.css");
+
+  assert.match(source, /function adminScrollBehavior\(\)[\s\S]*adminMotionShouldBeImmediate\(\) \|\| prefersReducedMotion\(\) \? "auto" : "smooth"/);
+  assert.equal((source.match(/behavior: adminScrollBehavior\(\)/g) || []).length, 2);
+  assert.match(source, /const behavior = adminScrollBehavior\(\)/);
+  assert.match(source, /field\.focus\(\{ preventScroll: true \}\)[\s\S]*field\.scrollIntoView/);
+  assert.match(source, /document\.addEventListener\("pointerover", restorePointerInputMethod/);
+  assert.match(source, /document\.addEventListener\("pointermove", restorePointerInputMethod/);
+  assert.match(source, /document\.addEventListener\("pointerdown", restorePointerInputMethod/);
+  assert.doesNotMatch(source, /event\.pointerType !== "touch"/);
+  assert.match(source, /cancelAdminDialogMotion\(dialog, \{ keepOpen: true \}\)/);
+  assert.match(source, /if \(!dialog\.open\) \{\s*dialog\.showModal\(\)/);
+  assert.match(source, /onClosed\?\.\(\{ interrupted: Boolean\(finishOptions\.interrupted\) \}\)/);
+  assert.match(styles, /\.xp-button,\s*\.nav-button\s*\{\s*transition: transform 90ms var\(--admin-ease-out\)/);
+  assert.match(styles, /\.xp-button:active:not\(:disabled\),[\s\S]*transition-duration: 140ms/);
+  assert.match(styles, /\.admin-dialog\.is-dialog-closing::backdrop\s*\{\s*opacity: 0/);
+  assert.match(styles, /\.mobile-nav-backdrop\.is-nav-closing:not\(\[hidden\]\)[\s\S]*pointer-events: auto/);
+  assert.match(styles, /body\[data-input-method="keyboard"\] \.map-city-marker circle,[\s\S]*body\[data-input-method="keyboard"\] \.traffic-pressure-track span[\s\S]*transition: none !important/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.traffic-pressure-track span,[\s\S]*\.map-city-marker circle,[\s\S]*transition: none !important/);
+  assert.doesNotMatch(source, /}, 1200\)/);
 });

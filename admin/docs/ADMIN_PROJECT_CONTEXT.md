@@ -2,6 +2,13 @@
 
 > 管理后台专用说明：本文档只描述 `/admin/` 管理后台。它不等同于主站根目录 `PROJECT_CONTEXT.md`，也不能替代主站项目上下文。新的 AI / Codex 对话如果只维护后台，应先读本文档和 `admin/docs/ADMIN_SKILL.md`；如果维护主站整体，仍以根目录 `PROJECT_CONTEXT.md` 和 `skills/lusu-personal-site-skill/SKILL.md` 为准。
 
+## 2026-08-09 后台与 Quick Transfer 动效精修
+
+- 主后台把加载节点统一为 `.is-loading`／`.is-busy` 与 `aria-busy` 同步状态，并用 700ms 线性 spinner 表达持续等待；流量压力条固定满宽后只改变 `scaleX`，不再逐次动画布局宽度。按钮按压、确认框和地图提示均使用短促 transform／opacity 反馈，提示层可在退出中途反向打开。
+- 移动侧栏抽屉与遮罩使用同一时钟开合，退出完成后才隐藏，重开会中断旧退出；键盘触发、Escape 和减少动态效果模式立即提交关键状态。文章校验滚动在减少动态效果下使用 `auto`，hover 反馈只在支持 hover 的细指针设备启用。
+- 独立 `/admin/transfer.html` 为表格请求、操作按钮与 notice 补齐忙碌、spinner 和可中断反馈；并发请求采用计数避免旧请求提前清掉新请求状态，只有实际触发请求的按钮进入 busy，复制反馈在真实剪贴板请求结束后保留 650ms，notice 使用稳定 44px 槽位避免内容跳动。Quick Transfer 在最新 1.0.9 之上精确升级到 `1.0.10`，口令派生、AES-GCM、私有 R2、滚动配额、管理员鉴权与发布后 24 小时生命周期均未改变。
+- 主后台 CSS／JS query 为 `20260809-admin-motion-polish-r2`；Transfer 管理 CSS／JS query 为 `20260809-transfer-motion-r2`，共享图集 token 继续保持 `20260718-resource-icons-layout-r1`。本轮没有修改 API、权限、数据写入协议或 MCP／能力层。
+
 ## 2026-08-02 免费额度余量保护
 
 - “流量与写入”默认阈值收紧为 30,000／50,000 站内估算行；正常档页面／点击／文章为 100%／100%／100%，预警档为 25%／10%／50%，硬保护档为 0%／0%／10%。按当前 D1 Free 的 100,000 rows-written／UTC 日口径，硬保护线为登录、云存档、Chat、Transfer、Whiteboard 和内容管理等必要业务保留至少一半写入余量。

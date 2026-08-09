@@ -42,6 +42,22 @@
       const themes = ["morning", "day", "dusk", "night"];
       const preview = searchParams.get("wallpaper");
       const now = new Date();
+      const nextThemeBoundary = (date) => {
+        const boundary = new Date(date);
+        const candidates = [5, 11, 17, 20];
+        const nextHour = candidates.find((hour) => {
+          const candidate = new Date(date);
+          candidate.setHours(hour, 0, 0, 0);
+          return candidate.getTime() > date.getTime();
+        });
+        if (nextHour === undefined) {
+          boundary.setDate(boundary.getDate() + 1);
+          boundary.setHours(5, 0, 0, 0);
+          return boundary;
+        }
+        boundary.setHours(nextHour, 0, 0, 0);
+        return boundary;
+      };
       const minutes = now.getHours() * 60 + now.getMinutes();
       const localTheme = minutes >= 5 * 60 && minutes < 11 * 60
         ? "morning"
@@ -50,7 +66,41 @@
           : minutes >= 17 * 60 && minutes < 20 * 60
             ? "dusk"
             : "night";
-      const activeTheme = themes.includes(preview) ? preview : localTheme;
+      const overrideStorageKey = "lusu-wallpaper-time-override-v1";
+      const clearStoredOverride = () => {
+        try { localStorage.removeItem(overrideStorageKey); } catch {}
+        try { sessionStorage.removeItem(overrideStorageKey); } catch {}
+      };
+      let storedTheme = "";
+      try {
+        let storedValue = "";
+        try { storedValue = localStorage.getItem(overrideStorageKey) || ""; } catch {}
+        if (!storedValue) {
+          try { storedValue = sessionStorage.getItem(overrideStorageKey) || ""; } catch {}
+        }
+        const storedOverride = JSON.parse(storedValue || "null");
+        const selectedAt = Number(storedOverride?.selectedAt);
+        const expiresAt = Number(storedOverride?.expiresAt);
+        const expectedExpiry = Number.isFinite(selectedAt)
+          ? nextThemeBoundary(new Date(selectedAt)).getTime()
+          : 0;
+        if (storedOverride?.v === 1
+          && themes.includes(storedOverride?.theme)
+          && Number.isFinite(selectedAt)
+          && selectedAt <= now.getTime() + 5000
+          && Number.isFinite(expiresAt)
+          && expiresAt === expectedExpiry
+          && expiresAt > now.getTime()
+          && expiresAt - selectedAt <= 12 * 60 * 60 * 1000) {
+          storedTheme = storedOverride.theme;
+        } else if (storedOverride) {
+          clearStoredOverride();
+        }
+      } catch {
+        storedTheme = "";
+        clearStoredOverride();
+      }
+      const activeTheme = themes.includes(preview) ? preview : storedTheme || localTheme;
       document.documentElement.dataset.timeTheme = activeTheme;
 
       const mobileShell = window.matchMedia?.("(max-width: 760px), (max-height: 520px) and (pointer: coarse)")?.matches;
@@ -75,10 +125,10 @@
       document.head.appendChild(preload);
     })();
   </script>
-  <script src="/js/mobile-shell.js?v=20260726-security-reliability-r1"></script>
-  <link rel="stylesheet" href="/css/style.css?v=20260726-security-reliability-r1">
-  <link rel="stylesheet" data-mobile-shell-style href="/css/mobile-ios-shell.css?v=20260728-knowledge-archive-r1">
-  <link rel="stylesheet" href="/css/motion-system.css?v=20260726-security-reliability-r1">
+  <script src="/js/mobile-shell.js?v=20260809-motion-polish-r2"></script>
+  <link rel="stylesheet" href="/css/style.css?v=20260809-motion-polish-r2">
+  <link rel="stylesheet" data-mobile-shell-style href="/css/mobile-ios-shell.css?v=20260809-motion-polish-r2">
+  <link rel="stylesheet" href="/css/motion-system.css?v=20260809-motion-polish-r2">
 </head>
 <body data-route="home">
   <a class="skip-link" href="#main-content" data-modal-background data-i18n="skipToMain">跳到主内容</a>
@@ -106,6 +156,54 @@
         <span data-i18n="siteName">鲁肃的个人站</span>
       </button>
       <div class="topbar-actions">
+        <div class="wallpaper-time-switch" id="wallpaper-time-switch" role="radiogroup" aria-label="壁纸时段切换" data-i18n-aria-label="wallpaperTimeSwitchAria" data-immediate="true">
+          <img class="wallpaper-time-track" src="/assets/images/wallpaper-switch/time-track.png?v=20260809-wallpaper-time-switch-r2" width="880" height="192" alt="" aria-hidden="true">
+          <span class="wallpaper-time-effects" aria-hidden="true">
+            <span class="wallpaper-time-effect" data-wallpaper-effect="morning">
+              <img class="wallpaper-time-effect-layer is-upper" data-src="/assets/images/wallpaper-switch/fx-morning.png?v=20260809-wallpaper-time-switch-r2" width="256" height="256" decoding="async" alt="">
+              <img class="wallpaper-time-effect-layer is-middle" data-src="/assets/images/wallpaper-switch/fx-morning.png?v=20260809-wallpaper-time-switch-r2" width="256" height="256" decoding="async" alt="">
+              <img class="wallpaper-time-effect-layer is-lower" data-src="/assets/images/wallpaper-switch/fx-morning.png?v=20260809-wallpaper-time-switch-r2" width="256" height="256" decoding="async" alt="">
+            </span>
+            <span class="wallpaper-time-effect" data-wallpaper-effect="day">
+              <img class="wallpaper-time-effect-layer is-upper" data-src="/assets/images/wallpaper-switch/fx-day.png?v=20260809-wallpaper-time-switch-r2" width="256" height="256" decoding="async" alt="">
+              <img class="wallpaper-time-effect-layer is-middle" data-src="/assets/images/wallpaper-switch/fx-day.png?v=20260809-wallpaper-time-switch-r2" width="256" height="256" decoding="async" alt="">
+              <img class="wallpaper-time-effect-layer is-lower" data-src="/assets/images/wallpaper-switch/fx-day.png?v=20260809-wallpaper-time-switch-r2" width="256" height="256" decoding="async" alt="">
+            </span>
+            <span class="wallpaper-time-effect" data-wallpaper-effect="dusk">
+              <img class="wallpaper-time-effect-layer is-upper" data-src="/assets/images/wallpaper-switch/fx-dusk.png?v=20260809-wallpaper-time-switch-r2" width="256" height="256" decoding="async" alt="">
+              <img class="wallpaper-time-effect-layer is-middle" data-src="/assets/images/wallpaper-switch/fx-dusk.png?v=20260809-wallpaper-time-switch-r2" width="256" height="256" decoding="async" alt="">
+              <img class="wallpaper-time-effect-layer is-lower" data-src="/assets/images/wallpaper-switch/fx-dusk.png?v=20260809-wallpaper-time-switch-r2" width="256" height="256" decoding="async" alt="">
+            </span>
+            <span class="wallpaper-time-effect" data-wallpaper-effect="night">
+              <img class="wallpaper-time-effect-layer is-upper" data-src="/assets/images/wallpaper-switch/fx-night.png?v=20260809-wallpaper-time-switch-r2" width="256" height="256" decoding="async" alt="">
+              <img class="wallpaper-time-effect-layer is-middle" data-src="/assets/images/wallpaper-switch/fx-night.png?v=20260809-wallpaper-time-switch-r2" width="256" height="256" decoding="async" alt="">
+              <img class="wallpaper-time-effect-layer is-lower" data-src="/assets/images/wallpaper-switch/fx-night.png?v=20260809-wallpaper-time-switch-r2" width="256" height="256" decoding="async" alt="">
+            </span>
+          </span>
+          <button class="wallpaper-time-option" type="button" role="radio" data-wallpaper-time="morning" aria-checked="true" aria-label="早上" data-i18n-aria-label="wallpaperTimeMorning" tabindex="0"></button>
+          <button class="wallpaper-time-option" type="button" role="radio" data-wallpaper-time="day" aria-checked="false" aria-label="中午" data-i18n-aria-label="wallpaperTimeDay" tabindex="-1"></button>
+          <button class="wallpaper-time-option" type="button" role="radio" data-wallpaper-time="dusk" aria-checked="false" aria-label="下午" data-i18n-aria-label="wallpaperTimeDusk" tabindex="-1"></button>
+          <button class="wallpaper-time-option" type="button" role="radio" data-wallpaper-time="night" aria-checked="false" aria-label="晚上" data-i18n-aria-label="wallpaperTimeNight" tabindex="-1"></button>
+          <span class="wallpaper-time-selector" aria-hidden="true">
+            <img src="/assets/images/wallpaper-switch/time-selector.png?v=20260809-wallpaper-time-switch-r2" width="200" height="200" alt="">
+          </span>
+          <span class="sr-only" id="wallpaper-time-status" aria-live="polite" aria-atomic="true"></span>
+        </div>
+        <script>
+          (() => {
+            const group = document.getElementById("wallpaper-time-switch");
+            const themes = ["morning", "day", "dusk", "night"];
+            const theme = document.documentElement.dataset.timeTheme;
+            const selectedIndex = Math.max(0, themes.indexOf(theme));
+            const selector = group?.querySelector(".wallpaper-time-selector");
+            if (selector) selector.style.transform = `translate3d(${8 + selectedIndex * 44}px, 0, 0)`;
+            group?.querySelectorAll("[data-wallpaper-time]").forEach((button) => {
+              const selected = button.dataset.wallpaperTime === themes[selectedIndex];
+              button.setAttribute("aria-checked", String(selected));
+              button.tabIndex = selected ? 0 : -1;
+            });
+          })();
+        </script>
         <div class="account-widget" id="account-widget"></div>
         <button class="mobile-language-cycle" type="button" aria-label="当前语言：中文。切换到 English。" title="当前语言：中文。切换到 English。"><span data-mobile-language-label>中文</span></button>
         <nav class="language-switcher" aria-label="语言切换" data-i18n-aria-label="languageSwitcherAria">
@@ -471,7 +569,7 @@
   </div>
 
   <script src="/js/telemetry.js?v=20260802-traffic-budget-r1"></script>
-  <script src="/js/ui-motion.js?v=20260726-security-reliability-r1"></script>
-  <script type="module" src="/js/main.js?v=20260809-game-video-mcp-candidate-r2"></script>
+  <script src="/js/ui-motion.js?v=20260809-motion-polish-r2"></script>
+  <script type="module" src="/js/main.js?v=20260809-motion-polish-r2"></script>
 </body>
 </html>

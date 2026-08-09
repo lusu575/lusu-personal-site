@@ -618,13 +618,18 @@ export function createChatroomRoute({
     const button = document.getElementById("chat-unread-button");
     const list = document.getElementById("chat-message-list");
     if (!button) return;
-    button.hidden = session.unread <= 0;
-    if (!button.hidden) {
+    const shouldShow = session.unread > 0;
+    if (shouldShow && button.hidden) {
+      button.hidden = false;
+    } else if (!shouldShow && !button.hidden) {
+      button.hidden = true;
+    }
+    if (shouldShow) {
       const label = formatChatCount("chatUnreadMessages", session.unread);
       button.textContent = label;
       button.setAttribute("aria-label", label);
     }
-    list?.classList.toggle("has-unread", session.unread > 0);
+    list?.classList.toggle("has-unread", shouldShow);
   }
 
   function clearChatUnread() {

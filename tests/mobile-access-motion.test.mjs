@@ -92,6 +92,28 @@ test("page navigation animates only live page content so fixed topbar and Dock n
   assert.doesNotMatch(motionSource, /view-transition-name:\s*(?:module-page|app-screen|mobile-tab-page)/);
 });
 
+test("keyboard and reduced navigation commit without spatial Dock motion", () => {
+  assert.match(uiMotionSource, /context\.motion === false[\s\S]*state\.mode === "reduced"[\s\S]*snapshot && snapshot\.inputMethod === "keyboard"/);
+  assert.match(mobileShellSource, /function dockUsesImmediateMotion[\s\S]*root\.dataset\.inputMethod === "keyboard"/);
+  assert.match(mobileShellSource, /const keyboardInput = root\.dataset\.inputMethod === "keyboard"/);
+  assert.match(mobileShellSource, /behavior: measurement\.keyboardInput \|\| measurement\.reducedMotion \? "auto" : "smooth"/);
+  assert.match(mobileShellSource, /indicator\.classList\.remove\("is-dock-indicator-ready"\)[\s\S]*void indicator\.offsetWidth[\s\S]*indicator\.style\.transform[\s\S]*void indicator\.offsetWidth[\s\S]*indicator\.classList\.toggle\("is-dock-indicator-ready"/);
+  assert.match(mobileSource, /html\[data-ui-shell="mobile"\]\[data-input-method="keyboard"\] \.mobile-dock-scroll\s*\{[\s\S]*scroll-behavior:\s*auto !important;[\s\S]*transition:\s*none !important/);
+  assert.match(mobileSource, /html\[data-ui-shell="mobile"\]\[data-input-method="keyboard"\] :is\([\s\S]*\.mobile-dock-selection[\s\S]*\.xp-taskbar[\s\S]*\.mobile-home-indicator span[\s\S]*transition:\s*none !important/);
+  assert.match(motionSource, /html\[data-input-method="keyboard"\] :where\([\s\S]*\.desktop-icon,[\s\S]*\.start-button,[\s\S]*\.taskbar-tabs button,[\s\S]*\.mobile-home-button,[\s\S]*transition:\s*none !important/);
+  assert.match(mobileSource, /\.mobile-dock-selection\.is-dock-indicator-ready\s*\{[\s\S]*transform var\(--motion-window\) var\(--motion-ease-in-out\)/);
+  const sharedPressRule = motionSource.match(/\.brand-button,\s*\.account-button,[\s\S]*?\n\}/)?.[0] || "";
+  assert.match(sharedPressRule, /\.account-mode-button,[\s\S]*\.account-password-toggle,[\s\S]*\.account-close-button/);
+  assert.match(sharedPressRule, /transform var\(--motion-release\) var\(--motion-ease-out\)/);
+  assert.match(motionSource, /--motion-press:\s*140ms;[\s\S]*--motion-release:\s*90ms;/);
+  assert.match(motionSource, /\.is-ui-pressed:not[\s\S]*transition-duration:\s*var\(--motion-press\)/);
+  assert.doesNotMatch(sharedPressRule, /(?:filter|box-shadow)\s+var\(--motion/);
+  assert.match(mobileShellSource, /const velocityY = deltaY \/ Math\.max\(elapsed, 1\)/);
+  assert.match(mobileShellSource, /deltaY >= HOME_GESTURE_DISTANCE[\s\S]*velocityY > HOME_GESTURE_MIN_VELOCITY/);
+  assert.match(styleSource, /\.skip-link\s*\{[\s\S]*transition:\s*none/);
+  assert.match(styleSource, /@media \(hover: hover\) and \(pointer: fine\)\s*\{\s*\.about-social-link:hover/);
+});
+
 test("OPT-085 viewport ownership and OPT-088 state-preserving i18n guards remain intact", () => {
   assert.equal((mobileShellSource.match(/window\.addEventListener\("resize"/g) || []).length, 1);
   assert.equal((mobileShellSource.match(/visualViewport\?\.addEventListener\("resize"/g) || []).length, 1);

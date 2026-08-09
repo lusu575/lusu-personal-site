@@ -11,6 +11,11 @@
   const FOCUS_RECHECK_KEY = "mobile-shell:focusout-recheck";
   const FOCUS_RECHECK_DELAY_MS = 400;
   const VIEWPORT_RESTORE_TOLERANCE = 8;
+  const HOME_GESTURE_DISTANCE = 54;
+  const HOME_GESTURE_MIN_FLICK_DISTANCE = 12;
+  const HOME_GESTURE_MAX_CROSS_AXIS = 72;
+  const HOME_GESTURE_MAX_DURATION_MS = 700;
+  const HOME_GESTURE_MIN_VELOCITY = 0.11;
   const HORIZONTAL_DISCOVERY_SELECTOR = [
     "#knowledge-categories",
     "#videos .filter-row",
@@ -497,6 +502,10 @@
       || window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
   }
 
+  function dockUsesImmediateMotion(explicitImmediate = false) {
+    return explicitImmediate || root.dataset.inputMethod === "keyboard";
+  }
+
   function dockRouteElements(route) {
     const scroller = document.querySelector(".mobile-dock-scroll");
     return {
@@ -522,16 +531,17 @@
       reveal = activeRect.left < scrollerRect.left + edgeInset
         || activeRect.right > scrollerRect.right - edgeInset;
     }
+    const keyboardInput = root.dataset.inputMethod === "keyboard";
     return {
       route,
       shell: state.shell,
       scroller,
       active,
       indicator,
-      immediate,
+      immediate: dockUsesImmediateMotion(immediate),
       reveal,
       selectionX: active?.offsetLeft || 0,
-      selectionWidth: active?.offsetWidth || 0,
+      keyboardInput,
       reducedMotion: motionIsReduced()
     };
   }
@@ -540,28 +550,38 @@
     if (!measurement?.scroller || !measurement.indicator || state.shell !== "mobile") {
       return;
     }
-    const { scroller, active } = measurement;
+    const { scroller, active, indicator } = measurement;
     if (!scroller.isConnected || (active && !active.isConnected)) {
       return;
     }
-    scroller.classList.toggle("has-no-dock-route", !active);
+    const wasReady = state.dockIndicatorReady;
+    const applyImmediately = measurement.immediate || !wasReady;
+    if (applyImmediately) {
+      indicator.classList.remove("is-dock-indicator-ready");
+      // Commit transition:none before changing the target values. Re-adding the
+      // ready class in the same task without this flush lets browsers merge both
+      // style states and animate a keyboard-triggered route change after all.
+      void indicator.offsetWidth;
+    }
+    indicator.style.opacity = active ? "1" : "0";
+    if (active) {
+      indicator.style.transform = `translate3d(${measurement.selectionX}px, 0, 0)`;
+    }
+    if (applyImmediately) {
+      // Commit the final position while transitions are still disabled, then
+      // restore the ready class for the next pointer-triggered route change.
+      void indicator.offsetWidth;
+      state.dockIndicatorReady = Boolean(active || wasReady);
+      indicator.classList.toggle("is-dock-indicator-ready", state.dockIndicatorReady);
+    }
     if (!active) {
       return;
-    }
-    if (measurement.immediate || !state.dockIndicatorReady) {
-      scroller.classList.remove("is-dock-indicator-ready");
-    }
-    scroller.style.setProperty("--mobile-dock-selection-x", `${measurement.selectionX}px`);
-    scroller.style.setProperty("--mobile-dock-selection-width", `${measurement.selectionWidth}px`);
-    if (!state.dockIndicatorReady || measurement.immediate) {
-      state.dockIndicatorReady = true;
-      scroller.classList.add("is-dock-indicator-ready");
     }
     if (measurement.reveal) {
       active.scrollIntoView({
         block: "nearest",
         inline: "nearest",
-        behavior: measurement.reducedMotion ? "auto" : "smooth"
+        behavior: measurement.keyboardInput || measurement.reducedMotion ? "auto" : "smooth"
       });
     }
   }
@@ -1026,7 +1046,13 @@
     const deltaY = start.y - event.clientY;
     const deltaX = Math.abs(start.x - event.clientX);
     const elapsed = performance.now() - start.time;
-    if (deltaY < 54 || deltaX > 72 || elapsed > 700 || document.body?.dataset.route === "home") {
+    const velocityY = deltaY / Math.max(elapsed, 1);
+    const hasSwipeIntent = deltaY >= HOME_GESTURE_DISTANCE
+      || (deltaY >= HOME_GESTURE_MIN_FLICK_DISTANCE && velocityY > HOME_GESTURE_MIN_VELOCITY);
+    if (!hasSwipeIntent
+      || deltaX > HOME_GESTURE_MAX_CROSS_AXIS
+      || elapsed > HOME_GESTURE_MAX_DURATION_MS
+      || document.body?.dataset.route === "home") {
       return;
     }
     document.querySelector(".start-button[data-route='home']")?.click();

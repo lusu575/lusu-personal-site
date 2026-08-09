@@ -34,8 +34,10 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the game and video MCP candidate leads the five-item trilingual projection while older updates remain archived", async () => {
+test("the game/video MCP update leads the five-item projection while wallpaper and motion updates remain visible", async () => {
   const updateId = "seed-update-2026-08-09-game-video-mcp-candidate";
+  const wallpaperTimeUpdateId = "seed-update-2026-08-09-wallpaper-time-switch";
+  const motionPolishUpdateId = "seed-update-2026-08-09-motion-polish";
   const remoteMcpOauthUpdateId = "seed-update-2026-08-07-remote-mcp-oauth";
   const lifeRestartAgentUpdateId = "seed-update-2026-08-07-life-restart-agent";
   const hextrisAgentUpdateId = "seed-update-2026-08-07-hextris-agent";
@@ -59,20 +61,22 @@ test("the game and video MCP candidate leads the five-item trilingual projection
 
   assert.equal(content.updates[0].article_id, updateId);
   assert.equal(homeContent.updates[0].article_id, updateId);
-  assert.equal(content.updates[1].article_id, remoteMcpOauthUpdateId);
-  assert.equal(homeContent.updates[1].article_id, remoteMcpOauthUpdateId);
-  assert.equal(content.updates[2].article_id, lifeRestartAgentUpdateId);
-  assert.equal(homeContent.updates[2].article_id, lifeRestartAgentUpdateId);
-  assert.equal(content.updates[3].article_id, hextrisAgentUpdateId);
-  assert.equal(homeContent.updates[3].article_id, hextrisAgentUpdateId);
-  assert.equal(content.updates[4].article_id, whiteboardAgentImagesUpdateId);
-  assert.equal(homeContent.updates[4].article_id, whiteboardAgentImagesUpdateId);
-  assert.equal(content.updates[5].article_id, agentAuthFormOriginUpdateId);
-  assert.equal(content.updates[6].article_id, japaneseProgressUpdateId);
-  assert.equal(content.updates[7].article_id, agentReadBreadthUpdateId);
-  assert.equal(content.updates[8].article_id, whiteboard2048UpdateId);
-  assert.equal(content.updates[9].article_id, firstPhaseUpdateId);
-  assert.equal(content.updates[10].article_id, websiteGuideUpdateId);
+  assert.equal(content.updates[1].article_id, wallpaperTimeUpdateId);
+  assert.equal(homeContent.updates[1].article_id, wallpaperTimeUpdateId);
+  assert.equal(content.updates[2].article_id, motionPolishUpdateId);
+  assert.equal(homeContent.updates[2].article_id, motionPolishUpdateId);
+  assert.equal(content.updates[3].article_id, remoteMcpOauthUpdateId);
+  assert.equal(homeContent.updates[3].article_id, remoteMcpOauthUpdateId);
+  assert.equal(content.updates[4].article_id, lifeRestartAgentUpdateId);
+  assert.equal(homeContent.updates[4].article_id, lifeRestartAgentUpdateId);
+  assert.equal(content.updates[5].article_id, hextrisAgentUpdateId);
+  assert.equal(content.updates[6].article_id, whiteboardAgentImagesUpdateId);
+  assert.equal(content.updates[7].article_id, agentAuthFormOriginUpdateId);
+  assert.equal(content.updates[8].article_id, japaneseProgressUpdateId);
+  assert.equal(content.updates[9].article_id, agentReadBreadthUpdateId);
+  assert.equal(content.updates[10].article_id, whiteboard2048UpdateId);
+  assert.equal(content.updates[11].article_id, firstPhaseUpdateId);
+  assert.equal(content.updates[12].article_id, websiteGuideUpdateId);
   assert.ok(content.updates.some((update) => update.article_id === trafficUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === calmWhiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === reliableWhiteboardUpdateId));
@@ -90,38 +94,44 @@ test("the game and video MCP candidate leads the five-item trilingual projection
 
   for (const path of ["functions/api/[[route]].js", "cloudflare/schema.sql"]) {
     const source = read(path);
-    assert.ok(source.includes(updateId), `${path} should include the newest update seed`);
+    for (const seededUpdateId of [updateId, wallpaperTimeUpdateId, motionPolishUpdateId]) {
+      assert.ok(source.includes(seededUpdateId), `${path} should include ${seededUpdateId}`);
+    }
     for (const title of Object.values(content.updates[0].title)) {
       assert.ok(source.includes(title), `${path} should include ${title}`);
     }
   }
 });
 
-test("Knowledge Markdown links use a fresh cache version without invalidating unrelated public assets", () => {
-  const stableVersion = "20260726-security-reliability-r1";
-  const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-  const agentCapabilitiesVersion = "20260806-agent-capabilities-quick-transfer-r1";
-  const gameVideoMcpCandidateVersion = "20260809-game-video-mcp-candidate-r2";
-  const transferVersion = "20260809-game-video-mcp-candidate-r2";
+test("public motion, wallpaper imagery, and Quick Transfer keep independent cache versions", () => {
+  const publicVersion = "20260809-motion-polish-r2";
+  const wallpaperAssetVersion = "20260809-wallpaper-time-switch-r2";
+  const transferVersion = "20260809-transfer-motion-r2";
   const index = read("index.html");
   const main = read("js/main.js");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");
   const resources = read("js/routes/resources.mjs");
 
   for (const asset of [
-    "/js/mobile-shell.js",
     "/css/style.css",
+    "/css/mobile-ios-shell.css",
     "/css/motion-system.css",
-    "/js/ui-motion.js"
+    "/js/mobile-shell.js",
+    "/js/ui-motion.js",
+    "/js/main.js"
   ]) {
-    assert.ok(index.includes(`${asset}?v=${stableVersion}`), `${asset} should use ${stableVersion}`);
+    assert.ok(index.includes(`${asset}?v=${publicVersion}`), `${asset} should use ${publicVersion}`);
   }
-  assert.ok(index.includes(`/css/mobile-ios-shell.css?v=${knowledgeReaderVersion}`));
-  assert.ok(index.includes(`/js/main.js?v=${gameVideoMcpCandidateVersion}`));
-  assert.ok(main.includes(`const routeStyleVersion = "${knowledgeReaderVersion}"`));
-  assert.ok(main.includes(`./core/i18n.mjs?v=${agentCapabilitiesVersion}`));
-  assert.ok(main.includes(`./data/home-content.mjs?v=${gameVideoMcpCandidateVersion}`));
-  assert.ok(main.includes(`./routes/knowledge.mjs?v=${agentCapabilitiesVersion}`));
+  for (const asset of ["time-track.png", "time-selector.png"]) {
+    assert.ok(index.includes(`/assets/images/wallpaper-switch/${asset}?v=${wallpaperAssetVersion}`));
+  }
+  assert.ok(main.includes(`const routeStyleVersion = "${publicVersion}"`));
+  assert.ok(main.includes(`./core/i18n.mjs?v=${publicVersion}`));
+  assert.ok(main.includes(`./core/wallpaper-time.mjs?v=${publicVersion}`));
+  assert.ok(main.includes(`./data/home-content.mjs?v=${publicVersion}`));
+  assert.ok(main.includes(`./features/account.mjs?v=${publicVersion}`));
+  assert.ok(main.includes(`./routes/knowledge.mjs?v=${publicVersion}`));
+  assert.ok(main.includes(`./routes/chatroom.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/resources.mjs?v=${transferVersion}`));
   assert.ok(main.includes(`./data/resources-content.mjs?v=${transferVersion}`));
   for (const token of [

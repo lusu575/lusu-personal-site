@@ -302,11 +302,12 @@ test("article navigation and multiline TOC geometry stay scroll-safe across desk
 });
 
 test("article reader uses an observer, in-window scrolling, shareable hashes, and an explicit summary control", async () => {
-  const [routeSource, indexSource, routeCss, mobileCss] = await Promise.all([
+  const [routeSource, indexSource, routeCss, mobileCss, motionCss] = await Promise.all([
     readFile(new URL("../js/routes/knowledge.mjs", import.meta.url), "utf8"),
     readFile(new URL("../index.html", import.meta.url), "utf8"),
     readFile(new URL("../css/routes/knowledge.css", import.meta.url), "utf8"),
-    readFile(new URL("../css/mobile-ios-shell.css", import.meta.url), "utf8")
+    readFile(new URL("../css/mobile-ios-shell.css", import.meta.url), "utf8"),
+    readFile(new URL("../css/motion-system.css", import.meta.url), "utf8")
   ]);
 
   assert.match(routeSource, /new window\.IntersectionObserver/);
@@ -333,9 +334,22 @@ test("article reader uses an observer, in-window scrolling, shareable hashes, an
   assert.match(indexSource, /data-article-scroll-top hidden/);
   assert.match(routeCss, /max-width:\s*82ch/);
   assert.match(routeCss, /user-select:\s*text/);
+  assert.match(routeCss, /#knowledge \.article-card\s*\{[\s\S]*transition:\s*transform var\(--motion-release\) var\(--motion-ease-out\)/);
+  assert.match(routeCss, /#knowledge \.article-card\.is-ui-pressed[\s\S]*transition-duration:\s*var\(--motion-press\)/);
+  assert.doesNotMatch(routeCss, /(?:border-color|box-shadow)\s+var\(--motion-fast/);
+  assert.doesNotMatch(routeCss, /@media/);
+  assert.match(motionCss, /@media \(hover: hover\) and \(pointer: fine\)[\s\S]*#knowledge \.article-card:hover/);
+  assert.match(routeCss, /data-input-method="keyboard"[\s\S]*#knowledge \.article-card[\s\S]*transition:\s*none !important/);
   assert.match(mobileCss, /#article-detail-meta[\s\S]*?flex-wrap:\s*wrap/);
   assert.match(mobileCss, /#article-summary-toggle\.is-expanded|#article-detail-summary\.is-expanded/);
-  assert.match(mobileCss, /article-detail-head > p\.is-collapsible:not\(\.is-expanded\)[\s\S]*display:\s*none/);
+  assert.match(mobileCss, /article-detail-head > p\.is-collapsible[\s\S]*opacity:\s*0\.82[\s\S]*transform:\s*translate3d\(0,\s*-2px,\s*0\)[\s\S]*transform var\(--motion-standard\) var\(--motion-ease-out\)/);
+  assert.doesNotMatch(mobileCss, /article-detail-head > p\.is-collapsible[\s\S]*transition:[^}]*\bheight\b/);
+  assert.match(mobileCss, /data-input-method="keyboard"\][\s\S]*#article-detail-summary\.is-collapsible[\s\S]*transition:\s*none !important/);
+  assert.match(mobileCss, /data-performance-tier="low"\][\s\S]*#article-detail-summary\.is-collapsible[\s\S]*transition:\s*none !important/);
+  assert.doesNotMatch(routeSource, /--article-summary-expanded-height/);
+  assert.match(routeSource, /Math\.ceil\(summary\.scrollHeight\)/);
+  assert.match(routeSource, /function scrollArticleToTop\(\{ immediate = false \} = \{\}\)[\s\S]*behavior: immediate \? "auto" : motionScrollBehavior\(\)/);
+  assert.match(await readFile(new URL("../js/main.js", import.meta.url), "utf8"), /scrollArticleToTop\(\{ immediate: keyboardActivation \}\)/);
   assert.match(routeSource, /const atArticleTop = !detail \|\| detail\.scrollTop <= 2/);
   assert.match(routeSource, /topButton\?\.toggleAttribute\("hidden", atArticleTop\)/);
   assert.match(routeSource, /document\.getElementById\("article-detail-title"\)\?\.focus\(\{ preventScroll: true \}\)/);

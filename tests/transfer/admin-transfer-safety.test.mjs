@@ -12,9 +12,11 @@ test("Transfer admin replaces native confirms with a contextual safe-default dia
   assert.doesNotMatch(client, /\bconfirm\s*\(/);
   assert.match(html, /<dialog[^>]+id="context-dialog"/);
   assert.match(html, /id="context-dialog-cancel">取消，保留当前状态</);
-  assert.match(client, /window\.setTimeout\(\(\) => byId\("context-dialog-cancel"\)\.focus\(\), 0\)/);
-  assert.match(client, /event\.target === dialog[\s\S]*dialog\.close\("cancel"\)/);
+  assert.match(client, /dialog\.classList\.add\("is-dialog-entering"\)[\s\S]*dialog\.showModal\(\)/);
+  assert.match(client, /event\.target === dialog[\s\S]*closeConfirmDialog\("cancel"\)/);
+  assert.match(client, /dialog\.addEventListener\("cancel"[\s\S]*closeConfirmDialog\("cancel", \{ immediate: true \}\)/);
   assert.match(client, /dialog\.returnValue === "confirm"/);
+  assert.match(styles, /\.context-dialog\.is-dialog-closing::backdrop\s*\{\s*opacity: 0/);
   assert.match(client, /title: "永久删除互传项目"[\s\S]*发送者：/);
   assert.match(client, /"清空互传房间"[\s\S]*不可撤销/);
 });
@@ -39,6 +41,7 @@ test("Transfer admin serializes mutations and protects list searches from stale 
   assert.match(client, /mutationLocked: false/);
   assert.match(client, /if \(state\.mutationLocked\)[\s\S]*return null/);
   assert.match(client, /document\.querySelectorAll\("\[data-mutation\]"\)/);
+  assert.match(client, /button === state\.mutationBusyButton[\s\S]*button\.setAttribute\("aria-busy", "true"\)[\s\S]*button\.removeAttribute\("aria-busy"\)/);
   assert.match(client, /controller\?\.abort\(\)/);
   assert.match(client, /const sequence = channel\.sequence \+ 1/);
   assert.match(client, /if \(channel\.sequence !== sequence\)/);
@@ -67,6 +70,17 @@ test("Transfer admin tables expose keyboard-scrollable labelled regions", () => 
     assert.match(wrapper, /aria-describedby="table-scroll-hint"/);
   }
   assert.match(styles, /\.table-wrap:focus-visible/);
+  assert.match(client, /tableBusyCounts: new Map\(\)/);
+  assert.match(client, /tableWrap\.setAttribute\("aria-busy", active \? "true" : "false"\)/);
+  assert.match(styles, /\.table-wrap\[aria-busy="true"\]::after/);
+  assert.doesNotMatch(styles, /\.table-wrap\[aria-busy="true"\]\s+table/);
+  assert.doesNotMatch(styles, /table\s*\{[^}]*transition:\s*opacity/);
+  assert.match(client, /const immediate = transferMotionShouldBeImmediate\(\)/);
+  assert.match(styles, /body\[data-input-method="keyboard"\] \.notice,body\[data-input-method="keyboard"\] \.context-dialog-window \{ transform: none; transition: none; \}/);
+  assert.match(styles, /button,a \{[^}]*transition: transform 90ms var\(--admin-ease-out\)/);
+  assert.match(styles, /button:active:not\(:disabled\),a:active \{[^}]*transition-duration: 130ms/);
+  assert.match(styles, /\.notice:not\(\.is-mounted\) \{ visibility: hidden; \}/);
+  assert.doesNotMatch(styles, /\.notice:not\(\.is-mounted\) \{ display: none/);
 });
 
 test("ready transitions verify D1 changes before recording completed uploads", () => {

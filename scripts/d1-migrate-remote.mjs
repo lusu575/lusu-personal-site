@@ -254,7 +254,7 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260809-game-video-mcp-candidate-r2'
+    where key = 'article_seed_version' and value = '20260809-motion-polish-r2'
     union all
     select 'game-video-mcp-candidate-update-article',
       case when count(*) = 1 then 1 else 0 end
@@ -282,6 +282,80 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'whiteboard-agent-images-update-article', count(*)
     from articles where article_id = 'seed-update-2026-08-06-whiteboard-agent-images'
+  `,
+  `
+    select 'wallpaper-time-switch-update-article' as item,
+      case when count(*) = 1 then 1 else 0 end as present
+    from articles
+    where article_id = 'seed-update-2026-08-09-wallpaper-time-switch'
+      and slug = '2026-08-09-wallpaper-time-switch'
+      and category = 'site-updates'
+      and status = 'published'
+      and published_at = '2026-08-09T05:40:00.000Z'
+    union all
+    select 'wallpaper-time-switch-update-translations',
+      case
+        when count(*) = 3
+          and count(distinct lang) = 3
+          and sum(case when lang in ('zh', 'en', 'ja') then 1 else 0 end) = 3
+          and sum(case
+            when length(trim(title)) > 0
+              and length(trim(summary)) > 0
+              and length(trim(content_markdown)) > 0
+            then 1 else 0 end) = 3
+        then 1 else 0
+      end
+    from article_translations
+    where article_id = 'seed-update-2026-08-09-wallpaper-time-switch'
+    union all
+    select 'motion-polish-update-article',
+      case when count(*) = 1 then 1 else 0 end
+    from articles
+    where article_id = 'seed-update-2026-08-09-motion-polish'
+      and slug = '2026-08-09-motion-polish'
+      and category = 'site-updates'
+      and status = 'published'
+      and published_at = '2026-08-09T02:50:00.000Z'
+    union all
+    select 'motion-polish-update-translations',
+      case
+        when count(*) = 3
+          and count(distinct lang) = 3
+          and sum(case when lang in ('zh', 'en', 'ja') then 1 else 0 end) = 3
+          and sum(case
+            when length(trim(title)) > 0
+              and length(trim(summary)) > 0
+              and length(trim(content_markdown)) > 0
+            then 1 else 0 end) = 3
+        then 1 else 0
+      end
+    from article_translations
+    where article_id = 'seed-update-2026-08-09-motion-polish'
+  `,
+  `
+    select 'remote-mcp-oauth-update-article' as item,
+      case when count(*) = 1 then 1 else 0 end as present
+    from articles
+    where article_id = 'seed-update-2026-08-07-remote-mcp-oauth'
+      and slug = '2026-08-07-remote-mcp-oauth'
+      and category = 'site-updates'
+      and status = 'published'
+      and published_at = '2026-08-09T01:00:00.000Z'
+    union all
+    select 'remote-mcp-oauth-update-translations',
+      case
+        when count(*) = 3
+          and count(distinct lang) = 3
+          and sum(case when lang in ('zh', 'en', 'ja') then 1 else 0 end) = 3
+          and sum(case
+            when length(trim(title)) > 0
+              and length(trim(summary)) > 0
+              and length(trim(content_markdown)) > 0
+            then 1 else 0 end) = 3
+        then 1 else 0
+      end
+    from article_translations
+    where article_id = 'seed-update-2026-08-07-remote-mcp-oauth'
   `,
   `
     select 'whiteboard-reliable-sketch-update-article' as item, count(*) as present

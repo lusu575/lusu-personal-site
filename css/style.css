@@ -527,6 +527,132 @@ body[data-route="home"] .site-shell::after {
     0 8px 18px rgba(0, 20, 72, 0.12);
 }
 
+/* The four illustrations and the moving lens are generated image assets.
+   CSS owns only layout, hit targets, focus, and state positioning. */
+.wallpaper-time-switch {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: repeat(4, 44px);
+  width: 176px;
+  height: 44px;
+  flex: 0 0 176px;
+  overflow: visible;
+  touch-action: manipulation;
+}
+
+.wallpaper-time-track {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 0;
+  width: 176px;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  transform: translateY(-50%);
+}
+
+.wallpaper-time-option {
+  position: relative;
+  z-index: 3;
+  box-sizing: border-box;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.wallpaper-time-option:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: -3px;
+  box-shadow: 0 0 0 2px #123e91;
+}
+
+.wallpaper-time-option:disabled {
+  cursor: default;
+}
+
+.wallpaper-time-effects {
+  position: absolute;
+  z-index: 1;
+  top: 3px;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 44px);
+  width: 176px;
+  height: 38px;
+  overflow: hidden;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.wallpaper-time-effect {
+  position: relative;
+  display: block;
+  width: 44px;
+  height: 38px;
+  overflow: hidden;
+}
+
+.wallpaper-time-effect-layer {
+  position: absolute;
+  top: 0;
+  left: 3px;
+  display: block;
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  opacity: 0;
+  transform-origin: center;
+  user-select: none;
+}
+
+.wallpaper-time-effect-layer.is-upper {
+  clip-path: inset(0 0 66.666% 0);
+}
+
+.wallpaper-time-effect-layer.is-middle {
+  clip-path: inset(33.333% 0 33.333% 0);
+}
+
+.wallpaper-time-effect-layer.is-lower {
+  clip-path: inset(66.666% 0 0 0);
+}
+
+.wallpaper-time-selector {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  left: 0;
+  display: block;
+  width: 28px;
+  height: 28px;
+  pointer-events: none;
+  transform: translate3d(8px, 0, 0);
+  transform-origin: center;
+}
+
+html[data-time-theme="morning"] .wallpaper-time-selector { transform: translate3d(8px, 0, 0); }
+html[data-time-theme="day"] .wallpaper-time-selector { transform: translate3d(52px, 0, 0); }
+html[data-time-theme="dusk"] .wallpaper-time-selector { transform: translate3d(96px, 0, 0); }
+html[data-time-theme="night"] .wallpaper-time-selector { transform: translate3d(140px, 0, 0); }
+
+.wallpaper-time-selector img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  user-select: none;
+}
+
 .account-widget {
   position: relative;
   display: flex;
@@ -1371,7 +1497,7 @@ main {
   line-height: 20px;
   text-decoration: none;
   transform: translateY(calc(-100% - 20px));
-  transition: transform 140ms ease;
+  transition: none;
 }
 
 .skip-link:focus,
@@ -2793,9 +2919,11 @@ html:not([data-ui-shell="mobile"]):lang(zh) .about-copy {
   display: none !important;
 }
 
-.about-social-link:hover {
-  filter: brightness(1.06);
-  transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+  .about-social-link:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+  }
 }
 
 .about-social-link:active {

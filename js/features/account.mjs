@@ -1,6 +1,16 @@
 const ACCOUNT_MODES = Object.freeze(["login", "register"]);
 export const ACCOUNT_REQUEST_TIMEOUT_MS = 8000;
 
+function isKeyboardActivation(event) {
+  if (Number(event?.detail) !== 0) {
+    return false;
+  }
+  if (event?.isTrusted !== false) {
+    return true;
+  }
+  return document.documentElement?.dataset.inputMethod !== "pointer";
+}
+
 export function normalizeAccountMode(value) {
   return ACCOUNT_MODES.includes(value) ? value : "login";
 }
@@ -118,6 +128,10 @@ export function createAccountFeature({
   let accountPopoverReturnFocus = null;
   let accountLastEditingField = "password";
   let accountFocusRequest = 0;
+  let renderedAccountView = "";
+  let accountContentAnimation = null;
+  let accountContentMotionGeneration = 0;
+  let accountPopoverCloseGeneration = 0;
   let sessionRevision = 0;
   let initRequestId = 0;
   let accountStatus = { key: "accountChecking", raw: "", error: false };
@@ -200,6 +214,7 @@ export function createAccountFeature({
     refs.popover.setAttribute("role", "group");
     refs.popover.setAttribute("aria-labelledby", "account-popover-title");
     refs.popover.hidden = true;
+    refs.popover.inert = true;
 
     const header = document.createElement("header");
     header.className = "account-popover-header";
@@ -324,11 +339,17 @@ export function createAccountFeature({
     widget.appendChild(refs.popover);
 
     refs.form.addEventListener("submit", submitAccountForm);
-    refs.loginMode.addEventListener("click", () => setAccountMode("login", { focus: true }));
-    refs.registerMode.addEventListener("click", () => setAccountMode("register", { focus: true }));
+    refs.loginMode.addEventListener("click", (event) => setAccountMode("login", {
+      focus: true,
+      motion: isKeyboardActivation(event) ? false : undefined
+    }));
+    refs.registerMode.addEventListener("click", (event) => setAccountMode("register", {
+      focus: true,
+      motion: isKeyboardActivation(event) ? false : undefined
+    }));
     refs.close.addEventListener("click", (event) => {
       event.stopPropagation();
-      closeAccountPopover();
+      closeAccountPopover({ motion: isKeyboardActivation(event) ? false : undefined });
     });
     refs.logout.addEventListener("click", logoutAccount);
     refs.retryCheck.addEventListener("click", retryAccountCheck);
@@ -425,7 +446,86 @@ export function createAccountFeature({
     if (!registering) clearFieldError("confirmPassword");
   }
 
-  function syncAccountView() {
+  function accountContentMotionProfile(surface, options = {}) {
+    const root = document.documentElement;
+    const motionMode = window.LusuUiMotion?.getMode?.() || root?.dataset.motion;
+    const easing = (root && typeof window.getComputedStyle === "function")
+      ? window.getComputedStyle(root).getPropertyValue("--motion-ease-out").trim()
+      : "";
+    const reduced = motionMode === "reduced"
+      || Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches);
+    return {
+      immediate: !surface?.animate
+        || refs.popover?.hidden
+        || surface.hidden
+        || options.motion === false
+        || root?.dataset.inputMethod === "keyboard"
+        || motionMode === "off"
+        || root?.dataset.motionTier === "low-performance",
+      reduced,
+      duration: reduced ? 120 : Number(window.LusuUiMotion?.durations?.standard) || 200,
+      easing: easing || "cubic-bezier(0.23, 1, 0.32, 1)"
+    };
+  }
+
+  function cancelAccountViewMotion() {
+    accountContentMotionGeneration += 1;
+    accountContentAnimation = null;
+    [refs.form, refs.signedIn].forEach((surface) => {
+      surface?.getAnimations?.().forEach((animation) => animation.cancel());
+    });
+    refs.form?.style.removeProperty("overflow");
+  }
+
+  function animateAccountContentTransition(surface, options = {}) {
+    const profile = accountContentMotionProfile(surface, options);
+    const continuesCurrentSurface = accountContentAnimation?.effect?.target === surface;
+    let currentFrame = null;
+    if (continuesCurrentSurface && typeof window.getComputedStyle === "function") {
+      const style = window.getComputedStyle(surface);
+      const opacity = Number.parseFloat(style.opacity);
+      currentFrame = {
+        opacity: Number.isFinite(opacity) ? opacity : 0.84,
+        transform: style.transform && style.transform !== "none"
+          ? style.transform
+          : "translate3d(0,3px,0)"
+      };
+    }
+    cancelAccountViewMotion();
+    if (profile.immediate) return;
+
+    const generation = ++accountContentMotionGeneration;
+    const startFrame = {
+      opacity: currentFrame?.opacity ?? 0.84,
+      transform: profile.reduced
+        ? "none"
+        : currentFrame?.transform || "translate3d(0,3px,0)"
+    };
+    const animation = surface.animate([
+      startFrame,
+      { opacity: 1, transform: profile.reduced ? "none" : "translate3d(0,0,0)" }
+    ], {
+      duration: profile.duration,
+      easing: profile.easing
+    });
+    accountContentAnimation = animation;
+    const cleanup = () => {
+      if (generation !== accountContentMotionGeneration || accountContentAnimation !== animation) return;
+      accountContentAnimation = null;
+    };
+    animation.addEventListener("finish", cleanup, { once: true });
+    animation.addEventListener("cancel", cleanup, { once: true });
+  }
+
+  function animateAccountViewChange(options = {}) {
+    const nextView = authUser ? "signed-in" : "signed-out";
+    const changed = Boolean(renderedAccountView && renderedAccountView !== nextView);
+    renderedAccountView = nextView;
+    if (!changed || refs.popover?.hidden) return;
+    animateAccountContentTransition(authUser ? refs.signedIn : refs.form, options);
+  }
+
+  function syncAccountView(options = {}) {
     if (!ensureAccountDom()) return;
     const signedIn = Boolean(authUser);
     refs.form.hidden = signedIn;
@@ -435,6 +535,7 @@ export function createAccountFeature({
     syncAccountCopy();
     syncAccountBusyState();
     syncAccountPopoverState();
+    animateAccountViewChange(options);
   }
 
   function renderAccountWidget(message = "") {
@@ -443,12 +544,15 @@ export function createAccountFeature({
   }
 
   function setAccountMode(mode, options = {}) {
-    accountMode = normalizeAccountMode(mode);
     if (!ensureAccountDom()) return;
+    const nextMode = normalizeAccountMode(mode);
+    const changed = nextMode !== accountMode;
+    accountMode = nextMode;
     if (options.resetErrors !== false) clearAllFieldErrors();
     if (options.resetStatus !== false) setAccountStatus("accountGuestNote");
     syncAccountMode();
     syncAccountCopy();
+    if (changed) animateAccountContentTransition(refs.form, options);
     if (options.focus) {
       refs.email.focus({ preventScroll: true });
       requestMobileFocusReveal("account-mode-focus");
@@ -512,35 +616,36 @@ export function createAccountFeature({
     return firstField;
   }
 
-  async function initAccountWidget() {
-    syncAccountView();
+  async function initAccountWidget(options = {}) {
+    syncAccountView(options);
     const requestId = ++initRequestId;
     const revision = sessionRevision;
     authState = "checking";
     setAccountStatus("accountChecking");
-    syncAccountView();
+    syncAccountView(options);
     try {
       const payload = await accountApi("/api/auth/me");
       if (requestId !== initRequestId || revision !== sessionRevision) return;
       authUser = payload.user || null;
       authState = authUser ? "signed-in" : "guest";
       setAccountStatus(authUser ? "" : "accountGuestNote");
-      syncAccountView();
+      syncAccountView(options);
     } catch (error) {
       if (requestId !== initRequestId || revision !== sessionRevision) return;
       authState = "unavailable";
       setAccountStatus(error?.code === "ACCOUNT_TIMEOUT" ? "accountCheckTimeout" : "accountUnavailable", { error: true });
-      syncAccountView();
+      syncAccountView(options);
     }
   }
 
-  async function retryAccountCheck() {
+  async function retryAccountCheck(event) {
     if (authState === "checking") return;
+    const motion = isKeyboardActivation(event) ? false : undefined;
     const retryButton = refs.retryCheck;
     const activeBeforeRetry = document.activeElement;
     const preserveEditingFocus = refs.popover?.contains(activeBeforeRetry)
       && activeBeforeRetry !== retryButton;
-    await initAccountWidget();
+    await initAccountWidget({ motion });
     if (!refs.popover || refs.popover.hidden) return;
     if (preserveEditingFocus
       && activeBeforeRetry?.isConnected
@@ -561,6 +666,7 @@ export function createAccountFeature({
   async function submitAccountForm(event) {
     event.preventDefault();
     if (accountSubmitting) return;
+    const motion = document.documentElement?.dataset.inputMethod === "keyboard" ? false : undefined;
     const mode = accountMode;
     const errors = validateAccountDraft({
       mode,
@@ -595,8 +701,8 @@ export function createAccountFeature({
       refs.password.type = "password";
       refs.confirmPassword.type = "password";
       setAccountStatus("");
-      syncAccountView();
-      openAccountPopover({ focus: "status" });
+      syncAccountView({ motion });
+      openAccountPopover({ focus: "status", motion });
       window.dispatchEvent(new CustomEvent("lusu:accountchange", {
         detail: { signedIn: true, source: mode }
       }));
@@ -605,7 +711,7 @@ export function createAccountFeature({
       const failure = accountRequestFailure(error, mode, editingField);
       setFieldError(failure.field, failure.key);
       setAccountStatus(failure.key, { error: true });
-      openAccountPopover({ focus: "error" });
+      openAccountPopover({ focus: "error", motion });
       const { input } = fieldRefs(failure.field);
       input.focus({ preventScroll: true });
       requestMobileFocusReveal("account-form-error-focus");
@@ -614,8 +720,9 @@ export function createAccountFeature({
     }
   }
 
-  async function logoutAccount() {
+  async function logoutAccount(event) {
     if (accountSubmitting || !authUser) return;
+    const motion = isKeyboardActivation(event) ? false : undefined;
     const requestRevision = ++sessionRevision;
     setAccountSubmitting("logout");
     setAccountStatus("accountBusyLogout");
@@ -626,16 +733,16 @@ export function createAccountFeature({
       authState = "guest";
       accountMode = "login";
       setAccountStatus("accountLoggedOut");
-      syncAccountView();
-      openAccountPopover({ focus: "status" });
+      syncAccountView({ motion });
+      openAccountPopover({ focus: "status", motion });
       window.dispatchEvent(new CustomEvent("lusu:accountchange", {
         detail: { signedIn: false, source: "logout" }
       }));
     } catch {
       if (requestRevision !== sessionRevision) return;
       setAccountStatus("accountLogoutFailed", { error: true });
-      syncAccountView();
-      openAccountPopover({ focus: "status" });
+      syncAccountView({ motion });
+      openAccountPopover({ focus: "status", motion });
       refs.logout.focus({ preventScroll: true });
       requestMobileFocusReveal("account-logout-error-focus");
     } finally {
@@ -704,49 +811,71 @@ export function createAccountFeature({
     }
     if (options.mode) setAccountMode(options.mode, { resetStatus: false });
     const wasHidden = popover.hidden;
+    const wasClosing = popover.getAttribute("data-ui-closing") === "true";
+    accountPopoverCloseGeneration += 1;
     cancelSurfaceClose(popover);
+    if (wasHidden && options.motion === false) {
+      window.LusuUiMotion?.skipNextSurfaceMotion?.(popover);
+    }
     popover.hidden = false;
+    popover.inert = false;
     syncAccountPopoverState(popover);
     requestMobileFocusReveal("account-popover-open");
-    if (wasHidden || options.focus) focusAccountPopover(options.focus || "auto");
+    if (wasHidden || wasClosing || options.focus) focusAccountPopover(options.focus || "auto");
   }
 
   function closeAccountPopover(options = {}) {
     const popover = refs.popover || document.getElementById("account-popover");
     const wasOpen = popover && !popover.hidden;
-    if (!popover || !wasOpen) return;
+    const alreadyClosing = popover?.getAttribute("data-ui-closing") === "true";
+    if (!popover || !wasOpen || alreadyClosing) return;
+    const closeGeneration = ++accountPopoverCloseGeneration;
     accountFocusRequest += 1;
+    const focusedInsideAtClose = popover.contains(document.activeElement);
     const toggle = refs.toggle || document.querySelector("[data-account-toggle]");
     const returnFocus = accountPopoverReturnFocus?.isConnected ? accountPopoverReturnFocus : toggle;
+    popover.inert = true;
     runSurfaceClose(popover, {
       motion: options.motion,
       origin: returnFocus
     }, () => {
+      if (closeGeneration !== accountPopoverCloseGeneration) return;
+      const focusBeforeHide = document.activeElement;
+      const focusStayedInPopover = popover.contains(focusBeforeHide)
+        || (focusedInsideAtClose
+          && (focusBeforeHide === document.body || focusBeforeHide === document.documentElement));
       popover.hidden = true;
       syncAccountPopoverState(popover);
       accountPopoverReturnFocus = null;
-      if (options.restoreFocus !== false && returnFocus && typeof returnFocus.focus === "function") {
+      if (options.restoreFocus !== false
+        && focusStayedInPopover
+        && returnFocus
+        && typeof returnFocus.focus === "function") {
         returnFocus.focus({ preventScroll: true });
       }
     });
+    syncAccountPopoverState(popover);
   }
 
-  function toggleAccountPopover(trigger = null) {
+  function toggleAccountPopover(trigger = null, options = {}) {
     syncAccountView();
     const popover = refs.popover;
     if (!popover) return;
-    if (popover.hidden) {
+    const closing = popover.getAttribute("data-ui-closing") === "true";
+    if (popover.hidden || closing) {
       if (trigger instanceof HTMLElement && trigger.isConnected) accountPopoverReturnFocus = trigger;
-      openAccountPopover();
+      openAccountPopover(options);
     } else {
-      closeAccountPopover();
+      closeAccountPopover(options);
     }
   }
 
   function syncAccountPopoverState(popover = refs.popover || document.getElementById("account-popover")) {
     const toggle = refs.toggle || document.querySelector("[data-account-toggle]");
     if (!toggle || !popover) return;
-    toggle.setAttribute("aria-expanded", String(!popover.hidden));
+    const expanded = !popover.hidden && popover.getAttribute("data-ui-closing") !== "true";
+    popover.inert = !expanded;
+    toggle.setAttribute("aria-expanded", String(expanded));
   }
 
   return Object.freeze({

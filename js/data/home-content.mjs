@@ -27,6 +27,56 @@ export const homeContent = Object.freeze({
       }
     },
     {
+      "article_id": "seed-update-2026-08-09-wallpaper-time-switch",
+      "slug": "2026-08-09-wallpaper-time-switch",
+      "category": "site-updates",
+      "tags": ["网站更新", "壁纸", "动效", "无障碍", "移动端"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-09T05:40:00.000Z",
+      "updated_at": "2026-08-09T05:40:00.000Z",
+      "published_at": "2026-08-09T05:40:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.09",
+      "title": {
+        "zh": "四时段壁纸开关",
+        "en": "Four-Stage Wallpaper Time Switch",
+        "ja": "4段階の壁紙時間スイッチ"
+      },
+      "summary": {
+        "zh": "网站右上角新增由生成素材组成的早上、中午、下午和晚上四段壁纸开关；它默认按本地时间自动切换，手动选择会保留到下一个真实时段边界，并用可中断的选择环移动与壁纸交叉淡化完成过渡。",
+        "en": "A generated-art four-stage wallpaper switch now sits at the site's upper right for morning, noon, afternoon, and night. It follows local time by default; a manual choice lasts until the next real schedule boundary, with an interruptible moving lens and wallpaper crossfade.",
+        "ja": "サイト右上に、生成素材で作った朝・昼・夕方・夜の4段階壁紙スイッチを追加しました。通常はローカル時刻に従い、手動選択は次の実際の時間境界まで維持され、中断可能なレンズ移動と壁紙のクロスフェードで切り替わります。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-08-09-motion-polish",
+      "slug": "2026-08-09-motion-polish",
+      "category": "site-updates",
+      "tags": ["网站更新", "界面", "动效", "移动端", "无障碍"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-09T02:50:00.000Z",
+      "updated_at": "2026-08-09T02:50:00.000Z",
+      "published_at": "2026-08-09T02:50:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.09",
+      "title": {
+        "zh": "主站动效与移动交互精修",
+        "en": "Public-Site Motion and Mobile Interaction Polish",
+        "ja": "公開サイトのモーションとモバイル操作を改善"
+      },
+      "summary": {
+        "zh": "主站弹层、窗口切换与移动 Dock 采用更快且可中断的动效；知识库骨架屏、阅读进度和聊天室未读提示改用低成本合成路径，键盘操作即时完成，reduced-motion 保留必要的淡入与颜色反馈。",
+        "en": "Public popovers, window changes, and the mobile Dock now use faster, interruptible motion. Knowledge skeletons, reading progress, and chat unread feedback use cheaper compositor paths, while keyboard actions complete instantly and reduced motion keeps only helpful fades and color cues.",
+        "ja": "公開サイトのポップオーバー、ウィンドウ切り替え、モバイル Dock をより速く中断可能な動きに調整しました。Knowledge のスケルトン、読書進捗、Chat の未読表示は軽量な合成処理を使い、キーボード操作は即時、視差軽減時は必要なフェードと色だけを残します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-07-remote-mcp-oauth",
       "slug": "2026-08-07-remote-mcp-oauth",
       "category": "site-updates",
@@ -74,56 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "本地 stdio MCP 现已支持三语知识库文章的原子发布、Markdown 文件发布、CAS 更新和确认删除，并继续提供可复现的人生重开游戏会话；写入仅接受管理员批准的独立 scope。",
         "en": "The local stdio MCP now atomically publishes trilingual knowledge articles, publishes Markdown files, performs CAS updates and confirmed deletes, and also runs reproducible Life Restart sessions. Writes require separately administrator-approved scopes.",
         "ja": "ローカル stdio MCP で、3言語の知識記事の原子的公開、Markdown ファイル公開、CAS 更新、確認付き削除に対応し、再現可能な Life Restart セッションも利用できます。書き込みには管理者が別途承認した scope が必要です。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-07-hextris-agent",
-      "slug": "2026-08-07-hextris-agent",
-      "category": "site-updates",
-      "tags": ["网站更新", "AI 能力", "Hextris", "游戏", "CLI", "MCP", "开源许可"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-07T00:30:00.000Z",
-      "updated_at": "2026-08-07T00:30:00.000Z",
-      "published_at": "2026-08-07T00:30:00.000Z",
-      "fallbackOnly": true,
-      "icon": "games",
-      "date": "2026.08.07",
-      "title": {
-        "zh": "Hextris 现在支持独立 AI 游戏会话",
-        "en": "Hextris Now Supports a Dedicated AI Game Session",
-        "ja": "Hextris が独立 AI ゲームセッションに対応"
-      },
-      "summary": {
-        "zh": "新增确定性的 Hextris 隔离会话、专用 CLI 与 stdio MCP，并补全 GPL 分发说明；它以独立进程运行，不接管已打开的浏览器，也不静态并入通用 CLI／MCP。",
-        "en": "Adds deterministic isolated Hextris sessions, a dedicated CLI and stdio MCP, plus complete GPL distribution notices. It runs as a separate process, does not take over an open browser, and is not statically linked into the general CLI or MCP.",
-        "ja": "決定論的な Hextris 分離セッション、専用 CLI／stdio MCP、GPL 配布表示を追加しました。独立プロセスとして動作し、開いているブラウザーを操作せず、共通 CLI／MCP に静的統合もしません。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-06-whiteboard-agent-images",
-      "slug": "2026-08-06-whiteboard-agent-images",
-      "category": "site-updates",
-      "tags": ["网站更新", "AI 能力", "在线画板", "图片", "CLI", "MCP", "安全"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-06T13:20:00.000Z",
-      "updated_at": "2026-08-06T15:53:00.000Z",
-      "published_at": "2026-08-06T13:20:00.000Z",
-      "fallbackOnly": true,
-      "icon": "resources",
-      "date": "2026.08.06",
-      "title": {
-        "zh": "AI 现在可以给在线画板添加图片",
-        "en": "AI Can Now Add Images to the Online Whiteboard",
-        "ja": "AI がオンラインホワイトボードに画像を追加可能に"
-      },
-      "summary": {
-        "zh": "本地 CLI／stdio MCP 可上传、下载并在当前房追加真实图片；生产热修已让精确图片上传与 Yjs 场景更新进入完整 Agent 鉴权，其他来源、路径、方法与 MIME 继续拒绝，远程 MCP 仍未部署。",
-        "en": "The local CLI and stdio MCP can upload, download, and append real images in the current room. Production fixes now pass only exact image uploads and Yjs scene updates into full Agent authorization; other origins, paths, methods, and MIME types remain rejected, and remote MCP remains undeployed.",
-        "ja": "ローカル CLI／stdio MCP から現在のルームへ実画像をアップロード・取得・追記できます。本番修正により正確な画像アップロードと Yjs シーン更新だけが完全な Agent 認可へ進み、他の送信元・パス・メソッド・MIME は拒否されます。リモート MCP は未展開です。"
       }
     }
   ]

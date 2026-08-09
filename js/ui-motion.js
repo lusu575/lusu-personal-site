@@ -7,7 +7,7 @@
 
   var document = global.document;
   var root = document.documentElement;
-  var VERSION = "1.4.0";
+  var VERSION = "1.5.0";
   var MAX_PARALLAX_PX = 0;
   var ROUTE_ORDER = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
   var TRIGGER_SELECTOR = [
@@ -40,9 +40,10 @@
   };
 
   var EASING = {
-    out: "cubic-bezier(.22,1,.36,1)",
+    out: "cubic-bezier(.23,1,.32,1)",
+    inOut: "cubic-bezier(.77,0,.175,1)",
     spring: "cubic-bezier(.22,1,.36,1)",
-    in: "cubic-bezier(.4,0,1,1)"
+    drawer: "cubic-bezier(.32,.72,0,1)"
   };
 
   var state = {
@@ -73,6 +74,8 @@
     runId: 0,
     activeRunId: 0,
     activeViewTransition: null,
+    surfaceTransitions: typeof global.WeakMap === "function" ? new global.WeakMap() : null,
+    skippedSurfaceMotions: typeof global.WeakSet === "function" ? new global.WeakSet() : null,
     suppressRouteUntil: 0,
     suppressThemeUntil: 0
   };
@@ -418,6 +421,13 @@
       && !document.hidden;
   }
 
+  function canUseSemanticMotion() {
+    return state.initialized
+      && !state.destroyed
+      && state.mode !== "off"
+      && !document.hidden;
+  }
+
   function canUseParallax() {
     return false;
   }
@@ -524,11 +534,17 @@
     }
 
     var meta = metadata && typeof metadata === "object" ? metadata : {};
+    var inputMethod = meta.inputMethod === "keyboard"
+      ? "keyboard"
+      : meta.inputMethod === "pointer"
+        ? "pointer"
+        : readData(root, "inputMethod") === "keyboard" ? "keyboard" : "pointer";
     var snapshot = {
       element: target,
       rect: safeRect(target),
       route: routeName(readData(target, "route") || meta.route),
       kind: typeof meta.kind === "string" ? meta.kind.slice(0, 40) : "",
+      inputMethod: inputMethod,
       at: now()
     };
     state.lastTrigger = snapshot;
@@ -590,11 +606,16 @@
     if (!target || isInteractionDisabled(target)) {
       return;
     }
-    noteTrigger(target, { kind: "activate" });
+    var syntheticPointerActivation = Number(event.detail) === 0
+      && event.isTrusted === false
+      && readData(root, "inputMethod") === "pointer";
+    var inputMethod = Number(event.detail) === 0 && !syntheticPointerActivation ? "keyboard" : "pointer";
+    setData(root, "inputMethod", inputMethod);
+    noteTrigger(target, { kind: "activate", inputMethod: inputMethod });
   }
 
   function handleKeyDown(event) {
-    if (event && event.key === "Tab") {
+    if (event) {
       setData(root, "inputMethod", "keyboard");
     }
   }
@@ -622,6 +643,9 @@
       }
     });
     state.animations.length = 0;
+    if (typeof global.WeakMap === "function") {
+      state.surfaceTransitions = new global.WeakMap();
+    }
   }
 
   function animationPromise(animation, duration) {
@@ -651,7 +675,9 @@
   }
 
   function animateElement(element, keyframes, options) {
-    if (!canUseFullMotion() || !isElement(element) || typeof element.animate !== "function") {
+    var semantic = Boolean(options && options.semantic);
+    var motionAvailable = semantic ? canUseSemanticMotion() : canUseFullMotion();
+    if (!motionAvailable || !isElement(element) || typeof element.animate !== "function") {
       return null;
     }
     var duration = Math.max(1, Number(options && options.duration) || DURATIONS.standard);
@@ -692,6 +718,187 @@
     } catch (error) {
       return null;
     }
+  }
+
+  function readAnimatedFrame(element, fallback) {
+    var frame = {
+      opacity: fallback.opacity,
+      transform: fallback.transform,
+      transformOrigin: fallback.transformOrigin
+    };
+    if (!isElement(element) || typeof global.getComputedStyle !== "function") {
+      return frame;
+    }
+    try {
+      var style = global.getComputedStyle(element);
+      var opacity = Number(style.opacity);
+      frame.opacity = isFinite(opacity) ? opacity : fallback.opacity;
+      frame.transform = style.transform && style.transform !== "none" ? style.transform : fallback.transform;
+      frame.transformOrigin = style.transformOrigin || fallback.transformOrigin;
+    } catch (error) {
+      // The fallback frame keeps presentation failures from blocking state.
+    }
+    return frame;
+  }
+
+  function surfaceDescriptor(surface) {
+    if (!isElement(surface)) {
+      return null;
+    }
+    var popover = elementMatches(surface, ".account-popover");
+    var modal = elementMatches(surface, ".modal");
+    if (!popover && !modal) {
+      return null;
+    }
+    var mobileSheet = modal && shellMode() === "mobile";
+    return {
+      surface: surface,
+      content: popover ? surface : safeQuery(".xp-window", surface) || surface,
+      backdrop: modal ? safeQuery(".modal-backdrop", surface) : null,
+      transformOrigin: popover ? "top right" : mobileSheet ? "center bottom" : "center center",
+      closedTransform: popover
+        ? "translate3d(0,-4px,0) scale(.97)"
+        : mobileSheet
+          ? "translate3d(0,8px,0) scale(.98)"
+          : "translate3d(0,6px,0) scale(.97)"
+    };
+  }
+
+  function surfaceTransitionRecord(surface) {
+    return state.surfaceTransitions && isElement(surface)
+      ? state.surfaceTransitions.get(surface) || null
+      : null;
+  }
+
+  function cancelSurfaceTransition(surface) {
+    var descriptor = surfaceDescriptor(surface);
+    if (!descriptor) {
+      return;
+    }
+    cancelAnimationsFor(descriptor.content);
+    if (descriptor.backdrop) {
+      cancelAnimationsFor(descriptor.backdrop);
+    }
+    if (state.surfaceTransitions) {
+      state.surfaceTransitions.delete(surface);
+    }
+  }
+
+  function skipNextSurfaceMotion(surface) {
+    if (state.skippedSurfaceMotions && isElement(surface)) {
+      state.skippedSurfaceMotions.add(surface);
+    }
+  }
+
+  function consumeSkippedSurfaceMotion(surface) {
+    if (!state.skippedSurfaceMotions || !isElement(surface) || !state.skippedSurfaceMotions.has(surface)) {
+      return false;
+    }
+    state.skippedSurfaceMotions.delete(surface);
+    return true;
+  }
+
+  function transitionSurface(surface, opening) {
+    var descriptor = surfaceDescriptor(surface);
+    if (!descriptor || !canUseSemanticMotion()) {
+      return null;
+    }
+    var previous = surfaceTransitionRecord(surface);
+    var reduced = !canUseFullMotion();
+    var openFrame = {
+      opacity: 1,
+      transform: reduced ? "none" : "translate3d(0,0,0) scale(1)",
+      transformOrigin: descriptor.transformOrigin
+    };
+    var closedFrame = {
+      opacity: 0,
+      transform: reduced ? "none" : descriptor.closedTransform,
+      transformOrigin: descriptor.transformOrigin
+    };
+    var contentStart = previous
+      ? readAnimatedFrame(descriptor.content, opening ? closedFrame : openFrame)
+      : opening ? closedFrame : readAnimatedFrame(descriptor.content, openFrame);
+    var backdropStart = descriptor.backdrop
+      ? previous
+        ? readAnimatedFrame(descriptor.backdrop, opening ? { opacity: 0, transform: "none", transformOrigin: "center" } : { opacity: 1, transform: "none", transformOrigin: "center" })
+        : { opacity: opening ? 0 : 1, transform: "none", transformOrigin: "center" }
+      : null;
+    cancelAnimationsFor(descriptor.content);
+    if (descriptor.backdrop) {
+      cancelAnimationsFor(descriptor.backdrop);
+    }
+
+    var targetOpacity = opening ? 1 : 0;
+    var contentDistance = Math.abs(targetOpacity - Number(contentStart.opacity || 0));
+    var backdropDistance = backdropStart ? Math.abs(targetOpacity - Number(backdropStart.opacity || 0)) : 0;
+    var distance = clamp(Math.max(contentDistance, backdropDistance), 0, 1);
+    var baseDuration = opening ? DURATIONS.standard : DURATIONS.fast;
+    var duration = Math.max(DURATIONS.instant, Math.round(baseDuration * Math.max(distance, 0.25)));
+    var targetFrame = opening ? openFrame : closedFrame;
+    var contentAnimation = animateElement(descriptor.content, [contentStart, targetFrame], {
+      duration: duration,
+      easing: EASING.out,
+      semantic: true
+    });
+    var backdropAnimation = descriptor.backdrop
+      ? animateElement(descriptor.backdrop, [
+        { opacity: backdropStart.opacity },
+        { opacity: targetOpacity }
+      ], { duration: duration, easing: EASING.out, semantic: true })
+      : null;
+    var animations = [contentAnimation, backdropAnimation].filter(function hasAnimation(value) {
+      return value && typeof value.then === "function";
+    });
+    if (!global.Promise || !animations.length) {
+      return contentAnimation || backdropAnimation;
+    }
+    var token = {};
+    var finished = global.Promise.all(animations).then(function surfaceDone() {
+      if (state.surfaceTransitions && state.surfaceTransitions.get(surface) === token) {
+        state.surfaceTransitions.delete(surface);
+      }
+    }, function surfaceInterrupted() {
+      if (state.surfaceTransitions && state.surfaceTransitions.get(surface) === token) {
+        state.surfaceTransitions.delete(surface);
+      }
+    });
+    token.direction = opening ? "opening" : "closing";
+    token.finished = finished;
+    if (state.surfaceTransitions) {
+      state.surfaceTransitions.set(surface, token);
+    }
+    return finished;
+  }
+
+  function resumeSurfaceOpen(surface) {
+    var record = surfaceTransitionRecord(surface);
+    if (!isElement(surface) || surface.hidden || !record || record.direction !== "closing") {
+      return null;
+    }
+    return transitionSurface(surface, true);
+  }
+
+  function animateStateChange(element, optionsValue) {
+    var options = optionsValue && typeof optionsValue === "object" ? optionsValue : {};
+    if (!isElement(element) || element.hidden || options.immediate || !canUseSemanticMotion()) {
+      if (isElement(element)) {
+        cancelAnimationsFor(element);
+      }
+      return null;
+    }
+    var reduced = !canUseFullMotion();
+    var distance = clamp(Number(options.distance) || 4, 0, 8);
+    return animateElement(element, [
+      {
+        opacity: 0,
+        transform: reduced ? "none" : "translate3d(0," + distance.toFixed(2) + "px,0)"
+      },
+      { opacity: 1, transform: reduced ? "none" : "translate3d(0,0,0)" }
+    ], {
+      duration: reduced ? 120 : 180,
+      easing: EASING.out,
+      semantic: true
+    });
   }
 
   function originTransform(origin, target) {
@@ -787,7 +994,7 @@
         transformOrigin: "center center",
         transform: "translate3d(" + exitX.toFixed(2) + "px," + exitY.toFixed(2) + "px,0)"
       }
-    ], { duration: minimizing ? DURATIONS.standard : DURATIONS.fast, easing: EASING.in });
+    ], { duration: minimizing ? DURATIONS.standard : DURATIONS.fast, easing: EASING.out });
   }
 
   function flipAnimation(target, beforeRect) {
@@ -815,7 +1022,7 @@
         transform: "translate3d(" + deltaX.toFixed(2) + "px," + deltaY.toFixed(2) + "px,0) scale(" + scaleX.toFixed(4) + "," + scaleY.toFixed(4) + ")"
       },
       { transformOrigin: "top left", transform: "translate3d(0,0,0) scale(1,1)" }
-    ], { duration: DURATIONS.window, easing: EASING.out });
+    ], { duration: DURATIONS.window, easing: EASING.inOut });
   }
 
   function routeEnterAnimation(target, direction) {
@@ -917,6 +1124,12 @@
     var beforeRect = safeRect(beforeTarget);
     var transition = null;
     var deferCommit = Boolean(context.deferCommit && isExitKind(kind));
+    var immediate = Boolean(
+      context.immediate
+      || context.motion === false
+      || state.mode === "reduced"
+      || (snapshot && snapshot.inputMethod === "keyboard")
+    );
     var pageNavigationKeepsChromeLive = kind === "route"
       || kind === "app-open"
       || kind === "mobile-tab";
@@ -987,7 +1200,7 @@
       var target = resolveMotionTarget(kind, context, "after");
       var animation = null;
 
-      if (!canUseFullMotion()) {
+      if (!canUseFullMotion() && !(kind.indexOf("modal") === 0 && canUseSemanticMotion())) {
         cleanup();
         return global.Promise ? global.Promise.resolve(result) : result;
       }
@@ -1010,7 +1223,7 @@
       return promiseAfter(result, animation, options && options.deferCleanup ? function keepTransitionState() {} : cleanup);
     }
 
-    if (!canUseFullMotion()) {
+    if (immediate || (!canUseFullMotion() && !(kind.indexOf("modal") === 0 && canUseSemanticMotion()))) {
       try {
         var immediateResult = commitOnce();
         cleanup();
@@ -1025,7 +1238,10 @@
     }
 
     if (deferCommit) {
-      var exit = exitAnimation(kind, beforeTarget, origin);
+      var surface = resolveContextElement(context.surface);
+      var exit = kind === "modal-close" && surface
+        ? transitionSurface(surface, false)
+        : exitAnimation(kind, beforeTarget, origin);
       if (global.Promise && exit && typeof exit.then === "function") {
         var commitAfterExit = function commitAfterExit() {
           try {
@@ -1209,10 +1425,15 @@
     }
     var hidden = element.hasAttribute("hidden");
     syncModalLayer();
-    if (hidden || !canUseFullMotion()) {
+    if (hidden) {
+      cancelSurfaceTransition(element);
       return;
     }
-    transientClass(element, "is-ui-entering", DURATIONS.window);
+    if (consumeSkippedSurfaceMotion(element)) {
+      cancelSurfaceTransition(element);
+    } else {
+      transitionSurface(element, true);
+    }
     dispatchHook("lusu:ui-motion-modal", {
       open: true,
       mode: state.mode
@@ -1361,6 +1582,12 @@
       }
     }
     state.activeViewTransition = null;
+    if (typeof global.WeakMap === "function") {
+      state.surfaceTransitions = new global.WeakMap();
+    }
+    if (typeof global.WeakSet === "function") {
+      state.skippedSurfaceMotions = new global.WeakSet();
+    }
     clearTimers();
     state.lastTrigger = null;
     state.targetX = 0;
@@ -1446,6 +1673,10 @@
     destroy: destroy,
     refresh: refresh,
     run: run,
+    animateStateChange: animateStateChange,
+    cancelSurfaceTransition: cancelSurfaceTransition,
+    resumeSurfaceOpen: resumeSurfaceOpen,
+    skipNextSurfaceMotion: skipNextSurfaceMotion,
     noteTrigger: noteTrigger,
     getMode: getMode,
     setMode: setMode,

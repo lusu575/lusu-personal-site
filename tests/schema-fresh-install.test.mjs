@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
+import { content } from "../js/data/content.mjs";
 import {
   CHAT_COLUMN_MIGRATIONS,
   CHAT_HASH_TABLES,
@@ -28,6 +29,8 @@ const hextrisAgentUpdateId = "seed-update-2026-08-07-hextris-agent";
 const lifeRestartAgentUpdateId = "seed-update-2026-08-07-life-restart-agent";
 const remoteMcpOauthUpdateId = "seed-update-2026-08-07-remote-mcp-oauth";
 const gameVideoMcpCandidateUpdateId = "seed-update-2026-08-09-game-video-mcp-candidate";
+const motionPolishUpdateId = "seed-update-2026-08-09-motion-polish";
+const wallpaperTimeSwitchUpdateId = "seed-update-2026-08-09-wallpaper-time-switch";
 
 test("D1 schema initializes an empty database and remains idempotent", () => {
   const db = new DatabaseSync(":memory:");
@@ -142,6 +145,41 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       assert.match(contentMarkdown, /v1\.0\.8/);
       assert.match(contentMarkdown, /v1\.0\.9/);
     }
+    assert.equal(
+      db.prepare("select count(*) as count from articles where article_id = ? and category = 'site-updates'").get(motionPolishUpdateId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(motionPolishUpdateId).count,
+      3
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from articles where article_id = ? and category = 'site-updates' and published_at = '2026-08-09T05:40:00.000Z'").get(wallpaperTimeSwitchUpdateId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(wallpaperTimeSwitchUpdateId).count,
+      3
+    );
+    const wallpaperTimeSwitchContent = content.updates.find(({ article_id: articleId }) => (
+      articleId === wallpaperTimeSwitchUpdateId
+    ));
+    assert.ok(wallpaperTimeSwitchContent);
+    for (const lang of ["zh", "en", "ja"]) {
+      const translation = db.prepare(`
+        select title, summary, content_markdown, created_at, updated_at
+        from article_translations
+        where article_id = ? and lang = ?
+      `).get(wallpaperTimeSwitchUpdateId, lang);
+      assert.equal(translation.title, wallpaperTimeSwitchContent.title[lang]);
+      assert.equal(translation.summary, wallpaperTimeSwitchContent.summary[lang]);
+      assert.equal(
+        translation.content_markdown.replace(/\r\n/g, "\n"),
+        wallpaperTimeSwitchContent.content_markdown[lang]
+      );
+      assert.equal(translation.created_at, "2026-08-09T05:40:00.000Z");
+      assert.equal(translation.updated_at, "2026-08-09T05:40:00.000Z");
+    }
     const trafficSettings = JSON.parse(
       db.prepare("select value from site_runtime_state where key = 'traffic_control_settings_v1'").get().value
     );
@@ -151,7 +189,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260809-game-video-mcp-candidate-r2"
+      "20260809-motion-polish-r2"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),

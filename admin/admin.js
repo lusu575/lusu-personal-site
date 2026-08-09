@@ -71,6 +71,9 @@ const state = {
   automationLoadGeneration: 0,
   mobileNavOpen: false,
   mobileNavReturnFocus: null,
+  mobileNavCloseCleanup: null,
+  mobileNavTransitionGeneration: 0,
+  adminMotionSuppressionGeneration: 0,
   masterDetail: {
     articles: { view: "list", scrollTop: 0, focusId: "" },
     videos: { view: "list", scrollTop: 0, focusId: "" },
@@ -100,7 +103,8 @@ const state = {
     rowsByKey: new Map(),
     pointElements: new Map(),
     pendingRows: null,
-    pendingRenderTimer: null
+    pendingRenderTimer: null,
+    tooltipHideTimer: null
   },
   loadedPanels: {},
   loadingPanels: {},
@@ -112,6 +116,12 @@ const state = {
 const ACTIVE_PANEL_STORAGE_KEY = "lusu-admin-active-panel";
 const ADMIN_HISTORY_STATE_KEY = "lusuAdminView";
 const MOBILE_ADMIN_MEDIA = window.matchMedia("(max-width: 920px)");
+const REDUCED_MOTION_MEDIA = window.matchMedia("(prefers-reduced-motion: reduce)");
+const FINE_HOVER_MEDIA = window.matchMedia("(hover: hover) and (pointer: fine)");
+const ADMIN_DIALOG_MOTION_MS = 150;
+const ADMIN_COPY_FEEDBACK_MS = 650;
+const adminDialogMotionCleanups = new WeakMap();
+const copyButtonFeedbackCleanups = new WeakMap();
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 const WORLD_MAP_WIDTH = 1000;
 const WORLD_MAP_HEIGHT = 500;
@@ -194,6 +204,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-08-09",
+    title: "后台与互传动效反馈精修",
+    body: "主后台统一了加载中、忙碌和 aria-busy 状态，只有实际触发请求的按钮显示 spinner；流量压力条改用不触发布局的缩放反馈，移动抽屉与遮罩同步开合，确认框和地图提示支持中途反向；键盘操作和减少动态效果偏好会立即完成关键状态切换。Quick Transfer 1.0.10 同步补齐请求表格、按钮 spinner、650ms 复制反馈、稳定 notice 槽位与可中断通知，未改变口令、加密、私有存储、权限或接口协议。后台资源版本为 20260809-admin-motion-polish-r2，互传管理资源版本为 20260809-transfer-motion-r2。"
+  },
   {
     date: "2026-08-02",
     title: "免费额度安全余量加固",
@@ -973,19 +988,77 @@ function trapFocus(event, container) {
   }
 }
 
+function prefersReducedMotion() {
+  return REDUCED_MOTION_MEDIA.matches
+    || document.documentElement.dataset.motion === "reduced"
+    || document.body.dataset.motion === "reduced";
+}
+
+function adminMotionIsOff() {
+  return document.documentElement.dataset.motion === "off"
+    || document.body.dataset.motion === "off";
+}
+
+function adminMotionShouldBeImmediate(options = {}) {
+  return Boolean(options.immediate)
+    || adminMotionIsOff()
+    || document.body.dataset.inputMethod === "keyboard";
+}
+
+function adminScrollBehavior() {
+  return adminMotionShouldBeImmediate() || prefersReducedMotion() ? "auto" : "smooth";
+}
+
+function commitAdminWithoutMotion(commit) {
+  const generation = state.adminMotionSuppressionGeneration + 1;
+  state.adminMotionSuppressionGeneration = generation;
+  document.body.classList.add("admin-motion-immediate");
+  commit();
+  void document.body.offsetWidth;
+  window.requestAnimationFrame(() => {
+    if (generation === state.adminMotionSuppressionGeneration) {
+      document.body.classList.remove("admin-motion-immediate");
+    }
+  });
+}
+
+function clearMobileNavCloseWait() {
+  state.mobileNavCloseCleanup?.();
+  state.mobileNavCloseCleanup = null;
+}
+
 function openMobileNav(opener = document.activeElement) {
   if (!MOBILE_ADMIN_MEDIA.matches || state.mobileNavOpen) {
     return;
   }
   const sidebar = $("#admin-sidebar");
   const backdrop = $("#mobile-nav-backdrop");
+  clearMobileNavCloseWait();
+  const generation = state.mobileNavTransitionGeneration + 1;
+  state.mobileNavTransitionGeneration = generation;
   state.mobileNavOpen = true;
   state.mobileNavReturnFocus = opener instanceof HTMLElement ? opener : $("#mobile-nav-toggle");
-  document.body.classList.add("admin-nav-open");
   sidebar.inert = false;
-  backdrop.hidden = false;
+  backdrop.classList.remove("is-nav-closing");
+  const wasHidden = backdrop.hidden;
+  const reveal = () => {
+    backdrop.hidden = false;
+    document.body.classList.add("admin-nav-open");
+  };
+  if (adminMotionShouldBeImmediate()) {
+    commitAdminWithoutMotion(reveal);
+  } else {
+    backdrop.hidden = false;
+    if (wasHidden) {
+      void backdrop.offsetWidth;
+    }
+    document.body.classList.add("admin-nav-open");
+  }
   $("#mobile-nav-toggle").setAttribute("aria-expanded", "true");
   window.requestAnimationFrame(() => {
+    if (!state.mobileNavOpen || generation !== state.mobileNavTransitionGeneration) {
+      return;
+    }
     const active = sidebar.querySelector(".nav-button.active");
     (active || $("#mobile-nav-close"))?.focus();
   });
@@ -995,21 +1068,57 @@ function closeMobileNav(options = {}) {
   const restoreFocus = options.restoreFocus !== false;
   const sidebar = $("#admin-sidebar");
   const backdrop = $("#mobile-nav-backdrop");
+  const wasOpen = state.mobileNavOpen || !backdrop.hidden;
+  clearMobileNavCloseWait();
+  const generation = state.mobileNavTransitionGeneration + 1;
+  state.mobileNavTransitionGeneration = generation;
+  const immediate = adminMotionShouldBeImmediate(options);
   state.mobileNavOpen = false;
-  document.body.classList.remove("admin-nav-open");
-  backdrop.hidden = true;
-  $("#mobile-nav-toggle").setAttribute("aria-expanded", "false");
-  sidebar.inert = MOBILE_ADMIN_MEDIA.matches;
-  if (restoreFocus) {
-    const target = state.mobileNavReturnFocus;
-    window.requestAnimationFrame(() => target?.isConnected && target.focus());
+  backdrop.classList.toggle("is-nav-closing", wasOpen && !immediate);
+  if (immediate) {
+    commitAdminWithoutMotion(() => document.body.classList.remove("admin-nav-open"));
+  } else {
+    document.body.classList.remove("admin-nav-open");
   }
+  $("#mobile-nav-toggle").setAttribute("aria-expanded", "false");
+  const returnFocus = state.mobileNavReturnFocus;
+  if (sidebar.contains(document.activeElement)) {
+    const target = restoreFocus ? returnFocus : $("#panel-title");
+    target?.focus({ preventScroll: true });
+  } else if (restoreFocus && returnFocus?.isConnected) {
+    returnFocus.focus({ preventScroll: true });
+  }
+  sidebar.inert = MOBILE_ADMIN_MEDIA.matches;
   state.mobileNavReturnFocus = null;
+
+  const finish = () => {
+    if (generation !== state.mobileNavTransitionGeneration || state.mobileNavOpen) {
+      return;
+    }
+    clearMobileNavCloseWait();
+    backdrop.classList.remove("is-nav-closing");
+    backdrop.hidden = true;
+  };
+  if (!wasOpen || immediate) {
+    finish();
+    return;
+  }
+  const onTransitionEnd = (event) => {
+    if (event.target === backdrop && event.propertyName === "opacity") {
+      finish();
+    }
+  };
+  const timeout = window.setTimeout(finish, 280);
+  backdrop.addEventListener("transitionend", onTransitionEnd);
+  state.mobileNavCloseCleanup = () => {
+    window.clearTimeout(timeout);
+    backdrop.removeEventListener("transitionend", onTransitionEnd);
+  };
 }
 
 function syncMobileNavMode() {
   if (!MOBILE_ADMIN_MEDIA.matches) {
-    closeMobileNav({ restoreFocus: false });
+    closeMobileNav({ restoreFocus: false, immediate: true });
     $("#admin-sidebar").inert = false;
     return;
   }
@@ -1019,18 +1128,98 @@ function syncMobileNavMode() {
   }
 }
 
-function settleConfirmDialog(result) {
+function cancelAdminDialogMotion(dialog, options = {}) {
+  adminDialogMotionCleanups.get(dialog)?.(options);
+  adminDialogMotionCleanups.delete(dialog);
+}
+
+function showAdminDialog(dialog, focusTarget) {
+  cancelAdminDialogMotion(dialog, { keepOpen: true });
+  dialog.classList.remove("is-dialog-closing");
+  dialog.classList.add("is-dialog-entering");
+  if (!dialog.open) {
+    dialog.showModal();
+  }
+  if (adminMotionShouldBeImmediate()) {
+    dialog.classList.remove("is-dialog-entering");
+    focusTarget?.focus();
+    return;
+  }
+  void dialog.offsetWidth;
+  window.requestAnimationFrame(() => {
+    if (!dialog.open || dialog.classList.contains("is-dialog-closing")) {
+      return;
+    }
+    dialog.classList.remove("is-dialog-entering");
+    focusTarget?.focus();
+  });
+}
+
+function closeAdminDialog(dialog, onClosed, options = {}) {
+  cancelAdminDialogMotion(dialog);
+  if (!dialog.open) {
+    onClosed?.({ interrupted: false });
+    return;
+  }
+  let settled = false;
+  let timeout = 0;
+  const card = dialog.querySelector(".admin-dialog-card");
+  const onTransitionEnd = (event) => {
+    if (event.target === card && event.propertyName === "opacity") {
+      finish();
+    }
+  };
+  let cancelMotion = null;
+  const cleanup = () => {
+    window.clearTimeout(timeout);
+    card?.removeEventListener("transitionend", onTransitionEnd);
+    if (adminDialogMotionCleanups.get(dialog) === cancelMotion) {
+      adminDialogMotionCleanups.delete(dialog);
+    }
+  };
+  const finish = (finishOptions = {}) => {
+    if (settled) {
+      return;
+    }
+    settled = true;
+    cleanup();
+    if (!finishOptions.keepOpen && dialog.open) {
+      dialog.close();
+    }
+    dialog.classList.remove("is-dialog-entering", "is-dialog-closing");
+    onClosed?.({ interrupted: Boolean(finishOptions.interrupted) });
+  };
+  if (adminMotionShouldBeImmediate(options)) {
+    finish();
+    return;
+  }
+  dialog.classList.remove("is-dialog-entering");
+  dialog.classList.add("is-dialog-closing");
+  timeout = window.setTimeout(finish, ADMIN_DIALOG_MOTION_MS + 50);
+  card?.addEventListener("transitionend", onTransitionEnd);
+  cancelMotion = (cancelOptions = {}) => finish({
+    interrupted: true,
+    keepOpen: Boolean(cancelOptions.keepOpen)
+  });
+  adminDialogMotionCleanups.set(dialog, cancelMotion);
+}
+
+function settleConfirmDialog(result, options = {}) {
   const dialog = $("#admin-confirm-dialog");
   const resolve = state.confirmDialogResolve;
+  if (!resolve) {
+    return;
+  }
   const returnFocus = state.confirmDialogReturnFocus;
   state.confirmDialogResolve = null;
   state.confirmDialogReturnFocus = null;
   state.confirmDialogExpected = "";
-  if (dialog.open) {
-    dialog.close();
-  }
-  resolve?.(Boolean(result));
-  window.requestAnimationFrame(() => returnFocus?.isConnected && returnFocus.focus());
+  closeAdminDialog(dialog, ({ interrupted } = {}) => {
+    resolve(Boolean(result));
+    if (!interrupted) {
+      window.requestAnimationFrame(() => !dialog.open && returnFocus?.isConnected && returnFocus.focus());
+    }
+  }, options);
 }
 
 function openConfirmDialog(options = {}) {
@@ -1058,24 +1247,25 @@ function openConfirmDialog(options = {}) {
   state.confirmDialogReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   return new Promise((resolve) => {
     state.confirmDialogResolve = resolve;
-    dialog.showModal();
-    window.requestAnimationFrame(() => $("#admin-confirm-cancel").focus());
+    showAdminDialog(dialog, $("#admin-confirm-cancel"));
   });
 }
 
-function settleUnsavedDialog(choice) {
+function settleUnsavedDialog(choice, options = {}) {
   const dialog = $("#admin-unsaved-dialog");
   const resolve = state.unsavedDialogResolve;
+  if (!resolve) {
+    return;
+  }
   const returnFocus = state.unsavedDialogReturnFocus;
   state.unsavedDialogResolve = null;
   state.unsavedDialogReturnFocus = null;
-  if (dialog.open) {
-    dialog.close();
-  }
-  resolve?.(choice);
-  if (choice === "stay") {
-    window.requestAnimationFrame(() => returnFocus?.isConnected && returnFocus.focus());
-  }
+  closeAdminDialog(dialog, ({ interrupted } = {}) => {
+    resolve(choice);
+    if (choice === "stay" && !interrupted) {
+      window.requestAnimationFrame(() => !dialog.open && returnFocus?.isConnected && returnFocus.focus());
+    }
+  }, options);
 }
 
 function openUnsavedDialog(panel, description) {
@@ -1090,8 +1280,7 @@ function openUnsavedDialog(panel, description) {
   state.unsavedDialogReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   return new Promise((resolve) => {
     state.unsavedDialogResolve = resolve;
-    dialog.showModal();
-    window.requestAnimationFrame(() => $("#admin-unsaved-stay").focus());
+    showAdminDialog(dialog, $("#admin-unsaved-stay"));
   });
 }
 
@@ -1776,7 +1965,13 @@ function getStatusTone(text) {
 function applyStatusTone(element) {
   const tone = getStatusTone(element.textContent);
   element.classList.toggle("is-busy", tone.busy);
+  element.classList.toggle("is-loading", tone.busy);
   element.classList.toggle("is-error", tone.error);
+  if (tone.busy) {
+    element.setAttribute("aria-busy", "true");
+  } else {
+    element.removeAttribute("aria-busy");
+  }
 }
 
 function setStatus(text, options = {}) {
@@ -2166,7 +2361,7 @@ function renderTrafficControlSnapshot() {
 
   const pressurePercent = hardRows > 0 ? Math.min(100, Math.max(0, estimatedRows / hardRows * 100)) : 0;
   const pressureFill = $("#traffic-pressure-fill");
-  pressureFill.style.width = `${pressurePercent.toFixed(1)}%`;
+  pressureFill.style.transform = `scaleX(${(pressurePercent / 100).toFixed(4)})`;
   pressureFill.dataset.mode = rawMode;
   setElementText(
     $("#traffic-pressure-note"),
@@ -2840,8 +3035,18 @@ function showMapLocation(key, options = {}) {
   setElementText($("#visitor-map-tooltip-pv"), formatNumber(row.pv));
   setElementText($("#visitor-map-tooltip-uv"), formatNumber(row.uv));
   setElementText($("#visitor-map-tooltip-time"), row.last_seen_at ? `最近访问 ${formatTime(row.last_seen_at)}` : "最近访问未记录");
+  window.clearTimeout(state.mapViewport.tooltipHideTimer);
+  state.mapViewport.tooltipHideTimer = null;
+  const wasHidden = tooltip.hidden;
+  if (wasHidden) {
+    tooltip.classList.remove("is-visible");
+  }
   tooltip.hidden = false;
   positionMapTooltip();
+  if (wasHidden) {
+    void tooltip.offsetWidth;
+  }
+  tooltip.classList.add("is-visible");
   if (options.announce) {
     announceMap(`${mapPlaceLabel(row)}，PV 浏览量 ${formatNumber(row.pv)}，UV 独立访客 ${formatNumber(row.uv)}`);
   }
@@ -2864,13 +3069,16 @@ function positionMapTooltip() {
   const pointCenterX = pointRect.left + pointRect.width / 2 - mapRect.left;
   let left = pointCenterX - tooltipRect.width / 2;
   let top = pointRect.top - mapRect.top - tooltipRect.height - gap;
+  let placement = "above";
   if (top < edge) {
     top = pointRect.bottom - mapRect.top + gap;
+    placement = "below";
   }
   left = clampNumber(left, edge, Math.max(edge, mapRect.width - tooltipRect.width - edge));
   top = clampNumber(top, edge, Math.max(edge, mapRect.height - tooltipRect.height - edge));
   tooltip.style.left = `${Math.round(left)}px`;
   tooltip.style.top = `${Math.round(top)}px`;
+  tooltip.dataset.placement = placement;
   tooltip.style.visibility = "";
 }
 
@@ -2889,10 +3097,28 @@ function hideMapTooltip() {
     point.classList.toggle("is-active", key === state.mapViewport.pinnedKey);
   });
   if (tooltip) {
-    tooltip.hidden = true;
-    tooltip.style.removeProperty("left");
-    tooltip.style.removeProperty("top");
-    tooltip.style.removeProperty("visibility");
+    window.clearTimeout(state.mapViewport.tooltipHideTimer);
+    state.mapViewport.tooltipHideTimer = null;
+    tooltip.classList.remove("is-visible");
+    if (adminMotionShouldBeImmediate()) {
+      tooltip.hidden = true;
+      tooltip.style.removeProperty("left");
+      tooltip.style.removeProperty("top");
+      tooltip.style.removeProperty("visibility");
+      delete tooltip.dataset.placement;
+      return;
+    }
+    state.mapViewport.tooltipHideTimer = window.setTimeout(() => {
+      state.mapViewport.tooltipHideTimer = null;
+      if (state.mapViewport.visibleKey || tooltip.classList.contains("is-visible")) {
+        return;
+      }
+      tooltip.hidden = true;
+      tooltip.style.removeProperty("left");
+      tooltip.style.removeProperty("top");
+      tooltip.style.removeProperty("visibility");
+      delete tooltip.dataset.placement;
+    }, 150);
   }
 }
 
@@ -3326,7 +3552,7 @@ function handleMapClick(event) {
 }
 
 function handleMapPointerOver(event) {
-  if (event.pointerType === "touch") {
+  if (!FINE_HOVER_MEDIA.matches) {
     return;
   }
   const point = event.target.closest(".map-city-marker");
@@ -3337,7 +3563,7 @@ function handleMapPointerOver(event) {
 }
 
 function handleMapPointerOut(event) {
-  if (event.pointerType === "touch") {
+  if (!FINE_HOVER_MEDIA.matches) {
     return;
   }
   const point = event.target.closest(".map-city-marker");
@@ -3372,8 +3598,7 @@ function handleMapDataListClick(event) {
   const action = event.target.closest(".map-data-focus");
   if (action) {
     focusMapLocation(action.dataset.mapKey || "");
-    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
-    $("#visitor-map")?.scrollIntoView({ block: "nearest", behavior: reducedMotion ? "auto" : "smooth" });
+    $("#visitor-map")?.scrollIntoView({ block: "nearest", behavior: adminScrollBehavior() });
   }
 }
 
@@ -4488,8 +4713,14 @@ function focusArticleValidationError(error) {
   }
   window.requestAnimationFrame(() => {
     const field = $("#article-form")?.elements?.[error.name];
-    field?.scrollIntoView({ block: "center", behavior: "smooth" });
-    field?.focus();
+    if (!field) {
+      return;
+    }
+    field.focus({ preventScroll: true });
+    field.scrollIntoView({
+      block: "center",
+      behavior: adminScrollBehavior()
+    });
   });
 }
 
@@ -8276,9 +8507,31 @@ function createEventItemElement(titleText, detailTexts) {
 }
 
 async function copyAdminText(value, button) {
+  copyButtonFeedbackCleanups.get(button)?.();
   const originalText = button.textContent;
   const originalTitle = button.getAttribute("title") || "";
   const originalAriaLabel = button.getAttribute("aria-label") || "";
+  let feedbackTimer = 0;
+  const restore = () => {
+    window.clearTimeout(feedbackTimer);
+    button.disabled = false;
+    button.removeAttribute("aria-busy");
+    button.textContent = originalText;
+    if (originalTitle) {
+      button.title = originalTitle;
+    } else {
+      button.removeAttribute("title");
+    }
+    if (originalAriaLabel) {
+      button.setAttribute("aria-label", originalAriaLabel);
+    } else {
+      button.removeAttribute("aria-label");
+    }
+    if (copyButtonFeedbackCleanups.get(button) === restore) {
+      copyButtonFeedbackCleanups.delete(button);
+    }
+  };
+  copyButtonFeedbackCleanups.set(button, restore);
   button.disabled = true;
   button.setAttribute("aria-busy", "true");
   try {
@@ -8292,21 +8545,9 @@ async function copyAdminText(value, button) {
     button.textContent = "复制失败";
     syncButtonHint(button, error.message || "复制失败");
   } finally {
-    window.setTimeout(() => {
-      button.disabled = false;
-      button.setAttribute("aria-busy", "false");
-      button.textContent = originalText;
-      if (originalTitle) {
-        button.title = originalTitle;
-      } else {
-        button.removeAttribute("title");
-      }
-      if (originalAriaLabel) {
-        button.setAttribute("aria-label", originalAriaLabel);
-      } else {
-        button.removeAttribute("aria-label");
-      }
-    }, 1200);
+    button.disabled = false;
+    button.removeAttribute("aria-busy");
+    feedbackTimer = window.setTimeout(restore, ADMIN_COPY_FEEDBACK_MS);
   }
 }
 
@@ -8314,16 +8555,15 @@ function copyFieldValue(selector, button, label) {
   const field = $(selector);
   const value = field?.value?.trim() || "";
   if (!value) {
+    copyButtonFeedbackCleanups.get(button)?.();
     const originalText = button.textContent;
     const originalTitle = button.getAttribute("title") || "";
     const originalAriaLabel = button.getAttribute("aria-label") || "";
-    button.disabled = true;
-    button.setAttribute("aria-busy", "true");
     button.textContent = "无内容";
     syncButtonHint(button, `请先填写${label}`);
-    window.setTimeout(() => {
-      button.disabled = false;
-      button.setAttribute("aria-busy", "false");
+    let feedbackTimer = 0;
+    const restore = () => {
+      window.clearTimeout(feedbackTimer);
       button.textContent = originalText;
       if (originalTitle) {
         button.title = originalTitle;
@@ -8335,7 +8575,12 @@ function copyFieldValue(selector, button, label) {
       } else {
         button.removeAttribute("aria-label");
       }
-    }, 1200);
+      if (copyButtonFeedbackCleanups.get(button) === restore) {
+        copyButtonFeedbackCleanups.delete(button);
+      }
+    };
+    copyButtonFeedbackCleanups.set(button, restore);
+    feedbackTimer = window.setTimeout(restore, ADMIN_COPY_FEEDBACK_MS);
     return;
   }
   copyAdminText(value, button);
@@ -8537,8 +8782,7 @@ function renderAdminUpdatesOverview() {
 }
 
 function scrollAdminToTop() {
-  const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
-  const behavior = prefersReducedMotion ? "auto" : "smooth";
+  const behavior = adminScrollBehavior();
   $$(".panel.active .editor-form, .panel.active .article-list, .panel.active .chat-list, .panel.active .ban-list, .panel.active .event-list, .panel.active .admin-updates, .panel.active .table-wrap").forEach((box) => {
     box.scrollTo({ top: 0, left: 0, behavior });
   });
@@ -8571,6 +8815,14 @@ function handleMapResize() {
 }
 
 function bindEvents() {
+  const restorePointerInputMethod = () => {
+    if (document.body.dataset.inputMethod !== "pointer") {
+      document.body.dataset.inputMethod = "pointer";
+    }
+  };
+  document.addEventListener("pointerdown", restorePointerInputMethod, { capture: true, passive: true });
+  document.addEventListener("pointerover", restorePointerInputMethod, { capture: true, passive: true });
+  document.addEventListener("pointermove", restorePointerInputMethod, { capture: true, passive: true });
   $$(".nav-button").forEach((button, index, buttons) => {
     button.addEventListener("click", () => {
       if (button.dataset.adminHref) {
@@ -8590,9 +8842,10 @@ function bindEvents() {
     }
   });
   document.addEventListener("keydown", (event) => {
+    document.body.dataset.inputMethod = "keyboard";
     if (event.key === "Escape" && state.mobileNavOpen && !$("#admin-confirm-dialog").open && !$("#admin-unsaved-dialog").open) {
       event.preventDefault();
-      closeMobileNav();
+      closeMobileNav({ immediate: true });
     }
   });
   MOBILE_ADMIN_MEDIA.addEventListener?.("change", syncMobileNavMode);

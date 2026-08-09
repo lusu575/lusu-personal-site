@@ -115,6 +115,21 @@ test("account UI keeps one stable safe-DOM tree with explicit labels and busy/er
   assert.match(accountSource, /refs\.retryCheck\.addEventListener\("click", retryAccountCheck\)/);
   assert.match(accountSource, /error\?\.code === "ACCOUNT_TIMEOUT" \? "accountCheckTimeout" : "accountUnavailable"/);
   assert.match(accountSource, /preserveEditingFocus[\s\S]*activeBeforeRetry\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(accountSource, /const nextView = authUser \? "signed-in" : "signed-out"/);
+  assert.match(accountSource, /function cancelAccountViewMotion\([\s\S]*accountContentMotionGeneration \+= 1[\s\S]*getAnimations\?\.\(\)[\s\S]*animation\.cancel\(\)/);
+  assert.match(accountSource, /function accountContentMotionProfile\([\s\S]*prefers-reduced-motion: reduce[\s\S]*motionMode === "off"/);
+  assert.match(accountSource, /function animateAccountContentTransition\([\s\S]*profile\.reduced[\s\S]*surface\.animate\([\s\S]*opacity: 1[\s\S]*translate3d\(0,0,0\)/);
+  assert.match(accountSource, /const generation = \+\+accountContentMotionGeneration[\s\S]*generation !== accountContentMotionGeneration[\s\S]*accountContentAnimation !== animation/);
+  assert.doesNotMatch(accountSource, /\.animate\(\[[\s\S]{0,240}height:/);
+  assert.match(accountSource, /root\?\.dataset\.inputMethod === "keyboard"/);
+  assert.doesNotMatch(accountSource, /`form:\$\{accountMode\}`/);
+  assert.match(accountSource, /const motion = document\.documentElement\?\.dataset\.inputMethod === "keyboard" \? false : undefined/);
+  assert.match(accountSource, /syncAccountView\(\{ motion \}\)[\s\S]*openAccountPopover\(\{ focus: "status", motion \}\)/);
+  assert.match(accountSource, /const wasClosing = popover\.getAttribute\("data-ui-closing"\) === "true"[\s\S]*accountPopoverCloseGeneration \+= 1[\s\S]*cancelSurfaceClose\(popover\)[\s\S]*popover\.inert = false/);
+  assert.match(accountSource, /const closeGeneration = \+\+accountPopoverCloseGeneration[\s\S]*popover\.inert = true[\s\S]*closeGeneration !== accountPopoverCloseGeneration/);
+  assert.match(accountSource, /const closing = popover\.getAttribute\("data-ui-closing"\) === "true"[\s\S]*popover\.hidden \|\| closing[\s\S]*openAccountPopover\(options\)/);
+  assert.match(accountSource, /const expanded = !popover\.hidden && popover\.getAttribute\("data-ui-closing"\) !== "true"[\s\S]*popover\.inert = !expanded/);
+  assert.match(accountSource, /const focusBeforeHide = document\.activeElement[\s\S]*focusStayedInPopover[\s\S]*&& focusStayedInPopover[\s\S]*returnFocus\.focus/);
 });
 
 test("all account copy keys exist in Chinese, English, and Japanese", () => {

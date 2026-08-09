@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { content } from "../js/data/content.mjs";
 
 const FRAME_PIPELINE_SEED_ID = "seed-update-2026-07-18-frame-pipeline-low-performance";
 const FRAME_PIPELINE_SEED_TIME = "2026-07-17T21:12:00.000Z";
@@ -18,7 +19,11 @@ const REMOTE_MCP_OAUTH_UPDATE_ID = "seed-update-2026-08-07-remote-mcp-oauth";
 const REMOTE_MCP_OAUTH_ACCEPTED_AT = "2026-08-09T01:00:00.000Z";
 const GAME_VIDEO_MCP_CANDIDATE_UPDATE_ID = "seed-update-2026-08-09-game-video-mcp-candidate";
 const GAME_VIDEO_MCP_CANDIDATE_PUBLISHED_AT = "2026-08-09T09:30:00.000Z";
-const ARTICLE_SEED_VERSION = "20260809-game-video-mcp-candidate-r2";
+const MOTION_POLISH_UPDATE_ID = "seed-update-2026-08-09-motion-polish";
+const MOTION_POLISH_PUBLISHED_AT = "2026-08-09T02:50:00.000Z";
+const WALLPAPER_TIME_SWITCH_UPDATE_ID = "seed-update-2026-08-09-wallpaper-time-switch";
+const WALLPAPER_TIME_SWITCH_PUBLISHED_AT = "2026-08-09T05:40:00.000Z";
+const ARTICLE_SEED_VERSION = "20260809-motion-polish-r2";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -309,6 +314,58 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /clientActionId/);
     assert.match(params[5], /browserBridge/);
     assert.match(params[5], /undeployed|未部署|未展開/);
+  }
+
+  const wallpaperTimeSwitchContent = content.updates.find(({ article_id: articleId }) => (
+    articleId === WALLPAPER_TIME_SWITCH_UPDATE_ID
+  ));
+  assert.ok(wallpaperTimeSwitchContent, "the public content fallback must include the wallpaper-time switch update");
+  const wallpaperTimeSwitchSeed = seedBatch.find(({ sql }) => (
+    sql.includes(`'${WALLPAPER_TIME_SWITCH_UPDATE_ID}'`)
+    && /on conflict\(article_id\) do update/i.test(normalizedSql(sql))
+  ));
+  assert.ok(wallpaperTimeSwitchSeed, "the wallpaper-time switch update metadata must be seeded");
+  assert.match(
+    normalizedSql(wallpaperTimeSwitchSeed.sql),
+    new RegExp(`${WALLPAPER_TIME_SWITCH_PUBLISHED_AT}.*${WALLPAPER_TIME_SWITCH_PUBLISHED_AT}.*${WALLPAPER_TIME_SWITCH_PUBLISHED_AT}`),
+    "the wallpaper-time switch update must use one consistent create, update, and publish timestamp"
+  );
+  const wallpaperTimeSwitchTranslations = boundStatements.filter(({ params }) => (
+    params[1] === WALLPAPER_TIME_SWITCH_UPDATE_ID
+    && ["zh", "en", "ja"].includes(params[2])
+  ));
+  assert.equal(wallpaperTimeSwitchTranslations.length, 3, "the wallpaper-time switch update must include three translations");
+  for (const { params } of wallpaperTimeSwitchTranslations) {
+    const lang = params[2];
+    assert.equal(params[3], wallpaperTimeSwitchContent.title[lang], `${lang} title must match the public content fallback`);
+    assert.equal(params[4], wallpaperTimeSwitchContent.summary[lang], `${lang} summary must match the public content fallback`);
+    assert.equal(params[5], wallpaperTimeSwitchContent.content_markdown[lang], `${lang} body must match the public content fallback`);
+    assert.equal(params[6], WALLPAPER_TIME_SWITCH_PUBLISHED_AT, `${lang} translation created_at must match publication`);
+    assert.equal(params[7], WALLPAPER_TIME_SWITCH_PUBLISHED_AT, `${lang} translation updated_at must match publication`);
+  }
+
+  const motionPolishSeed = seedBatch.find(({ sql }) => (
+    sql.includes(`'${MOTION_POLISH_UPDATE_ID}'`)
+    && /on conflict\(article_id\) do update/i.test(normalizedSql(sql))
+  ));
+  assert.ok(motionPolishSeed, "the public motion-polish update metadata must be seeded");
+  assert.match(
+    normalizedSql(motionPolishSeed.sql),
+    new RegExp(`${MOTION_POLISH_PUBLISHED_AT}.*${MOTION_POLISH_PUBLISHED_AT}.*${MOTION_POLISH_PUBLISHED_AT}`),
+    "the motion-polish update must use one consistent create, update, and publish timestamp"
+  );
+  const motionPolishTranslations = boundStatements.filter(({ params }) => (
+    params[1] === MOTION_POLISH_UPDATE_ID
+    && ["zh", "en", "ja"].includes(params[2])
+  ));
+  assert.equal(motionPolishTranslations.length, 3, "the motion-polish update must include three translations");
+  for (const { params } of motionPolishTranslations) {
+    assert.equal(params[7], MOTION_POLISH_PUBLISHED_AT, `${params[2]} translation updated_at must match publication`);
+    assert.match(params[5], /Dock/);
+    assert.match(params[5], /transform/);
+    assert.match(params[5], /opacity/);
+    assert.match(params[5], /keyboard|键盘|キーボード/i);
+    assert.match(params[5], /reduced.motion|reduced motion|减弱动效|視差軽減/i);
   }
 
   const remoteMcpOauthSeed = seedBatch.find(({ sql }) => (

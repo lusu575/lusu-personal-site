@@ -100,6 +100,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 软键盘打开只临时隐藏 Dock，不改写用户的 expanded / collapsed 状态。用户主动收起 Dock 时，滚动区必须同步 inert、aria-hidden 和视觉隐藏，并把已有焦点移到展开按钮；opacity / pointer-events 不能替代可访问性隐藏。文章回顶激活后把焦点交给标题，目录正文使用文章实际语言、目录导航标签保留界面语言，带按钮的横向容器不能再增加空白 Tab 停靠点。CDP 高度、缩放或 safe-area 代理只是几何回归，不得宣称真实软键盘、safe area 或浏览器 chrome 已验证；真机标志在未完成真机实测前保持 false。Headless 焦点审计先执行 CDP `Page.bringToFront`，避免未激活页只改 `activeElement` 却不触发 focus 事件。
 - 页面 route、App 打开和移动 tab 只动画当前页面/窗口表面，不使用会覆盖固定顶栏、任务栏或 Dock 的整页 View Transition。full motion 审计需要采集起始、60ms、140ms 和稳定帧，检查 Dock 节点身份、几何、透明度与 40ms 快速连续切换的最终路由。
 - motion off 必须同步停止硬编码过渡、Dock smooth scroll／选中滑动、骨架循环与主题快照；disabled / aria-disabled / inert 控件不播放按压反馈，maximize/restore 以真实几何做 FLIP。视频缩略图保持原生 16:9 button，不恢复遮图播放圆圈；播放器超时按 generation + settled 收口，失败卡并排提供重试与原视频，统一 `.content-state` 和重试焦点。
+- 指针按压反馈使用约 140ms 按下、90ms 松开的非对称节奏；键盘激活即时提交，不等待这组反馈。按钮、Knowledge 卡片和壁纸选择环共用该节奏，避免对称进退显得黏滞。
 - “日语的言外之意 / Behind the Japanese / 日本語の裏側”位于 `tools/japanese-subtext/`，固定采用版本化分批 JSON 和不可随意变更的关卡 ID；每次公开应用更新增加 `appVersion`，只有题库结构或存档兼容边界变化时才增加 `contentVersion`，改关另增 `revision`，完整流程见 `tools/japanese-subtext/MAINTENANCE.md`。
 - 题库、音频 manifest 与时间轴必须同步并分别验证；日语先使用审校读音，再进入 G2P/Kokoro。Misaki 音素与音高标记必须分离，完整 P2R 要保持 `j → y` 早于 `ʥ → j`，未知或超长音素必须失败关闭。每关 source hash、cue、reading/phoneme hash、实际 CPU provider、模型/运行时 provenance、输出参数和发音表 canonical SHA-256 必须一致；发布前做全量音素复算、ffprobe、SHA-256、孤儿文件和静音检测。模型只作离线批处理，结束后关闭，不安装服务或自启动。
 - 声线必须来源和许可清晰；保留 `NOTICE-japanese-voices.md` 与设置面板三语署名链接，不使用来源不明或模仿受保护动漫角色的声线。
@@ -108,6 +109,8 @@ skills/lusu-personal-site-skill/SKILL.md
 - 日语工具每关配图使用映射 setting、人物、台词、题问和道具的原创黑白四格漫画，统一线条、网点、边框和 4:3 画幅；图片 manifest 必须锁定 960×720、SHA-256、生成器和审查状态。imagegen 不可用时允许明确标注的本地原创 fallback，但不能冒充 AI 逐图产物。
 - 发布日语工具前必须通过题库、真实音频、自动测试、主站构建和 359×500 / 375×667 / 390×844 / 844×390 / 1365×900 五视口回归，并同步文档、Skill、缓存版本与唯一三语更新记录。
 - 首页四时段壁纸基础图放在 `assets/images/wallpapers/`；时间段统一为 05:00-10:59 morning、11:00-16:59 day、17:00-19:59 dusk、20:00-04:59 night。
+- 右上角壁纸开关固定为 morning／day／dusk／night 四段，并与上述时间模型共用 05:00、11:00、17:00、20:00 四个本地边界。手动选择只覆盖到下一边界，之后清除覆盖并恢复自动；`localStorage` 不可用时才用 `sessionStorage`，`?wallpaper=` 只作预览。
+- 四段轨道、内嵌选择环和四套换档特效只使用 `image2` 生成的项目内位图与来源 manifest，不用 CSS／Canvas／SVG path／代码几何绘制主体。176×44 椭圆轨道内的选择环为 28×28，四周保留 8px；morning 朝阳云朵、day 日光白云、dusk 落日云带、night 月亮／行星／星光分别用三段裁切层按 0／28／56ms 错峰入场。装饰图只在 Home 加载并预解码；手动选择的 pending request 持有乐观档位与最终持久化，clock／focus／pageshow 只复用。选择器用约 220ms transform，换档特效用约 280ms transform／opacity，场景用约 300ms generation-safe crossfade；键盘与 motion-off 即时，reduced 取消位移和装饰特效并只保留约 140ms opacity，low performance 也跳过装饰特效。
 - 首页保留 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构和动画 layer DOM/class；当前 morning / day / dusk / night 四时段均已启用无云底图 + 独立云层的动态云层。
 - 顶部栏和底部任务栏跟随同一套 `body[data-time-theme]` 四时段主题；维护顶部栏、任务栏、Start、任务按钮、账号入口、语言切换或状态托盘时，必须同时检查四套外观，保持无竖线的现代玻璃像素 HUD 方向，并保留现有图标资源。
 - PC 端活动任务按钮保留蓝色按下态与内凹层级，但不使用黄色底边、黄色外描边或常亮光晕；键盘 `:focus-visible` 焦点环和移动 Dock 的选中底板保持不变。

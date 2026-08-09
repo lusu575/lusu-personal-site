@@ -20,6 +20,7 @@
     settingsBaseline: "",
     settingsDirty: false,
     mutationLocked: false,
+    mutationBusyButton: null,
     itemLimit: 50,
     itemOffset: 0,
     itemTotal: 0,
@@ -29,12 +30,28 @@
       item: { sequence: 0, controller: null, timer: 0 },
       room: { sequence: 0, controller: null, timer: 0 }
     },
+    tableBusyCounts: new Map(),
     failedLoads: new Map(),
     retryOperation: null,
-    confirmResolver: null
+    confirmResolver: null,
+    noticeHideTimer: 0,
+    dialogCloseCleanup: null,
+    dialogMotionGeneration: 0
   };
 
   const byId = (id) => document.getElementById(id);
+  const TRANSFER_DIALOG_MOTION_MS = 180;
+
+  function transferMotionIsOff() {
+    return document.documentElement.dataset.motion === "off"
+      || document.body.dataset.motion === "off";
+  }
+
+  function transferMotionShouldBeImmediate(options = {}) {
+    return Boolean(options.immediate)
+      || transferMotionIsOff()
+      || document.body.dataset.inputMethod === "keyboard";
+  }
 
   class ApiError extends Error {
     constructor(message, response, payload) {
@@ -67,6 +84,33 @@
     return payload;
   }
 
+  function setTableBusy(bodyId, busy) {
+    const tableWrap = byId(bodyId)?.closest(".table-wrap");
+    if (!tableWrap) {
+      return;
+    }
+    const current = state.tableBusyCounts.get(bodyId) || 0;
+    const next = Math.max(0, current + (busy ? 1 : -1));
+    if (next) {
+      state.tableBusyCounts.set(bodyId, next);
+    } else {
+      state.tableBusyCounts.delete(bodyId);
+    }
+    const active = next > 0;
+    tableWrap.setAttribute("aria-busy", active ? "true" : "false");
+    tableWrap.classList.toggle("is-busy", active);
+    tableWrap.classList.toggle("is-loading", active);
+  }
+
+  async function withTableBusy(bodyId, operation) {
+    setTableBusy(bodyId, true);
+    try {
+      return await operation();
+    } finally {
+      setTableBusy(bodyId, false);
+    }
+  }
+
   function loadDefinitions(options = {}) {
     return [
       ["概览", async () => {
@@ -82,12 +126,16 @@
       ["房间", async () => loadRoomRows(state.roomSearch)],
       ["文件", async () => loadItemRows()],
       ["分片上传", async () => {
-        const payload = await api("/api/admin/transfer/uploads?limit=100");
-        renderUploads(payload.uploads || []);
+        await withTableBusy("uploads", async () => {
+          const payload = await api("/api/admin/transfer/uploads?limit=100");
+          renderUploads(payload.uploads || []);
+        });
       }],
       ["报警", async () => {
-        const payload = await api("/api/admin/transfer/alerts");
-        renderAlerts(payload.alerts || []);
+        await withTableBusy("alerts", async () => {
+          const payload = await api("/api/admin/transfer/alerts");
+          renderAlerts(payload.alerts || []);
+        });
       }]
     ];
   }
@@ -223,8 +271,8 @@
     rows.forEach((row) => {
       const actions = actionCell();
       actions.append(
-        action("清空", true, () => roomAction(row, "clear")),
-        action("关闭", true, () => roomAction(row, "close"))
+        action("清空", true, (button) => roomAction(row, "clear", button)),
+        action("关闭", true, (button) => roomAction(row, "close", button))
       );
       body.append(tableRow([
         code(row.id),
@@ -253,7 +301,7 @@
     }
     rows.forEach((row) => {
       const actions = actionCell();
-      actions.append(action("永久删除", true, () => deleteItem(row)));
+      actions.append(action("永久删除", true, (button) => deleteItem(row, button)));
       body.append(tableRow([
         row.display_filename || "加密文字",
         row.uploader_email || row.uploader_user_id || "账号已删除",
@@ -313,7 +361,8 @@
     channel.sequence = sequence;
     channel.controller = controller;
     try {
-      const payload = await api(url, { signal: controller.signal });
+      const bodyId = kind === "item" ? "items" : "rooms";
+      const payload = await withTableBusy(bodyId, () => api(url, { signal: controller.signal }));
       if (channel.sequence !== sequence) {
         return null;
       }
@@ -336,7 +385,7 @@
     rows.forEach((row) => {
       const actions = actionCell();
       if (["active", "completing", "failed"].includes(row.status)) {
-        actions.append(action("中止", true, () => abortUpload(row)));
+        actions.append(action("中止", true, (button) => abortUpload(row, button)));
       }
       body.append(tableRow([
         code(row.id),
@@ -392,7 +441,7 @@
     }
   }
 
-  async function roomAction(row, actionName) {
+  async function roomAction(row, actionName, busyTarget) {
     const clearing = actionName === "clear";
     const confirmed = await confirmAction({
       title: clearing ? "清空互传房间" : "关闭互传房间",
@@ -414,11 +463,12 @@
     const operation = () => api(endpoint, { method: "POST", json: {} });
     await runMutation(operation, {
       successMessage: clearing ? "房间内容已全部清空。" : "房间已关闭。",
-      partialRetry: clearing ? operation : null
+      partialRetry: clearing ? operation : null,
+      busyTarget
     });
   }
 
-  async function deleteItem(row) {
+  async function deleteItem(row, busyTarget) {
     const filename = row.display_filename || "加密文字";
     const sender = row.uploader_email || row.uploader_user_id || "账号已删除";
     const storageImpact = row.item_type === "text"
@@ -440,11 +490,11 @@
     }
     await runMutation(
       () => api(`/api/admin/transfer/item/${encodeURIComponent(row.id)}`, { method: "DELETE" }),
-      { successMessage: "互传项目已永久删除。" }
+      { successMessage: "互传项目已永久删除。", busyTarget }
     );
   }
 
-  async function abortUpload(row) {
+  async function abortUpload(row, busyTarget) {
     const confirmed = await confirmAction({
       title: "中止分片上传",
       message: "系统会中止 R2 Multipart 任务、删除已记录分片，并移除尚未就绪的项目记录。",
@@ -464,11 +514,11 @@
         method: "POST",
         json: { sessionId: row.id, roomKey: row.room_key }
       }),
-      { successMessage: "分片上传已中止。" }
+      { successMessage: "分片上传已中止。", busyTarget }
     );
   }
 
-  async function cleanup() {
+  async function cleanup(busyTarget) {
     const confirmed = await confirmAction({
       title: "立即执行存储清理",
       message: "系统会删除过期文件、重试删除失败项，并核对 48 小时前的孤立 R2 对象。",
@@ -488,11 +538,12 @@
     });
     await runMutation(operation, {
       successMessage: "存储清理已完成。",
-      partialRetry: operation
+      partialRetry: operation,
+      busyTarget
     });
   }
 
-  async function toggleUpload(kind) {
+  async function toggleUpload(kind, busyTarget) {
     const global = kind === "global";
     const button = byId(global ? "global-switch" : "normal-switch");
     const enabled = button.dataset.next === "true";
@@ -523,6 +574,7 @@
       }),
       {
         successMessage: enabled ? "上传已恢复。" : "上传已暂停。",
+        busyTarget,
         onSuccess(payload) {
           acceptOwnSettingsRevision(payload.settings);
         }
@@ -541,7 +593,7 @@
     return values;
   }
 
-  async function saveSettings() {
+  async function saveSettings(busyTarget) {
     if (!state.settingsDirty) {
       notice("设置没有变化。");
       return;
@@ -553,6 +605,7 @@
       }),
       {
         successMessage: "互传设置已保存。",
+        busyTarget,
         onSuccess(payload) {
           applySettings(payload.settings, { force: true });
         }
@@ -576,7 +629,7 @@
     if (state.mutationLocked) {
       return null;
     }
-    setMutationLocked(true);
+    setMutationLocked(true, options.busyTarget);
     notice("正在执行管理操作……");
     try {
       const payload = await operation();
@@ -655,11 +708,18 @@
     byId("operation-result").hidden = true;
   }
 
-  function setMutationLocked(locked) {
+  function setMutationLocked(locked, busyTarget = null) {
     state.mutationLocked = Boolean(locked);
+    state.mutationBusyButton = state.mutationLocked && busyTarget instanceof HTMLButtonElement
+      ? busyTarget
+      : null;
     document.querySelectorAll("[data-mutation]").forEach((button) => {
       button.disabled = state.mutationLocked;
-      button.setAttribute("aria-busy", state.mutationLocked ? "true" : "false");
+      if (state.mutationLocked && button === state.mutationBusyButton) {
+        button.setAttribute("aria-busy", "true");
+      } else {
+        button.removeAttribute("aria-busy");
+      }
     });
     syncSettingsDirty();
   }
@@ -679,11 +739,68 @@
     }));
     byId("context-dialog-confirm").textContent = options.confirmLabel || "确认操作";
     dialog.returnValue = "";
+    state.dialogCloseCleanup?.();
+    state.dialogCloseCleanup = null;
+    state.dialogMotionGeneration += 1;
+    dialog.classList.remove("is-dialog-closing");
+    dialog.classList.add("is-dialog-entering");
     dialog.showModal();
-    window.setTimeout(() => byId("context-dialog-cancel").focus(), 0);
+    if (transferMotionShouldBeImmediate()) {
+      dialog.classList.remove("is-dialog-entering");
+      byId("context-dialog-cancel").focus();
+    } else {
+      void dialog.offsetWidth;
+      window.requestAnimationFrame(() => {
+        if (dialog.open && !dialog.classList.contains("is-dialog-closing")) {
+          dialog.classList.remove("is-dialog-entering");
+          byId("context-dialog-cancel").focus();
+        }
+      });
+    }
     return new Promise((resolve) => {
       state.confirmResolver = resolve;
     });
+  }
+
+  function closeConfirmDialog(value, options = {}) {
+    const dialog = byId("context-dialog");
+    if (!dialog.open) {
+      return;
+    }
+    state.dialogCloseCleanup?.();
+    state.dialogCloseCleanup = null;
+    const generation = state.dialogMotionGeneration + 1;
+    state.dialogMotionGeneration = generation;
+    const finish = () => {
+      if (generation !== state.dialogMotionGeneration) {
+        return;
+      }
+      state.dialogCloseCleanup?.();
+      state.dialogCloseCleanup = null;
+      dialog.classList.remove("is-dialog-entering", "is-dialog-closing");
+      if (dialog.open) {
+        dialog.close(value);
+      }
+    };
+    if (transferMotionShouldBeImmediate(options)) {
+      finish();
+      return;
+    }
+    dialog.returnValue = value;
+    dialog.classList.remove("is-dialog-entering");
+    dialog.classList.add("is-dialog-closing");
+    const windowNode = dialog.querySelector(".context-dialog-window");
+    const onTransitionEnd = (event) => {
+      if (event.target === windowNode && event.propertyName === "opacity") {
+        finish();
+      }
+    };
+    const timeout = window.setTimeout(finish, TRANSFER_DIALOG_MOTION_MS + 60);
+    windowNode?.addEventListener("transitionend", onTransitionEnd);
+    state.dialogCloseCleanup = () => {
+      window.clearTimeout(timeout);
+      windowNode?.removeEventListener("transitionend", onTransitionEnd);
+    };
   }
 
   function resolveConfirm(confirmed) {
@@ -776,17 +893,30 @@
 
   function bindDialog() {
     const dialog = byId("context-dialog");
-    byId("context-dialog-cancel").addEventListener("click", () => dialog.close("cancel"));
-    byId("context-dialog-confirm").addEventListener("click", () => dialog.close("confirm"));
+    byId("context-dialog-cancel").addEventListener("click", () => closeConfirmDialog("cancel"));
+    byId("context-dialog-confirm").addEventListener("click", () => closeConfirmDialog("confirm"));
     dialog.addEventListener("close", () => resolveConfirm(dialog.returnValue === "confirm"));
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      closeConfirmDialog("cancel", { immediate: true });
+    });
     dialog.addEventListener("click", (event) => {
       if (event.target === dialog) {
-        dialog.close("cancel");
+        closeConfirmDialog("cancel");
       }
     });
   }
 
   function bind() {
+    const restorePointerInputMethod = () => {
+      document.body.dataset.inputMethod = "pointer";
+    };
+    document.addEventListener("pointerdown", restorePointerInputMethod, { capture: true, passive: true });
+    document.addEventListener("pointerover", restorePointerInputMethod, { capture: true, passive: true });
+    document.addEventListener("pointermove", restorePointerInputMethod, { capture: true, passive: true });
+    document.addEventListener("keydown", () => {
+      document.body.dataset.inputMethod = "keyboard";
+    }, { capture: true });
     bindDialog();
     byId("back-admin").addEventListener("click", protectAdminNavigation);
     byId("refresh").addEventListener("click", protectRefresh);
@@ -803,16 +933,16 @@
         if (error?.name !== "AbortError") notice(error.message, true);
       });
     });
-    byId("cleanup").addEventListener("click", cleanup);
-    byId("test-alert").addEventListener("click", () => runMutation(
+    byId("cleanup").addEventListener("click", (event) => cleanup(event.currentTarget));
+    byId("test-alert").addEventListener("click", (event) => runMutation(
       () => api("/api/admin/transfer/alert/test", { method: "POST", json: {} }),
-      { successMessage: "测试报警已创建。" }
+      { successMessage: "测试报警已创建。", busyTarget: event.currentTarget }
     ));
-    byId("normal-switch").addEventListener("click", () => toggleUpload("normal"));
-    byId("global-switch").addEventListener("click", () => toggleUpload("global"));
+    byId("normal-switch").addEventListener("click", (event) => toggleUpload("normal", event.currentTarget));
+    byId("global-switch").addEventListener("click", (event) => toggleUpload("global", event.currentTarget));
     byId("settings-form").addEventListener("submit", (event) => {
       event.preventDefault();
-      void saveSettings();
+      void saveSettings(event.submitter || byId("settings-save"));
     });
     byId("settings-form").addEventListener("input", syncSettingsDirty);
     byId("settings-form").addEventListener("change", syncSettingsDirty);
@@ -823,7 +953,8 @@
       if (retry) {
         void runMutation(retry, {
           successMessage: "失败对象已重试完成。",
-          partialRetry: retry
+          partialRetry: retry,
+          busyTarget: byId("operation-retry")
         });
       }
     });
@@ -899,7 +1030,7 @@
     if (danger) {
       button.className = "danger";
     }
-    button.addEventListener("click", handler);
+    button.addEventListener("click", (event) => handler(event.currentTarget));
     return button;
   }
 
@@ -966,10 +1097,42 @@
   }
 
   function notice(value, error, options = {}) {
+    const node = byId("notice");
+    const visible = Boolean(value) || options.retry === true;
+    const busy = visible && /正在|读取中|保存中|刷新中|重试中/.test(String(value || ""));
+    const immediate = transferMotionShouldBeImmediate();
+    window.clearTimeout(state.noticeHideTimer);
+    state.noticeHideTimer = 0;
     byId("notice-text").textContent = value || "";
-    byId("notice").classList.toggle("error", Boolean(error));
+    node.classList.toggle("error", Boolean(error));
+    node.classList.toggle("is-busy", busy);
+    node.classList.toggle("is-loading", busy);
+    node.setAttribute("aria-busy", busy ? "true" : "false");
     byId("notice-retry").hidden = !options.retry;
-    byId("notice").dataset.visible = String(Boolean(value) || options.retry === true);
+    if (visible) {
+      const wasMounted = node.classList.contains("is-mounted");
+      node.classList.add("is-mounted");
+      if (!wasMounted) {
+        node.dataset.visible = "false";
+        if (!immediate) {
+          void node.offsetWidth;
+        }
+      }
+      node.dataset.visible = "true";
+      return;
+    }
+    node.dataset.visible = "false";
+    const unmount = () => {
+      state.noticeHideTimer = 0;
+      if (node.dataset.visible !== "true") {
+        node.classList.remove("is-mounted");
+      }
+    };
+    if (immediate) {
+      unmount();
+    } else {
+      state.noticeHideTimer = window.setTimeout(unmount, 170);
+    }
   }
 
   bind();

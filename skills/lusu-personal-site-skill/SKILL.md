@@ -93,6 +93,9 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 首页四时段壁纸基础图放在 `assets/images/wallpapers/`，按用户本地时间切换 `morning` / `day` / `dusk` / `night`。
 - 首页壁纸必须保留 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构；静态底图和后续动画图层要共享同一套 cover 裁切尺寸，不要直接用视口百分比硬贴小图层。
 - 首页壁纸和欢迎弹窗问候语必须使用同一套时间段：05:00-10:59 morning，11:00-16:59 day，17:00-19:59 dusk，20:00-04:59 night。
+- 右上角壁纸控制固定为 morning／day／dusk／night 四段循环开关，与上述时间段共用唯一时间模型。自动模式只在 05:00、11:00、17:00、20:00 的真实本地边界推进；手动选择只覆盖到下一边界，随后必须清除覆盖并恢复自动状态，不得把手动主题永久锁死。覆盖优先保存到 `localStorage`，不可用时才退到 `sessionStorage`；URL `?wallpaper=` 仅作显式预览，不写入覆盖。
+- 四段轨道、时段主体、移动选择器和换档特效必须使用 `image2` 生成的项目内位图资产及来源 manifest，禁止用 CSS、Canvas、SVG path 或代码几何临时绘制日月云图案。四段各自要有可辨认的晨光、日间、暮色与夜空层次；morning 使用朝阳与云朵、day 使用日光与白云、dusk 使用落日云带、night 使用月亮／行星／星光。176×44 椭圆轨道内的选择环固定为 28×28，并在四周保留 8px 内边距；不得越出边框、遮住相邻时段或扩大成两态开关。
+- 壁纸选择器默认使用约 220ms strong ease-in-out 的 transform 位移；每次实际换档时，对应生成式特效以三个裁切层按 0／28／56ms 错峰、约 280ms transform／opacity 入场，再与选择环落位形成一组动作。四套装饰图只在 Home 首次进入时加载并预解码，非 Home 路由不得产生这些请求。完整底图与动态层按约 300ms generation-safe crossfade 切换，并遵守 last-request-wins。键盘触发与 `data-motion="off"` 立即提交；`prefers-reduced-motion`／reduced 取消选择器空间位移、换档特效和环境循环，只允许约 140ms 的纯 opacity 场景过渡；low performance 同样跳过换档特效。目标场景必须先预解码；手动选择的 pending request 必须持续拥有乐观档位和最终持久化提交，clock／focus／pageshow 只能复用，不能使它失效。手动覆盖截止时间仍以点击瞬间计算，不能因解码跨过边界而延长。
 - 首页欢迎弹窗按访问设备本地自然日记录到 `lusu-welcome-day`；每天首次打开任意公开路由时必须显示一次，并在实际打开时立刻记录当天，不能继续使用长期版本号让后续日期永不再弹。`welcome=0`／`welcome=1` 只作为明确审计或预览覆盖。
 - 顶部栏和底部任务栏也跟随同一套 `body[data-time-theme]` 四时段主题变量；维护 `.xp-topbar`、`.xp-taskbar`、Start、任务栏按钮、账号入口、语言切换或状态托盘时，必须同时检查 morning / day / dusk / night 四套外观，保持无竖线的现代玻璃像素 HUD 方向，并保留现有图标资源。
 - PC 端活动任务按钮使用蓝色按下态与内凹层级，不使用黄色底边、黄色外描边或常亮光晕；仅键盘 `:focus-visible` 保留清楚焦点环。该规则不得改写移动 Dock 的选中底板。
@@ -120,6 +123,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - `js/ui-motion.js` 只负责过渡与动效编排；业务提交必须继续由现有处理函数完成，并保证一次用户操作只提交一次。动效失败、关闭或减少动态时，业务操作仍必须立即完成。
 - 桌面 Home 图标进入模块不得捕获整张 Home 页面，只在实时壁纸上对目标 `.xp-window` 做克制淡入和 3px 上移归位；任务栏返回 Home 只动画 `.desktop-icons`，不得让顶层 Home 快照遮住任务栏。模块间 `route` 只让新活动页面轻淡入并小幅方向滑动，移动 Dock route 使用短促方向滑动和一个共享选中底板。页面路由、App 打开与移动 tab 不得调用会捕获整页固定 chrome 的 `document.startViewTransition()`；固定顶栏、桌面任务栏与移动 Dock 必须保持实时可见，fallback 不得克隆带 ID 的业务 DOM。full motion 回归必须拍摄切换起始、60ms、140ms 和稳定帧，验证 Dock 节点身份不变、全程可见，并覆盖 40ms 快速连续切换。
 - `data-motion="off"` 必须真正停止硬编码 transition / animation、Dock smooth scroll 与选中滑动、骨架循环和主题快照；reduced 也停止非必要循环。disabled、`aria-disabled`、inert 后代不产生按压反馈；窗口 maximize/restore 的 FLIP 使用真实 before/after 几何，不能用固定缩放伪装。
+- 键盘触发的跳转、筛选、回顶、Dock／壁纸选择和弹层开合必须立即提交，不得复用指针路径的 smooth scroll、弹跳或等待退出计时；触控开始要清除仅键盘态。Android／粗指针移动壳的 hover 规则必须被 `(hover: hover) and (pointer: fine)` 隔离，不能在触摸后留下粘滞位移。
 - 视频缩略图必须是带标题可访问名称的原生 16:9 `button`，不得退回装饰 `div` 或恢复遮图播放圆圈。iframe 超时、load 与 error 都按当前 request generation + settled 状态收口；失败卡内相邻显示重试／原视频，loading / empty / error 使用共同 `.content-state`，真实错误为 alert，重试后保留合理键盘焦点。
 - 不要克隆或 reparent 账号入口/弹窗、文章详情、视频弹窗、游戏或聊天等高耦合 DOM。移动壳应通过 CSS 和轻量装饰节点呈现现有内容，避免同一 ID、事件监听、焦点或异步请求产生两套生命周期。
 - 公开呈现文件目前包括 `css/style.css`、`css/mobile-ios-shell.css`、`css/motion-system.css`、`js/main.js` 及其 `js/core/`、`js/data/`、`js/features/`、`js/routes/` 模块、`js/mobile-shell.js` 和 `js/ui-motion.js`。新增或修改任何公开 CSS、JS、图标、壁纸或强视觉资产时，必须同步 `index.html` 中对应 query；同一发布批次使用同一可追踪版本。
@@ -137,7 +141,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - Quick Transfer 的 `quick-transfer-icons-source.png` 是洋红键构建源，不能在页面中引用，也不能直接 resize 覆盖生产 atlas。必须通过 `scripts/build-transfer-icon-atlas.mjs` 先色键和边缘去色，再生成 168×168 RGBA 图集；测试同时检查 alpha、整体透明率以及 16 个 sprite cell 的四角透明与可见像素比例。修资源入口时要检查整张图集，不能只看第一格。同一 Sharp / libvips 运行时的双次构建应逐字节一致；Windows / Linux 之间不得把 PNG 压缩流当作稳定接口，跨平台门禁应解码 RGBA 并用严格像素差阈值比较。
 - 工具区（`resources`）→ Quick Transfer → 工具区必须恢复打开前 `resource-categories` 与 `resource-list` 的精确 hidden 状态和列表几何，loader 与实现层不能用无条件显示互相覆盖。Windows 的直接 Chrome `--window-size` 在窄屏可能被钳制到约 500 CSS px；359×500 / 375×667 / 390×844 / 760×900 / 844×390 必须用 CDP 精确 viewport 并先断言 `innerWidth`、`innerHeight` 与 `visualViewport` 后再采信截图。Windows Headless 保存视觉证据时不要用可能空白的 `fromSurface: false`，也不要信任可能漏掉固定合成层的单帧结果；先预热捕获、等待双 `requestAnimationFrame`，再保存第二张 `fromSurface: true` 并逐张确认顶栏与 Dock。
 - 全站关闭指针驱动视差，不得通过鼠标或触控位置移动壁纸、系统栏、窗口或内容层。慢速壁纸氛围只允许使用与输入无关的 `transform` / `opacity`，并在页面隐藏、`prefers-reduced-motion`、`data-motion="reduced"` 或 `off` 时回到稳定静态状态。
-- 大面积页面、窗口和弹层只允许动画 `transform + opacity`，禁止动画 `filter`、`box-shadow`、`border-radius`、`left/top`、`width/height`，也禁止大面积 3D 透视或书页翻动。统一时长约为 instant 80ms、fast 140ms、standard 200ms、window 220ms、scene 300ms；`reduced` 与 `off` 必须立即提交导航和状态。
+- 大面积页面、窗口和弹层只允许动画 `transform + opacity`，禁止动画 `filter`、`box-shadow`、`border-radius`、`left/top`、`width/height`，也禁止大面积 3D 透视或书页翻动。统一时长约为 instant 80ms、fast 140ms、standard 200ms、window 220ms、scene 300ms；指针按压采用约 140ms 按下、90ms 松开的非对称节奏，键盘不得复用该等待。`reduced` 与 `off` 必须立即提交导航和状态。
 - 在线状态、托盘图标和其他状态提示不得持续闪烁。移动和桌面过渡都要短促、可中断，并禁止通过整页 `transform` 破坏 fixed 元素的包含块。
 - PC 任务栏连接状态只能在 `/api/health` 返回 `2xx + ok:true + db:true` 后显示在线；浏览器 `online` 事件只触发复查，不能直接宣称恢复。检查中、服务异常、离线必须同时用文字和独立状态灯表达，支持键盘重试与三语播报；页面隐藏时中止探测，移动 Dock 不重复放置该托盘。
 - 四时段移动竖版壁纸与位图 UI 资产使用 image2 生成并复制到项目资产目录；不要显示无法对应用户真实设备的模拟信号、Wi-Fi 或电量状态。不要把 Codex 临时生成目录或本地 QA 输出目录写进公开页面，QA 截图不提交仓库。

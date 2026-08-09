@@ -269,7 +269,7 @@ test("JSON resource cache still coalesces callers that share the same scope", as
 });
 
 test("cacheable API JSON emits a stable ETag and honors If-None-Match", async () => {
-  assert.equal(PUBLIC_API_REPRESENTATION_VERSION, "20260809-game-video-mcp-candidate-r2");
+  assert.equal(PUBLIC_API_REPRESENTATION_VERSION, "20260809-motion-polish-r2");
   const first = await cacheableJson(new Request("https://example.test/api/articles"), { articles: [] });
   const etag = first.headers.get("ETag");
   assert.match(etag, /^"sha256-[a-f0-9]{64}"$/);
