@@ -1,7 +1,7 @@
 import { MCP_OWNER_RESOURCE } from "../../../functions/api/mcp-oauth-ledger.mjs";
 
 export const SERVER_NAME = "lusu-site-mcp";
-export const SERVER_VERSION = "0.3.0";
+export const SERVER_VERSION = "0.3.1";
 export const CANONICAL_ISSUER = "https://lusu575.com";
 export const MCP_RESOURCE = MCP_OWNER_RESOURCE;
 export const MCP_PATH = "/mcp";

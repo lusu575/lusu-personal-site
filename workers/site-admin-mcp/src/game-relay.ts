@@ -5,6 +5,8 @@ import { sha256Hex } from "./security";
 export const GAME_RELAY_PROTOCOL_VERSION = 1;
 export const GAME_RELAY_WEBSOCKET_PROTOCOL = "lusu-game-v1";
 export const GAME_RELAY_PAIR_PROTOCOL_PREFIX = "pair.";
+const GAME_RELAY_HEARTBEAT_REQUEST = "ping";
+const GAME_RELAY_HEARTBEAT_RESPONSE = "pong";
 
 const STATE_KEY = "game-relay:state";
 const INTERNAL_HEADER = "x-lusu-game-relay-internal";
@@ -245,7 +247,10 @@ export class GameRelaySession extends DurableObject<Env> {
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
-    ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair("ping", "pong"));
+    ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair(
+      GAME_RELAY_HEARTBEAT_REQUEST,
+      GAME_RELAY_HEARTBEAT_RESPONSE
+    ));
     this.ready = ctx.blockConcurrencyWhile(async () => {
       const state = await ctx.storage.get<RelayState>(STATE_KEY);
       if (state && !validStoredState(state)) {
@@ -718,6 +723,11 @@ export class GameRelaySession extends DurableObject<Env> {
     if (identityError) return identityError;
     state.lastControllerAt = Date.now();
     if (state.status === "paused") {
+      const socket = this.browserSocket(state);
+      if (!socket || !sendSocketText(socket, GAME_RELAY_HEARTBEAT_RESPONSE)) {
+        await this.persistState(markDisconnected(state));
+        return sessionDisconnected();
+      }
       await this.persistState(state);
       return relayJson({ ok: true, status: "completed", commandId: "", output: publicSnapshot(state, true) });
     }
@@ -1238,6 +1248,16 @@ function sendSocketJson(socket: WebSocket, payload: Record<string, unknown>): bo
   try {
     if (socket.readyState !== 1) return false;
     socket.send(JSON.stringify(payload));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function sendSocketText(socket: WebSocket, payload: string): boolean {
+  try {
+    if (socket.readyState !== 1) return false;
+    socket.send(payload);
     return true;
   } catch {
     return false;

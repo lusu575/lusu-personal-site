@@ -102,7 +102,7 @@ export function registerGameOwnerTools(
     "game_browser_observe",
     {
       title: "Observe the paired browser game",
-      description: "Requests a fresh bounded semantic snapshot from the paired browser game. It never reads the DOM or captures the screen.",
+      description: "Requests a fresh bounded semantic snapshot while active. While paused, it returns the cached semantic snapshot and sends a transport-only pong to the browser; clients waiting for the owner to resume must call this tool at least once every 20 seconds. It never reads the DOM or captures the screen.",
       inputSchema: z.object({ sessionId: SessionIdSchema }).strict(),
       annotations: ReadOnlyAnnotations,
       _meta: oauthToolMeta(["games:play"])
@@ -194,7 +194,7 @@ export function registerGameOwnerTools(
     "game_browser_pause",
     {
       title: "Pause AI control of a browser game",
-      description: "Immediately pauses AI control. Only the owner in the browser can resume the session.",
+      description: "Immediately pauses AI control. Only the owner in the browser can resume the session. While waiting, call game_browser_observe at least once every 20 seconds to keep the paired browser transport live.",
       inputSchema: z.object({ sessionId: SessionIdSchema }).strict(),
       annotations: ControlAnnotations,
       _meta: oauthToolMeta(["games:play"])
