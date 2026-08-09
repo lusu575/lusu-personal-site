@@ -9,6 +9,7 @@ import {
   OWNER_SCOPES
 } from "../src/constants";
 import { oauthProviderOptions } from "../src/index";
+import { handleOAuthRevocationWithLedgerSync } from "../src/oauth-revocation";
 import { hmacSha256Hex, sha256Hex } from "../src/security";
 
 const testEnv = env as unknown as {
@@ -219,7 +220,12 @@ async function waitForRelayMessage(
 
 async function authorizeTestClient(
   scopes: string[],
-  forcedGrantRef = ""
+  forcedGrantRef = "",
+  captureTokens?: (value: {
+    clientId: string;
+    accessToken: string;
+    refreshToken: string;
+  }) => void
 ): Promise<string> {
   const redirectUri = "http://127.0.0.1:43110/callback";
   const registration = await SELF.fetch(`${CANONICAL_ISSUER}/oauth/register`, {
@@ -320,6 +326,9 @@ async function authorizeTestClient(
   expect(tokenPayload.token_type).toBe("bearer");
   const accessToken = String(tokenPayload.access_token || "");
   expect(accessToken).not.toBe("");
+  const refreshToken = String(tokenPayload.refresh_token || "");
+  expect(refreshToken).not.toBe("");
+  captureTokens?.({ clientId, accessToken, refreshToken });
   return accessToken;
 }
 
@@ -2006,5 +2015,370 @@ describe("complete owner OAuth MCP flow", () => {
     expect(afterRevocation.response.headers.get("www-authenticate")).toContain(
       'error="invalid_token"'
     );
+  });
+
+  it("synchronizes RFC 7009 refresh revocation to D1 exactly once", async () => {
+    let credentials: {
+      clientId: string;
+      accessToken: string;
+      refreshToken: string;
+    } | undefined;
+    await authorizeTestClient(
+      ["content:read", "content:write"],
+      "",
+      (value) => { credentials = value; }
+    );
+    expect(credentials).toBeDefined();
+    if (!credentials) throw new Error("Missing OAuth test credentials");
+    const revocationBody = new URLSearchParams({
+      token: credentials.refreshToken,
+      token_type_hint: "refresh_token",
+      client_id: credentials.clientId
+    }).toString();
+
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const revoked = await SELF.fetch(`${CANONICAL_ISSUER}/oauth/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: revocationBody
+      });
+      expect(revoked.status).toBe(200);
+      expect(await revoked.text()).toBe("");
+    }
+
+    const grant = await testEnv.DB.prepare(`
+      select status, revoked_reason from mcp_oauth_grants limit 1
+    `).first<{ status: string; revoked_reason: string }>();
+    expect(grant).toEqual({
+      status: "revoked",
+      revoked_reason: "rfc7009-refresh-token"
+    });
+    const audit = await testEnv.DB.prepare(`
+      select count(*) as count from mcp_oauth_audit_log
+      where action = 'mcp-oauth-grant-revoked'
+    `).first<{ count: number }>();
+    expect(Number(audit?.count || 0)).toBe(1);
+
+    const oldAccess = await ownerMcpRequest(credentials.accessToken, "tools/list");
+    expect(oldAccess.response.status).toBe(401);
+  });
+
+  it("keeps the D1 grant active when RFC 7009 revokes only an access token", async () => {
+    let credentials: {
+      clientId: string;
+      accessToken: string;
+      refreshToken: string;
+    } | undefined;
+    await authorizeTestClient(
+      ["content:read", "content:write"],
+      "",
+      (value) => { credentials = value; }
+    );
+    expect(credentials).toBeDefined();
+    if (!credentials) throw new Error("Missing OAuth test credentials");
+
+    const refreshParts = credentials.refreshToken.split(":");
+    expect(refreshParts).toHaveLength(3);
+    const invalidSameGrantToken = `${refreshParts[0]}:${refreshParts[1]}:invalid-refresh-token`;
+    const invalid = await SELF.fetch(`${CANONICAL_ISSUER}/oauth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        token: invalidSameGrantToken,
+        token_type_hint: "refresh_token",
+        client_id: credentials.clientId
+      }).toString()
+    });
+    expect(invalid.status).toBe(200);
+
+    const wrongClient = await SELF.fetch(`${CANONICAL_ISSUER}/oauth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        token: credentials.refreshToken,
+        token_type_hint: "refresh_token",
+        client_id: "unregistered-client"
+      }).toString()
+    });
+    expect([200, 400, 401]).toContain(wrongClient.status);
+
+    const revoked = await SELF.fetch(`${CANONICAL_ISSUER}/oauth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        token: credentials.accessToken,
+        client_id: credentials.clientId
+      }).toString()
+    });
+    expect(revoked.status).toBe(200);
+
+    const grant = await testEnv.DB.prepare(`
+      select status, revoked_reason from mcp_oauth_grants limit 1
+    `).first<{ status: string; revoked_reason: string }>();
+    expect(grant).toEqual({ status: "active", revoked_reason: "" });
+    const audit = await testEnv.DB.prepare(`
+      select count(*) as count from mcp_oauth_audit_log
+      where action = 'mcp-oauth-grant-revoked'
+    `).first<{ count: number }>();
+    expect(Number(audit?.count || 0)).toBe(0);
+
+    const oldAccess = await ownerMcpRequest(credentials.accessToken, "tools/list");
+    expect(oldAccess.response.status).toBe(401);
+  });
+
+  it("deletes the verified provider grant when RFC 7009 returns 200 after a refresh rotation", async () => {
+    await authorizeTestClient(["content:read", "content:write"]);
+    const ledger = await testEnv.DB.prepare(`
+      select grant_ref, client_id from mcp_oauth_grants limit 1
+    `).first<{ grant_ref: string; client_id: string }>();
+    expect(ledger).not.toBeNull();
+    if (!ledger) throw new Error("Missing OAuth ledger test grant");
+
+    const providerGrantId = "provider-grant-rotated-1";
+    const refreshToken = `owner-1:${providerGrantId}:refresh-token-before-rotation`;
+    const providerGrantKey = `grant:owner-1:${providerGrantId}`;
+    await testEnv.OAUTH_KV.put(providerGrantKey, JSON.stringify({
+      id: providerGrantId,
+      clientId: ledger.client_id,
+      userId: "owner-1",
+      scope: ["content:read", "content:write"],
+      metadata: {
+        grantRef: ledger.grant_ref,
+        resource: MCP_RESOURCE
+      },
+      encryptedProps: "test-only",
+      createdAt: Date.now(),
+      refreshTokenId: await sha256Hex(refreshToken)
+    }));
+    let revokeGrantCalls = 0;
+    const oauthApi = {
+      async unwrapToken() {
+        return null;
+      },
+      async revokeGrant(grantId: string, userId: string) {
+        revokeGrantCalls += 1;
+        expect(grantId).toBe(providerGrantId);
+        expect(userId).toBe("owner-1");
+        await testEnv.OAUTH_KV.delete(providerGrantKey);
+      }
+    } as any;
+    const request = new Request(`${CANONICAL_ISSUER}/oauth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        token: refreshToken,
+        token_type_hint: "refresh_token",
+        client_id: ledger.client_id
+      }).toString()
+    });
+
+    const response = await handleOAuthRevocationWithLedgerSync({
+      request,
+      env: testEnv as unknown as Env,
+      oauthApi,
+      // A concurrent rotation makes the provider treat the submitted token as
+      // invalid, so RFC 7009 returns 200 without deleting the grant.
+      providerFetch: async () => new Response("", { status: 200 })
+    });
+    expect(response?.status).toBe(200);
+    expect(revokeGrantCalls).toBe(1);
+    expect(await testEnv.OAUTH_KV.get(providerGrantKey)).toBeNull();
+    const grant = await testEnv.DB.prepare(`
+      select status, revoked_reason from mcp_oauth_grants where grant_ref = ?
+    `).bind(ledger.grant_ref).first<{ status: string; revoked_reason: string }>();
+    expect(grant).toEqual({
+      status: "revoked",
+      revoked_reason: "rfc7009-refresh-token"
+    });
+  });
+
+  it("keeps the D1 revocation pending when explicit provider grant deletion fails", async () => {
+    await authorizeTestClient(["content:read", "content:write"]);
+    const ledger = await testEnv.DB.prepare(`
+      select grant_ref, client_id from mcp_oauth_grants limit 1
+    `).first<{ grant_ref: string; client_id: string }>();
+    expect(ledger).not.toBeNull();
+    if (!ledger) throw new Error("Missing OAuth ledger test grant");
+
+    const providerGrantId = "provider-grant-delete-failure-1";
+    const refreshToken = `owner-1:${providerGrantId}:refresh-token-delete-failure`;
+    const providerGrantKey = `grant:owner-1:${providerGrantId}`;
+    await testEnv.OAUTH_KV.put(providerGrantKey, JSON.stringify({
+      id: providerGrantId,
+      clientId: ledger.client_id,
+      userId: "owner-1",
+      scope: ["content:read", "content:write"],
+      metadata: {
+        grantRef: ledger.grant_ref,
+        resource: MCP_RESOURCE
+      },
+      encryptedProps: "test-only",
+      createdAt: Date.now(),
+      refreshTokenId: await sha256Hex(refreshToken)
+    }));
+    let revokeGrantCalls = 0;
+    const oauthApi = {
+      async unwrapToken() {
+        return null;
+      },
+      async revokeGrant() {
+        revokeGrantCalls += 1;
+        if (revokeGrantCalls === 1) {
+          throw new Error("TEST_PROVIDER_GRANT_DELETE_FAILURE");
+        }
+        await testEnv.OAUTH_KV.delete(providerGrantKey);
+      }
+    } as any;
+    const createRequest = () => new Request(`${CANONICAL_ISSUER}/oauth/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          token: refreshToken,
+          token_type_hint: "refresh_token",
+          client_id: ledger.client_id
+        }).toString()
+      });
+    const response = await handleOAuthRevocationWithLedgerSync({
+      request: createRequest(),
+      env: testEnv as unknown as Env,
+      oauthApi,
+      providerFetch: async () => new Response("", { status: 200 })
+    });
+    expect(response?.status).toBe(503);
+    expect(await response?.json()).toMatchObject({
+      code: "OAUTH_REVOCATION_LEDGER_SYNC_FAILED"
+    });
+    const grant = await testEnv.DB.prepare(`
+      select status, revoked_reason from mcp_oauth_grants where grant_ref = ?
+    `).bind(ledger.grant_ref).first<{ status: string; revoked_reason: string }>();
+    expect(grant).toEqual({ status: "active", revoked_reason: "" });
+    const audit = await testEnv.DB.prepare(`
+      select result from mcp_oauth_audit_log
+      where action = 'mcp-oauth-grant-revoked' and grant_ref = ?
+    `).bind(ledger.grant_ref).first<{ result: string }>();
+    expect(audit).toEqual({ result: "pending" });
+
+    const recovered = await handleOAuthRevocationWithLedgerSync({
+      request: createRequest(),
+      env: testEnv as unknown as Env,
+      oauthApi,
+      providerFetch: async () => new Response("", { status: 200 })
+    });
+    expect(recovered?.status).toBe(200);
+    expect(revokeGrantCalls).toBe(2);
+    expect(await testEnv.OAUTH_KV.get(providerGrantKey)).toBeNull();
+    const completedGrant = await testEnv.DB.prepare(`
+      select status, revoked_reason from mcp_oauth_grants where grant_ref = ?
+    `).bind(ledger.grant_ref).first<{ status: string; revoked_reason: string }>();
+    expect(completedGrant).toEqual({
+      status: "revoked",
+      revoked_reason: "rfc7009-refresh-token"
+    });
+    const completedAudit = await testEnv.DB.prepare(`
+      select result from mcp_oauth_audit_log
+      where action = 'mcp-oauth-grant-revoked' and grant_ref = ?
+    `).bind(ledger.grant_ref).first<{ result: string }>();
+    expect(completedAudit).toEqual({ result: "success" });
+  });
+
+  it("recovers D1 revocation sync after the provider grant is already gone", async () => {
+    await authorizeTestClient(["content:read", "content:write"]);
+    const ledger = await testEnv.DB.prepare(`
+      select grant_ref, client_id from mcp_oauth_grants limit 1
+    `).first<{ grant_ref: string; client_id: string }>();
+    expect(ledger).not.toBeNull();
+    if (!ledger) throw new Error("Missing OAuth ledger test grant");
+
+    const providerGrantId = "provider-grant-recovery-1";
+    const refreshToken = `owner-1:${providerGrantId}:refresh-token-recovery`;
+    const providerGrantKey = `grant:owner-1:${providerGrantId}`;
+    await testEnv.OAUTH_KV.put(providerGrantKey, JSON.stringify({
+      id: providerGrantId,
+      clientId: ledger.client_id,
+      userId: "owner-1",
+      scope: ["content:read", "content:write"],
+      metadata: {
+        grantRef: ledger.grant_ref,
+        resource: MCP_RESOURCE
+      },
+      encryptedProps: "test-only",
+      createdAt: Date.now(),
+      refreshTokenId: await sha256Hex(refreshToken)
+    }));
+    let revokeGrantCalls = 0;
+    const oauthApi = {
+      async unwrapToken() {
+        return null;
+      },
+      async revokeGrant(grantId: string, userId: string) {
+        revokeGrantCalls += 1;
+        expect(grantId).toBe(providerGrantId);
+        expect(userId).toBe("owner-1");
+        await testEnv.OAUTH_KV.delete(providerGrantKey);
+      }
+    } as any;
+    let batchCalls = 0;
+    const flakyDb = {
+      prepare: (sql: string) => testEnv.DB.prepare(sql),
+      async batch(statements: D1PreparedStatement[]) {
+        batchCalls += 1;
+        if (batchCalls === 2) throw new Error("TEST_D1_SYNC_FAILURE");
+        return testEnv.DB.batch(statements);
+      }
+    } as unknown as D1Database;
+    const syncEnv = {
+      DB: flakyDb,
+      OAUTH_KV: testEnv.OAUTH_KV
+    } as unknown as Env;
+    const createRequest = () => new Request(`${CANONICAL_ISSUER}/oauth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        token: refreshToken,
+        token_type_hint: "refresh_token",
+        client_id: ledger.client_id
+      }).toString()
+    });
+    const providerFetch = async () => {
+      return new Response("", {
+        status: 200,
+        headers: { "Access-Control-Allow-Origin": "https://client.example" }
+      });
+    };
+
+    const first = await handleOAuthRevocationWithLedgerSync({
+      request: createRequest(),
+      env: syncEnv,
+      oauthApi,
+      providerFetch
+    });
+    expect(first?.status).toBe(503);
+    expect(await first?.json()).toMatchObject({
+      code: "OAUTH_REVOCATION_LEDGER_SYNC_FAILED"
+    });
+    expect(first?.headers.get("access-control-allow-origin")).toBe("https://client.example");
+    expect(revokeGrantCalls).toBe(1);
+    expect(await testEnv.OAUTH_KV.get(providerGrantKey)).toBeNull();
+
+    const recovered = await handleOAuthRevocationWithLedgerSync({
+      request: createRequest(),
+      env: syncEnv,
+      oauthApi,
+      providerFetch
+    });
+    expect(recovered?.status).toBe(200);
+    expect(revokeGrantCalls).toBe(2);
+    const grant = await testEnv.DB.prepare(`
+      select status, revoked_reason from mcp_oauth_grants where grant_ref = ?
+    `).bind(ledger.grant_ref).first<{ status: string; revoked_reason: string }>();
+    expect(grant).toEqual({
+      status: "revoked",
+      revoked_reason: "rfc7009-refresh-token"
+    });
+    const audit = await testEnv.DB.prepare(`
+      select count(*) as count from mcp_oauth_audit_log
+      where action = 'mcp-oauth-grant-revoked' and grant_ref = ?
+    `).bind(ledger.grant_ref).first<{ count: number }>();
+    expect(Number(audit?.count || 0)).toBe(1);
   });
 });

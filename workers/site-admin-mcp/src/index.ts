@@ -1,4 +1,5 @@
 import {
+  getOAuthApi,
   OAuthProvider,
   type OAuthProviderOptions
 } from "@cloudflare/workers-oauth-provider";
@@ -25,6 +26,7 @@ import {
   TOKEN_PATH
 } from "./constants";
 import { validateExplicitTokenResource } from "./oauth-policy";
+import { handleOAuthRevocationWithLedgerSync } from "./oauth-revocation";
 import {
   WorkerHttpError,
   assertTrustedRequestBoundary,
@@ -101,7 +103,15 @@ const worker = {
       if (providerRequest instanceof Response) return providerRequest;
       const tokenPolicyResponse = await validateExplicitTokenResource(providerRequest);
       if (tokenPolicyResponse) return tokenPolicyResponse;
-      return await createOAuthProvider(env).fetch(providerRequest, env, ctx);
+      const provider = createOAuthProvider(env);
+      const revocationResponse = await handleOAuthRevocationWithLedgerSync({
+        request: providerRequest,
+        env,
+        oauthApi: getOAuthApi(oauthProviderOptions, env),
+        providerFetch: () => provider.fetch(providerRequest, env, ctx)
+      });
+      if (revocationResponse) return revocationResponse;
+      return await provider.fetch(providerRequest, env, ctx);
     } catch (error) {
       const status = error instanceof WorkerHttpError ? error.status : 500;
       const code = error instanceof WorkerHttpError ? error.code : "INTERNAL_ERROR";

@@ -110,7 +110,7 @@ Use a purpose-specific value for `ANALYTICS_IP_HASH_SALT`; do not reuse an appli
 - Provider grants are backed by the D1 authorization ledger. Write/delete calls re-check the current admin role and active grant on every operation.
 - The provider token is unwrapped through the provider's public API, then the Worker independently verifies expiry, the exact audience, client, granted scopes, and active D1 grant before creating MCP `authInfo`.
 - Provider errors log only stable code/status/category fields. Tokens, cookies, raw IP addresses, callbacks, article bodies, and provider free-text reasons are not logged.
-- RFC 7009 revocation is served by the provider on `/oauth/token`.
+- RFC 7009 revocation is served on `/oauth/token`. Access-token-only revocation leaves the D1 grant active. For refresh tokens, the pinned provider grant record is read once by exact key to verify the current/previous token hash, then a grant-scoped deterministic `pending` intent is persisted in D1 before the provider deletes anything. After the RFC 7009 response succeeds, the Worker explicitly confirms an idempotent whole-grant deletion so a concurrent refresh rotation cannot turn the standard success into a no-op; only then does one D1 batch mark the grant revoked and complete the same audit event. Retries recover from the strong D1 intent rather than an eventually-consistent post-delete KV read. Raw tokens are never persisted.
 - Persistent Worker observability stays disabled so OAuth authorization queries and state are not retained by platform request logs; the query-safe routes are narrowed again by an exact pathname allowlist in code.
 
 ## Local verification

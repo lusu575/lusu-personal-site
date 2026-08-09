@@ -2,6 +2,7 @@
 
 ## 2026-08-09 游戏浏览器接管与视频 MCP 本地候选
 
+- 新 bundle 在上线前补齐 RFC 7009 refresh-token 撤销与 D1 grant／审计的原子同步。固定 provider 版本的 O(1) grant 记录只用于在删除前精确核对 current／previous refresh-token hash；调用 provider 前必须先写 grant 级、确定性的 D1 `pending` intent，RFC 7009 返回成功后仍须显式确认幂等的整 grant 删除完成，防止并发 refresh 轮换让标准 200 成为空操作，最后再以同一 D1 batch 记录 `rfc7009-refresh-token` 并把唯一审计完成为 `success`。access-token-only 撤销不得误撤整个 D1 grant；provider 已删除、D1 首次失败时从强一致 intent 返回稳定失败并允许同请求恢复，不能依赖最终一致 KV 的删除后反查，也不能把 token、client secret 或原始撤销表单写入响应或日志。
 - 当前仓库候选为 2048、Hextris、A Dark Room 与人生重开补齐受审计的浏览器语义 bridge。页面只把当前 revision 的不透明 `actionId` 交给 Agent；禁止选择器、脚本、原始按键、坐标、URL、任意 DOM 调用或原始存档注入。共享浏览器宿主负责显式玩家配对、一次只保留一个 pending command、revision CAS、超时和断线失效，并提供可见的锁定、暂停、收回控制与关闭入口；玩家暂停／收回／关闭或页面断线后必须立即释放控制，AI 不能自行恢复。
 - 下一版站长 OAuth Worker 的本地候选注册 `game_browser_pair`、`game_browser_observe`、`game_browser_actions`、`game_browser_act`、`game_browser_pause` 与 `game_browser_close`。所有工具要求独立非默认 `games:play` scope、active grant 与当前管理员角色；中继状态由 Durable Object 承担，配对码一次性、短时、绑定站长和 OAuth client。registry 中 `games.browser.*` 的目标 transport 包含远程 MCP／browser adapter，但 `availableTransports` 继续为空：未完成新 Worker 部署、Production OAuth 同意、DO 配对和真实浏览器完整闭环前，不得对外宣称可用。
 - 游戏命令的持久 outcome 审计属于命令完成语义，而不只是附加日志。调用尝试与最终结果必须分开记录，`success`、`pending`、`error` 使用各自状态；结果审计写入失败时工具必须返回 `MCP_OAUTH_AUDIT_FAILED`，不得把动作报告为成功。调用方可用同一 `clientActionId` 重试，DO 收据会复用既有结果而不会重复执行浏览器动作。
