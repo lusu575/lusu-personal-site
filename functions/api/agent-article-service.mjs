@@ -18,7 +18,8 @@ const OPERATION_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,79}$/;
 const ARTICLE_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,179}$/;
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const CATEGORY_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const PRINCIPAL_REF_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$/;
+const DEVICE_PRINCIPAL_REF_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$/;
+const OAUTH_GRANT_REF_PATTERN = /^[A-Za-z0-9_-]{16,128}$/;
 const PRINCIPAL_SCOPE_PATTERN = /^[a-z0-9][a-z0-9:._-]{0,127}$/;
 
 export async function assertAgentArticleAccess({ env, principal: principalValue, requiredScope }) {
@@ -58,10 +59,10 @@ function normalizeAgentArticlePrincipal(value) {
   const tokenRef = String(value.tokenRef || "").trim();
   const effectiveScopes = normalizedScopes(value.effectiveScopes);
   const agentTokenPrincipal = authType === "agent-token"
-    && PRINCIPAL_REF_PATTERN.test(tokenRef)
+    && DEVICE_PRINCIPAL_REF_PATTERN.test(tokenRef)
     && !grantRef;
   const oauthPrincipal = authType === "oauth"
-    && PRINCIPAL_REF_PATTERN.test(grantRef)
+    && OAUTH_GRANT_REF_PATTERN.test(grantRef)
     && clientId
     && clientId.length <= 2_048
     && !tokenRef;

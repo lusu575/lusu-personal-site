@@ -786,7 +786,7 @@ test("local MCP serves a clean stdio initialize and tools/list exchange", async 
   })}\n`);
   const initialized = await waitForMessage(messages, (message) => message.id === 1);
   assert.equal(initialized.result.serverInfo.name, "lusu-personal-site-local");
-  assert.equal(initialized.result.serverInfo.version, "0.7.0");
+  assert.equal(initialized.result.serverInfo.version, "0.8.0");
   input.write(`${JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized", params: {} })}\n`);
   input.write(`${JSON.stringify({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} })}\n`);
   const listed = await waitForMessage(messages, (message) => message.id === 2);

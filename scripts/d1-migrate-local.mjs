@@ -239,18 +239,18 @@ export async function migrateLocalD1() {
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260807-life-restart-agent-r1'
+    where key = 'article_seed_version' and value = '20260809-remote-mcp-oauth-r2'
     union all
-    select 'life-restart-agent-update-article',
+    select 'remote-mcp-oauth-update-article',
       case when count(*) = 1 then 1 else 0 end
     from articles
-    where article_id = 'seed-update-2026-08-07-life-restart-agent'
-      and slug = '2026-08-07-life-restart-agent'
+    where article_id = 'seed-update-2026-08-07-remote-mcp-oauth'
+      and slug = '2026-08-07-remote-mcp-oauth'
       and category = 'site-updates'
       and status = 'published'
-      and published_at = '2026-08-07T08:00:00.000Z'
+      and published_at = '2026-08-09T01:00:00.000Z'
     union all
-    select 'life-restart-agent-update-translations',
+    select 'remote-mcp-oauth-update-translations',
       case
         when count(*) = 3
           and count(distinct lang) = 3
@@ -263,7 +263,7 @@ export async function migrateLocalD1() {
         then 1 else 0
       end
     from article_translations
-    where article_id = 'seed-update-2026-08-07-life-restart-agent'
+    where article_id = 'seed-update-2026-08-07-remote-mcp-oauth'
     union all
     select 'whiteboard-agent-images-update-article', count(*)
     from articles where article_id = 'seed-update-2026-08-06-whiteboard-agent-images'

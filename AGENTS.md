@@ -51,7 +51,7 @@ For Tool Radar work, first read `自动新闻/integrations/lusu-site/tool-radar/
 - Admin site: `admin/`
 - Games: `games/`
 - Governed tool subprojects: online whiteboard in `docs/whiteboard/`; Quick Transfer in `docs/transfer/`
-- AI capability layer: registry/client modules in `lib/capabilities/`, local CLI/stdio MCP in `cli/` and `mcp/local/`, and an independent undeployed read-only remote Worker in `workers/site-mcp/`
+- AI capability layer: registry/client modules in `lib/capabilities/`, local CLI/stdio MCP in `cli/` and `mcp/local/`, the reusable public registrar in `workers/site-mcp/`, and the production OAuth remote MCP in `workers/site-admin-mcp/`
 - Deployment: GitHub `main` triggers Cloudflare Pages auto-deploy. Do not treat Wrangler manual deploy as the normal release path.
 
 ## Local Runtime And Secrets

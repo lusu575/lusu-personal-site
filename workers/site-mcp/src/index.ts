@@ -232,11 +232,12 @@ export function registerSiteMcpSurface<T extends SiteMcpRegistrar>(
     async ({ domain }) => {
       try {
         const capabilities = listCapabilities({
+          domain: "public-content",
+          scope: "content:read",
           availableTransports: "remote-mcp",
           readOnly: true,
-          status: "available",
-          ...(domain ? { domain } : {})
-        });
+          status: "available"
+        }).filter((capability) => !domain || capability.domain === domain);
         return successfulToolResult({
           mode: "public-read-only",
           count: capabilities.length,

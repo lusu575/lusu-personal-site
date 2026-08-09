@@ -37,7 +37,11 @@ import {
 const SESSION_COOKIE = "lusu_session";
 const CONSENT_FLOW_PREFIX = "lusu:owner-mcp:consent:";
 const MAX_FORM_BYTES = 16 * 1024;
+const CONSENT_COMPLETION_TTL_SECONDS = 2 * 60;
+const CONSENT_COMPLETION_POLL_ATTEMPTS = 24;
+const CONSENT_COMPLETION_POLL_INTERVAL_MS = 125;
 const OWNER_SCOPE_SET = new Set<string>(OWNER_SCOPES);
+const LOOPBACK_REDIRECT_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
 
 const StoredAuthRequestSchema = z.object({
   responseType: z.literal("code"),
@@ -57,6 +61,7 @@ const StoredConsentFlowSchema = z.object({
   userId: z.string().min(1).max(128),
   sessionTokenHash: z.string().regex(/^[a-f0-9]{64}$/),
   csrfHash: z.string().regex(/^[a-f0-9]{64}$/),
+  requestFingerprint: z.string().regex(/^[a-f0-9]{64}$/),
   clientName: z.string().max(240),
   grantedScopes: z.array(z.enum(OWNER_SCOPES)).min(1).max(OWNER_SCOPES.length),
   grantRef: z.string().regex(/^[A-Za-z0-9_-]{16,128}$/),
@@ -65,6 +70,21 @@ const StoredConsentFlowSchema = z.object({
 }).strict();
 
 type StoredConsentFlow = z.infer<typeof StoredConsentFlowSchema>;
+
+const StoredConsentCompletionSchema = z.object({
+  version: z.literal(1),
+  kind: z.literal("completed"),
+  decision: z.enum(["approve", "deny"]),
+  userId: z.string().min(1).max(128),
+  sessionTokenHash: z.string().regex(/^[a-f0-9]{64}$/),
+  csrfHash: z.string().regex(/^[a-f0-9]{64}$/),
+  requestFingerprint: z.string().regex(/^[a-f0-9]{64}$/),
+  redirectTo: z.string().url().max(8_192),
+  createdAt: z.string().datetime(),
+  expiresAt: z.string().datetime()
+}).strict();
+
+type StoredConsentCompletion = z.infer<typeof StoredConsentCompletionSchema>;
 
 type BrowserSession = {
   tokenHash: string;
@@ -130,7 +150,8 @@ export const oauthDefaultHandler = {
               "本次授权没有完成。请回到 AI 客户端重新发起连接。",
               "Authorization was not completed. Return to the AI client and start the connection again.",
               "認可は完了しませんでした。AI クライアントに戻り、接続をやり直してください。"
-            )
+            ),
+          `Error code: ${code}`
         ),
         status
       );
@@ -142,10 +163,18 @@ async function showConsent(request: Request, env: Env): Promise<Response> {
   const session = await requireOwnerSession(request, env);
   assertExplicitAuthorizationResource(request);
   const parsedRequest = await env.OAUTH_PROVIDER.parseAuthRequest(request);
+  const redirectOrigin = validateAuthorizationRedirectUri(parsedRequest.redirectUri);
   const oauthRequest = normalizeAuthRequest(parsedRequest);
   const client = await env.OAUTH_PROVIDER.lookupClient(oauthRequest.clientId);
   if (!client) {
     throw new WorkerHttpError("OAuth client was not found.", 400, "OAUTH_CLIENT_NOT_FOUND");
+  }
+  if (!client.redirectUris.includes(oauthRequest.redirectUri)) {
+    throw new WorkerHttpError(
+      "OAuth redirect URI is not registered for this client.",
+      400,
+      "OAUTH_REDIRECT_URI_NOT_REGISTERED"
+    );
   }
 
   const grantedScopes = normalizeRequestedScopes(oauthRequest);
@@ -153,6 +182,7 @@ async function showConsent(request: Request, env: Env): Promise<Response> {
   const flowId = randomUrlSafeToken(32);
   const csrfToken = randomUrlSafeToken(32);
   const grantRef = randomUrlSafeToken(24);
+  const requestFingerprint = await authorizationRequestFingerprint(oauthRequest, flowId);
   const createdAt = new Date();
   const expiresAt = new Date(createdAt.getTime() + CONSENT_FLOW_TTL_SECONDS * 1_000);
   const flow: StoredConsentFlow = {
@@ -161,6 +191,7 @@ async function showConsent(request: Request, env: Env): Promise<Response> {
     userId: session.user.id,
     sessionTokenHash: session.tokenHash,
     csrfHash: await sha256Hex(csrfToken),
+    requestFingerprint,
     clientName,
     grantedScopes,
     grantRef,
@@ -183,10 +214,12 @@ async function showConsent(request: Request, env: Env): Promise<Response> {
       scopes: grantedScopes,
       email: session.user.email,
       flowId,
-      csrfToken
+      csrfToken,
+      requestFingerprint
     }),
     200,
-    consentCookie(request, csrfToken, CONSENT_FLOW_TTL_SECONDS)
+    consentCookie(request, flowId, csrfToken, CONSENT_FLOW_TTL_SECONDS),
+    { formActionOrigin: redirectOrigin }
   );
 }
 
@@ -195,15 +228,38 @@ async function decideConsent(request: Request, env: Env): Promise<Response> {
   const form = await readBoundedForm(request, MAX_FORM_BYTES);
   const flowId = String(form.get("flow_id") || "");
   const csrfToken = String(form.get("csrf_token") || "");
-  const cookieToken = readCookie(request, consentCookieName(request));
+  const requestFingerprint = String(form.get("request_fingerprint") || "");
   const decision = String(form.get("decision") || "");
-  if (!/^[A-Za-z0-9_-]{32,128}$/.test(flowId)
-    || !csrfToken || !cookieToken
+  if (!/^[A-Za-z0-9_-]{32,128}$/.test(flowId)) {
+    throw new WorkerHttpError("OAuth consent confirmation expired.", 403, "OAUTH_CONSENT_CSRF_INVALID");
+  }
+  const cookieToken = readCookie(request, consentCookieName(request, flowId));
+  if (!csrfToken || !cookieToken
     || !await timingSafeEqualText(csrfToken, cookieToken)) {
     throw new WorkerHttpError("OAuth consent confirmation expired.", 403, "OAUTH_CONSENT_CSRF_INVALID");
   }
+  if (!/^[a-f0-9]{64}$/.test(requestFingerprint)) {
+    throw new WorkerHttpError(
+      "OAuth consent request binding is invalid.",
+      403,
+      "OAUTH_CONSENT_REQUEST_MISMATCH"
+    );
+  }
 
-  const rawFlow = await env.OAUTH_KV.get<unknown>(`${CONSENT_FLOW_PREFIX}${flowId}`, "json");
+  const flowKey = `${CONSENT_FLOW_PREFIX}${flowId}`;
+  const rawFlow = await env.OAUTH_KV.get<unknown>(flowKey, "json");
+  const parsedCompletion = StoredConsentCompletionSchema.safeParse(rawFlow);
+  if (parsedCompletion.success) {
+    return completedConsentResponse(
+      request,
+      flowId,
+      session,
+      csrfToken,
+      requestFingerprint,
+      decision,
+      parsedCompletion.data
+    );
+  }
   const parsedFlow = StoredConsentFlowSchema.safeParse(rawFlow);
   if (!parsedFlow.success || parsedFlow.data.expiresAt <= new Date().toISOString()) {
     throw new WorkerHttpError("OAuth consent confirmation expired.", 409, "OAUTH_CONSENT_EXPIRED");
@@ -214,19 +270,138 @@ async function decideConsent(request: Request, env: Env): Promise<Response> {
     || !await timingSafeEqualText(flow.csrfHash, await sha256Hex(csrfToken))) {
     throw new WorkerHttpError("OAuth consent is not bound to this session.", 403, "OAUTH_CONSENT_SESSION_MISMATCH");
   }
+  if (!await timingSafeEqualText(flow.requestFingerprint, requestFingerprint)) {
+    throw new WorkerHttpError(
+      "OAuth consent request binding does not match.",
+      403,
+      "OAUTH_CONSENT_REQUEST_MISMATCH"
+    );
+  }
 
-  await env.OAUTH_KV.delete(`${CONSENT_FLOW_PREFIX}${flowId}`);
-  const clearCookie = consentCookie(request, "", 0);
+  const completionCookie = consentCookie(
+    request,
+    flowId,
+    csrfToken,
+    CONSENT_COMPLETION_TTL_SECONDS
+  );
   if (decision === "deny") {
     await recordConsentAudit(env, request, flow, "mcp-oauth-consent-denied", "denied", "access_denied");
-    return authorizationDeniedResponse(flow.oauthRequest, clearCookie);
+    const redirect = authorizationDeniedRedirect(flow.oauthRequest);
+    await storeConsentCompletion(env, flowKey, flow, decision, redirect);
+    return redirectResponse(redirect, completionCookie);
   }
   if (decision !== "approve") {
     throw new WorkerHttpError("OAuth consent decision is invalid.", 400, "OAUTH_CONSENT_DECISION_INVALID");
   }
 
-  const redirect = await approveConsent(env, request, flow);
-  return redirectResponse(redirect, clearCookie);
+  let redirect: string;
+  try {
+    redirect = await approveConsent(env, request, flow);
+  } catch (error) {
+    if (safeErrorCode(error) !== "MCP_OAUTH_GRANT_CONFLICT") throw error;
+    const completion = await waitForConsentCompletion(env, flowKey);
+    return completedConsentResponse(
+      request,
+      flowId,
+      session,
+      csrfToken,
+      requestFingerprint,
+      decision,
+      completion
+    );
+  }
+  await storeConsentCompletion(env, flowKey, flow, decision, redirect);
+  return redirectResponse(redirect, completionCookie);
+}
+
+async function storeConsentCompletion(
+  env: Env,
+  flowKey: string,
+  flow: StoredConsentFlow,
+  decision: StoredConsentCompletion["decision"],
+  redirectTo: string
+): Promise<void> {
+  const createdAt = new Date();
+  const completion: StoredConsentCompletion = {
+    version: 1,
+    kind: "completed",
+    decision,
+    userId: flow.userId,
+    sessionTokenHash: flow.sessionTokenHash,
+    csrfHash: flow.csrfHash,
+    requestFingerprint: flow.requestFingerprint,
+    redirectTo,
+    createdAt: createdAt.toISOString(),
+    expiresAt: new Date(
+      createdAt.getTime() + CONSENT_COMPLETION_TTL_SECONDS * 1_000
+    ).toISOString()
+  };
+  await env.OAUTH_KV.put(flowKey, JSON.stringify(completion), {
+    expirationTtl: CONSENT_COMPLETION_TTL_SECONDS
+  });
+}
+
+async function waitForConsentCompletion(
+  env: Env,
+  flowKey: string
+): Promise<StoredConsentCompletion> {
+  for (let attempt = 0; attempt < CONSENT_COMPLETION_POLL_ATTEMPTS; attempt += 1) {
+    const raw = await env.OAUTH_KV.get<unknown>(flowKey, "json");
+    const parsed = StoredConsentCompletionSchema.safeParse(raw);
+    if (parsed.success && parsed.data.expiresAt > new Date().toISOString()) {
+      return parsed.data;
+    }
+    if (attempt + 1 < CONSENT_COMPLETION_POLL_ATTEMPTS) {
+      await new Promise((resolve) => setTimeout(resolve, CONSENT_COMPLETION_POLL_INTERVAL_MS));
+    }
+  }
+  throw new WorkerHttpError(
+    "OAuth consent is already being completed.",
+    409,
+    "OAUTH_CONSENT_IN_PROGRESS"
+  );
+}
+
+async function completedConsentResponse(
+  request: Request,
+  flowId: string,
+  session: BrowserSession,
+  csrfToken: string,
+  requestFingerprint: string,
+  decision: string,
+  completion: StoredConsentCompletion
+): Promise<Response> {
+  if (completion.expiresAt <= new Date().toISOString()) {
+    throw new WorkerHttpError("OAuth consent confirmation expired.", 409, "OAUTH_CONSENT_EXPIRED");
+  }
+  if (completion.userId !== session.user.id
+    || !await timingSafeEqualText(completion.sessionTokenHash, session.tokenHash)
+    || !await timingSafeEqualText(completion.csrfHash, await sha256Hex(csrfToken))) {
+    throw new WorkerHttpError("OAuth consent is not bound to this session.", 403, "OAUTH_CONSENT_SESSION_MISMATCH");
+  }
+  if (!await timingSafeEqualText(completion.requestFingerprint, requestFingerprint)) {
+    throw new WorkerHttpError(
+      "OAuth consent request binding does not match.",
+      403,
+      "OAUTH_CONSENT_REQUEST_MISMATCH"
+    );
+  }
+  if (completion.decision !== decision) {
+    throw new WorkerHttpError(
+      "OAuth consent decision does not match the completed request.",
+      409,
+      "OAUTH_CONSENT_DECISION_MISMATCH"
+    );
+  }
+  return redirectResponse(
+    completion.redirectTo,
+    consentCookie(
+      request,
+      flowId,
+      csrfToken,
+      CONSENT_COMPLETION_TTL_SECONDS
+    )
+  );
 }
 
 async function approveConsent(env: Env, request: Request, flow: StoredConsentFlow): Promise<string> {
@@ -270,6 +445,10 @@ async function approveConsent(env: Env, request: Request, flow: StoredConsentFlo
     await recordConsentAudit(env, request, flow, "mcp-oauth-grant-activated", "success", "");
     return redirectTo;
   } catch (error) {
+    if (!providerGrantCreated && !ledgerCreated
+      && safeErrorCode(error) === "MCP_OAUTH_GRANT_CONFLICT") {
+      throw error;
+    }
     if (providerGrantCreated) {
       await revokeProviderGrantByReference(env, flow.userId, flow.grantRef);
     }
@@ -423,8 +602,25 @@ function normalizeClientName(client: ClientInfo, fallback: string): string {
   return name.slice(0, 240);
 }
 
+async function authorizationRequestFingerprint(
+  request: StoredConsentFlow["oauthRequest"],
+  flowId: string
+): Promise<string> {
+  return sha256Hex(JSON.stringify({
+    flowId,
+    clientId: request.clientId,
+    redirectUri: request.redirectUri,
+    resource: request.resource,
+    scope: request.scope,
+    codeChallenge: request.codeChallenge,
+    codeChallengeMethod: request.codeChallengeMethod,
+    state: request.state,
+    issuer: request.issuer
+  }));
+}
+
 function authorizationErrorResponse(error: AuthorizationError): Response {
-  if (!error.redirectUri) {
+  if (!error.redirectUri || !safeAuthorizationRedirectOrigin(error.redirectUri)) {
     return htmlResponse(errorPage(
       localized("OAuth 请求已拒绝", "OAuth request rejected", "OAuth リクエストが拒否されました"),
       localized(
@@ -443,16 +639,56 @@ function authorizationErrorResponse(error: AuthorizationError): Response {
   return redirectResponse(redirect.toString());
 }
 
-function authorizationDeniedResponse(
-  request: StoredConsentFlow["oauthRequest"],
-  setCookie: string
-): Response {
+function validateAuthorizationRedirectUri(value: string): string {
+  if (typeof value !== "string"
+    || value.length < 1
+    || value.length > 2_048
+    || /[\u0000-\u0020\u007f]/.test(value)
+    || value.includes("\\")
+    || value.includes("#")) {
+    throw new WorkerHttpError(
+      "OAuth redirect URI is unsafe.",
+      400,
+      "OAUTH_REDIRECT_URI_UNSAFE"
+    );
+  }
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new WorkerHttpError(
+      "OAuth redirect URI is unsafe.",
+      400,
+      "OAUTH_REDIRECT_URI_UNSAFE"
+    );
+  }
+  const allowedScheme = url.protocol === "https:"
+    || (url.protocol === "http:" && LOOPBACK_REDIRECT_HOSTS.has(url.hostname));
+  if (!allowedScheme || !url.hostname || url.username || url.password) {
+    throw new WorkerHttpError(
+      "OAuth redirect URI is unsafe.",
+      400,
+      "OAUTH_REDIRECT_URI_UNSAFE"
+    );
+  }
+  return url.origin;
+}
+
+function safeAuthorizationRedirectOrigin(value: string): string | null {
+  try {
+    return validateAuthorizationRedirectUri(value);
+  } catch {
+    return null;
+  }
+}
+
+function authorizationDeniedRedirect(request: StoredConsentFlow["oauthRequest"]): string {
   const redirect = new URL(request.redirectUri);
   redirect.searchParams.set("error", "access_denied");
   redirect.searchParams.set("error_description", "The site owner denied this authorization request.");
   if (request.state) redirect.searchParams.set("state", request.state);
   if (request.issuer) redirect.searchParams.set("iss", request.issuer);
-  return redirectResponse(redirect.toString(), setCookie);
+  return redirect.toString();
 }
 
 function redirectResponse(location: string, setCookie?: string): Response {
@@ -465,15 +701,21 @@ function redirectResponse(location: string, setCookie?: string): Response {
   return new Response(null, { status: 302, headers });
 }
 
-function consentCookieName(request: Request): string {
-  return new URL(request.url).protocol === "https:"
-    ? "__Host-lusu_mcp_consent"
-    : "lusu_mcp_consent";
+function consentCookieName(request: Request, flowId: string): string {
+  const prefix = new URL(request.url).protocol === "https:"
+    ? "__Host-lusu_mcp_consent_"
+    : "lusu_mcp_consent_";
+  return `${prefix}${flowId}`;
 }
 
-function consentCookie(request: Request, token: string, maxAge: number): string {
+function consentCookie(
+  request: Request,
+  flowId: string,
+  token: string,
+  maxAge: number
+): string {
   const secure = new URL(request.url).protocol === "https:" ? "; Secure" : "";
-  return `${consentCookieName(request)}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure}`;
+  return `${consentCookieName(request, flowId)}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure}`;
 }
 
 function consentPage(input: {
@@ -485,6 +727,7 @@ function consentPage(input: {
   email: string;
   flowId: string;
   csrfToken: string;
+  requestFingerprint: string;
 }): string {
   const scopeItems = input.scopes.map((scope) => (
     `<li><code>${escapeHtml(scope)}</code>`
@@ -512,7 +755,7 @@ ${loopbackWarning}
 <p lang="en">Write and delete operations re-check the administrator role, authorization ledger, and minimum scope. Publishing is atomic and requires an operationId.</p>
 <p lang="ja">書き込みと削除の際は、管理者ロール、認可元帳、最小 scope を再確認します。公開は operationId を必須とし、サーバー側でアトミックに実行されます。</p></div>
 <form method="post" action="${AUTHORIZE_PATH}">
-<input type="hidden" name="flow_id" value="${escapeHtml(input.flowId)}"><input type="hidden" name="csrf_token" value="${escapeHtml(input.csrfToken)}">
+<input type="hidden" name="flow_id" value="${escapeHtml(input.flowId)}"><input type="hidden" name="csrf_token" value="${escapeHtml(input.csrfToken)}"><input type="hidden" name="request_fingerprint" value="${escapeHtml(input.requestFingerprint)}">
 <div class="actions"><button type="submit" name="decision" value="deny">拒绝 / Deny / 拒否</button><button class="approve" type="submit" name="decision" value="approve">同意授权 / Allow / 許可</button></div>
 </form></section></main></body></html>`;
 }
@@ -529,10 +772,7 @@ function localized(zh: string, en: string, ja: string): LocalizedText {
 function isLoopbackRedirect(value: string): boolean {
   try {
     const url = new URL(value);
-    return url.hostname === "localhost"
-      || url.hostname === "127.0.0.1"
-      || url.hostname === "::1"
-      || url.hostname === "[::1]";
+    return url.protocol === "http:" && LOOPBACK_REDIRECT_HOSTS.has(url.hostname);
   } catch {
     return false;
   }

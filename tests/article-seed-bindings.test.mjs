@@ -14,7 +14,9 @@ const AGENT_AUTH_FORM_ORIGIN_UPDATE_ID = "seed-update-2026-08-06-agent-auth-form
 const WHITEBOARD_AGENT_IMAGES_UPDATE_ID = "seed-update-2026-08-06-whiteboard-agent-images";
 const HEXTRIS_AGENT_UPDATE_ID = "seed-update-2026-08-07-hextris-agent";
 const LIFE_RESTART_AGENT_UPDATE_ID = "seed-update-2026-08-07-life-restart-agent";
-const ARTICLE_SEED_VERSION = "20260807-life-restart-agent-r1";
+const REMOTE_MCP_OAUTH_UPDATE_ID = "seed-update-2026-08-07-remote-mcp-oauth";
+const REMOTE_MCP_OAUTH_ACCEPTED_AT = "2026-08-09T01:00:00.000Z";
+const ARTICLE_SEED_VERSION = "20260809-remote-mcp-oauth-r2";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -305,6 +307,44 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /clientActionId/);
     assert.match(params[5], /browserBridge/);
     assert.match(params[5], /undeployed|未部署|未展開/);
+  }
+
+  const remoteMcpOauthSeed = seedBatch.find(({ sql }) => (
+    sql.includes(`'${REMOTE_MCP_OAUTH_UPDATE_ID}'`)
+    && /on conflict\(article_id\) do update/i.test(normalizedSql(sql))
+  ));
+  assert.ok(remoteMcpOauthSeed, "the remote MCP OAuth update metadata must be seeded");
+  assert.match(
+    normalizedSql(remoteMcpOauthSeed.sql),
+    new RegExp(`${REMOTE_MCP_OAUTH_ACCEPTED_AT}.*${REMOTE_MCP_OAUTH_ACCEPTED_AT}`),
+    "the accepted remote MCP update must publish and update at the production-acceptance timestamp"
+  );
+  const remoteMcpOauthTranslations = boundStatements.filter(({ params }) => (
+    params[1] === REMOTE_MCP_OAUTH_UPDATE_ID
+    && ["zh", "en", "ja"].includes(params[2])
+  ));
+  assert.equal(remoteMcpOauthTranslations.length, 3, "the remote MCP OAuth update must include three translations");
+  for (const { params } of remoteMcpOauthTranslations) {
+    assert.equal(params[7], REMOTE_MCP_OAUTH_ACCEPTED_AT, `${params[2]} translation updated_at must match acceptance`);
+    assert.match(params[5], /OAuth Allow/);
+    assert.match(params[5], /PKCE S256/);
+    assert.match(params[5], /tools\/list/);
+    assert.match(params[5], /9 (?:项工具|tools)|9ツール/);
+    assert.match(params[5], /4 (?:项|public capabilities|entries)|4項目/);
+    assert.match(params[5], /article_publish/);
+    assert.match(params[5], /article_manage_list/);
+    assert.match(params[5], /article_manage_get/);
+    assert.match(params[5], /operationId/);
+    assert.match(params[5], /expectedUpdatedAt/);
+    assert.match(params[5], /confirm: true/);
+    assert.match(params[5], /zh.*en.*ja/s);
+    assert.match(params[5], /404/);
+    assert.match(params[5], /revoked|撤销|失効/);
+    assert.match(params[5], /cleaned|清理|消去/);
+    assert.match(params[5], /article_publish_files/);
+    assert.match(params[5], /local stdio MCP|本地 stdio MCP|ローカル stdio MCP/);
+    assert.match(params[5], /not complete|尚未完成|未完成/);
+    assert.match(params[5], /game|游戏|ゲーム/);
   }
 
   const pinRepair = seedBatch.find(({ sql, params }) => (

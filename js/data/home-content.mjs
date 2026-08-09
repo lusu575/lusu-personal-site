@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-07-remote-mcp-oauth",
+      "slug": "2026-08-07-remote-mcp-oauth",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "知识库", "MCP", "安全"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-07T10:10:00.000Z",
+      "updated_at": "2026-08-09T01:00:00.000Z",
+      "published_at": "2026-08-09T01:00:00.000Z",
+      "fallbackOnly": true,
+      "icon": "knowledge",
+      "date": "2026.08.09",
+      "title": {
+        "zh": "远程 MCP OAuth 与知识库原子工具完成生产验收",
+        "en": "Remote MCP OAuth and Atomic Knowledge Tools Pass Production Acceptance",
+        "ja": "リモート MCP OAuth と知識ベース原子ツールの本番検証完了"
+      },
+      "summary": {
+        "zh": "正式域名端到端生产验收已通过：OAuth Allow 后精确发现 9 项工具与 4 项公开能力，并完成原子发布、同载荷重放、管理读取、CAS 更新、三语公开回读、确认删除、删除后 404、令牌撤销和临时数据清理；文件发布仍仅限本地，全站工具及游戏远程接管尚未完成。",
+        "en": "End-to-end production acceptance on the live domain has passed: OAuth Allow exposed exactly 9 tools and 4 public capabilities, followed by atomic publish, same-payload replay, management reads, CAS update, zh/en/ja public readback, confirmed delete, post-delete 404, token revocation, and temporary-data cleanup. File publishing remains local, while whole-site tool and game takeover is not complete.",
+        "ja": "本番ドメインのエンドツーエンド検証が完了しました。OAuth Allow 後に9ツールと4つの公開機能を正確に確認し、原子的公開、同一ペイロード再実行、管理一覧・取得、CAS 更新、zh／en／ja 公開再取得、確認付き削除、削除後404、トークン失効、一時データ消去まで合格しています。ファイル公開はローカル限定で、サイト全体のツールやゲームの遠隔操作は未完成です。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-07-life-restart-agent",
       "slug": "2026-08-07-life-restart-agent",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "修复浏览器点击 Allow 时被 no-referrer 变成 Origin:null 而误拒绝的问题；授权与令牌管理表单恢复，精确同源、登录态和 CSRF 边界不变。",
         "en": "Fixes browser Allow submissions that no-referrer turned into Origin:null; authorization and token-management forms work again while exact-origin, session, and CSRF checks remain unchanged.",
         "ja": "no-referrer により Allow 送信の Origin が null となり拒否される問題を修正しました。認証・トークン管理フォームを復旧し、厳密な同一オリジン、セッション、CSRF 検査は維持します。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-06-japanese-agent-progress",
-      "slug": "2026-08-06-japanese-agent-progress",
-      "category": "site-updates",
-      "tags": ["网站更新", "AI 能力", "MCP", "CLI", "日语", "账号进度"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-06T08:30:00.000Z",
-      "updated_at": "2026-08-06T08:30:00.000Z",
-      "published_at": "2026-08-06T08:30:00.000Z",
-      "fallbackOnly": true,
-      "icon": "resources",
-      "date": "2026.08.06",
-      "title": {
-        "zh": "AI 已可读取日语进度并受控提交答题",
-        "en": "AI Can Read Japanese Progress and Submit Checked Attempts",
-        "ja": "AI が日本語学習進捗の取得と検証済み解答送信に対応"
-      },
-      "summary": {
-        "zh": "第四阶段为本地 CLI／stdio MCP 加入账号日语进度读取和服务端判分的答题提交；新增权限、版本冲突与幂等保护，远程 MCP 仍未部署。",
-        "en": "Phase four adds account-bound Japanese progress reads and server-scored attempt submission to the local CLI/stdio MCP, with dedicated scopes, revision checks, and idempotency. The remote MCP remains undeployed.",
-        "ja": "第4段階ではローカル CLI／stdio MCP にアカウント連携の学習進捗取得とサーバー採点の解答送信を追加しました。専用権限、リビジョン検査、冪等性を備え、リモート MCP は未展開のままです。"
       }
     }
   ]

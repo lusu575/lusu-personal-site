@@ -31,9 +31,10 @@
 - 已实现的本地入口为 `cli/lusu.mjs` 和 `mcp/local/server.mjs`。它们可读取能力目录、文章／每日 AI 新闻、视频详情、三项真实工具、五个游戏的安全目录，以及日语潜台词 5 个等级／250 关；也可对授权后的 Quick Transfer 与在线画板执行受限操作，并运行隔离的本地 2048 Agent 会话。两个入口都复用业务适配层；网络能力向 `SiteClient` 注入站点共享的代理感知 fetch，不输出代理值或凭据。可用 `npm.cmd run lusu -- --help` 查看 CLI，用 `npm.cmd run mcp:local` 启动 stdio MCP。
 - 本地机器客户端通过网站设备码页面由账号持有者确认，令牌按 `content:read`、Transfer 与 Whiteboard 的最小 scope 授权；删除和画板 scope 均非默认。机器 Bearer 令牌不能获得管理员权限；房间口令不放进命令行、URL、日志或分析数据，Transfer 文字密钥始终在本地派生。
 - 2048 适配器使用共享纯引擎、revision CAS 和 clientActionId 去重；CLI／MCP 会话与已打开的浏览器隔离，不应描述为远程接管现有游戏。页面只预留了冻结的语义 Agent bridge，并保留原有云存档兼容入口。
-- `workers/site-mcp/` 是独立的远程 MCP Worker 工程，当前只提供公开内容的只读能力。代码和本地测试已就绪，但未部署、未提供正式远程 MCP 地址，也没有在线画板、游戏或其他写工具；这些本地能力不改变远程 OAuth 前置条件。
-- `workers/site-admin-mcp/` 是与公开 Worker 分离的站长 OAuth 远程 MCP 生产候选，复用公开读取和知识库原子业务服务；生产 OAuth KV 已创建并绑定，check／preflight／dry-run 已通过，但 Secret 首版注入、Production D1 迁移、Worker 发布与正式域名闭环完成前仍不得把 `https://lusu575.com/mcp` 宣称为可用入口。
-- 能力盘点、安全边界、本地使用和远程部署前清单见 `docs/agent-capabilities/README.md`。
+- 生产远程 MCP 已由独立 `workers/site-admin-mcp/` Worker `lusu-site-admin-mcp` 部署到 `https://lusu575.com/mcp`；2026-08-09 完成真实站长浏览器 OAuth 验收的 version ID 为 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b`。Production D1 migration 已完成，OAuth metadata、DCR、未鉴权 401 challenge、Origin 与 pathname 线上 smoke 已通过。
+- 生产面共有 9 个工具：`site_capabilities`、`content_list`、`content_search`、`article_get`，以及站长专用的 `article_manage_list`、`article_manage_get`、`article_publish`、`article_update`、`article_delete`。读取使用 `content:read`；管理查看／发布／更新使用非默认 `content:write`；永久删除使用独立 `content:delete`，并继续要求最新 CAS、唯一 `operationId` 和 `confirm: true`。客户端应保留写入／删除逐次确认。
+- `workers/site-mcp/` 保留为四个公开读取工具的复用注册层和独立无 OAuth 目标，不是 canonical 生产入口；视频、工具、游戏、画板、Transfer、日语进度等本地能力当前没有因此扩展到公网远程 MCP。
+- 该验收版本已由站长在普通浏览器 OAuth 页面手动 Allow，并通过 9 个工具、4 项公开 capability、受控文章原子发布、同载荷幂等重放、管理回读、CAS 更新、zh／en／ja 公开回读、确认删除、三语删除后 404 与 grant 撤销，临时文章已删除。该结论只绑定上述精确 Worker bundle；每个新生产 bundle 仍须重新完成同等真实闭环，不得复用历史验收。视频、工具、游戏、画板、Transfer、日语进度等全站能力尚未全部扩展到公网远程 MCP，浏览器游戏配对／接管也未实现。能力盘点与本地边界见 `docs/agent-capabilities/README.md`，外部 AI 接入步骤见 `docs/agent-capabilities/REMOTE_MCP_CONNECT.md`。
 
 鲁肃的个人站，一个保留 Windows XP + Pixel Art + Y2K 桌面识别度、同时提供原创移动虚拟 OS 的个人空间。
 
@@ -112,7 +113,7 @@ Cloudflare Pages Git 部署必须与仓库契约保持一致：框架预设 `Non
 - 匿名聊天室公开侧保持纯文本渲染，后台可隐藏、恢复、删除消息，并按隐藏访客 ID 或 IP hash 禁言。
 - 游戏区只保留可在本站本地打开的静态游戏入口，不做外部跳转入口。
 - 工具区提供多人实时在线画板，支持公共房、密码房、实时鼠标与临时名字、成员列表、图片、PNG/SVG 导出、自动重连、只读状态和手机触控。
-- 站点 AI 能力层已提供本地 CLI、stdio MCP、设备码授权、Quick Transfer、受限画板追加／导出、隔离 2048 会话，以及视频详情、真实工具、五个游戏和 250 个日语关卡的安全只读目录；独立远程 MCP Worker 仍为未部署的公开文章只读实现，其他游戏控制、浏览器配对、聊天写入和日语进度写入尚未宣告可用。
+- 站点 AI 能力层已提供本地 CLI、stdio MCP、设备码授权、Quick Transfer、受限画板追加／导出、隔离游戏会话，以及视频详情、真实工具、五个游戏和 250 个日语关卡的安全只读目录；生产远程 MCP 已上线 4 个公开文章读取工具和 5 个站长知识库工具，其他游戏控制、浏览器配对、聊天写入、画板／Transfer 和日语进度仍未扩展到远程面。
 - 工具区提供独立工具“日语的言外之意 / Behind the Japanese / 日本語の裏側”：当前应用版本 `1.0.3`、内容兼容版本 `1.0.2`，包含 5 个难度、250 个 N3–N1 潜台词训练关卡，支持纯听/日语/双语模式、逐句与词块离线语音、月历打卡、本地进度和账号云同步；每关配有响应式黑白四格场景图，维护规则见 `tools/japanese-subtext/MAINTENANCE.md`。
 
 ## 维护备注
@@ -145,8 +146,9 @@ Cloudflare Pages Git 部署必须与仓库契约保持一致：框架预设 `Non
 - 画板架构与运维：`docs/whiteboard/README.md`
 - AI 能力注册表：`lib/capabilities/registry.mjs`
 - 本地 CLI / stdio MCP：`cli/lusu.mjs`、`mcp/local/server.mjs`
-- 远程只读 MCP Worker（未部署）：`workers/site-mcp/`
-- 站长 OAuth 远程 MCP Worker（生产激活待点检）：`workers/site-admin-mcp/`
+- 远程公开读取注册层／独立无 OAuth 目标：`workers/site-mcp/`
+- 生产站长 OAuth 远程 MCP Worker：`workers/site-admin-mcp/`
+- 外部 AI 连接说明：`docs/agent-capabilities/REMOTE_MCP_CONNECT.md`
 - AI 能力架构与运维：`docs/agent-capabilities/README.md`
 - D1 schema：`cloudflare/schema.sql`
 - 日语潜台词训练器：`tools/japanese-subtext/`（维护与离线语音说明见其 `README.md`）

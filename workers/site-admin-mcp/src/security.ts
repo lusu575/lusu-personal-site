@@ -65,13 +65,22 @@ export function jsonResponse(
   return new Response(JSON.stringify(body), { status, headers });
 }
 
-export function htmlResponse(html: string, status = 200, setCookie?: string): Response {
+export function htmlResponse(
+  html: string,
+  status = 200,
+  setCookie?: string,
+  options: { formActionOrigin?: string } = {}
+): Response {
+  const formActionSources = ["'self'"];
+  if (options.formActionOrigin) {
+    formActionSources.push(validateCspOrigin(options.formActionOrigin));
+  }
   const headers = new Headers({
     "Cache-Control": "no-store",
     "Content-Security-Policy": [
       "default-src 'none'",
       "style-src 'unsafe-inline'",
-      "form-action 'self'",
+      `form-action ${formActionSources.join(" ")}`,
       "frame-ancestors 'none'",
       "base-uri 'none'"
     ].join("; "),
@@ -83,6 +92,25 @@ export function htmlResponse(html: string, status = 200, setCookie?: string): Re
   });
   if (setCookie) headers.append("Set-Cookie", setCookie);
   return new Response(html, { status, headers });
+}
+
+function validateCspOrigin(value: string): string {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new WorkerHttpError("CSP form-action origin is invalid.", 500, "CSP_ORIGIN_INVALID");
+  }
+  if ((url.protocol !== "https:" && url.protocol !== "http:")
+    || url.origin !== value
+    || url.pathname !== "/"
+    || url.search
+    || url.hash
+    || url.username
+    || url.password) {
+    throw new WorkerHttpError("CSP form-action origin is invalid.", 500, "CSP_ORIGIN_INVALID");
+  }
+  return value;
 }
 
 export function escapeHtml(value: unknown): string {

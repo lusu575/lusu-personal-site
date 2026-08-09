@@ -210,6 +210,50 @@ test("remote D1 runner is idempotent on a fresh schema and does not issue ALTER 
   }
 });
 
+test("remote D1 runner fails closed when the MCP OAuth persistence schema is absent", async () => {
+  const db = new DatabaseSync(":memory:");
+  const events = [];
+  const adapter = createAdapter(db, events);
+  const executeFile = adapter.executeFile;
+  try {
+    adapter.executeFile = async (file) => {
+      await executeFile(file);
+      if (file === "cloudflare/schema-indexes.sql") {
+        db.exec(`
+          drop table mcp_oauth_grants;
+          drop table mcp_oauth_audit_log;
+          drop table mcp_oauth_registration_limits;
+        `);
+      }
+    };
+
+    await assert.rejects(
+      migrateRemoteD1(adapter),
+      (error) => {
+        const message = String(error?.message || error);
+        for (const item of [
+          "mcp-oauth-grants-table",
+          "mcp-oauth-grants-critical-columns",
+          "mcp-oauth-audit-log-table",
+          "mcp-oauth-audit-log-critical-columns",
+          "mcp-oauth-registration-limits-table",
+          "mcp-oauth-registration-limits-critical-columns",
+          "mcp-oauth-grants-user-status-index",
+          "mcp-oauth-grants-client-resource-index",
+          "mcp-oauth-audit-created-index",
+          "mcp-oauth-audit-grant-index",
+          "mcp-oauth-registration-limits-expires-index"
+        ]) {
+          assert.match(message, new RegExp(item));
+        }
+        return true;
+      }
+    );
+  } finally {
+    db.close();
+  }
+});
+
 test("remote D1 runner replaces the legacy whiteboard partial ban index idempotently", async () => {
   const db = new DatabaseSync(":memory:");
   const events = [];
@@ -300,6 +344,31 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_log/);
   assert.match(verificationSql, /agent_article_receipts/);
   assert.match(verificationSql, /agent_article_receipts_created_idx/);
+  for (const identifier of [
+    "mcp_oauth_grants",
+    "mcp_oauth_audit_log",
+    "mcp_oauth_registration_limits",
+    "mcp-oauth-grants-critical-columns",
+    "mcp-oauth-audit-log-critical-columns",
+    "mcp-oauth-registration-limits-critical-columns",
+    "mcp_oauth_grants_user_status_idx",
+    "mcp_oauth_grants_client_resource_idx",
+    "mcp_oauth_audit_created_idx",
+    "mcp_oauth_audit_grant_idx",
+    "mcp_oauth_registration_limits_expires_idx"
+  ]) {
+    assert.ok(verificationSql.includes(identifier), `missing remote verification for ${identifier}`);
+  }
+  for (const column of [
+    "grant_ref", "user_id", "client_id", "client_name", "resource",
+    "authorized_scopes", "status", "created_at", "activated_at", "expires_at",
+    "revoked_at", "revoked_reason", "last_used_at", "event_id", "token_ref_hash",
+    "capability_id", "tool_name", "operation_id", "target_type", "target_id_hash",
+    "requested_scopes", "effective_scopes", "action", "result", "error_code",
+    "ip_hash", "bucket_key", "request_count", "updated_at"
+  ]) {
+    assert.ok(verificationSql.includes(`'${column}'`), `missing MCP OAuth critical column ${column}`);
+  }
   assert.match(verificationSql, /agent_device_status_expires_idx/);
   assert.match(verificationSql, /agent_device_ip_created_idx/);
   assert.match(verificationSql, /agent_access_tokens_user_idx/);
@@ -307,7 +376,7 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
-  assert.match(verificationSql, /slug = '2026-08-07-life-restart-agent'/);
+  assert.match(verificationSql, /slug = '2026-08-07-remote-mcp-oauth'/);
   assert.match(verificationSql, /category = 'site-updates'/);
   assert.match(verificationSql, /status = 'published'/);
   assert.match(verificationSql, /count\(distinct lang\) = 3/);

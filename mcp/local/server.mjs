@@ -209,7 +209,7 @@ export async function createLocalMcpServer(options = {}) {
   });
   const gameStore = options.gameStore || createGameSessionStore(stateOptions);
   const server = new McpServer(
-    { name: "lusu-personal-site-local", version: "0.7.0" },
+    { name: "lusu-personal-site-local", version: "0.8.0" },
     { capabilities: { tools: {} } }
   );
 

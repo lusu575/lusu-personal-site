@@ -133,7 +133,39 @@ function hiddenInput(html: string, name: string): string {
   return match[1];
 }
 
-async function authorizeTestClient(scopes: string[]): Promise<string> {
+function applySetCookie(jar: Map<string, string>, setCookie: string): string {
+  const pair = String(setCookie || "").split(";", 1)[0];
+  const separator = pair.indexOf("=");
+  if (separator <= 0) throw new Error("Missing Set-Cookie pair");
+  const name = pair.slice(0, separator);
+  const value = pair.slice(separator + 1);
+  if (value) jar.set(name, value);
+  else jar.delete(name);
+  return name;
+}
+
+function cookieHeader(jar: Map<string, string>): string {
+  return [...jar].map(([name, value]) => `${name}=${value}`).join("; ");
+}
+
+function deferred<T = void>(): {
+  promise: Promise<T>;
+  resolve: (value: T) => void;
+  reject: (reason?: unknown) => void;
+} {
+  let resolve!: (value: T) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, resolve, reject };
+}
+
+async function authorizeTestClient(
+  scopes: string[],
+  forcedGrantRef = ""
+): Promise<string> {
   const redirectUri = "http://127.0.0.1:43110/callback";
   const registration = await SELF.fetch(`${CANONICAL_ISSUER}/oauth/register`, {
     method: "POST",
@@ -177,10 +209,21 @@ async function authorizeTestClient(scopes: string[]): Promise<string> {
   });
   expect(consent.status).toBe(200);
   const consentCookie = String(consent.headers.get("set-cookie") || "").split(";", 1)[0];
-  expect(consentCookie).toContain("lusu_mcp_consent=");
+  expect(consentCookie).toContain("lusu_mcp_consent_");
   const html = await consent.text();
   const flowId = hiddenInput(html, "flow_id");
   const csrfToken = hiddenInput(html, "csrf_token");
+  const requestFingerprint = hiddenInput(html, "request_fingerprint");
+  if (forcedGrantRef) {
+    const flowKey = `lusu:owner-mcp:consent:${flowId}`;
+    const storedFlow = await testEnv.OAUTH_KV.get<Record<string, unknown>>(flowKey, "json");
+    expect(storedFlow).not.toBeNull();
+    if (!storedFlow) throw new Error("Missing stored OAuth consent flow");
+    await testEnv.OAUTH_KV.put(flowKey, JSON.stringify({
+      ...storedFlow,
+      grantRef: forcedGrantRef
+    }), { expirationTtl: 10 * 60 });
+  }
 
   const decision = await SELF.fetch(`${CANONICAL_ISSUER}/oauth/authorize`, {
     method: "POST",
@@ -192,6 +235,7 @@ async function authorizeTestClient(scopes: string[]): Promise<string> {
     body: new URLSearchParams({
       flow_id: flowId,
       csrf_token: csrfToken,
+      request_fingerprint: requestFingerprint,
       decision: "approve"
     }).toString(),
     redirect: "manual"
@@ -234,7 +278,8 @@ async function ownerMcpRequest(
     Authorization: `Bearer ${accessToken}`,
     "Content-Type": "application/json",
     Host: "lusu575.com",
-    "Mcp-Method": method
+    "Mcp-Method": method,
+    "Mcp-Protocol-Version": "2026-07-28"
   });
   if (typeof params.name === "string") headers.set("Mcp-Name", params.name);
   const response = await SELF.fetch(MCP_RESOURCE, {
@@ -704,6 +749,10 @@ describe("owner consent page", () => {
     expect(response.headers.get("content-type")).toContain("text/html");
     expect(response.headers.get("referrer-policy")).toBe("strict-origin");
     expect(response.headers.get("cross-origin-opener-policy")).toBe("same-origin-allow-popups");
+    expect(response.headers.get("content-security-policy")).toContain(
+      "form-action 'self' http://127.0.0.1:43110"
+    );
+    expect(response.headers.get("content-security-policy")).not.toContain("/callback");
     const html = await response.text();
     expect(html).toContain('<html lang="zh-CN">');
     expect(html).toContain('<span lang="en">');
@@ -716,6 +765,379 @@ describe("owner consent page", () => {
     expect(html).toContain(redirectUri);
     expect(html).toContain("content:read");
     expect(html).toContain("content:write");
+  });
+
+  it("adds only the exact registered HTTPS callback origin to consent form-action", async () => {
+    const redirectUri = "https://client.example:8443/oauth/callback?tenant=owner";
+    const consentEnv = {
+      DB: testEnv.DB,
+      OAUTH_KV: testEnv.OAUTH_KV,
+      ANALYTICS_IP_HASH_SALT: "test-only-consent-salt-at-least-32-bytes",
+      OAUTH_PROVIDER: {
+        async parseAuthRequest() {
+          return {
+            responseType: "code",
+            clientId: "https-callback-client",
+            redirectUri,
+            scope: ["content:read"],
+            state: "https-callback-state",
+            codeChallenge: "F".repeat(43),
+            codeChallengeMethod: "S256",
+            resource: MCP_RESOURCE,
+            issuer: CANONICAL_ISSUER
+          };
+        },
+        async lookupClient() {
+          return {
+            clientId: "https-callback-client",
+            clientName: "HTTPS callback client",
+            redirectUris: [redirectUri]
+          };
+        }
+      }
+    } as unknown as Env;
+    const response = await oauthDefaultHandler.fetch(
+      new Request(authorizeUrl([MCP_RESOURCE]), {
+        headers: { Cookie: `lusu_session=${SESSION_TOKEN}` }
+      }),
+      consentEnv
+    );
+    expect(response.status).toBe(200);
+    const csp = String(response.headers.get("content-security-policy") || "");
+    expect(csp).toContain("form-action 'self' https://client.example:8443");
+    expect(csp).not.toContain("/oauth/callback");
+    expect(csp).not.toContain("tenant=owner");
+    expect(csp).not.toContain("https:*");
+  });
+
+  it("rejects unsafe or unregistered callback URIs without adding them to CSP", async () => {
+    const unsafeRedirects = [
+      "javascript:alert(1)",
+      "data:text/plain,callback",
+      "file:///tmp/callback",
+      "http://client.example/callback",
+      "http://localhost.evil.example/callback",
+      "https://user:password@client.example/callback",
+      "https://client.example/callback#fragment",
+      "https:\\client.example\\callback",
+      "https://client.example/call back"
+    ];
+    for (const redirectUri of unsafeRedirects) {
+      const consentEnv = {
+        DB: testEnv.DB,
+        OAUTH_KV: testEnv.OAUTH_KV,
+        ANALYTICS_IP_HASH_SALT: "test-only-consent-salt-at-least-32-bytes",
+        OAUTH_PROVIDER: {
+          async parseAuthRequest() {
+            return {
+              responseType: "code",
+              clientId: "unsafe-callback-client",
+              redirectUri,
+              scope: ["content:read"],
+              state: "unsafe-callback-state",
+              codeChallenge: "G".repeat(43),
+              codeChallengeMethod: "S256",
+              resource: MCP_RESOURCE,
+              issuer: CANONICAL_ISSUER
+            };
+          },
+          async lookupClient() {
+            return {
+              clientId: "unsafe-callback-client",
+              clientName: "Unsafe callback client",
+              redirectUris: [redirectUri]
+            };
+          }
+        }
+      } as unknown as Env;
+      const response = await oauthDefaultHandler.fetch(
+        new Request(authorizeUrl([MCP_RESOURCE]), {
+          headers: { Cookie: `lusu_session=${SESSION_TOKEN}` }
+        }),
+        consentEnv
+      );
+      expect(response.status, redirectUri).toBe(400);
+      expect(response.headers.get("location"), redirectUri).toBeNull();
+      expect(await response.text(), redirectUri).toContain("OAUTH_REDIRECT_URI_UNSAFE");
+      expect(response.headers.get("content-security-policy"), redirectUri).toContain(
+        "form-action 'self'"
+      );
+      expect(response.headers.get("content-security-policy"), redirectUri).not.toContain(
+        "client.example"
+      );
+    }
+
+    const requestedRedirect = "https://client.example/callback";
+    const unregisteredEnv = {
+      DB: testEnv.DB,
+      OAUTH_KV: testEnv.OAUTH_KV,
+      ANALYTICS_IP_HASH_SALT: "test-only-consent-salt-at-least-32-bytes",
+      OAUTH_PROVIDER: {
+        async parseAuthRequest() {
+          return {
+            responseType: "code",
+            clientId: "unregistered-callback-client",
+            redirectUri: requestedRedirect,
+            scope: ["content:read"],
+            state: "unregistered-callback-state",
+            codeChallenge: "H".repeat(43),
+            codeChallengeMethod: "S256",
+            resource: MCP_RESOURCE,
+            issuer: CANONICAL_ISSUER
+          };
+        },
+        async lookupClient() {
+          return {
+            clientId: "unregistered-callback-client",
+            clientName: "Unregistered callback client",
+            redirectUris: ["https://other.example/callback"]
+          };
+        }
+      }
+    } as unknown as Env;
+    const unregistered = await oauthDefaultHandler.fetch(
+      new Request(authorizeUrl([MCP_RESOURCE]), {
+        headers: { Cookie: `lusu_session=${SESSION_TOKEN}` }
+      }),
+      unregisteredEnv
+    );
+    expect(unregistered.status).toBe(400);
+    expect(unregistered.headers.get("location")).toBeNull();
+    expect(await unregistered.text()).toContain("OAUTH_REDIRECT_URI_NOT_REGISTERED");
+    expect(unregistered.headers.get("content-security-policy")).toContain("form-action 'self'");
+    expect(unregistered.headers.get("content-security-policy")).not.toContain("client.example");
+  });
+
+  it("replays one PKCE-bound completion for rapid and sequential duplicate approval posts", async () => {
+    const redirectUri = "http://127.0.0.1:43110/callback";
+    const providerEntered = deferred();
+    const releaseProvider = deferred();
+    const secondGrantInsert = deferred();
+    let grantInsertCount = 0;
+    let completeAuthorizationCalls = 0;
+    const signaledDb = {
+      prepare(query: string) {
+        if (/insert\s+into\s+mcp_oauth_grants/i.test(query)) {
+          grantInsertCount += 1;
+          if (grantInsertCount === 2) secondGrantInsert.resolve();
+        }
+        return testEnv.DB.prepare(query);
+      },
+      batch(statements: D1PreparedStatement[]) {
+        return testEnv.DB.batch(statements);
+      }
+    } as unknown as D1Database;
+    const completionRedirect = new URL(redirectUri);
+    completionRedirect.searchParams.set("code", "provider-code-bound-to-test-pkce");
+    completionRedirect.searchParams.set("state", "duplicate-consent-state");
+    completionRedirect.searchParams.set("iss", CANONICAL_ISSUER);
+    const consentEnv = {
+      DB: signaledDb,
+      OAUTH_KV: testEnv.OAUTH_KV,
+      ANALYTICS_IP_HASH_SALT: "test-only-consent-salt-at-least-32-bytes",
+      OAUTH_PROVIDER: {
+        async parseAuthRequest() {
+          return {
+            responseType: "code",
+            clientId: "duplicate-consent-client",
+            redirectUri,
+            scope: ["content:read", "content:write"],
+            state: "duplicate-consent-state",
+            codeChallenge: "D".repeat(43),
+            codeChallengeMethod: "S256",
+            resource: MCP_RESOURCE,
+            issuer: CANONICAL_ISSUER
+          };
+        },
+        async lookupClient() {
+          return {
+            clientId: "duplicate-consent-client",
+            clientName: "Duplicate consent test client",
+            redirectUris: [redirectUri]
+          };
+        },
+        async completeAuthorization() {
+          completeAuthorizationCalls += 1;
+          providerEntered.resolve();
+          await releaseProvider.promise;
+          return { redirectTo: completionRedirect.toString() };
+        },
+        async listUserGrants() {
+          return { items: [] };
+        },
+        async revokeGrant() {}
+      }
+    } as unknown as Env;
+    const consent = await oauthDefaultHandler.fetch(
+      new Request(authorizeUrl([MCP_RESOURCE]), {
+        headers: { Cookie: `lusu_session=${SESSION_TOKEN}` }
+      }),
+      consentEnv
+    );
+    expect(consent.status).toBe(200);
+    const consentCookie = String(consent.headers.get("set-cookie") || "").split(";", 1)[0];
+    const html = await consent.text();
+    const flowId = hiddenInput(html, "flow_id");
+    const csrfToken = hiddenInput(html, "csrf_token");
+    const requestFingerprint = hiddenInput(html, "request_fingerprint");
+    const postDecision = (
+      decision = "approve",
+      cookie = consentCookie,
+      fingerprint = requestFingerprint
+    ) => oauthDefaultHandler.fetch(
+      new Request(`${CANONICAL_ISSUER}/oauth/authorize`, {
+        method: "POST",
+        headers: {
+          Cookie: `lusu_session=${SESSION_TOKEN}${cookie ? `; ${cookie}` : ""}`,
+          Origin: CANONICAL_ISSUER,
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+          flow_id: flowId,
+          csrf_token: csrfToken,
+          request_fingerprint: fingerprint,
+          decision
+        }).toString()
+      }),
+      consentEnv
+    );
+
+    const firstDecision = postDecision();
+    await providerEntered.promise;
+    const rapidDuplicate = postDecision();
+    await secondGrantInsert.promise;
+    releaseProvider.resolve();
+    const [firstResponse, rapidResponse] = await Promise.all([
+      firstDecision,
+      rapidDuplicate
+    ]);
+    const sequentialResponse = await postDecision();
+
+    for (const response of [firstResponse, rapidResponse, sequentialResponse]) {
+      expect(response.status).toBe(302);
+      expect(response.headers.get("location")).toBe(completionRedirect.toString());
+    }
+    expect(completeAuthorizationCalls).toBe(1);
+    const missingCookie = await postDecision("approve", "");
+    expect(missingCookie.status).toBe(403);
+    expect(await missingCookie.text()).toContain("OAUTH_CONSENT_CSRF_INVALID");
+    const changedDecision = await postDecision("deny");
+    expect(changedDecision.status).toBe(409);
+    expect(await changedDecision.text()).toContain("OAUTH_CONSENT_DECISION_MISMATCH");
+    const changedRequest = await postDecision("approve", consentCookie, "0".repeat(64));
+    expect(changedRequest.status).toBe(403);
+    expect(await changedRequest.text()).toContain("OAUTH_CONSENT_REQUEST_MISMATCH");
+    const grants = await testEnv.DB.prepare(`
+      select count(*) as count from mcp_oauth_grants
+      where client_id = ? and status = 'active'
+    `).bind("duplicate-consent-client").first<{ count: number }>();
+    expect(Number(grants?.count || 0)).toBe(1);
+  });
+
+  it("isolates overlapping flows and retains each CSRF cookie for receipt replay", async () => {
+    const redirectUri = "http://127.0.0.1:43110/callback";
+    let completionCount = 0;
+    const consentEnv = {
+      DB: testEnv.DB,
+      OAUTH_KV: testEnv.OAUTH_KV,
+      ANALYTICS_IP_HASH_SALT: "test-only-consent-salt-at-least-32-bytes",
+      OAUTH_PROVIDER: {
+        async parseAuthRequest() {
+          return {
+            responseType: "code",
+            clientId: "overlapping-consent-client",
+            redirectUri,
+            scope: ["content:read", "content:write"],
+            state: "overlapping-consent-state",
+            codeChallenge: "E".repeat(43),
+            codeChallengeMethod: "S256",
+            resource: MCP_RESOURCE,
+            issuer: CANONICAL_ISSUER
+          };
+        },
+        async lookupClient() {
+          return {
+            clientId: "overlapping-consent-client",
+            clientName: "Overlapping consent test client",
+            redirectUris: [redirectUri]
+          };
+        },
+        async completeAuthorization() {
+          completionCount += 1;
+          const redirect = new URL(redirectUri);
+          redirect.searchParams.set("code", `overlapping-code-${completionCount}`);
+          redirect.searchParams.set("state", "overlapping-consent-state");
+          redirect.searchParams.set("iss", CANONICAL_ISSUER);
+          return { redirectTo: redirect.toString() };
+        },
+        async listUserGrants() {
+          return { items: [] };
+        },
+        async revokeGrant() {}
+      }
+    } as unknown as Env;
+    const jar = new Map([["lusu_session", SESSION_TOKEN]]);
+    const beginFlow = async () => {
+      const response = await oauthDefaultHandler.fetch(
+        new Request(authorizeUrl([MCP_RESOURCE]), {
+          headers: { Cookie: cookieHeader(jar) }
+        }),
+        consentEnv
+      );
+      expect(response.status).toBe(200);
+      const cookieName = applySetCookie(jar, String(response.headers.get("set-cookie") || ""));
+      const html = await response.text();
+      return {
+        cookieName,
+        flowId: hiddenInput(html, "flow_id"),
+        csrfToken: hiddenInput(html, "csrf_token"),
+        requestFingerprint: hiddenInput(html, "request_fingerprint")
+      };
+    };
+    const postFlow = async (flow: Awaited<ReturnType<typeof beginFlow>>) => {
+      const response = await oauthDefaultHandler.fetch(
+        new Request(`${CANONICAL_ISSUER}/oauth/authorize`, {
+          method: "POST",
+          headers: {
+            Cookie: cookieHeader(jar),
+            Origin: CANONICAL_ISSUER,
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: new URLSearchParams({
+            flow_id: flow.flowId,
+            csrf_token: flow.csrfToken,
+            request_fingerprint: flow.requestFingerprint,
+            decision: "approve"
+          }).toString()
+        }),
+        consentEnv
+      );
+      applySetCookie(jar, String(response.headers.get("set-cookie") || ""));
+      return response;
+    };
+
+    const firstFlow = await beginFlow();
+    const secondFlow = await beginFlow();
+    expect(firstFlow.cookieName).not.toBe(secondFlow.cookieName);
+    expect(firstFlow.cookieName).toContain(firstFlow.flowId);
+    expect(secondFlow.cookieName).toContain(secondFlow.flowId);
+    expect(jar.has(firstFlow.cookieName)).toBe(true);
+    expect(jar.has(secondFlow.cookieName)).toBe(true);
+
+    const firstDecision = await postFlow(firstFlow);
+    expect(firstDecision.status).toBe(302);
+    expect(firstDecision.headers.get("set-cookie")).toContain("Max-Age=120");
+    expect(jar.has(firstFlow.cookieName)).toBe(true);
+    expect(jar.has(secondFlow.cookieName)).toBe(true);
+    const firstReplay = await postFlow(firstFlow);
+    expect(firstReplay.status).toBe(302);
+    expect(firstReplay.headers.get("location")).toBe(firstDecision.headers.get("location"));
+    expect(jar.has(firstFlow.cookieName)).toBe(true);
+    const secondDecision = await postFlow(secondFlow);
+    expect(secondDecision.status).toBe(302);
+    expect(jar.has(firstFlow.cookieName)).toBe(true);
+    expect(jar.has(secondFlow.cookieName)).toBe(true);
+    expect(completionCount).toBe(2);
   });
 });
 
@@ -751,6 +1173,32 @@ describe("complete owner OAuth MCP flow", () => {
     expect(toolsByName.get("article_delete")?._meta?.securitySchemes).toEqual([
       { type: "oauth2", scopes: ["content:delete"] }
     ]);
+
+    const discoveredCapabilities = await ownerMcpRequest(accessToken, "tools/call", {
+      name: "site_capabilities",
+      arguments: {}
+    });
+    expect(
+      discoveredCapabilities.response.status,
+      JSON.stringify(discoveredCapabilities.body)
+    ).toBe(200);
+    const capabilityResult = structuredToolResult(discoveredCapabilities.body);
+    expect(capabilityResult).toMatchObject({
+      mode: "public-read-only",
+      count: 4
+    });
+    expect((capabilityResult.capabilities as Array<Record<string, unknown>>)
+      .map((capability) => capability.id)).toEqual([
+      "content.articles.list",
+      "content.articles.search",
+      "content.articles.get",
+      "content.daily-ai-news.get"
+    ]);
+    expect((capabilityResult.capabilities as Array<Record<string, unknown>>)
+      .every((capability) => (
+        capability.domain === "public-content"
+        && capability.scope === "content:read"
+      ))).toBe(true);
 
     const payload = publishInput("oauth-publish-integration-0001", "oauth-integration-test");
     const published = await ownerMcpRequest(accessToken, "tools/call", {
@@ -829,6 +1277,85 @@ describe("complete owner OAuth MCP flow", () => {
     });
     const remaining = await testEnv.DB.prepare("select count(*) as count from articles").first();
     expect(Number(remaining?.count || 0)).toBe(0);
+  });
+
+  it("completes modern article lifecycles for OAuth grant refs beginning with base64url symbols", async () => {
+    const boundaryGrantRefs = [
+      `-${"A".repeat(15)}`,
+      `_${"z".repeat(127)}`
+    ];
+    for (const [index, grantRef] of boundaryGrantRefs.entries()) {
+      const accessToken = await authorizeTestClient([
+        "content:read",
+        "content:write",
+        "content:delete"
+      ], grantRef);
+      const suffix = index + 1;
+      const slug = `oauth-grant-boundary-${suffix}`;
+      const payload = publishInput(`oauth-boundary-publish-000${suffix}`, slug);
+      const published = await ownerMcpRequest(accessToken, "tools/call", {
+        name: "article_publish",
+        arguments: payload
+      });
+      expect(published.response.status, JSON.stringify(published.body)).toBe(200);
+      expect(published.body.result?.isError, JSON.stringify(published.body)).not.toBe(true);
+      const created = structuredToolResult(published.body);
+      expect(created).toMatchObject({ ok: true, duplicate: false });
+      const articleId = String(created.articleId || "");
+      expect(articleId).not.toBe("");
+
+      const replayed = await ownerMcpRequest(accessToken, "tools/call", {
+        name: "article_publish",
+        arguments: payload
+      });
+      expect(structuredToolResult(replayed.body)).toMatchObject({
+        ok: true,
+        duplicate: true,
+        articleId
+      });
+
+      const managedGet = await ownerMcpRequest(accessToken, "tools/call", {
+        name: "article_manage_get",
+        arguments: { articleId }
+      });
+      const beforeUpdate = structuredToolResult(managedGet.body);
+      expect(beforeUpdate).toMatchObject({ article: { articleId, slug } });
+
+      const updated = await ownerMcpRequest(accessToken, "tools/call", {
+        name: "article_update",
+        arguments: {
+          articleId,
+          operationId: `oauth-boundary-update-000${suffix}`,
+          expectedUpdatedAt: beforeUpdate.article.updatedAt,
+          tags: ["MCP", "grant-boundary"]
+        }
+      });
+      const updateResult = structuredToolResult(updated.body);
+      expect(updateResult).toMatchObject({ ok: true, duplicate: false, articleId });
+
+      const deleted = await ownerMcpRequest(accessToken, "tools/call", {
+        name: "article_delete",
+        arguments: {
+          articleId,
+          operationId: `oauth-boundary-delete-000${suffix}`,
+          expectedUpdatedAt: updateResult.updatedAt,
+          confirm: true
+        }
+      });
+      expect(structuredToolResult(deleted.body)).toMatchObject({
+        ok: true,
+        duplicate: false,
+        deleted: true,
+        articleId
+      });
+
+      const audit = await testEnv.DB.prepare(`
+        select token_id from agent_audit_log
+        where action = 'agent-article-published' and target_id = ?
+        limit 1
+      `).bind(articleId).first<{ token_id: string }>();
+      expect(audit?.token_id).toBe(`oauth:${grantRef}`);
+    }
   });
 
   it("keeps owner tools visible and returns a scope challenge without writing", async () => {

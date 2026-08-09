@@ -97,6 +97,58 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     from sqlite_master where type = 'index' and name = 'agent_article_receipts_created_idx'
   `,
   `
+    select 'mcp-oauth-grants-table' as item, count(*) as present
+    from sqlite_master where type = 'table' and name = 'mcp_oauth_grants'
+    union all
+    select 'mcp-oauth-grants-critical-columns',
+      case when count(*) = 13 then 1 else 0 end
+    from pragma_table_info('mcp_oauth_grants')
+    where name in (
+      'grant_ref', 'user_id', 'client_id', 'client_name', 'resource',
+      'authorized_scopes', 'status', 'created_at', 'activated_at',
+      'expires_at', 'revoked_at', 'revoked_reason', 'last_used_at'
+    )
+    union all
+    select 'mcp-oauth-audit-log-table', count(*)
+    from sqlite_master where type = 'table' and name = 'mcp_oauth_audit_log'
+    union all
+    select 'mcp-oauth-audit-log-critical-columns',
+      case when count(*) = 18 then 1 else 0 end
+    from pragma_table_info('mcp_oauth_audit_log')
+    where name in (
+      'event_id', 'user_id', 'client_id', 'grant_ref', 'token_ref_hash',
+      'resource', 'capability_id', 'tool_name', 'operation_id', 'target_type',
+      'target_id_hash', 'requested_scopes', 'effective_scopes', 'action',
+      'result', 'error_code', 'ip_hash', 'created_at'
+    )
+    union all
+    select 'mcp-oauth-registration-limits-table', count(*)
+    from sqlite_master where type = 'table' and name = 'mcp_oauth_registration_limits'
+  `,
+  `
+    select 'mcp-oauth-registration-limits-critical-columns' as item,
+      case when count(*) = 4 then 1 else 0 end as present
+    from pragma_table_info('mcp_oauth_registration_limits')
+    where name in ('bucket_key', 'request_count', 'expires_at', 'updated_at')
+    union all
+    select 'mcp-oauth-grants-user-status-index', count(*)
+    from sqlite_master where type = 'index' and name = 'mcp_oauth_grants_user_status_idx'
+    union all
+    select 'mcp-oauth-grants-client-resource-index', count(*)
+    from sqlite_master where type = 'index' and name = 'mcp_oauth_grants_client_resource_idx'
+    union all
+    select 'mcp-oauth-audit-created-index', count(*)
+    from sqlite_master where type = 'index' and name = 'mcp_oauth_audit_created_idx'
+    union all
+    select 'mcp-oauth-audit-grant-index', count(*)
+    from sqlite_master where type = 'index' and name = 'mcp_oauth_audit_grant_idx'
+  `,
+  `
+    select 'mcp-oauth-registration-limits-expires-index' as item, count(*) as present
+    from sqlite_master
+    where type = 'index' and name = 'mcp_oauth_registration_limits_expires_idx'
+  `,
+  `
     select 'article-delivery-auto-publish-column' as item, count(*) as present
     from pragma_table_info('article_delivery_channels') where name = 'auto_publish'
     union all
@@ -160,18 +212,18 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260807-life-restart-agent-r1'
+    where key = 'article_seed_version' and value = '20260809-remote-mcp-oauth-r2'
     union all
-    select 'life-restart-agent-update-article',
+    select 'remote-mcp-oauth-update-article',
       case when count(*) = 1 then 1 else 0 end
     from articles
-    where article_id = 'seed-update-2026-08-07-life-restart-agent'
-      and slug = '2026-08-07-life-restart-agent'
+    where article_id = 'seed-update-2026-08-07-remote-mcp-oauth'
+      and slug = '2026-08-07-remote-mcp-oauth'
       and category = 'site-updates'
       and status = 'published'
-      and published_at = '2026-08-07T08:00:00.000Z'
+      and published_at = '2026-08-09T01:00:00.000Z'
     union all
-    select 'life-restart-agent-update-translations',
+    select 'remote-mcp-oauth-update-translations',
       case
         when count(*) = 3
           and count(distinct lang) = 3
@@ -184,7 +236,7 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
         then 1 else 0
       end
     from article_translations
-    where article_id = 'seed-update-2026-08-07-life-restart-agent'
+    where article_id = 'seed-update-2026-08-07-remote-mcp-oauth'
     union all
     select 'whiteboard-agent-images-update-article', count(*)
     from articles where article_id = 'seed-update-2026-08-06-whiteboard-agent-images'
