@@ -1,9 +1,11 @@
 # PROJECT_CONTEXT.md
 
-## 2026-08-10 四时段壁纸开关平静版发布契约
+## 2026-08-10 四时段壁纸开关陶瓷滚轮版发布契约
 
-- 尚未上线的 calm redesign 跨日后统一使用 `seed-update-2026-08-10-wallpaper-switch-calm-redesign` 与 slug `2026-08-10-wallpaper-switch-calm-redesign`，发布时间固定为 `2026-08-09T16:00:00.000Z`。公开 CSS／JS、API 表示、文章 seed 与 Home 数据缓存统一使用 `20260810-wallpaper-switch-calm-r1`，顶栏最近更新日期为 2026-08-10。
-- 发布标识不因这次位置校准改写：17 个 Image2／imagegen 最终内容源、4 张纵向 atlas、独立 `frame.png` 和固定 5 个运行时图片请求继续沿用。为避免稳定态过素，morning／day／dusk 三张既有 RGBA accent 只在 480×160 透明画布上做整数像素位移；裁切 SHA 与 alpha 像素数前后完全一致，没有新增 Image2 调用、重采样、改色或重绘，累计仍为 20 次，accent atlas SHA-256 更新为 `a1af92a465eeeeb6e7a47ac61bb62dc27cbca115e90b54fa0be325b98968169c`。PNG 图像 token 保持 `20260809-wallpaper-time-switch-r4`；8 月 9 日记录中的旧 calm ID／公开 token 只表示未上线草稿历史，最终发布事实以上述 8 月 10 日契约为准。
+- 当前最终公开记录使用 `seed-update-2026-08-10-wallpaper-switch-ceramic-roll` 与 slug `2026-08-10-wallpaper-switch-ceramic-roll`，发布时间为 `2026-08-10T00:20:00.000Z`。三语 `site-updates` 完整 fallback、Home 最新五条投影、Functions seed、schema seed、公开 CSS／JS／API／文章 seed 统一使用 `20260810-wallpaper-switch-ceramic-roll-r1`，顶栏最近更新日期为 2026-08-10。此前 `calm-redesign` ID／slug、`20260810-wallpaper-switch-calm-r1` 和 r4 只保留为未上线迭代及 8 月 9 日历史事实，不能再作为当前长期契约。
+- 当前图像契约为 `20260810-wallpaper-time-switch-r5`：176×44 控件整条只显示当前时段场景，完整暖象牙壳面覆盖外轮廓，内部精确裁切 `inset(5px 6px round 17px)`；正式 `frame.png` 中心开口 alpha bbox 为 `[36,29,842,190]`。36×36 选择器固定 top 4px，四档 left 为 4／48／92／136px；32×32 天体在选择器内以 2px inset 居中。独立暖象牙 roller 与 thumb 同步平移并按每档 140deg 旋转，天体保持正立。未选节点为 20×20、四种高辨识的平滑高分辨率陶瓷／珐琅图标，浏览器必须使用 `image-rendering:auto`，不得退回像素画、空白珍珠、通用圆点或透明环。
+- 正式素材共 18 个互不复用的 Image2／imagegen 内容源：4 scene、4 smooth marker v2、4 node、4 accent、1 frame 与 1 roller。morning 只使用晨光与小云上展，day 使用双云横移，dusk 使用余晖横展，night 使用八星上升；每个主题始终只有一层 accent。除 frame 外的 17 个内容按声明顺序机械纵向打包成 scene／marker／node／accent 四张 atlas；roller 固定为 `node-atlas.png` 的第五个原生 192×192 cell，node atlas 为 192×960、SHA-256 为 `0589cfd12b1894e33f8f72f348ec03934bd21c7ffb9b701add571fa43baee3e9`，`frame.png` 是唯一 standalone 文件。运行时固定 5 个 URL并禁止单独请求 `roller.png`；不得通过放宽 Quick Transfer trace 预算容纳额外请求。smooth marker v2 的 marker atlas SHA-256 为 `a05fa5bb1b6cdaa5381eb363a7a7a944e20d59e3f0a444c6d776e7e1af357850`。`wallpaper-time-switch.source.json` 必须保留每个选中与弃用调用的完整真实 prompt、call ID、来源路径／SHA、机械处理、浏览器实际尺寸 QA、18 个正式文件与 4 张 atlas SHA；不得臆造、复用视觉 cell、代码绘制或改色。
+- thumb 位移与 roller 转动共享 `var(--motion-window)` 与 `cubic-bezier(0.77,0,0.175,1)`，场景和天体使用 `var(--motion-standard)`；所有快速换档只使用可中断、可重定向的 transform／opacity transition，不使用 keyframes、layout motion、`transition: all`、ease-in 或 stagger delay。键盘和 motion-off 立即提交；reduced 移除 thumb／roller 位置运动并只保留不超过 140ms opacity；low performance／Save-Data 不加载 accent，但保持场景、四节点、自动时段和手动覆盖语义。
 
 ## 2026-08-09 游戏 MCP 暂停保活发布与待验收状态
 
@@ -28,6 +30,7 @@
 
 ## 2026-08-09 四时段壁纸开关
 
+- 本节保留 r4 的 2026-08-09 历史实现事实；当前长期尺寸、素材、动效、公开记录与缓存契约已经由上方 2026-08-10 r5 陶瓷滚轮版完整取代。
 - 主站右上角提供 morning／day／dusk／night 四段壁纸开关，固定为 176×44 椭圆。整条轨道在任一时刻只显示当前时段的一幅安静色场，严禁恢复成四张缩略景并排的拼轨。四个节点始终可见：未激活节点使用各时段独有的 20×20 低对比浮雕语义标记，不得退回空白珍珠、通用圆点或透明圆环；激活节点换成 32×32 实心天体，依次为半露晨日、正午全日、低位落日和月亮，top 为 6px，四档 left 为 6／50／94／138px。
 - 默认状态继续按访问设备本地时间的四个真实边界切换：05:00 morning、11:00 day、17:00 dusk、20:00 night。用户手动选择时立即切换，并只覆盖到下一真实时段边界；边界到达后清除覆盖并恢复自动时间状态。覆盖优先写入 `localStorage`，不可用时使用 `sessionStorage` 兜底，刷新后可恢复；成功写入本地存储的覆盖通过 `storage` 事件同步其他标签页。URL `?wallpaper=` 仍是显式预览优先级，不改写持久覆盖。
 - 每个主题只允许一层稀疏 accent：morning 是四根分离的短晨光，day 是一朵矮小云，dusk 是一条极薄短余晖，night 是七颗稀疏小星。day 与 night 的基础 scene 已分别通过额外 Image2 修正为无云、无星的纯净色场，语义天气只在选中后由单层 accent 出现；不得恢复 far／mid／accent 堆叠、行星、密集景物或 0／35／70ms 错峰。选择器使用 220ms transform，当前场景使用 180ms 淡入；morning／day／dusk／night 的单层 accent 分别用 200／210／190／220ms 的轻微上浮、横移、展开或升起，但全部 `transition-delay: 0ms`。所有换档只用可中断、可重定向的 transform／opacity transition，不使用 keyframes，并遵守 last-request-wins。

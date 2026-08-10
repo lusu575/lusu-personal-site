@@ -81,6 +81,7 @@ function runSwitchFirstPaint({ saveData = false, hardwareConcurrency = 8, device
   const assets = {
     marker: makeAsset("marker"),
     scene: makeAsset("scene"),
+    roller: makeAsset("node"),
     accent: makeAsset("accent", true)
   };
   const buttons = WALLPAPER_TIME_THEMES.map((theme) => ({
@@ -214,10 +215,10 @@ test("top-bar switch exposes four localized radios with one roving tab stop", ()
   );
   assert.equal(options.filter((option) => attribute(option, "aria-checked") === "true").length, 1);
   assert.equal(options.filter((option) => attribute(option, "tabindex") === "0").length, 1);
-  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/scene-atlas\.png\?v=20260809-wallpaper-time-switch-r4"/g)].length, 4);
-  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/marker-atlas\.png\?v=20260809-wallpaper-time-switch-r4"/g)].length, 4);
-  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/node-atlas\.png\?v=20260809-wallpaper-time-switch-r4"/g)].length, 4);
-  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/accent-atlas\.png\?v=20260809-wallpaper-time-switch-r4"/g)].length, 4);
+  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/scene-atlas\.png\?v=20260810-wallpaper-time-switch-r5"/g)].length, 4);
+  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/marker-atlas\.png\?v=20260810-wallpaper-time-switch-r5"/g)].length, 4);
+  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/node-atlas\.png\?v=20260810-wallpaper-time-switch-r5"/g)].length, 5);
+  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/accent-atlas\.png\?v=20260810-wallpaper-time-switch-r5"/g)].length, 4);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-scene"/g)].length, 4);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-accents"/g)].length, 1);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-accent"/g)].length, 4);
@@ -227,17 +228,21 @@ test("top-bar switch exposes four localized radios with one roving tab stop", ()
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-accent-atlas"/g)].length, 4);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-marker-atlas"/g)].length, 4);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-node-atlas"/g)].length, 4);
-  assert.match(groupMarkup, /frame\.png\?v=20260809-wallpaper-time-switch-r4/);
+  assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-roller"/g)].length, 1);
+  assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-roller-atlas"/g)].length, 1);
+  assert.match(groupMarkup, /frame\.png\?v=20260810-wallpaper-time-switch-r5/);
+  assert.match(groupMarkup, /class="wallpaper-time-roller-atlas" data-atlas-cell="roller" data-src="\/assets\/images\/wallpaper-switch\/node-atlas\.png\?v=20260810-wallpaper-time-switch-r5" width="192" height="960"/);
+  assert.doesNotMatch(groupMarkup, /\/assets\/images\/wallpaper-switch\/roller\.png\?/);
   const runtimeUrls = new Set(
-    [...groupMarkup.matchAll(/(?:src|data-src)="(\/assets\/images\/wallpaper-switch\/[^"?]+\.png\?v=20260809-wallpaper-time-switch-r4)"/g)]
+    [...groupMarkup.matchAll(/(?:src|data-src)="(\/assets\/images\/wallpaper-switch\/[^"?]+\.png\?v=20260810-wallpaper-time-switch-r5)"/g)]
       .map((match) => match[1])
   );
   assert.deepEqual([...runtimeUrls].sort(), [
-    "/assets/images/wallpaper-switch/accent-atlas.png?v=20260809-wallpaper-time-switch-r4",
-    "/assets/images/wallpaper-switch/frame.png?v=20260809-wallpaper-time-switch-r4",
-    "/assets/images/wallpaper-switch/marker-atlas.png?v=20260809-wallpaper-time-switch-r4",
-    "/assets/images/wallpaper-switch/node-atlas.png?v=20260809-wallpaper-time-switch-r4",
-    "/assets/images/wallpaper-switch/scene-atlas.png?v=20260809-wallpaper-time-switch-r4"
+    "/assets/images/wallpaper-switch/accent-atlas.png?v=20260810-wallpaper-time-switch-r5",
+    "/assets/images/wallpaper-switch/frame.png?v=20260810-wallpaper-time-switch-r5",
+    "/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r5",
+    "/assets/images/wallpaper-switch/node-atlas.png?v=20260810-wallpaper-time-switch-r5",
+    "/assets/images/wallpaper-switch/scene-atlas.png?v=20260810-wallpaper-time-switch-r5"
   ]);
   assert.match(groupOpeningTag, /data-visual-theme="morning"/);
   assert.match(groupOpeningTag, /data-visual-assets-ready="false"/);
@@ -249,6 +254,7 @@ test("cold first paint skips the accent atlas in Save-Data or hardware-low modes
   const normal = runSwitchFirstPaint();
   assert.equal(normal.assets.marker.src, "/marker.png");
   assert.equal(normal.assets.scene.src, "/scene.png");
+  assert.equal(normal.assets.roller.src, "/node.png");
   assert.equal(normal.assets.accent.src, "/accent.png");
   assert.equal(normal.group.dataset.visualTheme, "night");
 
@@ -259,15 +265,22 @@ test("cold first paint skips the accent atlas in Save-Data or hardware-low modes
   ]) {
     assert.equal(constrained.assets.marker.src, "/marker.png");
     assert.equal(constrained.assets.scene.src, "/scene.png");
+    assert.equal(constrained.assets.roller.src, "/node.png");
     assert.equal(constrained.assets.accent.src, "");
   }
   assert.doesNotMatch(firstPaintSource, /dataset\.performanceTier/);
 });
 
-test("switch geometry preserves four 44px targets, a contained 32px thumb, and generated PNG dimensions", async () => {
+test("switch geometry preserves four 44px targets, a contained 36px roller with a 32px inner node, and generated PNG dimensions", async () => {
   const switchRule = ruleBody(styleCss, ".wallpaper-time-switch");
   const optionRule = ruleBody(styleCss, ".wallpaper-time-option");
+  const viewportRule = ruleBody(styleCss, ".wallpaper-time-viewport");
   const thumbRule = ruleBody(styleCss, ".wallpaper-time-thumb");
+  const celestialRule = styleCss.match(/(?:^|\n)\.wallpaper-time-celestial\s*\{\s*position:\s*absolute;[\s\S]*?\}/)?.[0] || "";
+  assert.ok(celestialRule, "missing exact positioned .wallpaper-time-celestial declaration");
+  const rollerRule = ruleBody(styleCss, ".wallpaper-time-roller");
+  const rollerAtlasRule = styleCss.match(/(?:^|\n)\.wallpaper-time-roller-atlas\s*\{\s*width:\s*36px;[\s\S]*?\}/)?.[0] || "";
+  assert.ok(rollerAtlasRule, "missing exact .wallpaper-time-roller-atlas declaration");
   const markerRule = ruleBody(styleCss, ".wallpaper-time-marker");
   assert.match(switchRule, /grid-template-columns:\s*repeat\(4,\s*44px\)/);
   assert.match(switchRule, /width:\s*176px/);
@@ -275,16 +288,30 @@ test("switch geometry preserves four 44px targets, a contained 32px thumb, and g
   for (const property of ["width", "min-width", "height", "min-height"]) {
     assert.match(optionRule, new RegExp(`${property}:\\s*44px`));
   }
-  assert.match(thumbRule, /top:\s*6px/);
-  assert.match(thumbRule, /width:\s*32px/);
-  assert.match(thumbRule, /height:\s*32px/);
-  assert.match(thumbRule, /transform:\s*translate3d\(6px,\s*0,\s*0\)/);
+  assert.match(viewportRule, /clip-path:\s*inset\(5px 6px round 17px\)/);
+  assert.match(thumbRule, /top:\s*4px/);
+  assert.match(thumbRule, /width:\s*36px/);
+  assert.match(thumbRule, /height:\s*36px/);
+  assert.match(thumbRule, /transform:\s*translate3d\(4px,\s*0,\s*0\)/);
+  assert.match(celestialRule, /top:\s*2px/);
+  assert.match(celestialRule, /left:\s*2px/);
+  assert.match(celestialRule, /width:\s*32px/);
+  assert.match(celestialRule, /height:\s*32px/);
+  assert.match(rollerRule, /width:\s*36px/);
+  assert.match(rollerRule, /height:\s*36px/);
+  assert.match(styleCss, /\.wallpaper-time-node-atlas,\s*\.wallpaper-time-roller-atlas\s*\{[\s\S]*?image-rendering:\s*auto/);
+  assert.match(rollerAtlasRule, /width:\s*36px/);
+  assert.match(rollerAtlasRule, /height:\s*180px/);
+  assert.match(rollerAtlasRule, /transform:\s*translate3d\(0,\s*-144px,\s*0\)/);
   assert.match(markerRule, /width:\s*20px/);
   assert.match(markerRule, /height:\s*20px/);
   assert.match(markerRule, /overflow:\s*hidden/);
   assert.match(styleCss, /\.wallpaper-time-scene,\s*\.wallpaper-time-accent,\s*\.wallpaper-time-celestial\s*\{[\s\S]*?overflow:\s*hidden/);
-  for (const x of [6, 50, 94, 138]) {
+  for (const x of [4, 48, 92, 136]) {
     assert.match(styleCss, new RegExp(`wallpaper-time-thumb \\{ transform: translate3d\\(${x}px, 0, 0\\)`));
+  }
+  for (const degrees of [0, 140, 280, 420]) {
+    assert.match(styleCss, new RegExp(`wallpaper-time-roller \\{ transform: rotate\\(${degrees}deg\\)`));
   }
   assert.match(styleCss, /wallpaper-time-scene-atlas\[data-atlas-cell="night"\][^\n]*translate3d\(0, -132px, 0\)/);
   assert.match(styleCss, /wallpaper-time-marker-atlas\[data-atlas-cell="night"\][^\n]*translate3d\(0, -60px, 0\)/);
@@ -295,7 +322,7 @@ test("switch geometry preserves four 44px targets, a contained 32px thumb, and g
   const expectedRuntimeAssets = [
     { file: "scene-atlas.png", width: 880, height: 880 },
     { file: "marker-atlas.png", width: 144, height: 576 },
-    { file: "node-atlas.png", width: 192, height: 768 },
+    { file: "node-atlas.png", width: 192, height: 960 },
     { file: "accent-atlas.png", width: 480, height: 640 },
     { file: "frame.png", width: 880, height: 220 },
   ];
@@ -311,24 +338,35 @@ test("switch geometry preserves four 44px targets, a contained 32px thumb, and g
       sha256
     });
   }
-  assert.equal(sourceRecord.date, "2026-08-09");
+  assert.equal(sourceRecord.date, "2026-08-10");
   assert.equal(sourceRecord.generator, "imagegen");
   assert.equal(sourceRecord.schema_version, 2);
-  assert.equal(sourceRecord.asset_version, "20260809-wallpaper-time-switch-r4");
-  assert.equal(sourceRecord.generated_assets.length, 17);
-  assert.equal(sourceRecord.generation_sources.length, 17);
+  assert.equal(sourceRecord.asset_version, "20260810-wallpaper-time-switch-r5");
+  assert.equal(sourceRecord.generated_assets.length, 18);
+  assert.equal(sourceRecord.generation_sources.length, 18);
   assert.equal(sourceRecord.delivery_atlases.length, 4);
-  assert.equal(sourceRecord.delivery_contract.content_asset_count, 17);
+  assert.equal(sourceRecord.delivery_contract.content_asset_count, 18);
   assert.equal(sourceRecord.delivery_contract.delivery_atlas_count, 4);
   assert.equal(sourceRecord.delivery_contract.unique_runtime_request_count, 5);
+  assert.deepEqual(sourceRecord.delivery_contract.standalone_delivery_files, ["frame.png"]);
   assert.deepEqual(sourceRecord.delivery_contract.runtime_files, expectedRuntimeAssets.map((asset) => asset.file));
+  const nodeAtlasRecord = sourceRecord.delivery_atlases.find((asset) => asset.file === "node-atlas.png");
+  assert.deepEqual(nodeAtlasRecord.cells, ["node-morning.png", "node-day.png", "node-dusk.png", "node-night.png", "roller.png"]);
+  const rollerContentRecord = sourceRecord.generated_assets.find((asset) => asset.file === "roller.png");
+  const rollerContentBuffer = await readFile(new URL("assets/images/wallpaper-switch/roller.png", root));
+  assert.deepEqual(pngDimensions(rollerContentBuffer), { width: 192, height: 192 });
+  assert.deepEqual(rollerContentRecord.final_png, {
+    width: 192,
+    height: 192,
+    sha256: createHash("sha256").update(rollerContentBuffer).digest("hex")
+  });
   const sourceRoles = new Map(sourceRecord.generation_sources.map((source) => [source.role, source]));
   assert.ok(sourceRoles.size > 0);
   assert.ok([...sourceRoles.values()].every((source) => source.prompt_summary));
   assert.ok(sourceRecord.generated_assets.every((asset) => sourceRoles.has(asset.source_role)));
   assert.ok(Array.isArray(sourceRecord.mechanical_pipeline?.steps));
   assert.ok(sourceRecord.mechanical_pipeline.steps.length > 0);
-  assert.match(sourceRecord.visual_contract.accent_model, /^Exactly one sparse Image2-generated accent layer per theme:/);
+  assert.match(sourceRecord.visual_contract.accent_model, /^Exactly one Image2-generated accent layer per theme:/);
   assert.deepEqual(sourceRecord.visual_contract.inactive_marker_css_px, [20, 20]);
   assert.doesNotMatch(
     JSON.stringify(sourceRecord),
@@ -338,24 +376,27 @@ test("switch geometry preserves four 44px targets, a contained 32px thumb, and g
 
 test("switch motion is retargetable, theme-specific, and quiet in accessibility modes", () => {
   const thumbMotionRule = ruleBody(motionCss, ".wallpaper-time-thumb");
+  const rollerMotionRule = ruleBody(motionCss, ".wallpaper-time-roller");
   assert.match(motionCss, /--motion-ease-in-out:\s*cubic-bezier\(0\.77,\s*0,\s*0\.175,\s*1\)/);
-  assert.match(thumbMotionRule, /transition:\s*transform 220ms var\(--motion-ease-in-out\)/);
+  assert.match(thumbMotionRule, /transition:\s*transform var\(--motion-window\) var\(--motion-ease-in-out\)/);
   assert.match(thumbMotionRule, /will-change:\s*transform/);
-  assert.match(motionCss, /\.wallpaper-time-scene\s*\{\s*transition:\s*opacity 90ms/);
-  assert.match(motionCss, /wallpaper-time-scene\[data-switch-theme="night"\][\s\S]*?transition-duration:\s*180ms/);
-  assert.match(motionCss, /\.wallpaper-time-celestial\s*\{[\s\S]*?opacity 90ms[\s\S]*?transform 90ms/);
-  assert.match(motionCss, /wallpaper-time-celestial\[data-switch-theme="night"\][\s\S]*?transition-duration:\s*140ms/);
-  assert.match(motionCss, /wallpaper-time-accent\[data-switch-theme="morning"\][^\n]*translate3d\(0, 4px, 0\) scale\(\.98\)/);
-  assert.match(motionCss, /wallpaper-time-accent\[data-switch-theme="day"\][^\n]*translate3d\(-5px, 0, 0\)/);
-  assert.match(motionCss, /wallpaper-time-accent\[data-switch-theme="dusk"\][^\n]*translate3d\(0, 2px, 0\) scaleX\(\.94\)/);
-  assert.match(motionCss, /wallpaper-time-accent\[data-switch-theme="night"\][^\n]*translate3d\(0, 5px, 0\)/);
-  assert.match(motionCss, /data-visual-theme="morning"[\s\S]*?wallpaper-time-accent\[data-switch-theme="morning"\][\s\S]*?transition-duration:\s*200ms/);
-  assert.match(motionCss, /data-visual-theme="day"[\s\S]*?wallpaper-time-accent\[data-switch-theme="day"\][\s\S]*?transition-duration:\s*210ms/);
-  assert.match(motionCss, /data-visual-theme="dusk"[\s\S]*?wallpaper-time-accent\[data-switch-theme="dusk"\][\s\S]*?transition-duration:\s*190ms/);
-  assert.match(motionCss, /data-visual-theme="night"[\s\S]*?wallpaper-time-accent\[data-switch-theme="night"\][\s\S]*?transition-duration:\s*220ms/);
+  assert.match(rollerMotionRule, /transition:\s*transform var\(--motion-window\) var\(--motion-ease-in-out\)/);
+  assert.match(rollerMotionRule, /will-change:\s*transform/);
+  assert.match(motionCss, /\.wallpaper-time-scene\s*\{\s*transition:\s*opacity var\(--motion-standard\)/);
+  assert.match(motionCss, /wallpaper-time-scene\[data-switch-theme="night"\][\s\S]*?transition-duration:\s*var\(--motion-standard\)/);
+  assert.match(motionCss, /\.wallpaper-time-celestial\s*\{[\s\S]*?opacity var\(--motion-standard\)[\s\S]*?transform var\(--motion-standard\)/);
+  assert.match(motionCss, /wallpaper-time-celestial\[data-switch-theme="night"\][\s\S]*?transition-duration:\s*var\(--motion-standard\)/);
+  assert.match(motionCss, /wallpaper-time-accent\[data-switch-theme="morning"\][^\n]*translate3d\(0, 7px, 0\) scale\(\.88\)/);
+  assert.match(motionCss, /wallpaper-time-accent\[data-switch-theme="day"\][^\n]*translate3d\(-8px, 1px, 0\) scale\(\.96\)/);
+  assert.match(motionCss, /wallpaper-time-accent\[data-switch-theme="dusk"\][^\n]*translate3d\(9px, 1px, 0\) scaleX\(\.76\)/);
+  assert.match(motionCss, /wallpaper-time-accent\[data-switch-theme="night"\][^\n]*translate3d\(0, 9px, 0\) scale\(\.9\)/);
+  assert.match(motionCss, /data-visual-theme="morning"[\s\S]*?wallpaper-time-accent\[data-switch-theme="morning"\][\s\S]*?transition-duration:\s*var\(--motion-window\)/);
+  assert.match(motionCss, /data-visual-theme="day"[\s\S]*?wallpaper-time-accent\[data-switch-theme="day"\][\s\S]*?transition-duration:\s*var\(--motion-standard\)/);
+  assert.match(motionCss, /data-visual-theme="dusk"[\s\S]*?wallpaper-time-accent\[data-switch-theme="dusk"\][\s\S]*?transition-duration:\s*var\(--motion-window\)/);
+  assert.match(motionCss, /data-visual-theme="night"[\s\S]*?wallpaper-time-accent\[data-switch-theme="night"\][\s\S]*?transition-duration:\s*var\(--motion-window\)/);
   assert.match(motionCss, /\.wallpaper-time-accent\s*\{[\s\S]*?transition-delay:\s*0ms/);
   assert.doesNotMatch(motionCss, /data-atmosphere-depth|wallpaper-time-atmosphere|transition-delay:\s*(?:35|70)ms/);
-  assert.match(motionCss, /data-motion="reduced"[\s\S]*?wallpaper-time-thumb[\s\S]*?transition:\s*none !important/);
+  assert.match(motionCss, /data-motion="reduced"[\s\S]*?wallpaper-time-thumb,[\s\S]*?wallpaper-time-roller[\s\S]*?transition:\s*none !important/);
   assert.match(motionCss, /data-motion="reduced"[\s\S]*?wallpaper-time-accent[\s\S]*?transition:\s*opacity 140ms/);
   assert.match(motionCss, /data-performance-tier="low"[\s\S]*?wallpaper-time-accent[\s\S]*?opacity:\s*0 !important/);
   assert.match(mainJs, /async function loadWallpaperTimeSwitchAssets\(assets\)[\s\S]*?const assetsByUrl = new Map\(\)[\s\S]*?Promise\.allSettled\([\s\S]*?\.\.\.assetsByUrl\.keys\(\)[\s\S]*?decodeWallpaperTimeSwitchUrl/);

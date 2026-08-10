@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-10-wallpaper-switch-ceramic-roll",
+      "slug": "2026-08-10-wallpaper-switch-ceramic-roll",
+      "category": "site-updates",
+      "tags": ["网站更新", "壁纸", "动效", "Image2", "无障碍"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-10T00:20:00.000Z",
+      "updated_at": "2026-08-10T00:20:00.000Z",
+      "published_at": "2026-08-10T00:20:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.10",
+      "title": {
+        "zh": "四段壁纸开关的陶瓷滚动重制",
+        "en": "Ceramic Rolling Redesign for the Four-Stage Wallpaper Switch",
+        "ja": "壁紙4段スイッチをセラミック調ローリング仕様に再設計"
+      },
+      "summary": {
+        "zh": "四段壁纸开关按参考图重制为暖象牙陶瓷椭圆壳与统一内沿，并换上四个高辨识时段节点。36px 选中轮以可中断 transform 平移，独立外圈按物理距离滚转而内部天体保持正向；晨光上展、两朵白云横移、余晖横向展开、星群上升。键盘／motion-off 即时完成，reduced-motion 不做位置移动，low／Save-Data 跳过 accent。",
+        "en": "The four-stage wallpaper switch now follows the reference's warm ivory ceramic oval shell and aligned inner rim, with four more recognizable time stops. A 36px selector travels with an interruptible transform while its independent outer ring rolls by physical distance and the celestial center stays upright. Morning light rises and opens, two white clouds cross during the day, dusk glow spreads sideways, and night stars rise. Keyboard/motion-off changes are immediate, reduced motion removes position travel, and low/Save-Data skips accents.",
+        "ja": "壁紙4段スイッチを、参考画像に合わせた暖かなアイボリーのセラミック楕円シェルと揃った内周へ作り直し、4時間帯のノードも識別しやすくしました。36px の選択輪は中断可能な transform で移動し、独立した外周だけが物理距離に応じて回転して中央の天体は正立を保ちます。朝の光は上へ開き、昼には2つの雲が横切り、夕方の残光は横へ広がり、夜の星群は上昇します。keyboard／motion-off は即時、reduced-motion は位置移動なし、low／Save-Data は accent を省略します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-10-wallpaper-switch-calm-redesign",
       "slug": "2026-08-10-wallpaper-switch-calm-redesign",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "网站右上角新增由生成素材组成的早上、中午、下午和晚上四段壁纸开关；它默认按本地时间自动切换，手动选择会保留到下一个真实时段边界，并用可中断的选择环移动与壁纸交叉淡化完成过渡。",
         "en": "A generated-art four-stage wallpaper switch now sits at the site's upper right for morning, noon, afternoon, and night. It follows local time by default; a manual choice lasts until the next real schedule boundary, with an interruptible moving lens and wallpaper crossfade.",
         "ja": "サイト右上に、生成素材で作った朝・昼・夕方・夜の4段階壁紙スイッチを追加しました。通常はローカル時刻に従い、手動選択は次の実際の時間境界まで維持され、中断可能なレンズ移動と壁紙のクロスフェードで切り替わります。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-09-motion-polish",
-      "slug": "2026-08-09-motion-polish",
-      "category": "site-updates",
-      "tags": ["网站更新", "界面", "动效", "移动端", "无障碍"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-09T02:50:00.000Z",
-      "updated_at": "2026-08-09T02:50:00.000Z",
-      "published_at": "2026-08-09T02:50:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.08.09",
-      "title": {
-        "zh": "主站动效与移动交互精修",
-        "en": "Public-Site Motion and Mobile Interaction Polish",
-        "ja": "公開サイトのモーションとモバイル操作を改善"
-      },
-      "summary": {
-        "zh": "主站弹层、窗口切换与移动 Dock 采用更快且可中断的动效；知识库骨架屏、阅读进度和聊天室未读提示改用低成本合成路径，键盘操作即时完成，reduced-motion 保留必要的淡入与颜色反馈。",
-        "en": "Public popovers, window changes, and the mobile Dock now use faster, interruptible motion. Knowledge skeletons, reading progress, and chat unread feedback use cheaper compositor paths, while keyboard actions complete instantly and reduced motion keeps only helpful fades and color cues.",
-        "ja": "公開サイトのポップオーバー、ウィンドウ切り替え、モバイル Dock をより速く中断可能な動きに調整しました。Knowledge のスケルトン、読書進捗、Chat の未読表示は軽量な合成処理を使い、キーボード操作は即時、視差軽減時は必要なフェードと色だけを残します。"
       }
     }
   ]

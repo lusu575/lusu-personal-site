@@ -17,31 +17,32 @@ import {
 const root = new URL("../", import.meta.url);
 const themes = ["morning", "day", "dusk", "night"];
 const widths = [960, 1440, 1920];
-const wallpaperSwitchAssetVersion = "20260809-wallpaper-time-switch-r4";
+const wallpaperSwitchAssetVersion = "20260810-wallpaper-time-switch-r5";
 const wallpaperSwitchAssets = new Map([
-  ["scene-morning.png", [880, 220, "f65a6382325b591613aab257cab1591f1dd492c2cf936aa22d0c76835142261a"]],
-  ["scene-day.png", [880, 220, "4f863bf841682eb14aeb72a63d74e18f5db7ef62a4508968937850576e9fc4d5"]],
-  ["scene-dusk.png", [880, 220, "cfa774d59070edd42960c62d866b93d4b03accc91d00826a0a2cb252831d105a"]],
-  ["scene-night.png", [880, 220, "24954dfba76914225f2feb702fd9f1a50a3cb036a3da6177eed26b728f85fb2b"]],
-  ["marker-morning.png", [144, 144, "1187f1dcd42d48c0544a7443cda053002161b4c8639a217ca6190a551ceadbb3"]],
-  ["marker-day.png", [144, 144, "fe4f496fd1a0acc7e1e275efc1f721c528c90e12c926f971fed5f8b81e3b6dd6"]],
-  ["marker-dusk.png", [144, 144, "35ec71df2e7dea2c81574135b48c9acbffbdb6f95375a2b46e9994c15400fad8"]],
-  ["marker-night.png", [144, 144, "84e30849783f970b4fe8c96803bdf2f6f93accd60bfe715b4aaf7949d6704882"]],
-  ["node-morning.png", [192, 192, "5257c540b8ff174bdf3e0bf09faaf0891e365a732350942ebde8a24bf98e05f1"]],
-  ["node-day.png", [192, 192, "7d4509b71dcfe0c13276405a186af3e12ef6a546107252163ea9f5d094f6e21a"]],
-  ["node-dusk.png", [192, 192, "db837f373de95d06ba83ecbba010acfdda691ea89f0a5060fbd0ad268a991e46"]],
-  ["node-night.png", [192, 192, "380dc95628a4b1acbde73dfe929e130d24d762be625522fe8246c69445437045"]],
-  ["accent-morning.png", [480, 160, "aa93ce40aca8267a60ea2d369acd88c7a8ab07217dbd3910abb14c5c9dbbc14d"]],
-  ["accent-day.png", [480, 160, "f975882040b482fa0be47ef1f5659b75f13ecf44118b6ef814038a155b654363"]],
-  ["accent-dusk.png", [480, 160, "5b42caea5cdb299a782d76d611f114ac9938fcae5ab5433c11597844e4eb4bbc"]],
-  ["accent-night.png", [480, 160, "88ce460cfb915d0b0c4567ddbc51b750a64959efa849eeea0eb8de5e3e4a3d05"]],
-  ["frame.png", [880, 220, "87df31d6535b46b2f32774f8a1d7d97f36c84f9a4a33706e672b9685b1e07147"]]
+  ["scene-morning.png", [880, 220, "86e32bee9e78d7f359d821e5fd7aaaa81a1f035bfeeac5bf017a699d3d0ba511"]],
+  ["scene-day.png", [880, 220, "21a93bfd59ad13511b7530386c78bc3b70e9a1fee64863aa652c41912ab89e10"]],
+  ["scene-dusk.png", [880, 220, "73c76214123272feb242790850933c578350c6b3ab1b384c500d2463be7d6d06"]],
+  ["scene-night.png", [880, 220, "21109ba9d458ec0fc97fc00be0b11e5a24eb8a160ef2895ed52ca667bf5f3379"]],
+  ["marker-morning.png", [144, 144, "972a2eda7cf584fb32bde5fc5655544ce478a626c030cdbc4ada661e4e47454d"]],
+  ["marker-day.png", [144, 144, "f5d964da42cdfa6a2bd2e2d7a8a98c838014d1fd7f3ba111c928b14aff837868"]],
+  ["marker-dusk.png", [144, 144, "24c82c18b55e096238f33a9fe5c3b80bffc38ad9ae89d2bdbb2cebbc2c9a6b9c"]],
+  ["marker-night.png", [144, 144, "74710010c0abb39b6381d72aead8ff43fc21b1b4e943a8eebe64561f84fcb397"]],
+  ["node-morning.png", [192, 192, "72163447acb1fb95161f5d88a079ccc675067063de899ad90ac9240e41b35c85"]],
+  ["node-day.png", [192, 192, "c706bd59eb2bf455ba7f13235b733376d221cdb9823843f42ee49f919846e999"]],
+  ["node-dusk.png", [192, 192, "358cb2597d53ec594064d2a02bcb9ede7f2089c3dc94d04216b5810eafdbc036"]],
+  ["node-night.png", [192, 192, "04d36be5765de703bffd89f8365f599dc6cb24a300750edabdec8c4e9d705562"]],
+  ["accent-morning.png", [480, 160, "17a3fa961b27c741e7fc1dafa982a9b3db55c48f86a643e74285c1cc0b327b20"]],
+  ["accent-day.png", [480, 160, "b24472486a5341f1339f6d88c678e6197efcd81ac46261653757e4c1907fc86f"]],
+  ["accent-dusk.png", [480, 160, "538a753d13cd71fb8114da2a79ca5c4bab02e51a58db812f031705a9007393b5"]],
+  ["accent-night.png", [480, 160, "99c2893a9beed43fa0188eaf20f86f6d39459ae4ffd5c27390d0fb5a4ee4a4f3"]],
+  ["frame.png", [880, 220, "304d90de2dec0698667e0cb8d370655e8de27ffb960a0217d9fdfa8e0cc1eb03"]],
+  ["roller.png", [192, 192, "10f90638e4392a6998a362207d03ced9831022023a38ac34fbf29a87598db17b"]]
 ]);
 const wallpaperSwitchDeliveryAtlases = new Map([
-  ["scene-atlas.png", [880, 880, "4b0215a84bfc498fbde7494b8ab10ff9e0822956edd01f938fb75afe11f8bd2e", ["scene-morning.png", "scene-day.png", "scene-dusk.png", "scene-night.png"]]],
-  ["marker-atlas.png", [144, 576, "aabf4cf0c48685812729242cd8af320180aeff2bdf9a90c46ca7cd3cec925975", ["marker-morning.png", "marker-day.png", "marker-dusk.png", "marker-night.png"]]],
-  ["node-atlas.png", [192, 768, "9e5f1cc5f3e70812ff128404d7a85a6fcd202084a6805adcfefa17919e01e8de", ["node-morning.png", "node-day.png", "node-dusk.png", "node-night.png"]]],
-  ["accent-atlas.png", [480, 640, "a1af92a465eeeeb6e7a47ac61bb62dc27cbca115e90b54fa0be325b98968169c", ["accent-morning.png", "accent-day.png", "accent-dusk.png", "accent-night.png"]]]
+  ["scene-atlas.png", [880, 880, "c988dbc44930bcb0397da5827f8145c685196aeadf06aac4afbad83fdd09e431", ["scene-morning.png", "scene-day.png", "scene-dusk.png", "scene-night.png"]]],
+  ["marker-atlas.png", [144, 576, "a05fa5bb1b6cdaa5381eb363a7a7a944e20d59e3f0a444c6d776e7e1af357850", ["marker-morning.png", "marker-day.png", "marker-dusk.png", "marker-night.png"]]],
+  ["node-atlas.png", [192, 960, "0589cfd12b1894e33f8f72f348ec03934bd21c7ffb9b701add571fa43baee3e9", ["node-morning.png", "node-day.png", "node-dusk.png", "node-night.png", "roller.png"]]],
+  ["accent-atlas.png", [480, 640, "8d416dc6c2780024b60a3028f676284fa712fa4f9b1e0b9bc470dbe0434b9e54", ["accent-morning.png", "accent-day.png", "accent-dusk.png", "accent-night.png"]]]
 ]);
 
 async function asset(path) {
@@ -152,256 +153,142 @@ test("responsive wallpaper and window assets stay below the per-file budget", as
   }
 });
 
-test("wallpaper switch manifest locks the 17 calm Image2 content assets and five runtime files", async () => {
-  const manifestUrl = new URL("assets/images/wallpaper-switch/wallpaper-time-switch.source.json", root);
-  const manifest = JSON.parse(await readFile(manifestUrl, "utf8"));
+test("wallpaper switch manifest locks 18 ceramic Image2 assets into five runtime files", async () => {
+  const manifest = JSON.parse(await readFile(new URL("assets/images/wallpaper-switch/wallpaper-time-switch.source.json", root), "utf8"));
   assert.equal(manifest.schema_version, 2);
-  assert.equal(manifest.generator, "imagegen");
   assert.equal(manifest.asset_version, wallpaperSwitchAssetVersion);
-  assert.deepEqual(manifest.visual_contract.control_size_css_px, [176, 44]);
-  assert.deepEqual(manifest.visual_contract.active_node_css_px, [32, 32]);
-  assert.deepEqual(manifest.visual_contract.inactive_marker_css_px, [20, 20]);
-  assert.match(manifest.visual_contract.accent_model, /^Exactly one sparse Image2-generated accent layer per theme:/);
-  assert.equal(manifest.generation_sources.length, 17);
-  assert.ok(
-    manifest.generation_sources.every((source) => /^exec-[a-f0-9-]+\.png$/.test(source.imagegen_output)),
-    "every current visual group must retain its original Image2/imagegen output"
-  );
-  assert.match(
-    manifest.mechanical_pipeline.steps.join(" "),
-    /No celestial body, cloud, star, frame, marker, ray, horizon, glow band, or scene artwork was drawn or synthesized in code/
-  );
-  const finalSourceRoles = new Map(manifest.generation_sources.map((source) => [source.role, source]));
-  assert.equal(finalSourceRoles.size, 17);
-  assert.equal(finalSourceRoles.get("scene_day")?.imagegen_output, "exec-89b74651-1def-4494-a72a-100e48bfbe72.png");
-  assert.equal(finalSourceRoles.get("scene_night")?.imagegen_output, "exec-15b635b1-348a-4de1-abc5-9353ff6ea2ad.png");
-  assert.match(finalSourceRoles.get("scene_day")?.prompt_summary || "", /all clouds and semantic weather removed/);
-  assert.match(finalSourceRoles.get("scene_night")?.prompt_summary || "", /every star and celestial subject removed/);
-  assert.equal(manifest.refinement_provenance.image2_source_call_count_before_refinement, 14);
-  assert.equal(manifest.refinement_provenance.image2_source_call_count_this_refinement, 6);
-  assert.equal(manifest.refinement_provenance.image2_source_call_count_total, 20);
-  assert.equal(manifest.refinement_provenance.generation_calls.length, 6);
-  assert.deepEqual(
-    manifest.refinement_provenance.generation_calls.map(({ imagegen_output }) => imagegen_output),
-    [
-      "exec-e384a283-df12-4e1a-9cad-57a42dee21c3.png",
-      "exec-1ee61603-b412-43f0-aded-524745dae773.png",
-      "exec-a55d99c1-b462-491f-b145-744c9ebb0c6f.png",
-      "exec-cdce41cb-28ca-4113-8955-db7b79fdaa1c.png",
-      "exec-947e4489-95ed-4758-8466-31f8a36190ae.png",
-      "exec-dc111d55-c3f3-4340-ac30-c6181ccc9195.png"
-    ]
-  );
-  assert.deepEqual(
-    manifest.refinement_provenance.generation_calls.map(({ prompt_sha256 }) => prompt_sha256),
-    [
-      "b0ef86f842e96e8f8f711681d130377f57199d3a508ecff0edc436d1b084b350",
-      "ee80c707e5556cf926bfaf72c7d2e5baf7d0744756d3934613c219c7ef283edd",
-      "0b81b87cf04c25a1a1f6e072d1a640ac39923b88bb206ea4034d395a6933204d",
-      "54b9568f30f212206252642947971a5a60287dc6dab6bd31867e153c72741ef8",
-      "2ed9e5c0260099d93f57152630bf28b4798afcad6fb372e3a6072e5a8c19bdf1",
-      "9bc7468395ba49f886d255ea7090102bb522f4ec625d2c9b6f368eeb313c4a5c"
-    ]
-  );
-  const discardedDusk = manifest.refinement_provenance.generation_calls.find(({ role }) => role === "accent_dusk_green_key_draft");
-  assert.equal(discardedDusk.adopted, false);
-  assert.match(discardedDusk.rejection_reason, /yellow-green outer halo/);
-  assert.equal(finalSourceRoles.get("accent_dusk")?.imagegen_output, "exec-dc111d55-c3f3-4340-ac30-c6181ccc9195.png");
-  assert.match(finalSourceRoles.get("accent_dusk")?.prompt_summary || "", /magenta key/);
+  assert.deepEqual(manifest.public_release, {
+    update_id: "seed-update-2026-08-10-wallpaper-switch-ceramic-roll",
+    slug: "2026-08-10-wallpaper-switch-ceramic-roll",
+    public_token: "20260810-wallpaper-switch-ceramic-roll-r1"
+  });
 
-  const placementCorrection = manifest.placement_correction;
-  assert.equal(placementCorrection.source_record, "output/wallpaper-switch-calm-refine/result.json#placementCorrection");
-  assert.equal(placementCorrection.new_image2_calls, 0);
-  assert.equal(placementCorrection.cumulative_image2_source_calls, 20);
-  assert.equal(placementCorrection.resampled, false);
-  assert.equal(placementCorrection.recolored, false);
-  assert.match(placementCorrection.operation, /Integer-pixel translation/);
-  assert.match(placementCorrection.content_invariant, /only transparent-canvas position changed/);
-  const placementExpectations = new Map([
-    ["accent-morning", {
-      translation: [-15, -32],
-      beforeHash: "4fba52840157517f282c7b5ede7b597d872a4aed02393987efc8d0acc8345eec",
-      afterHash: "aa93ce40aca8267a60ea2d369acd88c7a8ab07217dbd3910abb14c5c9dbbc14d",
-      beforeBbox: [45, 50, 95, 66],
-      afterBbox: [30, 18, 80, 34],
-      cropHash: "cd8a11f62b4e01d2924136412b4a6fb7dd63fd42eab68615772b8cbb0ffd1057",
-      alphaPixels: [169, 169]
-    }],
-    ["accent-day", {
-      translation: [35, -12],
-      beforeHash: "24711954701c788d869bcb51f445d11d219d7d0cec414f6f1d8e994973b2ae35",
-      afterHash: "f975882040b482fa0be47ef1f5659b75f13ecf44118b6ef814038a155b654363",
-      beforeBbox: [165, 60, 229, 80],
-      afterBbox: [200, 48, 264, 68],
-      cropHash: "580669e2e4ca31a7df18d28cfba9fd8bbf6c98fdb9cfeb34ba82f2017fa4c8f3",
-      alphaPixels: [909, 909]
-    }],
-    ["accent-dusk", {
-      translation: [34, -13],
-      beforeHash: "4b0c0266e313cac84fbba66818cdcf96acb58cae291c990cfda6ef21ded25524",
-      afterHash: "5b42caea5cdb299a782d76d611f114ac9938fcae5ab5433c11597844e4eb4bbc",
-      beforeBbox: [274, 87, 348, 91],
-      afterBbox: [308, 74, 382, 78],
-      cropHash: "da248bf95646cc9d4a07311fdcc83282943769a31505d175b7278199826c5299",
-      alphaPixels: [264, 264]
-    }]
+  const visual = manifest.visual_contract;
+  assert.deepEqual(visual.control_size_css_px, [176, 44]);
+  assert.deepEqual(visual.viewport_clip_css_px, [5, 6, 17]);
+  assert.deepEqual(visual.frame_center_opening_alpha_bbox, [36, 29, 842, 190]);
+  assert.deepEqual(visual.rolling_selector_css_px, [36, 36]);
+  assert.equal(visual.rolling_selector_top_css_px, 4);
+  assert.deepEqual(visual.rolling_selector_left_by_theme_css_px, { morning: 4, day: 48, dusk: 92, night: 136 });
+  assert.equal(visual.roller_degrees_per_stop, 140);
+  assert.deepEqual(visual.active_node_css_px, [32, 32]);
+  assert.deepEqual(visual.active_node_inset_css_px, [2, 2]);
+  assert.deepEqual(visual.inactive_marker_css_px, [20, 20]);
+  assert.match(visual.inactive_marker_model, /image-rendering:auto/);
+  assert.match(visual.motion_model, /interruptible transform\/opacity transitions only/);
+  assert.match(visual.motion_model, /var\(--motion-window\)/);
+  assert.match(visual.motion_model, /cubic-bezier\(0\.77,0,0\.175,1\)/);
+
+  const expectedRoles = new Set([
+    "frame", "roller",
+    ...themes.map((theme) => `scene_${theme}`),
+    ...themes.map((theme) => `marker_${theme}`),
+    ...themes.map((theme) => `node_${theme}`),
+    ...themes.map((theme) => `accent_${theme}`)
   ]);
-  for (const [role, expectation] of placementExpectations) {
-    const correction = placementCorrection.assets[role];
-    assert.deepEqual(correction.translation_xy, expectation.translation);
-    assert.equal(correction.before_sha256, expectation.beforeHash);
-    assert.equal(correction.after_sha256, expectation.afterHash);
-    assert.deepEqual(correction.before_bbox_alpha_8, expectation.beforeBbox);
-    assert.deepEqual(correction.after_bbox_alpha_8, expectation.afterBbox);
-    assert.equal(correction.rgba_crop_sha256_before, expectation.cropHash);
-    assert.equal(correction.rgba_crop_sha256_after, expectation.cropHash);
-    assert.deepEqual(correction.alpha_ge_8_pixels_before_after, expectation.alphaPixels);
-    assert.equal(correction.green_dominant_pixels_alpha_8, 0);
+  assert.equal(manifest.generation_sources.length, 18);
+  assert.deepEqual(new Set(manifest.generation_sources.map(({ role }) => role)), expectedRoles);
+  assert.equal(new Set(manifest.generation_sources.map(({ call_id }) => call_id)).size, 18);
+  for (const source of manifest.generation_sources) {
+    assert.equal(source.tool, "built-in image_gen.imagegen");
+    assert.equal(source.disposition, "selected");
+    assert.ok(source.prompt.length > 240, `${source.role} must retain its complete Image2 prompt`);
+    assert.match(source.call_id, /^exec-[a-f0-9-]{36}$/);
+    assert.match(source.source_sha256, /^[a-f0-9]{64}$/);
+    assert.ok(source.source_record.startsWith("output/wallpaper-switch-reference-v2/"));
   }
-  assert.deepEqual(placementCorrection.assets["accent-dusk"].before_bbox_alpha_1, [271, 87, 349, 91]);
-  assert.deepEqual(placementCorrection.assets["accent-dusk"].after_bbox_alpha_1, [305, 74, 383, 78]);
-  assert.equal(placementCorrection.validation_previews.after.sha256, "d66b8b8b3fc38290d620c02fbd5fda52bf77716fd14bd11e58338c55250c1ca3");
-  assert.equal(placementCorrection.validation_previews.before_after.sha256, "9e57ec9175da1d651aa25733c9fccbe11f85e3bea464ba5997504aab7b37dfc2");
-
-  const manifestNames = manifest.generated_assets.map(({ file }) => file);
-  assert.deepEqual([...manifestNames].sort(), [...wallpaperSwitchAssets.keys()].sort());
-  assert.equal(new Set(manifestNames).size, 17);
-  assert.equal(
-    new Set(manifest.generated_assets.map(({ final_png: { sha256 } }) => sha256)).size,
-    17,
-    "every Image2 content source must remain byte-distinct"
-  );
-
-  for (const entry of manifest.generated_assets) {
-    const [expectedWidth, expectedHeight, expectedHash] = wallpaperSwitchAssets.get(entry.file);
-    assert.deepEqual(
-      [entry.final_png.width, entry.final_png.height, entry.final_png.sha256],
-      [expectedWidth, expectedHeight, expectedHash],
-      `${entry.file} manifest metadata drifted`
-    );
-    const url = new URL(`assets/images/wallpaper-switch/${entry.file}`, root);
-    const bytes = await readFile(url);
-    const metadata = await sharp(bytes).metadata();
-    assert.deepEqual([metadata.width, metadata.height], [expectedWidth, expectedHeight], `${entry.file} dimensions drifted`);
-    assert.equal(metadata.format, "png");
-    if (entry.file.startsWith("scene-")) {
-      assert.equal(metadata.hasAlpha, false, `${entry.file} is the intentionally opaque complete sky scene`);
-      assert.equal(metadata.channels, 3, `${entry.file} must decode as RGB`);
-    } else {
-      assert.equal(metadata.hasAlpha, true, `${entry.file} must preserve its generated alpha channel`);
-      assert.equal(metadata.channels, 4, `${entry.file} must decode as RGBA`);
-    }
-    assert.equal(createHash("sha256").update(bytes).digest("hex"), expectedHash, `${entry.file} bytes drifted`);
+  assert.ok(manifest.rejected_generation_calls.length >= 2);
+  for (const rejected of manifest.rejected_generation_calls) {
+    assert.ok(rejected.prompt.length > 240, `${rejected.role} must retain its complete rejected prompt`);
+    assert.match(rejected.call_id, /^exec-[a-f0-9-]{36}$/);
+    assert.match(rejected.source_sha256, /^[a-f0-9]{64}$/);
+    assert.ok(rejected.rejection_reason.length > 24);
   }
 
-  const duskNodeBounds = alphaBounds(await rgba("assets/images/wallpaper-switch/node-dusk.png"));
-  assert.ok(duskNodeBounds.width >= 160 && duskNodeBounds.width <= 172, "dusk node must fill the active thumb with a restrained safety inset");
-  assert.ok(duskNodeBounds.height >= 164 && duskNodeBounds.height <= 174, "dusk node must match the other active nodes' visual weight");
-  assert.ok(
-    duskNodeBounds.left >= 10
-      && duskNodeBounds.top >= 10
-      && duskNodeBounds.right <= 181
-      && duskNodeBounds.bottom <= 181,
-    "dusk node must retain a transparent safety inset on every edge"
-  );
+  assert.equal(manifest.mechanical_pipeline.chroma_helper, "C:/Users/lusu/.codex/skills/.system/imagegen/scripts/remove_chroma_key.py");
+  assert.deepEqual(manifest.mechanical_pipeline.command_options, ["--auto-key", "border", "--soft-matte", "--transparent-threshold", "12", "--opaque-threshold", "220", "--despill"]);
+  assert.match(manifest.mechanical_pipeline.processing.markers, /premultiplied-alpha Lanczos3/);
+  assert.match(manifest.mechanical_pipeline.processing.delivery_atlases, /roller\.png as its fifth native 192x192 cell/);
+  assert.match(manifest.mechanical_pipeline.processing.delivery_atlases, /frame\.png is the only standalone runtime file/);
+  assert.ok(manifest.mechanical_pipeline.steps.some((step) => step.includes("18 content files were byte-locked")));
+  assert.ok(manifest.mechanical_pipeline.steps.some((step) => step.includes("No celestial body") && step.includes("synthesized in code")));
 
-  const refinedAlphaExpectations = new Map([
-    ["marker-day.png", { bbox: [26, 26, 118, 117], size: [92, 91], minCoverage: 0.04, maxCoverage: 0.065 }],
-    ["marker-night.png", { bbox: [36, 26, 108, 118], size: [72, 92], minCoverage: 0.04, maxCoverage: 0.065 }],
-    ["accent-morning.png", { bbox: [30, 18, 80, 34], size: [50, 16], minCoverage: 0.001, maxCoverage: 0.004 }],
-    ["accent-day.png", { bbox: [200, 48, 264, 68], size: [64, 20], minCoverage: 0.009, maxCoverage: 0.014 }],
-    ["accent-dusk.png", { bbox: [308, 74, 382, 78], size: [74, 4], minCoverage: 0.002, maxCoverage: 0.005 }]
-  ]);
-  for (const [file, expectation] of refinedAlphaExpectations) {
-    const image = await rgba(`assets/images/wallpaper-switch/${file}`);
-    const bounds = alphaBounds(image, 8);
-    const manifestEntry = manifest.generated_assets.find((entry) => entry.file === file);
-    assert.deepEqual(
-      [bounds.left, bounds.top, bounds.right + 1, bounds.bottom + 1],
-      expectation.bbox,
-      `${file} alpha>=8 bounds drifted`
-    );
-    assert.deepEqual([bounds.width, bounds.height], expectation.size, `${file} sparse content size drifted`);
-    assert.ok(
-      bounds.visibleRatio >= expectation.minCoverage && bounds.visibleRatio <= expectation.maxCoverage,
-      `${file} should remain visually sparse`
-    );
-    assert.deepEqual(manifestEntry.alpha_report.bbox, expectation.bbox, `${file} manifest alpha bounds drifted`);
-    assert.deepEqual(manifestEntry.alpha_report.bbox_size, expectation.size, `${file} manifest alpha size drifted`);
-    assert.equal(manifestEntry.alpha_report.threshold, 8);
-    assert.ok(Math.abs(manifestEntry.alpha_report.coverage - bounds.visibleRatio) < 1e-12);
-    assert.equal(greenDominantPixelCount(image, 8), 0, `${file} must not retain a green-key fringe`);
-    assert.equal(manifestEntry.alpha_report.green_dominant_pixels, 0);
-  }
+  assert.equal(manifest.qa.overall_pass, true);
+  assert.equal(manifest.qa.frame.pass, true);
+  assert.deepEqual(manifest.qa.frame.center_opening_alpha_bbox, [36, 29, 842, 190]);
+  assert.equal(manifest.qa.frame.center_alpha, 0);
+  assert.equal(manifest.qa.roller.pass, true);
+  assert.equal(manifest.qa.roller.center_alpha, 0);
+  assert.equal(manifest.qa.scenes.pass, true);
+  assert.equal(manifest.qa.markers.pass, true);
+  assert.match(manifest.qa.markers.version_decision.v1, /Rejected/);
+  assert.match(manifest.qa.markers.version_decision.v2, /Adopted/);
+  assert.match(manifest.qa.markers.browser_actual_size_preview.path, /image-rendering-auto-actual\.png$/);
+  assert.match(manifest.qa.markers.rendering, /image-rendering:auto/);
+  assert.equal(manifest.qa.nodes_accents.pass, true);
 
-  assert.equal(manifest.delivery_contract.content_asset_count, 17);
+  assert.equal(manifest.delivery_contract.content_asset_count, 18);
   assert.equal(manifest.delivery_contract.delivery_atlas_count, 4);
-  assert.equal(manifest.delivery_contract.unique_runtime_request_count, 5);
   assert.deepEqual(manifest.delivery_contract.standalone_delivery_files, ["frame.png"]);
-  assert.deepEqual(
-    [...manifest.delivery_contract.runtime_files].sort(),
-    [...wallpaperSwitchDeliveryAtlases.keys(), "frame.png"].sort()
-  );
-  assert.match(manifest.delivery_contract.packaging_rule, /Every atlas cell is a different byte-locked Image2-generated content asset/);
-  assert.match(manifest.delivery_contract.packaging_rule, /must never duplicate (?:one|a) cell or visual region/);
-  const packedCells = manifest.delivery_atlases.flatMap(({ cells }) => cells);
-  assert.equal(new Set(packedCells).size, 16);
-  assert.deepEqual(
-    [...packedCells].sort(),
-    [...wallpaperSwitchAssets.keys()].filter((file) => file !== "frame.png").sort()
-  );
+  assert.equal(manifest.delivery_contract.unique_runtime_request_count, 5);
+  assert.deepEqual(manifest.delivery_contract.runtime_files, ["scene-atlas.png", "marker-atlas.png", "node-atlas.png", "accent-atlas.png", "frame.png"]);
+  assert.match(manifest.delivery_contract.packaging_rule, /roller\.png is retained as a formal content source/);
+  assert.match(manifest.delivery_contract.packaging_rule, /fifth native cell of node-atlas\.png/);
+  assert.match(manifest.delivery_contract.packaging_rule, /must never request roller\.png independently/);
+  assert.match(manifest.delivery_contract.packaging_rule, /must never duplicate a cell or visual region/);
 
-  for (const entry of manifest.delivery_atlases) {
-    const [expectedWidth, expectedHeight, expectedHash, expectedCells] = wallpaperSwitchDeliveryAtlases.get(entry.file);
-    assert.equal(entry.layout, "vertical");
-    assert.deepEqual(entry.cells, expectedCells);
-    assert.deepEqual([entry.cell_width, entry.cell_height], [expectedWidth, expectedHeight / expectedCells.length]);
-    assert.deepEqual(
-      [entry.final_png.width, entry.final_png.height, entry.final_png.sha256],
-      [expectedWidth, expectedHeight, expectedHash],
-      `${entry.file} delivery metadata drifted`
-    );
-    const atlasUrl = new URL(`assets/images/wallpaper-switch/${entry.file}`, root);
-    const atlasBytes = await readFile(atlasUrl);
-    const atlasMetadata = await sharp(atlasBytes).metadata();
-    assert.deepEqual([atlasMetadata.width, atlasMetadata.height], [expectedWidth, expectedHeight]);
-    assert.equal(createHash("sha256").update(atlasBytes).digest("hex"), expectedHash, `${entry.file} bytes drifted`);
-    for (const [cellIndex, sourceFile] of expectedCells.entries()) {
-      const [, cellHeight] = wallpaperSwitchAssets.get(sourceFile);
-      const packedCell = await sharp(atlasBytes)
-        .extract({ left: 0, top: cellIndex * cellHeight, width: expectedWidth, height: cellHeight })
-        .ensureAlpha()
-        .raw()
-        .toBuffer();
-      const sourceCell = await sharp(fileURLToPath(new URL(`assets/images/wallpaper-switch/${sourceFile}`, root)))
-        .ensureAlpha()
-        .raw()
-        .toBuffer();
-      assert.deepEqual(packedCell, sourceCell, `${entry.file} cell ${cellIndex} must exactly preserve ${sourceFile}`);
+  assert.equal(manifest.generated_assets.length, 18);
+  assert.deepEqual(new Set(manifest.generated_assets.map(({ file }) => file)), new Set(wallpaperSwitchAssets.keys()));
+  assert.equal(new Set(manifest.generated_assets.map(({ final_png }) => final_png.sha256)).size, 18);
+  for (const generated of manifest.generated_assets) {
+    const [width, height, sha256] = wallpaperSwitchAssets.get(generated.file);
+    assert.deepEqual(generated.final_png, { width, height, sha256 });
+    const file = await readFile(new URL(`assets/images/wallpaper-switch/${generated.file}`, root));
+    assert.equal(createHash("sha256").update(file).digest("hex"), sha256, `${generated.file} bytes changed`);
+    const decoded = await asset(`assets/images/wallpaper-switch/${generated.file}`);
+    assert.deepEqual([decoded.metadata.width, decoded.metadata.height], [width, height]);
+    if (generated.file.startsWith("scene-")) {
+      assert.equal(decoded.metadata.channels, 3, `${generated.file} must remain an opaque RGB field`);
+    } else {
+      assert.equal(decoded.metadata.hasAlpha, true, `${generated.file} must retain alpha`);
     }
   }
 
-  const superseded = [
-    "time-track.png",
-    "time-selector.png",
-    "node-inactive.png",
-    ...themes.map((theme) => `fx-${theme}.png`),
-    ...themes.map((theme) => `atmosphere-${theme}-ambient.png`),
-    ...themes.flatMap((theme) => [
-      `atmosphere-${theme}-far.png`,
-      `atmosphere-${theme}-mid.png`,
-      `atmosphere-${theme}-accent.png`,
-      `atmosphere-${theme}-atlas.png`
-    ])
-  ];
-  for (const file of superseded) {
-    assert.ok(!manifestNames.includes(file), `${file} must not remain in the current manifest`);
-    await assert.rejects(
-      stat(new URL(`assets/images/wallpaper-switch/${file}`, root)),
-      { code: "ENOENT" },
-      `${file} must not remain as a production asset`
-    );
+  for (const marker of themes.map((theme) => `marker-${theme}.png`)) {
+    const markerPixels = await rgba(`assets/images/wallpaper-switch/${marker}`);
+    const bounds = alphaBounds(markerPixels, 4);
+    assert.ok(bounds.width >= 70 && bounds.height >= 30, `${marker} subject became too small`);
+    assert.ok(greenDominantPixelCount(markerPixels) <= 1, `${marker} retained a visible chroma-key fringe`);
   }
+
+  assert.equal(manifest.delivery_atlases.length, 4);
+  for (const atlasRecord of manifest.delivery_atlases) {
+    const [width, height, sha256, cells] = wallpaperSwitchDeliveryAtlases.get(atlasRecord.file);
+    assert.deepEqual(atlasRecord.final_png, { width, height, sha256 });
+    assert.deepEqual(atlasRecord.cells, cells);
+    const atlasPath = `assets/images/wallpaper-switch/${atlasRecord.file}`;
+    const atlasBytes = await readFile(new URL(atlasPath, root));
+    assert.equal(createHash("sha256").update(atlasBytes).digest("hex"), sha256, `${atlasRecord.file} bytes changed`);
+    const atlas = sharp(atlasBytes).ensureAlpha().raw();
+    const { data, info } = await atlas.toBuffer({ resolveWithObject: true });
+    assert.deepEqual([info.width, info.height], [width, height]);
+    for (const [index, cell] of cells.entries()) {
+      const source = await rgbaBuffer(await readFile(new URL(`assets/images/wallpaper-switch/${cell}`, root)));
+      const rowBytes = atlasRecord.cell_width * 4;
+      for (let row = 0; row < atlasRecord.cell_height; row += 1) {
+        const atlasOffset = ((index * atlasRecord.cell_height + row) * info.width) * 4;
+        const sourceOffset = row * rowBytes;
+        assert.deepEqual(
+          data.subarray(atlasOffset, atlasOffset + rowBytes),
+          source.data.subarray(sourceOffset, sourceOffset + rowBytes),
+          `${atlasRecord.file} cell ${cell} changed at row ${row}`
+        );
+      }
+    }
+  }
+
+  assert.equal(manifest.historical_supersession.prior_asset_version, "20260809-wallpaper-time-switch-r4");
+  assert.match(manifest.historical_supersession.status, /current long-term production contract is r5/);
 });
 
 test("sprite and entry icons use decode-sized production atlases", async () => {
@@ -560,7 +447,7 @@ test("JSON resource cache still coalesces callers that share the same scope", as
 });
 
 test("cacheable API JSON emits a stable ETag and honors If-None-Match", async () => {
-  assert.equal(PUBLIC_API_REPRESENTATION_VERSION, "20260810-wallpaper-switch-calm-r1");
+  assert.equal(PUBLIC_API_REPRESENTATION_VERSION, "20260810-wallpaper-switch-ceramic-roll-r1");
   const first = await cacheableJson(new Request("https://example.test/api/articles"), { articles: [] });
   const etag = first.headers.get("ETag");
   assert.match(etag, /^"sha256-[a-f0-9]{64}"$/);

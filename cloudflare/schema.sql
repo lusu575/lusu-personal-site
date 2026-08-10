@@ -961,6 +961,133 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-08-10-wallpaper-switch-ceramic-roll',
+  '2026-08-10-wallpaper-switch-ceramic-roll',
+  'site-updates',
+  '["网站更新","壁纸","动效","Image2","无障碍"]',
+  '', 'published', 0, 0,
+  '2026-08-10T00:20:00.000Z',
+  '2026-08-10T00:20:00.000Z',
+  '2026-08-10T00:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-10-wallpaper-switch-ceramic-roll-zh',
+    'seed-update-2026-08-10-wallpaper-switch-ceramic-roll',
+    'zh',
+    '四段壁纸开关的陶瓷滚动重制',
+    '四段壁纸开关按参考图重制为暖象牙陶瓷椭圆壳与统一内沿，并换上四个高辨识时段节点。36px 选中轮以可中断 transform 平移，独立外圈按物理距离滚转而内部天体保持正向；晨光上展、两朵白云横移、余晖横向展开、星群上升。键盘／motion-off 即时完成，reduced-motion 不做位置移动，low／Save-Data 跳过 accent。',
+    '# 四段壁纸开关的陶瓷滚动重制
+
+网站右上角的四段壁纸开关再次精修。时间自动切换、手动选择只持续到下一真实边界的行为保持不变，这次重点统一了参考图中的材质、轮廓和滚动手感。
+
+## 暖象牙陶瓷椭圆
+
+- Image2 重新制作暖象牙陶瓷外壳、统一对齐的椭圆内沿，以及更接近参考图的清透天空底色。
+- 早上、白天、傍晚和夜晚使用四个高辨识语义节点，不再让未选中状态融进背景。
+- 当前档位使用 36px 选中轮，在框内保留细小安全间距。
+
+## 外圈滚动，天体保持正向
+
+选中轮以可中断的 transform 在四个档位间平移。独立外圈按实际移动距离旋转，形成连续的物理滚动；圆心里的晨日、正午太阳、落日或月亮始终保持正向，不会跟着倒转。快速连续选择可以从当前帧重定向到最新目标。
+
+## 四个时段，四种入场
+
+- morning：晨光从下方向上展开。
+- day：两朵白云沿水平方向轻快横移。
+- dusk：余晖以低位水平带向两侧展开。
+- night：稀疏星群从下方升起。
+
+这些 accent 只服务当前主题，不堆叠额外场景元素。键盘操作和 motion-off 即时提交；reduced-motion 移除位置运动，只保留必要的短淡化；low 性能档与 Save-Data 跳过 accent，但保留完整色场、四个节点和时间切换。',
+    '2026-08-10T00:20:00.000Z',
+    '2026-08-10T00:20:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-10-wallpaper-switch-ceramic-roll-en',
+    'seed-update-2026-08-10-wallpaper-switch-ceramic-roll',
+    'en',
+    'Ceramic Rolling Redesign for the Four-Stage Wallpaper Switch',
+    'The four-stage wallpaper switch now follows the reference''s warm ivory ceramic oval shell and aligned inner rim, with four more recognizable time stops. A 36px selector travels with an interruptible transform while its independent outer ring rolls by physical distance and the celestial center stays upright. Morning light rises and opens, two white clouds cross during the day, dusk glow spreads sideways, and night stars rise. Keyboard/motion-off changes are immediate, reduced motion removes position travel, and low/Save-Data skips accents.',
+    '# Ceramic Rolling Redesign for the Four-Stage Wallpaper Switch
+
+The four-stage wallpaper switch at the site''s upper right has received another focused polish pass. Automatic scheduling and manual selection until the next real boundary are unchanged; this revision aligns the material, contours, and rolling feel with the reference.
+
+## A warm ivory ceramic oval
+
+- Image2 rebuilt the warm ivory ceramic shell, one precisely aligned oval inner rim, and clearer sky fields closer to the reference.
+- Morning, day, dusk, and night now use four highly recognizable semantic stops so inactive states do not disappear into the field.
+- The active position uses a 36px selector with a small, consistent inset inside the frame.
+
+## A rolling ring with an upright celestial center
+
+The selector translates between four stops with an interruptible transform. Its independent outer ring rotates according to the real travel distance, creating continuous physical rolling, while the morning sun, noon sun, setting sun, or moon in the center remains upright. Rapid repeated choices can retarget from the current frame to the latest destination.
+
+## Four periods, four entrances
+
+- Morning light rises and opens upward.
+- Two white clouds move lightly across the track during the day.
+- Dusk afterglow expands sideways as a low horizontal band.
+- A sparse night star field rises from below.
+
+Each accent belongs only to the current theme, without extra scene clutter. Keyboard input and motion-off commit immediately. Reduced motion removes positional travel and keeps only a necessary short fade. Low-performance mode and Save-Data skip accents while retaining the complete field, all four stops, and time switching.',
+    '2026-08-10T00:20:00.000Z',
+    '2026-08-10T00:20:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-10-wallpaper-switch-ceramic-roll-ja',
+    'seed-update-2026-08-10-wallpaper-switch-ceramic-roll',
+    'ja',
+    '壁紙4段スイッチをセラミック調ローリング仕様に再設計',
+    '壁紙4段スイッチを、参考画像に合わせた暖かなアイボリーのセラミック楕円シェルと揃った内周へ作り直し、4時間帯のノードも識別しやすくしました。36px の選択輪は中断可能な transform で移動し、独立した外周だけが物理距離に応じて回転して中央の天体は正立を保ちます。朝の光は上へ開き、昼には2つの雲が横切り、夕方の残光は横へ広がり、夜の星群は上昇します。keyboard／motion-off は即時、reduced-motion は位置移動なし、low／Save-Data は accent を省略します。',
+    '# 壁紙4段スイッチをセラミック調ローリング仕様に再設計
+
+サイト右上の壁紙4段スイッチを、もう一度丁寧に磨き直しました。時刻による自動切り替えと、次の実際の時間境界まで維持する手動選択は変えず、今回は参考画像の素材感、輪郭、転がる感触を揃えています。
+
+## 暖かなアイボリーのセラミック楕円
+
+- Image2 で暖かなアイボリーのセラミック外枠、正確に揃った一つの楕円内周、参考画像に近い澄んだ空の色面を作り直しました。
+- 朝・昼・夕方・夜は識別しやすい4種類の意味ノードを使い、未選択状態が背景に溶け込まないようにしました。
+- 選択中の位置は 36px の選択輪を使い、枠内に小さく一定の余白を残します。
+
+## 外周だけが転がり、天体は正立
+
+選択輪は中断可能な transform で4つの位置を移動します。独立した外周は実際の移動距離に応じて回転し、連続した物理的なローリングを表現します。中央の朝日、真昼の太陽、夕日、月は常に正立したままです。素早く連続して選んでも、現在のフレームから最新の行き先へ再設定できます。
+
+## 4時間帯に4種類の入場
+
+- morning：朝の光が下から上へ開きます。
+- day：2つの白い雲が水平方向へ軽く横切ります。
+- dusk：低い残光の帯が左右へ広がります。
+- night：まばらな星群が下から上昇します。
+
+accent は現在のテーマだけに使い、余計な景物は重ねません。keyboard 操作と motion-off は即時確定します。reduced-motion では位置移動をなくし、必要な短いフェードだけを残します。low モードと Save-Data では accent を省略しても、色面、4ノード、時刻切り替えは維持します。',
+    '2026-08-10T00:20:00.000Z',
+    '2026-08-10T00:20:00.000Z'
+  )
+on conflict(translation_id) do update set
+  article_id = excluded.article_id,
+  lang = excluded.lang,
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-08-10-wallpaper-switch-calm-redesign',
   '2026-08-10-wallpaper-switch-calm-redesign',
   'site-updates',
@@ -13427,7 +13554,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260810-wallpaper-switch-calm-r1', '2026-08-09T16:00:00.000Z')
+values ('article_seed_version', '20260810-wallpaper-switch-ceramic-roll-r1', '2026-08-10T00:20:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

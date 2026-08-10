@@ -494,12 +494,17 @@ html[data-ui-shell="desktop"] .desktop-icon[aria-pressed="true"] {
 /* The switch is a rapidly-triggered state control. Every layer uses a
    retargetable transition: no keyframe restarts, cloned sprites, or timers. */
 .wallpaper-time-thumb {
-  transition: transform 220ms var(--motion-ease-in-out);
+  transition: transform var(--motion-window) var(--motion-ease-in-out);
+  will-change: transform;
+}
+
+.wallpaper-time-roller {
+  transition: transform var(--motion-window) var(--motion-ease-in-out);
   will-change: transform;
 }
 
 .wallpaper-time-scene {
-  transition: opacity 90ms var(--motion-ease-out);
+  transition: opacity var(--motion-standard) var(--motion-ease-out);
 }
 
 .wallpaper-time-marker {
@@ -507,7 +512,7 @@ html[data-ui-shell="desktop"] .desktop-icon[aria-pressed="true"] {
   transform: scale(1);
   transform-origin: center;
   transition:
-    opacity 90ms var(--motion-ease-out),
+    opacity var(--motion-release) var(--motion-ease-out),
     transform var(--motion-release) var(--motion-ease-out);
 }
 
@@ -521,37 +526,42 @@ html[data-ui-shell="desktop"] .desktop-icon[aria-pressed="true"] {
 }
 
 .wallpaper-time-celestial {
-  transform: scale(.92);
+  transform: scale(.88);
   transition:
-    opacity 90ms var(--motion-ease-out),
-    transform 90ms var(--motion-ease-out);
+    opacity var(--motion-standard) var(--motion-ease-out),
+    transform var(--motion-standard) var(--motion-ease-out);
 }
+
+.wallpaper-time-celestial[data-switch-theme="morning"] { transform: translate3d(0, 4px, 0) scale(.84); }
+.wallpaper-time-celestial[data-switch-theme="day"] { transform: translate3d(0, 1px, 0) scale(.82); }
+.wallpaper-time-celestial[data-switch-theme="dusk"] { transform: translate3d(0, -4px, 0) scale(.86); }
+.wallpaper-time-celestial[data-switch-theme="night"] { transform: translate3d(0, 3px, 0) scale(.88); }
 
 .wallpaper-time-accent {
   transition-property: opacity, transform;
-  transition-duration: 90ms;
+  transition-duration: var(--motion-release);
   transition-timing-function: var(--motion-ease-out);
   transition-delay: 0ms;
 }
 
-.wallpaper-time-accent[data-switch-theme="morning"] { transform: translate3d(0, 4px, 0) scale(.98); }
-.wallpaper-time-accent[data-switch-theme="day"] { transform: translate3d(-5px, 0, 0); }
-.wallpaper-time-accent[data-switch-theme="dusk"] { transform: translate3d(0, 2px, 0) scaleX(.94); }
-.wallpaper-time-accent[data-switch-theme="night"] { transform: translate3d(0, 5px, 0); }
+.wallpaper-time-accent[data-switch-theme="morning"] { transform: translate3d(0, 7px, 0) scale(.88); }
+.wallpaper-time-accent[data-switch-theme="day"] { transform: translate3d(-8px, 1px, 0) scale(.96); }
+.wallpaper-time-accent[data-switch-theme="dusk"] { transform: translate3d(9px, 1px, 0) scaleX(.76); }
+.wallpaper-time-accent[data-switch-theme="night"] { transform: translate3d(0, 9px, 0) scale(.9); }
 
 .wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-scene[data-switch-theme="morning"],
 .wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-scene[data-switch-theme="day"],
 .wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-scene[data-switch-theme="dusk"],
 .wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-scene[data-switch-theme="night"] {
-  transition-duration: 180ms;
+  transition-duration: var(--motion-standard);
 }
 
 .wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-celestial[data-switch-theme="morning"],
 .wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-celestial[data-switch-theme="day"],
 .wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-celestial[data-switch-theme="dusk"],
 .wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-celestial[data-switch-theme="night"] {
-  transform: scale(1);
-  transition-duration: 140ms;
+  transform: translate3d(0, 0, 0) scale(1);
+  transition-duration: var(--motion-standard);
 }
 
 .wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-accent[data-switch-theme="morning"],
@@ -562,23 +572,25 @@ html[data-ui-shell="desktop"] .desktop-icon[aria-pressed="true"] {
 }
 
 .wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-accent[data-switch-theme="morning"] {
-  transition-duration: 200ms;
+  transition-duration: var(--motion-window);
 }
 
 .wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-accent[data-switch-theme="day"] {
-  transition-duration: 210ms;
+  transition-duration: var(--motion-standard);
 }
 
 .wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-accent[data-switch-theme="dusk"] {
-  transition-duration: 190ms;
+  transition-duration: var(--motion-window);
 }
 
 .wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-accent[data-switch-theme="night"] {
-  transition-duration: 220ms;
+  transition-duration: var(--motion-window);
 }
 
 html[data-motion="reduced"] .wallpaper-time-thumb,
-body[data-motion="reduced"] .wallpaper-time-thumb {
+html[data-motion="reduced"] .wallpaper-time-roller,
+body[data-motion="reduced"] .wallpaper-time-thumb,
+body[data-motion="reduced"] .wallpaper-time-roller {
   transition: none !important;
   will-change: auto;
 }
@@ -596,26 +608,31 @@ body[data-motion="reduced"] .wallpaper-time-accent {
 }
 
 .wallpaper-time-switch[data-immediate="true"] .wallpaper-time-thumb,
+.wallpaper-time-switch[data-immediate="true"] .wallpaper-time-roller,
 .wallpaper-time-switch[data-immediate="true"] .wallpaper-time-scene,
 .wallpaper-time-switch[data-immediate="true"] .wallpaper-time-marker,
 .wallpaper-time-switch[data-immediate="true"] .wallpaper-time-celestial,
 .wallpaper-time-switch[data-immediate="true"] .wallpaper-time-accent,
 .wallpaper-time-switch[data-static="true"] .wallpaper-time-thumb,
+.wallpaper-time-switch[data-static="true"] .wallpaper-time-roller,
 .wallpaper-time-switch[data-static="true"] .wallpaper-time-scene,
 .wallpaper-time-switch[data-static="true"] .wallpaper-time-marker,
 .wallpaper-time-switch[data-static="true"] .wallpaper-time-celestial,
 .wallpaper-time-switch[data-static="true"] .wallpaper-time-accent,
 html[data-motion="off"] .wallpaper-time-thumb,
+html[data-motion="off"] .wallpaper-time-roller,
 html[data-motion="off"] .wallpaper-time-scene,
 html[data-motion="off"] .wallpaper-time-marker,
 html[data-motion="off"] .wallpaper-time-celestial,
 html[data-motion="off"] .wallpaper-time-accent,
 body[data-motion="off"] .wallpaper-time-thumb,
+body[data-motion="off"] .wallpaper-time-roller,
 body[data-motion="off"] .wallpaper-time-scene,
 body[data-motion="off"] .wallpaper-time-marker,
 body[data-motion="off"] .wallpaper-time-celestial,
 body[data-motion="off"] .wallpaper-time-accent,
 html[data-performance-tier="low"] .wallpaper-time-thumb,
+html[data-performance-tier="low"] .wallpaper-time-roller,
 html[data-performance-tier="low"] .wallpaper-time-scene,
 html[data-performance-tier="low"] .wallpaper-time-marker,
 html[data-performance-tier="low"] .wallpaper-time-celestial,

@@ -1,377 +1,604 @@
 {
   "schema_version": 2,
-  "date": "2026-08-09",
+  "date": "2026-08-10",
   "generator": "imagegen",
-  "asset_version": "20260809-wallpaper-time-switch-r4",
+  "asset_version": "20260810-wallpaper-time-switch-r5",
+  "public_release": {
+    "update_id": "seed-update-2026-08-10-wallpaper-switch-ceramic-roll",
+    "slug": "2026-08-10-wallpaper-switch-ceramic-roll",
+    "public_token": "20260810-wallpaper-switch-ceramic-roll-r1"
+  },
+  "reference": {
+    "path": "C:/Users/lusu/AppData/Local/Temp/codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+    "role": "Style, material, contour and tactile hierarchy reference only; not an edit target.",
+    "user_direction": "Match the warm ivory ceramic oval, aligned inset field, glossy day/night material and tactile selector while adapting it to four time periods."
+  },
   "visual_contract": {
     "control_size_css_px": [176, 44],
-    "scene_model": "The whole oval shows exactly one restrained current time-of-day field. Four semantic embossed markers remain visible; the active stop replaces its marker with a solid theme-specific celestial medallion.",
-    "active_node_css_px": [32, 32],
-    "active_node_top_css_px": 6,
-    "active_node_left_by_theme_css_px": {
-      "morning": 6,
-      "day": 50,
-      "dusk": 94,
-      "night": 138
+    "viewport_clip_css_px": [5, 6, 17],
+    "frame_center_opening_alpha_bbox": [36, 29, 842, 190],
+    "scene_model": "The whole clipped oval shows exactly one current glossy sky field. It never presents four miniature scenes side by side.",
+    "rolling_selector_css_px": [36, 36],
+    "rolling_selector_top_css_px": 4,
+    "rolling_selector_left_by_theme_css_px": {
+      "morning": 4,
+      "day": 48,
+      "dusk": 92,
+      "night": 136
     },
+    "roller_degrees_per_stop": 140,
+    "roller_model": "The independent warm-ivory roller ring translates with the thumb and rotates 140deg per 44px stop while the celestial center stays upright.",
+    "active_node_css_px": [32, 32],
+    "active_node_inset_css_px": [2, 2],
     "inactive_marker_css_px": [20, 20],
-    "accent_model": "Exactly one sparse Image2-generated accent layer per theme: four short dawn rays, one daytime cloud, one dusk afterglow band, or seven night stars.",
+    "inactive_marker_model": "Four distinct smooth high-resolution ceramic/enamel semantic icons rendered with browser image-rendering:auto: cloud-obscured sunrise, complete eight-ray sun, rayless descending sun with horizon lines, and crescent with one star.",
+    "accent_model": "Exactly one Image2-generated accent layer per theme: morning rays and one small cloud expand/rise; two day clouds travel horizontally; dusk afterglow spreads horizontally; eight night stars rise.",
+    "motion_model": "Rapid changes use interruptible transform/opacity transitions only. Thumb and roller share var(--motion-window) with cubic-bezier(0.77,0,0.175,1); there are no switch keyframes or stagger delays.",
+    "accessibility_model": "Keyboard and motion-off commit immediately; reduced removes thumb/roller position travel and keeps at most 140ms opacity; low/Save-Data omits accents while retaining the scene, stops and time behavior.",
     "prohibited_regressions": [
       "four time-of-day thumbnails shown side by side in one track",
-      "a generic transparent selector ring, blank white pearl, or generic inactive dot",
-      "mountains, water, reflections, trees, cities, flowers, dense cloud banks, planets, galaxies, dense starfields, or other landscape clutter inside the switch scene",
-      "far, mid, and accent atmosphere stacks, staggered decorative delays, or more than one accent layer per theme",
+      "a generic transparent selector ring, blank white pearl, generic inactive dot, empty bead, or shared marker shape",
+      "pixelated or pixel-art markers, nearest-neighbor rendering, screenshot blur, heavy sticker outlines, or dark jagged contours",
+      "multiple accent layers per theme, dense scenery, planets, galaxies, landscape clutter, or staggered decoration",
       "the same visual region or atlas cell duplicated and clipped into multiple semantic roles; mechanically packing distinct Image2-generated cells into a delivery atlas is permitted",
-      "keyframe animations on the rapidly-triggered wallpaper toggle",
-      "CSS, Canvas, SVG path, or code geometry used to draw the celestial, cloud, star, marker, frame, ray, or scene artwork"
+      "keyframe animations, layout-property motion, transition: all, or ease-in on the rapidly triggered wallpaper toggle",
+      "CSS, Canvas, SVG path, or code geometry used to draw the celestial, cloud, star, marker, frame, roller, ray, afterglow, or scene artwork"
     ]
   },
+  "source_records": [
+    "output/wallpaper-switch-reference-v2/frame-scenes/result.json",
+    "output/wallpaper-switch-reference-v2/frame-scenes/qa.json",
+    "output/wallpaper-switch-reference-v2/markers/result.json",
+    "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
+    "output/wallpaper-switch-reference-v2/pack-result.json"
+  ],
   "generation_sources": [
     {
+      "role": "frame",
+      "final_file": "frame.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in image_gen / Image2",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:\\Users\\lusu\\AppData\\Local\\Temp\\codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style/material/contour reference only; not an edit target"
+      },
+      "prompt": "Use case: stylized-concept\nAsset type: production UI switch frame material, later mechanically cropped and resized to 880×220\nPrimary request: Create one single long horizontal capsule-shaped hollow bezel closely matching a charming premium warm-white ceramic and pale metal toggle switch from a soft skeuomorphic reference. This is a targeted thickness refinement: make the shell visibly slimmer than a heavy appliance bezel.\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for local removal. Fill both the entire outside of the bezel AND the entire hollow center opening with exactly the same flat #00ff00.\nSubject: one continuous complete capsule shell only, centered, very wide and low. The shell must fill the whole region between its outer and inner capsules, but its thickness should be about 10–12% of the overall capsule height per side, leaving an inner opening about 76–80% of the outer height. Use one perfectly aligned outer capsule contour and one perfectly aligned inner capsule contour sharing the exact same centerline and end radii. The inner opening is fully hollow and unobstructed.\nStyle/medium: clean polished 3D UI asset; warm ivory ceramic blended with pale satin metal; restrained Y2K skeuomorphism; friendly and refined.\nComposition/framing: orthographic front view, exact horizontal symmetry, no perspective, generous keyed padding, bezel fills most of a wide landscape canvas.\nLighting/mood: soft studio top-left light only on the bezel; subtle gray bevel shading contained inside the object.\nMaterials/textures: smooth warm-white ceramic, faint pearly metal, one narrow continuous highlight, one gentle inner bevel, crisp silhouette. No separate loose shadow.\nConstraints: chroma key must be perfectly uniform with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Do not use #00ff00 in the subject. No cast shadow, no contact shadow, no reflection, no text, no watermark. Exactly one complete shell; no buttons; no icons; no divider marks; no extra rings. The center must remain plain #00ff00. Keep the shell slim and elegant, not thick.\nAvoid: two floating strokes, heavy appliance bezel, double outlines, misregistered inner border, thick black stroke, dark rim, multiple capsules, background plate, perspective, scenery.",
+      "prompt_summary": "Create one single long horizontal capsule-shaped hollow bezel closely matching a charming premium warm-white ceramic and pale metal toggle switch from a soft skeuomorphic reference. This is a targeted thickness refinement: make the shell visibly slimmer than a heavy appliance bezel.",
+      "call_id": "exec-c5ea0dd6-8b89-4cbf-a9ab-32fdf462a2b3",
+      "imagegen_output": "exec-c5ea0dd6-8b89-4cbf-a9ab-32fdf462a2b3.png",
+      "generated_source": "C:\\Users\\lusu\\.codex\\generated_images\\019fe900-2c2a-7433-b9cf-0313d6246011\\exec-c5ea0dd6-8b89-4cbf-a9ab-32fdf462a2b3.png",
+      "staged_source": "F:\\lusu575个人站\\.codex-worktrees\\motion-wallpaper-online\\output\\wallpaper-switch-reference-v2\\frame-scenes\\sources\\frame-chroma-source-v2.png",
+      "source_sha256": "bb6a389f2eba25463097cb6916281d0620ecd34aeea6081c0fb7fc55d3c71b79",
+      "source_record": "output/wallpaper-switch-reference-v2/frame-scenes/result.json",
+      "disposition": "selected"
+    },
+    {
+      "role": "roller",
+      "final_file": "roller.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in image_gen / Image2",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:\\Users\\lusu\\AppData\\Local\\Temp\\codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style/material/contour reference only; not an edit target"
+      },
+      "prompt": "Use case: stylized-concept\nAsset type: production circular selector roller ring, later mechanically cropped and resized to 192×192\nPrimary request: Create one hollow circular selector roller ring in the exact same warm-white ceramic and pale satin-metal material language as a premium soft-skeuomorphic capsule switch.\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for local removal. Fill both the entire outside of the ring AND the entire circular center opening with exactly the same flat #00ff00.\nSubject: one circular roller ring only, centered, with a fully hollow center. The ring is moderately thick and clean. Add one restrained asymmetrical pearl highlight arc at the upper-left and three extremely fine, shallow engraved tick marks grouped near the lower-right edge so physical rotation will be readable. The tick marks are part of the material, not printed symbols.\nStyle/medium: polished 3D UI asset; warm ivory ceramic blended with pale satin metal; refined skeuomorphic detail.\nComposition/framing: orthographic front view, exact circle, no perspective, generous keyed padding, one object only.\nLighting/mood: soft studio top-left light; controlled gray bevel shading contained inside the ring.\nMaterials/textures: smooth warm-white ceramic, narrow pearl highlight, subtle inner bevel, crisp silhouette.\nConstraints: background must be perfectly uniform with no shadows, gradients, floor, reflections, texture, or lighting variation. Do not use #00ff00 in the subject. No cast shadow, no contact shadow, no reflection, no text, no watermark. Center opening must remain plain #00ff00. Keep the asymmetry subtle but clearly readable at small UI size.\nAvoid: filled disc, jewel center, icons, sun, moon, thick dark outline, black ring, gear teeth, excessive tick marks, multiple rings, perspective.",
+      "prompt_summary": "Create one hollow circular selector roller ring in the exact same warm-white ceramic and pale satin-metal material language as a premium soft-skeuomorphic capsule switch.",
+      "call_id": "exec-93e7a719-17b9-4404-beef-b11035438f8d",
+      "imagegen_output": "exec-93e7a719-17b9-4404-beef-b11035438f8d.png",
+      "generated_source": "C:\\Users\\lusu\\.codex\\generated_images\\019fe900-2c2a-7433-b9cf-0313d6246011\\exec-93e7a719-17b9-4404-beef-b11035438f8d.png",
+      "staged_source": "F:\\lusu575个人站\\.codex-worktrees\\motion-wallpaper-online\\output\\wallpaper-switch-reference-v2\\frame-scenes\\sources\\selector-ring-chroma-source.png",
+      "source_sha256": "54b7b2d386788ebec7756cafc887d16962293558994e48fa77087623bbb24038",
+      "source_record": "output/wallpaper-switch-reference-v2/frame-scenes/result.json",
+      "disposition": "selected"
+    },
+    {
       "role": "scene_morning",
-      "imagegen_output": "exec-78efa041-8b93-442d-ba57-a43b7485ddf4.png",
-      "source_original": "output/wallpaper-switch-calm-assets/source-originals/source-morning.png",
-      "source_sha256": "207a2ab8bbcced3b36ef875c49a43b76180b26855cc90940aa4c56a0355de3d9",
-      "working_copy": "output/wallpaper-switch-calm-assets/scenes/calm-scene-morning.png",
-      "prompt_summary": "Calm two-tone cream-to-muted-peach dawn field with only one extremely faint low horizon glow; no objects, scenery, clouds, sun, or decorative clutter."
+      "final_file": "scene-morning.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in image_gen / Image2",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:\\Users\\lusu\\AppData\\Local\\Temp\\codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style/material/contour reference only; not an edit target"
+      },
+      "prompt": "Use case: stylized-concept\nAsset type: production UI switch scene fill, later mechanically cropped and resized to 880×220\nPrimary request: Create a clean wide morning sky material matching the polished, friendly skeuomorphic feel of a premium day/night toggle reference.\nScene/backdrop: an abstract but atmospheric early-morning sky field only: creamy pale sky-blue at the upper area, a soft clear cyan body, and a narrow warm peach-gold dawn band low near the bottom. It must have enough tonal modeling to never read as one flat or muddy color.\nStyle/medium: smooth glossy enamel-like UI background with restrained 3D volume; crisp and clean, not painterly.\nComposition/framing: very wide low horizontal field, edge-to-edge, no frame, no perspective, no focal object.\nLighting/mood: gentle luminous dawn; subtle broad highlight near upper-left and soft lower warmth; calm but visibly dimensional.\nColor palette: cream blue, clear light cyan, warm peach-gold; restrained saturation and good contrast.\nMaterials/textures: silky polished gradient, extremely subtle atmospheric depth, no grain.\nConstraints: background only. No sun, moon, clouds, stars, rays, planets, landscape, horizon line, icons, border, ring, text, watermark, vignette that crushes the ends, or muddy blur. Keep both ends readable behind small pale icons.\nAvoid: pure flat color, white wash, overexposure, decorative objects, busy texture, dark edges.",
+      "prompt_summary": "Create a clean wide morning sky material matching the polished, friendly skeuomorphic feel of a premium day/night toggle reference.",
+      "call_id": "exec-d59c2179-b5a1-4508-bd31-6443a1a6dc8f",
+      "imagegen_output": "exec-d59c2179-b5a1-4508-bd31-6443a1a6dc8f.png",
+      "generated_source": "C:\\Users\\lusu\\.codex\\generated_images\\019fe900-2c2a-7433-b9cf-0313d6246011\\exec-d59c2179-b5a1-4508-bd31-6443a1a6dc8f.png",
+      "staged_source": "F:\\lusu575个人站\\.codex-worktrees\\motion-wallpaper-online\\output\\wallpaper-switch-reference-v2\\frame-scenes\\sources\\scene-morning-source.png",
+      "source_sha256": "6d251cdef9b3a63c44cb90fad0427cf796d557315d8b6cb7134bc76721ec6bd4",
+      "source_record": "output/wallpaper-switch-reference-v2/frame-scenes/result.json",
+      "disposition": "selected"
     },
     {
       "role": "scene_day",
-      "imagegen_output": "exec-89b74651-1def-4494-a72a-100e48bfbe72.png",
-      "source_original": "output/wallpaper-switch-calm-assets/source-originals/source-day-pure-r4.png",
-      "source_sha256": "6faf024cf23d8abe77cb45f3ca978567e9e9eedd8a15524c18779181bfee7dfe",
-      "working_copy": "output/wallpaper-switch-calm-assets/scenes/calm-scene-day.png",
-      "prompt_summary": "Corrected calm two-tone cyan and powder-blue daylight field with all clouds and semantic weather removed; the single day cloud exists only in accent-day.png."
+      "final_file": "scene-day.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in image_gen / Image2",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:\\Users\\lusu\\AppData\\Local\\Temp\\codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style/material/contour reference only; not an edit target"
+      },
+      "prompt": "Use case: stylized-concept\nAsset type: production UI switch scene fill, later mechanically cropped and resized to 880×220\nPrimary request: Create a clean bright daytime sky material matching the polished, friendly skeuomorphic feel of a premium day/night toggle reference.\nScene/backdrop: a clear luminous blue sky field only, with richer azure at the upper edge, clean cyan-blue through the middle, and a very slight pale horizon glow low at the bottom. Tonal separation must remain visible across the entire wide field.\nStyle/medium: smooth glossy enamel-like UI background with restrained 3D volume; crisp and clean, not painterly.\nComposition/framing: very wide low horizontal field, edge-to-edge, no frame, no perspective, no focal object.\nLighting/mood: fresh midday clarity; one subtle broad specular lift near the upper-left, balanced across the width.\nColor palette: clear azure, sky blue, light cyan; bright but not neon.\nMaterials/textures: silky polished gradient, subtle atmospheric depth, no grain.\nConstraints: background only. No sun, moon, clouds, stars, rays, planets, landscape, horizon line, icons, border, ring, text, watermark, vignette that crushes the ends, or muddy blur. Keep both ends readable behind small pale icons.\nAvoid: pure flat color, washed-out white, decorative objects, busy texture, dark edges.",
+      "prompt_summary": "Create a clean bright daytime sky material matching the polished, friendly skeuomorphic feel of a premium day/night toggle reference.",
+      "call_id": "exec-c7a5c91b-e599-4105-a42f-e10a42da2a30",
+      "imagegen_output": "exec-c7a5c91b-e599-4105-a42f-e10a42da2a30.png",
+      "generated_source": "C:\\Users\\lusu\\.codex\\generated_images\\019fe900-2c2a-7433-b9cf-0313d6246011\\exec-c7a5c91b-e599-4105-a42f-e10a42da2a30.png",
+      "staged_source": "F:\\lusu575个人站\\.codex-worktrees\\motion-wallpaper-online\\output\\wallpaper-switch-reference-v2\\frame-scenes\\sources\\scene-day-source.png",
+      "source_sha256": "7bb00168be31d968ffd857439241ee6cde3caab6b91c928be13366b11989528e",
+      "source_record": "output/wallpaper-switch-reference-v2/frame-scenes/result.json",
+      "disposition": "selected"
     },
     {
       "role": "scene_dusk",
-      "imagegen_output": "exec-e87b8177-a544-4d04-9335-e4617220a73f.png",
-      "source_original": "output/wallpaper-switch-calm-assets/source-originals/source-dusk.png",
-      "source_sha256": "af0ed564fa14fb8064fe3969bee98e0446faba39b188893f1cec1a69e0c06fd7",
-      "working_copy": "output/wallpaper-switch-calm-assets/scenes/calm-scene-dusk.png",
-      "prompt_summary": "Muted dusty-rose-to-apricot dusk field with exactly one thin low afterglow band; no clouds, sun, landscape, or decoration."
+      "final_file": "scene-dusk.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in image_gen / Image2",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:\\Users\\lusu\\AppData\\Local\\Temp\\codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style/material/contour reference only; not an edit target"
+      },
+      "prompt": "Use case: stylized-concept\nAsset type: production UI switch scene fill, later mechanically cropped and resized to 880×220\nPrimary request: Create a clean late-afternoon-to-dusk sky material matching the polished, friendly skeuomorphic feel of a premium day/night toggle reference.\nScene/backdrop: a distinct coral-apricot afterglow low near the bottom transitioning upward through rosy mauve into a soft restrained twilight purple at the top. Preserve a visible low residual-light band and clear tonal modeling so it never becomes one muddy flat color.\nStyle/medium: smooth glossy enamel-like UI background with restrained 3D volume; crisp and clean, not painterly.\nComposition/framing: very wide low horizontal field, edge-to-edge, no frame, no perspective, no focal object.\nLighting/mood: warm residual light below and cooler quiet twilight above; subtle broad material highlight, balanced across width.\nColor palette: coral, apricot, dusty rose, restrained mauve-purple; elegant and clearly different from morning.\nMaterials/textures: silky polished gradient, extremely subtle atmospheric depth, no grain.\nConstraints: background only. No sun, moon, clouds, stars, rays, planets, landscape, horizon line, icons, border, ring, text, watermark, vignette that crushes the ends, or muddy blur. Keep both ends readable behind small pale icons.\nAvoid: pure flat color, neon magenta, heavy darkness, decorative objects, busy texture.",
+      "prompt_summary": "Create a clean late-afternoon-to-dusk sky material matching the polished, friendly skeuomorphic feel of a premium day/night toggle reference.",
+      "call_id": "exec-24da224d-346b-49ec-a16e-7c2789183420",
+      "imagegen_output": "exec-24da224d-346b-49ec-a16e-7c2789183420.png",
+      "generated_source": "C:\\Users\\lusu\\.codex\\generated_images\\019fe900-2c2a-7433-b9cf-0313d6246011\\exec-24da224d-346b-49ec-a16e-7c2789183420.png",
+      "staged_source": "F:\\lusu575个人站\\.codex-worktrees\\motion-wallpaper-online\\output\\wallpaper-switch-reference-v2\\frame-scenes\\sources\\scene-dusk-source.png",
+      "source_sha256": "cdb87c6e7b4340ade94b1fed1433b4f02b4c43c48c96f057d7d46075199ee17e",
+      "source_record": "output/wallpaper-switch-reference-v2/frame-scenes/result.json",
+      "disposition": "selected"
     },
     {
       "role": "scene_night",
-      "imagegen_output": "exec-15b635b1-348a-4de1-abc5-9353ff6ea2ad.png",
-      "source_original": "output/wallpaper-switch-calm-assets/source-originals/source-night-pure-r4.png",
-      "source_sha256": "07fce20bb71d2f7f3d443840335c4afdb038bff13f347b434b18a57036c42807",
-      "working_copy": "output/wallpaper-switch-calm-assets/scenes/calm-scene-night.png",
-      "prompt_summary": "Corrected calm navy-to-indigo night field with every star and celestial subject removed; all seven stars exist only in accent-night.png."
-    },
-    {
-      "role": "node_morning",
-      "imagegen_output": "exec-6ae4e2bd-69e6-47f8-a047-3b5e395c4e46.png",
-      "source_original": "output/wallpaper-switch-calm-assets/source-originals/active-morning-exec-6ae4e2bd-69e6-47f8-a047-3b5e395c4e46.png",
-      "source_sha256": "7db3e087b0d1dddda227c425ac8ea75a87d64d9ec189eab98e1bd991e938eadc",
-      "working_copy": "output/wallpaper-switch-calm-assets/controls/calm-node-morning.png",
-      "prompt_summary": "Antique-cream and champagne pixel-enamel active medallion containing an unmistakable half-risen dawn sun and three short quiet rays."
-    },
-    {
-      "role": "node_day",
-      "imagegen_output": "exec-636a2290-e6bf-4684-af5c-5103a5978085.png",
-      "source_original": "output/wallpaper-switch-calm-assets/source-originals/active-day-exec-636a2290-e6bf-4684-af5c-5103a5978085.png",
-      "source_sha256": "97d14924f31f80d20392bbb45eaacd64b1b9735d51b0257667a80327b9560dcf",
-      "working_copy": "output/wallpaper-switch-calm-assets/controls/calm-node-day.png",
-      "prompt_summary": "Matching pixel-enamel active medallion containing one complete high midday sun with eight restrained rays."
-    },
-    {
-      "role": "node_dusk",
-      "imagegen_output": "exec-39370965-890c-433a-87e0-104b5ad9112b.png",
-      "source_original": "output/wallpaper-switch-calm-assets/source-originals/active-dusk-exec-39370965-890c-433a-87e0-104b5ad9112b.png",
-      "source_sha256": "ac0e79bb9f1917706163ef3f8f3776a6ca61a7e9658d6367d221f1ae165cff38",
-      "working_copy": "output/wallpaper-switch-calm-assets/controls/calm-node-dusk.png",
-      "prompt_summary": "Matching pixel-enamel active medallion containing a low half-submerged setting sun with restrained coral-apricot light."
-    },
-    {
-      "role": "node_night",
-      "imagegen_output": "exec-a6f1309e-3fbb-47f9-82d3-4f87ab0626e6.png",
-      "source_original": "output/wallpaper-switch-calm-assets/source-originals/active-night-exec-a6f1309e-3fbb-47f9-82d3-4f87ab0626e6.png",
-      "source_sha256": "cc883aa2c7db56b212b476254031700fff118a75f62c12e1bb33624238c97fe4",
-      "working_copy": "output/wallpaper-switch-calm-assets/controls/calm-node-night.png",
-      "prompt_summary": "Matching pixel-enamel active medallion containing one quiet crescent moon without stars, planets, or an empty ring."
+      "final_file": "scene-night.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in image_gen / Image2",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:\\Users\\lusu\\AppData\\Local\\Temp\\codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style/material/contour reference only; not an edit target"
+      },
+      "prompt": "Use case: stylized-concept\nAsset type: production UI switch scene fill, later mechanically cropped and resized to 880×220\nPrimary request: Create a clean deep-night sky material matching the polished, friendly skeuomorphic feel of a premium day/night toggle reference.\nScene/backdrop: a deep navy-blue field only, with subtly richer indigo at the upper edge, a controlled deep ocean-blue body, and a very faint cobalt lift low near the bottom. Preserve gentle tonal modeling across the whole width instead of a single flat dark fill.\nStyle/medium: smooth glossy enamel-like UI background with restrained 3D volume; crisp and clean, not painterly.\nComposition/framing: very wide low horizontal field, edge-to-edge, no frame, no perspective, no focal object.\nLighting/mood: quiet polished night; restrained broad blue sheen near upper-left, enough contrast that pale inactive icons remain legible.\nColor palette: deep navy, indigo, ocean blue, faint cobalt; rich but not black.\nMaterials/textures: silky polished gradient, subtle atmospheric depth, no grain.\nConstraints: background only. No sun, moon, clouds, stars, rays, planets, landscape, horizon line, icons, border, ring, text, watermark, vignette that crushes the ends, or muddy blur. Both ends must remain readable.\nAvoid: pure flat color, black void, decorative objects, busy texture, crushed shadows.",
+      "prompt_summary": "Create a clean deep-night sky material matching the polished, friendly skeuomorphic feel of a premium day/night toggle reference.",
+      "call_id": "exec-71cb4bb9-42e9-4d59-891c-f01ef64f5fbf",
+      "imagegen_output": "exec-71cb4bb9-42e9-4d59-891c-f01ef64f5fbf.png",
+      "generated_source": "C:\\Users\\lusu\\.codex\\generated_images\\019fe900-2c2a-7433-b9cf-0313d6246011\\exec-71cb4bb9-42e9-4d59-891c-f01ef64f5fbf.png",
+      "staged_source": "F:\\lusu575个人站\\.codex-worktrees\\motion-wallpaper-online\\output\\wallpaper-switch-reference-v2\\frame-scenes\\sources\\scene-night-source.png",
+      "source_sha256": "a9abbcde270402cce4d5f0bf5cce6147f85c465373cf67f045218abeed44007b",
+      "source_record": "output/wallpaper-switch-reference-v2/frame-scenes/result.json",
+      "disposition": "selected"
     },
     {
       "role": "marker_morning",
-      "imagegen_output": "exec-9e2f6af2-9752-448f-88b2-ba8b59b4340c.png",
-      "source_original": "output/wallpaper-switch-calm-assets/source-originals/marker-morning-exec-9e2f6af2-9752-448f-88b2-ba8b59b4340c.png",
-      "source_sha256": "cf769849321471843b4023ed9ddb8d20162b68b1bcb489bfb5d0347633c1b7eb",
-      "working_copy": "output/wallpaper-switch-calm-assets/controls/calm-marker-morning.png",
-      "prompt_summary": "Small low-contrast embossed morning marker using a semantic sunrise horizon, never a blank bead, empty ring, or generic dot."
+      "final_file": "marker-morning.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in image_gen (Image2)",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:\\Users\\lusu\\AppData\\Local\\Temp\\codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "shape and tactile material direction only",
+        "explicitExclusions": [
+          "screenshot blur",
+          "low-resolution pixels",
+          "two-state layout",
+          "pixel-art interpretation"
+        ]
+      },
+      "prompt": "Use case: stylized-concept\nAsset type: high-resolution inactive time-of-day marker for a polished web wallpaper switch, ultimately displayed by the browser at 20×20 CSS pixels with image-rendering:auto\nInput images: Image 1 is only a reference for the pleasant tactile weather-switch aesthetic, cream highlights, and soft metal/enamel material; ignore its screenshot blur, low resolution, pixels, and two-state composition; do not edit or copy the whole switch\nPrimary request: create one MORNING marker: a warm sun half visible behind one compact ivory cloud, with exactly three broad short dawn rays rising above it\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for local removal; one uniform color with no shadow, gradient, texture, floor, reflection, glow, or lighting variation\nSubject: one compact horizontal morning emblem; the cloud clearly overlaps the lower half of the sun; the silhouette must remain immediately legible after smooth reduction to 20×20\nStyle/medium: ultra-clean high-resolution miniature ceramic-and-enamel UI icon, smooth continuous curves, polished but restrained, warm ivory ceramic, pale-gold enamel, subtle silver-blue rim light, gentle dimensional highlight\nComposition/framing: centered, front-facing, generous uniform padding, strong simple silhouette, subject about 62% of square canvas\nEdge treatment: smooth anti-aliased contour with only a subtle cool-gray hairline separation integrated into the material; no thick dark outline\nMaterials/textures: opaque ceramic/enamel, crisp surface, no translucent subject, no cast shadow\nHierarchy: clear on both bright and dark switch scenes yet visually quieter than a 36px active medallion\nConstraints: morning must be unmistakably different from full noon sun and from the no-ray dusk horizon icon; no enclosing circle, no round base bead, no empty ring, no UI track, no text, no watermark\nAvoid: pixel art, pixel stair-steps, nearest-neighbor look, 8-bit style, bitmap jaggies, blur, soft focus, hazy edges, low resolution, sticker border, heavy navy or black outline, drop shadow, multiple clouds, extra rays, decorative scenery, green inside subject",
+      "prompt_summary": "create one MORNING marker: a warm sun half visible behind one compact ivory cloud, with exactly three broad short dawn rays rising above it",
+      "call_id": "exec-c8169f75-2c40-4333-836c-5824d81b786e",
+      "imagegen_output": "exec-c8169f75-2c40-4333-836c-5824d81b786e.png",
+      "generated_source": "C:\\Users\\lusu\\.codex\\generated_images\\019fe900-7b49-77d0-9a8f-491d56f71b81\\exec-c8169f75-2c40-4333-836c-5824d81b786e.png",
+      "staged_source": "output/wallpaper-switch-reference-v2/markers/sources-v2/morning-source.png",
+      "source_sha256": "76f633e6c91d0bd91f19910a072edb703d6778495f506dae68c47b0c440731de",
+      "source_record": "output/wallpaper-switch-reference-v2/markers/result.json",
+      "disposition": "selected"
     },
     {
       "role": "marker_day",
-      "imagegen_output": "exec-e384a283-df12-4e1a-9cad-57a42dee21c3.png",
-      "source_original": "output/wallpaper-switch-calm-refine/source-originals/marker-day-exec-e384a283-df12-4e1a-9cad-57a42dee21c3.png",
-      "source_sha256": "b2c13d456e6e865c04690aa925425223c4b3d7096fa1a41afcc1728e46f9bfce",
-      "working_copy": "output/wallpaper-switch-calm-refine/final/marker-day.png",
-      "prompt_summary": "One delicate, empty-centered thin-outline daytime sun with eight short slim rays; explicitly no filled disc, pearl, medallion, gear, cog, chunky teeth, cloud, or decorative clutter."
+      "final_file": "marker-day.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in image_gen (Image2)",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:\\Users\\lusu\\AppData\\Local\\Temp\\codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "shape and tactile material direction only",
+        "explicitExclusions": [
+          "screenshot blur",
+          "low-resolution pixels",
+          "two-state layout",
+          "pixel-art interpretation"
+        ]
+      },
+      "prompt": "Use case: stylized-concept\nAsset type: high-resolution inactive time-of-day marker for a polished web wallpaper switch, ultimately displayed by the browser at 20×20 CSS pixels with image-rendering:auto\nInput images: Image 1 is only a reference for the pleasant tactile weather-switch aesthetic, cream highlights, and soft metal/enamel material; ignore its screenshot blur, low resolution, pixels, and two-state composition; do not edit or copy the whole switch\nPrimary request: create one DAY marker: one complete high midday sun with exactly eight broad short rays, with no cloud and no horizon\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for local removal; one uniform color with no shadow, gradient, texture, floor, reflection, glow, or lighting variation\nSubject: one compact full-sun emblem with a clearly visible circular golden center and eight sturdy rays; immediately legible after smooth reduction to 20×20\nStyle/medium: ultra-clean high-resolution miniature ceramic-and-enamel UI icon, smooth continuous curves, polished but restrained, warm ivory highlights, pale-gold enamel, subtle silver-blue rim light, gentle dimensional highlight\nComposition/framing: centered, front-facing, generous uniform padding, strong radial silhouette, subject about 60% of square canvas\nEdge treatment: smooth anti-aliased contour with only a subtle cool-gray hairline separation integrated into the material; no thick dark outline\nMaterials/textures: opaque ceramic/enamel, crisp surface, no translucent subject, no cast shadow\nHierarchy: clear on both bright and dark switch scenes yet visually quieter than a 36px active medallion\nConstraints: exactly one full sun; thick short rays survive 20px scaling; no cloud, no horizon, no enclosing circle, no round base bead, no empty ring, no UI track, no text, no watermark\nAvoid: sunrise half-sun, sunset, pixel art, pixel stair-steps, nearest-neighbor look, 8-bit style, bitmap jaggies, blur, soft focus, hazy edges, low resolution, sticker border, heavy navy or black outline, drop shadow, decorative scenery, green inside subject",
+      "prompt_summary": "create one DAY marker: one complete high midday sun with exactly eight broad short rays, with no cloud and no horizon",
+      "call_id": "exec-95c3cb6b-bc06-464d-b18d-f9bdce6c5577",
+      "imagegen_output": "exec-95c3cb6b-bc06-464d-b18d-f9bdce6c5577.png",
+      "generated_source": "C:\\Users\\lusu\\.codex\\generated_images\\019fe900-7b49-77d0-9a8f-491d56f71b81\\exec-95c3cb6b-bc06-464d-b18d-f9bdce6c5577.png",
+      "staged_source": "output/wallpaper-switch-reference-v2/markers/sources-v2/day-source.png",
+      "source_sha256": "4dd6ea5a2483eec54fe9e0a48528f82862179a3123bd845e5d7a72c47f8af57c",
+      "source_record": "output/wallpaper-switch-reference-v2/markers/result.json",
+      "disposition": "selected"
     },
     {
       "role": "marker_dusk",
-      "imagegen_output": "exec-662e0c74-1005-4533-bf7f-98237679b189.png",
-      "source_original": "output/wallpaper-switch-calm-assets/source-originals/marker-dusk-exec-662e0c74-1005-4533-bf7f-98237679b189.png",
-      "source_sha256": "e87c34d0c0ac5c377ce6d43b04a75e0a7ef8d4369ce00ec6fc0c6f62c6de8bde",
-      "working_copy": "output/wallpaper-switch-calm-assets/controls/calm-marker-dusk.png",
-      "prompt_summary": "Small low-contrast embossed dusk marker using a double-horizon sunset, never a blank bead, empty ring, or generic dot."
+      "final_file": "marker-dusk.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in image_gen (Image2)",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:\\Users\\lusu\\AppData\\Local\\Temp\\codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "shape and tactile material direction only",
+        "explicitExclusions": [
+          "screenshot blur",
+          "low-resolution pixels",
+          "two-state layout",
+          "pixel-art interpretation"
+        ]
+      },
+      "prompt": "Use case: stylized-concept\nAsset type: high-resolution inactive time-of-day marker for a polished web wallpaper switch, ultimately displayed by the browser at 20×20 CSS pixels with image-rendering:auto\nInput images: Image 1 is only a reference for the pleasant tactile weather-switch aesthetic, cream highlights, and soft metal/enamel material; ignore its screenshot blur, low resolution, pixels, and two-state composition; do not edit or copy the whole switch\nPrimary request: create one DUSK marker: a coral-orange sun mostly sunk below one broad horizon bar, plus one shorter parallel afterglow line directly beneath; absolutely no sun rays and no cloud\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for local removal; one uniform color with no shadow, gradient, texture, floor, reflection, glow, or lighting variation\nSubject: one compact low horizontal sunset emblem; only the upper arc of the descending sun remains visible; two substantial horizontal elements must remain separate after smooth reduction to 20×20\nStyle/medium: ultra-clean high-resolution miniature ceramic-and-enamel UI icon, smooth continuous curves, polished but restrained, warm ivory ceramic highlight, coral enamel sun, muted dusk-lilac afterglow, subtle silver-blue rim light\nComposition/framing: centered, front-facing, generous padding, broad low silhouette, subject about 68% width and 42% height of square canvas\nEdge treatment: smooth anti-aliased contour with only a subtle plum-gray hairline separation integrated into the material; no thick dark outline\nMaterials/textures: opaque ceramic/enamel, crisp surface, no translucent subject, no cast shadow\nHierarchy: clear on both bright and dark switch scenes yet visually quieter than a 36px active medallion\nConstraints: no rays, no cloud, no full sun, no enclosing circle, no round base bead, no empty ring, no UI track, no text, no watermark; silhouette must be unmistakably different from morning\nAvoid: sunrise, ray crown, pixel art, pixel stair-steps, nearest-neighbor look, 8-bit style, bitmap jaggies, blur, soft focus, hazy edges, low resolution, sticker border, heavy navy or black outline, drop shadow, decorative scenery, green inside subject",
+      "prompt_summary": "create one DUSK marker: a coral-orange sun mostly sunk below one broad horizon bar, plus one shorter parallel afterglow line directly beneath; absolutely no sun rays and no cloud",
+      "call_id": "exec-f4d81cf8-bfad-4e4b-8f4d-e1a24b7eb6d0",
+      "imagegen_output": "exec-f4d81cf8-bfad-4e4b-8f4d-e1a24b7eb6d0.png",
+      "generated_source": "C:\\Users\\lusu\\.codex\\generated_images\\019fe900-7b49-77d0-9a8f-491d56f71b81\\exec-f4d81cf8-bfad-4e4b-8f4d-e1a24b7eb6d0.png",
+      "staged_source": "output/wallpaper-switch-reference-v2/markers/sources-v2/dusk-source.png",
+      "source_sha256": "d044a5302b5257d0356bcf025514acc63af63f52abaeaeb24ef4617cf17439b1",
+      "source_record": "output/wallpaper-switch-reference-v2/markers/result.json",
+      "disposition": "selected"
     },
     {
       "role": "marker_night",
-      "imagegen_output": "exec-1ee61603-b412-43f0-aded-524745dae773.png",
-      "source_original": "output/wallpaper-switch-calm-refine/source-originals/marker-night-exec-1ee61603-b412-43f0-aded-524745dae773.png",
-      "source_sha256": "1c07a99cdde07148d821ee6bd5189309eebfee99eadebed5565dda2a3757435f",
-      "working_copy": "output/wallpaper-switch-calm-refine/final/marker-night.png",
-      "prompt_summary": "One graceful narrow crescent described only by a thin continuous outline with transparent interior; explicitly no filled moon, pearl, bead, ring, star, planet, glow, or medallion."
+      "final_file": "marker-night.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in image_gen (Image2)",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:\\Users\\lusu\\AppData\\Local\\Temp\\codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "shape and tactile material direction only",
+        "explicitExclusions": [
+          "screenshot blur",
+          "low-resolution pixels",
+          "two-state layout",
+          "pixel-art interpretation"
+        ]
+      },
+      "prompt": "Use case: stylized-concept\nAsset type: high-resolution inactive time-of-day marker for a polished web wallpaper switch, ultimately displayed by the browser at 20×20 CSS pixels with image-rendering:auto\nInput images: Image 1 is only a reference for the pleasant tactile weather-switch aesthetic, cream highlights, and soft metal/enamel material; ignore its screenshot blur, low resolution, pixels, and two-state composition; do not edit or copy the whole switch\nPrimary request: create one NIGHT marker: one broad silver-white crescent moon with one compact four-point star near its upper-right tip\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for local removal; one uniform color with no shadow, gradient, texture, floor, reflection, glow, or lighting variation\nSubject: one compact crescent-and-star emblem; the crescent has a sturdy continuous silhouette and the star remains separate and visible after smooth reduction to 20×20\nStyle/medium: ultra-clean high-resolution miniature ceramic-and-enamel UI icon, smooth continuous curves, polished but restrained, warm ivory-to-silver ceramic moon, subtle silver-blue highlight, pearl-white star, gentle dimensional shading\nComposition/framing: centered, front-facing, generous uniform padding, crescent dominates, subject about 60% of square canvas\nEdge treatment: smooth anti-aliased contour with only a subtle cool blue-gray hairline separation integrated into the material; no thick dark outline\nMaterials/textures: opaque pearly ceramic/enamel, crisp surface, no translucent subject, no cast shadow\nHierarchy: clear on both bright and dark switch scenes yet visually quieter than a 36px active medallion\nConstraints: only one crescent and one star; no circular background medallion, no round base bead, no empty ring, no UI track, no extra stars, no text, no watermark\nAvoid: pixel art, pixel stair-steps, nearest-neighbor look, 8-bit style, bitmap jaggies, blur, soft focus, hazy edges, low resolution, sticker border, heavy navy or black outline, drop shadow, decorative night scene, green inside subject",
+      "prompt_summary": "create one NIGHT marker: one broad silver-white crescent moon with one compact four-point star near its upper-right tip",
+      "call_id": "exec-9fba80b7-e3ca-4374-85a7-5d65391c2131",
+      "imagegen_output": "exec-9fba80b7-e3ca-4374-85a7-5d65391c2131.png",
+      "generated_source": "C:\\Users\\lusu\\.codex\\generated_images\\019fe900-7b49-77d0-9a8f-491d56f71b81\\exec-9fba80b7-e3ca-4374-85a7-5d65391c2131.png",
+      "staged_source": "output/wallpaper-switch-reference-v2/markers/sources-v2/night-source.png",
+      "source_sha256": "96c5b9608bd4bc4efb2cb5609a647b961054528d08d42c2f0c0623d56f05c592",
+      "source_record": "output/wallpaper-switch-reference-v2/markers/result.json",
+      "disposition": "selected"
+    },
+    {
+      "role": "node_morning",
+      "final_file": "node-morning.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "generate with style reference",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:/Users/lusu/AppData/Local/Temp/codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style reference only"
+      },
+      "prompt": "Image 1 is a style reference only, not an edit target. Use case: stylized-concept. Asset type: production UI switch sprite cutout. Match the reference's cute tactile enamel-and-glass celestial icon language: rounded toy-like volume, warm ivory highlights, polished but restrained, readable at 32x32 CSS pixels. Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for local background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Keep the subject fully separated from the background with crisp edges and generous padding. Do not use #00ff00 anywhere in the subject. No cast shadow, no contact shadow, no external reflection, no watermark, no text. The icon itself must be an opaque isolated cutout. Critical: draw NO outer ring, NO circular bezel, NO switch frame, NO border halo; an independent roller ring will surround this inner artwork in the UI. Center one compact circular inner artwork, front-facing orthographic, strong simple silhouette, no extra objects.\nPrimary request: MORNING inner artwork. A golden sunrise is only one-third revealed above a soft cream-and-pale-blue horizon cloud bank, with three or four very short upward sun rays. Clearly an emerging sunrise, not a full sun. Warm pale cyan dawn interior behind it. Keep the horizon/cloud bank inside the circular artwork. Avoid full disk, avoid sunset red, avoid crescent, avoid stars.",
+      "prompt_summary": "MORNING inner artwork. A golden sunrise is only one-third revealed above a soft cream-and-pale-blue horizon cloud bank, with three or four very short upward sun rays. Clearly an emerging sunrise, not a full sun. Warm pale cyan dawn interior behind it. Keep the horizon/cloud bank inside the circular artwork. Avoid full disk, avoid sunset red, avoid crescent, avoid stars.",
+      "call_id": "exec-6aa165b2-f113-4151-aefd-34b68d8b0456",
+      "imagegen_output": "exec-6aa165b2-f113-4151-aefd-34b68d8b0456.png",
+      "generated_source": "C:/Users/lusu/.codex/generated_images/019fe900-c9a2-7601-b74e-a9295e0f026e/exec-6aa165b2-f113-4151-aefd-34b68d8b0456.png",
+      "source_sha256": "4fb5fba44f888208be8d24a2219e6bc17af7efc025e55978c267e719cccaeccd",
+      "source_record": "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
+      "disposition": "selected"
+    },
+    {
+      "role": "node_day",
+      "final_file": "node-day.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "generate with style reference",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:/Users/lusu/AppData/Local/Temp/codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style reference only"
+      },
+      "prompt": "Image 1 is a style reference only, not an edit target. Use case: stylized-concept. Asset type: production UI switch sprite cutout. Match the reference's cute tactile enamel-and-glass celestial icon language: rounded toy-like volume, warm ivory highlights, polished but restrained, readable at 32x32 CSS pixels. Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for local background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Keep the subject fully separated from the background with crisp edges and generous padding. Do not use #00ff00 anywhere in the subject. No cast shadow, no contact shadow, no external reflection, no watermark, no text. The icon itself must be an opaque isolated cutout. Critical: draw NO outer ring, NO circular bezel, NO switch frame, NO border halo; an independent roller ring will surround this inner artwork in the UI. Center one compact circular inner artwork, front-facing orthographic, strong simple silhouette, no extra objects.\nPrimary request: DAY inner artwork. One fully visible bright golden sun centered and high, complete circular disk with a compact ring of short even rays, over a clear rich sky-blue inner field. The entire sun must be unobstructed and unmistakably midday. Avoid horizon, avoid cloud cover, avoid orange-red sunset, avoid moon, avoid stars.",
+      "prompt_summary": "DAY inner artwork. One fully visible bright golden sun centered and high, complete circular disk with a compact ring of short even rays, over a clear rich sky-blue inner field. The entire sun must be unobstructed and unmistakably midday. Avoid horizon, avoid cloud cover, avoid orange-red sunset, avoid moon, avoid stars.",
+      "call_id": "exec-6b779e77-2991-454b-bbbf-fb3d0280b633",
+      "imagegen_output": "exec-6b779e77-2991-454b-bbbf-fb3d0280b633.png",
+      "generated_source": "C:/Users/lusu/.codex/generated_images/019fe900-c9a2-7601-b74e-a9295e0f026e/exec-6b779e77-2991-454b-bbbf-fb3d0280b633.png",
+      "source_sha256": "c899c3f15cdf713fdf3ae6c07b8d371ec68959273385f2dedbf0c2837fbbbaa2",
+      "source_record": "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
+      "disposition": "selected"
+    },
+    {
+      "role": "node_dusk",
+      "final_file": "node-dusk.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "generate with style reference",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:/Users/lusu/AppData/Local/Temp/codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style reference only"
+      },
+      "prompt": "Image 1 is a style reference only, not an edit target. Use case: stylized-concept. Asset type: production UI switch sprite cutout. Match the reference's cute tactile enamel-and-glass celestial icon language: rounded toy-like volume, warm ivory highlights, polished but restrained, readable at 32x32 CSS pixels. Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for local background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Keep the subject fully separated from the background with crisp edges and generous padding. Do not use #00ff00 anywhere in the subject. No cast shadow, no contact shadow, no external reflection, no watermark, no text. The icon itself must be an opaque isolated cutout. Critical: draw NO outer ring, NO circular bezel, NO switch frame, NO border halo; an independent roller ring will surround this inner artwork in the UI. Center one compact circular inner artwork, front-facing orthographic, strong simple silhouette, no extra objects.\nPrimary request: DUSK inner artwork. A distinctly orange-red sun with NO rays is more than halfway sunk below a clear dark mauve horizon line, leaving only a shallow upper arc visible; the upper field is deep dusk lavender fading toward muted amber at the horizon. Must be instantly different from morning even at 32px: dark mauve horizon, low red-orange arc, no clouds, no rays. Avoid yellow sunrise, avoid full disk, avoid moon, avoid stars.",
+      "prompt_summary": "DUSK inner artwork. A distinctly orange-red sun with NO rays is more than halfway sunk below a clear dark mauve horizon line, leaving only a shallow upper arc visible; the upper field is deep dusk lavender fading toward muted amber at the horizon. Must be instantly different from morning even at 32px: dark mauve horizon, low red-orange arc, no clouds, no rays. Avoid yellow sunrise, avoid full disk, avoid moon, avoid stars.",
+      "call_id": "exec-9a370333-dfc7-40d1-9609-00ccf15ed56c",
+      "imagegen_output": "exec-9a370333-dfc7-40d1-9609-00ccf15ed56c.png",
+      "generated_source": "C:/Users/lusu/.codex/generated_images/019fe900-c9a2-7601-b74e-a9295e0f026e/exec-9a370333-dfc7-40d1-9609-00ccf15ed56c.png",
+      "source_sha256": "efe4d7502b96613f8152cb234f2c8927c67a4f800d65de6caaea03832d3499ec",
+      "source_record": "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
+      "disposition": "selected"
+    },
+    {
+      "role": "node_night",
+      "final_file": "node-night.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "generate with style reference",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:/Users/lusu/AppData/Local/Temp/codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style reference only"
+      },
+      "prompt": "Image 1 is a style reference only, not an edit target. Use case: stylized-concept. Asset type: production UI switch sprite cutout. Match the reference's cute tactile enamel-and-glass celestial icon language: rounded toy-like volume, warm ivory highlights, polished but restrained, readable at 32x32 CSS pixels. Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for local background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Keep the subject fully separated from the background with crisp edges and generous padding. Do not use #00ff00 anywhere in the subject. No cast shadow, no contact shadow, no external reflection, no watermark, no text. The icon itself must be an opaque isolated cutout. Critical: draw NO outer ring, NO circular bezel, NO switch frame, NO border halo; an independent roller ring will surround this inner artwork in the UI. Center one compact circular inner artwork, front-facing orthographic, strong simple silhouette, no extra objects.\nPrimary request: NIGHT inner artwork. A thick silver-white crescent moon floating on a compact deep navy-blue inner field, with two tiny pinprick stars contained inside the circular artwork. Crescent is clearly curved and cool-toned, with pearly enamel highlights. Avoid sun, horizon, clouds, warm orange, outer ring.",
+      "prompt_summary": "NIGHT inner artwork. A thick silver-white crescent moon floating on a compact deep navy-blue inner field, with two tiny pinprick stars contained inside the circular artwork. Crescent is clearly curved and cool-toned, with pearly enamel highlights. Avoid sun, horizon, clouds, warm orange, outer ring.",
+      "call_id": "exec-550d245e-968e-4474-a76b-c11e430949e2",
+      "imagegen_output": "exec-550d245e-968e-4474-a76b-c11e430949e2.png",
+      "generated_source": "C:/Users/lusu/.codex/generated_images/019fe900-c9a2-7601-b74e-a9295e0f026e/exec-550d245e-968e-4474-a76b-c11e430949e2.png",
+      "source_sha256": "701efb4ae08375cd212b784e2ae570476ecc4e1f07c5d7122a27c71128946a46",
+      "source_record": "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
+      "disposition": "selected"
     },
     {
       "role": "accent_morning",
-      "imagegen_output": "exec-a55d99c1-b462-491f-b145-744c9ebb0c6f.png",
-      "source_original": "output/wallpaper-switch-calm-refine/source-originals/accent-morning-exec-a55d99c1-b462-491f-b145-744c9ebb0c6f.png",
-      "source_sha256": "9eb198cc2d5607ac44e97043edc8dbdd6b6fd538adb5b8af1e4a747501583ef4",
-      "working_copy": "output/wallpaper-switch-calm-refine/final/accent-morning.png",
-      "prompt_summary": "Exactly four separate, short, softly tapered dawn rays in one tiny shallow fan; no sun, cloud, glow bloom, particles, landscape, or second cluster."
+      "final_file": "accent-morning.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "generate with style reference",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:/Users/lusu/AppData/Local/Temp/codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style reference only"
+      },
+      "prompt": "Image 1 is a style reference only, not an edit target. Use case: stylized-concept. Asset type: production UI switch transition accent overlay, intended final canvas 480x160 and displayed inside a 176x44 oval. Match the reference's restrained tactile glossy enamel illustration language. Primary request: a compact fan of exactly five short warm-gold morning rays rising upward and slightly outward from one invisible active-node center near the lower middle; add exactly one very small cream-white two-lobed dawn cloud offset just to the upper-right of the ray fan, with a faint pale-cyan underside. The small cloud must remain secondary and visually light, suitable for a gentle upward float. The combined motif must occupy only the central 42 percent of the wide canvas and must not span the track. Rays and cloud remain clearly separated and readable at tiny size. Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for local background removal; one uniform color, no gradients, texture, shadows, reflections, floor, or lighting variation. Do not use #00ff00 in the subject. Crisp isolated opaque shapes, generous outer padding. No sun disk, no extra clouds, no stars, no horizon landscape, no ring, no switch, no frame, no text, no watermark, no cast shadow. Composition: wide 3:1 transparent-overlay layout; five rays point upward and stop well before the top edge.",
+      "prompt_summary": "a compact fan of exactly five short warm-gold morning rays rising upward and slightly outward from one invisible active-node center near the lower middle; add exactly one very small cream-white two-lobed dawn cloud offset just to the upper-right of the ray fan, with a faint pale-cyan underside. The small cloud must remain secondary and visually light, suitable for a gentle upward float. The combined motif must occupy only the central 42 percent of the wide canvas and must not span the track. Rays and cloud remain clearly separated and readable at tiny size. Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for local background removal; one uniform color, no gradients, texture, shadows, reflections, floor, or lighting variation. Do not use #00ff00 in the subject. Crisp isolated opaque shapes, generous outer padding. No sun disk, no extra clouds, no stars, no horizon landscape, no ring, no switch, no frame, no text, no watermark, no cast shadow. Composition: wide 3:1 transparent-overlay layout; five rays point upward and stop well before the top edge.",
+      "call_id": "exec-9defda97-4610-4e48-a451-036b2b5c0f09",
+      "imagegen_output": "exec-9defda97-4610-4e48-a451-036b2b5c0f09.png",
+      "generated_source": "C:/Users/lusu/.codex/generated_images/019fe900-c9a2-7601-b74e-a9295e0f026e/exec-9defda97-4610-4e48-a451-036b2b5c0f09.png",
+      "source_sha256": "60a96ba51b160af676fa2b9b7a29c77012a93257dc5e1c08fa899444a2f5f3d0",
+      "source_record": "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
+      "disposition": "selected"
     },
     {
       "role": "accent_day",
-      "imagegen_output": "exec-cdce41cb-28ca-4113-8955-db7b79fdaa1c.png",
-      "source_original": "output/wallpaper-switch-calm-refine/source-originals/accent-day-exec-cdce41cb-28ca-4113-8955-db7b79fdaa1c.png",
-      "source_sha256": "5597a6bad1d48c03c257c69453a80e9a6a1705f798b6028ebcf204ddf17b19d9",
-      "working_copy": "output/wallpaper-switch-calm-refine/final/accent-day.png",
-      "prompt_summary": "Exactly one very small, low-profile cloud with three shallow lobes and a short underside; no sun, rays, second cloud, cloud bank, thick base, horizon, or decorative subject."
+      "final_file": "accent-day.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "generate with style reference",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:/Users/lusu/AppData/Local/Temp/codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style reference only"
+      },
+      "prompt": "Image 1 is a style reference only, not an edit target. Use case: stylized-concept. Asset type: production UI switch transition accent overlay, intended final canvas 480x160 and displayed inside a 176x44 oval. Match the reference's restrained tactile glossy enamel illustration language. Primary request: exactly two small cream-white rounded daytime clouds, one slightly larger and lower-left of an invisible active-node center and one smaller and upper-right, each built from only two or three soft lobes with a pale cool-blue underside. The pair should gently suggest floating upward while leaving most of the wide canvas empty. Keep all cloud pixels within the central 46 percent of the canvas; do not fill the track. Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for local removal; uniform color, no gradients, texture, shadows, reflections, floor, or lighting variation. Do not use #00ff00 in the subject. Crisp isolated opaque shapes and generous padding. No sun, no rays, no horizon, no stars, no planet, no ring, no switch, no frame, no text, no watermark, no cast shadow. Composition: wide 3:1 overlay layout.",
+      "prompt_summary": "exactly two small cream-white rounded daytime clouds, one slightly larger and lower-left of an invisible active-node center and one smaller and upper-right, each built from only two or three soft lobes with a pale cool-blue underside. The pair should gently suggest floating upward while leaving most of the wide canvas empty. Keep all cloud pixels within the central 46 percent of the canvas; do not fill the track. Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for local removal; uniform color, no gradients, texture, shadows, reflections, floor, or lighting variation. Do not use #00ff00 in the subject. Crisp isolated opaque shapes and generous padding. No sun, no rays, no horizon, no stars, no planet, no ring, no switch, no frame, no text, no watermark, no cast shadow. Composition: wide 3:1 overlay layout.",
+      "call_id": "exec-a338ea93-f5ae-4a45-bde8-4ee0cadb87c2",
+      "imagegen_output": "exec-a338ea93-f5ae-4a45-bde8-4ee0cadb87c2.png",
+      "generated_source": "C:/Users/lusu/.codex/generated_images/019fe900-c9a2-7601-b74e-a9295e0f026e/exec-a338ea93-f5ae-4a45-bde8-4ee0cadb87c2.png",
+      "source_sha256": "1b646a6219e2cc7b2266cc849e8d869d646e31a8b2f967a6290453d73fac76c9",
+      "source_record": "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
+      "disposition": "selected"
     },
     {
       "role": "accent_dusk",
-      "imagegen_output": "exec-dc111d55-c3f3-4340-ac30-c6181ccc9195.png",
-      "source_original": "output/wallpaper-switch-calm-refine/source-originals/accent-dusk-magenta-exec-dc111d55-c3f3-4340-ac30-c6181ccc9195.png",
-      "source_sha256": "893c23fa5bac478cc451765915481a88210172ac421c63f08e788424ae79a604",
-      "working_copy": "output/wallpaper-switch-calm-refine/final/accent-dusk.png",
-      "prompt_summary": "Exactly one compact, thin, softly tapered apricot-cream afterglow band on a magenta key; no green or olive fringe, horizon, second band, sun, cloud, landscape, bloom, or particles."
+      "final_file": "accent-dusk.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "generate with style reference",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:/Users/lusu/AppData/Local/Temp/codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style reference only"
+      },
+      "prompt": "Image 1 is a style reference only, not an edit target. Use case: stylized-concept. Asset type: production UI switch transition accent overlay, intended final canvas 480x160 and displayed inside a 176x44 oval. Match the reference's restrained glossy enamel illustration language. Primary request: one compact horizontal evening-afterglow ribbon centered around an invisible active-node center, stretching modestly left and right with soft tapered ends, colored muted coral-orange to mauve; add exactly two tiny round amber afterglow particles, one above-left and one above-right of the ribbon. It must read as a horizontal sunset afterglow, never as sun rays. Keep all content within the central 50 percent of the wide canvas and away from edges. Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for local background removal; one uniform color, no gradients, texture, shadows, reflections, floor, or lighting variation. Do not use #00ff00 in the subject. Crisp isolated opaque shapes, generous outer padding. No sun disk, no ray fan, no clouds, no stars, no planet, no moon, no ring, no switch, no frame, no text, no watermark, no cast shadow. Composition: wide 3:1 transparent-overlay layout.",
+      "prompt_summary": "one compact horizontal evening-afterglow ribbon centered around an invisible active-node center, stretching modestly left and right with soft tapered ends, colored muted coral-orange to mauve; add exactly two tiny round amber afterglow particles, one above-left and one above-right of the ribbon. It must read as a horizontal sunset afterglow, never as sun rays. Keep all content within the central 50 percent of the wide canvas and away from edges. Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for local background removal; one uniform color, no gradients, texture, shadows, reflections, floor, or lighting variation. Do not use #00ff00 in the subject. Crisp isolated opaque shapes, generous outer padding. No sun disk, no ray fan, no clouds, no stars, no planet, no moon, no ring, no switch, no frame, no text, no watermark, no cast shadow. Composition: wide 3:1 transparent-overlay layout.",
+      "call_id": "exec-4c4d5541-b1a8-48c8-a6e8-9460eeea72c5",
+      "imagegen_output": "exec-4c4d5541-b1a8-48c8-a6e8-9460eeea72c5.png",
+      "generated_source": "C:/Users/lusu/.codex/generated_images/019fe900-c9a2-7601-b74e-a9295e0f026e/exec-4c4d5541-b1a8-48c8-a6e8-9460eeea72c5.png",
+      "source_sha256": "ed2a05ab49d5946bae1b8bd6a16a7891d72b19e760bb06ea93f21f25673ffda3",
+      "source_record": "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
+      "disposition": "selected"
     },
     {
       "role": "accent_night",
-      "imagegen_output": "exec-14205359-82d8-49e8-afce-c589ae98c12d.png",
-      "source_original": "F:/lusu575个人站/output/wallpaper-switch-calm-assets/fx-frame/originals/calm-accent-night-chroma.png",
-      "source_sha256": "0f7f8ae54dced1f95c2ac71908f51a43a3b59c19a258fe973b35d6279f646055",
-      "working_copy": "F:/lusu575个人站/output/wallpaper-switch-calm-assets/fx-frame/calm-accent-night.png",
-      "prompt_summary": "Exactly seven tiny separated night stars without moon, planet, galaxy, nebula, constellation lines, or dense starfield."
-    },
-    {
-      "role": "frame",
-      "imagegen_output": "exec-24400959-301b-4f05-a6a8-591804d4c5a6.png",
-      "source_original": "F:/lusu575个人站/output/wallpaper-switch-calm-assets/fx-frame/originals/calm-frame-chroma.png",
-      "source_sha256": "df9f18204157ca32add22d338f5827979523a0d97fd3a2db630fac2a3ed64a90",
-      "working_copy": "F:/lusu575个人站/output/wallpaper-switch-calm-assets/fx-frame/calm-frame.png",
-      "prompt_summary": "One slim cream-enamel pill rim with a restrained hairline brass edge and fully open center; no stacked bezel, shadow, or ornament."
+      "final_file": "accent-night.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "generate with style reference",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:/Users/lusu/AppData/Local/Temp/codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style reference only"
+      },
+      "prompt": "Image 1 is a style reference only, not an edit target. Use case: stylized-concept. Asset type: production UI switch transition accent overlay, intended final canvas 480x160 and displayed inside a 176x44 oval. Match the reference's restrained tactile glossy celestial illustration language. Primary request: exactly eight sparse tiny night stars distributed in a compact loose arc around an invisible active-node center, with varied sizes: six tiny pinprick silver-white dots and two small four-point pearly glints. They should visually suggest rising from below into place while leaving most of the wide canvas empty. Keep all star pixels within the central 52 percent of the canvas and well away from the edges. Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for local removal; uniform color, no gradients, texture, shadows, reflections, floor, or lighting variation. Do not use #00ff00 in the subject. Crisp isolated opaque shapes and generous padding. No moon, no sun, no cloud, no horizon, no planet, no ring, no switch, no frame, no text, no watermark, no cast shadow. Composition: wide 3:1 overlay layout.",
+      "prompt_summary": "exactly eight sparse tiny night stars distributed in a compact loose arc around an invisible active-node center, with varied sizes: six tiny pinprick silver-white dots and two small four-point pearly glints. They should visually suggest rising from below into place while leaving most of the wide canvas empty. Keep all star pixels within the central 52 percent of the canvas and well away from the edges. Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for local removal; uniform color, no gradients, texture, shadows, reflections, floor, or lighting variation. Do not use #00ff00 in the subject. Crisp isolated opaque shapes and generous padding. No moon, no sun, no cloud, no horizon, no planet, no ring, no switch, no frame, no text, no watermark, no cast shadow. Composition: wide 3:1 overlay layout.",
+      "call_id": "exec-65b7fc46-b914-4dab-9c92-549526db7007",
+      "imagegen_output": "exec-65b7fc46-b914-4dab-9c92-549526db7007.png",
+      "generated_source": "C:/Users/lusu/.codex/generated_images/019fe900-c9a2-7601-b74e-a9295e0f026e/exec-65b7fc46-b914-4dab-9c92-549526db7007.png",
+      "source_sha256": "d45975b89e79c806edfe37c65f6cbd6268e7a26653bfe67640186ae143f32f82",
+      "source_record": "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
+      "disposition": "selected"
     }
   ],
-  "refinement_provenance": {
-    "source_record": "output/wallpaper-switch-calm-refine/result.json",
-    "image2_source_call_count_before_refinement": 14,
-    "image2_source_call_count_this_refinement": 6,
-    "image2_source_call_count_total": 20,
-    "generation_calls": [
-      {
-        "role": "marker_day",
-        "adopted": true,
-        "imagegen_output": "exec-e384a283-df12-4e1a-9cad-57a42dee21c3.png",
-        "source_original": "output/wallpaper-switch-calm-refine/source-originals/marker-day-exec-e384a283-df12-4e1a-9cad-57a42dee21c3.png",
-        "source_size": [1254, 1254],
-        "source_sha256": "b2c13d456e6e865c04690aa925425223c4b3d7096fa1a41afcc1728e46f9bfce",
-        "prompt_sha256": "b0ef86f842e96e8f8f711681d130377f57199d3a508ecff0edc436d1b084b350",
-        "prompt_summary": "One centered, thin-outline, empty-centered sun with eight short rays on a perfectly flat green key; reject any filled disc, pearl, medallion, cog, chunky teeth, cloud, glow, or clutter."
+  "rejected_generation_calls": [
+    {
+      "role": "frame_v1",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in image_gen / Image2",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:\\Users\\lusu\\AppData\\Local\\Temp\\codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style/material/contour reference only; not an edit target"
       },
-      {
-        "role": "marker_night",
-        "adopted": true,
-        "imagegen_output": "exec-1ee61603-b412-43f0-aded-524745dae773.png",
-        "source_original": "output/wallpaper-switch-calm-refine/source-originals/marker-night-exec-1ee61603-b412-43f0-aded-524745dae773.png",
-        "source_size": [1254, 1254],
-        "source_sha256": "1c07a99cdde07148d821ee6bd5189309eebfee99eadebed5565dda2a3757435f",
-        "prompt_sha256": "ee80c707e5556cf926bfaf72c7d2e5baf7d0744756d3934613c219c7ef283edd",
-        "prompt_summary": "One centered, graceful, thin-outline crescent with transparent interior on a perfectly flat green key; reject filled moons, pearls, rings, stars, planets, glow, or clutter."
-      },
-      {
-        "role": "accent_morning",
-        "adopted": true,
-        "imagegen_output": "exec-a55d99c1-b462-491f-b145-744c9ebb0c6f.png",
-        "source_original": "output/wallpaper-switch-calm-refine/source-originals/accent-morning-exec-a55d99c1-b462-491f-b145-744c9ebb0c6f.png",
-        "source_size": [1254, 1254],
-        "source_sha256": "9eb198cc2d5607ac44e97043edc8dbdd6b6fd538adb5b8af1e4a747501583ef4",
-        "prompt_sha256": "0b81b87cf04c25a1a1f6e072d1a640ac39923b88bb206ea4034d395a6933204d",
-        "prompt_summary": "Exactly four separate short dawn rays in one tiny fan on a perfectly flat green key; reject sun, cloud, horizon, bloom, particles, landscape, or extra clusters."
-      },
-      {
-        "role": "accent_day",
-        "adopted": true,
-        "imagegen_output": "exec-cdce41cb-28ca-4113-8955-db7b79fdaa1c.png",
-        "source_original": "output/wallpaper-switch-calm-refine/source-originals/accent-day-exec-cdce41cb-28ca-4113-8955-db7b79fdaa1c.png",
-        "source_size": [1254, 1254],
-        "source_sha256": "5597a6bad1d48c03c257c69453a80e9a6a1705f798b6028ebcf204ddf17b19d9",
-        "prompt_sha256": "54b9568f30f212206252642947971a5a60287dc6dab6bd31867e153c72741ef8",
-        "prompt_summary": "Exactly one very small, thin, low-profile three-lobe cloud on a perfectly flat green key; reject sun, rays, cloud bank, tall cumulus, thick base, horizon, or clutter."
-      },
-      {
-        "role": "accent_dusk_green_key_draft",
-        "adopted": false,
-        "imagegen_output": "exec-947e4489-95ed-4758-8466-31f8a36190ae.png",
-        "source_original": "output/wallpaper-switch-calm-refine/source-originals/accent-dusk-exec-947e4489-95ed-4758-8466-31f8a36190ae.png",
-        "source_size": [1536, 1024],
-        "source_sha256": "a88fd280a79b50599dcc82d3c095c0c16f7cd8d9fffddd8e3cd566a32d2e5510",
-        "prompt_sha256": "2ed9e5c0260099d93f57152630bf28b4798afcad6fb372e3a6072e5a8c19bdf1",
-        "prompt_summary": "One short afterglow band on a flat green key.",
-        "rejection_reason": "The Image2 source contained an opaque yellow-green outer halo. Official helper retries could not remove it without degrading the band, so the draft was discarded; no code recoloring was used."
-      },
-      {
-        "role": "accent_dusk",
-        "adopted": true,
-        "imagegen_output": "exec-dc111d55-c3f3-4340-ac30-c6181ccc9195.png",
-        "source_original": "output/wallpaper-switch-calm-refine/source-originals/accent-dusk-magenta-exec-dc111d55-c3f3-4340-ac30-c6181ccc9195.png",
-        "source_size": [1536, 1024],
-        "source_sha256": "893c23fa5bac478cc451765915481a88210172ac421c63f08e788424ae79a604",
-        "prompt_sha256": "9bc7468395ba49f886d255ea7090102bb522f4ec625d2c9b6f368eeb313c4a5c",
-        "prompt_summary": "Regenerated one short, thin afterglow band on a perfectly flat magenta key, explicitly excluding green, olive, yellow-green and every extra subject."
-      }
-    ]
-  },
-  "mechanical_pipeline": {
-    "pipeline_id": "imagegen-calm-chroma-resize-atlas-png-v4",
-    "chroma_helper": "C:/Users/lusu/.codex/skills/.system/imagegen/scripts/remove_chroma_key.py",
-    "default_helper_parameters": ["--auto-key", "border", "--soft-matte", "--transparent-threshold", "12", "--opaque-threshold", "220", "--despill"],
-    "refined_asset_finalization": {
-      "marker_day": { "filter": "Lanczos", "resized_content": [92, 91], "canvas": [144, 144], "paste_xy": [26, 26] },
-      "marker_night": { "filter": "premultiplied-alpha Bilinear", "resized_content": [72, 92], "canvas": [144, 144], "paste_xy": [36, 26] },
-      "accent_morning": { "filter": "Lanczos", "resized_content": [50, 16], "canvas": [480, 160], "paste_xy": [30, 18] },
-      "accent_day": { "filter": "Lanczos", "resized_content": [64, 20], "canvas": [480, 160], "paste_xy": [200, 48] },
-      "accent_dusk": { "filter": "premultiplied-alpha Bilinear", "resized_content": [78, 4], "canvas": [480, 160], "paste_xy": [305, 74] }
+      "prompt": "Use case: stylized-concept\nAsset type: production UI switch frame material, later mechanically cropped and resized to 880×220\nPrimary request: Create one single long horizontal capsule-shaped hollow bezel that closely matches a charming premium warm-white ceramic and pale metal toggle switch from a soft skeuomorphic reference.\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for local removal. Fill both the entire outside of the bezel AND the entire hollow center opening with exactly the same flat #00ff00.\nSubject: one continuous outer capsule frame only, centered, very wide and low, with one perfectly aligned outer capsule contour and one perfectly aligned inner capsule contour. The inner opening must be fully hollow and unobstructed. Outer and inner curves share the exact same centerline and end radii, so there is no doubled, offset, or mismatched border.\nStyle/medium: clean polished 3D UI asset; warm ivory ceramic blended with pale satin metal; restrained Y2K skeuomorphism; friendly and refined, not photorealistic furniture.\nComposition/framing: orthographic front view, exact horizontal symmetry, no perspective, generous keyed padding, bezel fills most of a wide landscape canvas.\nLighting/mood: soft studio top-left light only on the bezel; subtle gray bevel shading and a restrained soft gray material edge contained inside the object.\nMaterials/textures: smooth warm-white ceramic, faint pearly metal, narrow continuous highlight, gentle inner bevel, crisp silhouette. No separate loose shadow.\nConstraints: the chroma-key background must be one perfectly uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Do not use #00ff00 in the subject. No cast shadow outside the bezel, no contact shadow, no reflection, no text, no watermark. Exactly one frame; no buttons; no icons; no divider marks; no extra rings. The hollow center must remain plain #00ff00 all the way through.\nAvoid: double outlines, misregistered inner border, thick black stroke, dark navy rim, plastic toy look, multiple capsules, background plate, perspective, scenery.",
+      "call_id": "exec-b478cb37-c69b-4bbd-98ae-04ec238cbb3b",
+      "imagegen_output": "exec-b478cb37-c69b-4bbd-98ae-04ec238cbb3b.png",
+      "generated_source": "C:\\Users\\lusu\\.codex\\generated_images\\019fe900-2c2a-7433-b9cf-0313d6246011\\exec-b478cb37-c69b-4bbd-98ae-04ec238cbb3b.png",
+      "staged_source": "F:\\lusu575个人站\\.codex-worktrees\\motion-wallpaper-online\\output\\wallpaper-switch-reference-v2\\frame-scenes\\sources\\frame-chroma-source.png",
+      "source_sha256": "271f57212c2c87c947b8e4ca96c056ee5aa4450f6a374a2726bb9b53ae34fc07",
+      "source_record": "output/wallpaper-switch-reference-v2/frame-scenes/result.json",
+      "rejection_reason": "The complete shell was valid, but it left only about 25 px of visible opening height after the 880×220 mechanical fit, which looked heavier than the reference at 176×44."
     },
-    "filter_note": "Lanczos was retained where it introduced no color-channel overshoot. Marker-night and accent-dusk use premultiplied-alpha Bilinear because Lanczos created 14 and 1 green-dominant edge pixels respectively after strong downsampling; Bilinear reduced both to zero without drawing or recoloring.",
-    "steps": [
-      "Each of the 17 final semantic content assets has its own built-in Image2/imagegen output ID, source bytes, prompt intent, and SHA-256. The day and night base fields use the two later correction calls recorded in result.json sceneCorrectionCalls, replacing their decorated draft outputs.",
-      "Resized each complete scene source mechanically to 880x220 with Lanczos and encoded an opaque RGB PNG; no crop, compositing, color adjustment, or visual drawing was applied.",
-      "Removed each declared flat green or magenta background from markers, nodes, accents, and frame with the installed imagegen scripts/remove_chroma_key.py helper using border auto-key, soft matte, transparent-threshold 12, opaque-threshold 220, and despill.",
-      "Applied only alpha-bounds crop, aspect-preserving mechanical resize, transparent placement, and optimized PNG encoding to the keyed content. Lanczos is the default; marker-night and accent-dusk alone use premultiplied-alpha Bilinear to prevent downsampling color-channel overshoot without recoloring. Marker canvases are 144x144, node canvases are 192x192, accents are 480x160, and frame is 880x220.",
-      "To keep each stable state slightly richer without restoring multi-layer decoration, translated the existing morning, day, and dusk RGBA crops by whole pixels on their 480x160 transparent canvases. The crop SHA-256 values and alpha>=8 pixel counts remain identical before and after; no Image2 call, resampling, recoloring, redrawing, or compositing was added.",
-      "After the resulting 17 content files were byte-locked, mechanically stacked the 16 non-frame files at their native cell dimensions into four vertical delivery atlases in the declared order. Transparent pixels are copied as straight RGBA; no cell is resampled, repeated, blended, or repurposed during atlas packaging. frame.png remains standalone.",
-      "No celestial body, cloud, star, frame, marker, ray, horizon, glow band, or scene artwork was drawn or synthesized in code. Code was used only for the declared mechanical key removal, crop, padding, resize, encoding, hashing, verification, and distinct-cell atlas packaging."
-    ]
-  },
-  "placement_correction": {
-    "source_record": "output/wallpaper-switch-calm-refine/result.json#placementCorrection",
-    "completed_at": "2026-08-10",
-    "reason": "Keep each stable state slightly richer without restoring multi-layer, planetary, or full-track decoration.",
-    "operation": "Integer-pixel translation on the existing 480x160 transparent canvases only.",
-    "new_image2_calls": 0,
-    "cumulative_image2_source_calls": 20,
-    "resampled": false,
-    "recolored": false,
-    "content_invariant": "For every translated accent, the RGBA crop SHA-256 and alpha>=8 pixel count are identical before and after; only transparent-canvas position changed.",
-    "assets": {
-      "accent-morning": {
-        "translation_xy": [-15, -32],
-        "before_sha256": "4fba52840157517f282c7b5ede7b597d872a4aed02393987efc8d0acc8345eec",
-        "after_sha256": "aa93ce40aca8267a60ea2d369acd88c7a8ab07217dbd3910abb14c5c9dbbc14d",
-        "before_bbox_alpha_8": [45, 50, 95, 66],
-        "after_bbox_alpha_8": [30, 18, 80, 34],
-        "rgba_crop_sha256_before": "cd8a11f62b4e01d2924136412b4a6fb7dd63fd42eab68615772b8cbb0ffd1057",
-        "rgba_crop_sha256_after": "cd8a11f62b4e01d2924136412b4a6fb7dd63fd42eab68615772b8cbb0ffd1057",
-        "alpha_ge_8_pixels_before_after": [169, 169],
-        "green_dominant_pixels_alpha_8": 0
+    {
+      "role": "accent_morning_v1",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "generate with style reference",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "C:/Users/lusu/AppData/Local/Temp/codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "style reference only"
       },
-      "accent-day": {
-        "translation_xy": [35, -12],
-        "before_sha256": "24711954701c788d869bcb51f445d11d219d7d0cec414f6f1d8e994973b2ae35",
-        "after_sha256": "f975882040b482fa0be47ef1f5659b75f13ecf44118b6ef814038a155b654363",
-        "before_bbox_alpha_8": [165, 60, 229, 80],
-        "after_bbox_alpha_8": [200, 48, 264, 68],
-        "rgba_crop_sha256_before": "580669e2e4ca31a7df18d28cfba9fd8bbf6c98fdb9cfeb34ba82f2017fa4c8f3",
-        "rgba_crop_sha256_after": "580669e2e4ca31a7df18d28cfba9fd8bbf6c98fdb9cfeb34ba82f2017fa4c8f3",
-        "alpha_ge_8_pixels_before_after": [909, 909],
-        "green_dominant_pixels_alpha_8": 0
-      },
-      "accent-dusk": {
-        "translation_xy": [34, -13],
-        "before_sha256": "4b0c0266e313cac84fbba66818cdcf96acb58cae291c990cfda6ef21ded25524",
-        "after_sha256": "5b42caea5cdb299a782d76d611f114ac9938fcae5ab5433c11597844e4eb4bbc",
-        "before_bbox_alpha_1": [271, 87, 349, 91],
-        "after_bbox_alpha_1": [305, 74, 383, 78],
-        "before_bbox_alpha_8": [274, 87, 348, 91],
-        "after_bbox_alpha_8": [308, 74, 382, 78],
-        "rgba_crop_sha256_before": "da248bf95646cc9d4a07311fdcc83282943769a31505d175b7278199826c5299",
-        "rgba_crop_sha256_after": "da248bf95646cc9d4a07311fdcc83282943769a31505d175b7278199826c5299",
-        "alpha_ge_8_pixels_before_after": [264, 264],
-        "green_dominant_pixels_alpha_8": 0
-      }
-    },
-    "validation_previews": {
-      "after": { "path": "output/wallpaper-switch-calm-refine/validation/placement-correction-preview.png", "sha256": "d66b8b8b3fc38290d620c02fbd5fda52bf77716fd14bd11e58338c55250c1ca3" },
-      "before_after": { "path": "output/wallpaper-switch-calm-refine/validation/placement-correction-before-after.png", "sha256": "9e57ec9175da1d651aa25733c9fccbe11f85e3bea464ba5997504aab7b37dfc2" }
+      "prompt": "Image 1 is a style reference only, not an edit target. Use case: stylized-concept. Asset type: production UI switch transition accent overlay, intended final canvas 480x160 and displayed inside a 176x44 oval. Match the reference's restrained glossy enamel illustration language. Primary request: a compact fan of exactly five short warm-gold morning rays rising upward and slightly outward from one invisible active-node center near the lower middle, plus one extremely faint short horizontal ivory dawn-mist stroke directly behind the ray base. The rays must occupy only the central 35 percent of the wide canvas and must not span the whole track. Clear silhouette at tiny size. Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for local background removal; one uniform color, no gradients, texture, shadows, reflections, floor, or lighting variation. Do not use #00ff00 in the subject. Crisp isolated opaque shapes, generous outer padding. No sun disk, no clouds, no stars, no horizon landscape, no ring, no switch, no frame, no text, no watermark, no cast shadow. Composition: wide 3:1 transparent-overlay layout, five rays point upward in a fan and stop well before the top edge.",
+      "call_id": "exec-2337c4ed-5d5b-4b1b-ac9d-a04581c0c164",
+      "imagegen_output": "exec-2337c4ed-5d5b-4b1b-ac9d-a04581c0c164.png",
+      "generated_source": "C:/Users/lusu/.codex/generated_images/019fe900-c9a2-7601-b74e-a9295e0f026e/exec-2337c4ed-5d5b-4b1b-ac9d-a04581c0c164.png",
+      "source_sha256": "25438b822ed02b0a67cc97035c4ec8c104e909657fd3d48da7241274770c411f",
+      "source_record": "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
+      "rejection_reason": "rays were clear but the follow-up requirement added one floating cloud"
     }
+  ],
+  "mechanical_pipeline": {
+    "pipeline_id": "imagegen-ceramic-roll-chroma-resize-atlas-png-v5",
+    "source_records": [
+      "output/wallpaper-switch-reference-v2/frame-scenes/result.json",
+      "output/wallpaper-switch-reference-v2/markers/result.json",
+      "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
+      "output/wallpaper-switch-reference-v2/pack-result.json"
+    ],
+    "chroma_helper": "C:/Users/lusu/.codex/skills/.system/imagegen/scripts/remove_chroma_key.py",
+    "command_options": ["--auto-key", "border", "--soft-matte", "--transparent-threshold", "12", "--opaque-threshold", "220", "--despill"],
+    "processing": {
+      "frame": "Official chroma removal; alpha trim; mechanical Lanczos3 fill resize to 880x220. No drawing, recoloring, or synthetic border.",
+      "roller": "Official chroma removal; alpha trim; mechanical Lanczos3 contain resize to 192x192 on a transparent canvas. No drawing or recoloring.",
+      "scenes": "Mechanical Lanczos3 fill resize from the complete Image2 fields to 880x220, preserving all generated tonal bands without crop, drawing, recoloring, or added objects.",
+      "markers": "Each new v2 source was keyed separately; transparent bounds were trimmed at alpha 4; premultiplied-alpha Lanczos3 aspect-preserving resize centered the subject on a transparent 144x144 canvas. No drawing, recoloring, sharpening, blur, or subject replacement.",
+      "nodes": "Alpha trim at threshold 1; proportional fit within 180x180; center on transparent 192x192.",
+      "accents": {
+        "canvas": [480, 160],
+        "morning_fit_and_xy": [120, 62, 0, 19],
+        "day_fit_and_xy": [150, 60, 165, 38],
+        "dusk_fit_and_xy": [190, 44, 205, 46],
+        "night_fit_and_xy": [150, 64, 330, 34],
+        "runtime_scale": "480x160 to 176x58.67 with top -7px"
+      },
+      "delivery_atlases": "Four vertical atlases were mechanically packed from the byte-locked formal scene, marker, node, roller and accent PNGs. The node atlas contains the four node cells in theme order followed by roller.png as its fifth native 192x192 cell; frame.png is the only standalone runtime file."
+    },
+    "steps": [
+      "Copied each selected built-in Image2 source into staging and used the installed imagegen scripts/remove_chroma_key.py helper separately on frame, roller, markers, nodes and accents with the declared options.",
+      "Applied only alpha trim or alpha-bounds crop, aspect-preserving Lanczos/Lanczos3 resizing, transparent-canvas placement and PNG encoding to keyed artwork; complete scene fields use mechanical Lanczos3 fill resize. No drawing, repainting, sharpening, blurring, or recoloring was used.",
+      "After the 18 content files were byte-locked, verified every final file dimension and SHA-256 against output/wallpaper-switch-reference-v2/pack-result.json.",
+      "Mechanically stacked the 17 non-frame content files into four vertical delivery atlases at their native cell dimensions; roller.png is the fifth node-atlas cell and frame.png remains the only standalone runtime file.",
+      "Transparent pixels are copied as straight RGBA; no cell is resampled, repeated, blended, or repurposed during atlas packaging.",
+      "No celestial body, cloud, star, frame, marker, ray, roller, horizon, glow band, or scene artwork was drawn or synthesized in code."
+    ]
+  },
+  "qa": {
+    "source_records": [
+      "output/wallpaper-switch-reference-v2/frame-scenes/qa.json",
+      "output/wallpaper-switch-reference-v2/markers/result.json",
+      "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
+      "output/wallpaper-switch-reference-v2/pack-result.json"
+    ],
+    "frame": {
+      "pass": true,
+      "dimensions": [880, 220],
+      "sha256": "304d90de2dec0698667e0cb8d370655e8de27ffb960a0217d9fdfa8e0cc1eb03",
+      "alpha": {"transparent": 134012, "partial": 10953, "opaque": 48635},
+      "center_opening_alpha_bbox": [36, 29, 842, 190],
+      "center_opening_pixels": 123983,
+      "center_opening_touches_edge": false,
+      "corner_alpha": [0, 0, 0, 0],
+      "center_alpha": 0
+    },
+    "roller": {
+      "pass": true,
+      "dimensions": [192, 192],
+      "sha256": "10f90638e4392a6998a362207d03ced9831022023a38ac34fbf29a87598db17b",
+      "alpha": {"transparent": 19533, "partial": 3110, "opaque": 14221},
+      "center_opening_alpha_bbox": [33, 33, 158, 158],
+      "center_opening_pixels": 12420,
+      "center_opening_touches_edge": false,
+      "corner_alpha": [0, 0, 0, 0],
+      "center_alpha": 0
+    },
+    "scenes": {
+      "pass": true,
+      "inspection": "Four RGB 880x220 fields passed individual view_image inspection and luma checks; each contains tonal depth but no cloud, star, celestial, icon, frame or landscape subject."
+    },
+    "markers": {
+      "pass": true,
+      "version_decision": {
+        "v1": "Rejected because coarse dark sticker outlines looked pixel-stepped; incidental screenshot blur was not the target aesthetic.",
+        "v2": "Adopted after four fresh independent smooth high-resolution ceramic/enamel Image2 generations remained legible at 20 CSS pixels."
+      },
+      "browser_actual_size_preview": {
+        "path": "output/wallpaper-switch-reference-v2/markers/validation-v2/image-rendering-auto-actual.png",
+        "dimensions": [176, 176],
+        "device_scale_factor": 1,
+        "sha256": "edc3cf9b50d72e55bcc61f67e25e77c85866fc479215972504faafec84c01b3e"
+      },
+      "browser_smooth_4x_preview": {
+        "path": "output/wallpaper-switch-reference-v2/markers/validation-v2/image-rendering-auto-4x.png",
+        "dimensions": [704, 704],
+        "device_scale_factor": 4,
+        "sha256": "56c2b589505117d709545ea9f045f42eaf5ca16554ba0720955fe8de6f7af793"
+      },
+      "rendering": "PASS: Chrome headless rendered width:20px; height:20px; object-fit:contain; image-rendering:auto on every current scene. No green fringe or nearest-neighbor scaling; all four remain subordinate to the 36px active medallion."
+    },
+    "nodes_accents": {
+      "pass": true,
+      "nodes": "PASS: all four celestial subjects remain readable through the independent roller aperture with no embedded outer ring; morning and dusk remain distinct.",
+      "accents": "PASS: morning expands upward, day clouds travel horizontally, dusk spreads horizontally, and eight night stars rise; density, transparency and green-fringe checks passed."
+    },
+    "overall_pass": true
   },
   "delivery_contract": {
-    "content_asset_count": 17,
+    "content_asset_count": 18,
     "delivery_atlas_count": 4,
     "standalone_delivery_files": ["frame.png"],
     "unique_runtime_request_count": 5,
-    "runtime_files": [
-      "scene-atlas.png",
-      "marker-atlas.png",
-      "node-atlas.png",
-      "accent-atlas.png",
-      "frame.png"
-    ],
-    "packaging_rule": "Every atlas cell is a different byte-locked Image2-generated content asset. Runtime cropping selects one declared distinct cell and must never duplicate a cell or visual region for another theme, marker, celestial, or accent."
+    "runtime_files": ["scene-atlas.png", "marker-atlas.png", "node-atlas.png", "accent-atlas.png", "frame.png"],
+    "packaging_rule": "Every atlas cell is a different byte-locked Image2-generated content asset. The generated roller.png is retained as a formal content source and reused only as the fifth native cell of node-atlas.png; runtime must never request roller.png independently. Runtime cropping selects one declared distinct cell and must never duplicate a cell or visual region for another theme, marker, celestial, roller, or accent."
   },
   "delivery_atlases": [
-    {
-      "file": "scene-atlas.png",
-      "layout": "vertical",
-      "cell_width": 880,
-      "cell_height": 220,
-      "cells": ["scene-morning.png", "scene-day.png", "scene-dusk.png", "scene-night.png"],
-      "final_png": { "width": 880, "height": 880, "sha256": "4b0215a84bfc498fbde7494b8ab10ff9e0822956edd01f938fb75afe11f8bd2e" }
-    },
-    {
-      "file": "marker-atlas.png",
-      "layout": "vertical",
-      "cell_width": 144,
-      "cell_height": 144,
-      "cells": ["marker-morning.png", "marker-day.png", "marker-dusk.png", "marker-night.png"],
-      "final_png": { "width": 144, "height": 576, "sha256": "aabf4cf0c48685812729242cd8af320180aeff2bdf9a90c46ca7cd3cec925975" }
-    },
-    {
-      "file": "node-atlas.png",
-      "layout": "vertical",
-      "cell_width": 192,
-      "cell_height": 192,
-      "cells": ["node-morning.png", "node-day.png", "node-dusk.png", "node-night.png"],
-      "final_png": { "width": 192, "height": 768, "sha256": "9e5f1cc5f3e70812ff128404d7a85a6fcd202084a6805adcfefa17919e01e8de" }
-    },
-    {
-      "file": "accent-atlas.png",
-      "layout": "vertical",
-      "cell_width": 480,
-      "cell_height": 160,
-      "cells": ["accent-morning.png", "accent-day.png", "accent-dusk.png", "accent-night.png"],
-      "final_png": { "width": 480, "height": 640, "sha256": "a1af92a465eeeeb6e7a47ac61bb62dc27cbca115e90b54fa0be325b98968169c" }
-    }
+    {"file": "scene-atlas.png", "layout": "vertical", "cell_width": 880, "cell_height": 220, "cells": ["scene-morning.png", "scene-day.png", "scene-dusk.png", "scene-night.png"], "final_png": {"width": 880, "height": 880, "sha256": "c988dbc44930bcb0397da5827f8145c685196aeadf06aac4afbad83fdd09e431"}, "bytes": 482222},
+    {"file": "marker-atlas.png", "layout": "vertical", "cell_width": 144, "cell_height": 144, "cells": ["marker-morning.png", "marker-day.png", "marker-dusk.png", "marker-night.png"], "final_png": {"width": 144, "height": 576, "sha256": "a05fa5bb1b6cdaa5381eb363a7a7a944e20d59e3f0a444c6d776e7e1af357850"}, "bytes": 50515},
+    {"file": "node-atlas.png", "layout": "vertical", "cell_width": 192, "cell_height": 192, "cells": ["node-morning.png", "node-day.png", "node-dusk.png", "node-night.png", "roller.png"], "final_png": {"width": 192, "height": 960, "sha256": "0589cfd12b1894e33f8f72f348ec03934bd21c7ffb9b701add571fa43baee3e9"}, "bytes": 204542},
+    {"file": "accent-atlas.png", "layout": "vertical", "cell_width": 480, "cell_height": 160, "cells": ["accent-morning.png", "accent-day.png", "accent-dusk.png", "accent-night.png"], "final_png": {"width": 480, "height": 640, "sha256": "8d416dc6c2780024b60a3028f676284fa712fa4f9b1e0b9bc470dbe0434b9e54"}, "bytes": 18180}
   ],
   "generated_assets": [
-    { "file": "scene-morning.png", "source_role": "scene_morning", "crop_role": "morning", "final_png": { "width": 880, "height": 220, "sha256": "f65a6382325b591613aab257cab1591f1dd492c2cf936aa22d0c76835142261a" } },
-    { "file": "scene-day.png", "source_role": "scene_day", "crop_role": "day", "final_png": { "width": 880, "height": 220, "sha256": "4f863bf841682eb14aeb72a63d74e18f5db7ef62a4508968937850576e9fc4d5" } },
-    { "file": "scene-dusk.png", "source_role": "scene_dusk", "crop_role": "dusk", "final_png": { "width": 880, "height": 220, "sha256": "cfa774d59070edd42960c62d866b93d4b03accc91d00826a0a2cb252831d105a" } },
-    { "file": "scene-night.png", "source_role": "scene_night", "crop_role": "night", "final_png": { "width": 880, "height": 220, "sha256": "24954dfba76914225f2feb702fd9f1a50a3cb036a3da6177eed26b728f85fb2b" } },
-    { "file": "marker-morning.png", "source_role": "marker_morning", "crop_role": "morning", "final_png": { "width": 144, "height": 144, "sha256": "1187f1dcd42d48c0544a7443cda053002161b4c8639a217ca6190a551ceadbb3" } },
-    { "file": "marker-day.png", "source_role": "marker_day", "crop_role": "day", "final_png": { "width": 144, "height": 144, "sha256": "fe4f496fd1a0acc7e1e275efc1f721c528c90e12c926f971fed5f8b81e3b6dd6" }, "alpha_report": { "threshold": 8, "bbox": [26, 26, 118, 117], "bbox_size": [92, 91], "coverage": 0.05454282407407408, "green_dominant_pixels": 0 } },
-    { "file": "marker-dusk.png", "source_role": "marker_dusk", "crop_role": "dusk", "final_png": { "width": 144, "height": 144, "sha256": "35ec71df2e7dea2c81574135b48c9acbffbdb6f95375a2b46e9994c15400fad8" } },
-    { "file": "marker-night.png", "source_role": "marker_night", "crop_role": "night", "final_png": { "width": 144, "height": 144, "sha256": "84e30849783f970b4fe8c96803bdf2f6f93accd60bfe715b4aaf7949d6704882" }, "alpha_report": { "threshold": 8, "bbox": [36, 26, 108, 118], "bbox_size": [72, 92], "coverage": 0.050443672839506175, "green_dominant_pixels": 0 } },
-    { "file": "node-morning.png", "source_role": "node_morning", "crop_role": "morning", "final_png": { "width": 192, "height": 192, "sha256": "5257c540b8ff174bdf3e0bf09faaf0891e365a732350942ebde8a24bf98e05f1" } },
-    { "file": "node-day.png", "source_role": "node_day", "crop_role": "day", "final_png": { "width": 192, "height": 192, "sha256": "7d4509b71dcfe0c13276405a186af3e12ef6a546107252163ea9f5d094f6e21a" } },
-    { "file": "node-dusk.png", "source_role": "node_dusk", "crop_role": "dusk", "final_png": { "width": 192, "height": 192, "sha256": "db837f373de95d06ba83ecbba010acfdda691ea89f0a5060fbd0ad268a991e46" } },
-    { "file": "node-night.png", "source_role": "node_night", "crop_role": "night", "final_png": { "width": 192, "height": 192, "sha256": "380dc95628a4b1acbde73dfe929e130d24d762be625522fe8246c69445437045" } },
-    { "file": "accent-morning.png", "source_role": "accent_morning", "crop_role": "morning", "final_png": { "width": 480, "height": 160, "sha256": "aa93ce40aca8267a60ea2d369acd88c7a8ab07217dbd3910abb14c5c9dbbc14d" }, "alpha_report": { "threshold": 8, "bbox": [30, 18, 80, 34], "bbox_size": [50, 16], "coverage": 0.0022005208333333334, "connected_components": 4, "green_dominant_pixels": 0 } },
-    { "file": "accent-day.png", "source_role": "accent_day", "crop_role": "day", "final_png": { "width": 480, "height": 160, "sha256": "f975882040b482fa0be47ef1f5659b75f13ecf44118b6ef814038a155b654363" }, "alpha_report": { "threshold": 8, "bbox": [200, 48, 264, 68], "bbox_size": [64, 20], "coverage": 0.0118359375, "green_dominant_pixels": 0 } },
-    { "file": "accent-dusk.png", "source_role": "accent_dusk", "crop_role": "dusk", "final_png": { "width": 480, "height": 160, "sha256": "5b42caea5cdb299a782d76d611f114ac9938fcae5ab5433c11597844e4eb4bbc" }, "alpha_report": { "threshold": 8, "bbox": [308, 74, 382, 78], "bbox_size": [74, 4], "coverage": 0.0034375, "green_dominant_pixels": 0 } },
-    { "file": "accent-night.png", "source_role": "accent_night", "crop_role": "night", "final_png": { "width": 480, "height": 160, "sha256": "88ce460cfb915d0b0c4567ddbc51b750a64959efa849eeea0eb8de5e3e4a3d05" } },
-    { "file": "frame.png", "source_role": "frame", "crop_role": "frame", "final_png": { "width": 880, "height": 220, "sha256": "87df31d6535b46b2f32774f8a1d7d97f36c84f9a4a33706e672b9685b1e07147" } }
-  ]
+    {"file": "scene-morning.png", "source_role": "scene_morning", "crop_role": "morning", "final_png": {"width": 880, "height": 220, "sha256": "86e32bee9e78d7f359d821e5fd7aaaa81a1f035bfeeac5bf017a699d3d0ba511"}, "bytes": 118815},
+    {"file": "scene-day.png", "source_role": "scene_day", "crop_role": "day", "final_png": {"width": 880, "height": 220, "sha256": "21a93bfd59ad13511b7530386c78bc3b70e9a1fee64863aa652c41912ab89e10"}, "bytes": 119317},
+    {"file": "scene-dusk.png", "source_role": "scene_dusk", "crop_role": "dusk", "final_png": {"width": 880, "height": 220, "sha256": "73c76214123272feb242790850933c578350c6b3ab1b384c500d2463be7d6d06"}, "bytes": 130860},
+    {"file": "scene-night.png", "source_role": "scene_night", "crop_role": "night", "final_png": {"width": 880, "height": 220, "sha256": "21109ba9d458ec0fc97fc00be0b11e5a24eb8a160ef2895ed52ca667bf5f3379"}, "bytes": 115316},
+    {"file": "marker-morning.png", "source_role": "marker_morning", "crop_role": "morning", "final_png": {"width": 144, "height": 144, "sha256": "972a2eda7cf584fb32bde5fc5655544ce478a626c030cdbc4ada661e4e47454d"}, "bytes": 15136},
+    {"file": "marker-day.png", "source_role": "marker_day", "crop_role": "day", "final_png": {"width": 144, "height": 144, "sha256": "f5d964da42cdfa6a2bd2e2d7a8a98c838014d1fd7f3ba111c928b14aff837868"}, "bytes": 17667},
+    {"file": "marker-dusk.png", "source_role": "marker_dusk", "crop_role": "dusk", "final_png": {"width": 144, "height": 144, "sha256": "24c82c18b55e096238f33a9fe5c3b80bffc38ad9ae89d2bdbb2cebbc2c9a6b9c"}, "bytes": 7290},
+    {"file": "marker-night.png", "source_role": "marker_night", "crop_role": "night", "final_png": {"width": 144, "height": 144, "sha256": "74710010c0abb39b6381d72aead8ff43fc21b1b4e943a8eebe64561f84fcb397"}, "bytes": 15310},
+    {"file": "node-morning.png", "source_role": "node_morning", "crop_role": "morning", "final_png": {"width": 192, "height": 192, "sha256": "72163447acb1fb95161f5d88a079ccc675067063de899ad90ac9240e41b35c85"}, "bytes": 51392},
+    {"file": "node-day.png", "source_role": "node_day", "crop_role": "day", "final_png": {"width": 192, "height": 192, "sha256": "c706bd59eb2bf455ba7f13235b733376d221cdb9823843f42ee49f919846e999"}, "bytes": 69365},
+    {"file": "node-dusk.png", "source_role": "node_dusk", "crop_role": "dusk", "final_png": {"width": 192, "height": 192, "sha256": "358cb2597d53ec594064d2a02bcb9ede7f2089c3dc94d04216b5810eafdbc036"}, "bytes": 54296},
+    {"file": "node-night.png", "source_role": "node_night", "crop_role": "night", "final_png": {"width": 192, "height": 192, "sha256": "04d36be5765de703bffd89f8365f599dc6cb24a300750edabdec8c4e9d705562"}, "bytes": 62697},
+    {"file": "accent-morning.png", "source_role": "accent_morning", "crop_role": "morning", "final_png": {"width": 480, "height": 160, "sha256": "17a3fa961b27c741e7fc1dafa982a9b3db55c48f86a643e74285c1cc0b327b20"}, "bytes": 6840},
+    {"file": "accent-day.png", "source_role": "accent_day", "crop_role": "day", "final_png": {"width": 480, "height": 160, "sha256": "b24472486a5341f1339f6d88c678e6197efcd81ac46261653757e4c1907fc86f"}, "bytes": 6418},
+    {"file": "accent-dusk.png", "source_role": "accent_dusk", "crop_role": "dusk", "final_png": {"width": 480, "height": 160, "sha256": "538a753d13cd71fb8114da2a79ca5c4bab02e51a58db812f031705a9007393b5"}, "bytes": 6486},
+    {"file": "accent-night.png", "source_role": "accent_night", "crop_role": "night", "final_png": {"width": 480, "height": 160, "sha256": "99c2893a9beed43fa0188eaf20f86f6d39459ae4ffd5c27390d0fb5a4ee4a4f3"}, "bytes": 1845},
+    {"file": "frame.png", "source_role": "frame", "crop_role": "frame", "final_png": {"width": 880, "height": 220, "sha256": "304d90de2dec0698667e0cb8d370655e8de27ffb960a0217d9fdfa8e0cc1eb03"}, "bytes": 72642},
+    {"file": "roller.png", "source_role": "roller", "crop_role": "roller", "final_png": {"width": 192, "height": 192, "sha256": "10f90638e4392a6998a362207d03ced9831022023a38ac34fbf29a87598db17b"}, "bytes": 34950}
+  ],
+  "historical_supersession": {
+    "prior_asset_version": "20260809-wallpaper-time-switch-r4",
+    "status": "Preserved only as dated 2026-08-09 history; the current long-term production contract is r5.",
+    "reason": "The ceramic rolling redesign replaces the old 32px selector, pixel-like marker treatment, sparse r4 accents, absence of a generated rolling ring and calm-r1 public contract."
+  }
 }

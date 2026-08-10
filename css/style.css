@@ -527,7 +527,7 @@ body[data-route="home"] .site-shell::after {
     0 8px 18px rgba(0, 20, 72, 0.12);
 }
 
-/* Imagegen supplies every sky, marker, accent, frame, and celestial.
+/* Imagegen supplies every sky, marker, accent, frame, roller, and celestial.
    CSS only composes the generated layers and preserves the 44px controls. */
 .wallpaper-time-switch {
   position: relative;
@@ -549,7 +549,8 @@ body[data-route="home"] .site-shell::after {
   width: 176px;
   height: 44px;
   overflow: hidden;
-  border-radius: 999px;
+  border-radius: 22px;
+  clip-path: inset(5px 6px round 17px);
   pointer-events: none;
   user-select: none;
 }
@@ -574,9 +575,11 @@ body[data-route="home"] .site-shell::after {
 .wallpaper-time-scene-atlas,
 .wallpaper-time-accent-atlas,
 .wallpaper-time-marker-atlas,
-.wallpaper-time-node-atlas {
+.wallpaper-time-node-atlas,
+.wallpaper-time-roller-atlas {
   display: block;
   max-width: none;
+  image-rendering: auto;
   pointer-events: none;
   user-select: none;
 }
@@ -627,6 +630,7 @@ body[data-route="home"] .site-shell::after {
   width: 176px;
   height: 44px;
   object-fit: fill;
+  image-rendering: auto;
   pointer-events: none;
   user-select: none;
 }
@@ -682,19 +686,21 @@ body[data-route="home"] .site-shell::after {
 .wallpaper-time-thumb {
   position: absolute;
   z-index: 5;
-  top: 6px;
+  top: 4px;
   left: 0;
   display: block;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   pointer-events: none;
-  transform: translate3d(6px, 0, 0);
+  transform: translate3d(4px, 0, 0);
   transform-origin: center;
 }
 
 .wallpaper-time-celestial {
   position: absolute;
-  inset: 0;
+  z-index: 1;
+  top: 2px;
+  left: 2px;
   width: 32px;
   height: 32px;
   opacity: 0;
@@ -703,7 +709,7 @@ body[data-route="home"] .site-shell::after {
 
 .wallpaper-time-node-atlas {
   width: 32px;
-  height: 128px;
+  height: 160px;
 }
 
 .wallpaper-time-node-atlas[data-atlas-cell="morning"] { transform: translate3d(0, 0, 0); }
@@ -711,10 +717,36 @@ body[data-route="home"] .site-shell::after {
 .wallpaper-time-node-atlas[data-atlas-cell="dusk"] { transform: translate3d(0, -64px, 0); }
 .wallpaper-time-node-atlas[data-atlas-cell="night"] { transform: translate3d(0, -96px, 0); }
 
-.wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-thumb { transform: translate3d(6px, 0, 0); }
-.wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-thumb { transform: translate3d(50px, 0, 0); }
-.wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-thumb { transform: translate3d(94px, 0, 0); }
-.wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-thumb { transform: translate3d(138px, 0, 0); }
+.wallpaper-time-roller {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: block;
+  width: 36px;
+  height: 36px;
+  max-width: none;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  transform: rotate(0deg);
+  transform-origin: center;
+}
+
+.wallpaper-time-roller-atlas {
+  width: 36px;
+  height: 180px;
+  transform: translate3d(0, -144px, 0);
+}
+
+.wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-thumb { transform: translate3d(4px, 0, 0); }
+.wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-thumb { transform: translate3d(48px, 0, 0); }
+.wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-thumb { transform: translate3d(92px, 0, 0); }
+.wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-thumb { transform: translate3d(136px, 0, 0); }
+
+.wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-roller { transform: rotate(0deg); }
+.wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-roller { transform: rotate(140deg); }
+.wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-roller { transform: rotate(280deg); }
+.wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-roller { transform: rotate(420deg); }
 
 .wallpaper-time-switch[data-visual-theme="morning"] [data-switch-theme="morning"],
 .wallpaper-time-switch[data-visual-theme="day"] [data-switch-theme="day"],
