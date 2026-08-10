@@ -197,6 +197,7 @@
             });
             const initialRouteIsHome = !window.location.pathname.startsWith("/articles/")
               && (!window.location.hash || window.location.hash === "#home");
+            const initialMobileShell = document.documentElement.dataset.uiShell === "mobile";
             const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             const hardwareConcurrencyValue = Number(navigator.hardwareConcurrency);
             const hardwareConcurrency = Number.isFinite(hardwareConcurrencyValue) && hardwareConcurrencyValue > 0
@@ -210,7 +211,8 @@
               `.wallpaper-time-marker-atlas[data-src], .wallpaper-time-roller-atlas[data-src], [data-switch-theme="${selectedTheme}"] [data-src]`
             ) || [];
             firstPaintAssets.forEach((asset) => {
-              if (asset.closest(".wallpaper-time-accent") && (!initialRouteIsHome || initialLow)) return;
+              if (asset.closest(".wallpaper-time-accent")
+                && (initialLow || (initialMobileShell && !initialRouteIsHome))) return;
               asset.setAttribute("src", asset.dataset.src);
             });
           })();
@@ -581,6 +583,6 @@
 
   <script src="/js/telemetry.js?v=20260802-traffic-budget-r1"></script>
   <script src="/js/ui-motion.js?v=20260809-motion-polish-r2"></script>
-  <script type="module" src="/js/main.js?v=20260810-wallpaper-switch-slim-dawn-r1"></script>
+  <script type="module" src="/js/main.js?v=20260810-wallpaper-switch-route-motion-r1"></script>
 </body>
 </html>

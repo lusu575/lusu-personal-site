@@ -69,7 +69,14 @@ function pngDimensions(buffer) {
   };
 }
 
-function runSwitchFirstPaint({ saveData = false, hardwareConcurrency = 8, deviceMemory = 8 } = {}) {
+function runSwitchFirstPaint({
+  saveData = false,
+  hardwareConcurrency = 8,
+  deviceMemory = 8,
+  mobileShell = false,
+  pathname = "/",
+  hash = "#home"
+} = {}) {
   const makeAsset = (name, accent = false) => ({
     dataset: { src: `/${name}.png` },
     src: "",
@@ -98,11 +105,11 @@ function runSwitchFirstPaint({ saveData = false, hardwareConcurrency = 8, device
   runInNewContext(firstPaintSource, {
     Number,
     document: {
-      documentElement: { dataset: { timeTheme: "night", performanceTier: "low" } },
+      documentElement: { dataset: { timeTheme: "night", uiShell: mobileShell ? "mobile" : "desktop" } },
       getElementById: () => group
     },
     navigator: { connection: { saveData }, hardwareConcurrency, deviceMemory },
-    window: { location: { pathname: "/", hash: "#home" } }
+    window: { location: { pathname, hash } }
   });
   return { assets, group };
 }
@@ -268,6 +275,8 @@ test("cold first paint skips the accent atlas in Save-Data or hardware-low modes
     assert.equal(constrained.assets.roller.src, "/node.png");
     assert.equal(constrained.assets.accent.src, "");
   }
+  assert.equal(runSwitchFirstPaint({ hash: "#knowledge" }).assets.accent.src, "/accent.png");
+  assert.equal(runSwitchFirstPaint({ mobileShell: true, hash: "#knowledge" }).assets.accent.src, "");
   assert.doesNotMatch(firstPaintSource, /dataset\.performanceTier/);
 });
 
@@ -414,9 +423,20 @@ test("switch motion is retargetable, theme-specific, and quiet in accessibility 
   assert.match(mainJs, /async function loadWallpaperTimeSwitchAssets\(assets\)[\s\S]*?const assetsByUrl = new Map\(\)[\s\S]*?Promise\.allSettled\([\s\S]*?\.\.\.assetsByUrl\.keys\(\)[\s\S]*?decodeWallpaperTimeSwitchUrl/);
   assert.match(mainJs, /results\.every\(\(result\) => result\.status === "fulfilled"[\s\S]*?image\.complete[\s\S]*?image\.naturalWidth > 0/);
   assert.match(mainJs, /function ensureWallpaperTimeSwitchAssets[\s\S]*?querySelectorAll\("\[data-src\]"\)[\s\S]*?loadWallpaperTimeSwitchAssets[\s\S]*?if \(!ready\)[\s\S]*?visualAssetsReady = "error"[\s\S]*?visualAssetsError = "true"[\s\S]*?visualCoreAssetsReady = "true"[\s\S]*?visualAssetsReady = "true"[\s\S]*?\.finally[\s\S]*?delete group\.dataset\.atlasBusy[\s\S]*?syncWallpaperTimeSwitchBusy\(group\)[\s\S]*?wallpaperTimeSwitchAssetsPromise = null/);
-  assert.match(mainJs, /if \(nextRoute === "home"\) void ensureWallpaperTimeSwitchAssets\(\)/);
-  assert.match(mainJs, /const initialRouteIsHome[\s\S]*?if \(initialRouteIsHome\) void ensureWallpaperTimeSwitchAssets\(group\)/);
-  assert.match(mainJs, /window\.addEventListener\("online"[\s\S]*?dataset\.route === "home"[\s\S]*?ensureWallpaperTimeSwitchAssets\(group\)/);
+  assert.match(mainJs, /document\.body\.dataset\.route = nextRoute;\s*void ensureWallpaperTimeSwitchAssets\(\)/);
+  assert.match(mainJs, /function wallpaperTimeSwitchIsVisible\(group[\s\S]*?getClientRects\(\)\.length/);
+  assert.match(mainJs, /function ensureWallpaperTimeSwitchAssets[\s\S]*?if \(coreReady && \(!includeAccent \|\| accentReady\)\)[\s\S]*?if \(wallpaperTimeSwitchAssetsPromise\)[\s\S]*?if \(!wallpaperTimeSwitchIsVisible\(group\)\) return Promise\.resolve\(false\)/);
+  assert.match(mainJs, /function initWallpaperTimeSwitch\(\)[\s\S]*?const initialRoute = parseRouteLocation\(\)\.route;[\s\S]*?initialMobileAppRoute[\s\S]*?if \(!initialMobileAppRoute && wallpaperTimeSwitchIsVisible\(group\)\)[\s\S]*?ensureWallpaperTimeSwitchAssets\(group\)/);
+  assert.match(mainJs, /window\.addEventListener\("online"[\s\S]*?coreMissing \|\| accentMissing[\s\S]*?ensureWallpaperTimeSwitchAssets\(group\)/);
+  assert.match(mainJs, /window\.addEventListener\("lusu:shellchange", \(\) => \{\s*updateWallpaperMotionState\(\);\s*\}\)/);
+  assert.match(mainJs, /let wallpaperTimeSwitchRouteReady = false;/);
+  assert.match(mainJs, /function updateWallpaperMotionState[\s\S]*?const coreMissing = switchControl\.dataset\.visualCoreAssetsReady !== "true";[\s\S]*?const accentMissing =[\s\S]*?wallpaperTimeSwitchRouteReady[\s\S]*?wallpaperTimeSwitchIsVisible\(switchControl\)[\s\S]*?coreMissing \|\| accentMissing[\s\S]*?ensureWallpaperTimeSwitchAssets\(switchControl\)/);
+  assert.match(mainJs, /syncRouteFromLocation\(\{ focusWindow: false \}\);\s*wallpaperTimeSwitchRouteReady = true;\s*updateClock\(\);\s*setInterval\(updateClock, 1000\);/);
+  assert.doesNotMatch(mainJs, /const initialRouteIsHome|dataset\.route !== "home"\);\s*const syncGeneration/);
+  assert.match(mainJs, /const immediate = Boolean\(options\.immediate[\s\S]*?dataset\.performanceTier === "low"[\s\S]*?document\.hidden\);/);
+  assert.match(mainJs, /group\.dataset\.static = String\(document\.hidden\)/);
+  assert.match(mainJs, /const assetsPreparing = group\.dataset\.visualAssetsReady !== "true"/);
+  assert.match(indexHtml, /initialMobileShell[\s\S]*?initialLow \|\| \(initialMobileShell && !initialRouteIsHome\)/);
   assert.match(mainJs, /if \(immediate\)[\s\S]*?group\.dataset\.immediate = "true";[\s\S]*?else \{[\s\S]*?delete group\.dataset\.immediate/);
   assert.match(mainJs, /group\.dataset\.visualTheme = state\.theme/);
   assert.doesNotMatch(mainJs, /wallpaperTimeSelectorAnimation|wallpaperTimeEffectGeneration|wallpaperTimeEffectTimer|playWallpaperTimeEffect|stopWallpaperTimeEffect|moveWallpaperTimeSelector/);

@@ -10,8 +10,8 @@ export const homeContent = Object.freeze({
       "status": "published",
       "is_pinned": 0,
       "created_at": "2026-08-10T02:30:00.000Z",
-      "updated_at": "2026-08-10T02:30:00.000Z",
-      "published_at": "2026-08-10T02:30:00.000Z",
+      "updated_at": "2026-08-10T04:10:00.000Z",
+      "published_at": "2026-08-10T04:10:00.000Z",
       "fallbackOnly": true,
       "icon": "system",
       "date": "2026.08.10",
@@ -21,9 +21,9 @@ export const homeContent = Object.freeze({
         "ja": "壁紙4段スイッチの細枠・朝焼け調整"
       },
       "summary": {
-        "zh": "Image2 将四段壁纸开关的外部椭圆陶瓷壳与滚轮环做得更轻薄清晰，并用低位暖橙半日和薄晨雾明确区分清晨与白天的高位完整太阳。四个 44px 触摸目标、自动时间与手动覆盖到下一真实边界的行为不变；可中断滚动、四主题 accent 及 keyboard／reduced／off／low／Save-Data 契约全部保留。",
-        "en": "Image2 gives the four-stage wallpaper switch a slimmer, clearer outer ceramic oval and roller ring, while a low warm-orange half sun with thin dawn mist now separates morning from the day's high, complete sun. All four 44px touch targets, automatic timing, and manual override until the next real boundary are unchanged; interruptible rolling, four theme accents, and keyboard/reduced/off/low/Save-Data behavior are preserved.",
-        "ja": "Image2 で壁紙4段スイッチの外側セラミック楕円とローラーリングをより薄く鮮明にし、低い位置の暖かなオレンジ色の半円日と薄い朝霧によって、朝を昼の高い完全な太陽と明確に区別しました。4つの 44px タッチ領域、自動時刻、次の実際の境界までの手動上書きは変えず、中断可能なローリング、4テーマの accent、keyboard／reduced／off／low／Save-Data の契約も維持します。"
+        "zh": "四段壁纸开关采用更轻薄清晰的陶瓷细框、滚轮环和低位暖橙半日晨雾，让清晨区别于白天。滚轮、场景、天体与四主题 accent 在所有可见桌面公共路由共享同一套可中断动画；整页壁纸 crossfade 与动态云仍由 Home 独占。",
+        "en": "The four-stage wallpaper switch now pairs a slimmer, crisper ceramic rim and roller ring with a low warm-orange half sun and dawn mist, clearly separating morning from day. Its roller, scene, celestial body, and four theme accents share one interruptible animation system across every visible desktop public route; full-page wallpaper crossfades and dynamic clouds remain exclusive to Home.",
+        "ja": "壁紙4段スイッチは、より薄く鮮明なセラミック細枠とローラーリング、低い暖色の半円日と朝霧で朝を昼から明確に分けます。ローラー、シーン、天体、4テーマの accent は表示中の全デスクトップ公開ルートで同じ中断可能なアニメーションを共有し、ページ全体の壁紙 crossfade と動く雲は Home 専用です。"
       }
     },
     {

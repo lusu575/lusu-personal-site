@@ -65,7 +65,7 @@ test("the slim-rim dawn wallpaper switch leads the exact five-item projection wi
 
   assert.equal(content.updates[0].article_id, updateId);
   assert.equal(content.updates[0].slug, "2026-08-10-wallpaper-switch-slim-dawn");
-  assert.equal(content.updates[0].published_at, "2026-08-10T02:30:00.000Z");
+  assert.equal(content.updates[0].published_at, "2026-08-10T04:10:00.000Z");
   assert.equal(homeContent.updates[0].article_id, updateId);
   assert.equal(content.updates[1].article_id, priorCeramicUpdateId);
   assert.equal(homeContent.updates[1].article_id, priorCeramicUpdateId);
@@ -116,6 +116,7 @@ test("the slim-rim dawn wallpaper switch leads the exact five-item projection wi
 test("slim-rim dawn wallpaper switch, retained motion modules, MCP heartbeat content, and Quick Transfer keep independent cache versions", () => {
   const publicVersion = "20260809-motion-polish-r2";
   const switchSceneVersion = "20260810-wallpaper-switch-slim-dawn-r1";
+  const switchRouteMotionVersion = "20260810-wallpaper-switch-route-motion-r1";
   const wallpaperAssetVersion = "20260810-wallpaper-time-switch-r6";
   const transferVersion = "20260809-transfer-motion-r2";
   const index = read("index.html");
@@ -130,9 +131,10 @@ test("slim-rim dawn wallpaper switch, retained motion modules, MCP heartbeat con
   ]) {
     assert.ok(index.includes(`${asset}?v=${publicVersion}`), `${asset} should use ${publicVersion}`);
   }
-  for (const asset of ["/css/style.css", "/css/motion-system.css", "/js/main.js"]) {
+  for (const asset of ["/css/style.css", "/css/motion-system.css"]) {
     assert.ok(index.includes(`${asset}?v=${switchSceneVersion}`), `${asset} should use ${switchSceneVersion}`);
   }
+  assert.ok(index.includes(`/js/main.js?v=${switchRouteMotionVersion}`));
   const switchContentAssets = [
     ...["morning", "day", "dusk", "night"].map((theme) => `scene-${theme}.png`),
     "frame.png",
@@ -168,7 +170,7 @@ test("slim-rim dawn wallpaper switch, retained motion modules, MCP heartbeat con
   assert.ok(main.includes(`const routeStyleVersion = "${publicVersion}"`));
   assert.ok(main.includes(`./core/i18n.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./core/wallpaper-time.mjs?v=${publicVersion}`));
-  assert.ok(main.includes(`./data/home-content.mjs?v=${switchSceneVersion}`));
+  assert.ok(main.includes(`./data/home-content.mjs?v=${switchRouteMotionVersion}`));
   assert.ok(main.includes(`./features/account.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/knowledge.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/chatroom.mjs?v=${publicVersion}`));

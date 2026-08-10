@@ -1,5 +1,11 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-10 四时段壁纸开关跨路由动效修复
+
+- 当前最终公开记录仍为 `seed-update-2026-08-10-wallpaper-switch-slim-dawn`／`2026-08-10-wallpaper-switch-slim-dawn`，但更新时间为 `2026-08-10T04:10:00.000Z`；Functions 公开 API、文章 seed、schema marker、Home 投影与 `js/main.js` 使用 `20260810-wallpaper-switch-route-motion-r1`。本次没有更改 r6 PNG，所以 `wallpaper-time-switch.source.json` 保留素材发布溯源 token `20260810-wallpaper-switch-slim-dawn-r1`，图像 token 仍为 `20260810-wallpaper-time-switch-r6`。
+- 四段开关的内部动效契约是“所有实际可见的公开路由”：桌面 Home、Knowledge、Videos、Tools、Games、Blog、Chat 与 About 都要先完成 5 个唯一运行时 URL 的预解码，再开放 radio；切换时 thumb、roller、scene、marker、celestial 和当前主题 accent 保持同一套可中断 transition。`data-static` 只能在 `document.hidden` 时设置，不得再用 `route !== home` 关闭动效。
+- 开关内部动效与整页壁纸是两个边界：Home 继续独占全景壁纸 crossfade 和动态云层，App 路由只让顶栏四段控件自身流畅动作。移动 App 紧凑栏仍隐藏该 176px 控件，不破坏有标签的 44px Home 返回键、右侧栏目标题和短屏可读容量；这些隐藏路由不应额外预解码 accent。keyboard／motion-off 即时、reduced 只保留 140ms opacity、low／Save-Data 跳过 accent 等既有语义不变。
+
 ## 2026-08-10 四时段壁纸开关细框晨曦版发布契约
 
 - 当前最终公开记录为 `seed-update-2026-08-10-wallpaper-switch-slim-dawn`，slug `2026-08-10-wallpaper-switch-slim-dawn`，发布时间 `2026-08-10T02:30:00.000Z`；三语 fallback、Home 投影、Functions seed、schema seed、公开 CSS／JS／API／文章 seed 统一使用 `20260810-wallpaper-switch-slim-dawn-r1`。Home 最新五条严格按 slim-dawn、ceramic-roll、calm-redesign、scene-redesign、game-video 排列；下方 r5 ceramic-roll 章节和更早记录只作为按日期保存的历史，不能再冒充当前契约。

@@ -160,8 +160,8 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
           and is_pinned = 0
           and cover_image = ''
           and created_at = '2026-08-10T02:30:00.000Z'
-          and updated_at = '2026-08-10T02:30:00.000Z'
-          and published_at = '2026-08-10T02:30:00.000Z'
+          and updated_at = '2026-08-10T04:10:00.000Z'
+          and published_at = '2026-08-10T04:10:00.000Z'
       `).get(wallpaperSwitchSlimDawnUpdateId).count,
       1
     );
@@ -191,7 +191,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
         wallpaperSwitchSlimDawnContent.content_markdown[lang]
       );
       assert.equal(translation.created_at, "2026-08-10T02:30:00.000Z");
-      assert.equal(translation.updated_at, "2026-08-10T02:30:00.000Z");
+      assert.equal(translation.updated_at, "2026-08-10T04:10:00.000Z");
     }
     assert.equal(
       db.prepare(`
@@ -369,7 +369,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260810-wallpaper-switch-slim-dawn-r1"
+      "20260810-wallpaper-switch-route-motion-r1"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),

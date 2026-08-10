@@ -25,14 +25,15 @@ const MOTION_POLISH_PUBLISHED_AT = "2026-08-09T02:50:00.000Z";
 const WALLPAPER_TIME_SWITCH_UPDATE_ID = "seed-update-2026-08-09-wallpaper-time-switch";
 const WALLPAPER_TIME_SWITCH_PUBLISHED_AT = "2026-08-09T05:40:00.000Z";
 const WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID = "seed-update-2026-08-10-wallpaper-switch-slim-dawn";
-const WALLPAPER_SWITCH_SLIM_DAWN_PUBLISHED_AT = "2026-08-10T02:30:00.000Z";
+const WALLPAPER_SWITCH_SLIM_DAWN_CREATED_AT = "2026-08-10T02:30:00.000Z";
+const WALLPAPER_SWITCH_SLIM_DAWN_PUBLISHED_AT = "2026-08-10T04:10:00.000Z";
 const WALLPAPER_SWITCH_CERAMIC_UPDATE_ID = "seed-update-2026-08-10-wallpaper-switch-ceramic-roll";
 const WALLPAPER_SWITCH_CERAMIC_PUBLISHED_AT = "2026-08-10T00:20:00.000Z";
 const WALLPAPER_SWITCH_CALM_UPDATE_ID = "seed-update-2026-08-10-wallpaper-switch-calm-redesign";
 const WALLPAPER_SWITCH_CALM_PUBLISHED_AT = "2026-08-09T16:00:00.000Z";
 const WALLPAPER_SWITCH_SCENE_UPDATE_ID = "seed-update-2026-08-09-wallpaper-switch-scene-redesign";
 const WALLPAPER_SWITCH_SCENE_PUBLISHED_AT = "2026-08-09T11:15:00.000Z";
-const ARTICLE_SEED_VERSION = "20260810-wallpaper-switch-slim-dawn-r1";
+const ARTICLE_SEED_VERSION = "20260810-wallpaper-switch-route-motion-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -355,6 +356,9 @@ test("every article seed D1 binding is defined", async () => {
   assert.equal(wallpaperSwitchSlimDawnContent.cover_image, "");
   assert.equal(wallpaperSwitchSlimDawnContent.fallbackOnly, true);
   assert.equal(wallpaperSwitchSlimDawnContent.date, "2026.08.10");
+  assert.equal(wallpaperSwitchSlimDawnContent.created_at, WALLPAPER_SWITCH_SLIM_DAWN_CREATED_AT);
+  assert.equal(wallpaperSwitchSlimDawnContent.updated_at, WALLPAPER_SWITCH_SLIM_DAWN_PUBLISHED_AT);
+  assert.equal(wallpaperSwitchSlimDawnContent.published_at, WALLPAPER_SWITCH_SLIM_DAWN_PUBLISHED_AT);
   assert.equal(wallpaperSwitchSlimDawnHome.date, "2026.08.10");
   assert.deepEqual(wallpaperSwitchSlimDawnContent.title, {
     zh: "四段壁纸开关的细框晨曦精修",
@@ -369,8 +373,8 @@ test("every article seed D1 binding is defined", async () => {
   assert.ok(wallpaperSwitchSlimDawnSeed, "the slim-rim dawn polish metadata must be seeded");
   assert.match(
     normalizedSql(wallpaperSwitchSlimDawnSeed.sql),
-    new RegExp(`${WALLPAPER_SWITCH_SLIM_DAWN_PUBLISHED_AT}.*${WALLPAPER_SWITCH_SLIM_DAWN_PUBLISHED_AT}.*${WALLPAPER_SWITCH_SLIM_DAWN_PUBLISHED_AT}`),
-    "the slim-rim dawn polish must use one consistent create, update, and publish timestamp"
+    new RegExp(`${WALLPAPER_SWITCH_SLIM_DAWN_CREATED_AT}.*${WALLPAPER_SWITCH_SLIM_DAWN_PUBLISHED_AT}.*${WALLPAPER_SWITCH_SLIM_DAWN_PUBLISHED_AT}`),
+    "the slim-rim dawn polish must preserve creation time and align update with publication"
   );
   assert.match(normalizedSql(wallpaperSwitchSlimDawnSeed.sql), /'', 'published', 0, 0/);
   const wallpaperSwitchSlimDawnTranslations = boundStatements.filter(({ params }) => (
@@ -383,7 +387,7 @@ test("every article seed D1 binding is defined", async () => {
     assert.equal(params[3], wallpaperSwitchSlimDawnContent.title[lang], `${lang} title must match the slim-rim dawn fallback`);
     assert.equal(params[4], wallpaperSwitchSlimDawnContent.summary[lang], `${lang} summary must match the slim-rim dawn fallback`);
     assert.equal(params[5], wallpaperSwitchSlimDawnContent.content_markdown[lang], `${lang} body must match the slim-rim dawn fallback`);
-    assert.equal(params[6], WALLPAPER_SWITCH_SLIM_DAWN_PUBLISHED_AT, `${lang} translation created_at must match publication`);
+    assert.equal(params[6], WALLPAPER_SWITCH_SLIM_DAWN_CREATED_AT, `${lang} translation created_at must preserve the original seed time`);
     assert.equal(params[7], WALLPAPER_SWITCH_SLIM_DAWN_PUBLISHED_AT, `${lang} translation updated_at must match publication`);
     assert.match(params[5], /Image2/);
     assert.match(params[5], /44px/);
@@ -393,6 +397,11 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /Save-Data/);
     assert.match(params[5], /reduced-motion|reduced motion/);
     assert.match(params[5], /motion-off/);
+    assert.match(params[4], /桌面|desktop|デスクトップ/);
+    assert.match(params[5], /crossfade/);
+    assert.match(params[5], /动态云|dynamic clouds|動く雲/);
+    assert.match(params[5], /移动 App|mobile App|モバイル App/);
+    assert.match(params[5], /Android Home/);
   }
 
   const wallpaperSwitchCeramicContent = content.updates.find(({ article_id: articleId }) => (

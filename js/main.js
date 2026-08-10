@@ -4,7 +4,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260809-motion-polish-r2";
-import { homeContent } from "./data/home-content.mjs?v=20260810-wallpaper-switch-slim-dawn-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260810-wallpaper-switch-route-motion-r1";
 import {
   WALLPAPER_TIME_THEMES,
   createWallpaperTimeOverride,
@@ -1336,7 +1336,7 @@ function navigate(route, options = {}) {
   const isSameRouteNoop = previousRoute === nextRoute
     && !(nextRoute === "knowledge" && (options.articleSlug || articleState.currentSlug));
   if (isSameRouteNoop) {
-    if (nextRoute === "home") void ensureWallpaperTimeSwitchAssets();
+    void ensureWallpaperTimeSwitchAssets();
     transitionRouteLifecycle(nextRoute, "same-route");
     updateNavigationState(nextRoute);
     if (options.updateUrl !== false && options.updateHash !== false) {
@@ -1395,7 +1395,7 @@ function navigate(route, options = {}) {
       page.classList.toggle("active", page.id === nextRoute);
     });
     document.body.dataset.route = nextRoute;
-    if (nextRoute === "home") void ensureWallpaperTimeSwitchAssets();
+    void ensureWallpaperTimeSwitchAssets();
     updateWallpaperMotionState();
     localizeRouteLanguage(nextRoute);
     transitionRouteLifecycle(nextRoute, options.lifecycleReason || "navigation");
@@ -2433,6 +2433,7 @@ let wallpaperTimeBoundaryTimer = 0;
 let wallpaperTimeBoundaryTarget = 0;
 let wallpaperTimeSwitchSyncGeneration = 0;
 let wallpaperTimeSwitchAssetsPromise = null;
+let wallpaperTimeSwitchRouteReady = false;
 let wallpaperTimeSelectionRequest = 0;
 let wallpaperTimePendingManualTheme = "";
 let wallpaperTimePendingManualPromise = null;
@@ -2625,6 +2626,10 @@ function syncWallpaperTimeSwitchBusy(group = document.getElementById("wallpaper-
   }
 }
 
+function wallpaperTimeSwitchIsVisible(group = document.getElementById("wallpaper-time-switch")) {
+  return Boolean(group?.getClientRects().length);
+}
+
 function ensureWallpaperTimeSwitchThemeAssets(theme, group = document.getElementById("wallpaper-time-switch")) {
   if (!group || !WALLPAPER_TIME_THEMES.includes(theme)) return Promise.resolve();
   tagWallpaperTimeSwitchAssetRoles(group);
@@ -2659,6 +2664,7 @@ function ensureWallpaperTimeSwitchAssets(group = document.getElementById("wallpa
       return stillNeedsAssets ? ensureWallpaperTimeSwitchAssets(group) : true;
     });
   }
+  if (!wallpaperTimeSwitchIsVisible(group)) return Promise.resolve(false);
   tagWallpaperTimeSwitchAssetRoles(group);
   const allAssets = Array.from(group.querySelectorAll("[data-src]"));
   const assets = allAssets.filter((asset) => {
@@ -2720,8 +2726,7 @@ function syncWallpaperTimeSwitch(state = resolvedWallpaperTimeState(), options =
   const immediate = Boolean(options.immediate
     || document.documentElement.dataset.motion === "off"
     || document.documentElement.dataset.performanceTier === "low"
-    || document.hidden
-    || document.body.dataset.route !== "home");
+    || document.hidden);
   const syncGeneration = ++wallpaperTimeSwitchSyncGeneration;
   if (immediate) {
     group.dataset.immediate = "true";
@@ -2729,13 +2734,12 @@ function syncWallpaperTimeSwitch(state = resolvedWallpaperTimeState(), options =
     delete group.dataset.immediate;
   }
   group.dataset.visualTheme = state.theme;
-  group.dataset.static = String(document.hidden || document.body.dataset.route !== "home");
+  group.dataset.static = String(document.hidden);
   group.dataset.mode = state.mode;
   group.setAttribute("aria-label", t("wallpaperTimeSwitchAria"));
   group.setAttribute("aria-disabled", String(state.mode === "preview"));
   const statusText = wallpaperTimeStatusText(state);
-  const assetsPreparing = document.body.dataset.route === "home"
-    && group.dataset.visualAssetsReady !== "true";
+  const assetsPreparing = group.dataset.visualAssetsReady !== "true";
   group.title = statusText;
   group.querySelectorAll("[data-wallpaper-time]").forEach((button) => {
     const selected = button.dataset.wallpaperTime === state.theme;
@@ -3078,9 +3082,12 @@ function initWallpaperTimeSwitch() {
   if (!wallpaperTimeSwitchAccentAllowed()) {
     group.querySelectorAll('[data-role="accent"]').forEach((asset) => asset.removeAttribute("src"));
   }
-  const initialRouteIsHome = !window.location.pathname.startsWith("/articles/")
-    && (!window.location.hash || window.location.hash === "#home");
-  if (initialRouteIsHome) void ensureWallpaperTimeSwitchAssets(group);
+  const initialRoute = parseRouteLocation().route;
+  const initialMobileAppRoute = document.documentElement.dataset.uiShell === "mobile"
+    && initialRoute !== "home";
+  if (!initialMobileAppRoute && wallpaperTimeSwitchIsVisible(group)) {
+    void ensureWallpaperTimeSwitchAssets(group);
+  }
   const optionFromEvent = (event) => event.target.closest?.("[data-wallpaper-time]");
   group.addEventListener("pointerover", (event) => {
     const option = optionFromEvent(event);
@@ -3137,9 +3144,12 @@ function initWallpaperTimeSwitch() {
     const coreMissing = group.dataset.visualCoreAssetsReady !== "true";
     const accentMissing = wallpaperTimeSwitchAccentAllowed()
       && group.dataset.visualAccentAssetsReady !== "true";
-    if (document.body.dataset.route === "home" && (coreMissing || accentMissing)) {
+    if (wallpaperTimeSwitchIsVisible(group) && (coreMissing || accentMissing)) {
       void ensureWallpaperTimeSwitchAssets(group);
     }
+  });
+  window.addEventListener("lusu:shellchange", () => {
+    updateWallpaperMotionState();
   });
   const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
   let ownedPerformanceTierMutation = "";
@@ -3219,16 +3229,18 @@ function updateWallpaperMotionState() {
   root.dataset.previewMotion = wallpaperPreviewTheme ? "true" : "false";
   const switchControl = document.getElementById("wallpaper-time-switch");
   if (switchControl) {
-    switchControl.dataset.static = String(document.hidden || document.body.dataset.route !== "home");
+    switchControl.dataset.static = String(document.hidden);
     const state = resolvedWallpaperTimeState();
-    const assetsPreparing = document.body.dataset.route === "home"
-      && switchControl.dataset.visualAssetsReady !== "true";
+    const assetsPreparing = switchControl.dataset.visualAssetsReady !== "true";
     switchControl.querySelectorAll("[data-wallpaper-time]").forEach((button) => {
       button.disabled = state.mode === "preview" || assetsPreparing;
     });
-    if (document.body.dataset.route === "home"
-      && wallpaperTimeSwitchAccentAllowed()
-      && switchControl.dataset.visualAccentAssetsReady !== "true") {
+    const coreMissing = switchControl.dataset.visualCoreAssetsReady !== "true";
+    const accentMissing = wallpaperTimeSwitchAccentAllowed()
+      && switchControl.dataset.visualAccentAssetsReady !== "true";
+    if (wallpaperTimeSwitchRouteReady
+      && wallpaperTimeSwitchIsVisible(switchControl)
+      && (coreMissing || accentMissing)) {
       void ensureWallpaperTimeSwitchAssets(switchControl);
     }
   }
@@ -4039,12 +4051,13 @@ setLanguage(initialLang);
 initAccountWidget();
 initWallpaperTimeSwitch();
 siteConnectionStatus.start();
-updateClock();
-setInterval(updateClock, 1000);
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
 }
 syncRouteFromLocation({ focusWindow: false });
+wallpaperTimeSwitchRouteReady = true;
+updateClock();
+setInterval(updateClock, 1000);
 const hoverRoute = pageParams.get("hover");
 if (pageIds.includes(hoverRoute)) {
   document.querySelector(`.desktop-icon[data-route="${hoverRoute}"]`)?.classList.add("is-hovered");

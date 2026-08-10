@@ -967,8 +967,8 @@ insert into articles (
   '["网站更新","壁纸","动效","Image2","无障碍"]',
   '', 'published', 0, 0,
   '2026-08-10T02:30:00.000Z',
-  '2026-08-10T02:30:00.000Z',
-  '2026-08-10T02:30:00.000Z'
+  '2026-08-10T04:10:00.000Z',
+  '2026-08-10T04:10:00.000Z'
 )
 on conflict(article_id) do update set
   slug = excluded.slug,
@@ -988,7 +988,7 @@ insert into article_translations (
     'seed-update-2026-08-10-wallpaper-switch-slim-dawn',
     'zh',
     '四段壁纸开关的细框晨曦精修',
-    'Image2 将四段壁纸开关的外部椭圆陶瓷壳与滚轮环做得更轻薄清晰，并用低位暖橙半日和薄晨雾明确区分清晨与白天的高位完整太阳。四个 44px 触摸目标、自动时间与手动覆盖到下一真实边界的行为不变；可中断滚动、四主题 accent 及 keyboard／reduced／off／low／Save-Data 契约全部保留。',
+    '四段壁纸开关采用更轻薄清晰的陶瓷细框、滚轮环和低位暖橙半日晨雾，让清晨区别于白天。滚轮、场景、天体与四主题 accent 在所有可见桌面公共路由共享同一套可中断动画；整页壁纸 crossfade 与动态云仍由 Home 独占。',
     '# 四段壁纸开关的细框晨曦精修
 
 网站右上角的四段壁纸开关继续沿用现有的自动时间与手动覆盖行为。这一轮只聚焦材质重量、清晰度，以及清晨和白天的辨识度。
@@ -1003,18 +1003,22 @@ insert into article_translations (
 
 清晨改为低位暖橙半日配合薄晨雾，强调太阳刚从地平线升起；白天继续使用高位、完整而明亮的太阳。选中和未选中的时段语义因此都能在小尺寸下快速分辨。
 
+## 桌面各路由共享完整开关动效
+
+开关内部的滚轮、当前场景、天体和四主题 accent 现在会在 Home、Knowledge、Videos、Tools、Games、Blog、Chat 与 About 等每个可见的桌面公共路由完整加载，并始终使用同一套可中断动画。这里扩展的是顶栏开关自身；首页整页壁纸的 crossfade 与动态云仍只在 Home 运行。移动 App 的紧凑栏继续隐藏开关，Android Home 的布局与行为保持不变。
+
 ## 行为与动效降级保持不变
 
 开关继续按本地 05:00／11:00／17:00／20:00 自动换档，手动选择只覆盖到下一个真实时段边界。四个主题原有的晨光、白云、余晖和星群 accent 保留；keyboard 与 motion-off 立即提交，reduced-motion 移除位置移动，low 性能档和 Save-Data 跳过 accent，但保留完整时间行为与四个节点。',
     '2026-08-10T02:30:00.000Z',
-    '2026-08-10T02:30:00.000Z'
+    '2026-08-10T04:10:00.000Z'
   ),
   (
     'seed-update-2026-08-10-wallpaper-switch-slim-dawn-en',
     'seed-update-2026-08-10-wallpaper-switch-slim-dawn',
     'en',
     'Slim-Rim Dawn Polish for the Four-Stage Wallpaper Switch',
-    'Image2 gives the four-stage wallpaper switch a slimmer, clearer outer ceramic oval and roller ring, while a low warm-orange half sun with thin dawn mist now separates morning from the day''s high, complete sun. All four 44px touch targets, automatic timing, and manual override until the next real boundary are unchanged; interruptible rolling, four theme accents, and keyboard/reduced/off/low/Save-Data behavior are preserved.',
+    'The four-stage wallpaper switch now pairs a slimmer, crisper ceramic rim and roller ring with a low warm-orange half sun and dawn mist, clearly separating morning from day. Its roller, scene, celestial body, and four theme accents share one interruptible animation system across every visible desktop public route; full-page wallpaper crossfades and dynamic clouds remain exclusive to Home.',
     '# Slim-Rim Dawn Polish for the Four-Stage Wallpaper Switch
 
 The four-stage wallpaper switch at the site''s upper right keeps its existing automatic schedule and manual override behavior. This pass focuses only on visual weight, clarity, and the distinction between morning and day.
@@ -1029,18 +1033,22 @@ The four-stage wallpaper switch at the site''s upper right keeps its existing au
 
 Morning now uses a low warm-orange half sun with a thin layer of dawn mist, emphasizing a sun that has just reached the horizon. Day keeps a high, complete, bright sun. The selected and unselected time semantics are therefore easier to distinguish at the switch''s actual size.
 
+## Complete switch motion across desktop routes
+
+The switch''s roller, current scene, celestial body, and all four theme accents now load completely on every visible desktop public route, including Home, Knowledge, Videos, Tools, Games, Blog, Chat, and About, while always using the same interruptible animation system. This expansion applies only to the top-bar switch itself; full-page wallpaper crossfades and dynamic clouds remain Home-only. The compact mobile App bar continues to hide the switch, and Android Home keeps its existing layout and behavior.
+
 ## Timing and motion fallbacks are unchanged
 
 The switch still changes automatically at local 05:00, 11:00, 17:00, and 20:00, while a manual choice lasts only until the next real period boundary. The four existing theme accents—morning light, day clouds, dusk afterglow, and night stars—remain. Keyboard and motion-off changes commit immediately, reduced motion removes positional travel, and low-performance mode and Save-Data skip accents while retaining the complete timing behavior and all four stops.',
     '2026-08-10T02:30:00.000Z',
-    '2026-08-10T02:30:00.000Z'
+    '2026-08-10T04:10:00.000Z'
   ),
   (
     'seed-update-2026-08-10-wallpaper-switch-slim-dawn-ja',
     'seed-update-2026-08-10-wallpaper-switch-slim-dawn',
     'ja',
     '壁紙4段スイッチの細枠・朝焼け調整',
-    'Image2 で壁紙4段スイッチの外側セラミック楕円とローラーリングをより薄く鮮明にし、低い位置の暖かなオレンジ色の半円日と薄い朝霧によって、朝を昼の高い完全な太陽と明確に区別しました。4つの 44px タッチ領域、自動時刻、次の実際の境界までの手動上書きは変えず、中断可能なローリング、4テーマの accent、keyboard／reduced／off／low／Save-Data の契約も維持します。',
+    '壁紙4段スイッチは、より薄く鮮明なセラミック細枠とローラーリング、低い暖色の半円日と朝霧で朝を昼から明確に分けます。ローラー、シーン、天体、4テーマの accent は表示中の全デスクトップ公開ルートで同じ中断可能なアニメーションを共有し、ページ全体の壁紙 crossfade と動く雲は Home 専用です。',
     '# 壁紙4段スイッチの細枠・朝焼け調整
 
 サイト右上の壁紙4段スイッチは、既存の自動時刻と手動上書きの動作をそのまま維持します。今回は素材の重さ、鮮明さ、朝と昼の識別だけに焦点を当てました。
@@ -1055,11 +1063,15 @@ The switch still changes automatically at local 05:00, 11:00, 17:00, and 20:00, 
 
 朝は低い位置の暖かなオレンジ色の半円日と薄い朝霧を使い、太陽が地平線から昇り始めた状態を強調します。昼は高い位置の完全で明るい太陽を維持します。これにより、選択中と未選択のどちらでも、実際の小さな表示サイズで時間帯を見分けやすくなります。
 
+## デスクトップ各ルートで完全なスイッチ動作
+
+スイッチ内部のローラー、現在のシーン、天体、4テーマすべての accent は、Home、Knowledge、Videos、Tools、Games、Blog、Chat、About を含む表示中のすべてのデスクトップ公開ルートで完全に読み込まれ、常に同じ中断可能なアニメーションを使用します。この拡張はトップバーのスイッチ本体だけに適用され、ページ全体の壁紙 crossfade と動く雲は引き続き Home のみで動作します。モバイル App のコンパクトバーではスイッチを非表示のままとし、Android Home のレイアウトと動作は変わりません。
+
 ## 時刻動作とモーションのフォールバックは維持
 
 スイッチはローカル時刻の 05:00／11:00／17:00／20:00 に自動で切り替わり、手動選択は次の実際の時間帯境界までだけ続きます。朝の光、昼の雲、夕方の残光、夜の星という4テーマの accent は維持します。keyboard と motion-off は即時確定し、reduced-motion は位置移動をなくし、low モードと Save-Data は accent を省略しても、完全な時刻動作と4つの停止位置を保ちます。',
     '2026-08-10T02:30:00.000Z',
-    '2026-08-10T02:30:00.000Z'
+    '2026-08-10T04:10:00.000Z'
   )
 on conflict(translation_id) do update set
   article_id = excluded.article_id,
@@ -13666,7 +13678,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260810-wallpaper-switch-slim-dawn-r1', '2026-08-10T02:30:00.000Z')
+values ('article_seed_version', '20260810-wallpaper-switch-route-motion-r1', '2026-08-10T04:10:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

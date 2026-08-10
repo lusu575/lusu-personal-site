@@ -873,6 +873,7 @@ const whiteboardReleaseVersion = "20260806-agent-capabilities-quick-transfer-r1"
 const gameVideoMcpCandidateReleaseVersion = "20260809-game-video-mcp-heartbeat-r1";
 const motionPolishReleaseVersion = "20260809-motion-polish-r2";
 const wallpaperSwitchSceneReleaseVersion = "20260810-wallpaper-switch-slim-dawn-r1";
+const wallpaperSwitchRouteMotionReleaseVersion = "20260810-wallpaper-switch-route-motion-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = "20260809-transfer-motion-r2";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
@@ -1196,7 +1197,7 @@ for (const route of lazyPublicRoutes) {
 for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
-  ["./data/home-content.mjs", wallpaperSwitchSceneReleaseVersion],
+  ["./data/home-content.mjs", wallpaperSwitchRouteMotionReleaseVersion],
   ["./features/account.mjs", motionPolishReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", transferReleaseVersion]
@@ -3204,7 +3205,7 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = motionPolishReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = wallpaperSwitchSceneReleaseVersion;
+const currentMainVersion = wallpaperSwitchRouteMotionReleaseVersion;
 const currentCssVersion = wallpaperSwitchSceneReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260809-browser-game-heartbeat-v1";
@@ -4243,8 +4244,15 @@ if (!hasPattern(styleCss, /\.wallpaper-time-switch\s*\{[\s\S]*grid-template-colu
   || !hasPattern(mainEntryJs, /if\s*\(coreReady\)\s*return\s+asset\.dataset\.role\s*===\s*["']accent["']/)
   || !hasPattern(mainEntryJs, /function\s+syncWallpaperTimeSwitch[\s\S]*dataset\.motion\s*===\s*["']off["'][\s\S]*dataset\.performanceTier\s*===\s*["']low["'][\s\S]*dataset\.visualTheme\s*=\s*state\.theme/)
   || !hasPattern(mainEntryJs, /group\.addEventListener\(["']click["'][\s\S]*event\.detail\s*===\s*0\s*\|\|\s*document\.documentElement\.dataset\.inputMethod\s*===\s*["']keyboard["'][\s\S]*selectWallpaperTimeTheme\([^\n]*\{\s*trigger:\s*option,\s*immediate\s*\}/)
-  || !hasPattern(mainEntryJs, /if\s*\(nextRoute\s*===\s*["']home["']\)\s*void\s+ensureWallpaperTimeSwitchAssets\(\)/)) {
-  fail("wallpaper switch must compose one ceramic current scene, four semantic markers, a 36px translating and rolling selector, upright 32px celestial nodes and four retargetable accent directions with accessibility fallbacks");
+  || !hasPattern(mainEntryJs, /function\s+wallpaperTimeSwitchIsVisible[\s\S]*getClientRects\(\)\.length/)
+  || !hasPattern(mainEntryJs, /document\.body\.dataset\.route\s*=\s*nextRoute;\s*void\s+ensureWallpaperTimeSwitchAssets\(\)/)
+  || !hasPattern(mainEntryJs, /addEventListener\(["']lusu:shellchange["'],\s*\(\)\s*=>\s*\{\s*updateWallpaperMotionState\(\);\s*\}\)/)
+  || !hasPattern(mainEntryJs, /let\s+wallpaperTimeSwitchRouteReady\s*=\s*false/)
+  || !hasPattern(mainEntryJs, /const\s+coreMissing\s*=\s*switchControl\.dataset\.visualCoreAssetsReady[\s\S]*const\s+accentMissing[\s\S]*wallpaperTimeSwitchRouteReady[\s\S]*wallpaperTimeSwitchIsVisible\(switchControl\)[\s\S]*coreMissing\s*\|\|\s*accentMissing[\s\S]*ensureWallpaperTimeSwitchAssets\(switchControl\)/)
+  || !hasPattern(mainEntryJs, /syncRouteFromLocation\(\{\s*focusWindow:\s*false\s*\}\);\s*wallpaperTimeSwitchRouteReady\s*=\s*true;\s*updateClock\(\)/)
+  || !hasPattern(mainEntryJs, /group\.dataset\.static\s*=\s*String\(document\.hidden\)/)
+  || hasPattern(mainEntryJs, /group\.dataset\.static\s*=\s*String\(document\.hidden\s*\|\|/)) {
+  fail("wallpaper switch must compose one ceramic current scene, four semantic markers, a 36px translating and rolling selector, upright 32px celestial nodes and four retargetable accent directions on every visible public route, with accessibility fallbacks");
 }
 
 const wallpaperSwitchMotionSlice = motionSystemCss.slice(
@@ -4690,7 +4698,7 @@ const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
 const finalTitleEn = "Slim-Rim Dawn Polish for the Four-Stage Wallpaper Switch";
-const finalPublishedAt = "2026-08-10T02:30:00.000Z";
+const finalPublishedAt = "2026-08-10T04:10:00.000Z";
 const preservedReleaseUpdateIds = [
   "seed-update-2026-08-10-wallpaper-switch-ceramic-roll",
   "seed-update-2026-08-10-wallpaper-switch-calm-redesign",
@@ -4952,6 +4960,7 @@ if (finalUpdateStarted) {
     ...preservedReleaseUpdateIds,
     wallpaperTimeSwitchAssetVersion,
     wallpaperSwitchSceneReleaseVersion,
+    wallpaperSwitchRouteMotionReleaseVersion,
     "site-updates",
     "fallback",
     "Functions seed",

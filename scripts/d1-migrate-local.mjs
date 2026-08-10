@@ -239,7 +239,7 @@ export async function migrateLocalD1() {
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260810-wallpaper-switch-slim-dawn-r1'
+    where key = 'article_seed_version' and value = '20260810-wallpaper-switch-route-motion-r1'
     union all
     select 'game-video-mcp-candidate-update-article',
       case when count(*) = 1 then 1 else 0 end
@@ -278,7 +278,7 @@ export async function migrateLocalD1() {
       and status = 'published'
       and is_pinned = 0
       and cover_image = ''
-      and published_at = '2026-08-10T02:30:00.000Z'
+      and published_at = '2026-08-10T04:10:00.000Z'
     union all
     select 'wallpaper-switch-slim-dawn-update-translations',
       case
