@@ -17,17 +17,17 @@ import {
 const root = new URL("../", import.meta.url);
 const themes = ["morning", "day", "dusk", "night"];
 const widths = [960, 1440, 1920];
-const wallpaperSwitchAssetVersion = "20260810-wallpaper-time-switch-r5";
+const wallpaperSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const wallpaperSwitchAssets = new Map([
-  ["scene-morning.png", [880, 220, "86e32bee9e78d7f359d821e5fd7aaaa81a1f035bfeeac5bf017a699d3d0ba511"]],
+  ["scene-morning.png", [880, 220, "228b4461cabbd28a4d7e552eb01e15020dcda46b02803b5e8423099450f8c6e3"]],
   ["scene-day.png", [880, 220, "21a93bfd59ad13511b7530386c78bc3b70e9a1fee64863aa652c41912ab89e10"]],
   ["scene-dusk.png", [880, 220, "73c76214123272feb242790850933c578350c6b3ab1b384c500d2463be7d6d06"]],
   ["scene-night.png", [880, 220, "21109ba9d458ec0fc97fc00be0b11e5a24eb8a160ef2895ed52ca667bf5f3379"]],
-  ["marker-morning.png", [144, 144, "972a2eda7cf584fb32bde5fc5655544ce478a626c030cdbc4ada661e4e47454d"]],
+  ["marker-morning.png", [144, 144, "c9dea9d91297a311d90305eacf6557c19a35ae00605e2a56115b6f41ececa443"]],
   ["marker-day.png", [144, 144, "f5d964da42cdfa6a2bd2e2d7a8a98c838014d1fd7f3ba111c928b14aff837868"]],
   ["marker-dusk.png", [144, 144, "24c82c18b55e096238f33a9fe5c3b80bffc38ad9ae89d2bdbb2cebbc2c9a6b9c"]],
   ["marker-night.png", [144, 144, "74710010c0abb39b6381d72aead8ff43fc21b1b4e943a8eebe64561f84fcb397"]],
-  ["node-morning.png", [192, 192, "72163447acb1fb95161f5d88a079ccc675067063de899ad90ac9240e41b35c85"]],
+  ["node-morning.png", [192, 192, "e0e18e9eca155af6fda1eee2e90c2a97c2e7ad1641b03645f0db0dfddb252bee"]],
   ["node-day.png", [192, 192, "c706bd59eb2bf455ba7f13235b733376d221cdb9823843f42ee49f919846e999"]],
   ["node-dusk.png", [192, 192, "358cb2597d53ec594064d2a02bcb9ede7f2089c3dc94d04216b5810eafdbc036"]],
   ["node-night.png", [192, 192, "04d36be5765de703bffd89f8365f599dc6cb24a300750edabdec8c4e9d705562"]],
@@ -35,13 +35,13 @@ const wallpaperSwitchAssets = new Map([
   ["accent-day.png", [480, 160, "b24472486a5341f1339f6d88c678e6197efcd81ac46261653757e4c1907fc86f"]],
   ["accent-dusk.png", [480, 160, "538a753d13cd71fb8114da2a79ca5c4bab02e51a58db812f031705a9007393b5"]],
   ["accent-night.png", [480, 160, "99c2893a9beed43fa0188eaf20f86f6d39459ae4ffd5c27390d0fb5a4ee4a4f3"]],
-  ["frame.png", [880, 220, "304d90de2dec0698667e0cb8d370655e8de27ffb960a0217d9fdfa8e0cc1eb03"]],
-  ["roller.png", [192, 192, "10f90638e4392a6998a362207d03ced9831022023a38ac34fbf29a87598db17b"]]
+  ["frame.png", [880, 220, "ce7917df11a97664a0ae6b72ae4e1d3498e1f8ff104017bf9f0e5e855567866a"]],
+  ["roller.png", [192, 192, "8f969ddad084c59dd507a81cdf940773fb55ae525e093ff55fd267cc36fb922e"]]
 ]);
 const wallpaperSwitchDeliveryAtlases = new Map([
-  ["scene-atlas.png", [880, 880, "c988dbc44930bcb0397da5827f8145c685196aeadf06aac4afbad83fdd09e431", ["scene-morning.png", "scene-day.png", "scene-dusk.png", "scene-night.png"]]],
-  ["marker-atlas.png", [144, 576, "a05fa5bb1b6cdaa5381eb363a7a7a944e20d59e3f0a444c6d776e7e1af357850", ["marker-morning.png", "marker-day.png", "marker-dusk.png", "marker-night.png"]]],
-  ["node-atlas.png", [192, 960, "0589cfd12b1894e33f8f72f348ec03934bd21c7ffb9b701add571fa43baee3e9", ["node-morning.png", "node-day.png", "node-dusk.png", "node-night.png", "roller.png"]]],
+  ["scene-atlas.png", [880, 880, "008b0739ff5165ab712f9e20bf6f5c94dac2f4b89735944631af31acabe66027", ["scene-morning.png", "scene-day.png", "scene-dusk.png", "scene-night.png"]]],
+  ["marker-atlas.png", [144, 576, "97044eedb7c02ad7a4930871955f01be393190339a5174c71d95069560485b29", ["marker-morning.png", "marker-day.png", "marker-dusk.png", "marker-night.png"]]],
+  ["node-atlas.png", [192, 960, "93b4964d9df08c9ad975c18854d13eaab5899763e0eea7a5c659cac2eb1ffe2f", ["node-morning.png", "node-day.png", "node-dusk.png", "node-night.png", "roller.png"]]],
   ["accent-atlas.png", [480, 640, "8d416dc6c2780024b60a3028f676284fa712fa4f9b1e0b9bc470dbe0434b9e54", ["accent-morning.png", "accent-day.png", "accent-dusk.png", "accent-night.png"]]]
 ]);
 
@@ -153,24 +153,28 @@ test("responsive wallpaper and window assets stay below the per-file budget", as
   }
 });
 
-test("wallpaper switch manifest locks 18 ceramic Image2 assets into five runtime files", async () => {
+test("wallpaper switch manifest locks the r6 slim-dawn Image2 contract into five runtime files", async () => {
   const manifest = JSON.parse(await readFile(new URL("assets/images/wallpaper-switch/wallpaper-time-switch.source.json", root), "utf8"));
   assert.equal(manifest.schema_version, 2);
   assert.equal(manifest.asset_version, wallpaperSwitchAssetVersion);
   assert.deepEqual(manifest.public_release, {
-    update_id: "seed-update-2026-08-10-wallpaper-switch-ceramic-roll",
-    slug: "2026-08-10-wallpaper-switch-ceramic-roll",
-    public_token: "20260810-wallpaper-switch-ceramic-roll-r1"
+    update_id: "seed-update-2026-08-10-wallpaper-switch-slim-dawn",
+    slug: "2026-08-10-wallpaper-switch-slim-dawn",
+    public_token: "20260810-wallpaper-switch-slim-dawn-r1"
   });
 
   const visual = manifest.visual_contract;
   assert.deepEqual(visual.control_size_css_px, [176, 44]);
-  assert.deepEqual(visual.viewport_clip_css_px, [5, 6, 17]);
-  assert.deepEqual(visual.frame_center_opening_alpha_bbox, [36, 29, 842, 190]);
+  assert.deepEqual(visual.viewport_clip_css_px, [4, 4, 18]);
+  assert.deepEqual(visual.frame_center_opening_alpha_bbox, [18, 20, 861, 201]);
+  assert.deepEqual(visual.frame_center_opening_measurement.horizontal_center_run, { start: 18, end_inclusive: 860, length: 843 });
+  assert.deepEqual(visual.frame_center_opening_measurement.vertical_center_run, { start: 20, end_inclusive: 200, length: 181 });
   assert.deepEqual(visual.rolling_selector_css_px, [36, 36]);
   assert.equal(visual.rolling_selector_top_css_px, 4);
   assert.deepEqual(visual.rolling_selector_left_by_theme_css_px, { morning: 4, day: 48, dusk: 92, night: 136 });
-  assert.equal(visual.roller_degrees_per_stop, 140);
+  assert.equal(visual.roller_degrees_per_stop, 151.072);
+  assert.deepEqual(visual.roller_rotation_by_theme_degrees, { morning: 0, day: 151.072, dusk: 302.144, night: 453.216 });
+  assert.deepEqual(visual.roller_visible_geometry_css_px, { wrapper: 36, outer_diameter: 33.375, center_opening: 30, wall_per_side_approx: 1.6875 });
   assert.deepEqual(visual.active_node_css_px, [32, 32]);
   assert.deepEqual(visual.active_node_inset_css_px, [2, 2]);
   assert.deepEqual(visual.inactive_marker_css_px, [20, 20]);
@@ -178,6 +182,7 @@ test("wallpaper switch manifest locks 18 ceramic Image2 assets into five runtime
   assert.match(visual.motion_model, /interruptible transform\/opacity transitions only/);
   assert.match(visual.motion_model, /var\(--motion-window\)/);
   assert.match(visual.motion_model, /cubic-bezier\(0\.77,0,0\.175,1\)/);
+  assert.match(visual.morning_day_distinction, /low one-third amber-orange sun/);
 
   const expectedRoles = new Set([
     "frame", "roller",
@@ -186,16 +191,48 @@ test("wallpaper switch manifest locks 18 ceramic Image2 assets into five runtime
     ...themes.map((theme) => `node_${theme}`),
     ...themes.map((theme) => `accent_${theme}`)
   ]);
-  assert.equal(manifest.generation_sources.length, 18);
-  assert.deepEqual(new Set(manifest.generation_sources.map(({ role }) => role)), expectedRoles);
-  assert.equal(new Set(manifest.generation_sources.map(({ call_id }) => call_id)).size, 18);
-  for (const source of manifest.generation_sources) {
+  const selectedSources = manifest.generation_sources.filter(({ disposition }) => disposition === "selected");
+  const supersededSources = manifest.generation_sources.filter(({ disposition }) => disposition === "superseded");
+  assert.equal(manifest.generation_sources.length, 23);
+  assert.equal(selectedSources.length, 18);
+  assert.deepEqual(new Set(selectedSources.map(({ role }) => role)), expectedRoles);
+  assert.equal(new Set(selectedSources.map(({ call_id }) => call_id)).size, 18);
+  for (const source of selectedSources) {
     assert.equal(source.tool, "built-in image_gen.imagegen");
     assert.equal(source.disposition, "selected");
     assert.ok(source.prompt.length > 240, `${source.role} must retain its complete Image2 prompt`);
     assert.match(source.call_id, /^exec-[a-f0-9-]{36}$/);
     assert.match(source.source_sha256, /^[a-f0-9]{64}$/);
-    assert.ok(source.source_record.startsWith("output/wallpaper-switch-reference-v2/"));
+    assert.match(source.source_record, /^output\/wallpaper-switch-(?:reference-v2|slim-dawn)\//);
+  }
+  const expectedR6Sources = new Map([
+    ["frame", ["exec-5dd68018-8385-4f07-aa00-8c5ac7909d6e", "1ffc24b752ba0dff492b17326f26661b87c297880fc8303a4f6d64c970787b80"]],
+    ["roller", ["exec-ebcffff9-74a4-48e1-bd90-a12a55fe656e", "a12cc784d8f9ff61b788b32ba28e811a771291319567700407f4161809116193"]],
+    ["scene_morning", ["exec-fa204e39-620d-4965-9e39-30e40ef4006b", "0622d9f8e8c76543b7816b5c79e4fbe32391c47d3c72ab075d5653a7164c57f3"]],
+    ["marker_morning", ["exec-bf5a4dab-d044-4f0e-ab28-30069ca7b6c2", "221ecc752ad577fd16a3075d5ddd5d5749f93bf550556070043350ff43081a73"]],
+    ["node_morning", ["exec-28dd3951-8144-4c5c-801a-f7e1d516dfea", "06e94c2b49b882688c0a1ae1400573ba6f405813533b5ec53f0ac85d41f726e3"]]
+  ]);
+  for (const [role, expected] of expectedR6Sources) {
+    const source = selectedSources.find((candidate) => candidate.role === role);
+    assert.deepEqual([source.call_id, source.source_sha256], expected);
+    assert.equal(source.asset_version, wallpaperSwitchAssetVersion);
+    assert.match(source.source_record, /^output\/wallpaper-switch-slim-dawn\//);
+    assert.ok(source.mechanical_processing.length > 80);
+  }
+  const expectedSuperseded = new Map([
+    ["frame", ["exec-c5ea0dd6-8b89-4cbf-a9ab-32fdf462a2b3", "bb6a389f2eba25463097cb6916281d0620ecd34aeea6081c0fb7fc55d3c71b79"]],
+    ["roller", ["exec-93e7a719-17b9-4404-beef-b11035438f8d", "54b7b2d386788ebec7756cafc887d16962293558994e48fa77087623bbb24038"]],
+    ["scene_morning", ["exec-d59c2179-b5a1-4508-bd31-6443a1a6dc8f", "6d251cdef9b3a63c44cb90fad0427cf796d557315d8b6cb7134bc76721ec6bd4"]],
+    ["marker_morning", ["exec-c8169f75-2c40-4333-836c-5824d81b786e", "76f633e6c91d0bd91f19910a072edb703d6778495f506dae68c47b0c440731de"]],
+    ["node_morning", ["exec-6aa165b2-f113-4151-aefd-34b68d8b0456", "4fb5fba44f888208be8d24a2219e6bc17af7efc025e55978c267e719cccaeccd"]]
+  ]);
+  assert.equal(supersededSources.length, 5);
+  for (const source of supersededSources) {
+    assert.deepEqual([source.call_id, source.source_sha256], expectedSuperseded.get(source.role));
+    assert.equal(source.asset_version, "20260810-wallpaper-time-switch-r5");
+    assert.equal(source.superseded_by_asset_version, wallpaperSwitchAssetVersion);
+    assert.ok(source.prompt.length > 240);
+    assert.ok(source.supersession_reason.length > 40);
   }
   assert.ok(manifest.rejected_generation_calls.length >= 2);
   for (const rejected of manifest.rejected_generation_calls) {
@@ -208,6 +245,8 @@ test("wallpaper switch manifest locks 18 ceramic Image2 assets into five runtime
   assert.equal(manifest.mechanical_pipeline.chroma_helper, "C:/Users/lusu/.codex/skills/.system/imagegen/scripts/remove_chroma_key.py");
   assert.deepEqual(manifest.mechanical_pipeline.command_options, ["--auto-key", "border", "--soft-matte", "--transparent-threshold", "12", "--opaque-threshold", "220", "--despill"]);
   assert.match(manifest.mechanical_pipeline.processing.markers, /premultiplied-alpha Lanczos3/);
+  assert.match(manifest.mechanical_pipeline.processing.frame, /Sharp-equivalent chroma removal/);
+  assert.match(manifest.mechanical_pipeline.processing.frame, /lacked Pillow/);
   assert.match(manifest.mechanical_pipeline.processing.delivery_atlases, /roller\.png as its fifth native 192x192 cell/);
   assert.match(manifest.mechanical_pipeline.processing.delivery_atlases, /frame\.png is the only standalone runtime file/);
   assert.ok(manifest.mechanical_pipeline.steps.some((step) => step.includes("18 content files were byte-locked")));
@@ -215,10 +254,20 @@ test("wallpaper switch manifest locks 18 ceramic Image2 assets into five runtime
 
   assert.equal(manifest.qa.overall_pass, true);
   assert.equal(manifest.qa.frame.pass, true);
-  assert.deepEqual(manifest.qa.frame.center_opening_alpha_bbox, [36, 29, 842, 190]);
+  assert.deepEqual(manifest.qa.frame.center_opening_alpha_bbox, [18, 20, 861, 201]);
+  assert.deepEqual(manifest.qa.frame.center_runs_at_alpha_32, {
+    horizontal: { start: 18, end_inclusive: 860, length: 843 },
+    vertical: { start: 20, end_inclusive: 200, length: 181 }
+  });
   assert.equal(manifest.qa.frame.center_alpha, 0);
   assert.equal(manifest.qa.roller.pass, true);
   assert.equal(manifest.qa.roller.center_alpha, 0);
+  assert.deepEqual(manifest.qa.roller.display_in_36px_wrapper, {
+    outer_diameter: 33.375,
+    center_opening: 30,
+    wall_per_side_approx: 1.6875,
+    orientation_cue: "two localized 4:30 grooves plus asymmetric 10 o'clock glaze highlight"
+  });
   assert.equal(manifest.qa.scenes.pass, true);
   assert.equal(manifest.qa.markers.pass, true);
   assert.match(manifest.qa.markers.version_decision.v1, /Rejected/);
@@ -226,6 +275,16 @@ test("wallpaper switch manifest locks 18 ceramic Image2 assets into five runtime
   assert.match(manifest.qa.markers.browser_actual_size_preview.path, /image-rendering-auto-actual\.png$/);
   assert.match(manifest.qa.markers.rendering, /image-rendering:auto/);
   assert.equal(manifest.qa.nodes_accents.pass, true);
+  assert.deepEqual(manifest.qa.morning_day_distinction, {
+    pass: true,
+    scene_rmse_at_176x44: 97.136,
+    node_rmse_at_32x32: 81.343,
+    marker_rmse_at_20x20: 39.576,
+    morning_marker_alpha_bbox: [13, 46, 131, 98],
+    morning_node_alpha_bbox: [7, 5, 186, 188],
+    actual_size_green_fringe_pixels: 0
+  });
+  assert.deepEqual(manifest.qa.final_composite.angles_degrees_clockwise, { morning: 0, day: 151.072, dusk: 302.144, night: 453.216 });
 
   assert.equal(manifest.delivery_contract.content_asset_count, 18);
   assert.equal(manifest.delivery_contract.delivery_atlas_count, 4);
@@ -247,6 +306,7 @@ test("wallpaper switch manifest locks 18 ceramic Image2 assets into five runtime
     assert.equal(createHash("sha256").update(file).digest("hex"), sha256, `${generated.file} bytes changed`);
     const decoded = await asset(`assets/images/wallpaper-switch/${generated.file}`);
     assert.deepEqual([decoded.metadata.width, decoded.metadata.height], [width, height]);
+    assert.equal(decoded.bytes, generated.bytes, `${generated.file} manifest byte count drifted`);
     if (generated.file.startsWith("scene-")) {
       assert.equal(decoded.metadata.channels, 3, `${generated.file} must remain an opaque RGB field`);
     } else {
@@ -269,6 +329,7 @@ test("wallpaper switch manifest locks 18 ceramic Image2 assets into five runtime
     const atlasPath = `assets/images/wallpaper-switch/${atlasRecord.file}`;
     const atlasBytes = await readFile(new URL(atlasPath, root));
     assert.equal(createHash("sha256").update(atlasBytes).digest("hex"), sha256, `${atlasRecord.file} bytes changed`);
+    assert.equal(atlasBytes.length, atlasRecord.bytes, `${atlasRecord.file} manifest byte count drifted`);
     const atlas = sharp(atlasBytes).ensureAlpha().raw();
     const { data, info } = await atlas.toBuffer({ resolveWithObject: true });
     assert.deepEqual([info.width, info.height], [width, height]);
@@ -289,6 +350,9 @@ test("wallpaper switch manifest locks 18 ceramic Image2 assets into five runtime
 
   assert.equal(manifest.historical_supersession.prior_asset_version, "20260809-wallpaper-time-switch-r4");
   assert.match(manifest.historical_supersession.status, /current long-term production contract is r5/);
+  assert.equal(manifest.current_supersession.prior_asset_version, "20260810-wallpaper-time-switch-r5");
+  assert.equal(manifest.current_supersession.asset_version, wallpaperSwitchAssetVersion);
+  assert.match(manifest.current_supersession.status, /r6 is the current slim-rim dawn production contract/);
 });
 
 test("sprite and entry icons use decode-sized production atlases", async () => {
@@ -447,7 +511,7 @@ test("JSON resource cache still coalesces callers that share the same scope", as
 });
 
 test("cacheable API JSON emits a stable ETag and honors If-None-Match", async () => {
-  assert.equal(PUBLIC_API_REPRESENTATION_VERSION, "20260810-wallpaper-switch-ceramic-roll-r1");
+  assert.equal(PUBLIC_API_REPRESENTATION_VERSION, "20260810-wallpaper-switch-slim-dawn-r1");
   const first = await cacheableJson(new Request("https://example.test/api/articles"), { articles: [] });
   const etag = first.headers.get("ETag");
   assert.match(etag, /^"sha256-[a-f0-9]{64}"$/);

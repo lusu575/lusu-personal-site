@@ -550,7 +550,7 @@ body[data-route="home"] .site-shell::after {
   height: 44px;
   overflow: hidden;
   border-radius: 22px;
-  clip-path: inset(5px 6px round 17px);
+  clip-path: inset(4px 4px round 18px);
   pointer-events: none;
   user-select: none;
 }
@@ -744,9 +744,9 @@ body[data-route="home"] .site-shell::after {
 .wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-thumb { transform: translate3d(136px, 0, 0); }
 
 .wallpaper-time-switch[data-visual-theme="morning"] .wallpaper-time-roller { transform: rotate(0deg); }
-.wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-roller { transform: rotate(140deg); }
-.wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-roller { transform: rotate(280deg); }
-.wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-roller { transform: rotate(420deg); }
+.wallpaper-time-switch[data-visual-theme="day"] .wallpaper-time-roller { transform: rotate(151.072deg); }
+.wallpaper-time-switch[data-visual-theme="dusk"] .wallpaper-time-roller { transform: rotate(302.144deg); }
+.wallpaper-time-switch[data-visual-theme="night"] .wallpaper-time-roller { transform: rotate(453.216deg); }
 
 .wallpaper-time-switch[data-visual-theme="morning"] [data-switch-theme="morning"],
 .wallpaper-time-switch[data-visual-theme="day"] [data-switch-theme="day"],

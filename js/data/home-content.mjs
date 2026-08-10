@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-10-wallpaper-switch-slim-dawn",
+      "slug": "2026-08-10-wallpaper-switch-slim-dawn",
+      "category": "site-updates",
+      "tags": ["网站更新", "壁纸", "动效", "Image2", "无障碍"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-10T02:30:00.000Z",
+      "updated_at": "2026-08-10T02:30:00.000Z",
+      "published_at": "2026-08-10T02:30:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.10",
+      "title": {
+        "zh": "四段壁纸开关的细框晨曦精修",
+        "en": "Slim-Rim Dawn Polish for the Four-Stage Wallpaper Switch",
+        "ja": "壁紙4段スイッチの細枠・朝焼け調整"
+      },
+      "summary": {
+        "zh": "Image2 将四段壁纸开关的外部椭圆陶瓷壳与滚轮环做得更轻薄清晰，并用低位暖橙半日和薄晨雾明确区分清晨与白天的高位完整太阳。四个 44px 触摸目标、自动时间与手动覆盖到下一真实边界的行为不变；可中断滚动、四主题 accent 及 keyboard／reduced／off／low／Save-Data 契约全部保留。",
+        "en": "Image2 gives the four-stage wallpaper switch a slimmer, clearer outer ceramic oval and roller ring, while a low warm-orange half sun with thin dawn mist now separates morning from the day's high, complete sun. All four 44px touch targets, automatic timing, and manual override until the next real boundary are unchanged; interruptible rolling, four theme accents, and keyboard/reduced/off/low/Save-Data behavior are preserved.",
+        "ja": "Image2 で壁紙4段スイッチの外側セラミック楕円とローラーリングをより薄く鮮明にし、低い位置の暖かなオレンジ色の半円日と薄い朝霧によって、朝を昼の高い完全な太陽と明確に区別しました。4つの 44px タッチ領域、自動時刻、次の実際の境界までの手動上書きは変えず、中断可能なローリング、4テーマの accent、keyboard／reduced／off／low／Save-Data の契約も維持します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-10-wallpaper-switch-ceramic-roll",
       "slug": "2026-08-10-wallpaper-switch-ceramic-roll",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "当前生产站长 Worker 为 377d494b-8f90-40ad-998f-863d209e1978；外链视频管理闭环已在该精确 bundle 通过，但远程可用性尚未晋级。2048 点检在暂停后暴露空闲 WebSocket 断线；本次 Pages 发布加入每 8 秒严格 ping／pong 保活，Worker 已具备边缘自动应答。精确线上字节与四游戏闭环仍待核验，Kittens Game 与真视频上传不开放。",
         "en": "The current production owner Worker is 377d494b-8f90-40ad-998f-863d209e1978. Its external-video management lifecycle passed for that exact bundle, but remote availability is not promoted. A 2048 check exposed an idle WebSocket disconnect after pause. This Pages release adds an exact eight-second ping/pong heartbeat, while the Worker already provides the edge auto-response. Exact live bytes and the four-game lifecycle still require verification; Kittens Game and true video upload remain unavailable.",
         "ja": "現在の本番所有者 Worker は 377d494b-8f90-40ad-998f-863d209e1978 です。この正確な bundle で外部動画管理のライフサイクルは合格しましたが、リモート可用性はまだ昇格していません。2048 の点検では停止後の待機中に WebSocket 切断が判明しました。今回の Pages 公開は8秒ごとの厳密な ping／pong 保活を追加し、Worker は既にエッジ自動応答を備えています。正確な本番バイトと4ゲームの完全検証は未完了で、Kittens Game と実動画アップロードは利用できません。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-09-wallpaper-time-switch",
-      "slug": "2026-08-09-wallpaper-time-switch",
-      "category": "site-updates",
-      "tags": ["网站更新", "壁纸", "动效", "无障碍", "移动端"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-09T05:40:00.000Z",
-      "updated_at": "2026-08-09T05:40:00.000Z",
-      "published_at": "2026-08-09T05:40:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.08.09",
-      "title": {
-        "zh": "四时段壁纸开关",
-        "en": "Four-Stage Wallpaper Time Switch",
-        "ja": "4段階の壁紙時間スイッチ"
-      },
-      "summary": {
-        "zh": "网站右上角新增由生成素材组成的早上、中午、下午和晚上四段壁纸开关；它默认按本地时间自动切换，手动选择会保留到下一个真实时段边界，并用可中断的选择环移动与壁纸交叉淡化完成过渡。",
-        "en": "A generated-art four-stage wallpaper switch now sits at the site's upper right for morning, noon, afternoon, and night. It follows local time by default; a manual choice lasts until the next real schedule boundary, with an interruptible moving lens and wallpaper crossfade.",
-        "ja": "サイト右上に、生成素材で作った朝・昼・夕方・夜の4段階壁紙スイッチを追加しました。通常はローカル時刻に従い、手動選択は次の実際の時間境界まで維持され、中断可能なレンズ移動と壁紙のクロスフェードで切り替わります。"
       }
     }
   ]

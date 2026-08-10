@@ -34,8 +34,9 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the ceramic rolling wallpaper switch leads the exact five-item projection without losing prior redesign or MCP history", async () => {
-  const updateId = "seed-update-2026-08-10-wallpaper-switch-ceramic-roll";
+test("the slim-rim dawn wallpaper switch leads the exact five-item projection without losing ceramic, redesign, or MCP history", async () => {
+  const updateId = "seed-update-2026-08-10-wallpaper-switch-slim-dawn";
+  const priorCeramicUpdateId = "seed-update-2026-08-10-wallpaper-switch-ceramic-roll";
   const priorCalmUpdateId = "seed-update-2026-08-10-wallpaper-switch-calm-redesign";
   const priorSceneUpdateId = "seed-update-2026-08-09-wallpaper-switch-scene-redesign";
   const gameVideoMcpUpdateId = "seed-update-2026-08-09-game-video-mcp-candidate";
@@ -63,28 +64,29 @@ test("the ceramic rolling wallpaper switch leads the exact five-item projection 
   ]);
 
   assert.equal(content.updates[0].article_id, updateId);
-  assert.equal(content.updates[0].slug, "2026-08-10-wallpaper-switch-ceramic-roll");
-  assert.equal(content.updates[0].published_at, "2026-08-10T00:20:00.000Z");
+  assert.equal(content.updates[0].slug, "2026-08-10-wallpaper-switch-slim-dawn");
+  assert.equal(content.updates[0].published_at, "2026-08-10T02:30:00.000Z");
   assert.equal(homeContent.updates[0].article_id, updateId);
-  assert.equal(content.updates[1].article_id, priorCalmUpdateId);
-  assert.equal(homeContent.updates[1].article_id, priorCalmUpdateId);
-  assert.equal(content.updates[2].article_id, priorSceneUpdateId);
-  assert.equal(homeContent.updates[2].article_id, priorSceneUpdateId);
-  assert.equal(content.updates[3].article_id, gameVideoMcpUpdateId);
-  assert.equal(homeContent.updates[3].article_id, gameVideoMcpUpdateId);
-  assert.equal(content.updates[4].article_id, wallpaperTimeUpdateId);
-  assert.equal(homeContent.updates[4].article_id, wallpaperTimeUpdateId);
-  assert.equal(content.updates[5].article_id, motionPolishUpdateId);
-  assert.equal(content.updates[6].article_id, remoteMcpOauthUpdateId);
-  assert.equal(content.updates[7].article_id, lifeRestartAgentUpdateId);
-  assert.equal(content.updates[8].article_id, hextrisAgentUpdateId);
-  assert.equal(content.updates[9].article_id, whiteboardAgentImagesUpdateId);
-  assert.equal(content.updates[10].article_id, agentAuthFormOriginUpdateId);
-  assert.equal(content.updates[11].article_id, japaneseProgressUpdateId);
-  assert.equal(content.updates[12].article_id, agentReadBreadthUpdateId);
-  assert.equal(content.updates[13].article_id, whiteboard2048UpdateId);
-  assert.equal(content.updates[14].article_id, firstPhaseUpdateId);
-  assert.equal(content.updates[15].article_id, websiteGuideUpdateId);
+  assert.equal(content.updates[1].article_id, priorCeramicUpdateId);
+  assert.equal(homeContent.updates[1].article_id, priorCeramicUpdateId);
+  assert.equal(content.updates[2].article_id, priorCalmUpdateId);
+  assert.equal(homeContent.updates[2].article_id, priorCalmUpdateId);
+  assert.equal(content.updates[3].article_id, priorSceneUpdateId);
+  assert.equal(homeContent.updates[3].article_id, priorSceneUpdateId);
+  assert.equal(content.updates[4].article_id, gameVideoMcpUpdateId);
+  assert.equal(homeContent.updates[4].article_id, gameVideoMcpUpdateId);
+  assert.equal(content.updates[5].article_id, wallpaperTimeUpdateId);
+  assert.equal(content.updates[6].article_id, motionPolishUpdateId);
+  assert.equal(content.updates[7].article_id, remoteMcpOauthUpdateId);
+  assert.equal(content.updates[8].article_id, lifeRestartAgentUpdateId);
+  assert.equal(content.updates[9].article_id, hextrisAgentUpdateId);
+  assert.equal(content.updates[10].article_id, whiteboardAgentImagesUpdateId);
+  assert.equal(content.updates[11].article_id, agentAuthFormOriginUpdateId);
+  assert.equal(content.updates[12].article_id, japaneseProgressUpdateId);
+  assert.equal(content.updates[13].article_id, agentReadBreadthUpdateId);
+  assert.equal(content.updates[14].article_id, whiteboard2048UpdateId);
+  assert.equal(content.updates[15].article_id, firstPhaseUpdateId);
+  assert.equal(content.updates[16].article_id, websiteGuideUpdateId);
   assert.ok(content.updates.some((update) => update.article_id === trafficUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === calmWhiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === reliableWhiteboardUpdateId));
@@ -102,7 +104,7 @@ test("the ceramic rolling wallpaper switch leads the exact five-item projection 
 
   for (const path of ["functions/api/[[route]].js", "cloudflare/schema.sql"]) {
     const source = read(path);
-    for (const seededUpdateId of [updateId, priorCalmUpdateId, priorSceneUpdateId, gameVideoMcpUpdateId, wallpaperTimeUpdateId, motionPolishUpdateId, remoteMcpOauthUpdateId]) {
+    for (const seededUpdateId of [updateId, priorCeramicUpdateId, priorCalmUpdateId, priorSceneUpdateId, gameVideoMcpUpdateId, wallpaperTimeUpdateId, motionPolishUpdateId, remoteMcpOauthUpdateId]) {
       assert.ok(source.includes(seededUpdateId), `${path} should include ${seededUpdateId}`);
     }
     for (const title of Object.values(content.updates[0].title)) {
@@ -111,10 +113,10 @@ test("the ceramic rolling wallpaper switch leads the exact five-item projection 
   }
 });
 
-test("ceramic rolling wallpaper switch, retained motion modules, MCP heartbeat content, and Quick Transfer keep independent cache versions", () => {
+test("slim-rim dawn wallpaper switch, retained motion modules, MCP heartbeat content, and Quick Transfer keep independent cache versions", () => {
   const publicVersion = "20260809-motion-polish-r2";
-  const switchSceneVersion = "20260810-wallpaper-switch-ceramic-roll-r1";
-  const wallpaperAssetVersion = "20260810-wallpaper-time-switch-r5";
+  const switchSceneVersion = "20260810-wallpaper-switch-slim-dawn-r1";
+  const wallpaperAssetVersion = "20260810-wallpaper-time-switch-r6";
   const transferVersion = "20260809-transfer-motion-r2";
   const index = read("index.html");
   const main = read("js/main.js");
@@ -151,7 +153,7 @@ test("ceramic rolling wallpaper switch, retained motion modules, MCP heartbeat c
   }
   assert.equal(switchContentAssets.length, 18);
   assert.equal(switchRuntimeAssets.length, 5);
-  const switchRuntimePaths = [...index.matchAll(/(?:src|data-src)="(\/assets\/images\/wallpaper-switch\/[^?"]+\.png)\?v=20260810-wallpaper-time-switch-r5"/g)]
+  const switchRuntimePaths = [...index.matchAll(/(?:src|data-src)="(\/assets\/images\/wallpaper-switch\/[^?"]+\.png)\?v=20260810-wallpaper-time-switch-r6"/g)]
     .map((match) => match[1]);
   assert.deepEqual(
     [...new Set(switchRuntimePaths)].sort(),
@@ -161,7 +163,7 @@ test("ceramic rolling wallpaper switch, retained motion modules, MCP heartbeat c
     if (asset === "frame.png") continue;
     assert.ok(!index.includes(`/assets/images/wallpaper-switch/${asset}?`), `${asset} should remain a manifest content source, not a runtime request`);
   }
-  assert.match(index, /class="wallpaper-time-roller-atlas" data-atlas-cell="roller" data-src="\/assets\/images\/wallpaper-switch\/node-atlas\.png\?v=20260810-wallpaper-time-switch-r5" width="192" height="960"/);
+  assert.match(index, /class="wallpaper-time-roller-atlas" data-atlas-cell="roller" data-src="\/assets\/images\/wallpaper-switch\/node-atlas\.png\?v=20260810-wallpaper-time-switch-r6" width="192" height="960"/);
   assert.doesNotMatch(index, /wallpaper-switch\/(?:time-track|time-selector|fx-(?:morning|day|dusk|night)|node-inactive|atmosphere-(?:morning|day|dusk|night)-(?:ambient|far|mid|accent|atlas))\.png/);
   assert.ok(main.includes(`const routeStyleVersion = "${publicVersion}"`));
   assert.ok(main.includes(`./core/i18n.mjs?v=${publicVersion}`));

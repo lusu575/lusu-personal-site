@@ -961,6 +961,118 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-08-10-wallpaper-switch-slim-dawn',
+  '2026-08-10-wallpaper-switch-slim-dawn',
+  'site-updates',
+  '["网站更新","壁纸","动效","Image2","无障碍"]',
+  '', 'published', 0, 0,
+  '2026-08-10T02:30:00.000Z',
+  '2026-08-10T02:30:00.000Z',
+  '2026-08-10T02:30:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-10-wallpaper-switch-slim-dawn-zh',
+    'seed-update-2026-08-10-wallpaper-switch-slim-dawn',
+    'zh',
+    '四段壁纸开关的细框晨曦精修',
+    'Image2 将四段壁纸开关的外部椭圆陶瓷壳与滚轮环做得更轻薄清晰，并用低位暖橙半日和薄晨雾明确区分清晨与白天的高位完整太阳。四个 44px 触摸目标、自动时间与手动覆盖到下一真实边界的行为不变；可中断滚动、四主题 accent 及 keyboard／reduced／off／low／Save-Data 契约全部保留。',
+    '# 四段壁纸开关的细框晨曦精修
+
+网站右上角的四段壁纸开关继续沿用现有的自动时间与手动覆盖行为。这一轮只聚焦材质重量、清晰度，以及清晨和白天的辨识度。
+
+## 更轻薄清晰的陶瓷轮廓
+
+- Image2 重新制作外部椭圆陶瓷壳和选中滚轮环，减轻过粗边缘，同时保留清晰的陶瓷高光与对齐的内外轮廓。
+- 四个 44px 触摸目标保持不变，没有缩小交互面积。
+- 滚轮继续通过可中断的 transform 在四个节点间流畅移动，中心时段图案保持正向。
+
+## 清晨不再像白天
+
+清晨改为低位暖橙半日配合薄晨雾，强调太阳刚从地平线升起；白天继续使用高位、完整而明亮的太阳。选中和未选中的时段语义因此都能在小尺寸下快速分辨。
+
+## 行为与动效降级保持不变
+
+开关继续按本地 05:00／11:00／17:00／20:00 自动换档，手动选择只覆盖到下一个真实时段边界。四个主题原有的晨光、白云、余晖和星群 accent 保留；keyboard 与 motion-off 立即提交，reduced-motion 移除位置移动，low 性能档和 Save-Data 跳过 accent，但保留完整时间行为与四个节点。',
+    '2026-08-10T02:30:00.000Z',
+    '2026-08-10T02:30:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-10-wallpaper-switch-slim-dawn-en',
+    'seed-update-2026-08-10-wallpaper-switch-slim-dawn',
+    'en',
+    'Slim-Rim Dawn Polish for the Four-Stage Wallpaper Switch',
+    'Image2 gives the four-stage wallpaper switch a slimmer, clearer outer ceramic oval and roller ring, while a low warm-orange half sun with thin dawn mist now separates morning from the day''s high, complete sun. All four 44px touch targets, automatic timing, and manual override until the next real boundary are unchanged; interruptible rolling, four theme accents, and keyboard/reduced/off/low/Save-Data behavior are preserved.',
+    '# Slim-Rim Dawn Polish for the Four-Stage Wallpaper Switch
+
+The four-stage wallpaper switch at the site''s upper right keeps its existing automatic schedule and manual override behavior. This pass focuses only on visual weight, clarity, and the distinction between morning and day.
+
+## A slimmer, clearer ceramic outline
+
+- Image2 rebuilt the outer oval ceramic shell and active roller ring with lighter edges while preserving crisp ceramic highlights and aligned inner and outer contours.
+- All four 44px touch targets remain unchanged, so the interactive area has not been reduced.
+- The roller still moves fluidly between four stops with an interruptible transform while the time-of-day subject in its center stays upright.
+
+## Morning no longer reads as day
+
+Morning now uses a low warm-orange half sun with a thin layer of dawn mist, emphasizing a sun that has just reached the horizon. Day keeps a high, complete, bright sun. The selected and unselected time semantics are therefore easier to distinguish at the switch''s actual size.
+
+## Timing and motion fallbacks are unchanged
+
+The switch still changes automatically at local 05:00, 11:00, 17:00, and 20:00, while a manual choice lasts only until the next real period boundary. The four existing theme accents—morning light, day clouds, dusk afterglow, and night stars—remain. Keyboard and motion-off changes commit immediately, reduced motion removes positional travel, and low-performance mode and Save-Data skip accents while retaining the complete timing behavior and all four stops.',
+    '2026-08-10T02:30:00.000Z',
+    '2026-08-10T02:30:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-10-wallpaper-switch-slim-dawn-ja',
+    'seed-update-2026-08-10-wallpaper-switch-slim-dawn',
+    'ja',
+    '壁紙4段スイッチの細枠・朝焼け調整',
+    'Image2 で壁紙4段スイッチの外側セラミック楕円とローラーリングをより薄く鮮明にし、低い位置の暖かなオレンジ色の半円日と薄い朝霧によって、朝を昼の高い完全な太陽と明確に区別しました。4つの 44px タッチ領域、自動時刻、次の実際の境界までの手動上書きは変えず、中断可能なローリング、4テーマの accent、keyboard／reduced／off／low／Save-Data の契約も維持します。',
+    '# 壁紙4段スイッチの細枠・朝焼け調整
+
+サイト右上の壁紙4段スイッチは、既存の自動時刻と手動上書きの動作をそのまま維持します。今回は素材の重さ、鮮明さ、朝と昼の識別だけに焦点を当てました。
+
+## より薄く鮮明なセラミック輪郭
+
+- Image2 で外側の楕円セラミックシェルと選択中のローラーリングを作り直し、鮮明なセラミックのハイライトと揃った内外輪郭を保ちながら、太すぎる縁を軽くしました。
+- 4つの 44px タッチ領域は変えず、操作面積を縮小していません。
+- ローラーは中断可能な transform で4つの停止位置を滑らかに移動し、中央の時間帯モチーフは正立を保ちます。
+
+## 朝を昼と明確に区別
+
+朝は低い位置の暖かなオレンジ色の半円日と薄い朝霧を使い、太陽が地平線から昇り始めた状態を強調します。昼は高い位置の完全で明るい太陽を維持します。これにより、選択中と未選択のどちらでも、実際の小さな表示サイズで時間帯を見分けやすくなります。
+
+## 時刻動作とモーションのフォールバックは維持
+
+スイッチはローカル時刻の 05:00／11:00／17:00／20:00 に自動で切り替わり、手動選択は次の実際の時間帯境界までだけ続きます。朝の光、昼の雲、夕方の残光、夜の星という4テーマの accent は維持します。keyboard と motion-off は即時確定し、reduced-motion は位置移動をなくし、low モードと Save-Data は accent を省略しても、完全な時刻動作と4つの停止位置を保ちます。',
+    '2026-08-10T02:30:00.000Z',
+    '2026-08-10T02:30:00.000Z'
+  )
+on conflict(translation_id) do update set
+  article_id = excluded.article_id,
+  lang = excluded.lang,
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-08-10-wallpaper-switch-ceramic-roll',
   '2026-08-10-wallpaper-switch-ceramic-roll',
   'site-updates',
@@ -13554,7 +13666,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260810-wallpaper-switch-ceramic-roll-r1', '2026-08-10T00:20:00.000Z')
+values ('article_seed_version', '20260810-wallpaper-switch-slim-dawn-r1', '2026-08-10T02:30:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

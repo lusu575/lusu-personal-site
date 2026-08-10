@@ -215,10 +215,10 @@ test("top-bar switch exposes four localized radios with one roving tab stop", ()
   );
   assert.equal(options.filter((option) => attribute(option, "aria-checked") === "true").length, 1);
   assert.equal(options.filter((option) => attribute(option, "tabindex") === "0").length, 1);
-  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/scene-atlas\.png\?v=20260810-wallpaper-time-switch-r5"/g)].length, 4);
-  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/marker-atlas\.png\?v=20260810-wallpaper-time-switch-r5"/g)].length, 4);
-  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/node-atlas\.png\?v=20260810-wallpaper-time-switch-r5"/g)].length, 5);
-  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/accent-atlas\.png\?v=20260810-wallpaper-time-switch-r5"/g)].length, 4);
+  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/scene-atlas\.png\?v=20260810-wallpaper-time-switch-r6"/g)].length, 4);
+  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/marker-atlas\.png\?v=20260810-wallpaper-time-switch-r6"/g)].length, 4);
+  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/node-atlas\.png\?v=20260810-wallpaper-time-switch-r6"/g)].length, 5);
+  assert.equal([...groupMarkup.matchAll(/data-src="\/assets\/images\/wallpaper-switch\/accent-atlas\.png\?v=20260810-wallpaper-time-switch-r6"/g)].length, 4);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-scene"/g)].length, 4);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-accents"/g)].length, 1);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-accent"/g)].length, 4);
@@ -230,19 +230,19 @@ test("top-bar switch exposes four localized radios with one roving tab stop", ()
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-node-atlas"/g)].length, 4);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-roller"/g)].length, 1);
   assert.equal([...groupMarkup.matchAll(/class="wallpaper-time-roller-atlas"/g)].length, 1);
-  assert.match(groupMarkup, /frame\.png\?v=20260810-wallpaper-time-switch-r5/);
-  assert.match(groupMarkup, /class="wallpaper-time-roller-atlas" data-atlas-cell="roller" data-src="\/assets\/images\/wallpaper-switch\/node-atlas\.png\?v=20260810-wallpaper-time-switch-r5" width="192" height="960"/);
+  assert.match(groupMarkup, /frame\.png\?v=20260810-wallpaper-time-switch-r6/);
+  assert.match(groupMarkup, /class="wallpaper-time-roller-atlas" data-atlas-cell="roller" data-src="\/assets\/images\/wallpaper-switch\/node-atlas\.png\?v=20260810-wallpaper-time-switch-r6" width="192" height="960"/);
   assert.doesNotMatch(groupMarkup, /\/assets\/images\/wallpaper-switch\/roller\.png\?/);
   const runtimeUrls = new Set(
-    [...groupMarkup.matchAll(/(?:src|data-src)="(\/assets\/images\/wallpaper-switch\/[^"?]+\.png\?v=20260810-wallpaper-time-switch-r5)"/g)]
+    [...groupMarkup.matchAll(/(?:src|data-src)="(\/assets\/images\/wallpaper-switch\/[^"?]+\.png\?v=20260810-wallpaper-time-switch-r6)"/g)]
       .map((match) => match[1])
   );
   assert.deepEqual([...runtimeUrls].sort(), [
-    "/assets/images/wallpaper-switch/accent-atlas.png?v=20260810-wallpaper-time-switch-r5",
-    "/assets/images/wallpaper-switch/frame.png?v=20260810-wallpaper-time-switch-r5",
-    "/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r5",
-    "/assets/images/wallpaper-switch/node-atlas.png?v=20260810-wallpaper-time-switch-r5",
-    "/assets/images/wallpaper-switch/scene-atlas.png?v=20260810-wallpaper-time-switch-r5"
+    "/assets/images/wallpaper-switch/accent-atlas.png?v=20260810-wallpaper-time-switch-r6",
+    "/assets/images/wallpaper-switch/frame.png?v=20260810-wallpaper-time-switch-r6",
+    "/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r6",
+    "/assets/images/wallpaper-switch/node-atlas.png?v=20260810-wallpaper-time-switch-r6",
+    "/assets/images/wallpaper-switch/scene-atlas.png?v=20260810-wallpaper-time-switch-r6"
   ]);
   assert.match(groupOpeningTag, /data-visual-theme="morning"/);
   assert.match(groupOpeningTag, /data-visual-assets-ready="false"/);
@@ -288,7 +288,7 @@ test("switch geometry preserves four 44px targets, a contained 36px roller with 
   for (const property of ["width", "min-width", "height", "min-height"]) {
     assert.match(optionRule, new RegExp(`${property}:\\s*44px`));
   }
-  assert.match(viewportRule, /clip-path:\s*inset\(5px 6px round 17px\)/);
+  assert.match(viewportRule, /clip-path:\s*inset\(4px 4px round 18px\)/);
   assert.match(thumbRule, /top:\s*4px/);
   assert.match(thumbRule, /width:\s*36px/);
   assert.match(thumbRule, /height:\s*36px/);
@@ -310,8 +310,8 @@ test("switch geometry preserves four 44px targets, a contained 36px roller with 
   for (const x of [4, 48, 92, 136]) {
     assert.match(styleCss, new RegExp(`wallpaper-time-thumb \\{ transform: translate3d\\(${x}px, 0, 0\\)`));
   }
-  for (const degrees of [0, 140, 280, 420]) {
-    assert.match(styleCss, new RegExp(`wallpaper-time-roller \\{ transform: rotate\\(${degrees}deg\\)`));
+  for (const degrees of [0, 151.072, 302.144, 453.216]) {
+    assert.match(styleCss, new RegExp(`wallpaper-time-roller \\{ transform: rotate\\(${String(degrees).replace(".", "\\.")}deg\\)`));
   }
   assert.match(styleCss, /wallpaper-time-scene-atlas\[data-atlas-cell="night"\][^\n]*translate3d\(0, -132px, 0\)/);
   assert.match(styleCss, /wallpaper-time-marker-atlas\[data-atlas-cell="night"\][^\n]*translate3d\(0, -60px, 0\)/);
@@ -341,9 +341,11 @@ test("switch geometry preserves four 44px targets, a contained 36px roller with 
   assert.equal(sourceRecord.date, "2026-08-10");
   assert.equal(sourceRecord.generator, "imagegen");
   assert.equal(sourceRecord.schema_version, 2);
-  assert.equal(sourceRecord.asset_version, "20260810-wallpaper-time-switch-r5");
+  assert.equal(sourceRecord.asset_version, "20260810-wallpaper-time-switch-r6");
   assert.equal(sourceRecord.generated_assets.length, 18);
-  assert.equal(sourceRecord.generation_sources.length, 18);
+  assert.equal(sourceRecord.generation_sources.length, 23);
+  assert.equal(sourceRecord.generation_sources.filter((source) => source.disposition === "selected").length, 18);
+  assert.equal(sourceRecord.generation_sources.filter((source) => source.disposition === "superseded").length, 5);
   assert.equal(sourceRecord.delivery_atlases.length, 4);
   assert.equal(sourceRecord.delivery_contract.content_asset_count, 18);
   assert.equal(sourceRecord.delivery_contract.delivery_atlas_count, 4);
@@ -360,6 +362,16 @@ test("switch geometry preserves four 44px targets, a contained 36px roller with 
     height: 192,
     sha256: createHash("sha256").update(rollerContentBuffer).digest("hex")
   });
+  assert.deepEqual(sourceRecord.visual_contract.viewport_clip_css_px, [4, 4, 18]);
+  assert.deepEqual(sourceRecord.visual_contract.frame_center_opening_alpha_bbox, [18, 20, 861, 201]);
+  assert.equal(sourceRecord.visual_contract.roller_degrees_per_stop, 151.072);
+  assert.deepEqual(sourceRecord.visual_contract.roller_rotation_by_theme_degrees, { morning: 0, day: 151.072, dusk: 302.144, night: 453.216 });
+  assert.deepEqual(sourceRecord.visual_contract.roller_visible_geometry_css_px, { wrapper: 36, outer_diameter: 33.375, center_opening: 30, wall_per_side_approx: 1.6875 });
+  assert.equal(sourceRecord.qa.morning_day_distinction.pass, true);
+  assert.deepEqual(
+    [sourceRecord.qa.morning_day_distinction.scene_rmse_at_176x44, sourceRecord.qa.morning_day_distinction.node_rmse_at_32x32, sourceRecord.qa.morning_day_distinction.marker_rmse_at_20x20],
+    [97.136, 81.343, 39.576]
+  );
   const sourceRoles = new Map(sourceRecord.generation_sources.map((source) => [source.role, source]));
   assert.ok(sourceRoles.size > 0);
   assert.ok([...sourceRoles.values()].every((source) => source.prompt_summary));

@@ -2,11 +2,11 @@
   "schema_version": 2,
   "date": "2026-08-10",
   "generator": "imagegen",
-  "asset_version": "20260810-wallpaper-time-switch-r5",
+  "asset_version": "20260810-wallpaper-time-switch-r6",
   "public_release": {
-    "update_id": "seed-update-2026-08-10-wallpaper-switch-ceramic-roll",
-    "slug": "2026-08-10-wallpaper-switch-ceramic-roll",
-    "public_token": "20260810-wallpaper-switch-ceramic-roll-r1"
+    "update_id": "seed-update-2026-08-10-wallpaper-switch-slim-dawn",
+    "slug": "2026-08-10-wallpaper-switch-slim-dawn",
+    "public_token": "20260810-wallpaper-switch-slim-dawn-r1"
   },
   "reference": {
     "path": "C:/Users/lusu/AppData/Local/Temp/codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
@@ -15,8 +15,14 @@
   },
   "visual_contract": {
     "control_size_css_px": [176, 44],
-    "viewport_clip_css_px": [5, 6, 17],
-    "frame_center_opening_alpha_bbox": [36, 29, 842, 190],
+    "viewport_clip_css_px": [4, 4, 18],
+    "frame_center_opening_alpha_bbox": [18, 20, 861, 201],
+    "frame_center_opening_measurement": {
+      "alpha_threshold": 32,
+      "bbox_convention": "half-open [left, top, right, bottom] derived from the measured center runs",
+      "horizontal_center_run": {"start": 18, "end_inclusive": 860, "length": 843},
+      "vertical_center_run": {"start": 20, "end_inclusive": 200, "length": 181}
+    },
     "scene_model": "The whole clipped oval shows exactly one current glossy sky field. It never presents four miniature scenes side by side.",
     "rolling_selector_css_px": [36, 36],
     "rolling_selector_top_css_px": 4,
@@ -26,12 +32,15 @@
       "dusk": 92,
       "night": 136
     },
-    "roller_degrees_per_stop": 140,
-    "roller_model": "The independent warm-ivory roller ring translates with the thumb and rotates 140deg per 44px stop while the celestial center stays upright.",
+    "roller_degrees_per_stop": 151.072,
+    "roller_rotation_by_theme_degrees": {"morning": 0, "day": 151.072, "dusk": 302.144, "night": 453.216},
+    "roller_visible_geometry_css_px": {"wrapper": 36, "outer_diameter": 33.375, "center_opening": 30, "wall_per_side_approx": 1.6875},
+    "roller_model": "The independent thin warm-ivory roller ring translates with the thumb and rotates 151.072deg per 44px stop while the celestial center stays upright; two localized grooves and one asymmetric glaze highlight keep the physical roll legible.",
     "active_node_css_px": [32, 32],
     "active_node_inset_css_px": [2, 2],
     "inactive_marker_css_px": [20, 20],
-    "inactive_marker_model": "Four distinct smooth high-resolution ceramic/enamel semantic icons rendered with browser image-rendering:auto: cloud-obscured sunrise, complete eight-ray sun, rayless descending sun with horizon lines, and crescent with one star.",
+    "inactive_marker_model": "Four distinct smooth high-resolution ceramic/enamel semantic icons rendered with browser image-rendering:auto: low partial amber sunrise joined to a restrained ivory horizon/cloud, complete high midday sun, rayless descending sun with horizon lines, and crescent with one star.",
+    "morning_day_distinction": "Morning uses a pale lavender upper sky, low peach-amber dawn band, low one-third amber-orange sun and restrained joined mist/horizon; day keeps the vivid blue field and high complete yellow sun. The scene, marker and node remain measurably distinct at their actual browser sizes.",
     "accent_model": "Exactly one Image2-generated accent layer per theme: morning rays and one small cloud expand/rise; two day clouds travel horizontally; dusk afterglow spreads horizontally; eight night stars rise.",
     "motion_model": "Rapid changes use interruptible transform/opacity transitions only. Thumb and roller share var(--motion-window) with cubic-bezier(0.77,0,0.175,1); there are no switch keyframes or stagger delays.",
     "accessibility_model": "Keyboard and motion-off commit immediately; reduced removes thumb/roller position travel and keeps at most 140ms opacity; low/Save-Data omits accents while retaining the scene, stops and time behavior.",
@@ -46,6 +55,11 @@
     ]
   },
   "source_records": [
+    "output/wallpaper-switch-slim-dawn/morning-result.json",
+    "output/wallpaper-switch-slim-dawn/frame-roller-result.json",
+    "output/wallpaper-switch-slim-dawn/pack-slim-dawn-result.json",
+    "output/wallpaper-switch-slim-dawn/qa/measurements.json",
+    "output/wallpaper-switch-slim-dawn/qa/final-composite/metrics.json",
     "output/wallpaper-switch-reference-v2/frame-scenes/result.json",
     "output/wallpaper-switch-reference-v2/frame-scenes/qa.json",
     "output/wallpaper-switch-reference-v2/markers/result.json",
@@ -71,7 +85,10 @@
       "staged_source": "F:\\lusu575个人站\\.codex-worktrees\\motion-wallpaper-online\\output\\wallpaper-switch-reference-v2\\frame-scenes\\sources\\frame-chroma-source-v2.png",
       "source_sha256": "bb6a389f2eba25463097cb6916281d0620ecd34aeea6081c0fb7fc55d3c71b79",
       "source_record": "output/wallpaper-switch-reference-v2/frame-scenes/result.json",
-      "disposition": "selected"
+      "disposition": "superseded",
+      "asset_version": "20260810-wallpaper-time-switch-r5",
+      "superseded_by_asset_version": "20260810-wallpaper-time-switch-r6",
+      "supersession_reason": "Replaced by the thinner, more even r6 ceramic shell while preserving this complete r5 Image2 provenance."
     },
     {
       "role": "roller",
@@ -91,7 +108,10 @@
       "staged_source": "F:\\lusu575个人站\\.codex-worktrees\\motion-wallpaper-online\\output\\wallpaper-switch-reference-v2\\frame-scenes\\sources\\selector-ring-chroma-source.png",
       "source_sha256": "54b7b2d386788ebec7756cafc887d16962293558994e48fa77087623bbb24038",
       "source_record": "output/wallpaper-switch-reference-v2/frame-scenes/result.json",
-      "disposition": "selected"
+      "disposition": "superseded",
+      "asset_version": "20260810-wallpaper-time-switch-r5",
+      "superseded_by_asset_version": "20260810-wallpaper-time-switch-r6",
+      "supersession_reason": "Replaced by the thinner r6 roller with a 30px visible opening and stronger localized rolling cues while preserving this complete r5 Image2 provenance."
     },
     {
       "role": "scene_morning",
@@ -111,7 +131,10 @@
       "staged_source": "F:\\lusu575个人站\\.codex-worktrees\\motion-wallpaper-online\\output\\wallpaper-switch-reference-v2\\frame-scenes\\sources\\scene-morning-source.png",
       "source_sha256": "6d251cdef9b3a63c44cb90fad0427cf796d557315d8b6cb7134bc76721ec6bd4",
       "source_record": "output/wallpaper-switch-reference-v2/frame-scenes/result.json",
-      "disposition": "selected"
+      "disposition": "superseded",
+      "asset_version": "20260810-wallpaper-time-switch-r5",
+      "superseded_by_asset_version": "20260810-wallpaper-time-switch-r6",
+      "supersession_reason": "Replaced by the r6 lavender-to-apricot dawn field so morning remains clearly distinct from day while preserving this complete r5 Image2 provenance."
     },
     {
       "role": "scene_day",
@@ -197,7 +220,10 @@
       "staged_source": "output/wallpaper-switch-reference-v2/markers/sources-v2/morning-source.png",
       "source_sha256": "76f633e6c91d0bd91f19910a072edb703d6778495f506dae68c47b0c440731de",
       "source_record": "output/wallpaper-switch-reference-v2/markers/result.json",
-      "disposition": "selected"
+      "disposition": "superseded",
+      "asset_version": "20260810-wallpaper-time-switch-r5",
+      "superseded_by_asset_version": "20260810-wallpaper-time-switch-r6",
+      "supersession_reason": "Replaced by the r6 low partial sunrise and restrained horizon marker so morning no longer resembles the complete midday sun while preserving this complete r5 Image2 provenance."
     },
     {
       "role": "marker_day",
@@ -294,7 +320,10 @@
       "generated_source": "C:/Users/lusu/.codex/generated_images/019fe900-c9a2-7601-b74e-a9295e0f026e/exec-6aa165b2-f113-4151-aefd-34b68d8b0456.png",
       "source_sha256": "4fb5fba44f888208be8d24a2219e6bc17af7efc025e55978c267e719cccaeccd",
       "source_record": "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
-      "disposition": "selected"
+      "disposition": "superseded",
+      "asset_version": "20260810-wallpaper-time-switch-r5",
+      "superseded_by_asset_version": "20260810-wallpaper-time-switch-r6",
+      "supersession_reason": "Replaced by the r6 low one-third amber sunrise behind mist with no radial crown while preserving this complete r5 Image2 provenance."
     },
     {
       "role": "node_day",
@@ -428,6 +457,118 @@
       "source_sha256": "d45975b89e79c806edfe37c65f6cbd6268e7a26653bfe67640186ae143f32f82",
       "source_record": "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
       "disposition": "selected"
+    },
+    {
+      "role": "frame",
+      "final_file": "frame.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in image_gen / Image2",
+      "taxonomy": "precise-object-edit",
+      "reference": {
+        "path": "C:/Users/lusu/AppData/Local/Temp/codex-clipboard-6d03e790-1ef7-4fc1-bef7-ac428c072754.png",
+        "role": "ceramic style reference paired with the generated frame edit target"
+      },
+      "prompt": "Use case: precise-object-edit\nAsset type: production raster shell for a 176×44 px four-position wallpaper switch\nInput images: Image 1 is the generated frame edit target; Image 2 is the ceramic style reference.\nPrimary request: change only the frame's apparent wall geometry. Make the ceramic wall another 25% thinner and exactly uniform around the entire stadium: top, bottom, left end, and right end must have the same narrow visual thickness. Remove the bulky lower lip and all lower shadow mass. Make the stadium much wider relative to its height, approximately 4.1:1, by reducing only its total height and leaving generous flat green margin above and below on the current canvas.\nScene/backdrop: preserve one perfectly flat solid #00ff00 chroma-key background, including the complete center opening.\nSubject: preserve one single front-facing concentric stadium frame, centered, with a much larger open center.\nStyle/medium: preserve crisp cream-white glazed porcelain, restrained cool silver-blue inner hairline, and precise anti-aliased edges.\nConstraints: change only wall uniformity, wall thickness, and overall stadium slenderness; keep the ceramic palette and single-ring construction; truly orthographic with no perspective; no cast/contact shadow, no external reflection, no text, logo, or watermark; do not use #00ff00 in the subject.\nAvoid: thick bottom edge, drop shadow, double border, stacked bevels, fuzzy edge, bloom, gradient background, extra objects.",
+      "prompt_summary": "Make the ceramic stadium shell another 25% thinner, uniformly narrow on every side, crisp, concentric and free of the heavy lower lip.",
+      "call_id": "exec-5dd68018-8385-4f07-aa00-8c5ac7909d6e",
+      "imagegen_output": "exec-5dd68018-8385-4f07-aa00-8c5ac7909d6e.png",
+      "generated_source": "output/wallpaper-switch-slim-dawn/frame/staging/frame-image2-selected-chroma.png",
+      "staged_source": "output/wallpaper-switch-slim-dawn/frame/staging/frame-image2-selected-chroma.png",
+      "source_sha256": "1ffc24b752ba0dff492b17326f26661b87c297880fc8303a4f6d64c970787b80",
+      "source_record": "output/wallpaper-switch-slim-dawn/frame-roller-result.json",
+      "mechanical_processing": "Sharp-equivalent chroma removal after the available Python runtime lacked Pillow; alpha-bounds crop and mechanical Lanczos resize to 880×220 only, with no procedural redraw or recoloring.",
+      "asset_version": "20260810-wallpaper-time-switch-r6",
+      "disposition": "selected"
+    },
+    {
+      "role": "roller",
+      "final_file": "roller.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in image_gen / Image2",
+      "taxonomy": "precise-object-edit",
+      "reference": {
+        "path": "output/wallpaper-switch-slim-dawn/roller/staging/roller-image2-cued-v2-chroma.png",
+        "role": "approved thin-ring edit target with the ceramic reference retained by the generation chain"
+      },
+      "prompt": "Use case: precise-object-edit\nAsset type: production raster rolling selector ring displayed at 36×36 px DPR1\nInput images: Image 1 is the approved thin-ring edit target.\nPrimary request: change only the two existing 4:30 rolling grooves so they survive thumbnail downscaling. Keep exactly two grooves in exactly the same place, but render each as a crisp near-navy blue-gray porcelain incision about one half of the ceramic wall's width in stroke thickness, extending radially across about 80% of the wall. Keep a small clear gap between the two grooves. They must resolve as two controlled dark one-pixel cues when the whole ring is reduced to 36 px. Slightly deepen the localized cool highlight at 10 o'clock for asymmetric rotation recognition.\nScene/backdrop: preserve the perfectly flat solid #00ff00 chroma-key background outside and throughout the center opening.\nSubject: preserve the exact same single centered thin annulus, outer diameter, huge center opening, cream-white ceramic, and concentric geometry.\nConstraints: only increase groove contrast and stroke clarity; do not change ring width, inner opening, outer silhouette, centering, palette, or overall lighting; center opening remains at least 90% of outer diameter; no bulge around grooves; exactly two grooves; no text, logo, watermark, shadow, or extra mark; no #00ff00 in the subject.\nAvoid: hairline grooves that disappear at thumbnail size, thicker ring, smaller opening, third groove, dashed decoration, icon or symbol, nested ring, heavy full outline, blur, bloom, green fringe, gradient background.",
+      "prompt_summary": "Keep the approved thin annulus and 30px opening while making exactly two localized grooves and one asymmetric highlight survive at 36px DPR1.",
+      "call_id": "exec-ebcffff9-74a4-48e1-bd90-a12a55fe656e",
+      "imagegen_output": "exec-ebcffff9-74a4-48e1-bd90-a12a55fe656e.png",
+      "generated_source": "output/wallpaper-switch-slim-dawn/roller/staging/roller-image2-cued-v2-chroma.png",
+      "staged_source": "output/wallpaper-switch-slim-dawn/roller/staging/roller-image2-cued-v2-chroma.png",
+      "source_sha256": "a12cc784d8f9ff61b788b32ba28e811a771291319567700407f4161809116193",
+      "source_record": "output/wallpaper-switch-slim-dawn/frame-roller-result.json",
+      "mechanical_processing": "Mechanical chroma removal, alpha-bounds crop and Lanczos contain resize to 192×192 only; no procedural ring drawing, geometry synthesis or recoloring.",
+      "asset_version": "20260810-wallpaper-time-switch-r6",
+      "disposition": "selected"
+    },
+    {
+      "role": "scene_morning",
+      "final_file": "scene-morning.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in Image2 (image_gen)",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "assets/images/wallpaper-switch/scene-day.png",
+        "role": "day contrast reference paired with the former morning structure reference"
+      },
+      "prompt": "Use case: stylized-concept\nAsset type: production raster backdrop for a 176×44 four-stage ceramic time-of-day switch, morning state only\nPrimary request: Create a crisp, restrained dawn-sky background that reads unmistakably different from the existing vivid blue daytime background when reduced to 176×44.\nInput images: Image 1 is the current morning background whose simple 4:1 layout and clarity should be preserved but whose cyan-dominant color should change; Image 2 is the existing daytime background used only as a contrast reference and must remain visually distinct.\nScene/backdrop: a very wide 4:1 horizontal sky field. Upper area is pale lavender-periwinkle blue; lower third warms smoothly through soft blush peach into a narrow amber-apricot sunrise band at the bottom horizon.\nStyle/medium: high-resolution clean illustrated gradient, polished Y2K ceramic-interface companion asset, crisp rather than hazy or pixelated.\nComposition/framing: edge-to-edge 4:1 landscape, no frame, no border, no vignette; calm nearly horizontal gradient with only a subtle thin dawn glow band near the bottom.\nLighting/mood: quiet early morning, cool upper air and warm low horizon, luminous but restrained.\nColor palette: pale lavender blue #B8CBEA / #AFC6E7 above, muted blush peach #F3B59B and amber-apricot #F6C070 near the bottom; lower saturation than midday cyan.\nConstraints: background only. Do not include the sun, clouds, stars, moon, rays, objects, icons, text, watermark, frame, border, ceramic ring, texture noise, bokeh, lens flare, brush strokes, or decorative speckles. No dominant cyan. Preserve enough tonal contrast for small white, gold, coral, and moon markers placed over it. Must remain crisp and smooth after cropping to 880×220 and displaying at 176×44.\nAvoid: midday blue, centered glow, busy gradients, multiple bands, blur, bloom, fog, washed-out white areas.",
+      "prompt_summary": "Create a crisp pale-lavender dawn field with a low peach-to-amber horizon band that stays unmistakably different from vivid blue day at 176×44.",
+      "call_id": "exec-fa204e39-620d-4965-9e39-30e40ef4006b",
+      "imagegen_output": "exec-fa204e39-620d-4965-9e39-30e40ef4006b.png",
+      "generated_source": "output/wallpaper-switch-slim-dawn/scene-morning/source-image2.png",
+      "staged_source": "output/wallpaper-switch-slim-dawn/staging/scene-morning.png",
+      "source_sha256": "0622d9f8e8c76543b7816b5c79e4fbe32391c47d3c72ab075d5653a7164c57f3",
+      "source_record": "output/wallpaper-switch-slim-dawn/morning-result.json",
+      "mechanical_processing": "Selected the 4:1 y=270..765 crop and applied Lanczos resize to 880×220; no drawn objects, recoloring, blur or procedural gradient was added.",
+      "asset_version": "20260810-wallpaper-time-switch-r6",
+      "disposition": "selected"
+    },
+    {
+      "role": "marker_morning",
+      "final_file": "marker-morning.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in Image2 (image_gen)",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "assets/images/wallpaper-switch/marker-day.png",
+        "role": "day contrast reference paired with the former morning material reference"
+      },
+      "prompt": "Use case: stylized-concept\nAsset type: unselected-state morning marker displayed at exactly 20×20 inside a ceramic time-of-day switch\nPrimary request: Create one extremely legible early-dawn ceramic-enamel marker whose silhouette is clearly different from the existing full midday sun marker at 20px.\nInput images: Image 1 is the current morning marker whose ray-topped sun is too similar to day; Image 2 is the existing day marker used only as a contrast reference. Do not reproduce Image 2's full sun or ray crown.\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for local removal, uniform to every edge, with no shadow, gradient, texture, reflection, floor plane, or lighting variation.\nSubject: one centered compact dawn symbol: a low amber-orange sun arc with only the upper one-third visible, emerging from behind a single low ivory cloud/horizon shape. The cloud/horizon reads primarily as a smooth horizontal bar with just two restrained rounded humps, not a large fluffy cloud. No rays. A thin muted coral-peach enamel line directly beneath may reinforce the horizon, but no other objects.\nStyle/medium: crisp glossy ceramic and cloisonné enamel icon, polished Y2K interface style, simple bold silhouette, controlled 1–2px-equivalent edge definition after downscaling.\nComposition/framing: centered, front-facing, generous green padding, compact width-to-height silhouette; every feature must remain identifiable at 20×20.\nColor palette: warm amber-orange partial sun, ivory ceramic horizon/cloud, tiny muted coral accent; deliberately no vivid cyan sky fill so it differs from the selected round node and from the full yellow day sun.\nMaterials/textures: smooth clear glaze, one restrained highlight, no fuzzy bloom.\nConstraints: exactly one partial low sun and one joined simple horizon/cloud. Only about one-third of the sun is visible. No radial rays, no complete circle, no high or centered sun. Do not use #00ff00 within the subject. No round medallion background, no thick enclosing ring, no outer badge, no cast shadow, no contact shadow, no text, no watermark, no stars, moon, extra clouds, birds, mountains, ocean, landscape, face, sparkles, or speckles.\nAvoid: generic partly-cloudy weather icon, eight-ray sunburst, detailed fluffy cloud, midday blue, blur, pixelation, heavy outline, clutter.",
+      "prompt_summary": "Create a 20px morning marker with a low one-third amber sun behind one restrained ivory horizon/cloud, no rays and no complete midday disk.",
+      "call_id": "exec-bf5a4dab-d044-4f0e-ab28-30069ca7b6c2",
+      "imagegen_output": "exec-bf5a4dab-d044-4f0e-ab28-30069ca7b6c2.png",
+      "generated_source": "output/wallpaper-switch-slim-dawn/marker-morning/source-image2-green.png",
+      "staged_source": "output/wallpaper-switch-slim-dawn/staging/marker-morning.png",
+      "source_sha256": "221ecc752ad577fd16a3075d5ddd5d5749f93bf550556070043350ff43081a73",
+      "alpha_intermediate_sha256": "8961792b8d0753adf0540dfa7aef1a08e263afcbdc2758fc67e690e36a45b010",
+      "source_record": "output/wallpaper-switch-slim-dawn/morning-result.json",
+      "mechanical_processing": "Official chroma helper with edge-contract=1 retry, alpha trim and aspect-preserving Lanczos placement on a transparent 144×144 canvas; no redraw or recoloring.",
+      "asset_version": "20260810-wallpaper-time-switch-r6",
+      "disposition": "selected"
+    },
+    {
+      "role": "node_morning",
+      "final_file": "node-morning.png",
+      "tool": "built-in image_gen.imagegen",
+      "mode": "built-in Image2 (image_gen)",
+      "taxonomy": "stylized-concept",
+      "reference": {
+        "path": "assets/images/wallpaper-switch/node-day.png",
+        "role": "day contrast reference paired with the former morning material reference"
+      },
+      "prompt": "Use case: stylized-concept\nAsset type: selected-state celestial insert for a 32px active roller in a ceramic four-stage time-of-day switch\nPrimary request: Create a crisp circular early-morning enamel medallion that cannot be mistaken for the existing midday sun when displayed at only 32×32.\nInput images: Image 1 is the current morning node used for material/style reference but its sun is too high and too similar to day; Image 2 is the existing day node used strictly as a contrast reference. Do not reproduce Image 2's full centered sun or radial crown.\nScene/backdrop: perfectly flat solid #00ff00 chroma-key background for local removal, uniform to every edge, no shadows, gradients, texture, reflections, floor plane, or lighting variation in the background.\nSubject: one centered round enamel sky insert. Within it, a low horizontal ivory cloud/horizon bank crosses the lower third. Only the upper approximately one-third of a warm amber-orange sunrise disc is visible emerging from behind that cloud bank. The disc sits low, not centered; it has no radial ray crown. A restrained warm peach dawn glow sits near the horizon while the upper sky is pale lavender-periwinkle blue.\nStyle/medium: high-resolution glossy ceramic and cloisonné enamel, crisp clean edges, restrained highlights, clear at 32px, matching the polished Y2K ceramic interface reference.\nComposition/framing: centered round insert, front-facing, symmetrical overall, generous green padding; celestial content remains entirely inside the round insert. The low sun and horizontal cloud/horizon must remain readable after reduction to 32×32.\nLighting/mood: gentle early dawn, warm low horizon, cool upper sky.\nColor palette: ivory ceramic cloud, amber-orange low sun, peach horizon, pale lavender blue sky; visibly different from the vivid cyan-and-yellow daytime node.\nMaterials/textures: smooth glazed enamel and clear ceramic, sharp highlight, no fuzzy bloom.\nConstraints: exactly one low partial sun and exactly one simple joined cloud/horizon bank. The sun must be only about one-third visible, low in the circle, and have no rays. No outer thick ceramic bezel because the UI roller supplies its own ring. Do not use #00ff00 anywhere in the subject. No cast shadow, contact shadow, reflection, text, watermark, stars, moon, extra clouds, birds, mountains, ocean, landscape, face, or decorative speckles.\nAvoid: complete sun, centered or high sun, eight-ray sunburst, midday blue, generic weather icon, thick outline, blur, pixelation, glow halo, clutter.",
+      "prompt_summary": "Create a 32px early-morning enamel insert with a low one-third amber sun behind one ivory mist/horizon bank, no rays and no outer bezel.",
+      "call_id": "exec-28dd3951-8144-4c5c-801a-f7e1d516dfea",
+      "imagegen_output": "exec-28dd3951-8144-4c5c-801a-f7e1d516dfea.png",
+      "generated_source": "output/wallpaper-switch-slim-dawn/node-morning/source-image2-green.png",
+      "staged_source": "output/wallpaper-switch-slim-dawn/staging/node-morning.png",
+      "source_sha256": "06e94c2b49b882688c0a1ae1400573ba6f405813533b5ec53f0ac85d41f726e3",
+      "alpha_intermediate_sha256": "c84465c6854594c53aa0b077c052e246a6eac28493385bee512273f6dd847b9c",
+      "source_record": "output/wallpaper-switch-slim-dawn/morning-result.json",
+      "mechanical_processing": "Official chroma helper with edge-contract=1 retry, alpha trim and aspect-preserving Lanczos placement on a transparent 192×192 canvas; no redraw or recoloring.",
+      "asset_version": "20260810-wallpaper-time-switch-r6",
+      "disposition": "selected"
     }
   ],
   "rejected_generation_calls": [
@@ -468,8 +609,13 @@
     }
   ],
   "mechanical_pipeline": {
-    "pipeline_id": "imagegen-ceramic-roll-chroma-resize-atlas-png-v5",
+    "pipeline_id": "imagegen-slim-dawn-chroma-resize-atlas-png-v6",
     "source_records": [
+      "output/wallpaper-switch-slim-dawn/morning-result.json",
+      "output/wallpaper-switch-slim-dawn/frame-roller-result.json",
+      "output/wallpaper-switch-slim-dawn/pack-slim-dawn-result.json",
+      "output/wallpaper-switch-slim-dawn/qa/measurements.json",
+      "output/wallpaper-switch-slim-dawn/qa/final-composite/metrics.json",
       "output/wallpaper-switch-reference-v2/frame-scenes/result.json",
       "output/wallpaper-switch-reference-v2/markers/result.json",
       "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
@@ -478,11 +624,11 @@
     "chroma_helper": "C:/Users/lusu/.codex/skills/.system/imagegen/scripts/remove_chroma_key.py",
     "command_options": ["--auto-key", "border", "--soft-matte", "--transparent-threshold", "12", "--opaque-threshold", "220", "--despill"],
     "processing": {
-      "frame": "Official chroma removal; alpha trim; mechanical Lanczos3 fill resize to 880x220. No drawing, recoloring, or synthetic border.",
-      "roller": "Official chroma removal; alpha trim; mechanical Lanczos3 contain resize to 192x192 on a transparent canvas. No drawing or recoloring.",
-      "scenes": "Mechanical Lanczos3 fill resize from the complete Image2 fields to 880x220, preserving all generated tonal bands without crop, drawing, recoloring, or added objects.",
-      "markers": "Each new v2 source was keyed separately; transparent bounds were trimmed at alpha 4; premultiplied-alpha Lanczos3 aspect-preserving resize centered the subject on a transparent 144x144 canvas. No drawing, recoloring, sharpening, blur, or subject replacement.",
-      "nodes": "Alpha trim at threshold 1; proportional fit within 180x180; center on transparent 192x192.",
+      "frame": "The selected r6 frame used Sharp-equivalent chroma removal because the available Python runtime lacked Pillow, then alpha-bounds crop and mechanical Lanczos resize to 880x220. No drawing, recoloring, synthetic border, blur or sharpening.",
+      "roller": "The selected r6 roller used mechanical chroma removal, alpha-bounds crop and Lanczos contain resize to 192x192 on a transparent canvas. No drawing, geometry synthesis or recoloring.",
+      "scenes": "The r6 morning field used the documented 4:1 y=270..765 crop and Lanczos resize to 880x220; the other complete Image2 fields remain byte-identical. No drawing, recoloring, procedural gradient or added object.",
+      "markers": "The r6 morning marker used the official helper with edge-contract=1 retry, then alpha trim and premultiplied-alpha Lanczos3 aspect-preserving placement on a transparent 144x144 canvas; the other markers remain byte-identical. No drawing or recoloring.",
+      "nodes": "The r6 morning node used the official helper with edge-contract=1 retry, then alpha trim and proportional Lanczos fit on a transparent 192x192 canvas; the other nodes remain byte-identical. No drawing or recoloring.",
       "accents": {
         "canvas": [480, 160],
         "morning_fit_and_xy": [120, 62, 0, 19],
@@ -494,9 +640,9 @@
       "delivery_atlases": "Four vertical atlases were mechanically packed from the byte-locked formal scene, marker, node, roller and accent PNGs. The node atlas contains the four node cells in theme order followed by roller.png as its fifth native 192x192 cell; frame.png is the only standalone runtime file."
     },
     "steps": [
-      "Copied each selected built-in Image2 source into staging and used the installed imagegen scripts/remove_chroma_key.py helper separately on frame, roller, markers, nodes and accents with the declared options.",
+      "Copied each selected built-in Image2 source into staging. The r6 morning marker/node used the installed imagegen scripts/remove_chroma_key.py helper with the declared options and edge-contract=1 retry; frame/roller used the documented Sharp-equivalent chroma removal after the available Python runtime lacked Pillow.",
       "Applied only alpha trim or alpha-bounds crop, aspect-preserving Lanczos/Lanczos3 resizing, transparent-canvas placement and PNG encoding to keyed artwork; complete scene fields use mechanical Lanczos3 fill resize. No drawing, repainting, sharpening, blurring, or recoloring was used.",
-      "After the 18 content files were byte-locked, verified every final file dimension and SHA-256 against output/wallpaper-switch-reference-v2/pack-result.json.",
+      "After the 18 content files were byte-locked, verified every final file dimension and SHA-256 against output/wallpaper-switch-slim-dawn/pack-slim-dawn-result.json.",
       "Mechanically stacked the 17 non-frame content files into four vertical delivery atlases at their native cell dimensions; roller.png is the fifth node-atlas cell and frame.png remains the only standalone runtime file.",
       "Transparent pixels are copied as straight RGBA; no cell is resampled, repeated, blended, or repurposed during atlas packaging.",
       "No celestial body, cloud, star, frame, marker, ray, roller, horizon, glow band, or scene artwork was drawn or synthesized in code."
@@ -504,6 +650,9 @@
   },
   "qa": {
     "source_records": [
+      "output/wallpaper-switch-slim-dawn/qa/measurements.json",
+      "output/wallpaper-switch-slim-dawn/qa/final-composite/metrics.json",
+      "output/wallpaper-switch-slim-dawn/morning-result.json",
       "output/wallpaper-switch-reference-v2/frame-scenes/qa.json",
       "output/wallpaper-switch-reference-v2/markers/result.json",
       "output/wallpaper-switch-reference-v2/nodes-accents/result.json",
@@ -512,24 +661,28 @@
     "frame": {
       "pass": true,
       "dimensions": [880, 220],
-      "sha256": "304d90de2dec0698667e0cb8d370655e8de27ffb960a0217d9fdfa8e0cc1eb03",
-      "alpha": {"transparent": 134012, "partial": 10953, "opaque": 48635},
-      "center_opening_alpha_bbox": [36, 29, 842, 190],
-      "center_opening_pixels": 123983,
+      "sha256": "ce7917df11a97664a0ae6b72ae4e1d3498e1f8ff104017bf9f0e5e855567866a",
+      "alpha_bounds": {"left": 4, "top": 4, "width": 872, "height": 212, "right": 875, "bottom": 215},
+      "semi_transparent_pixels": 8489,
+      "center_opening_alpha_bbox": [18, 20, 861, 201],
+      "center_runs_at_alpha_32": {"horizontal": {"start": 18, "end_inclusive": 860, "length": 843}, "vertical": {"start": 20, "end_inclusive": 200, "length": 181}},
       "center_opening_touches_edge": false,
       "corner_alpha": [0, 0, 0, 0],
-      "center_alpha": 0
+      "center_alpha": 0,
+      "display_at_176x44": {"outer_bounds_approx": [174.4, 42.4], "top_wall_approx": 3.2, "bottom_wall_approx": 3, "end_wall_approx": 2.8}
     },
     "roller": {
       "pass": true,
       "dimensions": [192, 192],
-      "sha256": "10f90638e4392a6998a362207d03ced9831022023a38ac34fbf29a87598db17b",
-      "alpha": {"transparent": 19533, "partial": 3110, "opaque": 14221},
-      "center_opening_alpha_bbox": [33, 33, 158, 158],
-      "center_opening_pixels": 12420,
+      "sha256": "8f969ddad084c59dd507a81cdf940773fb55ae525e093ff55fd267cc36fb922e",
+      "alpha_bounds": {"left": 7, "top": 7, "width": 178, "height": 178, "right": 184, "bottom": 184},
+      "semi_transparent_pixels": 2353,
+      "center_opening_alpha_bbox": [16, 17, 176, 177],
+      "center_runs_at_alpha_32": {"horizontal": {"start": 16, "end_inclusive": 175, "length": 160}, "vertical": {"start": 17, "end_inclusive": 176, "length": 160}},
       "center_opening_touches_edge": false,
       "corner_alpha": [0, 0, 0, 0],
-      "center_alpha": 0
+      "center_alpha": 0,
+      "display_in_36px_wrapper": {"outer_diameter": 33.375, "center_opening": 30, "wall_per_side_approx": 1.6875, "orientation_cue": "two localized 4:30 grooves plus asymmetric 10 o'clock glaze highlight"}
     },
     "scenes": {
       "pass": true,
@@ -557,8 +710,23 @@
     },
     "nodes_accents": {
       "pass": true,
-      "nodes": "PASS: all four celestial subjects remain readable through the independent roller aperture with no embedded outer ring; morning and dusk remain distinct.",
+      "nodes": "PASS: all four celestial subjects remain readable through the independent roller aperture with no embedded outer ring; morning uses a low partial sun behind mist while day uses a high complete sun.",
       "accents": "PASS: morning expands upward, day clouds travel horizontally, dusk spreads horizontally, and eight night stars rise; density, transparency and green-fringe checks passed."
+    },
+    "morning_day_distinction": {
+      "pass": true,
+      "scene_rmse_at_176x44": 97.136,
+      "node_rmse_at_32x32": 81.343,
+      "marker_rmse_at_20x20": 39.576,
+      "morning_marker_alpha_bbox": [13, 46, 131, 98],
+      "morning_node_alpha_bbox": [7, 5, 186, 188],
+      "actual_size_green_fringe_pixels": 0
+    },
+    "final_composite": {
+      "pass": true,
+      "viewport_clip": "inset(4px 4px round 18px)",
+      "angles_degrees_clockwise": {"morning": 0, "day": 151.072, "dusk": 302.144, "night": 453.216},
+      "viewport_uncovered_pixels_by_theme": {"morning": 0, "day": 0, "dusk": 0, "night": 0}
     },
     "overall_pass": true
   },
@@ -571,21 +739,21 @@
     "packaging_rule": "Every atlas cell is a different byte-locked Image2-generated content asset. The generated roller.png is retained as a formal content source and reused only as the fifth native cell of node-atlas.png; runtime must never request roller.png independently. Runtime cropping selects one declared distinct cell and must never duplicate a cell or visual region for another theme, marker, celestial, roller, or accent."
   },
   "delivery_atlases": [
-    {"file": "scene-atlas.png", "layout": "vertical", "cell_width": 880, "cell_height": 220, "cells": ["scene-morning.png", "scene-day.png", "scene-dusk.png", "scene-night.png"], "final_png": {"width": 880, "height": 880, "sha256": "c988dbc44930bcb0397da5827f8145c685196aeadf06aac4afbad83fdd09e431"}, "bytes": 482222},
-    {"file": "marker-atlas.png", "layout": "vertical", "cell_width": 144, "cell_height": 144, "cells": ["marker-morning.png", "marker-day.png", "marker-dusk.png", "marker-night.png"], "final_png": {"width": 144, "height": 576, "sha256": "a05fa5bb1b6cdaa5381eb363a7a7a944e20d59e3f0a444c6d776e7e1af357850"}, "bytes": 50515},
-    {"file": "node-atlas.png", "layout": "vertical", "cell_width": 192, "cell_height": 192, "cells": ["node-morning.png", "node-day.png", "node-dusk.png", "node-night.png", "roller.png"], "final_png": {"width": 192, "height": 960, "sha256": "0589cfd12b1894e33f8f72f348ec03934bd21c7ffb9b701add571fa43baee3e9"}, "bytes": 204542},
+    {"file": "scene-atlas.png", "layout": "vertical", "cell_width": 880, "cell_height": 220, "cells": ["scene-morning.png", "scene-day.png", "scene-dusk.png", "scene-night.png"], "final_png": {"width": 880, "height": 880, "sha256": "008b0739ff5165ab712f9e20bf6f5c94dac2f4b89735944631af31acabe66027"}, "bytes": 492191},
+    {"file": "marker-atlas.png", "layout": "vertical", "cell_width": 144, "cell_height": 144, "cells": ["marker-morning.png", "marker-day.png", "marker-dusk.png", "marker-night.png"], "final_png": {"width": 144, "height": 576, "sha256": "97044eedb7c02ad7a4930871955f01be393190339a5174c71d95069560485b29"}, "bytes": 44510},
+    {"file": "node-atlas.png", "layout": "vertical", "cell_width": 192, "cell_height": 192, "cells": ["node-morning.png", "node-day.png", "node-dusk.png", "node-night.png", "roller.png"], "final_png": {"width": 192, "height": 960, "sha256": "93b4964d9df08c9ad975c18854d13eaab5899763e0eea7a5c659cac2eb1ffe2f"}, "bytes": 188356},
     {"file": "accent-atlas.png", "layout": "vertical", "cell_width": 480, "cell_height": 160, "cells": ["accent-morning.png", "accent-day.png", "accent-dusk.png", "accent-night.png"], "final_png": {"width": 480, "height": 640, "sha256": "8d416dc6c2780024b60a3028f676284fa712fa4f9b1e0b9bc470dbe0434b9e54"}, "bytes": 18180}
   ],
   "generated_assets": [
-    {"file": "scene-morning.png", "source_role": "scene_morning", "crop_role": "morning", "final_png": {"width": 880, "height": 220, "sha256": "86e32bee9e78d7f359d821e5fd7aaaa81a1f035bfeeac5bf017a699d3d0ba511"}, "bytes": 118815},
+    {"file": "scene-morning.png", "source_role": "scene_morning", "crop_role": "morning", "final_png": {"width": 880, "height": 220, "sha256": "228b4461cabbd28a4d7e552eb01e15020dcda46b02803b5e8423099450f8c6e3"}, "bytes": 128474},
     {"file": "scene-day.png", "source_role": "scene_day", "crop_role": "day", "final_png": {"width": 880, "height": 220, "sha256": "21a93bfd59ad13511b7530386c78bc3b70e9a1fee64863aa652c41912ab89e10"}, "bytes": 119317},
     {"file": "scene-dusk.png", "source_role": "scene_dusk", "crop_role": "dusk", "final_png": {"width": 880, "height": 220, "sha256": "73c76214123272feb242790850933c578350c6b3ab1b384c500d2463be7d6d06"}, "bytes": 130860},
     {"file": "scene-night.png", "source_role": "scene_night", "crop_role": "night", "final_png": {"width": 880, "height": 220, "sha256": "21109ba9d458ec0fc97fc00be0b11e5a24eb8a160ef2895ed52ca667bf5f3379"}, "bytes": 115316},
-    {"file": "marker-morning.png", "source_role": "marker_morning", "crop_role": "morning", "final_png": {"width": 144, "height": 144, "sha256": "972a2eda7cf584fb32bde5fc5655544ce478a626c030cdbc4ada661e4e47454d"}, "bytes": 15136},
+    {"file": "marker-morning.png", "source_role": "marker_morning", "crop_role": "morning", "final_png": {"width": 144, "height": 144, "sha256": "c9dea9d91297a311d90305eacf6557c19a35ae00605e2a56115b6f41ececa443"}, "bytes": 7998},
     {"file": "marker-day.png", "source_role": "marker_day", "crop_role": "day", "final_png": {"width": 144, "height": 144, "sha256": "f5d964da42cdfa6a2bd2e2d7a8a98c838014d1fd7f3ba111c928b14aff837868"}, "bytes": 17667},
     {"file": "marker-dusk.png", "source_role": "marker_dusk", "crop_role": "dusk", "final_png": {"width": 144, "height": 144, "sha256": "24c82c18b55e096238f33a9fe5c3b80bffc38ad9ae89d2bdbb2cebbc2c9a6b9c"}, "bytes": 7290},
     {"file": "marker-night.png", "source_role": "marker_night", "crop_role": "night", "final_png": {"width": 144, "height": 144, "sha256": "74710010c0abb39b6381d72aead8ff43fc21b1b4e943a8eebe64561f84fcb397"}, "bytes": 15310},
-    {"file": "node-morning.png", "source_role": "node_morning", "crop_role": "morning", "final_png": {"width": 192, "height": 192, "sha256": "72163447acb1fb95161f5d88a079ccc675067063de899ad90ac9240e41b35c85"}, "bytes": 51392},
+    {"file": "node-morning.png", "source_role": "node_morning", "crop_role": "morning", "final_png": {"width": 192, "height": 192, "sha256": "e0e18e9eca155af6fda1eee2e90c2a97c2e7ad1641b03645f0db0dfddb252bee"}, "bytes": 37187},
     {"file": "node-day.png", "source_role": "node_day", "crop_role": "day", "final_png": {"width": 192, "height": 192, "sha256": "c706bd59eb2bf455ba7f13235b733376d221cdb9823843f42ee49f919846e999"}, "bytes": 69365},
     {"file": "node-dusk.png", "source_role": "node_dusk", "crop_role": "dusk", "final_png": {"width": 192, "height": 192, "sha256": "358cb2597d53ec594064d2a02bcb9ede7f2089c3dc94d04216b5810eafdbc036"}, "bytes": 54296},
     {"file": "node-night.png", "source_role": "node_night", "crop_role": "night", "final_png": {"width": 192, "height": 192, "sha256": "04d36be5765de703bffd89f8365f599dc6cb24a300750edabdec8c4e9d705562"}, "bytes": 62697},
@@ -593,12 +761,18 @@
     {"file": "accent-day.png", "source_role": "accent_day", "crop_role": "day", "final_png": {"width": 480, "height": 160, "sha256": "b24472486a5341f1339f6d88c678e6197efcd81ac46261653757e4c1907fc86f"}, "bytes": 6418},
     {"file": "accent-dusk.png", "source_role": "accent_dusk", "crop_role": "dusk", "final_png": {"width": 480, "height": 160, "sha256": "538a753d13cd71fb8114da2a79ca5c4bab02e51a58db812f031705a9007393b5"}, "bytes": 6486},
     {"file": "accent-night.png", "source_role": "accent_night", "crop_role": "night", "final_png": {"width": 480, "height": 160, "sha256": "99c2893a9beed43fa0188eaf20f86f6d39459ae4ffd5c27390d0fb5a4ee4a4f3"}, "bytes": 1845},
-    {"file": "frame.png", "source_role": "frame", "crop_role": "frame", "final_png": {"width": 880, "height": 220, "sha256": "304d90de2dec0698667e0cb8d370655e8de27ffb960a0217d9fdfa8e0cc1eb03"}, "bytes": 72642},
-    {"file": "roller.png", "source_role": "roller", "crop_role": "roller", "final_png": {"width": 192, "height": 192, "sha256": "10f90638e4392a6998a362207d03ced9831022023a38ac34fbf29a87598db17b"}, "bytes": 34950}
+    {"file": "frame.png", "source_role": "frame", "crop_role": "frame", "final_png": {"width": 880, "height": 220, "sha256": "ce7917df11a97664a0ae6b72ae4e1d3498e1f8ff104017bf9f0e5e855567866a"}, "bytes": 45067},
+    {"file": "roller.png", "source_role": "roller", "crop_role": "roller", "final_png": {"width": 192, "height": 192, "sha256": "8f969ddad084c59dd507a81cdf940773fb55ae525e093ff55fd267cc36fb922e"}, "bytes": 18124}
   ],
   "historical_supersession": {
     "prior_asset_version": "20260809-wallpaper-time-switch-r4",
     "status": "Preserved only as dated 2026-08-09 history; the current long-term production contract is r5.",
     "reason": "The ceramic rolling redesign replaces the old 32px selector, pixel-like marker treatment, sparse r4 accents, absence of a generated rolling ring and calm-r1 public contract."
+  },
+  "current_supersession": {
+    "prior_asset_version": "20260810-wallpaper-time-switch-r5",
+    "asset_version": "20260810-wallpaper-time-switch-r6",
+    "status": "The r5 ceramic-roll contract and its five replaced Image2 sources remain preserved as dated history; r6 is the current slim-rim dawn production contract.",
+    "reason": "r6 makes the outer shell and roller ring thinner and clearer, distinguishes morning from day with a low partial amber sunrise and lavender-to-apricot dawn field, and preserves the 176×44 geometry, 44px targets, five runtime URLs, four accent directions and accessibility behavior."
   }
 }
