@@ -2,6 +2,10 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-08-11
+
+- 新增既有 `video_publish` 的“一条链接即可发布”0.4.0 候选：工具名、23 项工具总数与 `content:write` scope 均不变化，AI 只需提交唯一 `operationId` 和 YouTube／Bilibili／b23.tv 链接，服务端便会有界补全省略的标题、简介、作者、发布时间和平台官方封面，并直接以 `status=published` 原子发布；调用方显式提交的展示字段始终优先。幂等收据在任何 provider 网络请求前回放；若标题既未提供也无法取得，则以 `VIDEO_METADATA_TITLE_UNAVAILABLE` 零写入拒绝。本站仍只保存外链和元数据，不下载、上传、转码或托管视频文件。仓库按 0.4.0 候选记录，精确生产 Worker version 与真实 OAuth 闭环结果须在实际部署后回填，当前不宣称已上线或已验收。新增三语 `site-updates` 记录 `seed-update-2026-08-11-video-link-autofill`，同步 fallback、Home 投影、Functions seed、schema seed 与公开表示，main 缓存 token 更新为 `20260811-video-link-autofill-r1`。
+
 ## 2026-08-10
 
 - 修复四段壁纸开关在非 Home 桌面路由被误当成静态控件的问题：只要顶栏中的开关实际可见，scene、marker、celestial、roller 与 morning／day／dusk／night 单层 accent 都会预解码并使用同一套可中断 transform／opacity transition，不再瞬移或隐藏特效。首页整幅壁纸 crossfade／动态云层仍只在 Home 运行；移动 App 紧凑栏仍隐藏 176px 开关，Home Android 布局不变。同一 slim-dawn 三语记录更新为 `2026-08-10T04:10:00.000Z`，公开 API／文章 seed／main 缓存 token 为 `20260810-wallpaper-switch-route-motion-r1`；r6 图像、素材 manifest 溯源 token `20260810-wallpaper-switch-slim-dawn-r1` 及 `20260810-wallpaper-time-switch-r6` 不变。

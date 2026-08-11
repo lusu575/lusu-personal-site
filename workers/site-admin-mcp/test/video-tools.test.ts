@@ -208,6 +208,9 @@ describe("owner video MCP tools", () => {
       { type: "oauth2", scopes: ["content:delete"] }
     ]);
     expect(tools.tools.get("video_publish")?.definition.description).toContain("YouTube or Bilibili");
+    expect(tools.tools.get("video_publish")?.definition.description).toContain(
+      "Only operationId and originalUrl are required"
+    );
     expect(tools.tools.get("video_publish")?.definition.description).toContain("never accepts local paths");
 
     await expect(tools.call("video_publish", {
@@ -229,7 +232,37 @@ describe("owner video MCP tools", () => {
     })).rejects.toThrow();
   });
 
-  it("publishes, replays, manages, refreshes, and deletes with CAS plus OAuth audits", async () => {
+  it("publishes with only operationId and originalUrl", async () => {
+    await activateGrant(["content:write"]);
+    const tools = registeredTools(["content:write"], async (input) => {
+      expect(String(input)).toContain("youtube.com/oembed");
+      return Response.json({
+        title: "Provider-only title",
+        author_name: "Provider-only author",
+        thumbnail_url: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+      });
+    });
+    const published = structured(await tools.call("video_publish", {
+      operationId: "video-publish-minimal-0001",
+      originalUrl: "https://youtu.be/dQw4w9WgXcQ"
+    }));
+    expect(published).toMatchObject({
+      ok: true,
+      duplicate: false,
+      platform: "youtube",
+      externalId: "dQw4w9WgXcQ",
+      status: "published"
+    });
+    const stored = await testEnv.DB.prepare(`
+      select title, status from videos where video_id = ?
+    `).bind(String(published.videoId || "")).first();
+    expect(stored).toMatchObject({
+      title: "Provider-only title",
+      status: "published"
+    });
+  });
+
+  it("preserves complete publish payloads, replays, manages, refreshes, and deletes with CAS plus OAuth audits", async () => {
     const scopes = ["content:write", "content:delete"];
     await activateGrant(scopes);
     let metadataFetchCount = 0;
@@ -247,6 +280,9 @@ describe("owner video MCP tools", () => {
       originalUrl: "https://youtu.be/dQw4w9WgXcQ",
       title: "External video",
       description: "Published atomically from MCP.",
+      thumbnailUrl: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      authorName: "Legacy payload author",
+      publishedAt: null,
       categoryIds: ["tutorials"]
     };
     const published = structured(await tools.call("video_publish", publishPayload));

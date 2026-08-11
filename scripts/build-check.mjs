@@ -874,6 +874,7 @@ const gameVideoMcpCandidateReleaseVersion = "20260809-game-video-mcp-heartbeat-r
 const motionPolishReleaseVersion = "20260809-motion-polish-r2";
 const wallpaperSwitchSceneReleaseVersion = "20260810-wallpaper-switch-slim-dawn-r1";
 const wallpaperSwitchRouteMotionReleaseVersion = "20260810-wallpaper-switch-route-motion-r1";
+const videoLinkAutofillReleaseVersion = "20260811-video-link-autofill-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = "20260809-transfer-motion-r2";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
@@ -1197,7 +1198,7 @@ for (const route of lazyPublicRoutes) {
 for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
-  ["./data/home-content.mjs", wallpaperSwitchRouteMotionReleaseVersion],
+  ["./data/home-content.mjs", videoLinkAutofillReleaseVersion],
   ["./features/account.mjs", motionPolishReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", transferReleaseVersion]
@@ -3205,7 +3206,7 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = motionPolishReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = wallpaperSwitchRouteMotionReleaseVersion;
+const currentMainVersion = videoLinkAutofillReleaseVersion;
 const currentCssVersion = wallpaperSwitchSceneReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260809-browser-game-heartbeat-v1";
@@ -4692,14 +4693,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-10-wallpaper-switch-slim-dawn";
-const finalUpdateSlug = "2026-08-10-wallpaper-switch-slim-dawn";
+const finalUpdateId = "seed-update-2026-08-11-video-link-autofill";
+const finalUpdateSlug = "2026-08-11-video-link-autofill";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Slim-Rim Dawn Polish for the Four-Stage Wallpaper Switch";
-const finalPublishedAt = "2026-08-10T04:10:00.000Z";
+const finalTitleEn = "Publish a Video with AI from One Link";
+const finalPublishedAt = "2026-08-11T00:20:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-08-10-wallpaper-switch-slim-dawn",
   "seed-update-2026-08-10-wallpaper-switch-ceramic-roll",
   "seed-update-2026-08-10-wallpaper-switch-calm-redesign",
   "seed-update-2026-08-09-wallpaper-switch-scene-redesign",
@@ -4739,6 +4741,7 @@ const changelog20260806Section = markdownSection(changelog, "## 2026-08-06");
 const changelog20260807Section = markdownSection(changelog, "## 2026-08-07");
 const changelog20260809Section = markdownSection(changelog, "## 2026-08-09");
 const changelog20260810Section = markdownSection(changelog, "## 2026-08-10");
+const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4757,6 +4760,10 @@ if (!finalUpdateStarted) {
 }
 
 if (finalUpdateStarted) {
+  const finalReleaseDate = finalPublishedAt.slice(0, 10);
+  if (!apiJs.includes(`const PUBLIC_RELEASE_DATE = "${finalReleaseDate}";`)) {
+    fail(`functions/api/[[route]].js PUBLIC_RELEASE_DATE should match ${finalReleaseDate}`);
+  }
   for (const updateId of preservedReleaseUpdateIds) {
     for (const [path, source] of [
       ["js/data/content.mjs", contentModuleJs],
@@ -4774,14 +4781,14 @@ if (finalUpdateStarted) {
     }
   }
   if (homeContentModuleJs.includes("seed-update-2026-08-07-remote-mcp-oauth")) {
-    fail("js/data/home-content.mjs should remain the newest five-item projection after the slim-rim dawn wallpaper update");
+    fail("js/data/home-content.mjs should remain the newest five-item projection after the video-link autofill update");
   }
 
   const projectedUpdateIds = [finalUpdateId, ...projectedSupportingReleaseUpdateIds];
   const projectedUpdateIndexes = projectedUpdateIds.map((updateId) => homeContentModuleJs.indexOf(updateId));
   if (projectedUpdateIndexes.some((index) => index < 0)
     || !projectedUpdateIndexes.every((index, offset, list) => offset === 0 || list[offset - 1] < index)) {
-    fail("js/data/home-content.mjs should order ceramic rolling, calm redesign, scene redesign, game/video heartbeat, and wallpaper time by descending publication time");
+    fail("js/data/home-content.mjs should order video-link autofill, slim dawn, ceramic rolling, calm redesign, and scene redesign by descending publication time");
   }
 
   for (const token of [
@@ -4939,7 +4946,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-08-10">2026.08.10</time>',
+    '<time id="top-updated" datetime="2026-08-11">2026.08.11</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${motionPolishReleaseVersion}`,
     `/css/motion-system.css?v=${wallpaperSwitchSceneReleaseVersion}`,
@@ -4954,20 +4961,27 @@ if (finalUpdateStarted) {
 
   for (const token of [
     finalMainVersion,
-    adminMotionPolishVersion,
-    transferReleaseVersion,
     finalUpdateId,
-    ...preservedReleaseUpdateIds,
-    wallpaperTimeSwitchAssetVersion,
-    wallpaperSwitchSceneReleaseVersion,
-    wallpaperSwitchRouteMotionReleaseVersion,
     "site-updates",
     "fallback",
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260810Section.includes(token)) {
+    if (!changelog20260811Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
+    }
+  }
+
+  for (const token of [
+    adminMotionPolishVersion,
+    transferReleaseVersion,
+    ...preservedReleaseUpdateIds,
+    wallpaperTimeSwitchAssetVersion,
+    wallpaperSwitchSceneReleaseVersion,
+    wallpaperSwitchRouteMotionReleaseVersion
+  ]) {
+    if (!changelog20260810Section.includes(token)) {
+      fail(`CHANGELOG.md should preserve the 2026-08-10 release token ${token}`);
     }
   }
 }

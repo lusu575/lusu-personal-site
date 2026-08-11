@@ -227,6 +227,7 @@ function createPayload(operationId, overrides = {}) {
     originalUrl: "https://youtu.be/dQw4w9WgXcQ?feature=shared#ignored",
     title: "Agent video",
     description: "Managed through the Agent API.",
+    thumbnailUrl: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
     authorName: "LuSu",
     publishedAt: "2026-08-09T08:00:00+08:00",
     status: "published",
@@ -265,6 +266,20 @@ function seedVideo(DB, options = {}) {
 
 function count(DB, table, where = "") {
   return Number(DB.sqlite.prepare(`select count(*) as count from ${table} ${where}`).get().count);
+}
+
+function canonicalJson(value) {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  if (value && typeof value === "object") {
+    return `{${Object.keys(value).sort().map((key) => (
+      `${JSON.stringify(key)}:${canonicalJson(value[key])}`
+    )).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function canonicalPayloadHash(value) {
+  return createHash("sha256").update(canonicalJson(value)).digest("hex");
 }
 
 test("Agent video routes require mutation scope and a current administrator", async () => {
@@ -331,7 +346,8 @@ test("Agent video create is atomic, canonical, audited, and replayable without a
   };
   const payload = createPayload("video-create-0001", {
     originalUrl: "https://b23.tv/test-video",
-    title: "Bilibili video"
+    title: "Bilibili video",
+    thumbnailUrl: ""
   });
   const created = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
     method: "POST",
@@ -377,6 +393,320 @@ test("Agent video create is atomic, canonical, audited, and replayable without a
   assert.equal(duplicateVideo.response.status, 409);
   assert.equal(duplicateVideo.payload.code, "VIDEO_DUPLICATE");
   assert.equal(count(fixture.DB, "agent_video_receipts"), 1);
+});
+
+test("Agent video link-only create fills provider metadata and replays before another fetch", async () => {
+  const fixture = createFixture();
+  let metadataFetches = 0;
+  fixture.env.VIDEO_METADATA_FETCH = async (url) => {
+    metadataFetches += 1;
+    assert.match(String(url), /^https:\/\/www\.youtube\.com\/oembed\?/);
+    return Response.json({
+      title: "Provider-resolved title",
+      author_name: "Provider author",
+      thumbnail_url: "https://i.ytimg.com/vi/aqz-KE-bpKQ/maxresdefault.jpg"
+    });
+  };
+  const body = {
+    operationId: "video-link-only-001",
+    originalUrl: "https://youtu.be/aqz-KE-bpKQ"
+  };
+
+  const created = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
+    method: "POST",
+    body
+  });
+  assert.equal(created.response.status, 201);
+  assert.equal(created.payload.status, "draft");
+  assert.equal(metadataFetches, 1);
+  const row = fixture.DB.sqlite.prepare("select * from videos where video_id = ?")
+    .get(created.payload.videoId);
+  assert.equal(row.title, "Provider-resolved title");
+  assert.equal(row.description, "");
+  assert.equal(row.thumbnail_url, "https://i.ytimg.com/vi/aqz-KE-bpKQ/maxresdefault.jpg");
+  assert.equal(row.author_name, "Provider author");
+  assert.equal(row.published_at, null);
+  assert.equal(row.metadata_error, "");
+
+  const replay = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
+    method: "POST",
+    body
+  });
+  assert.equal(replay.response.status, 200);
+  assert.equal(replay.payload.duplicate, true);
+  assert.equal(replay.payload.videoId, created.payload.videoId);
+  assert.equal(metadataFetches, 1);
+
+  const changedIntent = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
+    method: "POST",
+    body: { ...body, title: "Provider-resolved title" }
+  });
+  assert.equal(changedIntent.response.status, 409);
+  assert.equal(changedIntent.payload.code, "VIDEO_OPERATION_CONFLICT");
+  assert.equal(metadataFetches, 1);
+  assert.equal(count(fixture.DB, "videos"), 1);
+  assert.equal(count(fixture.DB, "agent_video_receipts"), 1);
+  assert.equal(count(fixture.DB, "agent_audit_log"), 1);
+});
+
+test("Agent video v2 receipts cannot be replayed through the legacy hash fallback", async () => {
+  const fixture = createFixture();
+  let metadataFetches = 0;
+  fixture.env.VIDEO_METADATA_FETCH = async () => {
+    metadataFetches += 1;
+    return Response.json({
+      title: "Provider title that must not be fetched",
+      author_name: "Provider author that changes the omitted intent"
+    });
+  };
+  const fullIntent = {
+    operationId: "video-v2-intent-001",
+    originalUrl: "https://youtu.be/M7lc1UVf-VE",
+    title: "Fully explicit v2 video",
+    description: "",
+    thumbnailUrl: "",
+    authorName: "",
+    publishedAt: null,
+    status: "published",
+    sortOrder: 0,
+    pinned: true,
+    pinnedSortOrder: 0,
+    categoryIds: []
+  };
+
+  const created = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
+    method: "POST",
+    body: fullIntent
+  });
+  assert.equal(created.response.status, 201);
+  assert.equal(metadataFetches, 0);
+  const receipt = fixture.DB.sqlite.prepare(`
+    select payload_hash from agent_video_receipts where operation_id = ?
+  `).get(fullIntent.operationId);
+  assert.match(receipt.payload_hash, /^v2:[a-f0-9]{64}$/);
+
+  const changedIntent = { ...fullIntent };
+  delete changedIntent.description;
+  delete changedIntent.authorName;
+  delete changedIntent.publishedAt;
+  delete changedIntent.categoryIds;
+  const conflict = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
+    method: "POST",
+    body: changedIntent
+  });
+  assert.equal(conflict.response.status, 409);
+  assert.equal(conflict.payload.code, "VIDEO_OPERATION_CONFLICT");
+  assert.equal(metadataFetches, 0);
+  assert.equal(count(fixture.DB, "videos"), 1);
+  assert.equal(count(fixture.DB, "agent_video_receipts"), 1);
+  assert.equal(count(fixture.DB, "agent_audit_log"), 1);
+});
+
+test("Agent video create replays legacy null-category receipts without provider access", async () => {
+  const fixture = createFixture();
+  await ensureAgentVideoSchema(fixture.env);
+  let metadataFetches = 0;
+  fixture.env.VIDEO_METADATA_FETCH = async () => {
+    metadataFetches += 1;
+    throw new Error("legacy receipt replay must not fetch");
+  };
+  const body = {
+    operationId: "video-legacy-replay-001",
+    originalUrl: "https://youtu.be/dQw4w9WgXcQ",
+    title: "Legacy explicit title",
+    categoryIds: null
+  };
+  const legacyPayloadHash = canonicalPayloadHash({
+    action: "create",
+    payload: {
+      originalUrl: body.originalUrl,
+      title: body.title,
+      description: "",
+      thumbnailUrl: null,
+      authorName: "",
+      publishedAt: null,
+      status: "draft",
+      sortOrder: null,
+      pinned: false,
+      pinnedSortOrder: null,
+      categoryIds: []
+    }
+  });
+  const responsePayload = {
+    ok: true,
+    duplicate: false,
+    videoId: "legacy-video-id",
+    platform: "youtube",
+    externalId: "dQw4w9WgXcQ",
+    status: "draft",
+    updatedAt: "2026-08-09T00:00:00.000Z"
+  };
+  fixture.DB.sqlite.prepare(`
+    insert into agent_video_receipts (
+      receipt_id, user_id, operation_id, action, payload_hash,
+      video_id, response_json, created_at
+    ) values (?, 'admin-1', ?, 'create', ?, ?, ?, ?)
+  `).run(
+    "legacy-receipt-id",
+    body.operationId,
+    legacyPayloadHash,
+    responsePayload.videoId,
+    JSON.stringify(responsePayload),
+    responsePayload.updatedAt
+  );
+
+  const replay = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
+    method: "POST",
+    body
+  });
+  assert.equal(replay.response.status, 200);
+  assert.equal(replay.payload.duplicate, true);
+  assert.equal(replay.payload.videoId, responsePayload.videoId);
+  assert.equal(metadataFetches, 0);
+  assert.equal(count(fixture.DB, "videos"), 0);
+
+  const rejectedFreshCreate = await callApi(
+    fixture.env,
+    fixture.tokens.adminWrite,
+    "agent/videos",
+    {
+      method: "POST",
+      body: {
+        ...body,
+        operationId: "video-null-category-new-001",
+        description: "",
+        thumbnailUrl: "",
+        authorName: "",
+        publishedAt: null
+      }
+    }
+  );
+  assert.equal(rejectedFreshCreate.response.status, 400);
+  assert.equal(rejectedFreshCreate.payload.code, "VIDEO_CATEGORY_IDS_INVALID");
+  assert.equal(metadataFetches, 0);
+  assert.equal(count(fixture.DB, "videos"), 0);
+  assert.equal(count(fixture.DB, "agent_video_receipts"), 1);
+});
+
+test("Agent video link-only create fills Bilibili metadata", async () => {
+  const fixture = createFixture();
+  let metadataFetches = 0;
+  fixture.env.VIDEO_METADATA_FETCH = async (url) => {
+    metadataFetches += 1;
+    assert.equal(
+      String(url),
+      "https://api.bilibili.com/x/web-interface/view?bvid=BV1xx411c7mD"
+    );
+    return Response.json({
+      code: 0,
+      data: {
+        title: "Bilibili provider title",
+        desc: "Bilibili provider description",
+        pic: "https://i0.hdslb.com/bfs/archive/provider-cover.jpg",
+        owner: { name: "Bilibili provider author" },
+        pubdate: 1_786_233_600
+      }
+    });
+  };
+
+  const created = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
+    method: "POST",
+    body: {
+      operationId: "video-link-only-bili-001",
+      originalUrl: "https://www.bilibili.com/video/BV1xx411c7mD"
+    }
+  });
+  assert.equal(created.response.status, 201);
+  assert.equal(metadataFetches, 1);
+  const row = fixture.DB.sqlite.prepare("select * from videos where video_id = ?")
+    .get(created.payload.videoId);
+  assert.equal(row.title, "Bilibili provider title");
+  assert.equal(row.description, "Bilibili provider description");
+  assert.equal(row.thumbnail_url, "https://i0.hdslb.com/bfs/archive/provider-cover.jpg");
+  assert.equal(row.author_name, "Bilibili provider author");
+  assert.equal(row.published_at, "2026-08-09T00:00:00.000Z");
+  assert.equal(row.metadata_error, "");
+});
+
+test("Agent video create preserves explicit empty metadata fields and null timestamps", async () => {
+  const fixture = createFixture();
+  fixture.env.VIDEO_METADATA_FETCH = async () => Response.json({
+    title: "Only the omitted title is resolved",
+    author_name: "Provider author must not override an explicit empty value",
+    thumbnail_url: "https://i.ytimg.com/vi/M7lc1UVf-VE/maxresdefault.jpg"
+  });
+
+  const created = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
+    method: "POST",
+    body: {
+      operationId: "video-explicit-empty-001",
+      originalUrl: "https://youtu.be/M7lc1UVf-VE",
+      description: "",
+      thumbnailUrl: "",
+      authorName: "",
+      publishedAt: null
+    }
+  });
+  assert.equal(created.response.status, 201);
+  const row = fixture.DB.sqlite.prepare("select * from videos where video_id = ?")
+    .get(created.payload.videoId);
+  assert.equal(row.title, "Only the omitted title is resolved");
+  assert.equal(row.description, "");
+  assert.equal(row.thumbnail_url, "");
+  assert.equal(row.author_name, "");
+  assert.equal(row.published_at, null);
+});
+
+test("Agent video create fails without writes when an omitted title cannot be resolved", async () => {
+  const fixture = createFixture();
+  let metadataFetches = 0;
+  fixture.env.VIDEO_METADATA_FETCH = async () => {
+    metadataFetches += 1;
+    throw new Error("provider unavailable");
+  };
+
+  const failed = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
+    method: "POST",
+    body: {
+      operationId: "video-title-unavailable-001",
+      originalUrl: "https://youtu.be/M7lc1UVf-VE"
+    }
+  });
+  assert.equal(failed.response.status, 502);
+  assert.equal(failed.payload.code, "VIDEO_METADATA_TITLE_UNAVAILABLE");
+  assert.equal(metadataFetches, 1);
+  assert.equal(count(fixture.DB, "videos"), 0);
+  assert.equal(count(fixture.DB, "video_category_relations"), 0);
+  assert.equal(count(fixture.DB, "agent_video_receipts"), 0);
+  assert.equal(count(fixture.DB, "agent_audit_log"), 0);
+});
+
+test("Agent video create keeps an explicit title when optional metadata fetch fails", async () => {
+  const fixture = createFixture();
+  let metadataFetches = 0;
+  fixture.env.VIDEO_METADATA_FETCH = async () => {
+    metadataFetches += 1;
+    throw new Error("provider unavailable");
+  };
+
+  const created = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
+    method: "POST",
+    body: {
+      operationId: "video-manual-title-001",
+      originalUrl: "https://youtu.be/M7lc1UVf-VE",
+      title: "Explicit fallback title"
+    }
+  });
+  assert.equal(created.response.status, 201);
+  assert.equal(metadataFetches, 1);
+  const row = fixture.DB.sqlite.prepare("select * from videos where video_id = ?")
+    .get(created.payload.videoId);
+  assert.equal(row.title, "Explicit fallback title");
+  assert.equal(row.description, "");
+  assert.equal(row.thumbnail_url, "https://i.ytimg.com/vi/M7lc1UVf-VE/hqdefault.jpg");
+  assert.equal(row.author_name, "");
+  assert.equal(row.published_at, null);
+  assert.equal(row.metadata_error, "YouTube metadata refresh failed.");
 });
 
 test("Agent video list/get expose managed fields and strict provider boundaries", async () => {

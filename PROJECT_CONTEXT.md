@@ -1,5 +1,14 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-11 `video_publish` 单链接发布 0.4.0 候选
+
+- 本轮只收窄既有 `video_publish` 的必填输入，不新增工具、scope 或 API：生产清单仍是 23 项工具，写入继续使用 `content:write`；0.4.0 候选仍由同一工具直接提交 `status=published`，既有直接公开行为不变。
+- 站长可以只告诉 AI 一条 YouTube、Bilibili 或 b23.tv 链接；AI 为每次新动作生成唯一 `operationId`。服务端规范化平台、外部 ID、原地址与 iframe 地址，并对省略的 `title`、`description`、`thumbnailUrl`、`authorName`、`publishedAt` 做有界 provider 补全；调用方显式传入的值（包括允许的空值或 `null`）优先，不被远端结果覆盖。
+- `operationId + canonical caller-intent hash` 只绑定调用方实际提交的字段。服务端必须先检查并回放持久收据，再决定是否访问 provider，因此同载荷重试不重复联网；旧版完整载荷收据继续兼容。只有在不存在可回放收据时才抓取元数据。
+- 标题是最终发布的硬门槛：若调用方省略标题且 provider 也无法返回合格标题，则返回 `VIDEO_METADATA_TITLE_UNAVAILABLE`，视频、分类关系、收据与审计均保持零写入。显式标题存在时，其他可选元数据抓取失败仍可发布，并持久化受限 `metadata_error`。本站始终不下载、上传、转码或托管视频文件，也不接受本机路径、Base64、原始字节或任意 iframe URL。
+- 当前只记录仓库 0.4.0 上线候选，不提前宣称生产可用。精确 Worker version、真实浏览器 OAuth、23 工具发现、最小载荷发布、同载荷重放、管理／公开回读与 grant 撤销结果必须在实际部署后由主发布流程回填；历史 bundle 的验收不能替代新 bundle。
+- 最新三语公开更新为 `seed-update-2026-08-11-video-link-autofill`／`2026-08-11-video-link-autofill`，发布时间 `2026-08-11T00:20:00.000Z`，公开表示、文章 seed、Home import 与 `js/main.js` 缓存 token 为 `20260811-video-link-autofill-r1`；Home 仅投影它与随后四条最新记录，不包含正文。
+
 ## 2026-08-10 四时段壁纸开关跨路由动效修复
 
 - 当前最终公开记录仍为 `seed-update-2026-08-10-wallpaper-switch-slim-dawn`／`2026-08-10-wallpaper-switch-slim-dawn`，但更新时间为 `2026-08-10T04:10:00.000Z`；Functions 公开 API、文章 seed、schema marker、Home 投影与 `js/main.js` 使用 `20260810-wallpaper-switch-route-motion-r1`。本次没有更改 r6 PNG，所以 `wallpaper-time-switch.source.json` 保留素材发布溯源 token `20260810-wallpaper-switch-slim-dawn-r1`，图像 token 仍为 `20260810-wallpaper-time-switch-r6`。

@@ -163,13 +163,17 @@ export async function createAgentVideoService({ env, principal: principalValue, 
   });
   await ensureAgentVideoSchema(env);
   const receiptInput = normalizeCreateReceiptInput(body);
-  const payloadHash = await hashCanonicalPayload({
+  const payloadHash = `v2:${await hashCanonicalPayload({
     action: "create",
     payload: receiptInput.payload
-  });
+  })}`;
+  const legacyPayload = legacyCreateReceiptPayload(receiptInput.payload);
+  const compatiblePayloadHashes = legacyPayload
+    ? [await hashCanonicalPayload({ action: "create", payload: legacyPayload })]
+    : [];
   const existingReceipt = await readAgentVideoReceipt(env, principal.userId, receiptInput.operationId);
   if (existingReceipt) {
-    return replayAgentVideoReceipt(existingReceipt, "create", payloadHash);
+    return replayAgentVideoReceipt(existingReceipt, "create", payloadHash, compatiblePayloadHashes);
   }
   const payload = await normalizeCreatePayload(body, env);
 
@@ -192,7 +196,7 @@ export async function createAgentVideoService({ env, principal: principalValue, 
         thumbnail_url, author_name, published_at, status, sort_order, pinned,
         pinned_sort_order, metadata_error, created_at, updated_at
       )
-      select ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, ?
+      select ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       where not exists (
         select 1 from videos where platform = ? and external_id = ?
       )
@@ -211,6 +215,7 @@ export async function createAgentVideoService({ env, principal: principalValue, 
       payload.sortOrder,
       payload.pinned ? 1 : 0,
       payload.pinnedSortOrder,
+      payload.metadataError,
       now,
       now,
       payload.platform,
@@ -248,13 +253,17 @@ export async function createAgentVideoService({ env, principal: principalValue, 
   } catch (error) {
     if (isUniqueConstraintError(error)) {
       const racedReceipt = await readAgentVideoReceipt(env, principal.userId, payload.operationId);
-      if (racedReceipt) return replayAgentVideoReceipt(racedReceipt, "create", payloadHash);
+      if (racedReceipt) {
+        return replayAgentVideoReceipt(racedReceipt, "create", payloadHash, compatiblePayloadHashes);
+      }
     }
     throw error;
   }
   if (Number(batchResults?.[0]?.meta?.changes || 0) !== 1) {
     const racedReceipt = await readAgentVideoReceipt(env, principal.userId, payload.operationId);
-    if (racedReceipt) return replayAgentVideoReceipt(racedReceipt, "create", payloadHash);
+    if (racedReceipt) {
+      return replayAgentVideoReceipt(racedReceipt, "create", payloadHash, compatiblePayloadHashes);
+    }
     if (await findVideoByProvider(env, payload.platform, payload.externalId)) {
       throw videoDuplicateError();
     }
@@ -695,7 +704,26 @@ async function normalizeCreatePayload(body, env) {
     "pinnedSortOrder", "categoryIds"
   ]);
   const parsed = await parseManagedVideoUrl(body.originalUrl, env);
-  const pinned = body.pinned === undefined ? false : normalizeBoolean(
+  const shouldFetchMetadata = [
+    "title", "description", "thumbnailUrl", "authorName", "publishedAt"
+  ].some((field) => !hasOwn(body, field));
+  const metadata = shouldFetchMetadata
+    ? await fetchManagedVideoMetadata(parsed, env)
+    : emptyManagedVideoMetadata();
+  const title = hasOwn(body, "title")
+    ? normalizeBoundedString(body.title, MAX_TITLE_CHARS, {
+        code: "VIDEO_TITLE_INVALID",
+        message: "Video title is invalid."
+      })
+    : metadata.title;
+  if (!title) {
+    throw new AgentVideoServiceError(
+      "Video title was not provided and could not be resolved from provider metadata.",
+      502,
+      "VIDEO_METADATA_TITLE_UNAVAILABLE"
+    );
+  }
+  const pinned = !hasOwn(body, "pinned") ? false : normalizeBoolean(
     body.pinned,
     "Video pin setting is invalid.",
     "VIDEO_PIN_INVALID"
@@ -705,33 +733,40 @@ async function normalizeCreatePayload(body, env) {
   return {
     operationId: normalizeOperationId(body.operationId),
     ...parsed,
-    title: normalizeBoundedString(body.title, MAX_TITLE_CHARS, {
-      code: "VIDEO_TITLE_INVALID",
-      message: "Video title is invalid."
-    }),
-    description: body.description === undefined ? "" : normalizeBoundedString(
-      body.description,
-      MAX_DESCRIPTION_CHARS,
-      { allowEmpty: true, code: "VIDEO_DESCRIPTION_INVALID", message: "Video description is invalid." }
-    ),
-    thumbnailUrl: body.thumbnailUrl === undefined
-      ? defaultThumbnailUrl(parsed)
+    title,
+    description: !hasOwn(body, "description")
+      ? metadata.description
+      : normalizeBoundedString(
+        body.description,
+        MAX_DESCRIPTION_CHARS,
+        { allowEmpty: true, code: "VIDEO_DESCRIPTION_INVALID", message: "Video description is invalid." }
+      ),
+    thumbnailUrl: !hasOwn(body, "thumbnailUrl")
+      ? (metadata.thumbnailUrl || defaultThumbnailUrl(parsed))
       : normalizeThumbnailUrl(body.thumbnailUrl, true),
-    authorName: body.authorName === undefined ? "" : normalizeBoundedString(
-      body.authorName,
-      MAX_AUTHOR_CHARS,
-      { allowEmpty: true, code: "VIDEO_AUTHOR_INVALID", message: "Video author is invalid." }
-    ),
-    publishedAt: body.publishedAt === undefined ? null : normalizeTimestamp(body.publishedAt, true),
-    status: body.status === undefined ? "draft" : normalizeVideoStatus(body.status),
-    sortOrder: body.sortOrder === undefined ? defaultSortOrder : normalizeSortOrder(body.sortOrder),
+    authorName: !hasOwn(body, "authorName")
+      ? metadata.authorName
+      : normalizeBoundedString(
+        body.authorName,
+        MAX_AUTHOR_CHARS,
+        { allowEmpty: true, code: "VIDEO_AUTHOR_INVALID", message: "Video author is invalid." }
+      ),
+    publishedAt: !hasOwn(body, "publishedAt")
+      ? metadata.publishedAt
+      : normalizeTimestamp(body.publishedAt, true),
+    status: !hasOwn(body, "status") ? "draft" : normalizeVideoStatus(body.status),
+    sortOrder: !hasOwn(body, "sortOrder") ? defaultSortOrder : normalizeSortOrder(body.sortOrder),
     pinned,
     pinnedSortOrder: pinned
-      ? (body.pinnedSortOrder === undefined
+      ? (!hasOwn(body, "pinnedSortOrder")
         ? defaultPinnedSortOrder
         : normalizeSortOrder(body.pinnedSortOrder))
       : 0,
-    categoryIds: await normalizeVideoCategoryIds(env, body.categoryIds ?? [])
+    metadataError: metadata.metadataError,
+    categoryIds: await normalizeVideoCategoryIds(
+      env,
+      hasOwn(body, "categoryIds") ? body.categoryIds : []
+    )
   };
 }
 
@@ -746,57 +781,78 @@ function normalizeCreateReceiptInput(body) {
     code: "VIDEO_URL_INVALID",
     message: "Video URL is invalid."
   });
-  const title = normalizeBoundedString(body.title, MAX_TITLE_CHARS, {
-    code: "VIDEO_TITLE_INVALID",
-    message: "Video title is invalid."
-  });
-  const description = body.description === undefined ? "" : normalizeBoundedString(
-    body.description,
-    MAX_DESCRIPTION_CHARS,
-    { allowEmpty: true, code: "VIDEO_DESCRIPTION_INVALID", message: "Video description is invalid." }
-  );
-  const thumbnailUrl = body.thumbnailUrl === undefined
-    ? null
-    : normalizeThumbnailUrl(body.thumbnailUrl, true);
-  const authorName = body.authorName === undefined ? "" : normalizeBoundedString(
-    body.authorName,
-    MAX_AUTHOR_CHARS,
-    { allowEmpty: true, code: "VIDEO_AUTHOR_INVALID", message: "Video author is invalid." }
-  );
-  const publishedAt = body.publishedAt === undefined ? null : normalizeTimestamp(body.publishedAt, true);
-  const status = body.status === undefined ? "draft" : normalizeVideoStatus(body.status);
-  const sortOrder = body.sortOrder === undefined ? null : normalizeSortOrder(body.sortOrder);
-  const pinned = body.pinned === undefined ? false : normalizeBoolean(
+  const pinned = !hasOwn(body, "pinned") ? false : normalizeBoolean(
     body.pinned,
     "Video pin setting is invalid.",
     "VIDEO_PIN_INVALID"
   );
-  if (!pinned && body.pinnedSortOrder !== undefined) {
+  if (!pinned && hasOwn(body, "pinnedSortOrder")) {
     throw new AgentVideoServiceError(
       "pinnedSortOrder requires pinned=true.",
       400,
       "VIDEO_PINNED_SORT_INVALID"
     );
   }
-  const pinnedSortOrder = body.pinnedSortOrder === undefined
-    ? null
-    : normalizeSortOrder(body.pinnedSortOrder);
-  const categoryIds = normalizeCategoryIdsShape(body.categoryIds ?? []);
+  const payload = { originalUrl };
+  if (hasOwn(body, "title")) {
+    payload.title = normalizeBoundedString(body.title, MAX_TITLE_CHARS, {
+      code: "VIDEO_TITLE_INVALID",
+      message: "Video title is invalid."
+    });
+  }
+  if (hasOwn(body, "description")) {
+    payload.description = normalizeBoundedString(body.description, MAX_DESCRIPTION_CHARS, {
+      allowEmpty: true,
+      code: "VIDEO_DESCRIPTION_INVALID",
+      message: "Video description is invalid."
+    });
+  }
+  if (hasOwn(body, "thumbnailUrl")) {
+    payload.thumbnailUrl = normalizeThumbnailUrl(body.thumbnailUrl, true);
+  }
+  if (hasOwn(body, "authorName")) {
+    payload.authorName = normalizeBoundedString(body.authorName, MAX_AUTHOR_CHARS, {
+      allowEmpty: true,
+      code: "VIDEO_AUTHOR_INVALID",
+      message: "Video author is invalid."
+    });
+  }
+  if (hasOwn(body, "publishedAt")) {
+    payload.publishedAt = normalizeTimestamp(body.publishedAt, true);
+  }
+  if (hasOwn(body, "status")) payload.status = normalizeVideoStatus(body.status);
+  if (hasOwn(body, "sortOrder")) payload.sortOrder = normalizeSortOrder(body.sortOrder);
+  if (hasOwn(body, "pinned")) payload.pinned = pinned;
+  if (hasOwn(body, "pinnedSortOrder")) {
+    payload.pinnedSortOrder = normalizeSortOrder(body.pinnedSortOrder);
+  }
+  if (hasOwn(body, "categoryIds")) {
+    payload.categoryIds = body.categoryIds === null
+      ? null
+      : normalizeCategoryIdsShape(body.categoryIds);
+  }
   return {
     operationId,
-    payload: {
-      originalUrl,
-      title,
-      description,
-      thumbnailUrl,
-      authorName,
-      publishedAt,
-      status,
-      sortOrder,
-      pinned,
-      pinnedSortOrder,
-      categoryIds
-    }
+    payload
+  };
+}
+
+function legacyCreateReceiptPayload(intentPayload) {
+  if (!hasOwn(intentPayload, "title")) return null;
+  return {
+    originalUrl: intentPayload.originalUrl,
+    title: intentPayload.title,
+    description: hasOwn(intentPayload, "description") ? intentPayload.description : "",
+    thumbnailUrl: hasOwn(intentPayload, "thumbnailUrl") ? intentPayload.thumbnailUrl : null,
+    authorName: hasOwn(intentPayload, "authorName") ? intentPayload.authorName : "",
+    publishedAt: hasOwn(intentPayload, "publishedAt") ? intentPayload.publishedAt : null,
+    status: hasOwn(intentPayload, "status") ? intentPayload.status : "draft",
+    sortOrder: hasOwn(intentPayload, "sortOrder") ? intentPayload.sortOrder : null,
+    pinned: hasOwn(intentPayload, "pinned") ? intentPayload.pinned : false,
+    pinnedSortOrder: hasOwn(intentPayload, "pinnedSortOrder") ? intentPayload.pinnedSortOrder : null,
+    categoryIds: hasOwn(intentPayload, "categoryIds") && intentPayload.categoryIds !== null
+      ? intentPayload.categoryIds
+      : []
   };
 }
 
@@ -1127,6 +1183,17 @@ async function fetchManagedVideoMetadata(parsed, env) {
   }
 }
 
+function emptyManagedVideoMetadata() {
+  return {
+    title: "",
+    description: "",
+    thumbnailUrl: "",
+    authorName: "",
+    publishedAt: null,
+    metadataError: ""
+  };
+}
+
 async function fetchWithTimeout(fetchImpl, url, options, timeoutMs) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -1309,8 +1376,12 @@ async function readAgentVideoReceipt(env, userId, operationId) {
   `).bind(userId, operationId).first();
 }
 
-function replayAgentVideoReceipt(receipt, action, payloadHash) {
-  if (receipt.action !== action || receipt.payload_hash !== payloadHash) {
+function replayAgentVideoReceipt(receipt, action, payloadHash, compatiblePayloadHashes = []) {
+  const storedPayloadHash = String(receipt.payload_hash || "");
+  const hashMatches = storedPayloadHash === payloadHash
+    || (SHA256_PATTERN.test(storedPayloadHash)
+      && compatiblePayloadHashes.includes(storedPayloadHash));
+  if (receipt.action !== action || !hashMatches) {
     throw new AgentVideoServiceError(
       "operationId was already used for a different video action or payload.",
       409,
@@ -1534,6 +1605,10 @@ function normalizeBilibiliPage(value) {
 
 function normalizedHost(value) {
   return String(value || "").toLowerCase().replace(/^www\./, "");
+}
+
+function hasOwn(value, key) {
+  return Object.prototype.hasOwnProperty.call(value, key);
 }
 
 function assertStrictObject(value, allowedFields, code = "VIDEO_PAYLOAD_INVALID") {
