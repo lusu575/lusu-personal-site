@@ -530,6 +530,21 @@ test("entry policy guarantees zero video requests on mobile, low, Save-Data, red
   assert.match(mainSource, /querySelectorAll\("video\.wallpaper-ambient-video"\)\.forEach\(releaseWallpaperAmbientVideo\)/);
 });
 
+test("motion lifecycle events and BFCache restoration always resync ambient eligibility", () => {
+  assert.match(
+    mainSource,
+    /document\.addEventListener\("lusu:ui-motion-mode", updateWallpaperMotionState\)/
+  );
+  assert.match(
+    mainSource,
+    /document\.addEventListener\("lusu:ui-motion-ready", updateWallpaperMotionState\)/
+  );
+  assert.match(
+    mainSource,
+    /window\.addEventListener\("pageshow", \(event\) => \{[\s\S]*?if \(!event\.persisted\) return;[\s\S]*?LusuUiMotion\?\.refresh\?\.\(\);[\s\S]*?updateWallpaperMotionState\(\);[\s\S]*?layoutWallpaperStage\("pageshow:bfcache"\)/
+  );
+});
+
 test("mobile, low-performance, and reduced/off CSS all hard-hide ambient video and stars", () => {
   const reducedOffRule = cssRuleContaining(
     styleSource,

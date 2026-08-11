@@ -110,6 +110,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 首页壁纸的 CSS 图层仍只允许 `transform` / `opacity`，不得用 JS 每帧修改 `left` / `top`，也不得使用整屏 GIF 或 APNG。整屏视频仅对当前四时段壁纸开放严格渐进增强例外：只在桌面 Home、normal performance、Save-Data 关闭且站内 motion 为 full 时允许请求；每次只请求当前主题的一个 muted／loop／playsinline MP4，按 CSS 尺寸 × DPR 选择 1080p 或 2160p，不预载其他三段。动态只能局限在树冠和真实水面，电视机与屏幕保持静态，不引入角色出现。
 - 4K 底图必须先对每个静态主题做一次 `RealESRGAN_x4plus_anime_6B` 超分，再叠加经时域平滑、限幅和语义遮罩的局部 H3 差分；不得对每帧独立做 AI 超分，也不得把整幅 H3 颜色／几何波动直接覆盖生产底图。这条保证 4K 清晰度、避免逐帧超分闪烁，并保持原壁纸的电视机、天空、城市、斜坡与地面稳定。
 - 静态壁纸是永久兜底；视频只有在 canplay／play 成功后才能短淡入，加载或自动播放失败不得留空白。手机、low performance、Save-Data、`prefers-reduced-motion`、`data-motion="reduced"` 与 `off` 全部必须零视频请求；页面隐藏时暂停，离开 Home 或进入上述降级档时释放 `src` 与视频节点。该渐进增强的公开记录 ID／slug 为 `seed-update-2026-08-10-h3-ambient-wallpapers-4k`／`2026-08-10-h3-ambient-wallpapers-4k`，公开 API／文章 seed token 为 `20260810-h3-ambient-wallpapers-4k-r1`。
+- 动态壁纸不能假设全站 motion runtime 与主模块只有一次固定初始化顺序。BFCache 恢复时主模块可能先读到旧 `off`，随后 `ui-motion` 才写回 `full`；壁纸控制器必须监听 motion mode 变化和 runtime ready，并在 `pageshow` 重新同步 route、theme、visibility 与播放资格。该生命周期修复的公开记录 ID／slug 为 `seed-update-2026-08-11-ambient-wallpaper-bfcache-fix`／`2026-08-11-ambient-wallpaper-bfcache-fix`，公开 API／文章 seed token 为 `20260811-ambient-wallpaper-bfcache-fix-r1`；不得借此放宽手机、low、Save-Data、reduced／off 的零视频请求边界。
 
 ## 双呈现壳、状态与动效规则
 

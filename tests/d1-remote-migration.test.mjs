@@ -467,7 +467,25 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
-  assert.match(verificationSql, /article_seed_version' and value = '20260810-h3-ambient-wallpapers-4k-r1'/);
+  assert.match(verificationSql, /article_seed_version' and value = '20260811-ambient-wallpaper-bfcache-fix-r1'/);
+  const currentReleaseVerificationSql = REMOTE_MIGRATION_VERIFICATION_QUERIES.find((sql) => (
+    sql.includes("ambient-wallpaper-bfcache-fix-update-article")
+  ));
+  assert.ok(currentReleaseVerificationSql, "missing current BFCache wallpaper release verification group");
+  assert.match(currentReleaseVerificationSql, /ambient-wallpaper-bfcache-fix-update-article/);
+  assert.match(currentReleaseVerificationSql, /article_id = 'seed-update-2026-08-11-ambient-wallpaper-bfcache-fix'/);
+  assert.match(currentReleaseVerificationSql, /slug = '2026-08-11-ambient-wallpaper-bfcache-fix'/);
+  assert.match(currentReleaseVerificationSql, /category = 'site-updates'/);
+  assert.match(currentReleaseVerificationSql, /status = 'published'/);
+  assert.match(currentReleaseVerificationSql, /is_pinned = 0/);
+  assert.match(currentReleaseVerificationSql, /cover_image = ''/);
+  assert.match(currentReleaseVerificationSql, /published_at = '2026-08-11T03:35:00.000Z'/);
+  assert.match(currentReleaseVerificationSql, /ambient-wallpaper-bfcache-fix-update-translations/);
+  assert.match(currentReleaseVerificationSql, /lang = 'zh' and title = '修复动态壁纸的历史返回恢复'/);
+  assert.match(currentReleaseVerificationSql, /lang = 'en' and title = 'Ambient Wallpaper Recovery After History Navigation'/);
+  assert.match(currentReleaseVerificationSql, /lang = 'ja' and title = '履歴移動後の動画壁紙復帰を修正'/);
+  assert.match(currentReleaseVerificationSql, /length\(trim\(summary\)\) > 0/);
+  assert.match(currentReleaseVerificationSql, /length\(trim\(content_markdown\)\) > 0/);
   assert.match(verificationSql, /slug = '2026-08-10-h3-ambient-wallpapers-4k'/);
   assert.match(verificationSql, /published_at = '2026-08-10T08:10:00.000Z'/);
   assert.match(verificationSql, /h3-ambient-wallpapers-4k-update-translations/);

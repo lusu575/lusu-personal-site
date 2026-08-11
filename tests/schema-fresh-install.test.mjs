@@ -33,6 +33,7 @@ const motionPolishUpdateId = "seed-update-2026-08-09-motion-polish";
 const wallpaperTimeSwitchUpdateId = "seed-update-2026-08-09-wallpaper-time-switch";
 const wallpaperSwitchSlimDawnUpdateId = "seed-update-2026-08-10-wallpaper-switch-slim-dawn";
 const h3AmbientWallpapersUpdateId = "seed-update-2026-08-10-h3-ambient-wallpapers-4k";
+const ambientWallpaperBfcacheUpdateId = "seed-update-2026-08-11-ambient-wallpaper-bfcache-fix";
 const wallpaperSwitchCeramicUpdateId = "seed-update-2026-08-10-wallpaper-switch-ceramic-roll";
 const wallpaperSwitchCalmUpdateId = "seed-update-2026-08-10-wallpaper-switch-calm-redesign";
 const wallpaperSwitchSceneUpdateId = "seed-update-2026-08-09-wallpaper-switch-scene-redesign";
@@ -149,6 +150,48 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       assert.match(contentMarkdown, /Quick Transfer/);
       assert.match(contentMarkdown, /v1\.0\.10/);
       assert.doesNotMatch(contentMarkdown, /not deployed|尚未部署|未展開/);
+    }
+    assert.equal(
+      db.prepare(`
+        select count(*) as count
+        from articles
+        where article_id = ?
+          and slug = '2026-08-11-ambient-wallpaper-bfcache-fix'
+          and category = 'site-updates'
+          and status = 'published'
+          and is_pinned = 0
+          and cover_image = ''
+          and created_at = '2026-08-11T03:35:00.000Z'
+          and updated_at = '2026-08-11T03:35:00.000Z'
+          and published_at = '2026-08-11T03:35:00.000Z'
+      `).get(ambientWallpaperBfcacheUpdateId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(ambientWallpaperBfcacheUpdateId).count,
+      3
+    );
+    const ambientWallpaperBfcacheContent = content.updates.find(({ article_id: articleId }) => (
+      articleId === ambientWallpaperBfcacheUpdateId
+    ));
+    assert.ok(ambientWallpaperBfcacheContent);
+    for (const lang of ["zh", "en", "ja"]) {
+      const translation = db.prepare(`
+        select title, summary, content_markdown, created_at, updated_at
+        from article_translations
+        where article_id = ? and lang = ?
+      `).get(ambientWallpaperBfcacheUpdateId, lang);
+      assert.equal(translation.title, ambientWallpaperBfcacheContent.title[lang]);
+      assert.equal(translation.summary, ambientWallpaperBfcacheContent.summary[lang]);
+      assert.equal(
+        translation.content_markdown.replace(/\r\n/g, "\n"),
+        ambientWallpaperBfcacheContent.content_markdown[lang]
+      );
+      assert.equal(translation.created_at, "2026-08-11T03:35:00.000Z");
+      assert.equal(translation.updated_at, "2026-08-11T03:35:00.000Z");
+      assert.match(translation.content_markdown, /BFCache/);
+      assert.match(translation.content_markdown, /pageshow/);
+      assert.match(translation.content_markdown, /Save-Data/);
     }
     assert.equal(
       db.prepare(`
@@ -407,7 +450,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260810-h3-ambient-wallpapers-4k-r1"
+      "20260811-ambient-wallpaper-bfcache-fix-r1"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),

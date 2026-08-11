@@ -2,6 +2,11 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-08-11
+
+- 修复桌面 Home 动态壁纸在浏览器前进／后退或 BFCache 恢复后可能一直停留在静态底图的问题。根因是恢复顺序中主模块先读到页面隐藏期间留下的旧 `off`，随后 `ui-motion` 写回 `full` 却未被壁纸控制器监听；现在 motion mode 变化、动效运行时 ready 与 `pageshow` 都会重新同步当前路由、主题和视频状态。
+- 新增三语 `site-updates` 记录 `seed-update-2026-08-11-ambient-wallpaper-bfcache-fix`／`2026-08-11-ambient-wallpaper-bfcache-fix`，统一时间为 `2026-08-11T03:35:00.000Z`，公开 API／文章 seed token 更新为 `20260811-ambient-wallpaper-bfcache-fix-r1`；完整 fallback、Home 无正文投影、Functions seed 与 schema seed 已同步，Home 最新五条严格为本修复 → H3 4K → slim-dawn → ceramic-roll → calm-redesign。手机、low performance、Save-Data、`prefers-reduced-motion` 及站内 reduced／off 的零视频请求策略没有改变。
+
 ## 2026-08-10
 
 - 桌面 Home 的 morning／day／dusk／night 四张壁纸加入本地 MiniMax H3 生成的约 5 秒无缝轻动态：只让树冠和真实水面克制变化，继续由 CSS 云层慢速漂移，夜间叠加微弱星光。视频只在当前主题上按物理显示尺寸选择 1080p 或 2160p；4K 底图先用官方 `RealESRGAN_x4plus_anime_6B` 对静态底图做一次超分，再叠加局部 H3 时域变化，避免逐帧超分的纹理闪烁。手机、low performance、Save-Data、`prefers-reduced-motion` 及站内 reduced／off 全部保持零视频请求，对应静态壁纸始终是可用兜底。

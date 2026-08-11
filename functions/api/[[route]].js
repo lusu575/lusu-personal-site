@@ -39,10 +39,10 @@ import {
   toPublicArticle
 } from "./public-content-service.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260810-h3-ambient-wallpapers-4k-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260811-ambient-wallpaper-bfcache-fix-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
-const PUBLIC_RELEASE_DATE = "2026-08-10";
+const PUBLIC_RELEASE_DATE = "2026-08-11";
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
@@ -90,7 +90,7 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260810-h3-ambient-wallpapers-4k-r1";
+const ARTICLE_SEED_VERSION = "20260811-ambient-wallpaper-bfcache-fix-r1";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AGENT_AUDIT_RETENTION_DAYS = 180;
@@ -7352,6 +7352,47 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-08-11-ambient-wallpaper-bfcache-fix',
+        '2026-08-11-ambient-wallpaper-bfcache-fix',
+        'site-updates',
+        '["网站更新","壁纸","可靠性","BFCache","无障碍"]',
+        '', 'published', 0, 0,
+        '2026-08-11T03:35:00.000Z',
+        '2026-08-11T03:35:00.000Z',
+        '2026-08-11T03:35:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-08-11-ambient-wallpaper-bfcache-fix", {
+      zh: {
+        title: "修复动态壁纸的历史返回恢复",
+        summary: "修复桌面 Home 动态壁纸在浏览器历史返回或 BFCache 恢复后可能停留在静态图的问题。恢复页面时，旧的 off 状态曾先被主模块读取，随后 ui-motion 写回 full 却没有触发壁纸重同步；现在 motion mode、运行时 ready 与 pageshow 都会重新协调视频状态。手机、low performance、Save-Data、reduced／off 的零视频请求策略保持不变。",
+        content_markdown: "# 修复动态壁纸的历史返回恢复\n\n桌面 Home 的轻动态壁纸现在能在浏览器前进、后退以及 BFCache 恢复后可靠回到正确状态。这次修复只处理页面生命周期同步，不改变视频内容、清晰度或渐进增强门槛。\n\n## 根因\n\n浏览器从 BFCache 恢复页面时，主模块可能先读取到页面隐藏期间留下的 `off`。随后 `ui-motion` 会把全站动效状态写回 `full`，但旧流程没有监听这次写回，所以壁纸控制器仍按静态状态判断，不会重新挂载当前主题视频。\n\n## 恢复时重新协调\n\n- motion mode 发生变化时，壁纸状态立即重新同步。\n- 动效运行时 ready 后再次核对当前 Home、主题与播放资格。\n- `pageshow` 恢复时重新协调壁纸动效和当前视频，不依赖整页重新加载。\n\n## 降级边界保持不变\n\n修复没有放宽渐进增强策略。手机、low performance、Save-Data、`prefers-reduced-motion` 以及站内 reduced／off 仍然不请求视频；非 Home 和页面隐藏状态仍会暂停或释放视频，静态壁纸继续作为永久兜底。"
+      },
+      en: {
+        title: "Ambient Wallpaper Recovery After History Navigation",
+        summary: "Fixes a case where the desktop Home ambient wallpaper could remain static after browser history navigation or a BFCache restore. The main module could read a stale off state before ui-motion wrote full back without notifying the wallpaper controller; motion-mode, runtime-ready, and pageshow signals now resynchronize video state. The zero-video-request policy for mobile, low-performance, Save-Data, and reduced/off modes is unchanged.",
+        content_markdown: "# Ambient Wallpaper Recovery After History Navigation\n\nThe subtle desktop Home wallpapers now return to the correct state after browser back/forward navigation and BFCache restores. This fix only addresses page-lifecycle synchronization; it does not change the video content, resolution, or progressive-enhancement thresholds.\n\n## Root cause\n\nDuring a BFCache restore, the main module could first read the stale `off` state left while the page was hidden. `ui-motion` then wrote the site-wide motion state back to `full`, but the previous flow did not observe that write, so the wallpaper controller continued to treat the page as static and did not remount the current theme video.\n\n## Resynchronizing on restore\n\n- Wallpaper state is synchronized immediately when the motion mode changes.\n- Runtime ready triggers another check of the current Home route, theme, and playback eligibility.\n- `pageshow` coordinates wallpaper motion and the current video again without relying on a full reload.\n\n## Fallback boundaries are unchanged\n\nThe fix does not loosen progressive enhancement. Mobile, low-performance, Save-Data, `prefers-reduced-motion`, and in-site reduced/off modes still make no video requests. Non-Home and hidden-page states still pause or release video, and the static wallpaper remains the permanent fallback."
+      },
+      ja: {
+        title: "履歴移動後の動画壁紙復帰を修正",
+        summary: "ブラウザー履歴の移動や BFCache 復帰後に、デスクトップ Home の動画壁紙が静止画のままになる場合を修正しました。主モジュールが古い off 状態を先に読み、その後 ui-motion が full を書き戻しても壁紙側へ再同期されないことが原因でした。motion mode、runtime ready、pageshow の各タイミングで動画状態を再調整します。モバイル、low performance、Save-Data、reduced／off の動画リクエストを行わない方針は変わりません。",
+        content_markdown: "# 履歴移動後の動画壁紙復帰を修正\n\nデスクトップ Home の控えめな動画壁紙が、ブラウザーの戻る／進む操作や BFCache 復帰後にも正しい状態へ戻るようになりました。今回の修正はページライフサイクルの同期だけを扱い、動画内容、解像度、段階的強化の条件は変更しません。\n\n## 原因\n\nBFCache から復帰するとき、主モジュールがページ非表示中に残った古い `off` 状態を先に読む場合がありました。その後 `ui-motion` がサイト全体の動作状態を `full` に戻しても、従来の処理はその書き戻しを監視していなかったため、壁紙コントローラーは静止状態のままと判断し、現在のテーマ動画を再マウントしませんでした。\n\n## 復帰時の再同期\n\n- motion mode が変わると壁紙状態をすぐに再同期します。\n- 動作ランタイムの ready 後に、現在の Home、テーマ、再生資格をもう一度確認します。\n- `pageshow` 復帰時に、ページ全体の再読み込みへ頼らず壁紙動作と現在の動画を再調整します。\n\n## フォールバック条件は変更なし\n\n段階的強化の条件は緩和していません。モバイル、low performance、Save-Data、`prefers-reduced-motion`、サイト内 reduced／off では引き続き動画をリクエストしません。Home 以外やページ非表示時には動画を一時停止または解放し、静止壁紙を常設のフォールバックとして維持します。"
+      }
+    }, "2026-08-11T03:35:00.000Z", "2026-08-11T03:35:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,

@@ -4,7 +4,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260809-motion-polish-r2";
-import { homeContent } from "./data/home-content.mjs?v=20260810-h3-ambient-wallpapers-4k-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260811-ambient-wallpaper-bfcache-fix-r1";
 import {
   WALLPAPER_TIME_THEMES,
   createWallpaperTimeOverride,
@@ -4046,6 +4046,18 @@ document.addEventListener("visibilitychange", () => {
     void reconcileWallpaperTimeTheme({ source: "visibility", immediate: true });
   }
   updateWallpaperMotionState();
+});
+
+document.addEventListener("lusu:ui-motion-mode", updateWallpaperMotionState);
+document.addEventListener("lusu:ui-motion-ready", updateWallpaperMotionState);
+
+window.addEventListener("pageshow", (event) => {
+  if (!event.persisted) return;
+  window.LusuUiMotion?.refresh?.();
+  updateWallpaperMotionState();
+  if (document.body.dataset.route === "home") {
+    layoutWallpaperStage("pageshow:bfcache");
+  }
 });
 
 if (wallpaperMotionMedia) {

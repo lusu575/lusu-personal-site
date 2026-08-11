@@ -124,6 +124,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 关于我窗口的 X、GitHub、Bilibili、Instagram、Discord 必须保持小图标按钮展示，链接从 `GET /api/social-links` 公开读取，后台通过 `GET/PUT /api/admin/social-links` 修改并保存到 `site_runtime_state.about_social_links`。
 - 本地调试动态壁纸可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定时间段；预览模式可临时加快动画，不要为了预览硬编码当前时间。
 - 首页的 CSS 壁纸图层只使用 `transform` / `opacity`。整屏视频只对四时段壁纸开放严格渐进增强例外：仅桌面 Home + normal performance + Save-Data 关闭 + full motion 可请求，并且只按物理显示尺寸加载当前主题的 1080p 或 2160p muted／loop／playsinline MP4，其他三段不预载。手机、low、Save-Data、`prefers-reduced-motion`、reduced／off 全部零视频请求；页面隐藏暂停，离开 Home 或降级时释放视频，静态壁纸永久兜底。H3 只提供约 5 秒、树冠／真实水面的克制局部时域变化；电视机和屏幕保持静态，不引入角色。4K 版先用 `RealESRGAN_x4plus_anime_6B` 对静态底图一次超分，再叠平滑限幅的局部 H3 差分，不得逐帧 AI 超分或覆盖整幅 H3 波动。该渐进增强的公开记录为 `seed-update-2026-08-10-h3-ambient-wallpapers-4k`，公开 API／文章 seed token 为 `20260810-h3-ambient-wallpapers-4k-r1`。
+- 动态壁纸还必须处理 BFCache 与异步 motion runtime 的初始化顺序：若主模块先读到旧 `off`、`ui-motion` 后写回 `full`，壁纸控制器要通过 motion mode、runtime ready 和 `pageshow` 重新同步 route、theme、visibility 与播放资格。修复记录为 `seed-update-2026-08-11-ambient-wallpaper-bfcache-fix`，token 为 `20260811-ambient-wallpaper-bfcache-fix-r1`；这不改变手机、low、Save-Data、reduced／off 的零视频请求规则。
 - 聊天室用户内容必须纯文本渲染，不能用 `innerHTML` 插入访客昵称或消息。
 - 聊天室前端应保持 `after/message_id` 增量拉取，空闲和后台时降频，发送后立即刷新；不要每次重复拉最近 100 条。
 - 聊天室普通大厅固定 `room_key='public'`，密码房使用暗色 UI 和浏览器端 Web Crypto 前端加密；密码房只提交密文 `encryptedContent`，不得保存密码或后台解密。

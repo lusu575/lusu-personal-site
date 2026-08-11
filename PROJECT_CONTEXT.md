@@ -1,5 +1,12 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-11 动态壁纸 BFCache 恢复契约
+
+- 桌面 Home 的轻动态壁纸必须在浏览器前进／后退和 BFCache 恢复后重新协调，而不能假设模块只初始化一次。已确认的故障顺序是：恢复时主模块先读到页面隐藏期间留下的旧 `off`，随后 `ui-motion` 把全站状态写回 `full`，但旧流程没有通知壁纸控制器，因此当前主题视频没有重新挂载。
+- 壁纸控制器现在在 motion mode 变化、动效运行时 ready 以及 `pageshow` 三个生命周期信号上重新同步当前 route、theme、visibility 与播放资格。恢复逻辑必须可重复执行，并继续维持同一时刻只有当前主题的一个视频节点／请求。
+- 本修复不改变渐进增强边界：手机、low performance、Save-Data、`prefers-reduced-motion`、站内 reduced／off 仍是零视频请求；非 Home 或页面隐藏仍暂停或释放视频，静态壁纸仍为永久兜底。
+- 公开更新 ID／slug 为 `seed-update-2026-08-11-ambient-wallpaper-bfcache-fix`／`2026-08-11-ambient-wallpaper-bfcache-fix`，时间为 `2026-08-11T03:35:00.000Z`，公开 API／文章 seed token 为 `20260811-ambient-wallpaper-bfcache-fix-r1`。Home 最新五条固定为本修复、H3 4K、slim-dawn、ceramic-roll、calm-redesign，完整历史仍保留后续未投影记录。
+
 ## 2026-08-10 四时段 H3 轻动态壁纸与 4K 超分发布契约
 
 - 桌面 Home 的 morning／day／dusk／night 四张壁纸均有约 5 秒的无缝环境循环，来源为本地 MiniMax H3。视觉目标是“看得出活着，不抢窗口和文字”：H3 局部变化只作用于树冠和真实水面，云层继续使用已有 CSS 慢速漂移，夜间另有低亮度、不持续强闪的微弱星光。电视机与屏幕保持静态，本版不引入角色出现。

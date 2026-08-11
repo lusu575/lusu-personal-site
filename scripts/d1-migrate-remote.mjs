@@ -254,7 +254,7 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260810-h3-ambient-wallpapers-4k-r1'
+    where key = 'article_seed_version' and value = '20260811-ambient-wallpaper-bfcache-fix-r1'
     union all
     select 'game-video-mcp-candidate-update-article',
       case when count(*) = 1 then 1 else 0 end
@@ -282,6 +282,38 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'whiteboard-agent-images-update-article', count(*)
     from articles where article_id = 'seed-update-2026-08-06-whiteboard-agent-images'
+  `,
+  `
+    select 'ambient-wallpaper-bfcache-fix-update-article' as item,
+      case when count(*) = 1 then 1 else 0 end as present
+    from articles
+    where article_id = 'seed-update-2026-08-11-ambient-wallpaper-bfcache-fix'
+      and slug = '2026-08-11-ambient-wallpaper-bfcache-fix'
+      and category = 'site-updates'
+      and status = 'published'
+      and is_pinned = 0
+      and cover_image = ''
+      and published_at = '2026-08-11T03:35:00.000Z'
+    union all
+    select 'ambient-wallpaper-bfcache-fix-update-translations',
+      case
+        when count(*) = 3
+          and count(distinct lang) = 3
+          and sum(case when lang in ('zh', 'en', 'ja') then 1 else 0 end) = 3
+          and sum(case
+            when (lang = 'zh' and title = '修复动态壁纸的历史返回恢复')
+              or (lang = 'en' and title = 'Ambient Wallpaper Recovery After History Navigation')
+              or (lang = 'ja' and title = '履歴移動後の動画壁紙復帰を修正')
+            then 1 else 0 end) = 3
+          and sum(case
+            when length(trim(title)) > 0
+              and length(trim(summary)) > 0
+              and length(trim(content_markdown)) > 0
+            then 1 else 0 end) = 3
+        then 1 else 0
+      end
+    from article_translations
+    where article_id = 'seed-update-2026-08-11-ambient-wallpaper-bfcache-fix'
   `,
   `
     select 'h3-ambient-wallpapers-4k-update-article' as item,

@@ -889,6 +889,7 @@ const motionPolishReleaseVersion = "20260809-motion-polish-r2";
 const wallpaperSwitchSceneReleaseVersion = "20260810-wallpaper-switch-slim-dawn-r1";
 const wallpaperSwitchRouteMotionReleaseVersion = "20260810-wallpaper-switch-route-motion-r1";
 const h3AmbientWallpapersReleaseVersion = "20260810-h3-ambient-wallpapers-4k-r1";
+const ambientWallpaperBfcacheFixVersion = "20260811-ambient-wallpaper-bfcache-fix-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = "20260809-transfer-motion-r2";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
@@ -1268,7 +1269,7 @@ for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-ambient.mjs", h3AmbientWallpapersReleaseVersion],
-  ["./data/home-content.mjs", h3AmbientWallpapersReleaseVersion],
+  ["./data/home-content.mjs", ambientWallpaperBfcacheFixVersion],
   ["./features/account.mjs", motionPolishReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", transferReleaseVersion]
@@ -3276,7 +3277,7 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = motionPolishReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = h3AmbientWallpapersReleaseVersion;
+const currentMainVersion = ambientWallpaperBfcacheFixVersion;
 const currentCssVersion = h3AmbientWallpapersReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260809-browser-game-heartbeat-v1";
@@ -4763,14 +4764,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-10-h3-ambient-wallpapers-4k";
-const finalUpdateSlug = "2026-08-10-h3-ambient-wallpapers-4k";
+const finalUpdateId = "seed-update-2026-08-11-ambient-wallpaper-bfcache-fix";
+const finalUpdateSlug = "2026-08-11-ambient-wallpaper-bfcache-fix";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Four Ambient Wallpapers with 4K Super-Resolution";
-const finalPublishedAt = "2026-08-10T08:10:00.000Z";
+const finalTitleEn = "Ambient Wallpaper Recovery After History Navigation";
+const finalPublishedAt = "2026-08-11T03:35:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-08-10-h3-ambient-wallpapers-4k",
   "seed-update-2026-08-10-wallpaper-switch-slim-dawn",
   "seed-update-2026-08-10-wallpaper-switch-ceramic-roll",
   "seed-update-2026-08-10-wallpaper-switch-calm-redesign",
@@ -4811,6 +4813,7 @@ const changelog20260806Section = markdownSection(changelog, "## 2026-08-06");
 const changelog20260807Section = markdownSection(changelog, "## 2026-08-07");
 const changelog20260809Section = markdownSection(changelog, "## 2026-08-09");
 const changelog20260810Section = markdownSection(changelog, "## 2026-08-10");
+const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4846,19 +4849,20 @@ if (finalUpdateStarted) {
     }
   }
   if ([
+    "seed-update-2026-08-09-wallpaper-switch-scene-redesign",
     "seed-update-2026-08-09-game-video-mcp-candidate",
     "seed-update-2026-08-09-wallpaper-time-switch",
     "seed-update-2026-08-09-motion-polish",
     "seed-update-2026-08-07-remote-mcp-oauth"
   ].some((updateId) => homeContentModuleJs.includes(updateId))) {
-    fail("js/data/home-content.mjs should remain the newest five-item projection after the H3 ambient wallpaper update");
+    fail("js/data/home-content.mjs should remain the newest five-item projection after the BFCache wallpaper recovery update");
   }
 
   const projectedUpdateIds = [finalUpdateId, ...projectedSupportingReleaseUpdateIds];
   const projectedUpdateIndexes = projectedUpdateIds.map((updateId) => homeContentModuleJs.indexOf(updateId));
   if (projectedUpdateIndexes.some((index) => index < 0)
     || !projectedUpdateIndexes.every((index, offset, list) => offset === 0 || list[offset - 1] < index)) {
-    fail("js/data/home-content.mjs should order the H3 ambient release, slim-rim dawn, ceramic roll, calm redesign, and scene redesign by descending publication time");
+    fail("js/data/home-content.mjs should order the BFCache recovery, H3 ambient release, slim-rim dawn, ceramic roll, and calm redesign by descending publication time");
   }
 
   for (const token of [
@@ -5016,7 +5020,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-08-10">2026.08.10</time>',
+    '<time id="top-updated" datetime="2026-08-11">2026.08.11</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${finalCssVersion}`,
     `/css/motion-system.css?v=${finalCssVersion}`,
@@ -5031,19 +5035,18 @@ if (finalUpdateStarted) {
 
   for (const token of [
     finalMainVersion,
-    adminMotionPolishVersion,
-    transferReleaseVersion,
     finalUpdateId,
-    ...preservedReleaseUpdateIds,
-    wallpaperTimeSwitchAssetVersion,
-    wallpaperSwitchSceneReleaseVersion,
-    wallpaperSwitchRouteMotionReleaseVersion,
+    finalUpdateSlug,
+    "H3 4K",
+    "slim-dawn",
+    "ceramic-roll",
+    "calm-redesign",
     "site-updates",
     "fallback",
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260810Section.includes(token)) {
+    if (!changelog20260811Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }

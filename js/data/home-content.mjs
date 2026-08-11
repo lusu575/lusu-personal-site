@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-11-ambient-wallpaper-bfcache-fix",
+      "slug": "2026-08-11-ambient-wallpaper-bfcache-fix",
+      "category": "site-updates",
+      "tags": ["网站更新", "壁纸", "可靠性", "BFCache", "无障碍"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-11T03:35:00.000Z",
+      "updated_at": "2026-08-11T03:35:00.000Z",
+      "published_at": "2026-08-11T03:35:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.11",
+      "title": {
+        "zh": "修复动态壁纸的历史返回恢复",
+        "en": "Ambient Wallpaper Recovery After History Navigation",
+        "ja": "履歴移動後の動画壁紙復帰を修正"
+      },
+      "summary": {
+        "zh": "修复桌面 Home 动态壁纸在浏览器历史返回或 BFCache 恢复后可能停留在静态图的问题。恢复页面时，旧的 off 状态曾先被主模块读取，随后 ui-motion 写回 full 却没有触发壁纸重同步；现在 motion mode、运行时 ready 与 pageshow 都会重新协调视频状态。手机、low performance、Save-Data、reduced／off 的零视频请求策略保持不变。",
+        "en": "Fixes a case where the desktop Home ambient wallpaper could remain static after browser history navigation or a BFCache restore. The main module could read a stale off state before ui-motion wrote full back without notifying the wallpaper controller; motion-mode, runtime-ready, and pageshow signals now resynchronize video state. The zero-video-request policy for mobile, low-performance, Save-Data, and reduced/off modes is unchanged.",
+        "ja": "ブラウザー履歴の移動や BFCache 復帰後に、デスクトップ Home の動画壁紙が静止画のままになる場合を修正しました。主モジュールが古い off 状態を先に読み、その後 ui-motion が full を書き戻しても壁紙側へ再同期されないことが原因でした。motion mode、runtime ready、pageshow の各タイミングで動画状態を再調整します。モバイル、low performance、Save-Data、reduced／off の動画リクエストを行わない方針は変わりません。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-10-h3-ambient-wallpapers-4k",
       "slug": "2026-08-10-h3-ambient-wallpapers-4k",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "四时段壁纸开关再次轻量重做：Image2 重新生成极简色场、四个语义浮雕节点，以及每个主题唯一一层点题内容；移除多层风景、行星与错峰装饰。选择器可随快速操作中断并重定向，键盘和 motion-off 即时完成；reduced-motion 只保留淡化，low／Save-Data 跳过 accent 层。",
         "en": "The four-stage wallpaper switch has been rebuilt around a calmer, lighter system. Image2 regenerated four minimal color fields, four semantic embossed stops, and one accent layer per theme; layered scenery, planets, and staggered decoration are removed. The selector stays interruptible and retargetable, keyboard and motion-off changes are immediate, reduced motion keeps only a fade, and low/Save-Data skips the accent layer.",
         "ja": "4段階壁紙スイッチを、より穏やかで軽量な構成に再設計しました。Image2 で最小限の色面4種、意味の異なる浮き彫りノード4種、各テーマ一層の accent を生成し直し、多層の風景、惑星、時間差装飾を削除しました。selector は中断・再設定可能で、keyboard／motion-off は即時、reduced-motion はフェードのみ、low／Save-Data では accent を読み込みません。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-09-wallpaper-switch-scene-redesign",
-      "slug": "2026-08-09-wallpaper-switch-scene-redesign",
-      "category": "site-updates",
-      "tags": ["网站更新", "壁纸", "动效", "Image2", "无障碍"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-09T11:15:00.000Z",
-      "updated_at": "2026-08-09T11:15:00.000Z",
-      "published_at": "2026-08-09T11:15:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.08.09",
-      "title": {
-        "zh": "四时段壁纸开关场景重做",
-        "en": "Four-Stage Wallpaper Switch Scene Redesign",
-        "ja": "4段階壁紙スイッチのシーン再設計"
-      },
-      "summary": {
-        "zh": "四时段壁纸开关改为单场景椭圆：整条轨道始终只显示当前天空，四个节点常驻，活跃节点分别呈现半露朝阳、完整太阳、低位落日或月亮；只有当前时段的云、光芒、星星与行星分层进入。全部视觉使用 Image2 生成位图，并保留自动边界、手动到下一边界、键盘与减弱／关闭动效降级。",
-        "en": "The four-stage wallpaper switch is now a single-scene oval: the whole track shows only the current sky while four persistent stops remain visible. The active stop carries a partly risen morning sun, full daytime sun, low setting sun, or moon, and only the current period's clouds, rays, stars, and planet enter in layers. All visuals are Image2-generated bitmaps, with automatic boundaries, manual overrides until the next boundary, keyboard access, and reduced/off-motion fallbacks.",
-        "ja": "4段階の壁紙スイッチを、現在の空だけを楕円全体に映す単一シーンへ再設計しました。4つのノードは常時表示し、選択中のノードは半分見える朝日、真昼の太陽、低い夕日、月に切り替わります。雲、光、星、惑星は現在の時間帯だけ段階的に現れます。ビジュアルはすべて Image2 生成ビットマップで、時刻境界の自動切り替え、次の境界までの手動選択、キーボード、モーション低減／オフ時のフォールバックに対応します。"
       }
     }
   ]
