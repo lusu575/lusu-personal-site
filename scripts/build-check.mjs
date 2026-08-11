@@ -889,7 +889,7 @@ const motionPolishReleaseVersion = "20260809-motion-polish-r2";
 const wallpaperSwitchSceneReleaseVersion = "20260810-wallpaper-switch-slim-dawn-r1";
 const wallpaperSwitchRouteMotionReleaseVersion = "20260810-wallpaper-switch-route-motion-r1";
 const h3AmbientWallpapersReleaseVersion = "20260810-h3-ambient-wallpapers-4k-r1";
-const ambientWallpaperBfcacheFixVersion = "20260811-ambient-wallpaper-bfcache-fix-r1";
+const h3FirstVersionVideoReleaseVersion = "20260811-h3-first-version-video-sr-48fps-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = "20260809-transfer-motion-r2";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
@@ -901,48 +901,80 @@ const publicRouteVersion = (route) => route === "knowledge" || route === "chatro
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
 const chatroomIconVersion = "20260726-chatroom-icon-redraw-r2";
 
-if (ambientWallpaperManifest.schema_version !== 1
-  || ambientWallpaperManifest.release_id !== h3AmbientWallpapersReleaseVersion
+const ambientWallpaperManifestSource = JSON.stringify(ambientWallpaperManifest);
+if (ambientWallpaperManifest.schema_version !== 2
+  || ambientWallpaperManifest.release_id !== h3FirstVersionVideoReleaseVersion
   || ambientWallpaperManifest.encoding?.video_codec !== "H.264"
   || ambientWallpaperManifest.encoding?.profile !== "High"
-  || ambientWallpaperManifest.encoding?.level !== "5.1"
+  || ambientWallpaperManifest.encoding?.levels?.[1080] !== "4.2"
+  || ambientWallpaperManifest.encoding?.levels?.[2160] !== "5.2"
   || ambientWallpaperManifest.encoding?.pixel_format !== "yuv420p"
+  || ambientWallpaperManifest.encoding?.frame_rate !== 48
+  || ambientWallpaperManifest.encoding?.frames !== 248
+  || ambientWallpaperManifest.encoding?.duration_seconds !== 5.166667
   || ambientWallpaperManifest.encoding?.audio !== false
   || ambientWallpaperManifest.encoding?.faststart !== true
+  || ambientWallpaperManifest.generation?.motion_generation !== "first version"
+  || ambientWallpaperManifest.generation?.full_frame_motion !== true
+  || ambientWallpaperManifest.generation?.loop?.secondary_composition !== false
+  || ambientWallpaperManifest.generation?.frame_interpolation?.source_fps !== 24
+  || ambientWallpaperManifest.generation?.frame_interpolation?.output_fps !== 48
+  || ambientWallpaperManifest.generation?.frame_interpolation?.output_frames !== 248
+  || !/optical-flow/i.test(ambientWallpaperManifest.generation?.frame_interpolation?.engine || "")
   || ambientWallpaperManifest.generation?.super_resolution?.model !== "RealESRGAN_x4plus_anime_6B"
   || ambientWallpaperManifest.generation?.super_resolution?.weights_sha256 !== "f872d837d3c90ed2e05227bed711af5671a6fd1c9f7d7e91c911a61f155e99da"
-  || ambientWallpaperManifest.quality_assurance?.decoded_loop_wrap_mean_difference !== 0
-  || ambientWallpaperManifest.quality_assurance?.turn_step_at_or_below_adjacent_p90 !== true
-  || /[A-Z]:\\/i.test(JSON.stringify(ambientWallpaperManifest))) {
-  fail("ambient wallpaper manifest must preserve the local-H3, one-pass RealESRGAN, H.264 Level 5.1 and decoded seamless-loop contract without local absolute paths");
+  || !/every interpolated video frame/i.test(ambientWallpaperManifest.generation?.super_resolution?.inference || "")
+  || ambientWallpaperManifest.generation?.web_delivery_encode?.encoder !== "libx264"
+  || ambientWallpaperManifest.generation?.web_delivery_encode?.preset !== "slow"
+  || ambientWallpaperManifest.generation?.web_delivery_encode?.tune !== "animation"
+  || ambientWallpaperManifest.generation?.web_delivery_encode?.crf !== 18
+  || ambientWallpaperManifest.quality_assurance?.all_assets_full_decode !== true
+  || ambientWallpaperManifest.quality_assurance?.decoded_frames_per_asset !== 248
+  || ambientWallpaperManifest.quality_assurance?.all_assets_audio_streams !== 0
+  || ambientWallpaperManifest.quality_assurance?.all_assets_faststart !== true
+  || ambientWallpaperManifest.quality_assurance?.delivery_encode_sample?.scope !== "day 2160p48 only"
+  || ambientWallpaperManifest.quality_assurance?.delivery_encode_sample?.vmaf < 95
+  || /static_base|tree_gain|water_gain|reflection_gain|temporal_smoothing/i.test(ambientWallpaperManifestSource)
+  || /composited-(?:preview-v2|final-superres)/i.test(ambientWallpaperManifestSource)
+  || /(?:artifacts|downloads)[\\/]/i.test(ambientWallpaperManifestSource)
+  || /[A-Z]:\\/i.test(ambientWallpaperManifestSource)) {
+  fail("ambient wallpaper manifest must preserve the approved first-version H3, per-frame RealESRGAN, 24-to-48fps optical-flow and measured H.264 delivery contract without legacy composition fields or local absolute paths");
 }
 
 for (const theme of ambientWallpaperThemes) {
   const themeRecord = ambientWallpaperManifest.themes?.[theme];
   const assets = Array.isArray(themeRecord?.assets) ? themeRecord.assets : [];
-  if (assets.length !== 2 || !themeRecord?.controller_job_id || !themeRecord?.motion_source_sha256
-    || !themeRecord?.static_base_sha256 || !themeRecord?.super_resolved_base_sha256) {
+  if (assets.length !== 2 || !themeRecord?.controller_job_id
+    || themeRecord?.h3_source?.file !== `${theme}-safe.mp4`
+    || !/^[a-f0-9]{64}$/.test(themeRecord?.h3_source?.sha256 || "")) {
     fail(`ambient wallpaper ${theme} manifest must include provenance and exactly two delivery assets`);
     continue;
   }
   for (const resolution of [1080, 2160]) {
     const asset = assets.find((candidate) => candidate?.height === resolution);
     const expectedPath = `assets/videos/wallpaper-dynamic/${theme}/motion-${resolution}.mp4`;
+    const expectedReviewMasterLabel = `approved first-version ${resolution}p48 review master`;
     if (!asset || asset.path !== expectedPath || asset.width !== (resolution === 2160 ? 3840 : 1920)
+      || asset.level !== (resolution === 2160 ? "5.2" : "4.2")
       || asset.cache_key !== asset.sha256?.slice(0, 12)
       || asset.url !== `/${expectedPath}?v=${asset.cache_key}`
+      || asset.review_master?.label !== expectedReviewMasterLabel
+      || !/^[a-f0-9]{64}$/.test(asset.review_master?.sha256 || "")
+      || !Number.isSafeInteger(asset.review_master?.bytes)
+      || asset.review_master.bytes <= asset.bytes
       || !ambientWallpaperModuleJs.includes(`"${asset.url}"`)) {
-      fail(`ambient wallpaper ${theme} ${resolution}p manifest and runtime URL must match the hash-addressed production asset`);
+      fail(`ambient wallpaper ${theme} ${resolution}p manifest must bind the approved first-version review master to one hash-addressed production asset and runtime URL`);
       continue;
     }
     const bytes = readFileSync(resolve(root, expectedPath));
     const digest = createHash("sha256").update(bytes).digest("hex");
     const moovOffset = bytes.indexOf("moov");
     const mdatOffset = bytes.indexOf("mdat");
-    const budget = resolution === 2160 ? 3 * 1024 * 1024 : 1.2 * 1024 * 1024;
+    const budget = ambientWallpaperManifest.performance_budget?.maximum_bytes?.[resolution];
     if (bytes.subarray(4, 8).toString("ascii") !== "ftyp"
       || bytes.length !== asset.bytes
       || digest !== asset.sha256
+      || !Number.isSafeInteger(budget)
       || bytes.length > budget
       || moovOffset < 0
       || mdatOffset < 0
@@ -950,6 +982,25 @@ for (const theme of ambientWallpaperThemes) {
       fail(`ambient wallpaper ${theme} ${resolution}p must match manifest bytes/SHA, stay within budget and keep faststart MP4 atom order`);
     }
   }
+}
+
+for (const resolution of [1080, 2160]) {
+  const measuredMaximum = Math.max(...ambientWallpaperThemes.map((theme) => (
+    ambientWallpaperManifest.themes[theme].assets.find((asset) => asset.height === resolution).bytes
+  )));
+  const budget = ambientWallpaperManifest.performance_budget.maximum_bytes[resolution];
+  if (budget < measuredMaximum || budget > Math.ceil(measuredMaximum * 1.11)) {
+    fail(`ambient wallpaper ${resolution}p delivery budget must stay within 11 percent of the measured largest asset`);
+  }
+}
+
+const ambientDeliverySample = ambientWallpaperManifest.quality_assurance.delivery_encode_sample;
+const ambientDay2160 = ambientWallpaperManifest.themes.day.assets.find((asset) => asset.height === 2160);
+if (ambientDeliverySample.review_master_sha256 !== ambientDay2160.review_master.sha256
+  || ambientDeliverySample.production_sha256 !== ambientDay2160.sha256
+  || ambientDeliverySample.ssim < 0.995
+  || ambientDeliverySample.psnr_db < 49) {
+  fail("ambient wallpaper delivery QA sample must bind the day 2160p48 review master and production bytes with VMAF/SSIM/PSNR evidence");
 }
 
 if (/\.mp4(?:\?|["'])/i.test(indexHtml) || /<link\b[^>]*\bas=["']video["']/i.test(indexHtml)) {
@@ -1268,8 +1319,8 @@ for (const route of lazyPublicRoutes) {
 for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
-  ["./core/wallpaper-ambient.mjs", h3AmbientWallpapersReleaseVersion],
-  ["./data/home-content.mjs", ambientWallpaperBfcacheFixVersion],
+  ["./core/wallpaper-ambient.mjs", h3FirstVersionVideoReleaseVersion],
+  ["./data/home-content.mjs", h3FirstVersionVideoReleaseVersion],
   ["./features/account.mjs", motionPolishReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", transferReleaseVersion]
@@ -3277,7 +3328,7 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = motionPolishReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = ambientWallpaperBfcacheFixVersion;
+const currentMainVersion = h3FirstVersionVideoReleaseVersion;
 const currentCssVersion = h3AmbientWallpapersReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260809-browser-game-heartbeat-v1";
@@ -4764,14 +4815,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-11-ambient-wallpaper-bfcache-fix";
-const finalUpdateSlug = "2026-08-11-ambient-wallpaper-bfcache-fix";
+const finalUpdateId = "seed-update-2026-08-11-h3-first-version-video-sr-48fps";
+const finalUpdateSlug = "2026-08-11-h3-first-version-video-sr-48fps";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Ambient Wallpaper Recovery After History Navigation";
-const finalPublishedAt = "2026-08-11T03:35:00.000Z";
+const finalTitleEn = "First-Version H3 Wallpapers at 48fps and 4K";
+const finalPublishedAt = "2026-08-11T10:40:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-08-11-ambient-wallpaper-bfcache-fix",
   "seed-update-2026-08-10-h3-ambient-wallpapers-4k",
   "seed-update-2026-08-10-wallpaper-switch-slim-dawn",
   "seed-update-2026-08-10-wallpaper-switch-ceramic-roll",
@@ -4849,20 +4901,21 @@ if (finalUpdateStarted) {
     }
   }
   if ([
+    "seed-update-2026-08-10-wallpaper-switch-calm-redesign",
     "seed-update-2026-08-09-wallpaper-switch-scene-redesign",
     "seed-update-2026-08-09-game-video-mcp-candidate",
     "seed-update-2026-08-09-wallpaper-time-switch",
     "seed-update-2026-08-09-motion-polish",
     "seed-update-2026-08-07-remote-mcp-oauth"
   ].some((updateId) => homeContentModuleJs.includes(updateId))) {
-    fail("js/data/home-content.mjs should remain the newest five-item projection after the BFCache wallpaper recovery update");
+    fail("js/data/home-content.mjs should remain the newest five-item projection after the first-version H3 video release");
   }
 
   const projectedUpdateIds = [finalUpdateId, ...projectedSupportingReleaseUpdateIds];
   const projectedUpdateIndexes = projectedUpdateIds.map((updateId) => homeContentModuleJs.indexOf(updateId));
   if (projectedUpdateIndexes.some((index) => index < 0)
     || !projectedUpdateIndexes.every((index, offset, list) => offset === 0 || list[offset - 1] < index)) {
-    fail("js/data/home-content.mjs should order the BFCache recovery, H3 ambient release, slim-rim dawn, ceramic roll, and calm redesign by descending publication time");
+    fail("js/data/home-content.mjs should order the first-version H3 release, BFCache recovery, prior H3 release, slim-rim dawn, and ceramic roll by descending publication time");
   }
 
   for (const token of [
@@ -5037,10 +5090,11 @@ if (finalUpdateStarted) {
     finalMainVersion,
     finalUpdateId,
     finalUpdateSlug,
-    "H3 4K",
-    "slim-dawn",
-    "ceramic-roll",
-    "calm-redesign",
+    "48fps",
+    "248 帧",
+    "RealESRGAN_x4plus_anime_6B",
+    "BFCache",
+    "8 月 10 日 H3",
     "site-updates",
     "fallback",
     "Functions seed",

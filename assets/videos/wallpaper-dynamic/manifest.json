@@ -1,46 +1,60 @@
 {
-  "schema_version": 1,
-  "release_id": "20260810-h3-ambient-wallpapers-4k-r1",
-  "created_at": "2026-08-10T15:57:12.000Z",
-  "purpose": "Desktop Home current-theme ambient wallpaper progressive enhancement",
+  "schema_version": 2,
+  "release_id": "20260811-h3-first-version-video-sr-48fps-r1",
+  "created_at": "2026-08-11T10:44:24.891Z",
+  "purpose": "Desktop Home current-theme first-version H3 wallpaper progressive enhancement",
   "generation": {
     "motion_model": "MiniMax H3 Local",
-    "motion_preset": "safe",
+    "motion_generation": "first version",
     "source_size": "864x480",
     "source_fps": 24,
     "source_frames": 124,
+    "full_frame_motion": true,
+    "loop": {
+      "method": "raw first-version frames 0..62 followed by frames 61..1",
+      "frames_at_24_fps": 124,
+      "duration_seconds": 5.166667,
+      "secondary_composition": false
+    },
+    "frame_interpolation": {
+      "engine": "FFmpeg minterpolate optical-flow MCI/AOBMC bidirectional",
+      "order": "before super-resolution",
+      "source_fps": 24,
+      "output_fps": 48,
+      "output_frames": 248
+    },
     "super_resolution": {
       "model": "RealESRGAN_x4plus_anime_6B",
       "repository": "https://github.com/xinntao/Real-ESRGAN",
       "weights": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.4/RealESRGAN_x4plus_anime_6B.pth",
       "license": "BSD-3-Clause",
       "weights_sha256": "f872d837d3c90ed2e05227bed711af5671a6fd1c9f7d7e91c911a61f155e99da",
-      "inference": "fp16, 512px tiles, 32px overlap, 4x static-base inference",
-      "policy": "Each static base is super-resolved once; individual video frames are never independently AI-upscaled."
+      "inference": "every interpolated video frame, fp16, 256px tiles, 24px overlap, 4x",
+      "native_output": "3456x1920",
+      "final_geometry": "resize to 3888x2160 then center-crop 24px from each side"
     },
-    "composition": {
-      "loop": "62 forward frames followed by the same 62 frames in reverse, with duplicated endpoints",
-      "loop_frames": 124,
-      "loop_fps": 24,
-      "duration_seconds": 5.166667,
-      "tree_mask": "shared semantic canopy matte; trunk and sky excluded",
-      "water_mask": "shared narrow visible-water matte; skyline, shrubs, shore and slope excluded",
-      "dusk_reflection": "separate narrow sunset reflection matte",
-      "temporal_smoothing_frames": {
-        "morning": 5,
-        "day": 5,
-        "dusk": 5,
-        "night": 7
-      }
+    "web_delivery_encode": {
+      "input": "the user-approved first-version 1080p48 and 2160p48 review masters recorded per asset",
+      "encoder": "libx264",
+      "preset": "slow",
+      "tune": "animation",
+      "crf": 18,
+      "frame_rate_preserved": true,
+      "resolution_preserved": true
     }
   },
   "encoding": {
     "container": "MP4",
     "video_codec": "H.264",
     "profile": "High",
-    "level": "5.1",
+    "levels": {
+      "1080": "4.2",
+      "2160": "5.2"
+    },
     "pixel_format": "yuv420p",
-    "rate_control": "QP 16",
+    "frame_rate": 48,
+    "frames": 248,
+    "duration_seconds": 5.166667,
     "audio": false,
     "faststart": true
   },
@@ -60,129 +74,184 @@
       "non-Home"
     ]
   },
+  "performance_budget": {
+    "maximum_bytes": {
+      "1080": 4784128,
+      "2160": 13631488
+    },
+    "basis": "approximately 10.4 percent above the largest measured first-version delivery asset at each resolution"
+  },
   "quality_assurance": {
-    "full_decode": true,
-    "decoded_frames_per_asset": 124,
-    "decoded_loop_wrap_mean_difference": 0,
-    "turn_step_at_or_below_adjacent_p90": true,
-    "outside_motion_mask_stable": true,
-    "television_region_stable": true
+    "all_assets_full_decode": true,
+    "decoded_frames_per_asset": 248,
+    "probed_frame_rate": 48,
+    "probed_duration_seconds": 5.166667,
+    "all_assets_audio_streams": 0,
+    "all_assets_faststart": true,
+    "review_status": "The four first-version 1080p48 review masters were shown to and approved by the site owner before integration.",
+    "delivery_encode_sample": {
+      "scope": "day 2160p48 only",
+      "review_master_sha256": "2f738df13895149477636ba60e130d2754038b9f654aee143642b7ddc6e06cf1",
+      "production_sha256": "abdb82258c35a9aa1ea0bdfc34ee4356439fee9ab88b8861dfc4c56728cb63a3",
+      "vmaf": 95.566885,
+      "ssim": 0.995636,
+      "psnr_db": 49.19956
+    }
   },
   "themes": {
     "morning": {
       "controller_job_id": "ca1771f3-99cb-4c1c-8744-cc45c1850429",
-      "motion_source_sha256": "ace3d3333fd29324888e923362ae9514dd928f93992bceaa2144dd4320fd3b7e",
-      "static_base": "assets/images/wallpaper-dynamic/morning/base-clean.png",
-      "static_base_sha256": "41a9c57427d505e1f56c50c762b46b1e3d0e4494c09040da08c51ee329d5c521",
-      "super_resolved_base_sha256": "8feb2630ed214d5118be91aeb0dee52b510caa0ee9d6a0479e90c29c10480742",
-      "tree_gain": 0.45,
-      "water_gain": 0.53,
+      "h3_source": {
+        "file": "morning-safe.mp4",
+        "sha256": "ace3d3333fd29324888e923362ae9514dd928f93992bceaa2144dd4320fd3b7e"
+      },
       "assets": [
         {
           "path": "assets/videos/wallpaper-dynamic/morning/motion-1080.mp4",
-          "url": "/assets/videos/wallpaper-dynamic/morning/motion-1080.mp4?v=5c27f252794a",
+          "url": "/assets/videos/wallpaper-dynamic/morning/motion-1080.mp4?v=4ca412a92580",
           "width": 1920,
           "height": 1080,
-          "bytes": 774846,
-          "sha256": "5c27f252794aae21d4ddc512ef2abbe211652a9b846c29fc929e3362d57f8ca4",
-          "cache_key": "5c27f252794a"
+          "level": "4.2",
+          "bytes": 2846812,
+          "sha256": "4ca412a92580756bb1af8d5a57cd536a8089a41db20baf93d155b3bc832f2a54",
+          "cache_key": "4ca412a92580",
+          "review_master": {
+            "label": "approved first-version 1080p48 review master",
+            "bytes": 7761671,
+            "sha256": "57acd656b0cc4bc861d0b9766d28a138c42c628c98104786dd1e82498dd81c4b"
+          }
         },
         {
           "path": "assets/videos/wallpaper-dynamic/morning/motion-2160.mp4",
-          "url": "/assets/videos/wallpaper-dynamic/morning/motion-2160.mp4?v=2a60f60122d1",
+          "url": "/assets/videos/wallpaper-dynamic/morning/motion-2160.mp4?v=369eef2dc913",
           "width": 3840,
           "height": 2160,
-          "bytes": 1978478,
-          "sha256": "2a60f60122d17b6511519f3cd938c894f9da84ee7307c0fd8ff67d2854a02489",
-          "cache_key": "2a60f60122d1"
+          "level": "5.2",
+          "bytes": 8211493,
+          "sha256": "369eef2dc9130ac820e0f787277b62fc14a0525fbc919f91eb42d53ddf33c52c",
+          "cache_key": "369eef2dc913",
+          "review_master": {
+            "label": "approved first-version 2160p48 review master",
+            "bytes": 25933914,
+            "sha256": "cbfd8f31bd87da784852edd153244eaea64899b4ae7fc45de0ea3fc8fcccc3ab"
+          }
         }
       ]
     },
     "day": {
       "controller_job_id": "73886dc8-5a3d-40e1-b431-e5ffcaafb063",
-      "motion_source_sha256": "5e585fa0c2732f7cd8bb7434acbb676ff845ce9612e42981206d3ac237fb1016",
-      "static_base": "assets/images/wallpaper-dynamic/day/base-clean.png",
-      "static_base_sha256": "5ea892faa71a1a21d4cdee790d88f238a1073709458aaa2949ee1698266c83b1",
-      "super_resolved_base_sha256": "e94cbcc6fa6ea1e424b894b48d8a5a81bcc6b2867f02d595288b125801b3cf8c",
-      "tree_gain": 0.39,
-      "water_gain": 0.32,
+      "h3_source": {
+        "file": "day-safe.mp4",
+        "sha256": "5e585fa0c2732f7cd8bb7434acbb676ff845ce9612e42981206d3ac237fb1016"
+      },
       "assets": [
         {
           "path": "assets/videos/wallpaper-dynamic/day/motion-1080.mp4",
-          "url": "/assets/videos/wallpaper-dynamic/day/motion-1080.mp4?v=82c14e4178c4",
+          "url": "/assets/videos/wallpaper-dynamic/day/motion-1080.mp4?v=6b2ae4137cc4",
           "width": 1920,
           "height": 1080,
-          "bytes": 813858,
-          "sha256": "82c14e4178c41057a674dde6284880a60e2e9381e929d344c58da4a7bb33697c",
-          "cache_key": "82c14e4178c4"
+          "level": "4.2",
+          "bytes": 4332265,
+          "sha256": "6b2ae4137cc4f90d93ecf389d766c7b5f5d84f74f4668981e1740ef6f82ceb97",
+          "cache_key": "6b2ae4137cc4",
+          "review_master": {
+            "label": "approved first-version 1080p48 review master",
+            "bytes": 11517295,
+            "sha256": "ae726f60ee60cfdd1aad10009bca594b1dcb2db70e6fdae27772845b0a85e1b7"
+          }
         },
         {
           "path": "assets/videos/wallpaper-dynamic/day/motion-2160.mp4",
-          "url": "/assets/videos/wallpaper-dynamic/day/motion-2160.mp4?v=272efb3341fb",
+          "url": "/assets/videos/wallpaper-dynamic/day/motion-2160.mp4?v=abdb82258c35",
           "width": 3840,
           "height": 2160,
-          "bytes": 2099801,
-          "sha256": "272efb3341fb5a029485593bcc2852459136cd83b4d6963f661d6641c9b2a37e",
-          "cache_key": "272efb3341fb"
+          "level": "5.2",
+          "bytes": 12348744,
+          "sha256": "abdb82258c35a9aa1ea0bdfc34ee4356439fee9ab88b8861dfc4c56728cb63a3",
+          "cache_key": "abdb82258c35",
+          "review_master": {
+            "label": "approved first-version 2160p48 review master",
+            "bytes": 47507952,
+            "sha256": "2f738df13895149477636ba60e130d2754038b9f654aee143642b7ddc6e06cf1"
+          }
         }
       ]
     },
     "dusk": {
       "controller_job_id": "3458ed28-140c-49d9-8562-f5fffcf7c9ad",
-      "motion_source_sha256": "81a829744578cefea03175392f18d91b292a6692a51e4c21b2f57f65f12ebf1d",
-      "static_base": "assets/images/wallpaper-dynamic/dusk/base-clean.png",
-      "static_base_sha256": "e288c3c6bc65e5bed3c683f47ebe899050244c52f7171c4a47ec5e2e590a15be",
-      "super_resolved_base_sha256": "b25eb60b7345b6ecea3fa580da29092ad9709318e560b2db1e2d9007239fb939",
-      "tree_gain": 0.49,
-      "water_gain": 0.52,
-      "reflection_gain": 0.64,
+      "h3_source": {
+        "file": "dusk-safe.mp4",
+        "sha256": "81a829744578cefea03175392f18d91b292a6692a51e4c21b2f57f65f12ebf1d"
+      },
       "assets": [
         {
           "path": "assets/videos/wallpaper-dynamic/dusk/motion-1080.mp4",
-          "url": "/assets/videos/wallpaper-dynamic/dusk/motion-1080.mp4?v=1d4a2dc8641d",
+          "url": "/assets/videos/wallpaper-dynamic/dusk/motion-1080.mp4?v=964dd9a44b0a",
           "width": 1920,
           "height": 1080,
-          "bytes": 1053845,
-          "sha256": "1d4a2dc8641d4abd7ed103621d3af465e332d4658672494c7ad8956d43c8334a",
-          "cache_key": "1d4a2dc8641d"
+          "level": "4.2",
+          "bytes": 2911141,
+          "sha256": "964dd9a44b0a4cdc3517126a3e68c5cf8064efa8ac2f495a5d6341b2d26f91d9",
+          "cache_key": "964dd9a44b0a",
+          "review_master": {
+            "label": "approved first-version 1080p48 review master",
+            "bytes": 7923103,
+            "sha256": "d3a448e0922b2c46de10ac51e320e55819e24b97cf7faea7125ca2cbfd1b2c61"
+          }
         },
         {
           "path": "assets/videos/wallpaper-dynamic/dusk/motion-2160.mp4",
-          "url": "/assets/videos/wallpaper-dynamic/dusk/motion-2160.mp4?v=33670f9614e2",
+          "url": "/assets/videos/wallpaper-dynamic/dusk/motion-2160.mp4?v=8cc2aa7898fd",
           "width": 3840,
           "height": 2160,
-          "bytes": 2688040,
-          "sha256": "33670f9614e2efae47a2f982f9f5130559e6f92f2bf9eb708d8b09c1c9c78f8a",
-          "cache_key": "33670f9614e2"
+          "level": "5.2",
+          "bytes": 8472499,
+          "sha256": "8cc2aa7898fdb356c4887239815d5ee9fb0d40bd4ac882edae0cb2944461c731",
+          "cache_key": "8cc2aa7898fd",
+          "review_master": {
+            "label": "approved first-version 2160p48 review master",
+            "bytes": 25813051,
+            "sha256": "c8de59bc7e0266db5afe9d36842cb48921497b131d9b2c3e11c41e630821d571"
+          }
         }
       ]
     },
     "night": {
       "controller_job_id": "0a4e4a2a-9d51-46a0-858a-a119ab7fbfc4",
-      "motion_source_sha256": "3547f41b3e31b67c3d7fa93514e6f9398ddbb8048695a3773bffb4fc037931cd",
-      "static_base": "assets/images/wallpaper-dynamic/night/base-clean.png",
-      "static_base_sha256": "fcdc75a4fe1c8324605d93d301f9064d842aa6a53f09644d69cdbe09e09c55eb",
-      "super_resolved_base_sha256": "a922be3207b2bc116b9b75c01c267371108ec5a2915a6c898d5cd9908c43b1d4",
-      "tree_gain": 0.27,
-      "water_gain": 0.31,
+      "h3_source": {
+        "file": "night-safe.mp4",
+        "sha256": "3547f41b3e31b67c3d7fa93514e6f9398ddbb8048695a3773bffb4fc037931cd"
+      },
       "assets": [
         {
           "path": "assets/videos/wallpaper-dynamic/night/motion-1080.mp4",
-          "url": "/assets/videos/wallpaper-dynamic/night/motion-1080.mp4?v=f03977297b96",
+          "url": "/assets/videos/wallpaper-dynamic/night/motion-1080.mp4?v=3251e39b7cea",
           "width": 1920,
           "height": 1080,
-          "bytes": 582525,
-          "sha256": "f03977297b9659f75e3e3c56b107e13b8a7935db35f6795c6a234e78ee73fcca",
-          "cache_key": "f03977297b96"
+          "level": "4.2",
+          "bytes": 3134331,
+          "sha256": "3251e39b7cea6655eed242bf21322e6f060095a502ed31ca9236846908abb378",
+          "cache_key": "3251e39b7cea",
+          "review_master": {
+            "label": "approved first-version 1080p48 review master",
+            "bytes": 9294794,
+            "sha256": "f9b774df836d5fe1426940f7c5e539e073df8a79a6a76f14d56e3b3ad2938d96"
+          }
         },
         {
           "path": "assets/videos/wallpaper-dynamic/night/motion-2160.mp4",
-          "url": "/assets/videos/wallpaper-dynamic/night/motion-2160.mp4?v=e34357c9d394",
+          "url": "/assets/videos/wallpaper-dynamic/night/motion-2160.mp4?v=6194df593cae",
           "width": 3840,
           "height": 2160,
-          "bytes": 1576796,
-          "sha256": "e34357c9d394438d67a64adbe9ec6f0169ed4fee4cd6ca5ac9a43b894386ccd0",
-          "cache_key": "e34357c9d394"
+          "level": "5.2",
+          "bytes": 9109841,
+          "sha256": "6194df593cae7ed36496d16f3c3d84176a372008b9ef8fd316339d8fee5a2e0b",
+          "cache_key": "6194df593cae",
+          "review_master": {
+            "label": "approved first-version 2160p48 review master",
+            "bytes": 32090593,
+            "sha256": "e411f458a0f6598d742efe7e713b789999da680397ab410d1505cb86c17b6a4f"
+          }
         }
       ]
     }

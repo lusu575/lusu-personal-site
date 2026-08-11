@@ -4,8 +4,10 @@
 
 ## 2026-08-11
 
+- 将桌面 Home 的 morning／day／dusk／night 正式视频从第二版过弱的局部 mask／gain 合成切换为用户确认的第一版 MiniMax H3 素材帧。四段均严格按源帧 `0..62 + 61..1` 整理为约 5.17 秒、24fps 的整屏往返序列，再经双向光流补到 48fps、共 248 帧，并由 `RealESRGAN_x4plus_anime_6B` 对全部帧逐帧 AI 超分，分别输出 1920×1080 和 3840×2160。没有使用原始 124 帧全段，也没有小女孩或电视 cameo；当前主题单文件加载、静态兜底以及手机／low／Save-Data／reduced／off 零视频请求边界不变。
+- 新增三语 `site-updates` 记录 `seed-update-2026-08-11-h3-first-version-video-sr-48fps`／`2026-08-11-h3-first-version-video-sr-48fps`，统一时间为 `2026-08-11T10:40:00.000Z`，公开 API／文章 seed token 更新为 `20260811-h3-first-version-video-sr-48fps-r1`；完整 fallback、Home 无正文投影、Functions seed、schema seed、本地／远端迁移精确验证与相关测试同步。Home 最新五条为本次第一版 H3 → BFCache 修复 → 8 月 10 日 H3 历史发布 → slim-dawn → ceramic-roll。
 - 修复桌面 Home 动态壁纸在浏览器前进／后退或 BFCache 恢复后可能一直停留在静态底图的问题。根因是恢复顺序中主模块先读到页面隐藏期间留下的旧 `off`，随后 `ui-motion` 写回 `full` 却未被壁纸控制器监听；现在 motion mode 变化、动效运行时 ready 与 `pageshow` 都会重新同步当前路由、主题和视频状态。
-- 新增三语 `site-updates` 记录 `seed-update-2026-08-11-ambient-wallpaper-bfcache-fix`／`2026-08-11-ambient-wallpaper-bfcache-fix`，统一时间为 `2026-08-11T03:35:00.000Z`，公开 API／文章 seed token 更新为 `20260811-ambient-wallpaper-bfcache-fix-r1`；完整 fallback、Home 无正文投影、Functions seed 与 schema seed 已同步，Home 最新五条严格为本修复 → H3 4K → slim-dawn → ceramic-roll → calm-redesign。手机、low performance、Save-Data、`prefers-reduced-motion` 及站内 reduced／off 的零视频请求策略没有改变。
+- 新增三语 `site-updates` 历史记录 `seed-update-2026-08-11-ambient-wallpaper-bfcache-fix`／`2026-08-11-ambient-wallpaper-bfcache-fix`，统一时间为 `2026-08-11T03:35:00.000Z`，当次 seed token 为 `20260811-ambient-wallpaper-bfcache-fix-r1`；该记录和三语正文继续保留，并在本次第一版 H3 发布后成为 Home 最新五条中的第二项。手机、low performance、Save-Data、`prefers-reduced-motion` 及站内 reduced／off 的零视频请求策略没有改变。
 
 ## 2026-08-10
 
