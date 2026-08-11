@@ -8,7 +8,7 @@
 - 标题是最终发布的硬门槛：若调用方省略标题且 provider 也无法返回合格标题，则返回 `VIDEO_METADATA_TITLE_UNAVAILABLE`，视频、分类关系、收据与审计均保持零写入。显式标题存在时，其他可选元数据抓取失败仍可发布，并持久化受限 `metadata_error`。本站始终不下载、上传、转码或托管视频文件，也不接受本机路径、Base64、原始字节或任意 iframe URL。
 - 当前只记录仓库 0.4.0 上线候选，不提前宣称生产可用。精确 Worker version、真实浏览器 OAuth、23 工具发现、最小载荷发布、同载荷重放、管理／公开回读与 grant 撤销结果必须在实际部署后由主发布流程回填；历史 bundle 的验收不能替代新 bundle。
 - 首次候选曾临时部署为精确 Worker `9b0bd726-2c15-414c-bdff-fc5179b4e003`。DCR、PKCE、站长 OAuth 和精确 23 项工具发现通过，但仅 `operationId + originalUrl` 的 YouTube 发布因 provider 未返回标题而以 `VIDEO_METADATA_TITLE_UNAVAILABLE` 结束，视频、分类、收据和审计均未写入；临时 grant 已撤销，生产已 100% 回滚到稳定 0.3.1 `849d8328-87db-4ac8-819a-ce725fc06349`。该尝试不是生命周期验收成功，也不得用于 registry promotion。
-- 当前仓库候选为 YouTube oEmbed 增加同一已校验 videoId 构造的官方 watch page 兜底，并以浏览器兼容请求头、256 KiB JSON／2 MiB HTML 流式上限和覆盖正文的 8 秒超时约束 provider 响应；标题、描述、作者、发布时间和封面仍经过既有规范化／官方 CDN 白名单。此修复尚未重新部署或生产验收；站长停止本轮授权后不得继续发起 OAuth，只有收到新的明确授权才能重跑闭环。
+- 当前仓库候选并行读取 YouTube oEmbed 与由同一已校验 videoId 构造的官方 watch page：oEmbed 的标题／作者／封面优先，页面尽量补齐简介／发布时间并在 oEmbed 失败或缺标题时兜底。两路使用浏览器兼容请求头、256 KiB JSON／2 MiB HTML 流式上限和覆盖正文的 8 秒超时；页面声明的 canonical／`og:url` 必须匹配请求 videoId，畸形或中断正文会主动取消响应流，结果仍经过既有字段规范化／官方 CDN 白名单。此修复尚未重新部署或生产验收；站长停止本轮授权后不得继续发起 OAuth，只有收到新的明确授权才能重跑闭环。
 - 最新三语公开更新为 `seed-update-2026-08-11-video-link-autofill`／`2026-08-11-video-link-autofill`，发布时间 `2026-08-11T00:20:00.000Z`，公开表示、文章 seed、Home import 与 `js/main.js` 缓存 token 为 `20260811-video-link-autofill-r1`；Home 仅投影它与随后四条最新记录，不包含正文。
 
 ## 2026-08-10 四时段 H3 轻动态壁纸与 4K 超分发布契约

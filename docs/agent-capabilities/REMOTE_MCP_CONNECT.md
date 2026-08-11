@@ -24,7 +24,7 @@ https://lusu575.com/mcp
 
 这仍是 link-only 发布，不下载、上传、转码或托管视频文件，也不接受本机路径、Base64、原始字节或任意 iframe。精确 0.4.0 Worker version 与真实浏览器 OAuth、23 工具发现、最小载荷发布、重放、管理／公开回读及撤销闭环须在部署后回填；当前生产版本和历史验收事实不变。
 
-2026-08-11 的首次候选部署 `9b0bd726-2c15-414c-bdff-fc5179b4e003` 已完成 DCR、PKCE、站长 OAuth 与精确 23 项工具发现，但最小 YouTube 发布因 provider 标题不可用而以 `VIDEO_METADATA_TITLE_UNAVAILABLE` 零写入失败。临时 grant 已撤销，生产已 100% 回滚至 0.3.1 `849d8328-87db-4ac8-819a-ce725fc06349`。仓库候选现加入官方 watch page 的有界流式兜底，仍未重新部署或验收；不得把这次失败尝试写成可用性晋级，也不得在站长未重新明确授权时继续 OAuth。
+2026-08-11 的首次候选部署 `9b0bd726-2c15-414c-bdff-fc5179b4e003` 已完成 DCR、PKCE、站长 OAuth 与精确 23 项工具发现，但最小 YouTube 发布因 provider 标题不可用而以 `VIDEO_METADATA_TITLE_UNAVAILABLE` 零写入失败。临时 grant 已撤销，生产已 100% 回滚至 0.3.1 `849d8328-87db-4ac8-819a-ce725fc06349`。仓库候选现以有界流式读取并行合并官方 oEmbed 与 watch page，让页面补简介／发布时间并兜底标题；仍未重新部署或验收。不得把这次失败尝试写成可用性晋级，也不得在站长未重新明确授权时继续 OAuth。
 
 ## 当前 Worker 的 23 个工具
 

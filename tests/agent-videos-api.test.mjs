@@ -397,15 +397,34 @@ test("Agent video create is atomic, canonical, audited, and replayable without a
 
 test("Agent video link-only create fills provider metadata and replays before another fetch", async () => {
   const fixture = createFixture();
-  let metadataFetches = 0;
+  const metadataUrls = [];
   fixture.env.VIDEO_METADATA_FETCH = async (url) => {
-    metadataFetches += 1;
-    assert.match(String(url), /^https:\/\/www\.youtube\.com\/oembed\?/);
-    return Response.json({
-      title: "Provider-resolved title",
-      author_name: "Provider author",
-      thumbnail_url: "https://i.ytimg.com/vi/aqz-KE-bpKQ/maxresdefault.jpg"
-    });
+    const metadataUrl = String(url);
+    metadataUrls.push(metadataUrl);
+    if (metadataUrl.startsWith("https://www.youtube.com/oembed?")) {
+      return Response.json({
+        title: "Provider-resolved title",
+        author_name: "Provider author",
+        thumbnail_url: "https://i.ytimg.com/vi/aqz-KE-bpKQ/maxresdefault.jpg"
+      });
+    }
+    if (metadataUrl === "https://www.youtube.com/watch?v=aqz-KE-bpKQ") {
+      return new Response(`<!doctype html>
+        <html>
+          <head>
+            <meta property="og:url" content="https://www.youtube.com/watch?v=aqz-KE-bpKQ">
+            <meta property="og:title" content="Watch title must not override oEmbed">
+            <meta name="description" content="Watch-page description">
+            <meta property="og:image" content="https://i.ytimg.com/vi/aqz-KE-bpKQ/watch-page.jpg">
+            <script type="application/ld+json">
+              {"ownerChannelName":"Watch author must not override oEmbed","publishDate":"2026-08-10"}
+            </script>
+          </head>
+        </html>`, {
+        headers: { "Content-Type": "text/html; charset=utf-8" }
+      });
+    }
+    throw new Error(`Unexpected YouTube metadata URL: ${metadataUrl}`);
   };
   const body = {
     operationId: "video-link-only-001",
@@ -418,14 +437,17 @@ test("Agent video link-only create fills provider metadata and replays before an
   });
   assert.equal(created.response.status, 201);
   assert.equal(created.payload.status, "draft");
-  assert.equal(metadataFetches, 1);
+  assert.deepEqual(metadataUrls, [
+    "https://www.youtube.com/oembed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3Daqz-KE-bpKQ&format=json",
+    "https://www.youtube.com/watch?v=aqz-KE-bpKQ"
+  ]);
   const row = fixture.DB.sqlite.prepare("select * from videos where video_id = ?")
     .get(created.payload.videoId);
   assert.equal(row.title, "Provider-resolved title");
-  assert.equal(row.description, "");
+  assert.equal(row.description, "Watch-page description");
   assert.equal(row.thumbnail_url, "https://i.ytimg.com/vi/aqz-KE-bpKQ/maxresdefault.jpg");
   assert.equal(row.author_name, "Provider author");
-  assert.equal(row.published_at, null);
+  assert.equal(row.published_at, "2026-08-10T00:00:00.000Z");
   assert.equal(row.metadata_error, "");
 
   const replay = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
@@ -435,7 +457,7 @@ test("Agent video link-only create fills provider metadata and replays before an
   assert.equal(replay.response.status, 200);
   assert.equal(replay.payload.duplicate, true);
   assert.equal(replay.payload.videoId, created.payload.videoId);
-  assert.equal(metadataFetches, 1);
+  assert.equal(metadataUrls.length, 2);
 
   const changedIntent = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
     method: "POST",
@@ -443,7 +465,7 @@ test("Agent video link-only create fills provider metadata and replays before an
   });
   assert.equal(changedIntent.response.status, 409);
   assert.equal(changedIntent.payload.code, "VIDEO_OPERATION_CONFLICT");
-  assert.equal(metadataFetches, 1);
+  assert.equal(metadataUrls.length, 2);
   assert.equal(count(fixture.DB, "videos"), 1);
   assert.equal(count(fixture.DB, "agent_video_receipts"), 1);
   assert.equal(count(fixture.DB, "agent_audit_log"), 1);
@@ -460,7 +482,8 @@ test("Agent video link-only create falls back from YouTube oEmbed to the officia
     return new Response(`<!doctype html>
       <html>
         <head>
-          <meta property="og:title" content="Watch fallback &amp; title &amp;#39;literal">
+          <meta property="og:url" content="https://www.youtube.com/watch?v=aqz-KE-bpKQ">
+          <meta property="og:title" content="Watch fallback &amp; title &amp;#39;literal &#38;quot;numeric">
           <meta name="description" content="Fallback description &quot;quoted&quot;">
           <meta property="og:image" content="https://i.ytimg.com/vi/aqz-KE-bpKQ/maxresdefault.jpg">
           <script type="application/ld+json">
@@ -488,12 +511,77 @@ test("Agent video link-only create falls back from YouTube oEmbed to the officia
   assert.equal(metadataUrls.length, 2);
   const row = fixture.DB.sqlite.prepare("select * from videos where video_id = ?")
     .get(created.payload.videoId);
-  assert.equal(row.title, "Watch fallback & title &#39;literal");
+  assert.equal(row.title, "Watch fallback & title &#39;literal &quot;numeric");
   assert.equal(row.description, 'Fallback description "quoted"');
   assert.equal(row.thumbnail_url, "https://i.ytimg.com/vi/aqz-KE-bpKQ/maxresdefault.jpg");
   assert.equal(row.author_name, "Watch page author");
   assert.equal(row.published_at, "2026-08-10T00:00:00.000Z");
   assert.equal(row.metadata_error, "");
+});
+
+test("Agent video YouTube watch-page fallback rejects a mismatched generic page without writes", async () => {
+  const fixture = createFixture();
+  fixture.env.VIDEO_METADATA_FETCH = async (url) => {
+    if (String(url).includes("youtube.com/oembed")) {
+      return new Response("oEmbed unavailable", { status: 503 });
+    }
+    return new Response(`<!doctype html>
+      <html>
+        <head>
+          <meta property="og:url" content="https://www.youtube.com/watch?v=M7lc1UVf-VE">
+          <meta property="og:title" content="Generic YouTube page title">
+          <meta name="description" content="This must not be accepted for the requested video">
+        </head>
+      </html>`);
+  };
+
+  const failed = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
+    method: "POST",
+    body: {
+      operationId: "video-youtube-page-mismatch-001",
+      originalUrl: "https://youtu.be/aqz-KE-bpKQ"
+    }
+  });
+
+  assert.equal(failed.response.status, 502);
+  assert.equal(failed.payload.code, "VIDEO_METADATA_TITLE_UNAVAILABLE");
+  assert.equal(count(fixture.DB, "videos"), 0);
+  assert.equal(count(fixture.DB, "video_category_relations"), 0);
+  assert.equal(count(fixture.DB, "agent_video_receipts"), 0);
+  assert.equal(count(fixture.DB, "agent_audit_log"), 0);
+});
+
+test("Agent video metadata reader cancels an interrupted malformed UTF-8 body", async () => {
+  const fixture = createFixture();
+  let cancelReason = "";
+  fixture.env.VIDEO_METADATA_FETCH = async (url) => {
+    if (String(url).includes("youtube.com/oembed")) {
+      return new Response("oEmbed unavailable", { status: 503 });
+    }
+    return new Response(new ReadableStream({
+      start(controller) {
+        controller.enqueue(new Uint8Array([0xc3, 0x28]));
+      },
+      cancel(reason) {
+        cancelReason = String(reason || "");
+      }
+    }));
+  };
+
+  const failed = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
+    method: "POST",
+    body: {
+      operationId: "video-youtube-malformed-body-001",
+      originalUrl: "https://youtu.be/aqz-KE-bpKQ"
+    }
+  });
+
+  assert.equal(failed.response.status, 502);
+  assert.equal(failed.payload.code, "VIDEO_METADATA_TITLE_UNAVAILABLE");
+  assert.equal(cancelReason, "metadata response interrupted");
+  assert.equal(count(fixture.DB, "videos"), 0);
+  assert.equal(count(fixture.DB, "agent_video_receipts"), 0);
+  assert.equal(count(fixture.DB, "agent_audit_log"), 0);
 });
 
 test("Agent video YouTube watch-page fallback rejects an oversized chunked response without writes", async () => {
@@ -933,15 +1021,34 @@ test("Agent video update keeps CAS, category relations, idempotency, and duplica
 test("Agent video refresh replays before row reads or metadata fetches", async () => {
   const fixture = createFixture();
   const seeded = seedVideo(fixture.DB);
-  let metadataFetches = 0;
+  const metadataUrls = [];
   fixture.env.VIDEO_METADATA_FETCH = async (url) => {
-    metadataFetches += 1;
-    assert.match(String(url), /^https:\/\/www\.youtube\.com\/oembed\?/);
-    return Response.json({
-      title: "Fresh metadata title",
-      author_name: "Fresh author",
-      thumbnail_url: "https://i.ytimg.com/vi/M7lc1UVf-VE/maxresdefault.jpg"
-    });
+    const metadataUrl = String(url);
+    metadataUrls.push(metadataUrl);
+    if (metadataUrl.startsWith("https://www.youtube.com/oembed?")) {
+      return Response.json({
+        title: "Fresh metadata title",
+        author_name: "Fresh author",
+        thumbnail_url: "https://i.ytimg.com/vi/M7lc1UVf-VE/maxresdefault.jpg"
+      });
+    }
+    if (metadataUrl === "https://www.youtube.com/watch?v=M7lc1UVf-VE") {
+      return new Response(`<!doctype html>
+        <html>
+          <head>
+            <meta property="og:url" content="https://www.youtube.com/watch?v=M7lc1UVf-VE">
+            <meta property="og:title" content="Watch refresh title must not override oEmbed">
+            <meta name="description" content="Fresh watch-page description">
+            <meta property="og:image" content="https://i.ytimg.com/vi/M7lc1UVf-VE/watch-page.jpg">
+            <script type="application/ld+json">
+              {"ownerChannelName":"Watch refresh author must not override oEmbed","uploadDate":"2026-08-11"}
+            </script>
+          </head>
+        </html>`, {
+        headers: { "Content-Type": "text/html; charset=utf-8" }
+      });
+    }
+    throw new Error(`Unexpected YouTube metadata URL: ${metadataUrl}`);
   };
   const body = {
     operationId: "video-refresh-001",
@@ -955,11 +1062,17 @@ test("Agent video refresh replays before row reads or metadata fetches", async (
   );
   assert.equal(refreshed.response.status, 200);
   assert.equal(refreshed.payload.metadataUpdated, true);
-  assert.equal(metadataFetches, 1);
-  assert.equal(
-    fixture.DB.sqlite.prepare("select title from videos where video_id = ?").get(seeded.videoId).title,
-    "Fresh metadata title"
-  );
+  assert.deepEqual(metadataUrls, [
+    "https://www.youtube.com/oembed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DM7lc1UVf-VE&format=json",
+    "https://www.youtube.com/watch?v=M7lc1UVf-VE"
+  ]);
+  const refreshedRow = fixture.DB.sqlite.prepare("select * from videos where video_id = ?")
+    .get(seeded.videoId);
+  assert.equal(refreshedRow.title, "Fresh metadata title");
+  assert.equal(refreshedRow.description, "Fresh watch-page description");
+  assert.equal(refreshedRow.thumbnail_url, "https://i.ytimg.com/vi/M7lc1UVf-VE/maxresdefault.jpg");
+  assert.equal(refreshedRow.author_name, "Fresh author");
+  assert.equal(refreshedRow.published_at, "2026-08-11T00:00:00.000Z");
 
   const replay = await callApi(
     fixture.env,
@@ -969,7 +1082,7 @@ test("Agent video refresh replays before row reads or metadata fetches", async (
   );
   assert.equal(replay.response.status, 200);
   assert.equal(replay.payload.duplicate, true);
-  assert.equal(metadataFetches, 1);
+  assert.equal(metadataUrls.length, 2);
   assert.equal(count(fixture.DB, "agent_audit_log", "where action = 'agent-video-metadata-refreshed'"), 1);
 
   const operationConflict = await callApi(
@@ -983,7 +1096,7 @@ test("Agent video refresh replays before row reads or metadata fetches", async (
   );
   assert.equal(operationConflict.response.status, 409);
   assert.equal(operationConflict.payload.code, "VIDEO_OPERATION_CONFLICT");
-  assert.equal(metadataFetches, 1);
+  assert.equal(metadataUrls.length, 2);
 
   const stale = await callApi(
     fixture.env,
@@ -996,7 +1109,7 @@ test("Agent video refresh replays before row reads or metadata fetches", async (
   );
   assert.equal(stale.response.status, 409);
   assert.equal(stale.payload.code, "CONTENT_CONFLICT");
-  assert.equal(metadataFetches, 1);
+  assert.equal(metadataUrls.length, 2);
 });
 
 test("Agent video delete requires delete scope, confirmation, CAS, and remains replayable after removal", async () => {

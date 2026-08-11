@@ -4,7 +4,7 @@
 
 仓库 0.4.0 候选只扩展既有 `video_publish` 的输入便利性：工具总数仍为 23，scope 仍为 `content:write`，发布结果仍直接是 `status=published`。AI 可以只提交唯一 `operationId` 和 YouTube／Bilibili／b23.tv 链接，其余展示元数据由服务端有界补全；这不是新增工具或当前生产已经升级的声明。
 
-首次候选曾临时部署为精确 Worker `9b0bd726-2c15-414c-bdff-fc5179b4e003`。DCR、PKCE、站长 OAuth 与 23 项工具发现通过，但链接-only YouTube 发布因标题解析失败而零写入返回 `VIDEO_METADATA_TITLE_UNAVAILABLE`；grant 已撤销，生产已回滚到 0.3.1 `849d8328-87db-4ac8-819a-ce725fc06349`。仓库候选随后加入有界的官方 YouTube watch page 兜底，但尚未重新部署或生产验收；只有站长再次明确授权后才能重跑闭环，registry 保持不变。
+首次候选曾临时部署为精确 Worker `9b0bd726-2c15-414c-bdff-fc5179b4e003`。DCR、PKCE、站长 OAuth 与 23 项工具发现通过，但链接-only YouTube 发布因标题解析失败而零写入返回 `VIDEO_METADATA_TITLE_UNAVAILABLE`；grant 已撤销，生产已回滚到 0.3.1 `849d8328-87db-4ac8-819a-ce725fc06349`。仓库候选随后改为有界并行合并官方 YouTube oEmbed 与 watch page，以后者补简介／发布时间和兜底标题；但该修复尚未重新部署或生产验收。只有站长再次明确授权后才能重跑闭环，registry 保持不变。
 
 ## 1. 先看能力注册表，不要靠猜
 
@@ -254,7 +254,7 @@ Hextris 使用相同的语义动作原则，但保持独立 GPL 进程边界：
 - 日语能力只访问固定 catalog、五个 level index 和由合法 `L1-001` 至 `L5-050` ID 推导出的固定 batch。适配器限制 JSON 字节、条目和搜索结果，验证 schema、`contentVersion: 1.0.2`、250 关计数、唯一 ID、64 位 SHA-256、`textLocked: true` 与关卡哈希；输出省略 batch 路径、内部音频文本和构建字段。
 - 所有公开目录参数只接受 zh／en／ja、白名单 ID、1–5 等级和有界 limit／query。URL 必须是固定站内路径或安全 GitHub HTTPS 地址，调用方不能借参数读取任意文件或 URL。
 
-这些目录本身仍是只读发现面；账号日语进度由下节独立 scope 和专用 API 承担，不把浏览器原始存档混入目录响应。工具目录来自本地模块，因此只在 CLI／本地 MCP 可用；游戏和日语数据虽由正式站点提供，当前生产远程 MCP 的九个工具也没有接入这些目录。这保留了第三阶段“没有远程接线”的历史范围，同时以本节当前工具清单为准。
+这些目录本身仍是只读发现面；账号日语进度由下节独立 scope 和专用 API 承担，不把浏览器原始存档混入目录响应。工具目录来自本地模块，因此只在 CLI／本地 MCP 可用；游戏和日语数据虽由正式站点提供，当前生产远程 MCP 的 23 个工具也没有接入这些目录。这保留了第三阶段“没有远程接线”的历史范围，同时以本节当前工具清单为准。
 
 ## 9. 日语账号进度与受控答题
 

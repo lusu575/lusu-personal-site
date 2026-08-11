@@ -5,7 +5,7 @@
 ## 2026-08-11
 
 - 新增既有 `video_publish` 的“一条链接即可发布”0.4.0 候选：工具名、23 项工具总数与 `content:write` scope 均不变化，AI 只需提交唯一 `operationId` 和 YouTube／Bilibili／b23.tv 链接，服务端便会有界补全省略的标题、简介、作者、发布时间和平台官方封面，并直接以 `status=published` 原子发布；调用方显式提交的展示字段始终优先。幂等收据在任何 provider 网络请求前回放；若标题既未提供也无法取得，则以 `VIDEO_METADATA_TITLE_UNAVAILABLE` 零写入拒绝。本站仍只保存外链和元数据，不下载、上传、转码或托管视频文件。仓库按 0.4.0 候选记录，精确生产 Worker version 与真实 OAuth 闭环结果须在实际部署后回填，当前不宣称已上线或已验收。新增三语 `site-updates` 记录 `seed-update-2026-08-11-video-link-autofill`，同步 fallback、Home 投影、Functions seed、schema seed 与公开表示，main 缓存 token 更新为 `20260811-video-link-autofill-r1`。
-- 首次 0.4.0 候选曾临时部署为精确 Worker `9b0bd726-2c15-414c-bdff-fc5179b4e003`：DCR、PKCE、站长 OAuth 与精确 23 项 `tools/list` 已通过，但仅链接的 `video_publish` 因 Cloudflare 路径未取得 YouTube 标题而以 `VIDEO_METADATA_TITLE_UNAVAILABLE` 零业务写入失败；临时 grant 随后撤销，生产流量已 100% 回滚到稳定 0.3.1 `849d8328-87db-4ac8-819a-ce725fc06349`。仓库候选现为 YouTube oEmbed 增加固定官方 watch page 兜底，JSON／HTML 分别以 256 KiB／2 MiB 流式上限读取，并让 8 秒超时覆盖正文；该修复只完成本地回归，尚未重新部署或生产验收，registry 不晋级，后续重验须由站长重新明确授权。
+- 首次 0.4.0 候选曾临时部署为精确 Worker `9b0bd726-2c15-414c-bdff-fc5179b4e003`：DCR、PKCE、站长 OAuth 与精确 23 项 `tools/list` 已通过，但仅链接的 `video_publish` 因 Cloudflare 路径未取得 YouTube 标题而以 `VIDEO_METADATA_TITLE_UNAVAILABLE` 零业务写入失败；临时 grant 随后撤销，生产流量已 100% 回滚到稳定 0.3.1 `849d8328-87db-4ac8-819a-ce725fc06349`。仓库候选现并行合并 YouTube oEmbed 与固定官方 watch page：oEmbed 优先标题／作者／封面，页面补简介／发布时间并可兜底标题；JSON／HTML 分别以 256 KiB／2 MiB 流式上限读取，8 秒超时覆盖正文，页面身份须匹配请求 videoId，畸形或中断正文会主动取消响应流。该修复只完成本地回归，尚未重新部署或生产验收，registry 不晋级，后续重验须由站长重新明确授权。
 
 ## 2026-08-10
 

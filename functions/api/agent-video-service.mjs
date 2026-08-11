@@ -1177,49 +1177,55 @@ async function fetchManagedVideoMetadata(parsed, env) {
 async function fetchYoutubeMetadata(parsed, env) {
   const fetchImpl = metadataFetch(env);
   const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(parsed.originalUrl)}&format=json`;
-  try {
-    const data = await fetchProviderJson(fetchImpl, oembedUrl, {
+  const pageUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(parsed.externalId)}`;
+  const [oembedResult, pageResult] = await Promise.allSettled([
+    fetchProviderJson(fetchImpl, oembedUrl, {
       headers: { ...YOUTUBE_METADATA_HEADERS, Accept: "application/json" },
       redirect: "follow"
-    }, 8_000, MAX_PROVIDER_JSON_BYTES);
-    const title = metadataText(data.title, MAX_TITLE_CHARS);
-    if (!title) throw new Error("metadata title unavailable");
-    return {
-      title,
-      description: "",
-      thumbnailUrl: metadataThumbnailUrl(data.thumbnail_url),
-      authorName: metadataText(data.author_name, MAX_AUTHOR_CHARS),
-      publishedAt: null,
-      metadataError: ""
-    };
-  } catch {
-    const pageUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(parsed.externalId)}`;
-    const html = await fetchProviderText(fetchImpl, pageUrl, {
-      headers: YOUTUBE_METADATA_HEADERS,
-      redirect: "follow"
-    }, 8_000, MAX_PROVIDER_HTML_BYTES);
-    const title = metadataText(
+    }, 8_000, MAX_PROVIDER_JSON_BYTES),
+    fetchYoutubePageMetadata(fetchImpl, pageUrl, parsed.externalId)
+  ]);
+  const oembed = oembedResult.status === "fulfilled" ? oembedResult.value : {};
+  const page = pageResult.status === "fulfilled" ? pageResult.value : emptyManagedVideoMetadata();
+  const title = metadataText(oembed?.title, MAX_TITLE_CHARS) || page.title;
+  if (!title) throw new Error("metadata title unavailable");
+  return {
+    title,
+    description: page.description,
+    thumbnailUrl: metadataThumbnailUrl(oembed?.thumbnail_url) || page.thumbnailUrl,
+    authorName: metadataText(oembed?.author_name, MAX_AUTHOR_CHARS) || page.authorName,
+    publishedAt: page.publishedAt,
+    metadataError: ""
+  };
+}
+
+async function fetchYoutubePageMetadata(fetchImpl, pageUrl, expectedVideoId) {
+  const html = await fetchProviderText(fetchImpl, pageUrl, {
+    headers: YOUTUBE_METADATA_HEADERS,
+    redirect: "follow"
+  }, 8_000, MAX_PROVIDER_HTML_BYTES);
+  if (youtubePageVideoId(html) !== expectedVideoId) {
+    throw new Error("metadata page identity mismatch");
+  }
+  return {
+    title: metadataText(
       htmlMetaContent(html, "og:title") || htmlJsonString(html, "title"),
       MAX_TITLE_CHARS
-    );
-    if (!title) throw new Error("metadata title unavailable");
-    return {
-      title,
-      description: metadataText(
-        htmlMetaContent(html, "description") || htmlMetaContent(html, "og:description"),
-        MAX_DESCRIPTION_CHARS
-      ),
-      thumbnailUrl: metadataThumbnailUrl(htmlMetaContent(html, "og:image")),
-      authorName: metadataText(
-        htmlJsonString(html, "ownerChannelName") || htmlJsonString(html, "author"),
-        MAX_AUTHOR_CHARS
-      ),
-      publishedAt: providerTimestamp(
-        htmlJsonString(html, "publishDate") || htmlJsonString(html, "uploadDate")
-      ),
-      metadataError: ""
-    };
-  }
+    ),
+    description: metadataText(
+      htmlMetaContent(html, "description") || htmlMetaContent(html, "og:description"),
+      MAX_DESCRIPTION_CHARS
+    ),
+    thumbnailUrl: metadataThumbnailUrl(htmlMetaContent(html, "og:image")),
+    authorName: metadataText(
+      htmlJsonString(html, "ownerChannelName") || htmlJsonString(html, "author"),
+      MAX_AUTHOR_CHARS
+    ),
+    publishedAt: providerTimestamp(
+      htmlJsonString(html, "publishDate") || htmlJsonString(html, "uploadDate")
+    ),
+    metadataError: ""
+  };
 }
 
 function emptyManagedVideoMetadata() {
@@ -1670,13 +1676,18 @@ async function fetchProviderText(fetchImpl, url, options, timeoutMs, maxBytes) {
     const decoder = new TextDecoder("utf-8", { fatal: true });
     let size = 0;
     let text = "";
+    let streamFinished = false;
     try {
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
+        if (done) {
+          streamFinished = true;
+          break;
+        }
         size += value.byteLength;
         if (size > maxBytes) {
           await reader.cancel("metadata response too large");
+          streamFinished = true;
           throw new Error("metadata response too large");
         }
         text += decoder.decode(value, { stream: true });
@@ -1684,6 +1695,13 @@ async function fetchProviderText(fetchImpl, url, options, timeoutMs, maxBytes) {
       text += decoder.decode();
       return text;
     } finally {
+      if (!streamFinished) {
+        try {
+          await reader.cancel("metadata response interrupted");
+        } catch {
+          // Preserve the original read/decode error.
+        }
+      }
       reader.releaseLock();
     }
   } finally {
@@ -1700,6 +1718,17 @@ function htmlMetaContent(html, expectedKey) {
       || htmlAttribute(tag, "itemprop");
     if (declaredKey.toLowerCase() !== key) continue;
     return decodeHtmlText(htmlAttribute(tag, "content"));
+  }
+  return "";
+}
+
+function htmlLinkHref(html, expectedRel) {
+  const rel = String(expectedRel || "").toLowerCase();
+  for (const match of String(html || "").matchAll(/<link\b[^>]*>/gi)) {
+    const tag = match[0];
+    const declaredRel = htmlAttribute(tag, "rel").toLowerCase().split(/\s+/);
+    if (!declaredRel.includes(rel)) continue;
+    return decodeHtmlText(htmlAttribute(tag, "href"));
   }
   return "";
 }
@@ -1726,15 +1755,38 @@ function htmlJsonString(html, key) {
   }
 }
 
+function youtubePageVideoId(html) {
+  const declaredUrl = htmlMetaContent(html, "og:url") || htmlLinkHref(html, "canonical");
+  try {
+    const url = new URL(declaredUrl);
+    const host = normalizedHost(url.hostname);
+    if (url.protocol !== "https:" || url.username || url.password
+      || (host !== "youtube.com" && host !== "m.youtube.com")
+      || url.pathname !== "/watch") {
+      return "";
+    }
+    return cleanYoutubeId(url.searchParams.get("v"));
+  } catch {
+    return "";
+  }
+}
+
 function decodeHtmlText(value) {
-  return String(value || "")
-    .replace(/&#(\d+);/g, (entity, code) => decodeHtmlCodePoint(entity, code, 10))
-    .replace(/&#x([0-9a-f]+);/gi, (entity, code) => decodeHtmlCodePoint(entity, code, 16))
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;|&apos;/gi, "'")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&amp;/gi, "&");
+  return String(value || "").replace(
+    /&(?:#(\d+)|#x([0-9a-f]+)|quot|apos|lt|gt|amp);/gi,
+    (entity, decimal, hexadecimal) => {
+      if (decimal !== undefined) return decodeHtmlCodePoint(entity, decimal, 10);
+      if (hexadecimal !== undefined) return decodeHtmlCodePoint(entity, hexadecimal, 16);
+      switch (entity.toLowerCase()) {
+        case "&quot;": return '"';
+        case "&apos;": return "'";
+        case "&lt;": return "<";
+        case "&gt;": return ">";
+        case "&amp;": return "&";
+        default: return entity;
+      }
+    }
+  );
 }
 
 function decodeHtmlCodePoint(entity, value, radix) {

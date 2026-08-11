@@ -234,13 +234,27 @@ describe("owner video MCP tools", () => {
 
   it("publishes with only operationId and originalUrl", async () => {
     await activateGrant(["content:write"]);
+    let metadataFetchCount = 0;
     const tools = registeredTools(["content:write"], async (input) => {
-      expect(String(input)).toContain("youtube.com/oembed");
-      return Response.json({
-        title: "Provider-only title",
-        author_name: "Provider-only author",
-        thumbnail_url: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
-      });
+      metadataFetchCount += 1;
+      const url = String(input);
+      if (url.includes("youtube.com/oembed")) {
+        return Response.json({
+          title: "Provider-only title",
+          author_name: "Provider-only author",
+          thumbnail_url: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+        });
+      }
+      expect(url).toContain("youtube.com/watch?v=dQw4w9WgXcQ");
+      return new Response(`<!doctype html>
+        <meta property="og:url" content="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+        <meta property="og:title" content="Watch-page fallback title">
+        <meta name="description" content="Watch-page provider description">
+        <meta property="og:image" content="https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg">
+        <script type="application/ld+json">{
+          "ownerChannelName":"Watch-page fallback author",
+          "publishDate":"2026-08-08T09:10:11+00:00"
+        }</script>`);
     });
     const published = structured(await tools.call("video_publish", {
       operationId: "video-publish-minimal-0001",
@@ -253,11 +267,17 @@ describe("owner video MCP tools", () => {
       externalId: "dQw4w9WgXcQ",
       status: "published"
     });
+    expect(metadataFetchCount).toBe(2);
     const stored = await testEnv.DB.prepare(`
-      select title, status from videos where video_id = ?
+      select title, description, thumbnail_url, author_name, published_at, status
+      from videos where video_id = ?
     `).bind(String(published.videoId || "")).first();
     expect(stored).toMatchObject({
       title: "Provider-only title",
+      description: "Watch-page provider description",
+      thumbnail_url: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      author_name: "Provider-only author",
+      published_at: "2026-08-08T09:10:11.000Z",
       status: "published"
     });
   });
@@ -268,12 +288,24 @@ describe("owner video MCP tools", () => {
     let metadataFetchCount = 0;
     const tools = registeredTools(scopes, async (input) => {
       metadataFetchCount += 1;
-      expect(String(input)).toContain("youtube.com/oembed");
-      return Response.json({
-        title: "Refreshed provider title",
-        author_name: "Provider author",
-        thumbnail_url: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
-      });
+      const url = String(input);
+      if (url.includes("youtube.com/oembed")) {
+        return Response.json({
+          title: "Refreshed provider title",
+          author_name: "Provider author",
+          thumbnail_url: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+        });
+      }
+      expect(url).toContain("youtube.com/watch?v=dQw4w9WgXcQ");
+      return new Response(`<!doctype html>
+        <meta property="og:url" content="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+        <meta property="og:title" content="Watch-page refresh fallback title">
+        <meta name="description" content="Watch-page refreshed description">
+        <meta property="og:image" content="https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg">
+        <script type="application/ld+json">{
+          "ownerChannelName":"Watch-page refresh fallback author",
+          "uploadDate":"2026-08-09T10:11:12Z"
+        }</script>`);
     });
     const publishPayload = {
       operationId: "video-publish-oauth-0001",
@@ -335,11 +367,13 @@ describe("owner video MCP tools", () => {
       metadataUpdated: true,
       metadataError: ""
     });
-    expect(metadataFetchCount).toBe(1);
+    expect(metadataFetchCount).toBe(2);
     const afterRefresh = structured(await tools.call("video_manage_get", { videoId }));
     expect(afterRefresh.video).toMatchObject({
       title: "Refreshed provider title",
+      description: "Watch-page refreshed description",
       authorName: "Provider author",
+      publishedAt: "2026-08-09T10:11:12.000Z",
       status: "hidden"
     });
 

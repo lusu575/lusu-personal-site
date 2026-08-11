@@ -227,7 +227,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 跨域播放器热区不能由父页面精确改写，遇到默认信息栏或底部空白误触时，用站内遮罩、透明点击防护区和收窄本站按钮热区兜底。
 - YouTube / Bilibili 元数据只在后台预览、首次保存、URL 变化保存或刷新元数据时抓取；已有视频 URL 未变化的普通保存不要重新抓取外部元数据。
 - `video_publish` 只要求 `operationId + originalUrl`；`title`、`description`、`thumbnailUrl`、`authorName`、`publishedAt` 都是可选覆盖项，省略才取平台元数据。标题未提供且 provider 无法取得时以 `VIDEO_METADATA_TITLE_UNAVAILABLE` 零写入失败；显式标题存在时，其他元数据失败可采用安全默认值并记录受限错误。远程抓取结果不进入调用意图哈希。
-- YouTube 元数据先走官方 oEmbed，失败／缺标题才以已校验 videoId 构造固定官方 watch URL；不接受任意页面或 iframe。JSON／HTML 按 256 KiB／2 MiB 流式上限读取，超时覆盖正文，结果继续通过字段规范化、时间校验和官方封面 host 白名单；provider 联网始终晚于收据回放。
+- YouTube 元数据并行合并官方 oEmbed 与由已校验 videoId 构造的固定官方 watch URL：oEmbed 标题／作者／封面优先，页面补简介／发布时间并兜底标题；页面 canonical／`og:url` 必须匹配同一 videoId，不接受通用错误页、任意页面或 iframe。JSON／HTML 按 256 KiB／2 MiB 流式上限读取，超时覆盖正文，畸形／中断读取主动取消响应流，结果继续通过字段规范化、时间校验和官方封面 host 白名单；provider 联网始终晚于收据回放。
 - 后台封面可使用 YouTube / Bilibili 图片 URL，或本地 JPG、PNG、WEBP、AVIF 图片压缩后的受限 `data:image`；不得允许 SVG、HTML、任意 data URL 或任意图片域名。
 - 从本地视频截首帧只生成封面，不上传或托管视频文件，也不改变 YouTube / Bilibili / b23.tv 链接白名单。
 - 视频排序语义为置顶独立队列优先；置顶视频一定排在未置顶视频前面，多个置顶视频按 `pinned_sort_order` 从大到小显示，未置顶视频和视频分类按 `sort_order` 从大到小显示，新建默认取对应队列最大排序 +10。
