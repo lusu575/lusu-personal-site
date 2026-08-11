@@ -53,6 +53,12 @@ const wallpaperSwitchDeliveryExpectations = Object.freeze({
 });
 const wallpaperSwitchDeliveryPaths = Object.keys(wallpaperSwitchDeliveryExpectations)
   .map((file) => `assets/images/wallpaper-switch/${file}`);
+const ambientWallpaperThemes = ["morning", "day", "dusk", "night"];
+const ambientWallpaperVideoPaths = ambientWallpaperThemes.flatMap((theme) => [
+  `assets/videos/wallpaper-dynamic/${theme}/motion-1080.mp4`,
+  `assets/videos/wallpaper-dynamic/${theme}/motion-2160.mp4`
+]);
+const ambientWallpaperManifestPath = "assets/videos/wallpaper-dynamic/manifest.json";
 
 function apiEnv(DB) {
   return { DB, ...API_RUNTIME_SECRETS };
@@ -97,6 +103,8 @@ const requiredFiles = [
   ...wallpaperSwitchAssetPaths,
   ...wallpaperSwitchDeliveryPaths,
   "assets/images/wallpaper-switch/wallpaper-time-switch.source.json",
+  ...ambientWallpaperVideoPaths,
+  ambientWallpaperManifestPath,
   "assets/images/generated-icons/whiteboard.png",
   "assets/images/generated-icons/whiteboard.source.json",
   "css/mobile-ios-shell.css",
@@ -108,6 +116,7 @@ const requiredFiles = [
   "css/style.css",
   "css/transfer.css",
   "fragments/quick-transfer.html",
+  "js/core/wallpaper-ambient.mjs",
   "design-system/MASTER.md",
   "design-system/pages/desktop-shell.md",
   "design-system/pages/mobile-shell.md",
@@ -771,6 +780,8 @@ for (const file of [
   ...wallpaperSwitchAssetPaths,
   ...wallpaperSwitchDeliveryPaths,
   "assets/images/wallpaper-switch/wallpaper-time-switch.source.json",
+  ...ambientWallpaperVideoPaths,
+  ambientWallpaperManifestPath,
   "css/mobile-ios-shell.css",
   "css/motion-system.css",
   "design-system/MASTER.md",
@@ -778,6 +789,7 @@ for (const file of [
   "design-system/pages/mobile-shell.md",
   "js/mobile-shell.js",
   "js/core/i18n.mjs",
+  "js/core/wallpaper-ambient.mjs",
   "js/core/wallpaper-time.mjs",
   "js/core/route-modules.mjs",
   "js/data/content.mjs",
@@ -802,6 +814,7 @@ const d1MigrateLocalJs = readRequired("scripts/d1-migrate-local.mjs");
 const testRunnerJs = readRequired("scripts/run-tests.mjs");
 const indexHtml = readRequired("index.html");
 const wallpaperSwitchManifest = readRequiredJson("assets/images/wallpaper-switch/wallpaper-time-switch.source.json");
+const ambientWallpaperManifest = readRequiredJson(ambientWallpaperManifestPath);
 const mobileIosShellCss = readRequired("css/mobile-ios-shell.css");
 const motionSystemCss = readRequired("css/motion-system.css");
 const styleCss = readRequired("css/style.css");
@@ -828,6 +841,7 @@ const lifeRestartMobileTouchJs = readRequired("games/life-restart/source/lusu-mo
 const mobileShellJs = readRequired("js/mobile-shell.js");
 const publicModuleSources = Object.fromEntries(publicModuleGraph.files.map((file) => [file, readRequired(file)]));
 const mainEntryJs = publicModuleSources["js/main.js"];
+const ambientWallpaperModuleJs = publicModuleSources["js/core/wallpaper-ambient.mjs"];
 const i18nModuleJs = publicModuleSources["js/core/i18n.mjs"];
 const contentModuleJs = publicModuleSources["js/data/content.mjs"];
 const homeContentModuleJs = publicModuleSources["js/data/home-content.mjs"];
@@ -874,6 +888,7 @@ const gameVideoMcpCandidateReleaseVersion = "20260809-game-video-mcp-heartbeat-r
 const motionPolishReleaseVersion = "20260809-motion-polish-r2";
 const wallpaperSwitchSceneReleaseVersion = "20260810-wallpaper-switch-slim-dawn-r1";
 const wallpaperSwitchRouteMotionReleaseVersion = "20260810-wallpaper-switch-route-motion-r1";
+const h3AmbientWallpapersReleaseVersion = "20260810-h3-ambient-wallpapers-4k-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = "20260809-transfer-motion-r2";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
@@ -884,6 +899,61 @@ const publicRouteVersion = (route) => route === "knowledge" || route === "chatro
   : (route === "resources" ? resourcesRouteVersion : routeLazyVersion);
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
 const chatroomIconVersion = "20260726-chatroom-icon-redraw-r2";
+
+if (ambientWallpaperManifest.schema_version !== 1
+  || ambientWallpaperManifest.release_id !== h3AmbientWallpapersReleaseVersion
+  || ambientWallpaperManifest.encoding?.video_codec !== "H.264"
+  || ambientWallpaperManifest.encoding?.profile !== "High"
+  || ambientWallpaperManifest.encoding?.level !== "5.1"
+  || ambientWallpaperManifest.encoding?.pixel_format !== "yuv420p"
+  || ambientWallpaperManifest.encoding?.audio !== false
+  || ambientWallpaperManifest.encoding?.faststart !== true
+  || ambientWallpaperManifest.generation?.super_resolution?.model !== "RealESRGAN_x4plus_anime_6B"
+  || ambientWallpaperManifest.generation?.super_resolution?.weights_sha256 !== "f872d837d3c90ed2e05227bed711af5671a6fd1c9f7d7e91c911a61f155e99da"
+  || ambientWallpaperManifest.quality_assurance?.decoded_loop_wrap_mean_difference !== 0
+  || ambientWallpaperManifest.quality_assurance?.turn_step_at_or_below_adjacent_p90 !== true
+  || /[A-Z]:\\/i.test(JSON.stringify(ambientWallpaperManifest))) {
+  fail("ambient wallpaper manifest must preserve the local-H3, one-pass RealESRGAN, H.264 Level 5.1 and decoded seamless-loop contract without local absolute paths");
+}
+
+for (const theme of ambientWallpaperThemes) {
+  const themeRecord = ambientWallpaperManifest.themes?.[theme];
+  const assets = Array.isArray(themeRecord?.assets) ? themeRecord.assets : [];
+  if (assets.length !== 2 || !themeRecord?.controller_job_id || !themeRecord?.motion_source_sha256
+    || !themeRecord?.static_base_sha256 || !themeRecord?.super_resolved_base_sha256) {
+    fail(`ambient wallpaper ${theme} manifest must include provenance and exactly two delivery assets`);
+    continue;
+  }
+  for (const resolution of [1080, 2160]) {
+    const asset = assets.find((candidate) => candidate?.height === resolution);
+    const expectedPath = `assets/videos/wallpaper-dynamic/${theme}/motion-${resolution}.mp4`;
+    if (!asset || asset.path !== expectedPath || asset.width !== (resolution === 2160 ? 3840 : 1920)
+      || asset.cache_key !== asset.sha256?.slice(0, 12)
+      || asset.url !== `/${expectedPath}?v=${asset.cache_key}`
+      || !ambientWallpaperModuleJs.includes(`"${asset.url}"`)) {
+      fail(`ambient wallpaper ${theme} ${resolution}p manifest and runtime URL must match the hash-addressed production asset`);
+      continue;
+    }
+    const bytes = readFileSync(resolve(root, expectedPath));
+    const digest = createHash("sha256").update(bytes).digest("hex");
+    const moovOffset = bytes.indexOf("moov");
+    const mdatOffset = bytes.indexOf("mdat");
+    const budget = resolution === 2160 ? 3 * 1024 * 1024 : 1.2 * 1024 * 1024;
+    if (bytes.subarray(4, 8).toString("ascii") !== "ftyp"
+      || bytes.length !== asset.bytes
+      || digest !== asset.sha256
+      || bytes.length > budget
+      || moovOffset < 0
+      || mdatOffset < 0
+      || moovOffset >= mdatOffset) {
+      fail(`ambient wallpaper ${theme} ${resolution}p must match manifest bytes/SHA, stay within budget and keep faststart MP4 atom order`);
+    }
+  }
+}
+
+if (/\.mp4(?:\?|["'])/i.test(indexHtml) || /<link\b[^>]*\bas=["']video["']/i.test(indexHtml)) {
+  fail("index.html must not preload or directly reference ambient MP4 files");
+}
 
 const wallpaperSwitchThemes = ["morning", "day", "dusk", "night"];
 const wallpaperSwitchExpectedNames = Object.keys(wallpaperSwitchAssetExpectations).sort();
@@ -1197,7 +1267,8 @@ for (const route of lazyPublicRoutes) {
 for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
-  ["./data/home-content.mjs", wallpaperSwitchRouteMotionReleaseVersion],
+  ["./core/wallpaper-ambient.mjs", h3AmbientWallpapersReleaseVersion],
+  ["./data/home-content.mjs", h3AmbientWallpapersReleaseVersion],
   ["./features/account.mjs", motionPolishReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", transferReleaseVersion]
@@ -3205,8 +3276,8 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = motionPolishReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = wallpaperSwitchRouteMotionReleaseVersion;
-const currentCssVersion = wallpaperSwitchSceneReleaseVersion;
+const currentMainVersion = h3AmbientWallpapersReleaseVersion;
+const currentCssVersion = h3AmbientWallpapersReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260809-browser-game-heartbeat-v1";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
@@ -3233,13 +3304,13 @@ if (styleVersions.length !== 1 || styleVersions[0] !== currentCssVersion) {
 }
 
 const mobileShellStyleVersions = assetQueryVersions(indexHtml, "/css/mobile-ios-shell.css");
-if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== motionPolishReleaseVersion) {
-  fail(`index.html /css/mobile-ios-shell.css query should appear once as ${motionPolishReleaseVersion}`);
+if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== h3AmbientWallpapersReleaseVersion) {
+  fail(`index.html /css/mobile-ios-shell.css query should appear once as ${h3AmbientWallpapersReleaseVersion}`);
 }
 
 const motionCssVersions = assetQueryVersions(indexHtml, "/css/motion-system.css");
-if (motionCssVersions.length !== 1 || motionCssVersions[0] !== wallpaperSwitchSceneReleaseVersion) {
-  fail(`index.html /css/motion-system.css query should appear once as ${wallpaperSwitchSceneReleaseVersion}`);
+if (motionCssVersions.length !== 1 || motionCssVersions[0] !== h3AmbientWallpapersReleaseVersion) {
+  fail(`index.html /css/motion-system.css query should appear once as ${h3AmbientWallpapersReleaseVersion}`);
 }
 
 if (countLiteral(quickTransferLoaderJs, transferLazyVersion) !== 1) {
@@ -4692,14 +4763,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-10-wallpaper-switch-slim-dawn";
-const finalUpdateSlug = "2026-08-10-wallpaper-switch-slim-dawn";
+const finalUpdateId = "seed-update-2026-08-10-h3-ambient-wallpapers-4k";
+const finalUpdateSlug = "2026-08-10-h3-ambient-wallpapers-4k";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Slim-Rim Dawn Polish for the Four-Stage Wallpaper Switch";
-const finalPublishedAt = "2026-08-10T04:10:00.000Z";
+const finalTitleEn = "Four Ambient Wallpapers with 4K Super-Resolution";
+const finalPublishedAt = "2026-08-10T08:10:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-08-10-wallpaper-switch-slim-dawn",
   "seed-update-2026-08-10-wallpaper-switch-ceramic-roll",
   "seed-update-2026-08-10-wallpaper-switch-calm-redesign",
   "seed-update-2026-08-09-wallpaper-switch-scene-redesign",
@@ -4773,15 +4845,20 @@ if (finalUpdateStarted) {
       fail(`js/data/home-content.mjs final release should preserve projected update ${updateId}`);
     }
   }
-  if (homeContentModuleJs.includes("seed-update-2026-08-07-remote-mcp-oauth")) {
-    fail("js/data/home-content.mjs should remain the newest five-item projection after the slim-rim dawn wallpaper update");
+  if ([
+    "seed-update-2026-08-09-game-video-mcp-candidate",
+    "seed-update-2026-08-09-wallpaper-time-switch",
+    "seed-update-2026-08-09-motion-polish",
+    "seed-update-2026-08-07-remote-mcp-oauth"
+  ].some((updateId) => homeContentModuleJs.includes(updateId))) {
+    fail("js/data/home-content.mjs should remain the newest five-item projection after the H3 ambient wallpaper update");
   }
 
   const projectedUpdateIds = [finalUpdateId, ...projectedSupportingReleaseUpdateIds];
   const projectedUpdateIndexes = projectedUpdateIds.map((updateId) => homeContentModuleJs.indexOf(updateId));
   if (projectedUpdateIndexes.some((index) => index < 0)
     || !projectedUpdateIndexes.every((index, offset, list) => offset === 0 || list[offset - 1] < index)) {
-    fail("js/data/home-content.mjs should order ceramic rolling, calm redesign, scene redesign, game/video heartbeat, and wallpaper time by descending publication time");
+    fail("js/data/home-content.mjs should order the H3 ambient release, slim-rim dawn, ceramic roll, calm redesign, and scene redesign by descending publication time");
   }
 
   for (const token of [
@@ -4941,8 +5018,8 @@ if (finalUpdateStarted) {
   for (const token of [
     '<time id="top-updated" datetime="2026-08-10">2026.08.10</time>',
     `/css/style.css?v=${finalCssVersion}`,
-    `/css/mobile-ios-shell.css?v=${motionPolishReleaseVersion}`,
-    `/css/motion-system.css?v=${wallpaperSwitchSceneReleaseVersion}`,
+    `/css/mobile-ios-shell.css?v=${finalCssVersion}`,
+    `/css/motion-system.css?v=${finalCssVersion}`,
     `/js/mobile-shell.js?v=${motionPolishReleaseVersion}`,
     `/js/ui-motion.js?v=${motionPolishReleaseVersion}`,
     `/js/main.js?v=${finalMainVersion}`

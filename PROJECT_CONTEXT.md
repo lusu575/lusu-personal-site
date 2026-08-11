@@ -1,5 +1,13 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-10 四时段 H3 轻动态壁纸与 4K 超分发布契约
+
+- 桌面 Home 的 morning／day／dusk／night 四张壁纸均有约 5 秒的无缝环境循环，来源为本地 MiniMax H3。视觉目标是“看得出活着，不抢窗口和文字”：H3 局部变化只作用于树冠和真实水面，云层继续使用已有 CSS 慢速漂移，夜间另有低亮度、不持续强闪的微弱星光。电视机与屏幕保持静态，本版不引入角色出现。
+- 4K 交付不对每个视频帧独立做 AI 超分。每个主题的静态底图先使用官方 `RealESRGAN_x4plus_anime_6B` 权重一次超分到 3840×2160，然后再叠加经平滑与限幅的 H3 局部时域差分。这样保留静态像素场的 4K 清晰度，同时避免逐帧超分引入的边缘与纹理闪烁。
+- 运行时只为当前主题请求一个视频文件，依 CSS 显示尺寸与 device pixel ratio 选择 1920×1080 或 3840×2160；其他三个主题不预载。视频 muted、loop、playsinline，就绪后才短淡入，失败时不影响对应静态壁纸；页面隐藏时暂停。
+- 移动端、low performance、Save-Data、`prefers-reduced-motion`、站内 `data-motion="reduced"` 与 `off` 都是零视频请求的硬门槛，直接使用当前主题静态壁纸。这是对历史“不用整屏视频”的严格渐进增强例外，不得扩展到手机、非 Home 路由、同时预载四个主题或无静态兜底的实现。
+- 公开三语更新 ID／slug 为 `seed-update-2026-08-10-h3-ambient-wallpapers-4k`／`2026-08-10-h3-ambient-wallpapers-4k`，公开 API／文章 seed token 为 `20260810-h3-ambient-wallpapers-4k-r1`；完整 fallback、Home 最新五条投影、Functions seed 与 schema seed 必须保持三语一致。
+
 ## 2026-08-10 四时段壁纸开关跨路由动效修复
 
 - 当前最终公开记录仍为 `seed-update-2026-08-10-wallpaper-switch-slim-dawn`／`2026-08-10-wallpaper-switch-slim-dawn`，但更新时间为 `2026-08-10T04:10:00.000Z`；Functions 公开 API、文章 seed、schema marker、Home 投影与 `js/main.js` 使用 `20260810-wallpaper-switch-route-motion-r1`。本次没有更改 r6 PNG，所以 `wallpaper-time-switch.source.json` 保留素材发布溯源 token `20260810-wallpaper-switch-slim-dawn-r1`，图像 token 仍为 `20260810-wallpaper-time-switch-r6`。
@@ -727,7 +735,7 @@ Cloudflare Pages 项目状态：
 
 - 单页、单业务状态的双呈现壳个人站：桌面端 Neo-XP，移动端原创虚拟手机 OS
 - 桌面首页图标入口；移动 Home 的 App grid 与 Dock 复用同一组既有路由
-- 首页使用四时段像素壁纸：基础静态底图位于 `assets/images/wallpapers/`，按用户本地时间切换 morning / day / dusk / night。四个时段均已接入动态云层，分别使用 `assets/images/wallpaper-dynamic/<time>/base-clean.png` 作为无云底图，并叠加从对应原始壁纸抠出的独立透明云层；云层沿用 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构，只用 CSS `transform` / `opacity` 做同一主风向下的慢速错相漂移，并支持减少动态、小屏和页面隐藏暂停降级。本地调试可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定动态壁纸，预览模式会临时加快云层位移以便肉眼确认动画。树冠、电视雪花、小女孩、星星、水面光效等层仍作为后续动画接口保留。
+- 首页使用四时段像素壁纸：基础静态底图位于 `assets/images/wallpapers/`，按用户本地时间切换 morning / day / dusk / night。桌面 Home 在 normal/full 动效档下只加载当前主题的约 5 秒 H3 轻动态视频，树冠和真实水面做小幅变化；云层仍沿用 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构，使用 CSS `transform` / `opacity` 做同一主风向下的慢速错相漂移，夜间星光保持微弱。4K 版静态底图用 `RealESRGAN_x4plus_anime_6B` 一次超分后再叠局部 H3 差分，不做逐帧 AI 超分。手机、low performance、Save-Data、reduced／off 不请求视频，静态底图始终兜底；电视机与屏幕保持静态，本版不引入角色。本地调试可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定时段。
 - 顶部栏和底部任务栏：保留 XP 桌面结构与原有图标，并跟随 morning / day / dusk / night 四时段切换无竖线的现代玻璃像素 HUD 色温与高光
 - 知识库、视频区、工具区、游戏区、杂谈区、匿名聊天室、关于我
 - 工具区中的多人实时在线画板：`/tools/whiteboard/`，支持公共房、密码房、实时鼠标与名字、图片、PNG/SVG 导出和移动端绘制

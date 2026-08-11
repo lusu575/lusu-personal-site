@@ -4250,6 +4250,85 @@ async function auditReducedMotionWallpaperNetwork(client, server) {
   return { kind:"reduced-motion-network", name:"optimized-static-wallpaper", shell:"desktop", viewport, state, requests, failures, status:failures.length?"FAIL":"PASS" };
 }
 
+async function auditAmbientWallpaperPlayback(client, server) {
+  const desktop4k = { name: "desktop-4k", width: 3840, height: 2160, mobile: false };
+  const desktop1080 = { name: "desktop-1080", width: 1920, height: 1080, mobile: false };
+  const mobile = { name: "phone-standard", width: 390, height: 844, mobile: true };
+  const failures = [];
+  const samples = [];
+  const highTier = await client.send("Page.addScriptToEvaluateOnNewDocument", { source: `(() => {
+    try { Object.defineProperty(navigator, 'hardwareConcurrency', { configurable:true, get:()=>8 }); } catch {}
+    try { Object.defineProperty(navigator, 'deviceMemory', { configurable:true, get:()=>8 }); } catch {}
+  })();` });
+  const videoRequests = () => server.requestLog().filter((entry) => /\/assets\/videos\/wallpaper-dynamic\/(morning|day|dusk|night)\/motion-(1080|2160)\.mp4/.test(entry.path));
+  const emulateAmbient = async (viewport, reduced = false) => {
+    await emulate(client, viewport);
+    await client.send("Emulation.setEmulatedMedia", {
+      media: "screen",
+      features: [
+        { name: "prefers-reduced-motion", value: reduced ? "reduce" : "no-preference" },
+        { name: "prefers-color-scheme", value: "light" }
+      ]
+    });
+  };
+  const playableState = async () => evaluate(client, `(() => {
+    const video=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]');
+    return {route:document.body.dataset.route||'',shell:document.documentElement.dataset.uiShell||'',tier:document.documentElement.dataset.performanceTier||'',motion:document.querySelector('#wallpaper-root')?.dataset.motion||'',theme:video?.dataset.wallpaperAmbientTheme||'',resolution:video?.dataset.wallpaperAmbientResolution||'',videoWidth:video?.videoWidth||0,videoHeight:video?.videoHeight||0,readyState:video?.readyState||0,paused:video?.paused??true,opacity:video?.style.opacity||'',currentPath:video?.currentSrc?new URL(video.currentSrc).pathname:''};
+  })()`);
+  try {
+    for (const sample of [
+      { viewport: desktop4k, expectedResolution: "2160", expectedWidth: 3840, expectedHeight: 2160 },
+      { viewport: desktop1080, expectedResolution: "1080", expectedWidth: 1920, expectedHeight: 1080 }
+    ]) {
+      await client.send("Page.navigate", { url: "about:blank" });
+      await waitFor(client, `document.readyState==='complete'`, `${sample.viewport.name} ambient blank boundary`);
+      await emulateAmbient(sample.viewport);
+      await client.send("Network.clearBrowserCache");
+      server.resetRequests();
+      await navigateFresh(client, `${server.origin}/?lang=zh&wallpaper=day&welcome=0&audit-ambient-playback=${sample.expectedResolution}`, `${sample.viewport.name}-ambient-playback`);
+      await waitFor(client, `document.readyState==='complete'&&document.body.dataset.route==='home'&&document.documentElement.dataset.uiShell==='desktop'`, `${sample.viewport.name} ambient shell`);
+      await waitFor(client, `(() => {const video=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]');return video&&video.readyState>=3&&!video.paused&&video.style.opacity==='1';})()`, `${sample.viewport.name} ambient playback`);
+      const state = await playableState();
+      const requests = videoRequests();
+      const expectedPath = `/assets/videos/wallpaper-dynamic/day/motion-${sample.expectedResolution}.mp4`;
+      if (state.resolution !== sample.expectedResolution) failures.push(`${sample.viewport.name} selected ${state.resolution || "no"} video instead of ${sample.expectedResolution}`);
+      if (state.videoWidth !== sample.expectedWidth || state.videoHeight !== sample.expectedHeight) failures.push(`${sample.viewport.name} decoded ${state.videoWidth}x${state.videoHeight} instead of ${sample.expectedWidth}x${sample.expectedHeight}`);
+      if (state.currentPath !== expectedPath) failures.push(`${sample.viewport.name} current video path ${state.currentPath || "missing"} !== ${expectedPath}`);
+      if (requests.length !== 1 || requests[0]?.path !== expectedPath) failures.push(`${sample.viewport.name} requested ambient assets ${JSON.stringify(requests.map((entry) => entry.path))}`);
+      samples.push({ ...sample, state, requests });
+      if (sample.expectedResolution === "2160") {
+        await setAuditRoute(client, "resources");
+        await waitFor(client, `document.body.dataset.route==='resources'&&!document.querySelector('video.wallpaper-ambient-video')`, "non-Home ambient decoder release");
+        const released = await evaluate(client, `({route:document.body.dataset.route,videoCount:document.querySelectorAll('video.wallpaper-ambient-video').length})`);
+        if (released.videoCount !== 0) failures.push(`non-Home route retained ${released.videoCount} ambient videos`);
+        samples.at(-1).released = released;
+      }
+    }
+
+    for (const sample of [
+      { viewport: mobile, reduced: false, name: "mobile-zero-request" },
+      { viewport: desktop1080, reduced: true, name: "reduced-zero-request" }
+    ]) {
+      await client.send("Page.navigate", { url: "about:blank" });
+      await waitFor(client, `document.readyState==='complete'`, `${sample.name} blank boundary`);
+      await emulateAmbient(sample.viewport, sample.reduced);
+      await client.send("Network.clearBrowserCache");
+      server.resetRequests();
+      await navigateFresh(client, `${server.origin}/?lang=zh&wallpaper=night&welcome=0&audit-ambient-playback=${sample.name}`, sample.name);
+      await waitFor(client, `document.readyState==='complete'&&Boolean(document.documentElement.dataset.uiShell)`, `${sample.name} shell`);
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      const state = await evaluate(client, `({route:document.body.dataset.route,shell:document.documentElement.dataset.uiShell,motion:document.querySelector('#wallpaper-root')?.dataset.motion||'',videoCount:document.querySelectorAll('video.wallpaper-ambient-video').length})`);
+      const requests = videoRequests();
+      if (state.videoCount !== 0 || requests.length) failures.push(`${sample.name} created ${state.videoCount} videos and requested ${JSON.stringify(requests.map((entry) => entry.path))}`);
+      samples.push({ ...sample, state, requests });
+    }
+  } finally {
+    await client.send("Page.removeScriptToEvaluateOnNewDocument", { identifier: highTier.identifier }).catch(() => {});
+    await emulate(client, viewports.find((item) => item.width === 1280 && item.height === 720));
+  }
+  return { kind:"ambient-wallpaper-playback", name:"current-theme-1080-2160-and-zero-request-fallbacks", samples, failures, status:failures.length?"FAIL":"PASS" };
+}
+
 async function auditWallpaperPreloadNetwork(client, server) {
   const scenarios = [
     {
@@ -4497,7 +4576,7 @@ async function auditPerformanceTraces(client, server, output) {
     { name:"route-switch", route:"home", action:async()=>{await setAuditRoute(client,"resources");await stable(client,"resources");} },
     { name:"long-article", route:"article", action:async()=>{} },
     { name:"chat", route:"chatroom", action:async()=>{} },
-    { name:"transfer", route:"resources", action:async()=>{await openQuickTransferFromCta(client);} }
+    { name:"transfer", route:"resources", maxRequests:56, action:async()=>{await openQuickTransferFromCta(client);} }
   ];
   const budgets = { requests:55, encodedBytes:12*1024*1024, decodedBytes:24*1024*1024, loadMs:4000, cls:.2, tbtMs:350, nodes:6500, listeners:800, heapBytes:96*1024*1024 };
   const results = [];
@@ -4522,7 +4601,12 @@ async function auditPerformanceTraces(client, server, output) {
       const network = [...transfers.values()].filter((item)=>item.url.startsWith(server.origin));
       const totals = { requests:network.length, encodedBytes:network.reduce((sum,item)=>sum+item.encodedDataLength,0), decodedBytes:web.navigation.decodedBodySize+web.resources.decodedBodySize };
       const failures = [];
-      if (totals.requests > budgets.requests) failures.push(`requests ${totals.requests} > ${budgets.requests}`);
+      const requestBudget = scenario.maxRequests || budgets.requests;
+      const wallpaperVideoRequests = network.filter((item) => /\/assets\/videos\/wallpaper-dynamic\/(morning|day|dusk|night)\/motion-(1080|2160)\.mp4(?:\?|$)/.test(item.url));
+      if (totals.requests > requestBudget) failures.push(`requests ${totals.requests} > ${requestBudget}`);
+      if (scenario.route !== "home" && wallpaperVideoRequests.length) failures.push(`non-Home route requested ambient video: ${wallpaperVideoRequests.map((item) => item.url).join(", ")}`);
+      if (wallpaperVideoRequests.some((item) => !item.url.includes("/day/"))) failures.push(`wallpaper=day requested another theme video: ${wallpaperVideoRequests.map((item) => item.url).join(", ")}`);
+      if (wallpaperVideoRequests.length > 1) failures.push(`ambient wallpaper requested ${wallpaperVideoRequests.length} videos instead of at most one current-theme asset`);
       if (totals.encodedBytes > budgets.encodedBytes) failures.push(`encoded bytes ${totals.encodedBytes} > ${budgets.encodedBytes}`);
       if (totals.decodedBytes > budgets.decodedBytes) failures.push(`decoded bytes ${totals.decodedBytes} > ${budgets.decodedBytes}`);
       if (web.navigation.load > budgets.loadMs) failures.push(`load ${Math.round(web.navigation.load)}ms > ${budgets.loadMs}ms`);
@@ -4573,6 +4657,7 @@ async function runReleaseAudit(client, server, options, executable) {
   const forcedColors = await auditForcedColorsSmoke(client, server.origin); results.push(forcedColors); logAuditStatus(forcedColors,"OPT-094 forced-colors smoke");
   const wallpaperPreloadNetwork = await auditWallpaperPreloadNetwork(client, server); results.push(...wallpaperPreloadNetwork); wallpaperPreloadNetwork.forEach((item)=>logAuditStatus(item, `OPT-093 wallpaper preload ${item.name}`));
   const reducedMotionNetwork = await auditReducedMotionWallpaperNetwork(client, server); results.push(reducedMotionNetwork); logAuditStatus(reducedMotionNetwork,"OPT-093 reduced-motion optimized wallpaper network");
+  const ambientPlayback = await auditAmbientWallpaperPlayback(client, server); results.push(ambientPlayback); logAuditStatus(ambientPlayback,"OPT-093 ambient wallpaper 1080/4K playback and zero-request fallbacks");
   const optionalBlog = await auditOptionalBlogRoute(client, server.origin, viewports.find((item)=>item.width===1280)); results.push(optionalBlog); logAuditStatus(optionalBlog,"OPT-091 optional unpublished Blog route");
   const lifecycle = await auditLifecycleGrowth(client, server.origin); results.push(lifecycle); logAuditStatus(lifecycle,"OPT-096 lifecycle growth");
   const summary = { audit:"public-site-release-gates", generatedAt:new Date().toISOString(), browser:basename(executable), contract:releaseAuditContract, limitations:["Automated CDP/AX/forced-state smoke is not a WCAG certification or a real NVDA, JAWS, VoiceOver, iOS, or Android test.","Performance budgets are deterministic localhost regression budgets, not field Core Web Vitals.","OPT-100 is local evidence only; this command never commits, pushes, deploys, or calls production."], results };

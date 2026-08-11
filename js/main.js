@@ -4,7 +4,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260809-motion-polish-r2";
-import { homeContent } from "./data/home-content.mjs?v=20260810-wallpaper-switch-route-motion-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260810-h3-ambient-wallpapers-4k-r1";
 import {
   WALLPAPER_TIME_THEMES,
   createWallpaperTimeOverride,
@@ -17,6 +17,10 @@ import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteModuleRegistry } from "./core/route-modules.mjs?v=20260718-resource-icons-layout-r1";
 import { createJsonResourceCache } from "./core/content-cache.mjs?v=20260718-resource-icons-layout-r1";
+import {
+  createWallpaperAmbientController,
+  releaseWallpaperAmbientVideo
+} from "./core/wallpaper-ambient.mjs?v=20260810-h3-ambient-wallpapers-4k-r1";
 import { createAccountFeature } from "./features/account.mjs?v=20260809-motion-polish-r2";
 import { createConnectionStatus } from "./features/connection-status.mjs?v=20260726-security-reliability-r1";
 
@@ -2440,6 +2444,7 @@ let wallpaperTimePendingManualPromise = null;
 let wallpaperTimePreparingTheme = "";
 let wallpaperTimePreparingPromise = null;
 let wallpaperThemeTransitionGeneration = 0;
+let wallpaperAmbientController = null;
 const wallpaperWarmRequests = new Map();
 const wallpaperTimeSwitchWarmRequests = new Map();
 const wallpaperCloudLayers = Object.freeze({
@@ -2967,6 +2972,11 @@ function prepareWallpaperThemeCrossfade(options = {}) {
   baseSnapshot.style.backgroundColor = computed.backgroundColor;
   sceneSnapshot.appendChild(baseSnapshot);
 
+  const liveVideo = wallpaperAmbientController?.takeForSceneSnapshot?.();
+  if (liveVideo) {
+    sceneSnapshot.appendChild(liveVideo);
+  }
+
   const liveClouds = [...stage.querySelectorAll(":scope > [data-wallpaper-dynamic-layer]")];
   liveClouds.forEach((cloud) => {
     const cloudStyle = getComputedStyle(cloud);
@@ -2980,7 +2990,7 @@ function prepareWallpaperThemeCrossfade(options = {}) {
     sceneSnapshot.appendChild(cloud);
   });
 
-  stage.insertBefore(sceneSnapshot, existing[0] || stage.querySelector(".wallpaper-tree-canopy"));
+  stage.insertBefore(sceneSnapshot, existing[0] || stage.querySelector(".wallpaper-stars"));
   return [...stage.querySelectorAll(":scope > .wallpaper-theme-scene-overlay")];
 }
 
@@ -2988,6 +2998,7 @@ function clearWallpaperThemeCrossfade() {
   wallpaperThemeTransitionGeneration += 1;
   document.querySelectorAll(".wallpaper-theme-scene-overlay, .wallpaper-theme-overlay, .wallpaper-theme-cloud-overlay, .wallpaper-mobile-theme-overlay").forEach((layer) => {
     layer.getAnimations?.().forEach((animation) => animation.cancel());
+    layer.querySelectorAll?.("video.wallpaper-ambient-video").forEach(releaseWallpaperAmbientVideo);
     layer.remove();
   });
 }
@@ -3011,7 +3022,10 @@ function runWallpaperThemeCrossfade(overlays) {
   });
   Promise.allSettled(animations.map((animation) => animation.finished)).then(() => {
     if (generation !== wallpaperThemeTransitionGeneration) return;
-    overlays.forEach((layer) => layer.remove());
+    overlays.forEach((layer) => {
+      layer.querySelectorAll("video.wallpaper-ambient-video").forEach(releaseWallpaperAmbientVideo);
+      layer.remove();
+    });
   });
 }
 
@@ -3202,6 +3216,7 @@ function applyHomeViewportLayout(measurement) {
   measurement.root.style.setProperty("--wallpaper-stage-height", `${measurement.stageHeight}px`);
   storeRouteIconRects(measurement.routeIconRects);
   syncDynamicWallpaperLayers();
+  syncWallpaperAmbientVideo();
 }
 
 function layoutWallpaperStage(reason = "home-layout") {
@@ -3214,6 +3229,47 @@ function layoutWallpaperStage(reason = "home-layout") {
     return;
   }
   applyHomeViewportLayout(measureHomeViewportLayout());
+}
+
+function wallpaperAmbientState() {
+  const root = document.getElementById("wallpaper-root");
+  const stage = document.getElementById("wallpaper-stage");
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const theme = root?.dataset.time || "";
+  const width = stage?.clientWidth || 0;
+  const height = stage?.clientHeight || 0;
+  return Object.freeze({
+    allowed: Boolean(root && stage && WALLPAPER_TIME_THEMES.includes(theme))
+      && width > 0
+      && height > 0
+      && root.dataset.motion === "full"
+      && document.body.dataset.route === "home"
+      && document.documentElement.dataset.uiShell !== "mobile"
+      && document.documentElement.dataset.performanceTier !== "low"
+      && connection?.saveData !== true,
+    hidden: document.hidden,
+    theme,
+    width,
+    height,
+    dpr: window.devicePixelRatio || 1
+  });
+}
+
+function ensureWallpaperAmbientController() {
+  if (wallpaperAmbientController) return wallpaperAmbientController;
+  const stage = document.getElementById("wallpaper-stage");
+  if (!stage) return null;
+  wallpaperAmbientController = createWallpaperAmbientController({
+    document,
+    window,
+    stage,
+    getState: wallpaperAmbientState
+  });
+  return wallpaperAmbientController;
+}
+
+function syncWallpaperAmbientVideo() {
+  ensureWallpaperAmbientController()?.sync();
 }
 
 function updateWallpaperMotionState() {
@@ -3248,6 +3304,7 @@ function updateWallpaperMotionState() {
     clearWallpaperThemeCrossfade();
   }
   syncDynamicWallpaperLayers();
+  syncWallpaperAmbientVideo();
 }
 
 function dynamicWallpaperIsActive(root) {
@@ -3277,7 +3334,7 @@ function syncDynamicWallpaperLayers() {
     layer.dataset.wallpaperDynamicLayer = theme;
     fragment.appendChild(layer);
   });
-  stage.insertBefore(fragment, stage.querySelector(".wallpaper-tree-canopy"));
+  stage.insertBefore(fragment, stage.querySelector(".wallpaper-stars"));
   stage.dataset.cloudTheme = theme;
 }
 

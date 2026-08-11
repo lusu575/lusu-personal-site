@@ -909,11 +909,8 @@
   }
 
   .wallpaper-cloud,
-  .wallpaper-tree-canopy,
-  .wallpaper-tv-static,
-  .wallpaper-tv-girl,
-  .wallpaper-stars,
-  .wallpaper-water-shimmer {
+  .wallpaper-ambient-video,
+  .wallpaper-stars {
     display: none !important;
   }
 
@@ -2011,11 +2008,8 @@ html[data-ui-shell="mobile"] .wallpaper-root[data-time] .wallpaper-base {
 }
 
 html[data-ui-shell="mobile"] .wallpaper-cloud,
-html[data-ui-shell="mobile"] .wallpaper-tree-canopy,
-html[data-ui-shell="mobile"] .wallpaper-tv-static,
-html[data-ui-shell="mobile"] .wallpaper-tv-girl,
-html[data-ui-shell="mobile"] .wallpaper-stars,
-html[data-ui-shell="mobile"] .wallpaper-water-shimmer {
+html[data-ui-shell="mobile"] .wallpaper-ambient-video,
+html[data-ui-shell="mobile"] .wallpaper-stars {
   display: none !important;
 }
 

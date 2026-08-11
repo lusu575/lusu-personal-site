@@ -39,7 +39,7 @@ test("the mobile language cycle exposes its current and next language in all thr
 });
 
 test("shell dates and Chat controls expose machine-readable and described state", () => {
-  assert.match(html, /<time id="top-updated" datetime="2026-08-09">2026\.08\.09<\/time>/);
+  assert.match(html, /<time id="top-updated" datetime="2026-08-10">2026\.08\.10<\/time>/);
   const privatePassword = html.match(/<input id="chat-private-password"[^>]*>/)?.[0] || "";
   assert.match(privatePassword, /aria-describedby="chat-private-room-hint"/);
   assert.match(privatePassword, /aria-errormessage="chat-private-password-error"/);

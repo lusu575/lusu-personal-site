@@ -467,7 +467,10 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
-  assert.match(verificationSql, /article_seed_version' and value = '20260810-wallpaper-switch-route-motion-r1'/);
+  assert.match(verificationSql, /article_seed_version' and value = '20260810-h3-ambient-wallpapers-4k-r1'/);
+  assert.match(verificationSql, /slug = '2026-08-10-h3-ambient-wallpapers-4k'/);
+  assert.match(verificationSql, /published_at = '2026-08-10T08:10:00.000Z'/);
+  assert.match(verificationSql, /h3-ambient-wallpapers-4k-update-translations/);
   assert.match(verificationSql, /slug = '2026-08-10-wallpaper-switch-slim-dawn'/);
   assert.match(verificationSql, /published_at = '2026-08-10T04:10:00.000Z'/);
   assert.match(verificationSql, /wallpaper-switch-slim-dawn-update-translations/);

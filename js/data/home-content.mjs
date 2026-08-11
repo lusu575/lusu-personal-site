@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-10-h3-ambient-wallpapers-4k",
+      "slug": "2026-08-10-h3-ambient-wallpapers-4k",
+      "category": "site-updates",
+      "tags": ["网站更新", "壁纸", "MiniMax H3", "4K", "超分", "无障碍"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-10T08:10:00.000Z",
+      "updated_at": "2026-08-10T08:10:00.000Z",
+      "published_at": "2026-08-10T08:10:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.10",
+      "title": {
+        "zh": "四时段轻动态壁纸与 4K 超分",
+        "en": "Four Ambient Wallpapers with 4K Super-Resolution",
+        "ja": "4時間帯の微動壁紙と4K超解像"
+      },
+      "summary": {
+        "zh": "桌面 Home 的 morning／day／dusk／night 壁纸加入本地 MiniMax H3 生成的约 5 秒无缝轻动态，只让树冠和真实水面克制变化，并保留慢漂云层与夜间微弱星光。当前主题按物理尺寸只请求 1080p 或 2160p；4K 静态底图先用官方 RealESRGAN 动漫模型一次超分，再叠局部动态，避免逐帧超分闪烁。手机、低性能、Save-Data 与 reduced／off 不请求视频，静态图永久兜底。",
+        "en": "The morning, day, dusk, and night wallpapers on desktop Home now have subtle seamless loops of about five seconds generated locally with MiniMax H3. Motion is limited to restrained tree-canopy and real-water changes, alongside the existing slow clouds and faint night stars. Only the current theme requests a 1080p or 2160p file based on physical display size. For 4K, each static base is super-resolved once with the official RealESRGAN anime model before local motion is composited, avoiding per-frame upscaling flicker. Mobile, low-performance, Save-Data, and reduced/off modes make no video requests and always keep the static wallpaper fallback.",
+        "ja": "デスクトップ Home の朝・昼・夕方・夜の壁紙に、ローカル MiniMax H3 で生成した約5秒の穏やかなシームレス動画を追加しました。動きは樹冠と実際の水面の小さな変化に限定し、既存のゆっくり流れる雲と夜の弱い星光も保ちます。現在のテーマだけが物理表示サイズに応じて 1080p または 2160p を要求します。4K は静止背景を公式 RealESRGAN アニメモデルで1回だけ超解像化してから局所動画を合成し、フレームごとの超解像によるちらつきを防ぎます。モバイル、low、Save-Data、reduced／off は動画を要求せず、常に静止壁紙へフォールバックします。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-10-wallpaper-switch-slim-dawn",
       "slug": "2026-08-10-wallpaper-switch-slim-dawn",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "四时段壁纸开关改为单场景椭圆：整条轨道始终只显示当前天空，四个节点常驻，活跃节点分别呈现半露朝阳、完整太阳、低位落日或月亮；只有当前时段的云、光芒、星星与行星分层进入。全部视觉使用 Image2 生成位图，并保留自动边界、手动到下一边界、键盘与减弱／关闭动效降级。",
         "en": "The four-stage wallpaper switch is now a single-scene oval: the whole track shows only the current sky while four persistent stops remain visible. The active stop carries a partly risen morning sun, full daytime sun, low setting sun, or moon, and only the current period's clouds, rays, stars, and planet enter in layers. All visuals are Image2-generated bitmaps, with automatic boundaries, manual overrides until the next boundary, keyboard access, and reduced/off-motion fallbacks.",
         "ja": "4段階の壁紙スイッチを、現在の空だけを楕円全体に映す単一シーンへ再設計しました。4つのノードは常時表示し、選択中のノードは半分見える朝日、真昼の太陽、低い夕日、月に切り替わります。雲、光、星、惑星は現在の時間帯だけ段階的に現れます。ビジュアルはすべて Image2 生成ビットマップで、時刻境界の自動切り替え、次の境界までの手動選択、キーボード、モーション低減／オフ時のフォールバックに対応します。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-09-game-video-mcp-candidate",
-      "slug": "2026-08-09-game-video-mcp-candidate",
-      "category": "site-updates",
-      "tags": ["网站更新", "AI 能力", "游戏", "视频区", "MCP", "安全"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-09T09:30:00.000Z",
-      "updated_at": "2026-08-09T09:30:00.000Z",
-      "published_at": "2026-08-09T09:30:00.000Z",
-      "fallbackOnly": true,
-      "icon": "games",
-      "date": "2026.08.09",
-      "title": {
-        "zh": "游戏 MCP 保活修复候选与视频闭环点检",
-        "en": "Game MCP Heartbeat Fix Candidate and Video Lifecycle Check",
-        "ja": "ゲーム MCP 保活修正候補と動画ライフサイクル検証"
-      },
-      "summary": {
-        "zh": "当前生产站长 Worker 为 377d494b-8f90-40ad-998f-863d209e1978；外链视频管理闭环已在该精确 bundle 通过，但远程可用性尚未晋级。2048 点检在暂停后暴露空闲 WebSocket 断线；本次 Pages 发布加入每 8 秒严格 ping／pong 保活，Worker 已具备边缘自动应答。精确线上字节与四游戏闭环仍待核验，Kittens Game 与真视频上传不开放。",
-        "en": "The current production owner Worker is 377d494b-8f90-40ad-998f-863d209e1978. Its external-video management lifecycle passed for that exact bundle, but remote availability is not promoted. A 2048 check exposed an idle WebSocket disconnect after pause. This Pages release adds an exact eight-second ping/pong heartbeat, while the Worker already provides the edge auto-response. Exact live bytes and the four-game lifecycle still require verification; Kittens Game and true video upload remain unavailable.",
-        "ja": "現在の本番所有者 Worker は 377d494b-8f90-40ad-998f-863d209e1978 です。この正確な bundle で外部動画管理のライフサイクルは合格しましたが、リモート可用性はまだ昇格していません。2048 の点検では停止後の待機中に WebSocket 切断が判明しました。今回の Pages 公開は8秒ごとの厳密な ping／pong 保活を追加し、Worker は既にエッジ自動応答を備えています。正確な本番バイトと4ゲームの完全検証は未完了で、Kittens Game と実動画アップロードは利用できません。"
       }
     }
   ]

@@ -750,6 +750,8 @@ html[data-performance-tier="low"] .wallpaper-time-accent {
   .page,
   .cloud,
   .wallpaper-cloud,
+  .wallpaper-ambient-video,
+  .wallpaper-stars,
   .desktop-icon,
   .desktop-icon .pixel-icon,
   .desktop-icon .icon-title,
@@ -988,11 +990,10 @@ html[data-performance-tier="low"] .wallpaper-cloud {
   will-change: auto !important;
 }
 
-html[data-performance-tier="low"] .wallpaper-tree-canopy,
-html[data-performance-tier="low"] .wallpaper-tv-static,
-html[data-performance-tier="low"] .wallpaper-tv-girl,
-html[data-performance-tier="low"] .wallpaper-stars,
-html[data-performance-tier="low"] .wallpaper-water-shimmer {
+html[data-performance-tier="low"] .wallpaper-ambient-video,
+html[data-performance-tier="low"] .wallpaper-stars {
+  display: none !important;
+  animation: none !important;
   will-change: auto !important;
 }
 
