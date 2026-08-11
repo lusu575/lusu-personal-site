@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "release_id": "20260810-h3-ambient-wallpapers-4k-r1",
+  "created_at": "2026-08-10T15:57:12.000Z",
+  "purpose": "Desktop Home current-theme ambient wallpaper progressive enhancement",
+  "generation": {
+    "motion_model": "MiniMax H3 Local",
+    "motion_preset": "safe",
+    "source_size": "864x480",
+    "source_fps": 24,
+    "source_frames": 124,
+    "super_resolution": {
+      "model": "RealESRGAN_x4plus_anime_6B",
+      "repository": "https://github.com/xinntao/Real-ESRGAN",
+      "weights": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.4/RealESRGAN_x4plus_anime_6B.pth",
+      "license": "BSD-3-Clause",
+      "weights_sha256": "f872d837d3c90ed2e05227bed711af5671a6fd1c9f7d7e91c911a61f155e99da",
+      "inference": "fp16, 512px tiles, 32px overlap, 4x static-base inference",
+      "policy": "Each static base is super-resolved once; individual video frames are never independently AI-upscaled."
+    },
+    "composition": {
+      "loop": "62 forward frames followed by the same 62 frames in reverse, with duplicated endpoints",
+      "loop_frames": 124,
+      "loop_fps": 24,
+      "duration_seconds": 5.166667,
+      "tree_mask": "shared semantic canopy matte; trunk and sky excluded",
+      "water_mask": "shared narrow visible-water matte; skyline, shrubs, shore and slope excluded",
+      "dusk_reflection": "separate narrow sunset reflection matte",
+      "temporal_smoothing_frames": {
+        "morning": 5,
+        "day": 5,
+        "dusk": 5,
+        "night": 7
+      }
+    }
+  },
+  "encoding": {
+    "container": "MP4",
+    "video_codec": "H.264",
+    "profile": "High",
+    "level": "5.1",
+    "pixel_format": "yuv420p",
+    "rate_control": "QP 16",
+    "audio": false,
+    "faststart": true
+  },
+  "runtime_policy": {
+    "current_theme_only": true,
+    "preload": "none",
+    "static_poster_fallback": true,
+    "select_2160_when_physical_width_at_least": 2560,
+    "select_2160_when_physical_height_at_least": 1440,
+    "zero_request_modes": [
+      "mobile",
+      "low-performance",
+      "Save-Data",
+      "prefers-reduced-motion",
+      "site-motion-reduced",
+      "site-motion-off",
+      "non-Home"
+    ]
+  },
+  "quality_assurance": {
+    "full_decode": true,
+    "decoded_frames_per_asset": 124,
+    "decoded_loop_wrap_mean_difference": 0,
+    "turn_step_at_or_below_adjacent_p90": true,
+    "outside_motion_mask_stable": true,
+    "television_region_stable": true
+  },
+  "themes": {
+    "morning": {
+      "controller_job_id": "ca1771f3-99cb-4c1c-8744-cc45c1850429",
+      "motion_source_sha256": "ace3d3333fd29324888e923362ae9514dd928f93992bceaa2144dd4320fd3b7e",
+      "static_base": "assets/images/wallpaper-dynamic/morning/base-clean.png",
+      "static_base_sha256": "41a9c57427d505e1f56c50c762b46b1e3d0e4494c09040da08c51ee329d5c521",
+      "super_resolved_base_sha256": "8feb2630ed214d5118be91aeb0dee52b510caa0ee9d6a0479e90c29c10480742",
+      "tree_gain": 0.45,
+      "water_gain": 0.53,
+      "assets": [
+        {
+          "path": "assets/videos/wallpaper-dynamic/morning/motion-1080.mp4",
+          "url": "/assets/videos/wallpaper-dynamic/morning/motion-1080.mp4?v=5c27f252794a",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 774846,
+          "sha256": "5c27f252794aae21d4ddc512ef2abbe211652a9b846c29fc929e3362d57f8ca4",
+          "cache_key": "5c27f252794a"
+        },
+        {
+          "path": "assets/videos/wallpaper-dynamic/morning/motion-2160.mp4",
+          "url": "/assets/videos/wallpaper-dynamic/morning/motion-2160.mp4?v=2a60f60122d1",
+          "width": 3840,
+          "height": 2160,
+          "bytes": 1978478,
+          "sha256": "2a60f60122d17b6511519f3cd938c894f9da84ee7307c0fd8ff67d2854a02489",
+          "cache_key": "2a60f60122d1"
+        }
+      ]
+    },
+    "day": {
+      "controller_job_id": "73886dc8-5a3d-40e1-b431-e5ffcaafb063",
+      "motion_source_sha256": "5e585fa0c2732f7cd8bb7434acbb676ff845ce9612e42981206d3ac237fb1016",
+      "static_base": "assets/images/wallpaper-dynamic/day/base-clean.png",
+      "static_base_sha256": "5ea892faa71a1a21d4cdee790d88f238a1073709458aaa2949ee1698266c83b1",
+      "super_resolved_base_sha256": "e94cbcc6fa6ea1e424b894b48d8a5a81bcc6b2867f02d595288b125801b3cf8c",
+      "tree_gain": 0.39,
+      "water_gain": 0.32,
+      "assets": [
+        {
+          "path": "assets/videos/wallpaper-dynamic/day/motion-1080.mp4",
+          "url": "/assets/videos/wallpaper-dynamic/day/motion-1080.mp4?v=82c14e4178c4",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 813858,
+          "sha256": "82c14e4178c41057a674dde6284880a60e2e9381e929d344c58da4a7bb33697c",
+          "cache_key": "82c14e4178c4"
+        },
+        {
+          "path": "assets/videos/wallpaper-dynamic/day/motion-2160.mp4",
+          "url": "/assets/videos/wallpaper-dynamic/day/motion-2160.mp4?v=272efb3341fb",
+          "width": 3840,
+          "height": 2160,
+          "bytes": 2099801,
+          "sha256": "272efb3341fb5a029485593bcc2852459136cd83b4d6963f661d6641c9b2a37e",
+          "cache_key": "272efb3341fb"
+        }
+      ]
+    },
+    "dusk": {
+      "controller_job_id": "3458ed28-140c-49d9-8562-f5fffcf7c9ad",
+      "motion_source_sha256": "81a829744578cefea03175392f18d91b292a6692a51e4c21b2f57f65f12ebf1d",
+      "static_base": "assets/images/wallpaper-dynamic/dusk/base-clean.png",
+      "static_base_sha256": "e288c3c6bc65e5bed3c683f47ebe899050244c52f7171c4a47ec5e2e590a15be",
+      "super_resolved_base_sha256": "b25eb60b7345b6ecea3fa580da29092ad9709318e560b2db1e2d9007239fb939",
+      "tree_gain": 0.49,
+      "water_gain": 0.52,
+      "reflection_gain": 0.64,
+      "assets": [
+        {
+          "path": "assets/videos/wallpaper-dynamic/dusk/motion-1080.mp4",
+          "url": "/assets/videos/wallpaper-dynamic/dusk/motion-1080.mp4?v=1d4a2dc8641d",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 1053845,
+          "sha256": "1d4a2dc8641d4abd7ed103621d3af465e332d4658672494c7ad8956d43c8334a",
+          "cache_key": "1d4a2dc8641d"
+        },
+        {
+          "path": "assets/videos/wallpaper-dynamic/dusk/motion-2160.mp4",
+          "url": "/assets/videos/wallpaper-dynamic/dusk/motion-2160.mp4?v=33670f9614e2",
+          "width": 3840,
+          "height": 2160,
+          "bytes": 2688040,
+          "sha256": "33670f9614e2efae47a2f982f9f5130559e6f92f2bf9eb708d8b09c1c9c78f8a",
+          "cache_key": "33670f9614e2"
+        }
+      ]
+    },
+    "night": {
+      "controller_job_id": "0a4e4a2a-9d51-46a0-858a-a119ab7fbfc4",
+      "motion_source_sha256": "3547f41b3e31b67c3d7fa93514e6f9398ddbb8048695a3773bffb4fc037931cd",
+      "static_base": "assets/images/wallpaper-dynamic/night/base-clean.png",
+      "static_base_sha256": "fcdc75a4fe1c8324605d93d301f9064d842aa6a53f09644d69cdbe09e09c55eb",
+      "super_resolved_base_sha256": "a922be3207b2bc116b9b75c01c267371108ec5a2915a6c898d5cd9908c43b1d4",
+      "tree_gain": 0.27,
+      "water_gain": 0.31,
+      "assets": [
+        {
+          "path": "assets/videos/wallpaper-dynamic/night/motion-1080.mp4",
+          "url": "/assets/videos/wallpaper-dynamic/night/motion-1080.mp4?v=f03977297b96",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 582525,
+          "sha256": "f03977297b9659f75e3e3c56b107e13b8a7935db35f6795c6a234e78ee73fcca",
+          "cache_key": "f03977297b96"
+        },
+        {
+          "path": "assets/videos/wallpaper-dynamic/night/motion-2160.mp4",
+          "url": "/assets/videos/wallpaper-dynamic/night/motion-2160.mp4?v=e34357c9d394",
+          "width": 3840,
+          "height": 2160,
+          "bytes": 1576796,
+          "sha256": "e34357c9d394438d67a64adbe9ec6f0169ed4fee4cd6ca5ac9a43b894386ccd0",
+          "cache_key": "e34357c9d394"
+        }
+      ]
+    }
+  }
+}

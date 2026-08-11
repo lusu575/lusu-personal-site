@@ -307,6 +307,32 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     where article_id = 'seed-update-2026-08-11-video-link-autofill'
   `,
   `
+    select 'h3-ambient-wallpapers-4k-update-article' as item,
+      case when count(*) = 1 then 1 else 0 end as present
+    from articles
+    where article_id = 'seed-update-2026-08-10-h3-ambient-wallpapers-4k'
+      and slug = '2026-08-10-h3-ambient-wallpapers-4k'
+      and category = 'site-updates'
+      and status = 'published'
+      and is_pinned = 0
+      and cover_image = ''
+      and published_at = '2026-08-10T08:10:00.000Z'
+    union all
+    select 'h3-ambient-wallpapers-4k-update-translations',
+      case
+        when count(*) = 3
+          and count(distinct lang) = 3
+          and sum(case when lang in ('zh', 'en', 'ja') then 1 else 0 end) = 3
+          and sum(case
+            when length(trim(title)) > 0
+              and length(trim(summary)) > 0
+              and length(trim(content_markdown)) > 0
+            then 1 else 0 end) = 3
+        then 1 else 0
+      end
+    from article_translations
+    where article_id = 'seed-update-2026-08-10-h3-ambient-wallpapers-4k'
+    union all
     select 'wallpaper-switch-slim-dawn-update-article' as item,
       case when count(*) = 1 then 1 else 0 end as present
     from articles

@@ -7,7 +7,17 @@
 - `operationId + canonical caller-intent hash` 只绑定调用方实际提交的字段。服务端必须先检查并回放持久收据，再决定是否访问 provider，因此同载荷重试不重复联网；旧版完整载荷收据继续兼容。只有在不存在可回放收据时才抓取元数据。
 - 标题是最终发布的硬门槛：若调用方省略标题且 provider 也无法返回合格标题，则返回 `VIDEO_METADATA_TITLE_UNAVAILABLE`，视频、分类关系、收据与审计均保持零写入。显式标题存在时，其他可选元数据抓取失败仍可发布，并持久化受限 `metadata_error`。本站始终不下载、上传、转码或托管视频文件，也不接受本机路径、Base64、原始字节或任意 iframe URL。
 - 当前只记录仓库 0.4.0 上线候选，不提前宣称生产可用。精确 Worker version、真实浏览器 OAuth、23 工具发现、最小载荷发布、同载荷重放、管理／公开回读与 grant 撤销结果必须在实际部署后由主发布流程回填；历史 bundle 的验收不能替代新 bundle。
+- 首次候选曾临时部署为精确 Worker `9b0bd726-2c15-414c-bdff-fc5179b4e003`。DCR、PKCE、站长 OAuth 和精确 23 项工具发现通过，但仅 `operationId + originalUrl` 的 YouTube 发布因 provider 未返回标题而以 `VIDEO_METADATA_TITLE_UNAVAILABLE` 结束，视频、分类、收据和审计均未写入；临时 grant 已撤销，生产已 100% 回滚到稳定 0.3.1 `849d8328-87db-4ac8-819a-ce725fc06349`。该尝试不是生命周期验收成功，也不得用于 registry promotion。
+- 当前仓库候选为 YouTube oEmbed 增加同一已校验 videoId 构造的官方 watch page 兜底，并以浏览器兼容请求头、256 KiB JSON／2 MiB HTML 流式上限和覆盖正文的 8 秒超时约束 provider 响应；标题、描述、作者、发布时间和封面仍经过既有规范化／官方 CDN 白名单。此修复尚未重新部署或生产验收；站长停止本轮授权后不得继续发起 OAuth，只有收到新的明确授权才能重跑闭环。
 - 最新三语公开更新为 `seed-update-2026-08-11-video-link-autofill`／`2026-08-11-video-link-autofill`，发布时间 `2026-08-11T00:20:00.000Z`，公开表示、文章 seed、Home import 与 `js/main.js` 缓存 token 为 `20260811-video-link-autofill-r1`；Home 仅投影它与随后四条最新记录，不包含正文。
+
+## 2026-08-10 四时段 H3 轻动态壁纸与 4K 超分发布契约
+
+- 桌面 Home 的 morning／day／dusk／night 四张壁纸均有约 5 秒的无缝环境循环，来源为本地 MiniMax H3。视觉目标是“看得出活着，不抢窗口和文字”：H3 局部变化只作用于树冠和真实水面，云层继续使用已有 CSS 慢速漂移，夜间另有低亮度、不持续强闪的微弱星光。电视机与屏幕保持静态，本版不引入角色出现。
+- 4K 交付不对每个视频帧独立做 AI 超分。每个主题的静态底图先使用官方 `RealESRGAN_x4plus_anime_6B` 权重一次超分到 3840×2160，然后再叠加经平滑与限幅的 H3 局部时域差分。这样保留静态像素场的 4K 清晰度，同时避免逐帧超分引入的边缘与纹理闪烁。
+- 运行时只为当前主题请求一个视频文件，依 CSS 显示尺寸与 device pixel ratio 选择 1920×1080 或 3840×2160；其他三个主题不预载。视频 muted、loop、playsinline，就绪后才短淡入，失败时不影响对应静态壁纸；页面隐藏时暂停。
+- 移动端、low performance、Save-Data、`prefers-reduced-motion`、站内 `data-motion="reduced"` 与 `off` 都是零视频请求的硬门槛，直接使用当前主题静态壁纸。这是对历史“不用整屏视频”的严格渐进增强例外，不得扩展到手机、非 Home 路由、同时预载四个主题或无静态兜底的实现。
+- 公开三语更新 ID／slug 为 `seed-update-2026-08-10-h3-ambient-wallpapers-4k`／`2026-08-10-h3-ambient-wallpapers-4k`，公开 API／文章 seed token 为 `20260810-h3-ambient-wallpapers-4k-r1`；完整 fallback、Home 最新五条投影、Functions seed 与 schema seed 必须保持三语一致。
 
 ## 2026-08-10 四时段壁纸开关跨路由动效修复
 
@@ -736,7 +746,7 @@ Cloudflare Pages 项目状态：
 
 - 单页、单业务状态的双呈现壳个人站：桌面端 Neo-XP，移动端原创虚拟手机 OS
 - 桌面首页图标入口；移动 Home 的 App grid 与 Dock 复用同一组既有路由
-- 首页使用四时段像素壁纸：基础静态底图位于 `assets/images/wallpapers/`，按用户本地时间切换 morning / day / dusk / night。四个时段均已接入动态云层，分别使用 `assets/images/wallpaper-dynamic/<time>/base-clean.png` 作为无云底图，并叠加从对应原始壁纸抠出的独立透明云层；云层沿用 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构，只用 CSS `transform` / `opacity` 做同一主风向下的慢速错相漂移，并支持减少动态、小屏和页面隐藏暂停降级。本地调试可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定动态壁纸，预览模式会临时加快云层位移以便肉眼确认动画。树冠、电视雪花、小女孩、星星、水面光效等层仍作为后续动画接口保留。
+- 首页使用四时段像素壁纸：基础静态底图位于 `assets/images/wallpapers/`，按用户本地时间切换 morning / day / dusk / night。桌面 Home 在 normal/full 动效档下只加载当前主题的约 5 秒 H3 轻动态视频，树冠和真实水面做小幅变化；云层仍沿用 `wallpaper-root` / `wallpaper-stage` 舞台坐标结构，使用 CSS `transform` / `opacity` 做同一主风向下的慢速错相漂移，夜间星光保持微弱。4K 版静态底图用 `RealESRGAN_x4plus_anime_6B` 一次超分后再叠局部 H3 差分，不做逐帧 AI 超分。手机、low performance、Save-Data、reduced／off 不请求视频，静态底图始终兜底；电视机与屏幕保持静态，本版不引入角色。本地调试可用 `?wallpaper=morning` / `?wallpaper=day` / `?wallpaper=dusk` / `?wallpaper=night` 强制预览指定时段。
 - 顶部栏和底部任务栏：保留 XP 桌面结构与原有图标，并跟随 morning / day / dusk / night 四时段切换无竖线的现代玻璃像素 HUD 色温与高光
 - 知识库、视频区、工具区、游戏区、杂谈区、匿名聊天室、关于我
 - 工具区中的多人实时在线画板：`/tools/whiteboard/`，支持公共房、密码房、实时鼠标与名字、图片、PNG/SVG 导出和移动端绘制

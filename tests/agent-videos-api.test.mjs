@@ -449,6 +449,96 @@ test("Agent video link-only create fills provider metadata and replays before an
   assert.equal(count(fixture.DB, "agent_audit_log"), 1);
 });
 
+test("Agent video link-only create falls back from YouTube oEmbed to the official watch page", async () => {
+  const fixture = createFixture();
+  const metadataUrls = [];
+  fixture.env.VIDEO_METADATA_FETCH = async (url) => {
+    metadataUrls.push(String(url));
+    if (metadataUrls.length === 1) {
+      return new Response("oEmbed unavailable", { status: 503 });
+    }
+    return new Response(`<!doctype html>
+      <html>
+        <head>
+          <meta property="og:title" content="Watch fallback &amp; title &amp;#39;literal">
+          <meta name="description" content="Fallback description &quot;quoted&quot;">
+          <meta property="og:image" content="https://i.ytimg.com/vi/aqz-KE-bpKQ/maxresdefault.jpg">
+          <script type="application/ld+json">
+            {"ownerChannelName":"Watch page author","publishDate":"2026-08-10"}
+          </script>
+        </head>
+      </html>`, {
+      headers: { "Content-Type": "text/html; charset=utf-8" }
+    });
+  };
+
+  const created = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
+    method: "POST",
+    body: {
+      operationId: "video-youtube-page-fallback-001",
+      originalUrl: "https://youtu.be/aqz-KE-bpKQ"
+    }
+  });
+
+  assert.equal(created.response.status, 201);
+  assert.deepEqual(metadataUrls, [
+    "https://www.youtube.com/oembed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3Daqz-KE-bpKQ&format=json",
+    "https://www.youtube.com/watch?v=aqz-KE-bpKQ"
+  ]);
+  assert.equal(metadataUrls.length, 2);
+  const row = fixture.DB.sqlite.prepare("select * from videos where video_id = ?")
+    .get(created.payload.videoId);
+  assert.equal(row.title, "Watch fallback & title &#39;literal");
+  assert.equal(row.description, 'Fallback description "quoted"');
+  assert.equal(row.thumbnail_url, "https://i.ytimg.com/vi/aqz-KE-bpKQ/maxresdefault.jpg");
+  assert.equal(row.author_name, "Watch page author");
+  assert.equal(row.published_at, "2026-08-10T00:00:00.000Z");
+  assert.equal(row.metadata_error, "");
+});
+
+test("Agent video YouTube watch-page fallback rejects an oversized chunked response without writes", async () => {
+  const fixture = createFixture();
+  let metadataFetches = 0;
+  fixture.env.VIDEO_METADATA_FETCH = async () => {
+    metadataFetches += 1;
+    if (metadataFetches === 1) {
+      return new Response("oEmbed unavailable", { status: 503 });
+    }
+    let chunkIndex = 0;
+    const response = new Response(new ReadableStream({
+      pull(controller) {
+        if (chunkIndex < 2) {
+          chunkIndex += 1;
+          controller.enqueue(new Uint8Array(1024 * 1024));
+          return;
+        }
+        controller.enqueue(new Uint8Array([0x20]));
+        controller.close();
+      }
+    }), {
+      headers: { "Content-Type": "text/html; charset=utf-8" }
+    });
+    assert.equal(response.headers.get("Content-Length"), null);
+    return response;
+  };
+
+  const failed = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/videos", {
+    method: "POST",
+    body: {
+      operationId: "video-youtube-oversized-page-001",
+      originalUrl: "https://youtu.be/aqz-KE-bpKQ"
+    }
+  });
+
+  assert.equal(failed.response.status, 502);
+  assert.equal(failed.payload.code, "VIDEO_METADATA_TITLE_UNAVAILABLE");
+  assert.equal(metadataFetches, 2);
+  assert.equal(count(fixture.DB, "videos"), 0);
+  assert.equal(count(fixture.DB, "video_category_relations"), 0);
+  assert.equal(count(fixture.DB, "agent_video_receipts"), 0);
+  assert.equal(count(fixture.DB, "agent_audit_log"), 0);
+});
+
 test("Agent video v2 receipts cannot be replayed through the legacy hash fallback", async () => {
   const fixture = createFixture();
   let metadataFetches = 0;
@@ -674,7 +764,7 @@ test("Agent video create fails without writes when an omitted title cannot be re
   });
   assert.equal(failed.response.status, 502);
   assert.equal(failed.payload.code, "VIDEO_METADATA_TITLE_UNAVAILABLE");
-  assert.equal(metadataFetches, 1);
+  assert.equal(metadataFetches, 2);
   assert.equal(count(fixture.DB, "videos"), 0);
   assert.equal(count(fixture.DB, "video_category_relations"), 0);
   assert.equal(count(fixture.DB, "agent_video_receipts"), 0);
@@ -698,7 +788,7 @@ test("Agent video create keeps an explicit title when optional metadata fetch fa
     }
   });
   assert.equal(created.response.status, 201);
-  assert.equal(metadataFetches, 1);
+  assert.equal(metadataFetches, 2);
   const row = fixture.DB.sqlite.prepare("select * from videos where video_id = ?")
     .get(created.payload.videoId);
   assert.equal(row.title, "Explicit fallback title");

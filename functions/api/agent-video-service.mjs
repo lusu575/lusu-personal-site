@@ -3,6 +3,8 @@ const MAX_DESCRIPTION_CHARS = 2_000;
 const MAX_AUTHOR_CHARS = 160;
 const MAX_URL_CHARS = 800;
 const MAX_METADATA_ERROR_CHARS = 500;
+const MAX_PROVIDER_JSON_BYTES = 256 * 1024;
+const MAX_PROVIDER_HTML_BYTES = 2 * 1024 * 1024;
 const MAX_CATEGORY_IDS = 12;
 const MAX_RECEIPT_RESPONSE_BYTES = 16 * 1024;
 const MAX_HOSTED_VIDEO_BYTES = 2 * 1024 * 1024 * 1024;
@@ -20,6 +22,11 @@ const THUMBNAIL_HOSTS = new Set([
   "i2.hdslb.com",
   "archive.biliimg.com"
 ]);
+const YOUTUBE_METADATA_HEADERS = Object.freeze({
+  Accept: "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.7",
+  "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36"
+});
 const OPERATION_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,79}$/;
 const VIDEO_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,179}$/;
 const UPLOAD_SESSION_ID_PATTERN = /^vup_[A-Za-z0-9_-]{24,96}$/;
@@ -1133,33 +1140,17 @@ async function resolveB23Url(initialUrl, env) {
 async function fetchManagedVideoMetadata(parsed, env) {
   try {
     if (parsed.platform === "youtube") {
-      const url = `https://www.youtube.com/oembed?url=${encodeURIComponent(parsed.originalUrl)}&format=json`;
-      const response = await fetchWithTimeout(metadataFetch(env), url, {
-        headers: { Accept: "application/json", "User-Agent": "LuSu-Agent-Video/1.0" },
-        redirect: "error"
-      }, 5_000);
-      if (!response.ok) throw new Error("metadata unavailable");
-      const data = await response.json();
-      return {
-        title: metadataText(data.title, MAX_TITLE_CHARS),
-        description: "",
-        thumbnailUrl: metadataThumbnailUrl(data.thumbnail_url),
-        authorName: metadataText(data.author_name, MAX_AUTHOR_CHARS),
-        publishedAt: null,
-        metadataError: ""
-      };
+      return await fetchYoutubeMetadata(parsed, env);
     }
     const url = `https://api.bilibili.com/x/web-interface/view?bvid=${encodeURIComponent(parsed.externalId)}`;
-    const response = await fetchWithTimeout(metadataFetch(env), url, {
+    const payload = await fetchProviderJson(metadataFetch(env), url, {
       headers: {
         Accept: "application/json",
         Referer: parsed.originalUrl,
         "User-Agent": "LuSu-Agent-Video/1.0"
       },
       redirect: "error"
-    }, 6_000);
-    if (!response.ok) throw new Error("metadata unavailable");
-    const payload = await response.json();
+    }, 6_000, MAX_PROVIDER_JSON_BYTES);
     if (Number(payload?.code || 0) !== 0 || !payload?.data) throw new Error("metadata unavailable");
     const data = payload.data;
     return {
@@ -1179,6 +1170,54 @@ async function fetchManagedVideoMetadata(parsed, env) {
       publishedAt: null,
       metadataError: `${parsed.platform === "youtube" ? "YouTube" : "Bilibili"} metadata refresh failed.`
         .slice(0, MAX_METADATA_ERROR_CHARS)
+    };
+  }
+}
+
+async function fetchYoutubeMetadata(parsed, env) {
+  const fetchImpl = metadataFetch(env);
+  const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(parsed.originalUrl)}&format=json`;
+  try {
+    const data = await fetchProviderJson(fetchImpl, oembedUrl, {
+      headers: { ...YOUTUBE_METADATA_HEADERS, Accept: "application/json" },
+      redirect: "follow"
+    }, 8_000, MAX_PROVIDER_JSON_BYTES);
+    const title = metadataText(data.title, MAX_TITLE_CHARS);
+    if (!title) throw new Error("metadata title unavailable");
+    return {
+      title,
+      description: "",
+      thumbnailUrl: metadataThumbnailUrl(data.thumbnail_url),
+      authorName: metadataText(data.author_name, MAX_AUTHOR_CHARS),
+      publishedAt: null,
+      metadataError: ""
+    };
+  } catch {
+    const pageUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(parsed.externalId)}`;
+    const html = await fetchProviderText(fetchImpl, pageUrl, {
+      headers: YOUTUBE_METADATA_HEADERS,
+      redirect: "follow"
+    }, 8_000, MAX_PROVIDER_HTML_BYTES);
+    const title = metadataText(
+      htmlMetaContent(html, "og:title") || htmlJsonString(html, "title"),
+      MAX_TITLE_CHARS
+    );
+    if (!title) throw new Error("metadata title unavailable");
+    return {
+      title,
+      description: metadataText(
+        htmlMetaContent(html, "description") || htmlMetaContent(html, "og:description"),
+        MAX_DESCRIPTION_CHARS
+      ),
+      thumbnailUrl: metadataThumbnailUrl(htmlMetaContent(html, "og:image")),
+      authorName: metadataText(
+        htmlJsonString(html, "ownerChannelName") || htmlJsonString(html, "author"),
+        MAX_AUTHOR_CHARS
+      ),
+      publishedAt: providerTimestamp(
+        htmlJsonString(html, "publishDate") || htmlJsonString(html, "uploadDate")
+      ),
+      metadataError: ""
     };
   }
 }
@@ -1605,6 +1644,113 @@ function normalizeBilibiliPage(value) {
 
 function normalizedHost(value) {
   return String(value || "").toLowerCase().replace(/^www\./, "");
+}
+
+async function fetchProviderJson(fetchImpl, url, options, timeoutMs, maxBytes) {
+  const text = await fetchProviderText(fetchImpl, url, options, timeoutMs, maxBytes);
+  return JSON.parse(text.replace(/^\uFEFF/, ""));
+}
+
+async function fetchProviderText(fetchImpl, url, options, timeoutMs, maxBytes) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetchImpl(url, { ...options, signal: controller.signal });
+    if (!response.ok) {
+      await response.body?.cancel?.("metadata response rejected");
+      throw new Error("metadata unavailable");
+    }
+    const declaredLength = Number(response.headers?.get?.("content-length") || 0);
+    if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
+      await response.body?.cancel?.("metadata response too large");
+      throw new Error("metadata response too large");
+    }
+    const reader = response.body?.getReader?.();
+    if (!reader) throw new Error("metadata response body unavailable");
+    const decoder = new TextDecoder("utf-8", { fatal: true });
+    let size = 0;
+    let text = "";
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        size += value.byteLength;
+        if (size > maxBytes) {
+          await reader.cancel("metadata response too large");
+          throw new Error("metadata response too large");
+        }
+        text += decoder.decode(value, { stream: true });
+      }
+      text += decoder.decode();
+      return text;
+    } finally {
+      reader.releaseLock();
+    }
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function htmlMetaContent(html, expectedKey) {
+  const key = String(expectedKey || "").toLowerCase();
+  for (const match of String(html || "").matchAll(/<meta\b[^>]*>/gi)) {
+    const tag = match[0];
+    const declaredKey = htmlAttribute(tag, "property")
+      || htmlAttribute(tag, "name")
+      || htmlAttribute(tag, "itemprop");
+    if (declaredKey.toLowerCase() !== key) continue;
+    return decodeHtmlText(htmlAttribute(tag, "content"));
+  }
+  return "";
+}
+
+function htmlAttribute(tag, name) {
+  const match = String(tag || "").match(new RegExp(
+    `\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`,
+    "i"
+  ));
+  return String(match?.[1] ?? match?.[2] ?? match?.[3] ?? "").trim();
+}
+
+function htmlJsonString(html, key) {
+  const escapedKey = String(key || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = String(html || "").match(new RegExp(
+    `"${escapedKey}"\\s*:\\s*"((?:\\\\.|[^"\\\\])*)"`,
+    "i"
+  ));
+  if (!match) return "";
+  try {
+    return JSON.parse(`"${match[1]}"`);
+  } catch {
+    return "";
+  }
+}
+
+function decodeHtmlText(value) {
+  return String(value || "")
+    .replace(/&#(\d+);/g, (entity, code) => decodeHtmlCodePoint(entity, code, 10))
+    .replace(/&#x([0-9a-f]+);/gi, (entity, code) => decodeHtmlCodePoint(entity, code, 16))
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&amp;/gi, "&");
+}
+
+function decodeHtmlCodePoint(entity, value, radix) {
+  const codePoint = Number.parseInt(String(value || ""), radix);
+  if (!Number.isInteger(codePoint)
+    || codePoint < 0
+    || codePoint > 0x10ffff
+    || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
+    return entity;
+  }
+  return String.fromCodePoint(codePoint);
+}
+
+function providerTimestamp(value) {
+  const timestamp = Date.parse(String(value || ""));
+  return Number.isFinite(timestamp) ? new Date(timestamp).toISOString() : null;
 }
 
 function hasOwn(value, key) {

@@ -471,6 +471,9 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /slug = '2026-08-11-video-link-autofill'/);
   assert.match(verificationSql, /published_at = '2026-08-11T00:20:00.000Z'/);
   assert.match(verificationSql, /video-link-autofill-update-translations/);
+  assert.match(verificationSql, /slug = '2026-08-10-h3-ambient-wallpapers-4k'/);
+  assert.match(verificationSql, /published_at = '2026-08-10T08:10:00.000Z'/);
+  assert.match(verificationSql, /h3-ambient-wallpapers-4k-update-translations/);
   assert.match(verificationSql, /slug = '2026-08-10-wallpaper-switch-slim-dawn'/);
   assert.match(verificationSql, /published_at = '2026-08-10T04:10:00.000Z'/);
   assert.match(verificationSql, /wallpaper-switch-slim-dawn-update-translations/);

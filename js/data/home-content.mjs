@@ -27,6 +27,31 @@ export const homeContent = Object.freeze({
       }
     },
     {
+      "article_id": "seed-update-2026-08-10-h3-ambient-wallpapers-4k",
+      "slug": "2026-08-10-h3-ambient-wallpapers-4k",
+      "category": "site-updates",
+      "tags": ["网站更新", "壁纸", "MiniMax H3", "4K", "超分", "无障碍"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-10T08:10:00.000Z",
+      "updated_at": "2026-08-10T08:10:00.000Z",
+      "published_at": "2026-08-10T08:10:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.10",
+      "title": {
+        "zh": "四时段轻动态壁纸与 4K 超分",
+        "en": "Four Ambient Wallpapers with 4K Super-Resolution",
+        "ja": "4時間帯の微動壁紙と4K超解像"
+      },
+      "summary": {
+        "zh": "桌面 Home 的 morning／day／dusk／night 壁纸加入本地 MiniMax H3 生成的约 5 秒无缝轻动态，只让树冠和真实水面克制变化，并保留慢漂云层与夜间微弱星光。当前主题按物理尺寸只请求 1080p 或 2160p；4K 静态底图先用官方 RealESRGAN 动漫模型一次超分，再叠局部动态，避免逐帧超分闪烁。手机、低性能、Save-Data 与 reduced／off 不请求视频，静态图永久兜底。",
+        "en": "The morning, day, dusk, and night wallpapers on desktop Home now have subtle seamless loops of about five seconds generated locally with MiniMax H3. Motion is limited to restrained tree-canopy and real-water changes, alongside the existing slow clouds and faint night stars. Only the current theme requests a 1080p or 2160p file based on physical display size. For 4K, each static base is super-resolved once with the official RealESRGAN anime model before local motion is composited, avoiding per-frame upscaling flicker. Mobile, low-performance, Save-Data, and reduced/off modes make no video requests and always keep the static wallpaper fallback.",
+        "ja": "デスクトップ Home の朝・昼・夕方・夜の壁紙に、ローカル MiniMax H3 で生成した約5秒の穏やかなシームレス動画を追加しました。動きは樹冠と実際の水面の小さな変化に限定し、既存のゆっくり流れる雲と夜の弱い星光も保ちます。現在のテーマだけが物理表示サイズに応じて 1080p または 2160p を要求します。4K は静止背景を公式 RealESRGAN アニメモデルで1回だけ超解像化してから局所動画を合成し、フレームごとの超解像によるちらつきを防ぎます。モバイル、low、Save-Data、reduced／off は動画を要求せず、常に静止壁紙へフォールバックします。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-10-wallpaper-switch-slim-dawn",
       "slug": "2026-08-10-wallpaper-switch-slim-dawn",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "四时段壁纸开关再次轻量重做：Image2 重新生成极简色场、四个语义浮雕节点，以及每个主题唯一一层点题内容；移除多层风景、行星与错峰装饰。选择器可随快速操作中断并重定向，键盘和 motion-off 即时完成；reduced-motion 只保留淡化，low／Save-Data 跳过 accent 层。",
         "en": "The four-stage wallpaper switch has been rebuilt around a calmer, lighter system. Image2 regenerated four minimal color fields, four semantic embossed stops, and one accent layer per theme; layered scenery, planets, and staggered decoration are removed. The selector stays interruptible and retargetable, keyboard and motion-off changes are immediate, reduced motion keeps only a fade, and low/Save-Data skips the accent layer.",
         "ja": "4段階壁紙スイッチを、より穏やかで軽量な構成に再設計しました。Image2 で最小限の色面4種、意味の異なる浮き彫りノード4種、各テーマ一層の accent を生成し直し、多層の風景、惑星、時間差装飾を削除しました。selector は中断・再設定可能で、keyboard／motion-off は即時、reduced-motion はフェードのみ、low／Save-Data では accent を読み込みません。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-09-wallpaper-switch-scene-redesign",
-      "slug": "2026-08-09-wallpaper-switch-scene-redesign",
-      "category": "site-updates",
-      "tags": ["网站更新", "壁纸", "动效", "Image2", "无障碍"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-09T11:15:00.000Z",
-      "updated_at": "2026-08-09T11:15:00.000Z",
-      "published_at": "2026-08-09T11:15:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.08.09",
-      "title": {
-        "zh": "四时段壁纸开关场景重做",
-        "en": "Four-Stage Wallpaper Switch Scene Redesign",
-        "ja": "4段階壁紙スイッチのシーン再設計"
-      },
-      "summary": {
-        "zh": "四时段壁纸开关改为单场景椭圆：整条轨道始终只显示当前天空，四个节点常驻，活跃节点分别呈现半露朝阳、完整太阳、低位落日或月亮；只有当前时段的云、光芒、星星与行星分层进入。全部视觉使用 Image2 生成位图，并保留自动边界、手动到下一边界、键盘与减弱／关闭动效降级。",
-        "en": "The four-stage wallpaper switch is now a single-scene oval: the whole track shows only the current sky while four persistent stops remain visible. The active stop carries a partly risen morning sun, full daytime sun, low setting sun, or moon, and only the current period's clouds, rays, stars, and planet enter in layers. All visuals are Image2-generated bitmaps, with automatic boundaries, manual overrides until the next boundary, keyboard access, and reduced/off-motion fallbacks.",
-        "ja": "4段階の壁紙スイッチを、現在の空だけを楕円全体に映す単一シーンへ再設計しました。4つのノードは常時表示し、選択中のノードは半分見える朝日、真昼の太陽、低い夕日、月に切り替わります。雲、光、星、惑星は現在の時間帯だけ段階的に現れます。ビジュアルはすべて Image2 生成ビットマップで、時刻境界の自動切り替え、次の境界までの手動選択、キーボード、モーション低減／オフ時のフォールバックに対応します。"
       }
     }
   ]

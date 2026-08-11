@@ -10,7 +10,7 @@
 https://lusu575.com/mcp
 ```
 
-截至 2026-08-09，生产 Worker `lusu-site-admin-mcp` 已部署；当前精确 version ID 为 `849d8328-87db-4ac8-819a-ce725fc06349`，内部版本 `0.3.1`，承接 100% 流量，Production D1 migration 已完成。该精确 bundle 的 OAuth protected-resource／authorization-server metadata、未鉴权 `401 WWW-Authenticate` challenge 与非 allowlist pathname `404` 已完成线上 smoke；这些基础检查不替代 DCR、真实浏览器 OAuth 或业务生命周期验收。
+截至 2026-08-11，生产 Worker `lusu-site-admin-mcp` 已部署；当前精确 version ID 为 `849d8328-87db-4ac8-819a-ce725fc06349`，内部版本 `0.3.1`，承接 100% 流量，Production D1 migration 已完成。该精确 bundle 的 OAuth protected-resource／authorization-server metadata、未鉴权 `401 WWW-Authenticate` challenge 与非 allowlist pathname `404` 已完成线上 smoke；这些基础检查不替代 DCR、真实浏览器 OAuth 或业务生命周期验收。
 
 该地址是无状态 Streamable HTTP 端点，不提供旧式 `/sse`，也不接受网站设备码令牌、`lusu_session` Cookie 或 URL 查询参数中的 Bearer token。客户端必须通过该 resource 发现并完成站点 OAuth 2.1 授权。
 
@@ -23,6 +23,8 @@ https://lusu575.com/mcp
 `title`、`description`、`thumbnailUrl`、`authorName` 与 `publishedAt` 在候选 schema 中都是可选覆盖项。服务端只对省略字段调用固定平台 provider 做有界补全，显式传入值优先。持久收据会在任何网络访问前检查，所以同载荷重试直接回放且不会再次抓取；换意图复用同一 `operationId` 仍冲突。若标题未传且 provider 也取不到标题，则返回 `VIDEO_METADATA_TITLE_UNAVAILABLE`，视频、分类、收据与审计全部零写入。
 
 这仍是 link-only 发布，不下载、上传、转码或托管视频文件，也不接受本机路径、Base64、原始字节或任意 iframe。精确 0.4.0 Worker version 与真实浏览器 OAuth、23 工具发现、最小载荷发布、重放、管理／公开回读及撤销闭环须在部署后回填；当前生产版本和历史验收事实不变。
+
+2026-08-11 的首次候选部署 `9b0bd726-2c15-414c-bdff-fc5179b4e003` 已完成 DCR、PKCE、站长 OAuth 与精确 23 项工具发现，但最小 YouTube 发布因 provider 标题不可用而以 `VIDEO_METADATA_TITLE_UNAVAILABLE` 零写入失败。临时 grant 已撤销，生产已 100% 回滚至 0.3.1 `849d8328-87db-4ac8-819a-ce725fc06349`。仓库候选现加入官方 watch page 的有界流式兜底，仍未重新部署或验收；不得把这次失败尝试写成可用性晋级，也不得在站长未重新明确授权时继续 OAuth。
 
 ## 当前 Worker 的 23 个工具
 

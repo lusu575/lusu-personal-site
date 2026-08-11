@@ -31,6 +31,36 @@ export const content = {
       }
     },
     {
+      "article_id": "seed-update-2026-08-10-h3-ambient-wallpapers-4k",
+      "slug": "2026-08-10-h3-ambient-wallpapers-4k",
+      "category": "site-updates",
+      "tags": ["网站更新", "壁纸", "MiniMax H3", "4K", "超分", "无障碍"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-10T08:10:00.000Z",
+      "updated_at": "2026-08-10T08:10:00.000Z",
+      "published_at": "2026-08-10T08:10:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.10",
+      "title": {
+        "zh": "四时段轻动态壁纸与 4K 超分",
+        "en": "Four Ambient Wallpapers with 4K Super-Resolution",
+        "ja": "4時間帯の微動壁紙と4K超解像"
+      },
+      "summary": {
+        "zh": "桌面 Home 的 morning／day／dusk／night 壁纸加入本地 MiniMax H3 生成的约 5 秒无缝轻动态，只让树冠和真实水面克制变化，并保留慢漂云层与夜间微弱星光。当前主题按物理尺寸只请求 1080p 或 2160p；4K 静态底图先用官方 RealESRGAN 动漫模型一次超分，再叠局部动态，避免逐帧超分闪烁。手机、低性能、Save-Data 与 reduced／off 不请求视频，静态图永久兜底。",
+        "en": "The morning, day, dusk, and night wallpapers on desktop Home now have subtle seamless loops of about five seconds generated locally with MiniMax H3. Motion is limited to restrained tree-canopy and real-water changes, alongside the existing slow clouds and faint night stars. Only the current theme requests a 1080p or 2160p file based on physical display size. For 4K, each static base is super-resolved once with the official RealESRGAN anime model before local motion is composited, avoiding per-frame upscaling flicker. Mobile, low-performance, Save-Data, and reduced/off modes make no video requests and always keep the static wallpaper fallback.",
+        "ja": "デスクトップ Home の朝・昼・夕方・夜の壁紙に、ローカル MiniMax H3 で生成した約5秒の穏やかなシームレス動画を追加しました。動きは樹冠と実際の水面の小さな変化に限定し、既存のゆっくり流れる雲と夜の弱い星光も保ちます。現在のテーマだけが物理表示サイズに応じて 1080p または 2160p を要求します。4K は静止背景を公式 RealESRGAN アニメモデルで1回だけ超解像化してから局所動画を合成し、フレームごとの超解像によるちらつきを防ぎます。モバイル、low、Save-Data、reduced／off は動画を要求せず、常に静止壁紙へフォールバックします。"
+      },
+      "content_markdown": {
+        "zh": "# 四时段轻动态壁纸与 4K 超分\n\n桌面 Home 的四个时段现在都有一点点环境动态。这次不追求显眼的“视频感”，而是让像素场景在不影响窗口和文字的前提下轻微呼吸。\n\n## 约 5 秒的克制循环\n\n- morning／day／dusk／night 分别使用本地 MiniMax H3 生成的约 5 秒无缝循环。\n- H3 变化只取树冠和真实水面的小范围，城市、天空、斜坡、地面与电视机保持稳定。\n- 现有 CSS 云层继续慢速漂移，夜间只增加很微弱的星光，不做频繁闪烁。\n\n## 4K 清晰度不靠逐帧放大\n\n每个主题的静态底图先用官方 `RealESRGAN_x4plus_anime_6B` 做一次超分，然后再叠加经平滑和限幅的局部 H3 时域差分。这样能让 4K 显示器看到更清晰的静态细节，又不会因为每一帧都独立超分而出现边缘和纹理闪烁。\n\n## 只加载眼前需要的一份\n\n页面只为当前主题按物理显示尺寸选择 1080p 或 2160p，不会预载其他三个时段。视频播放就绪后才短淡入，加载失败仍然保留原静态壁纸。手机、低性能、Save-Data、`prefers-reduced-motion` 和站内 reduced／off 模式完全不请求视频；页面隐藏时也会暂停。",
+        "en": "# Four Ambient Wallpapers with 4K Super-Resolution\n\nAll four periods on desktop Home now carry a small amount of environmental motion. The goal is not to make the page feel like a conspicuous video, but to let the pixel scene breathe without competing with windows or text.\n\n## Restrained loops of about five seconds\n\n- Morning, day, dusk, and night each use a seamless loop of about five seconds generated locally with MiniMax H3.\n- H3 changes are taken only from small tree-canopy and real-water regions. The city, sky, slope, ground, and television remain stable.\n- The existing CSS clouds continue their slow drift, while night adds only faint starlight without frequent flashing.\n\n## 4K clarity without upscaling every frame\n\nEach theme's static base is super-resolved once with the official `RealESRGAN_x4plus_anime_6B` model. A smoothed and gain-limited local H3 temporal delta is then composited on top. This keeps static detail clearer on 4K displays without introducing the edge and texture flicker that can appear when every frame is independently super-resolved.\n\n## Loading only the one file needed now\n\nThe page selects a 1080p or 2160p file for the current theme from its physical display size and does not preload the other three periods. Video fades in only after playback is ready; if loading fails, the original static wallpaper remains. Mobile, low-performance, Save-Data, `prefers-reduced-motion`, and in-site reduced/off modes make no video requests at all. Playback also pauses while the page is hidden.",
+        "ja": "# 4時間帯の微動壁紙と4K超解像\n\nデスクトップ Home の4時間帯すべてに、わずかな環境モーションを加えました。目立つ「動画らしさ」ではなく、ウィンドウや文字の邪魔をせず、ピクセルシーンが穏やかに呼吸する状態を目指します。\n\n## 約5秒の控えめなループ\n\n- 朝・昼・夕方・夜は、それぞれローカル MiniMax H3 で生成した約5秒のシームレスループを使います。\n- H3 の変化は樹冠と実際の水面の小さな範囲だけを取り出し、街、空、斜面、地面、テレビは安定させます。\n- 既存の CSS 雲はゆっくり流れ続け、夜は頻繁に点滅しない弱い星光だけを加えます。\n\n## 全フレームの拡大に頼らない4K鮮明度\n\n各テーマの静止背景を公式 `RealESRGAN_x4plus_anime_6B` で1回だけ超解像化し、その上に平滑化して強度を抑えた局所 H3 時間差分を合成します。4K 画面で静止細部を鮮明に保ちながら、フレームごとの独立超解像で起きる輪郭や質感のちらつきを防ぎます。\n\n## 今必要な1ファイルだけを読み込む\n\n現在のテーマについて、物理表示サイズから 1080p または 2160p を選び、残り3時間帯は事前読み込みしません。再生準備完了後にだけ短くフェードインし、読み込み失敗時は元の静止壁紙を保ちます。モバイル、low、Save-Data、`prefers-reduced-motion`、サイト内 reduced／off は動画を一切要求しません。ページが非表示の間は再生も一時停止します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-10-wallpaper-switch-slim-dawn",
       "slug": "2026-08-10-wallpaper-switch-slim-dawn",
       "category": "site-updates",
