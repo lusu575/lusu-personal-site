@@ -2,20 +2,20 @@ export const WALLPAPER_AMBIENT_THEMES = Object.freeze(["morning", "day", "dusk",
 
 export const WALLPAPER_AMBIENT_ASSETS = Object.freeze({
   morning: Object.freeze({
-    1080: "/assets/videos/wallpaper-dynamic/morning/motion-1080.mp4?v=5c27f252794a",
-    2160: "/assets/videos/wallpaper-dynamic/morning/motion-2160.mp4?v=2a60f60122d1"
+    1080: "/assets/videos/wallpaper-dynamic/morning/motion-1080.mp4?v=4ca412a92580",
+    2160: "/assets/videos/wallpaper-dynamic/morning/motion-2160.mp4?v=369eef2dc913"
   }),
   day: Object.freeze({
-    1080: "/assets/videos/wallpaper-dynamic/day/motion-1080.mp4?v=82c14e4178c4",
-    2160: "/assets/videos/wallpaper-dynamic/day/motion-2160.mp4?v=272efb3341fb"
+    1080: "/assets/videos/wallpaper-dynamic/day/motion-1080.mp4?v=6b2ae4137cc4",
+    2160: "/assets/videos/wallpaper-dynamic/day/motion-2160.mp4?v=abdb82258c35"
   }),
   dusk: Object.freeze({
-    1080: "/assets/videos/wallpaper-dynamic/dusk/motion-1080.mp4?v=1d4a2dc8641d",
-    2160: "/assets/videos/wallpaper-dynamic/dusk/motion-2160.mp4?v=33670f9614e2"
+    1080: "/assets/videos/wallpaper-dynamic/dusk/motion-1080.mp4?v=964dd9a44b0a",
+    2160: "/assets/videos/wallpaper-dynamic/dusk/motion-2160.mp4?v=8cc2aa7898fd"
   }),
   night: Object.freeze({
-    1080: "/assets/videos/wallpaper-dynamic/night/motion-1080.mp4?v=f03977297b96",
-    2160: "/assets/videos/wallpaper-dynamic/night/motion-2160.mp4?v=e34357c9d394"
+    1080: "/assets/videos/wallpaper-dynamic/night/motion-1080.mp4?v=3251e39b7cea",
+    2160: "/assets/videos/wallpaper-dynamic/night/motion-2160.mp4?v=6194df593cae"
   })
 });
 

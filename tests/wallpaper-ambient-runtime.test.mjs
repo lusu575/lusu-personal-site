@@ -245,19 +245,47 @@ test("ambient assets map exactly four themes to current-theme 1080p and 2160p MP
       assert.equal(manifestAsset.cache_key, manifestAsset.sha256.slice(0, 12));
       assert.equal(createHash("sha256").update(header).digest("hex"), manifestAsset.sha256);
       assert.ok(header.indexOf(Buffer.from("moov")) < header.indexOf(Buffer.from("mdat")), `${theme}:${resolution} must keep moov before mdat`);
+      const budget = ambientManifest.performance_budget.maximum_bytes[resolution];
+      assert.equal(typeof budget, "number", `${theme}:${resolution} must have a numeric delivery budget`);
       assert.ok(
-        metadata.size <= (resolution === "2160" ? 3 * 1024 * 1024 : 1.2 * 1024 * 1024),
+        metadata.size <= budget,
         `${theme}:${resolution} must stay within the current-theme delivery budget`
       );
+      assert.equal(manifestAsset.review_master.label, `approved first-version ${resolution}p48 review master`);
+      assert.match(manifestAsset.review_master.sha256, /^[a-f0-9]{64}$/);
+      assert.ok(manifestAsset.review_master.bytes > metadata.size, `${theme}:${resolution} web encode must be smaller than its approved review master`);
     }
   }
   assert.equal(urls.size, 8);
   assert.equal(wallpaperAmbientAsset("unknown", "2160"), "");
   assert.equal(wallpaperAmbientAsset("day", "unexpected"), WALLPAPER_AMBIENT_ASSETS.day[1080]);
-  assert.equal(ambientManifest.release_id, "20260810-h3-ambient-wallpapers-4k-r1");
+  assert.equal(ambientManifest.schema_version, 2);
+  assert.equal(ambientManifest.release_id, "20260811-h3-first-version-video-sr-48fps-r1");
+  assert.equal(ambientManifest.generation.motion_generation, "first version");
+  assert.equal(ambientManifest.generation.full_frame_motion, true);
+  assert.equal(ambientManifest.generation.loop.secondary_composition, false);
+  assert.equal(ambientManifest.generation.frame_interpolation.source_fps, 24);
+  assert.equal(ambientManifest.generation.frame_interpolation.output_fps, 48);
+  assert.equal(ambientManifest.generation.frame_interpolation.output_frames, 248);
+  assert.match(ambientManifest.generation.super_resolution.inference, /every interpolated video frame/i);
   assert.equal(ambientManifest.generation.super_resolution.weights_sha256, "f872d837d3c90ed2e05227bed711af5671a6fd1c9f7d7e91c911a61f155e99da");
-  assert.equal(ambientManifest.quality_assurance.decoded_loop_wrap_mean_difference, 0);
-  assert.equal(ambientManifest.quality_assurance.turn_step_at_or_below_adjacent_p90, true);
+  assert.equal(ambientManifest.generation.web_delivery_encode.encoder, "libx264");
+  assert.equal(ambientManifest.generation.web_delivery_encode.crf, 18);
+  assert.equal(ambientManifest.encoding.frame_rate, 48);
+  assert.equal(ambientManifest.encoding.frames, 248);
+  assert.equal(ambientManifest.encoding.levels[1080], "4.2");
+  assert.equal(ambientManifest.encoding.levels[2160], "5.2");
+  assert.equal(ambientManifest.quality_assurance.all_assets_full_decode, true);
+  assert.equal(ambientManifest.quality_assurance.decoded_frames_per_asset, 248);
+  assert.equal(ambientManifest.quality_assurance.delivery_encode_sample.scope, "day 2160p48 only");
+  const day2160 = ambientManifest.themes.day.assets.find(({ height }) => height === 2160);
+  assert.equal(ambientManifest.quality_assurance.delivery_encode_sample.review_master_sha256, day2160.review_master.sha256);
+  assert.equal(ambientManifest.quality_assurance.delivery_encode_sample.production_sha256, day2160.sha256);
+  assert.ok(ambientManifest.quality_assurance.delivery_encode_sample.vmaf >= 95);
+  assert.ok(ambientManifest.quality_assurance.delivery_encode_sample.ssim >= 0.995);
+  assert.ok(ambientManifest.quality_assurance.delivery_encode_sample.psnr_db >= 49);
+  assert.doesNotMatch(JSON.stringify(ambientManifest), /static_base|tree_gain|water_gain|reflection_gain|temporal_smoothing/i);
+  assert.doesNotMatch(JSON.stringify(ambientManifest), /(?:artifacts|downloads)[\\/]/i, "public provenance must use logical labels rather than local artifact paths");
   assert.doesNotMatch(JSON.stringify(ambientManifest), /[A-Z]:\\/i, "production provenance must not expose local absolute paths");
 });
 
