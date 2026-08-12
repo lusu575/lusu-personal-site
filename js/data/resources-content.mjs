@@ -5,7 +5,7 @@ export const resourcesContent = Object.freeze({
       "category": 0,
       "toolId": "minimax-h3",
       "capabilityDomain": "minimax-h3",
-      "iconSrc": "assets/images/generated-icons/minimax-h3.png?v=20260812-minimax-h3-r3",
+      "iconSrc": "assets/images/generated-icons/minimax-h3.png?v=20260813-minimax-h3-r4",
       "iconDataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAACXBIWXMAAAPoAAAD6AG1e1JrAAADc0lEQVRYhe1WbY7bNhC1SMn6sCTvIgv0gl1ZTgq0OUBukBPlb//mJivLuz8WaLscvmKGpERjm40CGGgLaABCFEXTj29m3sxms9pqq6222v/PqidC/UTY/BetOln8lRPuakL1+DbIZgT2o0V9ItyMFu1o0YxW1poToR2B27Pbs5e9QHPibxa139sMFvWDXU7Gu9zAFgRbEdpHi+YZqJ9xccDNEx/4ESr9AJ0eodMeSh+hNT97aH2QNRnyznP+foTy67xf8Vp2hNr0cpllDA4Emxk02jExsXWeD9gPJIcrfYDSHVTKTwblnuHdrTlQMgQorweQ0UWyD8tZbMUNr93bjuw2C5W993/QCxiddn4EkG6ulAMzAePv8j5fKFxK6w7taSGL3zMHKrDUIVFdBKzH5/L36ZsD0V8AU2p+54slfJH0gGa4GsDAWOeY9OwIINWBCgMqLP7QLwJGYk1Yii/m2fXMcwjUg70uQBUxx3Nmkv+YCgJVnGhWRhKSw4MU5nhvGH6tXcpgfQZ4vAVwdt9BYs2B6wSAzZ0KMEjaEf7MDcqdY2mO2ShJ+KK6X+ZiztyX0uI2J1RRFr8Vg2pysVt3MmU9iwZUGlBlYCrrpWlmc06SHs2SJLkrjNzelqyDBM5oyWoRYsjcZWMM8t7rm/sjdrGALBlkAEqgkkC5wZf91wvJCS6ulzDYnC32iUW7td93sXYudSyGeQ9iF5eeRQa6syAZBmn6q4/HHklwsQe4WxqDDJJL0be+J97FOmRupGsOoEsOYay0wuSu+gSd/TbF3pT1U6Xpr6iDmXNlou4noJO7WWbyKItLQpr+Ap2yuHu2w4UC+z/i4kUA05AYnYisjrM6ACwNXnLjSp2vFK6yRPrnEyyERn29ShLpX+oZ8M9UvxehTrZHKG4EpiRw0hKXxRDLITwWM1hyO/T4OgZ3JystmNY/Q2Xh4G5iUEBkl02BaxJeNxIcHrFEcaeze1gAsBgJpiA0JaGIGoZ6mOfbwUwM6LjmhjkDykLizKXwIubk3e+VGD6iXNIX/lTCaRiDPBOK0SAbzcUPWRNVxnLRyeFS7CdXefa4soSMlZLYz3s8wMRLldoepIld5F6Wl70itNtLUP9k+WCRnyzk6efFYMEhUvj1cnBrRbQm8+g3u6XgJoZOQHWtzmK11VZbbbXVNv+m/Q3aV69kQRJZFgAAAABJRU5ErkJggg==",
       "version": "P2",
       "updated": "2026.08.12",
