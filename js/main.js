@@ -4,7 +4,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260809-motion-polish-r2";
-import { homeContent } from "./data/home-content.mjs?v=20260811-video-link-autofill-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260811-h3-first-version-video-sr-48fps-r1";
 import {
   WALLPAPER_TIME_THEMES,
   createWallpaperTimeOverride,
@@ -20,7 +20,7 @@ import { createJsonResourceCache } from "./core/content-cache.mjs?v=20260718-res
 import {
   createWallpaperAmbientController,
   releaseWallpaperAmbientVideo
-} from "./core/wallpaper-ambient.mjs?v=20260810-h3-ambient-wallpapers-4k-r1";
+} from "./core/wallpaper-ambient.mjs?v=20260811-h3-first-version-video-sr-48fps-r1";
 import { createAccountFeature } from "./features/account.mjs?v=20260809-motion-polish-r2";
 import { createConnectionStatus } from "./features/connection-status.mjs?v=20260726-security-reliability-r1";
 
@@ -4046,6 +4046,18 @@ document.addEventListener("visibilitychange", () => {
     void reconcileWallpaperTimeTheme({ source: "visibility", immediate: true });
   }
   updateWallpaperMotionState();
+});
+
+document.addEventListener("lusu:ui-motion-mode", updateWallpaperMotionState);
+document.addEventListener("lusu:ui-motion-ready", updateWallpaperMotionState);
+
+window.addEventListener("pageshow", (event) => {
+  if (!event.persisted) return;
+  window.LusuUiMotion?.refresh?.();
+  updateWallpaperMotionState();
+  if (document.body.dataset.route === "home") {
+    layoutWallpaperStage("pageshow:bfcache");
+  }
 });
 
 if (wallpaperMotionMedia) {

@@ -319,12 +319,24 @@ async function auditServer() {
       requests.push(requestEntry);
       response.once("finish", () => { requestEntry.status = response.statusCode; });
       if (apiFixture(url, response)) return;
+      if (url.pathname === "/__audit/bfcache-away") {
+        const body = "<!doctype html><html><body data-audit-bfcache-away='true'>BFCache boundary</body></html>";
+        response.writeHead(200, {
+          "Cache-Control": "private, max-age=0, must-revalidate",
+          "Content-Type": "text/html; charset=utf-8",
+          "Content-Length": Buffer.byteLength(body)
+        });
+        response.end(body);
+        return;
+      }
       const file = url.pathname === "/" || url.pathname.startsWith("/articles/") ? index : localPath(url.pathname);
       const info = file ? await stat(file).catch(() => null) : null;
       if (!info?.isFile()) { response.writeHead(404); response.end("Not found"); return; }
-      const cacheControl = cacheWallpaperBaseAssets && isWallpaperBaseAssetPath(url.pathname)
-        ? "public, max-age=86400, must-revalidate"
-        : "no-store";
+      const cacheControl = url.searchParams.has("audit-ambient-bfcache")
+        ? "private, max-age=0, must-revalidate"
+        : cacheWallpaperBaseAssets && isWallpaperBaseAssetPath(url.pathname)
+          ? "public, max-age=86400, must-revalidate"
+          : "no-store";
       response.writeHead(200, { "Cache-Control": cacheControl, "Content-Type": mime[extname(file).toLowerCase()] || "application/octet-stream", "Content-Length": info.size });
       if (request.method === "HEAD") response.end();
       else createReadStream(file).pipe(response);
@@ -4304,6 +4316,57 @@ async function auditAmbientWallpaperPlayback(client, server) {
         samples.at(-1).released = released;
       }
     }
+
+    await client.send("Page.navigate", { url: "about:blank" });
+    await waitFor(client, `document.readyState==='complete'`, "ambient BFCache blank boundary");
+    await emulateAmbient(desktop1080);
+    await client.send("Network.clearBrowserCache");
+    server.resetRequests();
+    await navigateFresh(
+      client,
+      `${server.origin}/?lang=zh&wallpaper=day&welcome=0&audit-ambient-bfcache=1`,
+      "ambient-bfcache-home"
+    );
+    await waitFor(client, `document.readyState==='complete'&&document.body.dataset.route==='home'`, "ambient BFCache initial Home");
+    await waitFor(client, `(() => {const video=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]');return video&&video.readyState>=3&&!video.paused&&video.style.opacity==='1';})()`, "ambient BFCache initial playback");
+    await evaluate(client, `(() => {
+      window.__auditAmbientBfCacheEvents=[];
+      window.addEventListener('pagehide', event => window.__auditAmbientBfCacheEvents.push({type:'pagehide',persisted:event.persisted}));
+      window.addEventListener('pageshow', event => window.__auditAmbientBfCacheEvents.push({type:'pageshow',persisted:event.persisted}));
+      return true;
+    })()`);
+    server.resetRequests();
+    const bfcacheNotUsed = [];
+    const stopBfCacheNotUsed = client.on("Page.backForwardCacheNotUsed", (event) => bfcacheNotUsed.push(event));
+    try {
+      await client.send("Page.navigate", { url: `${server.origin}/__audit/bfcache-away` });
+      await waitFor(client, `document.body?.dataset.auditBfcacheAway==='true'`, "ambient BFCache away page");
+      await evaluate(client, `history.back(); true`);
+      await waitFor(client, `document.body?.dataset.route==='home'&&document.getElementById('wallpaper-stage')`, "ambient BFCache restored Home");
+      await waitFor(client, `(() => {const video=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]');return video&&video.readyState>=3&&!video.paused&&video.style.opacity==='1';})()`, "ambient BFCache restored playback");
+    } finally {
+      stopBfCacheNotUsed();
+    }
+    const bfcacheState = await playableState();
+    const bfcacheEvents = await evaluate(client, `window.__auditAmbientBfCacheEvents || []`);
+    const bfcacheRequests = videoRequests();
+    const bfcacheExpectedPath = "/assets/videos/wallpaper-dynamic/day/motion-1080.mp4";
+    const restoredFromBfCache = bfcacheEvents.some((event) => event.type === "pageshow" && event.persisted === true);
+    if (!restoredFromBfCache) failures.push(`ambient playback audit did not restore from BFCache: ${JSON.stringify({ bfcacheEvents, bfcacheNotUsed })}`);
+    if (bfcacheState.resolution !== "1080" || bfcacheState.currentPath !== bfcacheExpectedPath || bfcacheState.paused) {
+      failures.push(`BFCache restored the wrong ambient playback state: ${JSON.stringify(bfcacheState)}`);
+    }
+    if (bfcacheRequests.length !== 1 || bfcacheRequests[0]?.path !== bfcacheExpectedPath) {
+      failures.push(`BFCache restoration requested ambient assets ${JSON.stringify(bfcacheRequests.map((entry) => entry.path))}`);
+    }
+    samples.push({
+      viewport: desktop1080,
+      name: "desktop-1080-bfcache-restore",
+      state: bfcacheState,
+      events: bfcacheEvents,
+      bfcacheNotUsed,
+      requests: bfcacheRequests
+    });
 
     for (const sample of [
       { viewport: mobile, reduced: false, name: "mobile-zero-request" },

@@ -1,6 +1,66 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-08-11-h3-first-version-video-sr-48fps",
+      "slug": "2026-08-11-h3-first-version-video-sr-48fps",
+      "category": "site-updates",
+      "tags": ["网站更新", "壁纸", "MiniMax H3", "4K", "超分", "补帧"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-11T10:40:00.000Z",
+      "updated_at": "2026-08-11T10:40:00.000Z",
+      "published_at": "2026-08-11T10:40:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.11",
+      "title": {
+        "zh": "第一版 H3 动态壁纸升级至 48fps 与 4K",
+        "en": "First-Version H3 Wallpapers at 48fps and 4K",
+        "ja": "初版 H3 動画壁紙を48fps・4Kへ更新"
+      },
+      "summary": {
+        "zh": "桌面 Home 的 morning／day／dusk／night 已改用用户确认的第一版 MiniMax H3 整帧动态，不再使用第二版局部 mask／gain 合成。每段整理为整屏往返循环，先用双向光流补至 48fps、共 248 帧，再用 RealESRGAN_x4plus_anime_6B 逐帧超分，交付 1080p／2160p；没有小女孩或电视 cameo，手机、Save-Data 与 reduced／off 降级边界不变。",
+        "en": "The morning, day, dusk, and night wallpapers on desktop Home now use the user-approved first-version full-frame MiniMax H3 motion instead of the second version's local mask/gain composite. Each clip is arranged as a full-frame ping-pong loop, bidirectionally optical-flow interpolated to 48fps and 248 frames, then super-resolved frame by frame with RealESRGAN_x4plus_anime_6B for 1080p/2160p delivery. No girl or TV cameo is included, and the mobile, Save-Data, and reduced/off fallback boundaries are unchanged.",
+        "ja": "デスクトップ Home の朝・昼・夕方・夜の壁紙を、ユーザーが確認した初版 MiniMax H3 の全画面モーションへ切り替え、第二版の局所 mask／gain 合成を廃止しました。各動画を全画面の往復ループに整え、双方向オプティカルフローで 48fps・全248フレームへ補間してから、RealESRGAN_x4plus_anime_6B でフレームごとに超解像し、1080p／2160p を用意しています。少女やテレビの cameo は含まず、モバイル、Save-Data、reduced／off のフォールバック条件も変わりません。"
+      },
+      "content_markdown": {
+        "zh": "# 第一版 H3 动态壁纸升级至 48fps 与 4K\n\n桌面 Home 的四个时段现在正式使用用户确认的第一版 MiniMax H3 素材。它保留第一版整幅画面的轻微树木、云层、水面与光影变化，不再套用第二版过弱的局部 mask／gain 合成。\n\n## 第一版整屏往返循环\n\n- morning／day／dusk／night 四段都从第一版 H3 素材帧制作，并按源帧 0..62 + 61..1 整理为往返循环。\n- 每段循环约 5.17 秒，最终为 48fps、248 帧。\n- 本版没有小女孩，也没有电视机随机 cameo。\n\n## 先补帧，再逐帧超分\n\n第一版往返素材以 24fps 进入双向光流补帧，补到 48fps 后再对全部 248 帧使用 `RealESRGAN_x4plus_anime_6B` 做逐帧 AI 超分，最终分别输出 1920×1080 和 3840×2160。生产链路不再使用“静态底图只超分一次，再叠局部 mask／gain 差分”的第二版方案。\n\n## 播放与降级边界不变\n\n页面仍然只为当前主题按物理显示尺寸选择 1080p 或 2160p，视频保持 muted／loop／playsinline，并在可播放后短淡入。手机、low performance、Save-Data、`prefers-reduced-motion` 和站内 reduced／off 仍然零视频请求；离开 Home 或页面隐藏时继续暂停或释放视频，静态壁纸永久兜底。此前的 BFCache 恢复修复也继续保留。",
+        "en": "# First-Version H3 Wallpapers at 48fps and 4K\n\nAll four periods on desktop Home now officially use the user-approved first-version MiniMax H3 source frames. They retain the first version's subtle full-frame changes across trees, clouds, water, and light instead of applying the second version's overly weak local mask/gain composite.\n\n## Full-frame ping-pong loops from version one\n\n- Morning, day, dusk, and night are built from first-version H3 source frames, arranged as source frames 0..62 + 61..1 for the ping-pong loop.\n- Each loop lasts about 5.17 seconds, ending at 48fps and 248 frames.\n- This release contains no girl and no random television cameo.\n\n## Interpolation first, then per-frame super-resolution\n\nThe first-version ping-pong source enters bidirectional optical-flow interpolation at 24fps. After interpolation to 48fps, all 248 frames are AI super-resolved with `RealESRGAN_x4plus_anime_6B`, producing separate 1920×1080 and 3840×2160 outputs. The production pipeline no longer uses the second-version approach of super-resolving one static base and compositing a local masked, gain-limited delta.\n\n## Playback and fallback boundaries are unchanged\n\nThe page still selects only the current theme's 1080p or 2160p file from physical display size. Video remains muted, looped, and playsinline, with a short fade only after playback is ready. Mobile, low-performance, Save-Data, `prefers-reduced-motion`, and in-site reduced/off modes still make zero video requests. Leaving Home or hiding the page still pauses or releases video, the static wallpaper remains the permanent fallback, and the earlier BFCache recovery fix remains in place.",
+        "ja": "# 初版 H3 動画壁紙を48fps・4Kへ更新\n\nデスクトップ Home の4時間帯は、ユーザーが確認した初版 MiniMax H3 の素材フレームを正式に使用します。第二版の弱すぎる局所 mask／gain 合成ではなく、初版にある樹木、雲、水面、光の控えめな全画面変化をそのまま活かします。\n\n## 初版から作る全画面往復ループ\n\n- 朝・昼・夕方・夜の4本は初版 H3 の素材フレームから作り、元フレーム 0..62 + 61..1 の順で往復ループに整えます。\n- 各ループは約5.17秒で、最終的に 48fps・248フレームとします。\n- この版には少女も、テレビにランダム表示される cameo もありません。\n\n## 補間してからフレーム単位で超解像\n\n初版の往復素材を 24fps で双方向オプティカルフロー補間へ渡し、48fps にした後、248フレームすべてを `RealESRGAN_x4plus_anime_6B` で AI 超解像します。最終出力は 1920×1080 と 3840×2160 の2種類です。静止背景だけを一度超解像し、局所的な mask／gain 差分を重ねる第二版の方式は本番では使用しません。\n\n## 再生とフォールバック条件は変更なし\n\nページは物理表示サイズに応じて現在のテーマの 1080p または 2160p だけを選びます。動画は muted／loop／playsinline のまま、再生準備後に短くフェードインします。モバイル、low performance、Save-Data、`prefers-reduced-motion`、サイト内 reduced／off は引き続き動画を一切要求しません。Home を離れたときやページ非表示時は動画を一時停止または解放し、静止壁紙を常設のフォールバックとして維持します。先に公開した BFCache 復帰修正もそのまま保持します。"
+      }
+    },
+    {
+      "article_id": "seed-update-2026-08-11-ambient-wallpaper-bfcache-fix",
+      "slug": "2026-08-11-ambient-wallpaper-bfcache-fix",
+      "category": "site-updates",
+      "tags": ["网站更新", "壁纸", "可靠性", "BFCache", "无障碍"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-11T03:35:00.000Z",
+      "updated_at": "2026-08-11T03:35:00.000Z",
+      "published_at": "2026-08-11T03:35:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.11",
+      "title": {
+        "zh": "修复动态壁纸的历史返回恢复",
+        "en": "Ambient Wallpaper Recovery After History Navigation",
+        "ja": "履歴移動後の動画壁紙復帰を修正"
+      },
+      "summary": {
+        "zh": "修复桌面 Home 动态壁纸在浏览器历史返回或 BFCache 恢复后可能停留在静态图的问题。恢复页面时，旧的 off 状态曾先被主模块读取，随后 ui-motion 写回 full 却没有触发壁纸重同步；现在 motion mode、运行时 ready 与 pageshow 都会重新协调视频状态。手机、low performance、Save-Data、reduced／off 的零视频请求策略保持不变。",
+        "en": "Fixes a case where the desktop Home ambient wallpaper could remain static after browser history navigation or a BFCache restore. The main module could read a stale off state before ui-motion wrote full back without notifying the wallpaper controller; motion-mode, runtime-ready, and pageshow signals now resynchronize video state. The zero-video-request policy for mobile, low-performance, Save-Data, and reduced/off modes is unchanged.",
+        "ja": "ブラウザー履歴の移動や BFCache 復帰後に、デスクトップ Home の動画壁紙が静止画のままになる場合を修正しました。主モジュールが古い off 状態を先に読み、その後 ui-motion が full を書き戻しても壁紙側へ再同期されないことが原因でした。motion mode、runtime ready、pageshow の各タイミングで動画状態を再調整します。モバイル、low performance、Save-Data、reduced／off の動画リクエストを行わない方針は変わりません。"
+      },
+      "content_markdown": {
+        "zh": "# 修复动态壁纸的历史返回恢复\n\n桌面 Home 的轻动态壁纸现在能在浏览器前进、后退以及 BFCache 恢复后可靠回到正确状态。这次修复只处理页面生命周期同步，不改变视频内容、清晰度或渐进增强门槛。\n\n## 根因\n\n浏览器从 BFCache 恢复页面时，主模块可能先读取到页面隐藏期间留下的 `off`。随后 `ui-motion` 会把全站动效状态写回 `full`，但旧流程没有监听这次写回，所以壁纸控制器仍按静态状态判断，不会重新挂载当前主题视频。\n\n## 恢复时重新协调\n\n- motion mode 发生变化时，壁纸状态立即重新同步。\n- 动效运行时 ready 后再次核对当前 Home、主题与播放资格。\n- `pageshow` 恢复时重新协调壁纸动效和当前视频，不依赖整页重新加载。\n\n## 降级边界保持不变\n\n修复没有放宽渐进增强策略。手机、low performance、Save-Data、`prefers-reduced-motion` 以及站内 reduced／off 仍然不请求视频；非 Home 和页面隐藏状态仍会暂停或释放视频，静态壁纸继续作为永久兜底。",
+        "en": "# Ambient Wallpaper Recovery After History Navigation\n\nThe subtle desktop Home wallpapers now return to the correct state after browser back/forward navigation and BFCache restores. This fix only addresses page-lifecycle synchronization; it does not change the video content, resolution, or progressive-enhancement thresholds.\n\n## Root cause\n\nDuring a BFCache restore, the main module could first read the stale `off` state left while the page was hidden. `ui-motion` then wrote the site-wide motion state back to `full`, but the previous flow did not observe that write, so the wallpaper controller continued to treat the page as static and did not remount the current theme video.\n\n## Resynchronizing on restore\n\n- Wallpaper state is synchronized immediately when the motion mode changes.\n- Runtime ready triggers another check of the current Home route, theme, and playback eligibility.\n- `pageshow` coordinates wallpaper motion and the current video again without relying on a full reload.\n\n## Fallback boundaries are unchanged\n\nThe fix does not loosen progressive enhancement. Mobile, low-performance, Save-Data, `prefers-reduced-motion`, and in-site reduced/off modes still make no video requests. Non-Home and hidden-page states still pause or release video, and the static wallpaper remains the permanent fallback.",
+        "ja": "# 履歴移動後の動画壁紙復帰を修正\n\nデスクトップ Home の控えめな動画壁紙が、ブラウザーの戻る／進む操作や BFCache 復帰後にも正しい状態へ戻るようになりました。今回の修正はページライフサイクルの同期だけを扱い、動画内容、解像度、段階的強化の条件は変更しません。\n\n## 原因\n\nBFCache から復帰するとき、主モジュールがページ非表示中に残った古い `off` 状態を先に読む場合がありました。その後 `ui-motion` がサイト全体の動作状態を `full` に戻しても、従来の処理はその書き戻しを監視していなかったため、壁紙コントローラーは静止状態のままと判断し、現在のテーマ動画を再マウントしませんでした。\n\n## 復帰時の再同期\n\n- motion mode が変わると壁紙状態をすぐに再同期します。\n- 動作ランタイムの ready 後に、現在の Home、テーマ、再生資格をもう一度確認します。\n- `pageshow` 復帰時に、ページ全体の再読み込みへ頼らず壁紙動作と現在の動画を再調整します。\n\n## フォールバック条件は変更なし\n\n段階的強化の条件は緩和していません。モバイル、low performance、Save-Data、`prefers-reduced-motion`、サイト内 reduced／off では引き続き動画をリクエストしません。Home 以外やページ非表示時には動画を一時停止または解放し、静止壁紙を常設のフォールバックとして維持します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-11-video-link-autofill",
       "slug": "2026-08-11-video-link-autofill",
       "category": "site-updates",

@@ -467,10 +467,37 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
-  assert.match(verificationSql, /article_seed_version' and value = '20260811-video-link-autofill-r1'/);
-  assert.match(verificationSql, /slug = '2026-08-11-video-link-autofill'/);
-  assert.match(verificationSql, /published_at = '2026-08-11T00:20:00.000Z'/);
-  assert.match(verificationSql, /video-link-autofill-update-translations/);
+  assert.match(verificationSql, /article_seed_version' and value = '20260811-h3-first-version-video-sr-48fps-r1'/);
+  const currentReleaseVerificationSql = REMOTE_MIGRATION_VERIFICATION_QUERIES.find((sql) => (
+    sql.includes("h3-first-version-video-sr-48fps-update-article")
+  ));
+  assert.ok(currentReleaseVerificationSql, "missing current first-version H3 release verification group");
+  assert.match(currentReleaseVerificationSql, /h3-first-version-video-sr-48fps-update-article/);
+  assert.match(currentReleaseVerificationSql, /article_id = 'seed-update-2026-08-11-h3-first-version-video-sr-48fps'/);
+  assert.match(currentReleaseVerificationSql, /slug = '2026-08-11-h3-first-version-video-sr-48fps'/);
+  assert.match(currentReleaseVerificationSql, /category = 'site-updates'/);
+  assert.match(currentReleaseVerificationSql, /status = 'published'/);
+  assert.match(currentReleaseVerificationSql, /is_pinned = 0/);
+  assert.match(currentReleaseVerificationSql, /cover_image = ''/);
+  assert.match(currentReleaseVerificationSql, /published_at = '2026-08-11T10:40:00.000Z'/);
+  assert.match(currentReleaseVerificationSql, /h3-first-version-video-sr-48fps-update-translations/);
+  assert.match(currentReleaseVerificationSql, /lang = 'zh' and title = '第一版 H3 动态壁纸升级至 48fps 与 4K'/);
+  assert.match(currentReleaseVerificationSql, /lang = 'en' and title = 'First-Version H3 Wallpapers at 48fps and 4K'/);
+  assert.match(currentReleaseVerificationSql, /lang = 'ja' and title = '初版 H3 動画壁紙を48fps・4Kへ更新'/);
+  assert.match(currentReleaseVerificationSql, /length\(trim\(summary\)\) > 0/);
+  assert.match(currentReleaseVerificationSql, /length\(trim\(content_markdown\)\) > 0/);
+  assert.match(verificationSql, /ambient-wallpaper-bfcache-fix-update-article/);
+  assert.match(verificationSql, /slug = '2026-08-11-ambient-wallpaper-bfcache-fix'/);
+  assert.match(verificationSql, /published_at = '2026-08-11T03:35:00.000Z'/);
+  assert.match(verificationSql, /ambient-wallpaper-bfcache-fix-update-translations/);
+  const videoLinkVerificationSql = REMOTE_MIGRATION_VERIFICATION_QUERIES.find((sql) => (
+    sql.includes("video-link-autofill-update-article")
+  ));
+  assert.ok(videoLinkVerificationSql, "missing video-link autofill release verification group");
+  assert.match(videoLinkVerificationSql, /article_id = 'seed-update-2026-08-11-video-link-autofill'/);
+  assert.match(videoLinkVerificationSql, /slug = '2026-08-11-video-link-autofill'/);
+  assert.match(videoLinkVerificationSql, /published_at = '2026-08-11T00:20:00.000Z'/);
+  assert.match(videoLinkVerificationSql, /video-link-autofill-update-translations/);
   assert.match(verificationSql, /slug = '2026-08-10-h3-ambient-wallpapers-4k'/);
   assert.match(verificationSql, /published_at = '2026-08-10T08:10:00.000Z'/);
   assert.match(verificationSql, /h3-ambient-wallpapers-4k-update-translations/);
