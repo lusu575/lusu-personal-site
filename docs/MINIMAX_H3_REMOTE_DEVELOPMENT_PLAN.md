@@ -1641,7 +1641,7 @@ TUNNEL_UNAVAILABLE
 - 网站代码和 D1/R2 中不存在媒体字节。
 - 家庭路由器无端口转发；8188 和 8791 均只绑定 loopback。
 
-实现记录（2026-08-12）：loopback Bridge、一次性 download ticket/introspection、内存 HttpOnly session、Access bootstrap 占位、完整 GET/HEAD/单 Range、ETag 和 no-store/no-transform 已实现并通过本地回归；admin 下载动作使用原生流式导航，不把视频读入 Blob。H3-only Production D1 增量迁移已完成，生产代码仍须随 GitHub `main` 触发 Cloudflare Pages 后做 commit 回读；真实 `cloudflared` Tunnel、Access application、Cache Rule、生产 token、跨网络传输与 GPU canary 尚未完成，因此不能宣称生成链路已在线。
+实现记录（2026-08-12）：loopback Bridge、一次性 download ticket/introspection、内存 HttpOnly session、Access bootstrap 占位、完整 GET/HEAD/单 Range、ETag 和 no-store/no-transform 已实现并通过本地回归；admin 下载动作使用原生流式导航，不把视频读入 Blob。H3-only Production D1 增量迁移已完成，控制面代码已随 GitHub `main` 合并并由 Cloudflare Pages Production 部署到 `775e5743fddd3e19c0084ef41c2efb23cdc1b8b7`。真实 `cloudflared` Tunnel、Access application、Cache Rule、生产 token、跨网络传输与 GPU canary 尚未完成，因此不能宣称生成链路已在线。
 
 ### P4：I2V 图片上传
 
