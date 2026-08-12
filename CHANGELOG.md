@@ -7,6 +7,7 @@
 - MiniMax H3 隔离发布候选保留 `main` 上既有视频、壁纸与游戏改动，并接入 Tools 的站长专用在线 ComfyUI 入口、admin-only `minimax-h3:execute`、P0–P3 API/control-plane、固定 Runner/loopback Bridge 与 H3 D1 schema/index；控制与传输开关仍默认关闭，生产 Runner token、Tunnel/Access 和 GPU canary 未验证前不宣称生成链路在线。
 - 修正 H3 版本的本地 D1 初始化与文章 seed 绑定校验，使其使用当前 `20260812-minimax-h3-control-plane-r1` 状态标记，避免 GitHub release gate 在 schema 已成功执行后误报旧版本。
 - 收紧发布门禁：Tools 的 H3 图标继续保留 image2 生成的 PNG 源资产，并以内嵌的机械缩放位图复用，避免打开 Quick Transfer 时产生迟到的额外请求；资源路由、目录过滤、Production D1 本地复现与 Quick Transfer 受管版本测试同步通过，公开 UI 审计 197/197、A Dark Room 专项审计 1/1。
+- 发布候选本地完整门禁通过：678 主测试、38 Hextris Agent 测试、lint、类型检查、Whiteboard 57 项、两个 MCP Worker 43 项、公开模块图、生产构建可复现、公开 UI 197/197 与 A Dark Room 1/1 全部通过；PR #26 的 Cloudflare Pages 预览检查通过，GitHub Verify 因 runner 长时间卡在 checkout 尚未完成，未绕过保护规则合并。
 
 - 修复桌面 Home 的两层云：只要当前设备和动效设置具备视频壁纸播放资格，就完全跳过旧 CSS 动态云的创建与预热，由视频自身承载云层运动；手机、low、Save-Data、reduced／off 等降级路径及静态底图兜底保持不变，未修改任何视频或云朵素材。
 - 修复从知识库、视频区、工具区、游戏区、聊天室或关于页返回 Home 时的视频闪烁与重载。离开 Home 或页面暂时隐藏时只暂停并保留当前视频节点、`src` 与解码器，返回后复用同一节点续播；仅在设备／动效真正失去播放资格或主题资源发生变化时销毁旧视频。
