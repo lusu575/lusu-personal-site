@@ -52,6 +52,31 @@ export const homeContent = Object.freeze({
       }
     },
     {
+      "article_id": "seed-update-2026-08-11-video-link-autofill",
+      "slug": "2026-08-11-video-link-autofill",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "视频区", "MCP", "安全"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-11T00:20:00.000Z",
+      "updated_at": "2026-08-11T00:20:00.000Z",
+      "published_at": "2026-08-11T00:20:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.11",
+      "title": {
+        "zh": "一条视频链接即可交给 AI 发布",
+        "en": "Publish a Video with AI from One Link",
+        "ja": "動画リンク1本だけでAIから公開"
+      },
+      "summary": {
+        "zh": "既有 video_publish 的 0.4.0 候选把必填输入缩到 operationId 和 YouTube／Bilibili／b23.tv 链接；标题、简介、作者、发布时间与官方封面可由服务端有界补全，调用仍直接公开且不传输视频文件。精确生产版本与真实 OAuth 验收仍待部署后确认。",
+        "en": "The 0.4.0 candidate narrows the existing video_publish tool to an operationId and a YouTube, Bilibili, or b23.tv link. The server can fill bounded title, description, author, publication time, and official cover metadata while the call still publishes directly and never transfers the video file. The exact production version and real OAuth acceptance remain pending deployment.",
+        "ja": "既存の video_publish を拡張する 0.4.0 候補では、必須入力が operationId と YouTube／Bilibili／b23.tv リンクだけになります。タイトル、説明、作者、公開日時、公式サムネイルはサーバーが限定的に補完でき、呼び出しは従来どおり直接公開し、動画ファイルは転送しません。正確な本番版と実 OAuth 検証はデプロイ後に確認します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-10-h3-ambient-wallpapers-4k",
       "slug": "2026-08-10-h3-ambient-wallpapers-4k",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "四段壁纸开关采用更轻薄清晰的陶瓷细框、滚轮环和低位暖橙半日晨雾，让清晨区别于白天。滚轮、场景、天体与四主题 accent 在所有可见桌面公共路由共享同一套可中断动画；整页壁纸 crossfade 与动态云仍由 Home 独占。",
         "en": "The four-stage wallpaper switch now pairs a slimmer, crisper ceramic rim and roller ring with a low warm-orange half sun and dawn mist, clearly separating morning from day. Its roller, scene, celestial body, and four theme accents share one interruptible animation system across every visible desktop public route; full-page wallpaper crossfades and dynamic clouds remain exclusive to Home.",
         "ja": "壁紙4段スイッチは、より薄く鮮明なセラミック細枠とローラーリング、低い暖色の半円日と朝霧で朝を昼から明確に分けます。ローラー、シーン、天体、4テーマの accent は表示中の全デスクトップ公開ルートで同じ中断可能なアニメーションを共有し、ページ全体の壁紙 crossfade と動く雲は Home 専用です。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-10-wallpaper-switch-ceramic-roll",
-      "slug": "2026-08-10-wallpaper-switch-ceramic-roll",
-      "category": "site-updates",
-      "tags": ["网站更新", "壁纸", "动效", "Image2", "无障碍"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-10T00:20:00.000Z",
-      "updated_at": "2026-08-10T00:20:00.000Z",
-      "published_at": "2026-08-10T00:20:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.08.10",
-      "title": {
-        "zh": "四段壁纸开关的陶瓷滚动重制",
-        "en": "Ceramic Rolling Redesign for the Four-Stage Wallpaper Switch",
-        "ja": "壁紙4段スイッチをセラミック調ローリング仕様に再設計"
-      },
-      "summary": {
-        "zh": "四段壁纸开关按参考图重制为暖象牙陶瓷椭圆壳与统一内沿，并换上四个高辨识时段节点。36px 选中轮以可中断 transform 平移，独立外圈按物理距离滚转而内部天体保持正向；晨光上展、两朵白云横移、余晖横向展开、星群上升。键盘／motion-off 即时完成，reduced-motion 不做位置移动，low／Save-Data 跳过 accent。",
-        "en": "The four-stage wallpaper switch now follows the reference's warm ivory ceramic oval shell and aligned inner rim, with four more recognizable time stops. A 36px selector travels with an interruptible transform while its independent outer ring rolls by physical distance and the celestial center stays upright. Morning light rises and opens, two white clouds cross during the day, dusk glow spreads sideways, and night stars rise. Keyboard/motion-off changes are immediate, reduced motion removes position travel, and low/Save-Data skips accents.",
-        "ja": "壁紙4段スイッチを、参考画像に合わせた暖かなアイボリーのセラミック楕円シェルと揃った内周へ作り直し、4時間帯のノードも識別しやすくしました。36px の選択輪は中断可能な transform で移動し、独立した外周だけが物理距離に応じて回転して中央の天体は正立を保ちます。朝の光は上へ開き、昼には2つの雲が横切り、夕方の残光は横へ広がり、夜の星群は上昇します。keyboard／motion-off は即時、reduced-motion は位置移動なし、low／Save-Data は accent を省略します。"
       }
     }
   ]

@@ -3,6 +3,8 @@ const MAX_DESCRIPTION_CHARS = 2_000;
 const MAX_AUTHOR_CHARS = 160;
 const MAX_URL_CHARS = 800;
 const MAX_METADATA_ERROR_CHARS = 500;
+const MAX_PROVIDER_JSON_BYTES = 256 * 1024;
+const MAX_PROVIDER_HTML_BYTES = 2 * 1024 * 1024;
 const MAX_CATEGORY_IDS = 12;
 const MAX_RECEIPT_RESPONSE_BYTES = 16 * 1024;
 const MAX_HOSTED_VIDEO_BYTES = 2 * 1024 * 1024 * 1024;
@@ -20,6 +22,11 @@ const THUMBNAIL_HOSTS = new Set([
   "i2.hdslb.com",
   "archive.biliimg.com"
 ]);
+const YOUTUBE_METADATA_HEADERS = Object.freeze({
+  Accept: "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.7",
+  "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36"
+});
 const OPERATION_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,79}$/;
 const VIDEO_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,179}$/;
 const UPLOAD_SESSION_ID_PATTERN = /^vup_[A-Za-z0-9_-]{24,96}$/;
@@ -163,13 +170,17 @@ export async function createAgentVideoService({ env, principal: principalValue, 
   });
   await ensureAgentVideoSchema(env);
   const receiptInput = normalizeCreateReceiptInput(body);
-  const payloadHash = await hashCanonicalPayload({
+  const payloadHash = `v2:${await hashCanonicalPayload({
     action: "create",
     payload: receiptInput.payload
-  });
+  })}`;
+  const legacyPayload = legacyCreateReceiptPayload(receiptInput.payload);
+  const compatiblePayloadHashes = legacyPayload
+    ? [await hashCanonicalPayload({ action: "create", payload: legacyPayload })]
+    : [];
   const existingReceipt = await readAgentVideoReceipt(env, principal.userId, receiptInput.operationId);
   if (existingReceipt) {
-    return replayAgentVideoReceipt(existingReceipt, "create", payloadHash);
+    return replayAgentVideoReceipt(existingReceipt, "create", payloadHash, compatiblePayloadHashes);
   }
   const payload = await normalizeCreatePayload(body, env);
 
@@ -192,7 +203,7 @@ export async function createAgentVideoService({ env, principal: principalValue, 
         thumbnail_url, author_name, published_at, status, sort_order, pinned,
         pinned_sort_order, metadata_error, created_at, updated_at
       )
-      select ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, ?
+      select ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       where not exists (
         select 1 from videos where platform = ? and external_id = ?
       )
@@ -211,6 +222,7 @@ export async function createAgentVideoService({ env, principal: principalValue, 
       payload.sortOrder,
       payload.pinned ? 1 : 0,
       payload.pinnedSortOrder,
+      payload.metadataError,
       now,
       now,
       payload.platform,
@@ -248,13 +260,17 @@ export async function createAgentVideoService({ env, principal: principalValue, 
   } catch (error) {
     if (isUniqueConstraintError(error)) {
       const racedReceipt = await readAgentVideoReceipt(env, principal.userId, payload.operationId);
-      if (racedReceipt) return replayAgentVideoReceipt(racedReceipt, "create", payloadHash);
+      if (racedReceipt) {
+        return replayAgentVideoReceipt(racedReceipt, "create", payloadHash, compatiblePayloadHashes);
+      }
     }
     throw error;
   }
   if (Number(batchResults?.[0]?.meta?.changes || 0) !== 1) {
     const racedReceipt = await readAgentVideoReceipt(env, principal.userId, payload.operationId);
-    if (racedReceipt) return replayAgentVideoReceipt(racedReceipt, "create", payloadHash);
+    if (racedReceipt) {
+      return replayAgentVideoReceipt(racedReceipt, "create", payloadHash, compatiblePayloadHashes);
+    }
     if (await findVideoByProvider(env, payload.platform, payload.externalId)) {
       throw videoDuplicateError();
     }
@@ -695,7 +711,26 @@ async function normalizeCreatePayload(body, env) {
     "pinnedSortOrder", "categoryIds"
   ]);
   const parsed = await parseManagedVideoUrl(body.originalUrl, env);
-  const pinned = body.pinned === undefined ? false : normalizeBoolean(
+  const shouldFetchMetadata = [
+    "title", "description", "thumbnailUrl", "authorName", "publishedAt"
+  ].some((field) => !hasOwn(body, field));
+  const metadata = shouldFetchMetadata
+    ? await fetchManagedVideoMetadata(parsed, env)
+    : emptyManagedVideoMetadata();
+  const title = hasOwn(body, "title")
+    ? normalizeBoundedString(body.title, MAX_TITLE_CHARS, {
+        code: "VIDEO_TITLE_INVALID",
+        message: "Video title is invalid."
+      })
+    : metadata.title;
+  if (!title) {
+    throw new AgentVideoServiceError(
+      "Video title was not provided and could not be resolved from provider metadata.",
+      502,
+      "VIDEO_METADATA_TITLE_UNAVAILABLE"
+    );
+  }
+  const pinned = !hasOwn(body, "pinned") ? false : normalizeBoolean(
     body.pinned,
     "Video pin setting is invalid.",
     "VIDEO_PIN_INVALID"
@@ -705,33 +740,40 @@ async function normalizeCreatePayload(body, env) {
   return {
     operationId: normalizeOperationId(body.operationId),
     ...parsed,
-    title: normalizeBoundedString(body.title, MAX_TITLE_CHARS, {
-      code: "VIDEO_TITLE_INVALID",
-      message: "Video title is invalid."
-    }),
-    description: body.description === undefined ? "" : normalizeBoundedString(
-      body.description,
-      MAX_DESCRIPTION_CHARS,
-      { allowEmpty: true, code: "VIDEO_DESCRIPTION_INVALID", message: "Video description is invalid." }
-    ),
-    thumbnailUrl: body.thumbnailUrl === undefined
-      ? defaultThumbnailUrl(parsed)
+    title,
+    description: !hasOwn(body, "description")
+      ? metadata.description
+      : normalizeBoundedString(
+        body.description,
+        MAX_DESCRIPTION_CHARS,
+        { allowEmpty: true, code: "VIDEO_DESCRIPTION_INVALID", message: "Video description is invalid." }
+      ),
+    thumbnailUrl: !hasOwn(body, "thumbnailUrl")
+      ? (metadata.thumbnailUrl || defaultThumbnailUrl(parsed))
       : normalizeThumbnailUrl(body.thumbnailUrl, true),
-    authorName: body.authorName === undefined ? "" : normalizeBoundedString(
-      body.authorName,
-      MAX_AUTHOR_CHARS,
-      { allowEmpty: true, code: "VIDEO_AUTHOR_INVALID", message: "Video author is invalid." }
-    ),
-    publishedAt: body.publishedAt === undefined ? null : normalizeTimestamp(body.publishedAt, true),
-    status: body.status === undefined ? "draft" : normalizeVideoStatus(body.status),
-    sortOrder: body.sortOrder === undefined ? defaultSortOrder : normalizeSortOrder(body.sortOrder),
+    authorName: !hasOwn(body, "authorName")
+      ? metadata.authorName
+      : normalizeBoundedString(
+        body.authorName,
+        MAX_AUTHOR_CHARS,
+        { allowEmpty: true, code: "VIDEO_AUTHOR_INVALID", message: "Video author is invalid." }
+      ),
+    publishedAt: !hasOwn(body, "publishedAt")
+      ? metadata.publishedAt
+      : normalizeTimestamp(body.publishedAt, true),
+    status: !hasOwn(body, "status") ? "draft" : normalizeVideoStatus(body.status),
+    sortOrder: !hasOwn(body, "sortOrder") ? defaultSortOrder : normalizeSortOrder(body.sortOrder),
     pinned,
     pinnedSortOrder: pinned
-      ? (body.pinnedSortOrder === undefined
+      ? (!hasOwn(body, "pinnedSortOrder")
         ? defaultPinnedSortOrder
         : normalizeSortOrder(body.pinnedSortOrder))
       : 0,
-    categoryIds: await normalizeVideoCategoryIds(env, body.categoryIds ?? [])
+    metadataError: metadata.metadataError,
+    categoryIds: await normalizeVideoCategoryIds(
+      env,
+      hasOwn(body, "categoryIds") ? body.categoryIds : []
+    )
   };
 }
 
@@ -746,57 +788,78 @@ function normalizeCreateReceiptInput(body) {
     code: "VIDEO_URL_INVALID",
     message: "Video URL is invalid."
   });
-  const title = normalizeBoundedString(body.title, MAX_TITLE_CHARS, {
-    code: "VIDEO_TITLE_INVALID",
-    message: "Video title is invalid."
-  });
-  const description = body.description === undefined ? "" : normalizeBoundedString(
-    body.description,
-    MAX_DESCRIPTION_CHARS,
-    { allowEmpty: true, code: "VIDEO_DESCRIPTION_INVALID", message: "Video description is invalid." }
-  );
-  const thumbnailUrl = body.thumbnailUrl === undefined
-    ? null
-    : normalizeThumbnailUrl(body.thumbnailUrl, true);
-  const authorName = body.authorName === undefined ? "" : normalizeBoundedString(
-    body.authorName,
-    MAX_AUTHOR_CHARS,
-    { allowEmpty: true, code: "VIDEO_AUTHOR_INVALID", message: "Video author is invalid." }
-  );
-  const publishedAt = body.publishedAt === undefined ? null : normalizeTimestamp(body.publishedAt, true);
-  const status = body.status === undefined ? "draft" : normalizeVideoStatus(body.status);
-  const sortOrder = body.sortOrder === undefined ? null : normalizeSortOrder(body.sortOrder);
-  const pinned = body.pinned === undefined ? false : normalizeBoolean(
+  const pinned = !hasOwn(body, "pinned") ? false : normalizeBoolean(
     body.pinned,
     "Video pin setting is invalid.",
     "VIDEO_PIN_INVALID"
   );
-  if (!pinned && body.pinnedSortOrder !== undefined) {
+  if (!pinned && hasOwn(body, "pinnedSortOrder")) {
     throw new AgentVideoServiceError(
       "pinnedSortOrder requires pinned=true.",
       400,
       "VIDEO_PINNED_SORT_INVALID"
     );
   }
-  const pinnedSortOrder = body.pinnedSortOrder === undefined
-    ? null
-    : normalizeSortOrder(body.pinnedSortOrder);
-  const categoryIds = normalizeCategoryIdsShape(body.categoryIds ?? []);
+  const payload = { originalUrl };
+  if (hasOwn(body, "title")) {
+    payload.title = normalizeBoundedString(body.title, MAX_TITLE_CHARS, {
+      code: "VIDEO_TITLE_INVALID",
+      message: "Video title is invalid."
+    });
+  }
+  if (hasOwn(body, "description")) {
+    payload.description = normalizeBoundedString(body.description, MAX_DESCRIPTION_CHARS, {
+      allowEmpty: true,
+      code: "VIDEO_DESCRIPTION_INVALID",
+      message: "Video description is invalid."
+    });
+  }
+  if (hasOwn(body, "thumbnailUrl")) {
+    payload.thumbnailUrl = normalizeThumbnailUrl(body.thumbnailUrl, true);
+  }
+  if (hasOwn(body, "authorName")) {
+    payload.authorName = normalizeBoundedString(body.authorName, MAX_AUTHOR_CHARS, {
+      allowEmpty: true,
+      code: "VIDEO_AUTHOR_INVALID",
+      message: "Video author is invalid."
+    });
+  }
+  if (hasOwn(body, "publishedAt")) {
+    payload.publishedAt = normalizeTimestamp(body.publishedAt, true);
+  }
+  if (hasOwn(body, "status")) payload.status = normalizeVideoStatus(body.status);
+  if (hasOwn(body, "sortOrder")) payload.sortOrder = normalizeSortOrder(body.sortOrder);
+  if (hasOwn(body, "pinned")) payload.pinned = pinned;
+  if (hasOwn(body, "pinnedSortOrder")) {
+    payload.pinnedSortOrder = normalizeSortOrder(body.pinnedSortOrder);
+  }
+  if (hasOwn(body, "categoryIds")) {
+    payload.categoryIds = body.categoryIds === null
+      ? null
+      : normalizeCategoryIdsShape(body.categoryIds);
+  }
   return {
     operationId,
-    payload: {
-      originalUrl,
-      title,
-      description,
-      thumbnailUrl,
-      authorName,
-      publishedAt,
-      status,
-      sortOrder,
-      pinned,
-      pinnedSortOrder,
-      categoryIds
-    }
+    payload
+  };
+}
+
+function legacyCreateReceiptPayload(intentPayload) {
+  if (!hasOwn(intentPayload, "title")) return null;
+  return {
+    originalUrl: intentPayload.originalUrl,
+    title: intentPayload.title,
+    description: hasOwn(intentPayload, "description") ? intentPayload.description : "",
+    thumbnailUrl: hasOwn(intentPayload, "thumbnailUrl") ? intentPayload.thumbnailUrl : null,
+    authorName: hasOwn(intentPayload, "authorName") ? intentPayload.authorName : "",
+    publishedAt: hasOwn(intentPayload, "publishedAt") ? intentPayload.publishedAt : null,
+    status: hasOwn(intentPayload, "status") ? intentPayload.status : "draft",
+    sortOrder: hasOwn(intentPayload, "sortOrder") ? intentPayload.sortOrder : null,
+    pinned: hasOwn(intentPayload, "pinned") ? intentPayload.pinned : false,
+    pinnedSortOrder: hasOwn(intentPayload, "pinnedSortOrder") ? intentPayload.pinnedSortOrder : null,
+    categoryIds: hasOwn(intentPayload, "categoryIds") && intentPayload.categoryIds !== null
+      ? intentPayload.categoryIds
+      : []
   };
 }
 
@@ -1077,33 +1140,17 @@ async function resolveB23Url(initialUrl, env) {
 async function fetchManagedVideoMetadata(parsed, env) {
   try {
     if (parsed.platform === "youtube") {
-      const url = `https://www.youtube.com/oembed?url=${encodeURIComponent(parsed.originalUrl)}&format=json`;
-      const response = await fetchWithTimeout(metadataFetch(env), url, {
-        headers: { Accept: "application/json", "User-Agent": "LuSu-Agent-Video/1.0" },
-        redirect: "error"
-      }, 5_000);
-      if (!response.ok) throw new Error("metadata unavailable");
-      const data = await response.json();
-      return {
-        title: metadataText(data.title, MAX_TITLE_CHARS),
-        description: "",
-        thumbnailUrl: metadataThumbnailUrl(data.thumbnail_url),
-        authorName: metadataText(data.author_name, MAX_AUTHOR_CHARS),
-        publishedAt: null,
-        metadataError: ""
-      };
+      return await fetchYoutubeMetadata(parsed, env);
     }
     const url = `https://api.bilibili.com/x/web-interface/view?bvid=${encodeURIComponent(parsed.externalId)}`;
-    const response = await fetchWithTimeout(metadataFetch(env), url, {
+    const payload = await fetchProviderJson(metadataFetch(env), url, {
       headers: {
         Accept: "application/json",
         Referer: parsed.originalUrl,
         "User-Agent": "LuSu-Agent-Video/1.0"
       },
       redirect: "error"
-    }, 6_000);
-    if (!response.ok) throw new Error("metadata unavailable");
-    const payload = await response.json();
+    }, 6_000, MAX_PROVIDER_JSON_BYTES);
     if (Number(payload?.code || 0) !== 0 || !payload?.data) throw new Error("metadata unavailable");
     const data = payload.data;
     return {
@@ -1125,6 +1172,71 @@ async function fetchManagedVideoMetadata(parsed, env) {
         .slice(0, MAX_METADATA_ERROR_CHARS)
     };
   }
+}
+
+async function fetchYoutubeMetadata(parsed, env) {
+  const fetchImpl = metadataFetch(env);
+  const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(parsed.originalUrl)}&format=json`;
+  const pageUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(parsed.externalId)}`;
+  const [oembedResult, pageResult] = await Promise.allSettled([
+    fetchProviderJson(fetchImpl, oembedUrl, {
+      headers: { ...YOUTUBE_METADATA_HEADERS, Accept: "application/json" },
+      redirect: "follow"
+    }, 8_000, MAX_PROVIDER_JSON_BYTES),
+    fetchYoutubePageMetadata(fetchImpl, pageUrl, parsed.externalId)
+  ]);
+  const oembed = oembedResult.status === "fulfilled" ? oembedResult.value : {};
+  const page = pageResult.status === "fulfilled" ? pageResult.value : emptyManagedVideoMetadata();
+  const title = metadataText(oembed?.title, MAX_TITLE_CHARS) || page.title;
+  if (!title) throw new Error("metadata title unavailable");
+  return {
+    title,
+    description: page.description,
+    thumbnailUrl: metadataThumbnailUrl(oembed?.thumbnail_url) || page.thumbnailUrl,
+    authorName: metadataText(oembed?.author_name, MAX_AUTHOR_CHARS) || page.authorName,
+    publishedAt: page.publishedAt,
+    metadataError: ""
+  };
+}
+
+async function fetchYoutubePageMetadata(fetchImpl, pageUrl, expectedVideoId) {
+  const html = await fetchProviderText(fetchImpl, pageUrl, {
+    headers: YOUTUBE_METADATA_HEADERS,
+    redirect: "follow"
+  }, 8_000, MAX_PROVIDER_HTML_BYTES);
+  if (youtubePageVideoId(html) !== expectedVideoId) {
+    throw new Error("metadata page identity mismatch");
+  }
+  return {
+    title: metadataText(
+      htmlMetaContent(html, "og:title") || htmlJsonString(html, "title"),
+      MAX_TITLE_CHARS
+    ),
+    description: metadataText(
+      htmlMetaContent(html, "description") || htmlMetaContent(html, "og:description"),
+      MAX_DESCRIPTION_CHARS
+    ),
+    thumbnailUrl: metadataThumbnailUrl(htmlMetaContent(html, "og:image")),
+    authorName: metadataText(
+      htmlJsonString(html, "ownerChannelName") || htmlJsonString(html, "author"),
+      MAX_AUTHOR_CHARS
+    ),
+    publishedAt: providerTimestamp(
+      htmlJsonString(html, "publishDate") || htmlJsonString(html, "uploadDate")
+    ),
+    metadataError: ""
+  };
+}
+
+function emptyManagedVideoMetadata() {
+  return {
+    title: "",
+    description: "",
+    thumbnailUrl: "",
+    authorName: "",
+    publishedAt: null,
+    metadataError: ""
+  };
 }
 
 async function fetchWithTimeout(fetchImpl, url, options, timeoutMs) {
@@ -1309,8 +1421,12 @@ async function readAgentVideoReceipt(env, userId, operationId) {
   `).bind(userId, operationId).first();
 }
 
-function replayAgentVideoReceipt(receipt, action, payloadHash) {
-  if (receipt.action !== action || receipt.payload_hash !== payloadHash) {
+function replayAgentVideoReceipt(receipt, action, payloadHash, compatiblePayloadHashes = []) {
+  const storedPayloadHash = String(receipt.payload_hash || "");
+  const hashMatches = storedPayloadHash === payloadHash
+    || (SHA256_PATTERN.test(storedPayloadHash)
+      && compatiblePayloadHashes.includes(storedPayloadHash));
+  if (receipt.action !== action || !hashMatches) {
     throw new AgentVideoServiceError(
       "operationId was already used for a different video action or payload.",
       409,
@@ -1534,6 +1650,163 @@ function normalizeBilibiliPage(value) {
 
 function normalizedHost(value) {
   return String(value || "").toLowerCase().replace(/^www\./, "");
+}
+
+async function fetchProviderJson(fetchImpl, url, options, timeoutMs, maxBytes) {
+  const text = await fetchProviderText(fetchImpl, url, options, timeoutMs, maxBytes);
+  return JSON.parse(text.replace(/^\uFEFF/, ""));
+}
+
+async function fetchProviderText(fetchImpl, url, options, timeoutMs, maxBytes) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetchImpl(url, { ...options, signal: controller.signal });
+    if (!response.ok) {
+      await response.body?.cancel?.("metadata response rejected");
+      throw new Error("metadata unavailable");
+    }
+    const declaredLength = Number(response.headers?.get?.("content-length") || 0);
+    if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
+      await response.body?.cancel?.("metadata response too large");
+      throw new Error("metadata response too large");
+    }
+    const reader = response.body?.getReader?.();
+    if (!reader) throw new Error("metadata response body unavailable");
+    const decoder = new TextDecoder("utf-8", { fatal: true });
+    let size = 0;
+    let text = "";
+    let streamFinished = false;
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          streamFinished = true;
+          break;
+        }
+        size += value.byteLength;
+        if (size > maxBytes) {
+          await reader.cancel("metadata response too large");
+          streamFinished = true;
+          throw new Error("metadata response too large");
+        }
+        text += decoder.decode(value, { stream: true });
+      }
+      text += decoder.decode();
+      return text;
+    } finally {
+      if (!streamFinished) {
+        try {
+          await reader.cancel("metadata response interrupted");
+        } catch {
+          // Preserve the original read/decode error.
+        }
+      }
+      reader.releaseLock();
+    }
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function htmlMetaContent(html, expectedKey) {
+  const key = String(expectedKey || "").toLowerCase();
+  for (const match of String(html || "").matchAll(/<meta\b[^>]*>/gi)) {
+    const tag = match[0];
+    const declaredKey = htmlAttribute(tag, "property")
+      || htmlAttribute(tag, "name")
+      || htmlAttribute(tag, "itemprop");
+    if (declaredKey.toLowerCase() !== key) continue;
+    return decodeHtmlText(htmlAttribute(tag, "content"));
+  }
+  return "";
+}
+
+function htmlLinkHref(html, expectedRel) {
+  const rel = String(expectedRel || "").toLowerCase();
+  for (const match of String(html || "").matchAll(/<link\b[^>]*>/gi)) {
+    const tag = match[0];
+    const declaredRel = htmlAttribute(tag, "rel").toLowerCase().split(/\s+/);
+    if (!declaredRel.includes(rel)) continue;
+    return decodeHtmlText(htmlAttribute(tag, "href"));
+  }
+  return "";
+}
+
+function htmlAttribute(tag, name) {
+  const match = String(tag || "").match(new RegExp(
+    `\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`,
+    "i"
+  ));
+  return String(match?.[1] ?? match?.[2] ?? match?.[3] ?? "").trim();
+}
+
+function htmlJsonString(html, key) {
+  const escapedKey = String(key || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = String(html || "").match(new RegExp(
+    `"${escapedKey}"\\s*:\\s*"((?:\\\\.|[^"\\\\])*)"`,
+    "i"
+  ));
+  if (!match) return "";
+  try {
+    return JSON.parse(`"${match[1]}"`);
+  } catch {
+    return "";
+  }
+}
+
+function youtubePageVideoId(html) {
+  const declaredUrl = htmlMetaContent(html, "og:url") || htmlLinkHref(html, "canonical");
+  try {
+    const url = new URL(declaredUrl);
+    const host = normalizedHost(url.hostname);
+    if (url.protocol !== "https:" || url.username || url.password
+      || (host !== "youtube.com" && host !== "m.youtube.com")
+      || url.pathname !== "/watch") {
+      return "";
+    }
+    return cleanYoutubeId(url.searchParams.get("v"));
+  } catch {
+    return "";
+  }
+}
+
+function decodeHtmlText(value) {
+  return String(value || "").replace(
+    /&(?:#(\d+)|#x([0-9a-f]+)|quot|apos|lt|gt|amp);/gi,
+    (entity, decimal, hexadecimal) => {
+      if (decimal !== undefined) return decodeHtmlCodePoint(entity, decimal, 10);
+      if (hexadecimal !== undefined) return decodeHtmlCodePoint(entity, hexadecimal, 16);
+      switch (entity.toLowerCase()) {
+        case "&quot;": return '"';
+        case "&apos;": return "'";
+        case "&lt;": return "<";
+        case "&gt;": return ">";
+        case "&amp;": return "&";
+        default: return entity;
+      }
+    }
+  );
+}
+
+function decodeHtmlCodePoint(entity, value, radix) {
+  const codePoint = Number.parseInt(String(value || ""), radix);
+  if (!Number.isInteger(codePoint)
+    || codePoint < 0
+    || codePoint > 0x10ffff
+    || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
+    return entity;
+  }
+  return String.fromCodePoint(codePoint);
+}
+
+function providerTimestamp(value) {
+  const timestamp = Date.parse(String(value || ""));
+  return Number.isFinite(timestamp) ? new Date(timestamp).toISOString() : null;
+}
+
+function hasOwn(value, key) {
+  return Object.prototype.hasOwnProperty.call(value, key);
 }
 
 function assertStrictObject(value, allowedFields, code = "VIDEO_PAYLOAD_INVALID") {

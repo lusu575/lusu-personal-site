@@ -490,6 +490,14 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /slug = '2026-08-11-ambient-wallpaper-bfcache-fix'/);
   assert.match(verificationSql, /published_at = '2026-08-11T03:35:00.000Z'/);
   assert.match(verificationSql, /ambient-wallpaper-bfcache-fix-update-translations/);
+  const videoLinkVerificationSql = REMOTE_MIGRATION_VERIFICATION_QUERIES.find((sql) => (
+    sql.includes("video-link-autofill-update-article")
+  ));
+  assert.ok(videoLinkVerificationSql, "missing video-link autofill release verification group");
+  assert.match(videoLinkVerificationSql, /article_id = 'seed-update-2026-08-11-video-link-autofill'/);
+  assert.match(videoLinkVerificationSql, /slug = '2026-08-11-video-link-autofill'/);
+  assert.match(videoLinkVerificationSql, /published_at = '2026-08-11T00:20:00.000Z'/);
+  assert.match(videoLinkVerificationSql, /video-link-autofill-update-translations/);
   assert.match(verificationSql, /slug = '2026-08-10-h3-ambient-wallpapers-4k'/);
   assert.match(verificationSql, /published_at = '2026-08-10T08:10:00.000Z'/);
   assert.match(verificationSql, /h3-ambient-wallpapers-4k-update-translations/);

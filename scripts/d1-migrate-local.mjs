@@ -269,6 +269,29 @@ export async function migrateLocalD1() {
     from articles where article_id = 'seed-update-2026-08-06-whiteboard-agent-images'
     `),
     ...await queryRows(`
+    select 'video-link-autofill-update-article' as item,
+      case when count(*) = 1 then 1 else 0 end as present
+    from articles
+    where article_id = 'seed-update-2026-08-11-video-link-autofill'
+      and slug = '2026-08-11-video-link-autofill'
+      and category = 'site-updates'
+      and status = 'published'
+      and is_pinned = 0
+      and cover_image = ''
+      and published_at = '2026-08-11T00:20:00.000Z'
+    union all
+    select 'video-link-autofill-update-translations',
+      case
+        when count(*) = 3
+          and count(distinct lang) = 3
+          and sum(case when lang in ('zh', 'en', 'ja') then 1 else 0 end) = 3
+          and sum(case when length(trim(title)) > 0 and length(trim(summary)) > 0 and length(trim(content_markdown)) > 0 then 1 else 0 end) = 3
+        then 1 else 0
+      end
+    from article_translations
+    where article_id = 'seed-update-2026-08-11-video-link-autofill'
+    `),
+    ...await queryRows(`
     select 'h3-first-version-video-sr-48fps-update-article' as item,
       case when count(*) = 1 then 1 else 0 end as present
     from articles
@@ -359,7 +382,7 @@ export async function migrateLocalD1() {
     from article_translations
     where article_id = 'seed-update-2026-08-10-h3-ambient-wallpapers-4k'
     union all
-    select 'wallpaper-switch-slim-dawn-update-article',
+    select 'wallpaper-switch-slim-dawn-update-article' as item,
       case when count(*) = 1 then 1 else 0 end as present
     from articles
     where article_id = 'seed-update-2026-08-10-wallpaper-switch-slim-dawn'

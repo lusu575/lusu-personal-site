@@ -1921,6 +1921,10 @@ describe("complete owner OAuth MCP flow", () => {
     expect(toolsByName.get("video_publish")?._meta?.securitySchemes).toEqual([
       { type: "oauth2", scopes: ["content:write"] }
     ]);
+    expect(toolsByName.get("video_publish")?.inputSchema?.required).toEqual(
+      expect.arrayContaining(["operationId", "originalUrl"])
+    );
+    expect(toolsByName.get("video_publish")?.inputSchema?.required).not.toContain("title");
     expect(toolsByName.get("video_delete")?._meta?.securitySchemes).toEqual([
       { type: "oauth2", scopes: ["content:delete"] }
     ]);

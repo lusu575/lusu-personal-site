@@ -5,7 +5,7 @@
 - 桌面 Home 的 morning／day／dusk／night 当前正式使用用户确认的第一版 MiniMax H3 素材帧。四段都保留第一版整幅画面的轻微树木、云层、水面与光影变化，并严格按源帧 `0..62 + 61..1` 整理为约 5.17 秒的整屏往返循环；最终每段为 48fps、248 帧。第二版过弱的局部 mask／gain 合成不再是生产视频来源，电视机中也没有小女孩或随机 cameo。
 - 正式视频链路固定为：第一版 H3 源帧 `0..62 + 61..1` 组成 24fps 往返序列 → 双向光流补帧到 48fps → 对全部 248 帧使用 `RealESRGAN_x4plus_anime_6B` 逐帧 AI 超分 → 分别输出 1920×1080 与 3840×2160。不得把原始 124 帧全段误写为本次循环来源，也不得再把旧的“静态底图只超分一次，再叠局部 mask／gain 时域差分”描述为当前生产方案。
 - 运行时边界没有扩大：只在桌面 Home、normal performance、Save-Data 关闭且站内 motion 为 full 时请求当前主题的一段 muted／loop／playsinline MP4，并按 CSS 尺寸 × DPR 选择 1080p 或 2160p。手机、low performance、Save-Data、`prefers-reduced-motion`、站内 reduced／off 保持零视频请求；非 Home 或页面隐藏时暂停／释放，静态壁纸永久兜底。motion mode、runtime ready 与 `pageshow` 的 BFCache 恢复协调继续保留。
-- 公开更新 ID／slug 为 `seed-update-2026-08-11-h3-first-version-video-sr-48fps`／`2026-08-11-h3-first-version-video-sr-48fps`，时间为 `2026-08-11T10:40:00.000Z`，公开 API／文章 seed token 为 `20260811-h3-first-version-video-sr-48fps-r1`。Home 最新五条固定为本次第一版 H3 发布、BFCache 修复、8 月 10 日 H3 历史发布、slim-dawn、ceramic-roll；完整历史继续保留 calm-redesign 及更早记录。
+- 公开更新 ID／slug 为 `seed-update-2026-08-11-h3-first-version-video-sr-48fps`／`2026-08-11-h3-first-version-video-sr-48fps`，时间为 `2026-08-11T10:40:00.000Z`，公开 API／文章 seed token 为 `20260811-h3-first-version-video-sr-48fps-r1`。融合视频单链接候选后，Home 最新五条固定为本次第一版 H3 发布、BFCache 修复、视频单链接候选、8 月 10 日 H3 历史发布、slim-dawn；完整历史继续保留 ceramic-roll、calm-redesign 及更早记录。
 
 ## 2026-08-11 动态壁纸 BFCache 恢复契约
 
@@ -13,6 +13,17 @@
 - 壁纸控制器现在在 motion mode 变化、动效运行时 ready 以及 `pageshow` 三个生命周期信号上重新同步当前 route、theme、visibility 与播放资格。恢复逻辑必须可重复执行，并继续维持同一时刻只有当前主题的一个视频节点／请求。
 - 本修复不改变渐进增强边界：手机、low performance、Save-Data、`prefers-reduced-motion`、站内 reduced／off 仍是零视频请求；非 Home 或页面隐藏仍暂停或释放视频，静态壁纸仍为永久兜底。
 - 公开更新 ID／slug 为 `seed-update-2026-08-11-ambient-wallpaper-bfcache-fix`／`2026-08-11-ambient-wallpaper-bfcache-fix`，时间为 `2026-08-11T03:35:00.000Z`，该次历史 seed token 为 `20260811-ambient-wallpaper-bfcache-fix-r1`。这条记录继续完整保留，并在后续第一版 H3 发布加入后成为 Home 最新五条中的第二项。
+
+## 2026-08-11 `video_publish` 单链接发布 0.4.0 候选
+
+- 本轮只收窄既有 `video_publish` 的必填输入，不新增工具、scope 或 API：生产清单仍是 23 项工具，写入继续使用 `content:write`；0.4.0 候选仍由同一工具直接提交 `status=published`，既有直接公开行为不变。
+- 站长可以只告诉 AI 一条 YouTube、Bilibili 或 b23.tv 链接；AI 为每次新动作生成唯一 `operationId`。服务端规范化平台、外部 ID、原地址与 iframe 地址，并对省略的 `title`、`description`、`thumbnailUrl`、`authorName`、`publishedAt` 做有界 provider 补全；调用方显式传入的值（包括允许的空值或 `null`）优先，不被远端结果覆盖。
+- `operationId + canonical caller-intent hash` 只绑定调用方实际提交的字段。服务端必须先检查并回放持久收据，再决定是否访问 provider，因此同载荷重试不重复联网；旧版完整载荷收据继续兼容。只有在不存在可回放收据时才抓取元数据。
+- 标题是最终发布的硬门槛：若调用方省略标题且 provider 也无法返回合格标题，则返回 `VIDEO_METADATA_TITLE_UNAVAILABLE`，视频、分类关系、收据与审计均保持零写入。显式标题存在时，其他可选元数据抓取失败仍可发布，并持久化受限 `metadata_error`。本站始终不下载、上传、转码或托管视频文件，也不接受本机路径、Base64、原始字节或任意 iframe URL。
+- 当前只记录仓库 0.4.0 上线候选，不提前宣称生产可用。精确 Worker version、真实浏览器 OAuth、23 工具发现、最小载荷发布、同载荷重放、管理／公开回读与 grant 撤销结果必须在实际部署后由主发布流程回填；历史 bundle 的验收不能替代新 bundle。
+- 首次候选曾临时部署为精确 Worker `9b0bd726-2c15-414c-bdff-fc5179b4e003`。DCR、PKCE、站长 OAuth 和精确 23 项工具发现通过，但仅 `operationId + originalUrl` 的 YouTube 发布因 provider 未返回标题而以 `VIDEO_METADATA_TITLE_UNAVAILABLE` 结束，视频、分类、收据和审计均未写入；临时 grant 已撤销，生产已 100% 回滚到稳定 0.3.1 `849d8328-87db-4ac8-819a-ce725fc06349`。该尝试不是生命周期验收成功，也不得用于 registry promotion。
+- 当前仓库候选并行读取 YouTube oEmbed 与由同一已校验 videoId 构造的官方 watch page：oEmbed 的标题／作者／封面优先，页面尽量补齐简介／发布时间并在 oEmbed 失败或缺标题时兜底。两路使用浏览器兼容请求头、256 KiB JSON／2 MiB HTML 流式上限和覆盖正文的 8 秒超时；页面声明的 canonical／`og:url` 必须匹配请求 videoId，畸形或中断正文会主动取消响应流，结果仍经过既有字段规范化／官方 CDN 白名单。此修复尚未重新部署或生产验收；站长停止本轮授权后不得继续发起 OAuth，只有收到新的明确授权才能重跑闭环。
+- 视频候选的三语公开更新为 `seed-update-2026-08-11-video-link-autofill`／`2026-08-11-video-link-autofill`，发布时间 `2026-08-11T00:20:00.000Z`，该条历史 seed token 为 `20260811-video-link-autofill-r1`；随后第一版 H3 发布把当前公开表示、文章 seed、Home import 与 `js/main.js` 缓存 token 推进为 `20260811-h3-first-version-video-sr-48fps-r1`。Home 无正文投影仍保留本条，并按发布时间排在第一版 H3 与 BFCache 修复之后。
 
 ## 2026-08-10 四时段 H3 局部合成发布契约（历史阶段，已由第一版整帧方案替代）
 
