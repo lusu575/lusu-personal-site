@@ -74,6 +74,7 @@ export function createResourcesRoute({
     if (httpUrl) return item.external === true ? safeTrustedExternalUrl(value, trustedResourceExternalHosts) : "";
     const localPath = value.replace(/^\/+/, "").replace(/^\.\//, "");
     if (/(^|\/)\.\.(\/|$)/.test(localPath)) return "";
+    if (/^admin\/minimax-h3\.html$/i.test(localPath)) return sitePath("admin/minimax-h3.html");
     if (/^tools\/japanese-subtext\/?$/i.test(localPath)) return sitePath("tools/japanese-subtext/");
     if (/^tools\/whiteboard\/?$/i.test(localPath)) {
       const language = ["zh", "en", "ja"].includes(document.documentElement.lang)
@@ -83,6 +84,12 @@ export function createResourcesRoute({
     }
     if (/^(assets|downloads)\/[a-z0-9][a-z0-9._/-]*(\?[a-z0-9=&._-]+)?$/i.test(localPath)) return sitePath(localPath);
     return "";
+  }
+
+  function safeInlineResourceIconSrc(item) {
+    if (item?.toolId !== "minimax-h3") return "";
+    const value = String(item.iconDataUrl || "").trim();
+    return /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(value) ? value : "";
   }
 
   function resourceActionElement(item, url = safeResourceUrl(item)) {
@@ -177,7 +184,7 @@ export function createResourcesRoute({
     const main = document.createElement("div");
     main.className = "resource-main";
     const title = document.createElement("h2");
-    const resourceIconSrc = safeResourceIconSrc(item.iconSrc);
+    const resourceIconSrc = safeInlineResourceIconSrc(item) || safeResourceIconSrc(item.iconSrc);
     const icon = resourceIconSrc ? document.createElement("img") : document.createElement("span");
     icon.className = resourceIconSrc
       ? "resource-icon-image"
@@ -188,7 +195,9 @@ export function createResourcesRoute({
       icon.width = 40;
       icon.height = 40;
       icon.alt = "";
-      icon.loading = "lazy";
+      // The protected H3 card reuses its image2-generated raster inline so
+      // opening another Tools card cannot create a late icon request.
+      icon.loading = item.toolId === "minimax-h3" ? "eager" : "lazy";
       icon.decoding = "async";
     } else {
       icon.textContent = String(item.icon || "");

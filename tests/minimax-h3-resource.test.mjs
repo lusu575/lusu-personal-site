@@ -8,6 +8,7 @@ import { resourcesContent } from "../js/data/resources-content.mjs";
 const iconPath = new URL("../assets/images/generated-icons/minimax-h3.png", import.meta.url);
 const manifestPath = new URL("../assets/images/generated-icons/minimax-h3.source.json", import.meta.url);
 const consolePath = new URL("../admin/minimax-h3.html", import.meta.url);
+const resourcesRoutePath = new URL("../js/routes/resources.mjs", import.meta.url);
 
 test("Tools exposes the protected Online ComfyUI MiniMax H3 entry", () => {
   const resource = resourcesContent.resources.find((item) => item.toolId === "minimax-h3");
@@ -15,11 +16,20 @@ test("Tools exposes the protected Online ComfyUI MiniMax H3 entry", () => {
   assert.equal(resource.external, false);
   assert.equal(resource.url, "/admin/minimax-h3.html");
   assert.match(resource.iconSrc, /^assets\/images\/generated-icons\/minimax-h3\.png\?v=/);
+  assert.match(resource.iconDataUrl, /^data:image\/png;base64,[A-Za-z0-9+/=]+$/);
   assert.equal(resource.title.zh, "在线 ComfyUI · MiniMax H3");
   assert.equal(resource.title.en, "Online ComfyUI · MiniMax H3");
   assert.equal(resource.title.ja, "オンライン ComfyUI · MiniMax H3");
   assert.match(resource.desc.zh, /Runner/);
   assert.ok(resource.tags.some((tag) => tag.zh === "站长专用"));
+});
+
+test("Tools allows only the exact protected MiniMax H3 console path", async () => {
+  const source = await readFile(resourcesRoutePath, "utf8");
+  assert.match(source, /admin\/minimax-h3\.html/);
+  assert.match(source, /function safeInlineResourceIconSrc/);
+  assert.match(source, /safeInlineResourceIconSrc\(item\) \|\| safeResourceIconSrc\(item\.iconSrc\)/);
+  assert.match(source, /item\.toolId === "minimax-h3" \? "eager" : "lazy"/);
 });
 
 test("MiniMax H3 icon is an image2-generated transparent RGBA raster", async () => {

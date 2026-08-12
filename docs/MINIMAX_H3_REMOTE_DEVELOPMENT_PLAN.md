@@ -2,7 +2,7 @@
 
 > 文档版本：1.0
 > 编写日期：2026-08-12
-> 状态：**仅完成设计与实施计划，尚未开发、部署或开放生产权限**
+> 状态：**P0–P3 代码与本地回归已完成，Production D1 的 H3-only 增量迁移已完成；当前为隔离发布候选，执行链路仍默认关闭，Tunnel/Access、生产 token、GPU canary 与跨网络验收未完成**
 > 适用仓库：`F:\lusu575个人站`
 > 适用本机 H3 版本：`F:\AI视频H3\MiniMax-H3-Local\versions\2026-08-04_v4`
 > 目标读者：站点维护者，以及上下文较小、推理能力有限、需要逐项执行的开发模型
@@ -1641,7 +1641,7 @@ TUNNEL_UNAVAILABLE
 - 网站代码和 D1/R2 中不存在媒体字节。
 - 家庭路由器无端口转发；8188 和 8791 均只绑定 loopback。
 
-实现记录（2026-08-12）：loopback Bridge、一次性 download ticket/introspection、内存 HttpOnly session、Access bootstrap 占位、完整 GET/HEAD/单 Range、ETag 和 no-store/no-transform 已实现并通过本地回归；admin 下载动作使用原生流式导航，不把视频读入 Blob。真实 `cloudflared` Tunnel、Access application、Cache Rule、生产 D1/Pages 与跨网络验收尚未完成，公网仍未宣称上线。
+实现记录（2026-08-12）：loopback Bridge、一次性 download ticket/introspection、内存 HttpOnly session、Access bootstrap 占位、完整 GET/HEAD/单 Range、ETag 和 no-store/no-transform 已实现并通过本地回归；admin 下载动作使用原生流式导航，不把视频读入 Blob。H3-only Production D1 增量迁移已完成，生产代码仍须随 GitHub `main` 触发 Cloudflare Pages 后做 commit 回读；真实 `cloudflared` Tunnel、Access application、Cache Rule、生产 token、跨网络传输与 GPU canary 尚未完成，因此不能宣称生成链路已在线。
 
 ### P4：I2V 图片上传
 

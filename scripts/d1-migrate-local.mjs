@@ -106,6 +106,8 @@ export function chatColumnMigrationSql(table) {
   return migration.sql;
 }
 
+let localQueryNumber = 0;
+
 export async function migrateLocalD1() {
   if (!existsSync(wranglerCli)) {
     throw new Error("Wrangler is not installed. Run npm ci before initializing local D1.");
@@ -206,8 +208,9 @@ export async function migrateLocalD1() {
     union all
     select 'minimax-h3-events-index', count(*)
     from sqlite_master where type = 'index' and name = 'minimax_h3_job_events_job_seq_idx'
-    union all
-    select 'minimax-h3-tickets-job-index', count(*)
+    `),
+    ...await queryRows(`
+    select 'minimax-h3-tickets-job-index' as item, count(*) as present
     from sqlite_master where type = 'index' and name = 'minimax_h3_transfer_tickets_job_status_idx'
     union all
     select 'minimax-h3-tickets-runner-index', count(*)
@@ -274,7 +277,7 @@ export async function migrateLocalD1() {
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260812-wallpaper-game-display-r1'
+    where key = 'article_seed_version' and value = '20260812-minimax-h3-control-plane-r1'
     union all
     select 'game-video-mcp-candidate-update-article',
       case when count(*) = 1 then 1 else 0 end
@@ -653,15 +656,22 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
 }
 
 async function queryRows(sql) {
-  const output = await runWrangler([
-    "d1",
-    "execute",
-    database,
-    "--local",
-    "--command",
-    sql.replace(/\s+/g, " ").trim(),
-    "--json"
-  ], { captureStdout: true });
+  const queryNumber = ++localQueryNumber;
+  const compactSql = sql.replace(/\s+/g, " ").trim();
+  let output;
+  try {
+    output = await runWrangler([
+      "d1",
+      "execute",
+      database,
+      "--local",
+      "--command",
+      compactSql,
+      "--json"
+    ], { captureStdout: true });
+  } catch (error) {
+    throw new Error(`Local D1 verification query #${queryNumber} failed: ${compactSql.slice(0, 240)}`, { cause: error });
+  }
   let payload;
   try {
     payload = JSON.parse(output);

@@ -2,7 +2,7 @@
 
 ## 2026-08-12 MiniMax H3 隔离生产发布边界
 
-- 当前发布候选把站长专用在线 ComfyUI · MiniMax H3 工具入口、admin-only `minimax-h3:execute`、P0–P3 控制面与 D1 schema 合并到 `main` 基线，同时保留基线上已有视频、壁纸和游戏功能。
+- 当前发布候选把站长专用在线 ComfyUI · MiniMax H3 工具入口、admin-only `minimax-h3:execute`、P0–P3 控制面与 D1 schema 接入主站基线，同时保留基线上已有视频、壁纸和游戏功能；Production D1 已完成 H3-only 增量迁移，公开代码须以合并后的 Cloudflare Pages commit 回读为准。
 - 代码路径支持固定 Runner、家庭 ComfyUI `127.0.0.1:8188` 与 loopback Bridge `127.0.0.1:8791`，但控制／传输开关默认关闭；生产 Agent token、Tunnel/Access、Runner 心跳和 GPU canary 必须单独配置并实测后，才能宣称可在线生成。
 - H3 参考素材与成片不进入站点 R2、D1、KV、Durable Object、Pages 或 CDN；图标由 image2 生成，采用机械透明处理和最近邻缩放，不使用代码绘制或合成。
 

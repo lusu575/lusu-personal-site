@@ -31,6 +31,10 @@ function withToolMutation(index, changes, assertion) {
   }
 }
 
+function toolIndex(toolId) {
+  return resourcesContent.resources.findIndex((entry) => entry.toolId === toolId);
+}
+
 test("public tool catalog exposes only stable ready tools and registered capabilities", () => {
   const catalog = listPublicTools({ lang: "en" });
   assert.equal(catalog.lang, "en");
@@ -46,6 +50,7 @@ test("public tool catalog exposes only stable ready tools and registered capabil
   assert.ok(catalog.tools.every((tool) => tool.capabilities.some((capability) => (
     capability.availableTransports.includes("local-mcp")
   ))));
+  assert.equal(catalog.tools.some((tool) => tool.id === "minimax-h3"), false);
 
   const serialized = JSON.stringify(catalog);
   assert.equal(serialized.includes("iconSrc"), false);
@@ -69,16 +74,19 @@ test("public tool lookup localizes output and distinguishes invalid ids from mis
 });
 
 test("public tools fail closed unless id, domain, and launch target match the fixed contract", () => {
+  const whiteboardIndex = toolIndex("whiteboard");
+  const quickTransferIndex = toolIndex("quick-transfer");
+  const japaneseSubtextIndex = toolIndex("japanese-subtext");
   const invalidMutations = [
-    [0, { toolId: undefined }],
-    [0, { toolId: "unknown-tool" }],
-    [0, { capabilityDomain: "transfer" }],
-    [0, { url: "/admin/" }],
-    [0, { url: "/tools/%2e%2e/admin" }],
-    [0, { action: "quick-transfer" }],
-    [1, { action: "whiteboard" }],
-    [1, { url: "/tools/whiteboard/" }],
-    [2, { url: "/tools/whiteboard/" }]
+    [whiteboardIndex, { toolId: undefined }],
+    [whiteboardIndex, { toolId: "unknown-tool" }],
+    [whiteboardIndex, { capabilityDomain: "transfer" }],
+    [whiteboardIndex, { url: "/admin/" }],
+    [whiteboardIndex, { url: "/tools/%2e%2e/admin" }],
+    [whiteboardIndex, { action: "quick-transfer" }],
+    [quickTransferIndex, { action: "whiteboard" }],
+    [quickTransferIndex, { url: "/tools/whiteboard/" }],
+    [japaneseSubtextIndex, { url: "/tools/whiteboard/" }]
   ];
   for (const [index, changes] of invalidMutations) {
     withToolMutation(index, changes, () => {

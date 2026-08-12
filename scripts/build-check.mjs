@@ -895,7 +895,7 @@ const wallpaperGameDisplayReleaseVersion = "20260812-wallpaper-game-display-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = "20260809-transfer-motion-r2";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
-const resourcesRouteVersion = transferReleaseVersion;
+const resourcesRouteVersion = "20260812-minimax-h3-tools-r1";
 const routeStyleVersion = motionPolishReleaseVersion;
 const publicRouteVersion = (route) => route === "knowledge" || route === "chatroom"
   ? motionPolishReleaseVersion
@@ -1325,7 +1325,7 @@ for (const [modulePath, expectedVersion] of [
   ["./data/home-content.mjs", wallpaperGameDisplayReleaseVersion],
   ["./features/account.mjs", motionPolishReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
-  ["./data/resources-content.mjs", transferReleaseVersion]
+  ["./data/resources-content.mjs", resourcesRouteVersion]
 ]) {
   const versions = assetQueryVersions(mainEntryJs, modulePath);
   if (versions.length !== 1 || versions[0] !== expectedVersion) {
