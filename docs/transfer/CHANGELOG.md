@@ -2,6 +2,10 @@
 
 本日志只记录临时互传子项目。根项目发布历史仍写入仓库根 `CHANGELOG.md`。
 
+## 1.0.11 - 2026-08-12
+
+- Governance-only patch: the shared Agent Auth registry now carries the owner-only `minimax-h3:execute` scope for the protected MiniMax H3 control plane. Quick Transfer protocol, encryption, private R2, quota, authentication, and expiry semantics are unchanged.
+
 ## 1.0.10 - 2026-08-09
 
 - 精修公开 Quick Transfer 与独立管理页的动效和忙碌反馈：只有实际触发请求的按钮进入 busy／`aria-busy` 与 spinner，复制标签只覆盖真实剪贴板请求并在 650ms 后复原；notice 使用稳定的 44px 槽位，表格请求、遮罩和对话框支持可中断的 transform／opacity 进入退出。

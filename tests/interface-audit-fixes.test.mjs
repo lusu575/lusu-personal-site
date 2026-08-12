@@ -34,7 +34,8 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the wallpaper and game display fix leads the exact five-item projection without losing H3 history", async () => {
+test("the MiniMax H3 console update leads the exact five-item projection without losing release history", async () => {
+  const minimaxH3UpdateId = "seed-update-2026-08-12-minimax-h3-console";
   const updateId = "seed-update-2026-08-12-wallpaper-game-display-fix";
   const firstVersionUpdateId = "seed-update-2026-08-11-h3-first-version-video-sr-48fps";
   const priorBfcacheUpdateId = "seed-update-2026-08-11-ambient-wallpaper-bfcache-fix";
@@ -68,35 +69,33 @@ test("the wallpaper and game display fix leads the exact five-item projection wi
     import("../js/data/home-content.mjs")
   ]);
 
-  assert.equal(content.updates[0].article_id, updateId);
-  assert.equal(content.updates[0].slug, "2026-08-12-wallpaper-game-display-fix");
-  assert.equal(content.updates[0].published_at, "2026-08-12T07:30:00.000Z");
-  assert.equal(homeContent.updates[0].article_id, updateId);
-  assert.equal(content.updates[1].article_id, firstVersionUpdateId);
-  assert.equal(homeContent.updates[1].article_id, firstVersionUpdateId);
-  assert.equal(content.updates[2].article_id, priorBfcacheUpdateId);
-  assert.equal(homeContent.updates[2].article_id, priorBfcacheUpdateId);
-  assert.equal(content.updates[3].article_id, videoLinkAutofillUpdateId);
-  assert.equal(homeContent.updates[3].article_id, videoLinkAutofillUpdateId);
-  assert.equal(content.updates[4].article_id, priorH3UpdateId);
-  assert.equal(homeContent.updates[4].article_id, priorH3UpdateId);
-  assert.equal(content.updates[5].article_id, priorSlimDawnUpdateId);
-  assert.equal(content.updates[6].article_id, priorCeramicUpdateId);
-  assert.equal(content.updates[7].article_id, priorCalmUpdateId);
-  assert.equal(content.updates[8].article_id, priorSceneUpdateId);
-  assert.equal(content.updates[9].article_id, gameVideoMcpUpdateId);
-  assert.equal(content.updates[10].article_id, wallpaperTimeUpdateId);
-  assert.equal(content.updates[11].article_id, motionPolishUpdateId);
-  assert.equal(content.updates[12].article_id, remoteMcpOauthUpdateId);
-  assert.equal(content.updates[13].article_id, lifeRestartAgentUpdateId);
-  assert.equal(content.updates[14].article_id, hextrisAgentUpdateId);
-  assert.equal(content.updates[15].article_id, whiteboardAgentImagesUpdateId);
-  assert.equal(content.updates[16].article_id, agentAuthFormOriginUpdateId);
-  assert.equal(content.updates[17].article_id, japaneseProgressUpdateId);
-  assert.equal(content.updates[18].article_id, agentReadBreadthUpdateId);
-  assert.equal(content.updates[19].article_id, whiteboard2048UpdateId);
-  assert.equal(content.updates[20].article_id, firstPhaseUpdateId);
-  assert.equal(content.updates[21].article_id, websiteGuideUpdateId);
+  assert.deepEqual(content.updates.slice(0, 22).map((update) => update.article_id), [
+    minimaxH3UpdateId,
+    updateId,
+    firstVersionUpdateId,
+    priorBfcacheUpdateId,
+    videoLinkAutofillUpdateId,
+    priorH3UpdateId,
+    priorSlimDawnUpdateId,
+    priorCeramicUpdateId,
+    priorCalmUpdateId,
+    priorSceneUpdateId,
+    gameVideoMcpUpdateId,
+    wallpaperTimeUpdateId,
+    motionPolishUpdateId,
+    remoteMcpOauthUpdateId,
+    lifeRestartAgentUpdateId,
+    hextrisAgentUpdateId,
+    whiteboardAgentImagesUpdateId,
+    agentAuthFormOriginUpdateId,
+    japaneseProgressUpdateId,
+    agentReadBreadthUpdateId,
+    whiteboard2048UpdateId,
+    firstPhaseUpdateId,
+  ]);
+  assert.equal(content.updates[0].slug, "2026-08-12-minimax-h3-console");
+  assert.equal(content.updates[0].published_at, "2026-08-12T08:00:00.000Z");
+  assert.equal(homeContent.updates[0].article_id, minimaxH3UpdateId);
   assert.ok(content.updates.some((update) => update.article_id === trafficUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === calmWhiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === reliableWhiteboardUpdateId));
@@ -114,7 +113,7 @@ test("the wallpaper and game display fix leads the exact five-item projection wi
 
   for (const path of ["functions/api/[[route]].js", "cloudflare/schema.sql"]) {
     const source = read(path);
-    for (const seededUpdateId of [updateId, firstVersionUpdateId, priorBfcacheUpdateId, videoLinkAutofillUpdateId, priorH3UpdateId, priorSlimDawnUpdateId, priorCeramicUpdateId, priorCalmUpdateId, priorSceneUpdateId, gameVideoMcpUpdateId, wallpaperTimeUpdateId, motionPolishUpdateId, remoteMcpOauthUpdateId]) {
+    for (const seededUpdateId of [minimaxH3UpdateId, updateId, firstVersionUpdateId, priorBfcacheUpdateId, videoLinkAutofillUpdateId, priorH3UpdateId, priorSlimDawnUpdateId, priorCeramicUpdateId, priorCalmUpdateId, priorSceneUpdateId, gameVideoMcpUpdateId, wallpaperTimeUpdateId, motionPolishUpdateId, remoteMcpOauthUpdateId]) {
       assert.ok(source.includes(seededUpdateId), `${path} should include ${seededUpdateId}`);
     }
     for (const title of Object.values(content.updates[0].title)) {
@@ -190,8 +189,9 @@ test("BFCache-safe ambient wallpapers, retained motion modules, wallpaper switch
   assert.ok(main.includes(`./features/account.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/knowledge.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/chatroom.mjs?v=${publicVersion}`));
-  assert.ok(main.includes(`./routes/resources.mjs?v=${transferVersion}`));
-  assert.ok(main.includes(`./data/resources-content.mjs?v=${transferVersion}`));
+  const resourcesVersion = "20260812-minimax-h3-tools-r1";
+  assert.ok(main.includes(`./routes/resources.mjs?v=${resourcesVersion}`));
+  assert.ok(main.includes(`./data/resources-content.mjs?v=${resourcesVersion}`));
   for (const token of [
     '"AI 能力": { zh: "AI 能力", en: "AI capabilities", ja: "AI 機能" }',
     '"CLI": { zh: "CLI", en: "CLI", ja: "CLI" }',

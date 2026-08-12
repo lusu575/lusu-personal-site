@@ -1,5 +1,12 @@
 # 鲁肃个人站管理后台专用 PROJECT_CONTEXT
 
+## 2026-08-12 MiniMax H3 控制面与控制台
+
+- H3 Agent 使用非默认、管理员专属 `minimax-h3:execute`；线上授权必须在包含该 scope 的隔离 Pages 发布后进行。固定控制器、锁定工作流、ComfyUI 与 RTX 5080 preflight 已通过，但生产 token、Tunnel/Access 和 GPU canary 仍需现场配置与核验。
+- 后台导航与公共 Tools 只提供站长专用 `/admin/minimax-h3.html` 入口，继续由现有 `/admin/*` 中间件检查 HttpOnly `lusu_session`、D1 会话和 `users.role = admin`；不嵌入、不代理原版 ComfyUI。
+- P0/P1/P2/P3 控制面包含严格任务协议、D1 任务／租约／事件／回执、Runner register/heartbeat、admin 只读元数据、受控取消、固定控制器校验、T2V 闸门以及独立传输 ticket／loopback Bridge／Range 下载。控制与传输开关默认关闭，未有真实 Runner、Bridge、Tunnel/Access 和 canary 证据前不得显示为在线。
+- 家庭端边界固定为 ComfyUI `127.0.0.1:8188`、Bridge `127.0.0.1:8791`；媒体字节、家庭路径、凭证和完整提示词不写入页面或 D1。标题图标使用 image2 生成的 AI 视频主题光栅资产。
+
 > 管理后台专用说明：本文档只描述 `/admin/` 管理后台。它不等同于主站根目录 `PROJECT_CONTEXT.md`，也不能替代主站项目上下文。新的 AI / Codex 对话如果只维护后台，应先读本文档和 `admin/docs/ADMIN_SKILL.md`；如果维护主站整体，仍以根目录 `PROJECT_CONTEXT.md` 和 `skills/lusu-personal-site-skill/SKILL.md` 为准。
 
 ## 2026-08-09 后台与 Quick Transfer 动效精修

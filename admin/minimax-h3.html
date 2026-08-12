@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>在线 ComfyUI · MiniMax H3 控制台</title>
+  <link rel="icon" type="image/png" href="/assets/images/generated-icons/minimax-h3.png?v=20260812-minimax-h3-r3">
+  <link rel="stylesheet" href="/admin/minimax-h3.css?v=20260812-minimax-h3-console-r4">
+</head>
+<body>
+  <main class="h3-console" aria-labelledby="h3-page-title">
+    <header class="h3-topbar">
+      <a class="h3-back-button" href="/#resources">返回工具区</a>
+      <div class="h3-title-block">
+        <img class="h3-title-icon" src="/assets/images/generated-icons/minimax-h3.png?v=20260812-minimax-h3-r3" width="64" height="64" alt="简约 AI 视频工具图标">
+        <div>
+          <span class="h3-kicker">MINIMAX H3 / ONLINE COMFYUI</span>
+          <h1 id="h3-page-title">在线 ComfyUI · MiniMax H3</h1>
+          <p>受保护的站长控制台 · Owner-only control surface</p>
+        </div>
+      </div>
+      <span class="h3-release-badge">P2 · T2V</span>
+    </header>
+
+    <section class="h3-notice" role="status" aria-live="polite" data-h3-live-summary>
+      正在读取受保护的 Runner、固定控制器、ComfyUI、Bridge 和队列状态；未验证的组件不会被显示为在线。P1 控制面仍保留严格边界：本页不接收媒体字节。
+    </section>
+
+    <section class="h3-section" aria-labelledby="h3-status-title">
+      <div class="h3-section-heading">
+        <div>
+          <span class="h3-kicker">01 / ENVIRONMENT</span>
+          <h2 id="h3-status-title">执行环境状态</h2>
+        </div>
+        <span class="h3-muted-label">Live status · no placeholder data</span>
+      </div>
+      <div class="h3-status-grid">
+        <article class="h3-status-card" data-state="pending" data-h3-status="runner">
+          <div class="h3-card-heading"><h3>家庭 Runner</h3><span class="h3-state">未接入</span></div>
+          <p>等待受保护的家庭 Agent 报告心跳、版本与设备能力。</p>
+        </article>
+        <article class="h3-status-card" data-state="pending" data-h3-status="controller">
+          <div class="h3-card-heading"><h3>固定控制器</h3><span class="h3-state">未验证</span></div>
+          <p>只接受锁定版本的 H3 控制器 doctor/validate 结果。</p>
+        </article>
+        <article class="h3-status-card" data-state="pending" data-h3-status="comfy">
+          <div class="h3-card-heading"><h3>ComfyUI</h3><span class="h3-state">未读取</span></div>
+          <p>目标固定为家庭电脑的 127.0.0.1:8188，不代理原版 UI。</p>
+        </article>
+        <article class="h3-status-card" data-state="pending" data-h3-status="bridge">
+          <div class="h3-card-heading"><h3>Bridge / Tunnel</h3><span class="h3-state">未配置</span></div>
+          <p>家庭 Bridge 固定监听 127.0.0.1:8791；受保护入口尚未宣称为公网可用。</p>
+        </article>
+        <article class="h3-status-card" data-state="pending" data-h3-status="disk">
+          <div class="h3-card-heading"><h3>磁盘 / Spool</h3><span class="h3-state">未读取</span></div>
+          <p>只显示 Runner 回报的本地空间状态，不伪造容量。</p>
+        </article>
+        <article class="h3-status-card" data-state="pending" data-h3-status="jobs">
+          <div class="h3-card-heading"><h3>任务队列</h3><span class="h3-state">未接入</span></div>
+          <p>控制开关默认关闭；未满足条件时表单保持禁用。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="h3-workspace-grid" aria-label="任务与输出">
+      <section class="h3-panel" aria-labelledby="h3-new-task-title">
+        <div class="h3-section-heading compact">
+          <div>
+            <span class="h3-kicker">02 / JOB INPUT</span>
+            <h2 id="h3-new-task-title">新建任务</h2>
+          </div>
+          <span class="h3-release-badge">T2V only</span>
+        </div>
+        <form class="h3-form" data-h3-job-form>
+          <fieldset data-h3-job-fieldset disabled>
+            <label>任务名称<input type="text" data-h3-project-title maxlength="120" placeholder="例如：夜景镜头测试" required></label>
+            <div class="h3-form-row">
+              <label>画幅<select data-h3-aspect required><option value="16:9">16:9 · 横屏</option><option value="9:16">9:16 · 竖屏</option><option value="1:1">1:1 · 方形</option></select></label>
+              <label>预设<select data-h3-preset required><option value="safe">safe · 稳定</option><option value="preview_fast">preview_fast · 预览</option></select></label>
+            </div>
+            <label>提示词<textarea data-h3-prompt rows="5" maxlength="10000" placeholder="描述镜头、主体、动作、光线与镜头运动。" required></textarea></label>
+            <button class="h3-primary-button" type="submit">提交 T2V 任务</button>
+          </fieldset>
+        </form>
+        <p class="h3-panel-note" data-h3-form-note>需要：Cloudflare 控制开关、管理员 Runner、固定控制器 doctor 通过，以及 ComfyUI 心跳正常。</p>
+        <p class="h3-form-message" data-h3-form-message role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="h3-panel" aria-labelledby="h3-output-title">
+        <div class="h3-section-heading compact">
+          <div>
+            <span class="h3-kicker">03 / OUTPUT</span>
+            <h2 id="h3-output-title">任务与输出</h2>
+          </div>
+          <span class="h3-release-badge">Live</span>
+        </div>
+        <div class="h3-job-list" data-h3-job-list aria-live="polite">
+          <div class="h3-empty-state"><strong>正在读取任务</strong><p>列表只展示受保护的任务元数据与结果摘要。</p></div>
+        </div>
+      </section>
+    </section>
+
+    <section class="h3-boundary" aria-labelledby="h3-boundary-title">
+      <div class="h3-section-heading compact">
+        <div>
+          <span class="h3-kicker">04 / BOUNDARY</span>
+          <h2 id="h3-boundary-title">固定边界</h2>
+        </div>
+      </div>
+      <ul>
+        <li>不公开原版 ComfyUI UI；站点只提供受保护的任务控制面。</li>
+        <li>ComfyUI 与 Bridge 只允许家庭端回环地址；公网入口必须经过认证与最小协议。</li>
+        <li>参考素材与成片不写入 D1；后续传输只允许绑定任务的窄带结果。</li>
+        <li>网络不确定、心跳过期或读取失败时，不自动重试任务，也不把失败改写成成功。</li>
+        <li>当前开放范围是无参考 T2V；I2V、R2V、Tunnel 与结果传输分别受独立开关和验收证据约束。</li>
+      </ul>
+    </section>
+
+    <footer class="h3-footer">
+      <span>协议目标 1.0</span>
+      <span>实现范围：P1 控制面 + P2 T2V</span>
+      <span>最后核对：2026.08.12</span>
+    </footer>
+  </main>
+  <script src="/admin/minimax-h3.js?v=20260812-minimax-h3-console-r4"></script>
+</body>
+</html>

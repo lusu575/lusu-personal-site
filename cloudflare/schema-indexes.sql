@@ -1,6 +1,23 @@
 create index if not exists anonymous_chat_messages_room_ip_generation_idx
   on anonymous_chat_messages(room_key, ip_hash_key_id, ip_hash, created_at);
 
+create index if not exists minimax_h3_runners_owner_status_idx
+  on minimax_h3_runners(owner_user_id, status);
+create index if not exists minimax_h3_jobs_runner_state_created_idx
+  on minimax_h3_jobs(runner_id, state, created_at);
+create index if not exists minimax_h3_jobs_owner_created_idx
+  on minimax_h3_jobs(owner_user_id, created_at desc);
+create index if not exists minimax_h3_jobs_lease_state_idx
+  on minimax_h3_jobs(lease_expires_at, state);
+create index if not exists minimax_h3_job_assets_job_ordinal_idx
+  on minimax_h3_job_assets(job_id, ordinal);
+create index if not exists minimax_h3_job_events_job_seq_idx
+  on minimax_h3_job_events(job_id, seq);
+create index if not exists minimax_h3_transfer_tickets_job_status_idx
+  on minimax_h3_transfer_tickets(job_id, status, expires_at);
+create index if not exists minimax_h3_transfer_tickets_runner_status_idx
+  on minimax_h3_transfer_tickets(runner_id, status, expires_at);
+
 create index if not exists chat_bans_active_ip_generation_idx
   on chat_bans(active, ip_hash_key_id, ip_hash, expires_at);
 

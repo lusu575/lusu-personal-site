@@ -9,8 +9,83 @@ import {
 const root = resolve(import.meta.dirname, "..");
 const database = "lusu_personal_site";
 const wranglerCli = resolve(root, "node_modules", "wrangler", "bin", "wrangler.js");
+const MINIMAX_H3_MIGRATION_FILE = "cloudflare/migrations/20260812-minimax-h3-control-plane.sql";
 const D1_MAX_COMPOUND_SELECT_TERMS = 5;
 const REMOTE_D1_READ_RETRY_DELAYS_MS = Object.freeze([750, 1500]);
+
+export const MINIMAX_H3_REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
+  `
+    select 'minimax-h3-runners-table' as item, count(*) as present
+    from sqlite_master where type = 'table' and name = 'minimax_h3_runners'
+    union all
+    select 'minimax-h3-jobs-table', count(*)
+    from sqlite_master where type = 'table' and name = 'minimax_h3_jobs'
+    union all
+    select 'minimax-h3-assets-table', count(*)
+    from sqlite_master where type = 'table' and name = 'minimax_h3_job_assets'
+    union all
+    select 'minimax-h3-events-table', count(*)
+    from sqlite_master where type = 'table' and name = 'minimax_h3_job_events'
+    union all
+    select 'minimax-h3-receipts-table', count(*)
+    from sqlite_master where type = 'table' and name = 'minimax_h3_operation_receipts'
+  `,
+  `
+    select 'minimax-h3-tickets-table' as item, count(*) as present
+    from sqlite_master where type = 'table' and name = 'minimax_h3_transfer_tickets'
+    union all
+    select 'minimax-h3-runners-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_runners_owner_status_idx'
+    union all
+    select 'minimax-h3-jobs-runner-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_jobs_runner_state_created_idx'
+    union all
+    select 'minimax-h3-jobs-owner-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_jobs_owner_created_idx'
+    union all
+    select 'minimax-h3-jobs-lease-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_jobs_lease_state_idx'
+  `,
+  `
+    select 'minimax-h3-assets-index' as item, count(*) as present
+    from sqlite_master where type = 'index' and name = 'minimax_h3_job_assets_job_ordinal_idx'
+    union all
+    select 'minimax-h3-events-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_job_events_job_seq_idx'
+    union all
+    select 'minimax-h3-tickets-job-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_transfer_tickets_job_status_idx'
+    union all
+    select 'minimax-h3-tickets-runner-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_transfer_tickets_runner_status_idx'
+  `,
+  `
+    select 'minimax-h3-update-article' as item,
+      case when count(*) = 1 then 1 else 0 end as present
+    from articles
+    where article_id = 'seed-update-2026-08-12-minimax-h3-console'
+      and slug = '2026-08-12-minimax-h3-console'
+      and category = 'site-updates'
+      and status = 'published'
+      and published_at = '2026-08-12T08:00:00.000Z'
+    union all
+    select 'minimax-h3-update-translations',
+      case
+        when count(*) = 3
+          and count(distinct lang) = 3
+          and sum(case when lang in ('zh', 'en', 'ja') then 1 else 0 end) = 3
+          and sum(case when length(trim(title)) > 0 and length(trim(summary)) > 0 and length(trim(content_markdown)) > 0 then 1 else 0 end) = 3
+        then 1 else 0
+      end
+    from article_translations
+    where article_id = 'seed-update-2026-08-12-minimax-h3-console'
+    union all
+    select 'minimax-h3-article-seed-version',
+      case when count(*) = 1 then 1 else 0 end
+    from site_runtime_state
+    where key = 'article_seed_version' and value = '20260812-minimax-h3-control-plane-r1'
+  `
+]);
 
 export async function retryRemoteD1Read(
   operation,
@@ -139,6 +214,42 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     from sqlite_master where type = 'index' and name = 'video_upload_sessions_status_expires_idx'
   `,
   `
+    select 'minimax-h3-runners-table' as item, count(*) as present
+    from sqlite_master where type = 'table' and name = 'minimax_h3_runners'
+    union all
+    select 'minimax-h3-jobs-table', count(*)
+    from sqlite_master where type = 'table' and name = 'minimax_h3_jobs'
+    union all
+    select 'minimax-h3-assets-table', count(*)
+    from sqlite_master where type = 'table' and name = 'minimax_h3_job_assets'
+    union all
+    select 'minimax-h3-events-table', count(*)
+    from sqlite_master where type = 'table' and name = 'minimax_h3_job_events'
+    union all
+    select 'minimax-h3-receipts-table', count(*)
+    from sqlite_master where type = 'table' and name = 'minimax_h3_operation_receipts'
+  `,
+  `
+    select 'minimax-h3-tickets-table' as item, count(*) as present
+    from sqlite_master where type = 'table' and name = 'minimax_h3_transfer_tickets'
+    union all
+    select 'minimax-h3-jobs-runner-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_jobs_runner_state_created_idx'
+    union all
+    select 'minimax-h3-jobs-owner-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_jobs_owner_created_idx'
+    union all
+    select 'minimax-h3-events-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_job_events_job_seq_idx'
+  `,
+  `
+    select 'minimax-h3-tickets-job-index' as item, count(*) as present
+    from sqlite_master where type = 'index' and name = 'minimax_h3_transfer_tickets_job_status_idx'
+    union all
+    select 'minimax-h3-tickets-runner-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_transfer_tickets_runner_status_idx'
+  `,
+  `
     select 'mcp-oauth-grants-table' as item, count(*) as present
     from sqlite_master where type = 'table' and name = 'mcp_oauth_grants'
     union all
@@ -254,7 +365,7 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260812-wallpaper-game-display-r1'
+    where key = 'article_seed_version' and value = '20260812-minimax-h3-control-plane-r1'
     union all
     select 'game-video-mcp-candidate-update-article',
       case when count(*) = 1 then 1 else 0 end
@@ -658,24 +769,31 @@ export async function migrateRemoteD1({
   executeFile = executeRemoteFile,
   executeCommand = executeRemoteCommand,
   queryRows = queryRemoteRows,
-  log = console.log
+  log = console.log,
+  h3Only = false
 } = {}) {
-  assertVerificationQueryLimits();
-  log("remote-d1-migrate: inspecting legacy compatibility columns");
-  const missingMigrations = await inspectMissingColumns(queryRows);
+  const verificationQueries = h3Only
+    ? MINIMAX_H3_REMOTE_MIGRATION_VERIFICATION_QUERIES
+    : REMOTE_MIGRATION_VERIFICATION_QUERIES;
+  assertVerificationQueryLimits(verificationQueries);
+  log(`remote-d1-migrate: ${h3Only ? "skipping legacy compatibility inspection" : "inspecting legacy compatibility columns"}`);
+  const missingMigrations = h3Only ? [] : await inspectMissingColumns(queryRows);
   for (const migration of missingMigrations) {
     log(`remote-d1-migrate: adding ${migration.table}.${migration.column}`);
     await executeCommand(migration.sql);
   }
 
-  log("remote-d1-migrate: applying base schema");
-  await executeFile("cloudflare/schema.sql");
+  const schemaFile = h3Only ? MINIMAX_H3_MIGRATION_FILE : "cloudflare/schema.sql";
+  log(`remote-d1-migrate: applying ${h3Only ? "H3 additive" : "base"} schema`);
+  await executeFile(schemaFile);
 
-  log("remote-d1-migrate: applying dependent indexes");
-  await executeFile("cloudflare/schema-indexes.sql");
+  if (!h3Only) {
+    log("remote-d1-migrate: applying dependent indexes");
+    await executeFile("cloudflare/schema-indexes.sql");
+  }
 
   const verification = [];
-  for (const sql of REMOTE_MIGRATION_VERIFICATION_QUERIES) {
+  for (const sql of verificationQueries) {
     verification.push(...await queryRows(sql));
   }
   const missing = verification
@@ -689,8 +807,8 @@ export async function migrateRemoteD1({
   return { alteredColumns: missingMigrations.map(({ table, column }) => ({ table, column })) };
 }
 
-function assertVerificationQueryLimits() {
-  for (const sql of REMOTE_MIGRATION_VERIFICATION_QUERIES) {
+function assertVerificationQueryLimits(verificationQueries = REMOTE_MIGRATION_VERIFICATION_QUERIES) {
+  for (const sql of verificationQueries) {
     const terms = 1 + (sql.match(/\bunion\s+all\b/gi)?.length || 0);
     if (terms > D1_MAX_COMPOUND_SELECT_TERMS) {
       throw new Error(
@@ -701,7 +819,7 @@ function assertVerificationQueryLimits() {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  await migrateRemoteD1();
+  await migrateRemoteD1({ h3Only: process.argv.includes("--h3-only") });
 }
 
 async function executeRemoteFile(file) {

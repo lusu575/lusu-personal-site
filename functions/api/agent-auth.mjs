@@ -22,6 +22,7 @@ export const AGENT_SCOPE_DEFINITIONS = Object.freeze({
   "transfer:read": Object.freeze({ readOnly: true }),
   "transfer:write": Object.freeze({ readOnly: false }),
   "transfer:delete": Object.freeze({ readOnly: false }),
+  "minimax-h3:execute": Object.freeze({ readOnly: false, adminOnly: true }),
   "whiteboard:read": Object.freeze({ readOnly: true }),
   "whiteboard:write": Object.freeze({ readOnly: false }),
   "whiteboard:assets": Object.freeze({ readOnly: false }),

@@ -5,6 +5,13 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 
 # 鲁肃个人站管理后台专用 Skill
 
+## MiniMax H3 管理后台规则
+
+- MiniMax H3 必须保持独立的 `/admin/minimax-h3.html` 页面，依赖现有 `/admin/*` 中间件，公共 Tools 卡片只负责跳转。
+- 页面只读展示真实 Runner、固定控制器、ComfyUI、Bridge、磁盘和队列状态；不伪造在线心跳，不嵌入或代理原版 ComfyUI，不接收媒体字节。
+- ComfyUI 与 Bridge 只使用家庭端 `127.0.0.1:8188` 和 `127.0.0.1:8791`；P2 任务操作必须等待真实 Agent、Runner、Bridge 和 GPU canary 证据，执行与传输开关默认关闭。
+- H3 图标使用明确表现 AI 视频生成的 image2 光栅资产，不使用代码绘制；新增页面、导航和缓存版本必须同步根 CHANGELOG、后台文档、`adminUpdates` 和构建检查。
+
 > 管理后台专用说明：本 Skill 只约束 `/admin/` 管理后台维护工作，不等同于主站 `skills/lusu-personal-site-skill/SKILL.md`。维护主站首页、知识库公开展示、游戏区、聊天室公开侧、首页壁纸或三语主站文案时，仍必须读取主站 Skill。
 
 ## 使用时机

@@ -499,8 +499,8 @@ const routeModuleRegistry = createRouteModuleRegistry({
       import("./data/videos-content.mjs?v=20260718-resource-icons-layout-r1")
     ]), ([{ createVideosRoute }, { videosContent }]) => instantiateVideosRoute(createVideosRoute, videosContent)),
     resources: () => Promise.all([
-      import("./routes/resources.mjs?v=20260809-transfer-motion-r2"),
-      import("./data/resources-content.mjs?v=20260809-transfer-motion-r2")
+      import("./routes/resources.mjs?v=20260812-minimax-h3-tools-r1"),
+      import("./data/resources-content.mjs?v=20260812-minimax-h3-tools-r1")
     ]).then(([{ createResourcesRoute }, { resourcesContent }]) => instantiateResourcesRoute(createResourcesRoute, resourcesContent)),
     games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260726-security-reliability-r1"),
       ({ createGamesRoute }) => instantiateGamesRoute(createGamesRoute)),

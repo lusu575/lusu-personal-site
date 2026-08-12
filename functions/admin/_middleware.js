@@ -57,7 +57,7 @@ function adminSecurityHeaders(headers = {}) {
   secured.set("Referrer-Policy", "same-origin");
   secured.set(
     "Content-Security-Policy",
-    "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.bilibili.com; font-src 'self'; worker-src 'none'"
+    "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self' https://h3-bridge.lusu575.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.bilibili.com; font-src 'self'; worker-src 'none'"
   );
   secured.set("X-Frame-Options", "DENY");
   secured.set(

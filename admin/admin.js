@@ -205,6 +205,11 @@ const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
   {
+    date: "2026-08-12",
+    title: "MiniMax H3 控制面上线准备",
+    body: "后台新增受 /admin/* 保护的 MiniMax H3 控制台与主导航入口，接入固定 Runner、控制器、本机 ComfyUI、Bridge、任务和队列状态读取。执行、传输、Tunnel/Access、生产 token 与 GPU canary 仍需现场配置和核验。"
+  },
+  {
     date: "2026-08-09",
     title: "后台与互传动效反馈精修",
     body: "主后台统一了加载中、忙碌和 aria-busy 状态，只有实际触发请求的按钮显示 spinner；流量压力条改用不触发布局的缩放反馈，移动抽屉与遮罩同步开合，确认框和地图提示支持中途反向；键盘操作和减少动态效果偏好会立即完成关键状态切换。Quick Transfer 1.0.10 同步补齐请求表格、按钮 spinner、650ms 复制反馈、稳定 notice 槽位与可中断通知，未改变口令、加密、私有存储、权限或接口协议。后台资源版本为 20260809-admin-motion-polish-r2，互传管理资源版本为 20260809-transfer-motion-r2。"

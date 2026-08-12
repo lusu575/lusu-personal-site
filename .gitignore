@@ -14,6 +14,8 @@ __pycache__/
 .codex-wrangler-preview*.log
 .diagnostics/
 .test-tmp/
+agents/minimax-h3-runner/config.json
+agents/minimax-h3-runner/state/
 output/
 dist/
 .production-build-*/
