@@ -2,6 +2,10 @@
 
 > 管理后台专用说明：本文档只记录 `/admin/` 管理后台的私有维护记录，不等同于主站根目录 `CHANGELOG.md`。后台私有更新不写入主站知识库 `site-updates`，也不展示到首页最近更新。
 
+## 2026-08-12
+
+- MiniMax H3 隔离发布候选把受保护控制面、Runner register/heartbeat、固定控制器、T2V 闸门与 loopback Bridge/Range 下载接入 `main` 基线；控制与传输开关默认关闭，生产 Agent token、Tunnel/Access 与 GPU canary 仍需现场配置和核验。
+
 ## 2026-08-09
 
 - 精修主后台和独立 Quick Transfer 管理页的交互反馈：加载／忙碌状态统一同步 class 与 `aria-busy`，持续请求使用克制 spinner；只有实际触发 mutation 的按钮进入 busy，流量压力条改为 `scaleX`，移动抽屉与遮罩同步且可中断，确认框、地图提示、notice 和请求表格补齐短促进入／退出反馈。复制反馈仅覆盖真实剪贴板请求并在 650ms 后复原，notice 保留稳定 44px 槽位。键盘、Escape 与减少动态效果路径立即提交关键状态，hover 只在细指针设备启用。Quick Transfer 在 1.0.9 之上精确升级至 1.0.10，协议、加密、私有存储和权限不变；后台 query 为 `20260809-admin-motion-polish-r2`，Transfer 管理 query 为 `20260809-transfer-motion-r2`。

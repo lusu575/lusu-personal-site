@@ -1,6 +1,36 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-08-12-minimax-h3-console",
+      "slug": "2026-08-12-minimax-h3-console",
+      "category": "site-updates",
+      "tags": ["网站更新", "工具区", "ComfyUI", "MiniMax H3", "AI"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-12T08:00:00.000Z",
+      "updated_at": "2026-08-12T08:00:00.000Z",
+      "published_at": "2026-08-12T08:00:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.12",
+      "title": {
+        "zh": "在线 ComfyUI 控制面上线准备",
+        "en": "Online ComfyUI Control Plane Ready for Launch",
+        "ja": "オンライン ComfyUI 制御面の公開準備"
+      },
+      "summary": {
+        "zh": "工具区新增站长专用的在线 ComfyUI · MiniMax H3 控制台，接入受保护的 Runner、固定控制器、本机 ComfyUI、Bridge 与任务状态读取；执行和传输开关仍默认关闭。",
+        "en": "Tools now includes a private Online ComfyUI · MiniMax H3 console with protected Runner, pinned controller, local ComfyUI, Bridge, and job-state checks; execution and transfer remain disabled by default.",
+        "ja": "ツールに所有者専用のオンライン ComfyUI · MiniMax H3 コンソールを追加しました。保護された Runner、固定コントローラー、ローカル ComfyUI、Bridge、ジョブ状態を確認できますが、実行と転送は既定で無効です。"
+      },
+      "content_markdown": {
+        "zh": "# 在线 ComfyUI 控制面上线准备\n\n工具区现在提供站长专用的“在线 ComfyUI · MiniMax H3”入口，打开的是现有 `/admin/*` 保护下的控制台，不是公网 ComfyUI 页面。\n\n## 这一轮接入的内容\n\n- 工具卡继续使用 image2 生成的简约 AI 视频主题图标，不使用代码绘制。\n- 控制台可以读取 Runner、固定控制器、本机 ComfyUI、Bridge、磁盘和任务队列的受保护状态。\n- Agent 使用独立的管理员专属 `minimax-h3:execute` 权限，任务、租约、事件和幂等回执进入 H3 控制面。\n\n## 生产安全边界\n\n家庭端 ComfyUI 固定在 `127.0.0.1:8188`，Bridge 固定在 `127.0.0.1:8791`。参考素材与成片不进入站点的 R2、D1、KV、Durable Object、Pages 或 CDN。执行、传输、Tunnel/Access、Runner token 和 GPU canary 仍需分别配置并验证；在证据完成前，页面不会把未接入组件显示为在线。",
+        "en": "# Online ComfyUI Control Plane Ready for Launch\n\nTools now provides a private Online ComfyUI · MiniMax H3 entry for the site owner. It opens a console protected by the existing `/admin/*` boundary, not a public ComfyUI page.\n\n## What this release connects\n\n- The tool card keeps the simple AI-video-themed image2 asset and does not draw the icon in code.\n- The console can read protected Runner, pinned controller, local ComfyUI, Bridge, disk, and queue state.\n- The Agent uses the separate administrator-only `minimax-h3:execute` scope, while jobs, leases, events, and idempotent receipts stay in the H3 control plane.\n\n## Production safety boundary\n\nHome ComfyUI remains fixed at `127.0.0.1:8188` and the Bridge at `127.0.0.1:8791`. Reference media and finished clips do not enter site R2, D1, KV, Durable Objects, Pages, or CDN assets. Execution, transfer, Tunnel/Access, the Runner token, and the GPU canary still require separate configuration and evidence; unconnected components are not shown as online before that evidence exists.",
+        "ja": "# オンライン ComfyUI 制御面の公開準備\n\nツールにサイト所有者専用の Online ComfyUI · MiniMax H3 入口を追加しました。既存の `/admin/*` 境界で保護されたコンソールを開き、ComfyUI の画面を公開するものではありません。\n\n## 今回接続した範囲\n\n- ツールカードは image2 で生成したシンプルな AI ビデオテーマの素材を使い、アイコンをコードで描画しません。\n- コンソールは保護された Runner、固定コントローラー、ローカル ComfyUI、Bridge、ディスク、キューの状態を読み取れます。\n- Agent は管理者専用の独立した `minimax-h3:execute` scope を使い、ジョブ、リース、イベント、冪等レシートは H3 制御面に保存します。\n\n## 本番の安全境界\n\n家庭側 ComfyUI は `127.0.0.1:8188`、Bridge は `127.0.0.1:8791` に固定します。素材と完成動画はサイトの R2、D1、KV、Durable Object、Pages、CDN アセットへ入りません。実行、転送、Tunnel/Access、Runner token、GPU canary は個別の設定と証拠が必要で、未接続の部品をオンラインとは表示しません。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-12-wallpaper-game-display-fix",
       "slug": "2026-08-12-wallpaper-game-display-fix",
       "category": "site-updates",

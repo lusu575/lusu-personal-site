@@ -3,6 +3,50 @@ export const resourcesContent = Object.freeze({
   "resources": [
     {
       "category": 0,
+      "toolId": "minimax-h3",
+      "capabilityDomain": "minimax-h3",
+      "iconSrc": "assets/images/generated-icons/minimax-h3.png?v=20260812-minimax-h3-r3",
+      "version": "P2",
+      "updated": "2026.08.12",
+      "external": false,
+      "publicCatalog": false,
+      "showReadyStatus": false,
+      "url": "/admin/minimax-h3.html",
+      "title": {
+        "zh": "在线 ComfyUI · MiniMax H3",
+        "en": "Online ComfyUI · MiniMax H3",
+        "ja": "オンライン ComfyUI · MiniMax H3"
+      },
+      "desc": {
+        "zh": "站长专用的 MiniMax H3 远程生成控制台。通过受保护的控制面查看 Runner、固定控制器、本机 ComfyUI、Bridge 与任务状态。",
+        "en": "A private MiniMax H3 remote-generation console for the site owner. Use the protected control plane to inspect the Runner, pinned controller, local ComfyUI, Bridge, and job state.",
+        "ja": "サイト所有者向け MiniMax H3 リモート生成コンソール。保護された制御面から Runner、固定コントローラー、ローカル ComfyUI、Bridge、ジョブ状態を確認します。"
+      },
+      "actionLabel": {
+        "zh": "进入",
+        "en": "Open",
+        "ja": "開く"
+      },
+      "tags": [
+        {
+          "zh": "站长专用",
+          "en": "Owner only",
+          "ja": "所有者専用"
+        },
+        {
+          "zh": "AI 视频",
+          "en": "AI video",
+          "ja": "AI 動画"
+        },
+        {
+          "zh": "本机 ComfyUI",
+          "en": "Local ComfyUI",
+          "ja": "ローカル ComfyUI"
+        }
+      ]
+    },
+    {
+      "category": 0,
       "toolId": "whiteboard",
       "capabilityDomain": "whiteboard",
       "iconSrc": "assets/images/generated-icons/whiteboard.png?v=20260730-online-whiteboard-r1",

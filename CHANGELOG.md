@@ -4,6 +4,8 @@
 
 ## 2026-08-12
 
+- MiniMax H3 隔离发布候选保留 `main` 上既有视频、壁纸与游戏改动，并接入 Tools 的站长专用在线 ComfyUI 入口、admin-only `minimax-h3:execute`、P0–P3 API/control-plane、固定 Runner/loopback Bridge 与 H3 D1 schema/index；控制与传输开关仍默认关闭，生产 Runner token、Tunnel/Access 和 GPU canary 未验证前不宣称生成链路在线。
+
 - 修复桌面 Home 的两层云：只要当前设备和动效设置具备视频壁纸播放资格，就完全跳过旧 CSS 动态云的创建与预热，由视频自身承载云层运动；手机、low、Save-Data、reduced／off 等降级路径及静态底图兜底保持不变，未修改任何视频或云朵素材。
 - 修复从知识库、视频区、工具区、游戏区、聊天室或关于页返回 Home 时的视频闪烁与重载。离开 Home 或页面暂时隐藏时只暂停并保留当前视频节点、`src` 与解码器，返回后复用同一节点续播；仅在设备／动效真正失去播放资格或主题资源发生变化时销毁旧视频。
 - 修复人生重开等独立游戏在浏览器缩放、窄屏与短横屏下变成中央小窗或可玩高度不足的问题：共享 game shell 移除 1280px 固定宽度上限；宽度不超过 860px 或高度不超过 720px 时，存档、云端与 AI 工具默认折叠到一个三语 44px 按钮后，iframe 获得剩余空间。没有使用全局 zoom、裁切或缩小触控目标。

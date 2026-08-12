@@ -1,0 +1,11 @@
+{
+  "baseUrl": "https://lusu575.com",
+  "runnerId": "",
+  "label": "LuSu H3 Runner",
+  "agentVersion": "0.2.0",
+  "agentTokenFile": "C:/Users/CHANGE-ME/AppData/Local/LuSu/minimax-h3/agent-token",
+  "installationIdFile": "C:/Users/CHANGE-ME/AppData/Local/LuSu/minimax-h3/installation-id",
+  "stateRoot": "C:/Users/CHANGE-ME/AppData/Local/LuSu/minimax-h3",
+  "pollSeconds": 8,
+  "heartbeatSeconds": 15
+}

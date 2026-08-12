@@ -6,6 +6,7 @@ import {
   REMOTE_MIGRATION_VERIFICATION_QUERIES,
   compatibilityColumnMigrations,
   migrateRemoteD1,
+  MINIMAX_H3_REMOTE_MIGRATION_VERIFICATION_QUERIES,
   retryRemoteD1Read
 } from "../scripts/d1-migrate-remote.mjs";
 
@@ -467,7 +468,7 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
-  assert.match(verificationSql, /article_seed_version' and value = '20260812-wallpaper-game-display-r1'/);
+  assert.match(verificationSql, /article_seed_version' and value = '20260812-minimax-h3-control-plane-r1'/);
   const currentReleaseVerificationSql = REMOTE_MIGRATION_VERIFICATION_QUERIES.find((sql) => (
     sql.includes("wallpaper-game-display-fix-update-article")
   ));
@@ -523,6 +524,25 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /length\(trim\(content_markdown\)\) > 0/);
   assert.match(verificationSql, /whiteboard-agent-images-update-translations/);
   assert.match(verificationSql, /seed-update-2026-08-01-whiteboard-reliable-sketch/);
+});
+
+test("H3-only remote migration uses the additive file and H3 verification only", async () => {
+  const files = [];
+  const queries = [];
+  await migrateRemoteD1({
+    h3Only: true,
+    executeFile: async (file) => files.push(file),
+    executeCommand: async () => assert.fail("H3-only migration must not run legacy ALTER statements"),
+    queryRows: async (sql) => {
+      queries.push(sql);
+      return sql.includes("minimax-h3") || sql.includes("article_seed_version")
+        ? sql.match(/'([^']+)'/g).filter((value) => value.startsWith("'minimax") || value.includes("article_seed_version")).map((value) => ({ item: value.slice(1, -1), present: 1 }))
+        : [];
+    },
+    log: () => {}
+  });
+  assert.deepEqual(files, ["cloudflare/migrations/20260812-minimax-h3-control-plane.sql"]);
+  assert.equal(queries.length, MINIMAX_H3_REMOTE_MIGRATION_VERIFICATION_QUERIES.length);
 });
 
 test("remote D1 read retries are bounded and never retry write operations", async () => {

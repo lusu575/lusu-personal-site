@@ -4841,7 +4841,7 @@ const preservedReleaseUpdateIds = [
   "seed-update-2026-08-09-motion-polish",
   "seed-update-2026-08-07-remote-mcp-oauth"
 ];
-const projectedSupportingReleaseUpdateIds = preservedReleaseUpdateIds.slice(0, 4);
+const projectedSupportingReleaseUpdateIds = preservedReleaseUpdateIds.slice(0, 3);
 const finalTranslationMinimums = {
   title: 6,
   summary: 24,
@@ -4924,11 +4924,11 @@ if (finalUpdateStarted) {
     fail("js/data/home-content.mjs should remain the newest five-item projection after the wallpaper and game display release");
   }
 
-  const projectedUpdateIds = [finalUpdateId, ...projectedSupportingReleaseUpdateIds];
+  const projectedUpdateIds = ["seed-update-2026-08-12-minimax-h3-console", finalUpdateId, ...projectedSupportingReleaseUpdateIds];
   const projectedUpdateIndexes = projectedUpdateIds.map((updateId) => homeContentModuleJs.indexOf(updateId));
   if (projectedUpdateIndexes.some((index) => index < 0)
     || !projectedUpdateIndexes.every((index, offset, list) => offset === 0 || list[offset - 1] < index)) {
-    fail("js/data/home-content.mjs should order the display fix, first-version H3 release, BFCache recovery, video-link autofill, and prior H3 release by descending publication time");
+    fail("js/data/home-content.mjs should order the MiniMax H3 control plane, display fix, first-version H3 release, BFCache recovery, and video-link autofill by descending publication time");
   }
 
   for (const token of [

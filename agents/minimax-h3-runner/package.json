@@ -1,0 +1,12 @@
+{
+  "name": "lusu-minimax-h3-runner",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "dependencies": {
+    "undici": "7.29.0"
+  }
+}

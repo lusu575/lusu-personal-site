@@ -179,6 +179,41 @@ export async function migrateLocalD1() {
     from sqlite_master where type = 'index' and name = 'agent_article_receipts_created_idx'
     `),
     ...await queryRows(`
+    select 'minimax-h3-runners-table' as item, count(*) as present
+    from sqlite_master where type = 'table' and name = 'minimax_h3_runners'
+    union all
+    select 'minimax-h3-jobs-table', count(*)
+    from sqlite_master where type = 'table' and name = 'minimax_h3_jobs'
+    union all
+    select 'minimax-h3-assets-table', count(*)
+    from sqlite_master where type = 'table' and name = 'minimax_h3_job_assets'
+    union all
+    select 'minimax-h3-events-table', count(*)
+    from sqlite_master where type = 'table' and name = 'minimax_h3_job_events'
+    union all
+    select 'minimax-h3-receipts-table', count(*)
+    from sqlite_master where type = 'table' and name = 'minimax_h3_operation_receipts'
+    `),
+    ...await queryRows(`
+    select 'minimax-h3-tickets-table' as item, count(*) as present
+    from sqlite_master where type = 'table' and name = 'minimax_h3_transfer_tickets'
+    union all
+    select 'minimax-h3-jobs-runner-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_jobs_runner_state_created_idx'
+    union all
+    select 'minimax-h3-jobs-owner-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_jobs_owner_created_idx'
+    union all
+    select 'minimax-h3-events-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_job_events_job_seq_idx'
+    union all
+    select 'minimax-h3-tickets-job-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_transfer_tickets_job_status_idx'
+    union all
+    select 'minimax-h3-tickets-runner-index', count(*)
+    from sqlite_master where type = 'index' and name = 'minimax_h3_transfer_tickets_runner_status_idx'
+    `),
+    ...await queryRows(`
     select 'article-delivery-auto-publish-column' as item, count(*) as present
     from pragma_table_info('article_delivery_channels') where name = 'auto_publish'
     union all

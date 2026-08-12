@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "asset": "assets/images/generated-icons/minimax-h3.png",
+  "generator": "image2",
+  "theme": "ai-video-generation",
+  "generatedOutput": {
+    "width": 1254,
+    "height": 1254,
+    "format": "png"
+  },
+  "publishedOutput": {
+    "width": 192,
+    "height": 192,
+    "format": "png",
+    "channels": 4,
+    "hasAlpha": true,
+    "sha256": "bc281f6020f43d40b081170fbc59dcd8e400fc66d255461f4017ae4101eff8b1"
+  },
+  "postProcessing": {
+    "mechanicalResizeOnly": false,
+    "codeDrawnOrComposited": false,
+    "operations": [
+      {
+        "operation": "chroma-key-removal",
+        "keyColor": "#00ff00",
+        "method": "mechanical-raster-processing"
+      },
+      {
+        "operation": "resize",
+        "from": {
+          "width": 1254,
+          "height": 1254
+        },
+        "to": {
+          "width": 192,
+          "height": 192
+        },
+        "kernel": "nearest"
+      }
+    ]
+  }
+}

@@ -146,6 +146,7 @@ Hextris 不注册到上述通用服务。它由 `node .\games\hextris\agent\mcp-
 | `content:read` | 读取公开内容。 |
 | `content:write` | 管理并原子发布普通知识库文章；仅当前站点管理员可批准，默认登录不授予。 |
 | `content:delete` | 永久删除符合 CAS revision 的普通知识库文章；仅当前站点管理员可批准，默认登录不授予。 |
+| `minimax-h3:execute` | 通过专用本地 Runner 执行受控 MiniMax H3 任务；仅当前站点管理员可批准，默认登录不授予，不进入通用能力目录。 |
 | `transfer:read` | 查看已加入的 Quick Transfer 房间并下载。 |
 | `transfer:write` | 加入房间、发送文本和上传文件。 |
 | `transfer:delete` | 删除房间项目或中止分片上传；默认登录不授予。 |
@@ -167,7 +168,13 @@ node .\cli\lusu.mjs auth login --scopes content:read,transfer:read,transfer:writ
 - `GET /api/agent-auth/me`：Bearer 客户端检查当前用户、scope 和到期时间。
 - `DELETE /api/agent-auth/tokens/current`：撤销正在使用的 Bearer 令牌；`lusu auth logout` 会调用它并清理本机凭据。
 
-Agent Bearer 仍只代表一个普通机器会话，不能进入 `/api/admin/*` 或绕过 Quick Transfer 的权限边界。知识库写入是唯一的专用管理员 Agent 通道：`content:write`／`content:delete` 只能由当前管理员在设备授权页批准，每次请求还会重新核对令牌所属账号仍为管理员；这不会把管理员角色写进或返回给机器 principal。
+Agent Bearer 仍只代表一个普通机器会话，不能进入 `/api/admin/*` 或绕过 Quick Transfer 的权限边界。知识库管理和 MiniMax H3 Runner 是专用管理员 Agent 通道：`content:write`／`content:delete`／`minimax-h3:execute` 只能由当前管理员在设备授权页批准，每次请求还会重新核对令牌所属账号仍为管理员；这不会把管理员角色写进或返回给机器 principal。
+
+### MiniMax H3 Runner 的专用边界
+
+- `minimax-h3:execute` 是非默认、管理员专属 scope；它只允许固定版本的本地 Runner 访问 `/api/agent/minimax-h3/*`，不能访问通用 admin API、文章、视频、Quick Transfer 或账户接口。
+- Runner 使用固定的 ComfyUI `127.0.0.1:8188`、哈希锁定的 H3 控制器与受限任务 schema；不接受任意 workflow、node、path、command、environment 或 URL。提交结果不确定时进入 stalled/reconciliation，不自动重复提交 GPU 任务。
+- H3 Bridge 仍是本地 loopback 服务；公网下载必须另经站长控制的 Tunnel/Access、一次性 ticket、短期 HttpOnly session 和绑定 job 的完整／HEAD／单 Range 读取。该 scope 不代表任何公网文件 URL。
 
 ### 知识库文章的原子 MCP 边界
 

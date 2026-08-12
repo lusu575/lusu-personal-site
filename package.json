@@ -43,6 +43,7 @@
     "d1:create": "wrangler d1 create lusu_personal_site",
     "d1:migrate:local": "node scripts/d1-migrate-local.mjs",
     "d1:migrate:remote": "node scripts/d1-migrate-remote.mjs",
+    "d1:migrate:remote:h3": "node scripts/d1-migrate-remote.mjs --h3-only",
     "transfer:test": "node --test tests/transfer/*.test.mjs",
     "transfer:cleanup:dev": "wrangler dev --config workers/transfer-cleanup/wrangler.jsonc",
     "deploy": "echo Merge to GitHub main to trigger Cloudflare Pages automatic deploy.",
