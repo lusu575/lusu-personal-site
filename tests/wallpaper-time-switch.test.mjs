@@ -598,6 +598,8 @@ test("main schedules the exact boundary, decodes on demand, and reconciles cross
   assert.match(mainJs, /document\.addEventListener\("visibilitychange",[\s\S]*?source: "visibility"/);
   assert.match(mainJs, /initWallpaperTimeSwitch\(\);/);
   assert.match(mainJs, /wallpaperCloudAssetCandidates\(theme\)[\s\S]*?cloud-\$\{name\}\.png/);
+  assert.match(mainJs, /function wallpaperCloudAssetCandidates[\s\S]*?wallpaperAmbientPlaybackEligible\(\)[\s\S]*?return \[\]/);
+  assert.match(mainJs, /function dynamicWallpaperIsActive[\s\S]*?!wallpaperAmbientPlaybackEligible\(\)/);
   assert.match(mainJs, /wallpaper-theme-scene-overlay[\s\S]*?:scope > \[data-wallpaper-dynamic-layer\][\s\S]*?frozenTransform = cloudStyle\.transform[\s\S]*?cloud\.style\.animation = "none"/);
   assert.match(mainJs, /const reduced = document\.documentElement\.dataset\.motion === "reduced";[\s\S]*?\? 140/);
   assert.match(mainJs, /root\.dataset\.motion === "off" \|\| document\.hidden/);

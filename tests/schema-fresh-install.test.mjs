@@ -35,6 +35,7 @@ const wallpaperSwitchSlimDawnUpdateId = "seed-update-2026-08-10-wallpaper-switch
 const h3AmbientWallpapersUpdateId = "seed-update-2026-08-10-h3-ambient-wallpapers-4k";
 const ambientWallpaperBfcacheUpdateId = "seed-update-2026-08-11-ambient-wallpaper-bfcache-fix";
 const h3FirstVersionUpdateId = "seed-update-2026-08-11-h3-first-version-video-sr-48fps";
+const wallpaperGameDisplayUpdateId = "seed-update-2026-08-12-wallpaper-game-display-fix";
 const wallpaperSwitchCeramicUpdateId = "seed-update-2026-08-10-wallpaper-switch-ceramic-roll";
 const wallpaperSwitchCalmUpdateId = "seed-update-2026-08-10-wallpaper-switch-calm-redesign";
 const wallpaperSwitchSceneUpdateId = "seed-update-2026-08-09-wallpaper-switch-scene-redesign";
@@ -152,6 +153,38 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       assert.match(contentMarkdown, /Quick Transfer/);
       assert.match(contentMarkdown, /v1\.0\.10/);
       assert.doesNotMatch(contentMarkdown, /not deployed|尚未部署|未展開/);
+    }
+    assert.equal(
+      db.prepare(`
+        select count(*) as count
+        from articles
+        where article_id = ?
+          and slug = '2026-08-12-wallpaper-game-display-fix'
+          and category = 'site-updates'
+          and status = 'published'
+          and is_pinned = 0
+          and cover_image = ''
+          and published_at = '2026-08-12T07:30:00.000Z'
+      `).get(wallpaperGameDisplayUpdateId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(wallpaperGameDisplayUpdateId).count,
+      3
+    );
+    const wallpaperGameDisplayContent = content.updates.find(({ article_id: articleId }) => (
+      articleId === wallpaperGameDisplayUpdateId
+    ));
+    assert.ok(wallpaperGameDisplayContent);
+    for (const lang of ["zh", "en", "ja"]) {
+      const translation = db.prepare(`
+        select title, summary, content_markdown
+        from article_translations
+        where article_id = ? and lang = ?
+      `).get(wallpaperGameDisplayUpdateId, lang);
+      assert.equal(translation.title, wallpaperGameDisplayContent.title[lang]);
+      assert.equal(translation.summary, wallpaperGameDisplayContent.summary[lang]);
+      assert.equal(translation.content_markdown.replace(/\r\n/g, "\n"), wallpaperGameDisplayContent.content_markdown[lang]);
     }
     assert.equal(
       db.prepare(`
@@ -539,7 +572,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20260811-h3-first-version-video-sr-48fps-r1"
+      "20260812-wallpaper-game-display-r1"
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),

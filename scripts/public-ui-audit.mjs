@@ -189,10 +189,11 @@ const mime = Object.freeze({
 });
 
 function args(argv) {
-  const result = { output: defaultOutput, chrome: "", list: false, videoOnly: false, articleOnly: false, releaseOnly: false, dockIconOnly: false, resourcesOnly: false };
+  const result = { output: defaultOutput, chrome: "", list: false, videoOnly: false, gameShellOnly: false, articleOnly: false, releaseOnly: false, dockIconOnly: false, resourcesOnly: false };
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === "--list") result.list = true;
     else if (argv[i] === "--video-only") result.videoOnly = true;
+    else if (argv[i] === "--game-shell-only") result.gameShellOnly = true;
     else if (argv[i] === "--article-only") result.articleOnly = true;
     else if (argv[i] === "--release-only") result.releaseOnly = true;
     else if (argv[i] === "--dock-icon-only") result.dockIconOnly = true;
@@ -200,7 +201,7 @@ function args(argv) {
     else if (argv[i] === "--output") result.output = resolve(root, argv[++i] || "");
     else if (argv[i] === "--chrome") result.chrome = resolve(argv[++i] || "");
     else if (["--help", "-h"].includes(argv[i])) {
-      console.log("Usage: npm.cmd run audit:public-ui -- [--output <dir>] [--chrome <path>] [--video-only] [--article-only] [--release-only] [--dock-icon-only] [--resources-only] [--list]");
+      console.log("Usage: npm.cmd run audit:public-ui -- [--output <dir>] [--chrome <path>] [--video-only] [--game-shell-only] [--article-only] [--release-only] [--dock-icon-only] [--resources-only] [--list]");
       process.exit(0);
     } else throw new Error(`Unknown argument: ${argv[i]}`);
   }
@@ -470,7 +471,9 @@ async function navigateFresh(client, url, stage) {
 
 async function emulate(client, viewport) {
   const landscape = viewport.width > viewport.height;
-  await client.send("Emulation.setDeviceMetricsOverride", { width: viewport.width, height: viewport.height, deviceScaleFactor: 1, mobile: viewport.mobile, screenWidth: viewport.width, screenHeight: viewport.height, screenOrientation: { angle: landscape ? 90 : 0, type: landscape ? "landscapePrimary" : "portraitPrimary" } });
+  const deviceMetrics = { width: viewport.width, height: viewport.height, deviceScaleFactor: 1, mobile: viewport.mobile, screenWidth: viewport.width, screenHeight: viewport.height, screenOrientation: { angle: landscape ? 90 : 0, type: landscape ? "landscapePrimary" : "portraitPrimary" } };
+  if (Number(viewport.emulationScale) > 0) deviceMetrics.scale = Number(viewport.emulationScale);
+  await client.send("Emulation.setDeviceMetricsOverride", deviceMetrics);
   await client.send("Emulation.setTouchEmulationEnabled", { enabled: viewport.mobile, maxTouchPoints: viewport.mobile ? 5 : 1 });
   await client.send("Emulation.setEmulatedMedia", { media: "screen", features: [{ name: "prefers-reduced-motion", value: "reduce" }, { name: "prefers-color-scheme", value: "light" }] });
   await client.send("Emulation.setTimezoneOverride", { timezoneId: "Asia/Shanghai" });
@@ -4285,7 +4288,7 @@ async function auditAmbientWallpaperPlayback(client, server) {
   };
   const playableState = async () => evaluate(client, `(() => {
     const video=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]');
-    return {route:document.body.dataset.route||'',shell:document.documentElement.dataset.uiShell||'',tier:document.documentElement.dataset.performanceTier||'',motion:document.querySelector('#wallpaper-root')?.dataset.motion||'',theme:video?.dataset.wallpaperAmbientTheme||'',resolution:video?.dataset.wallpaperAmbientResolution||'',videoWidth:video?.videoWidth||0,videoHeight:video?.videoHeight||0,readyState:video?.readyState||0,paused:video?.paused??true,opacity:video?.style.opacity||'',currentPath:video?.currentSrc?new URL(video.currentSrc).pathname:''};
+    return {route:document.body.dataset.route||'',shell:document.documentElement.dataset.uiShell||'',tier:document.documentElement.dataset.performanceTier||'',motion:document.querySelector('#wallpaper-root')?.dataset.motion||'',theme:video?.dataset.wallpaperAmbientTheme||'',resolution:video?.dataset.wallpaperAmbientResolution||'',videoWidth:video?.videoWidth||0,videoHeight:video?.videoHeight||0,readyState:video?.readyState||0,paused:video?.paused??true,opacity:video?.style.opacity||'',currentPath:video?.currentSrc?new URL(video.currentSrc).pathname:'',cloudCount:document.querySelectorAll('[data-wallpaper-dynamic-layer]').length};
   })()`);
   try {
     for (const sample of [
@@ -4307,13 +4310,22 @@ async function auditAmbientWallpaperPlayback(client, server) {
       if (state.videoWidth !== sample.expectedWidth || state.videoHeight !== sample.expectedHeight) failures.push(`${sample.viewport.name} decoded ${state.videoWidth}x${state.videoHeight} instead of ${sample.expectedWidth}x${sample.expectedHeight}`);
       if (state.currentPath !== expectedPath) failures.push(`${sample.viewport.name} current video path ${state.currentPath || "missing"} !== ${expectedPath}`);
       if (requests.length !== 1 || requests[0]?.path !== expectedPath) failures.push(`${sample.viewport.name} requested ambient assets ${JSON.stringify(requests.map((entry) => entry.path))}`);
+      if (state.cloudCount !== 0) failures.push(`${sample.viewport.name} mounted ${state.cloudCount} CSS cloud layers while video wallpaper was eligible`);
       samples.push({ ...sample, state, requests });
       if (sample.expectedResolution === "2160") {
+        await evaluate(client, `window.__auditRetainedAmbientVideo=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]'); true`);
         await setAuditRoute(client, "resources");
-        await waitFor(client, `document.body.dataset.route==='resources'&&!document.querySelector('video.wallpaper-ambient-video')`, "non-Home ambient decoder release");
-        const released = await evaluate(client, `({route:document.body.dataset.route,videoCount:document.querySelectorAll('video.wallpaper-ambient-video').length})`);
-        if (released.videoCount !== 0) failures.push(`non-Home route retained ${released.videoCount} ambient videos`);
-        samples.at(-1).released = released;
+        await waitFor(client, `(() => {const video=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]');return document.body.dataset.route==='resources'&&video===window.__auditRetainedAmbientVideo&&video.paused&&video.hasAttribute('src');})()`, "non-Home ambient pause with decoder retained");
+        const paused = await evaluate(client, `({route:document.body.dataset.route,videoCount:document.querySelectorAll('video.wallpaper-ambient-video').length,sameNode:document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]')===window.__auditRetainedAmbientVideo,paused:window.__auditRetainedAmbientVideo?.paused??false,hasSource:window.__auditRetainedAmbientVideo?.hasAttribute('src')??false,cloudCount:document.querySelectorAll('[data-wallpaper-dynamic-layer]').length})`);
+        if (paused.videoCount !== 1 || !paused.sameNode || !paused.paused || !paused.hasSource) failures.push(`non-Home route did not retain one paused ambient decoder: ${JSON.stringify(paused)}`);
+        if (paused.cloudCount !== 0) failures.push(`non-Home route retained ${paused.cloudCount} CSS cloud layers`);
+        await setAuditRoute(client, "home");
+        await waitFor(client, `(() => {const video=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]');return document.body.dataset.route==='home'&&video===window.__auditRetainedAmbientVideo&&!video.paused&&video.style.opacity==='1';})()`, "Home ambient resume with retained decoder");
+        const resumed = await evaluate(client, `({route:document.body.dataset.route,sameNode:document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]')===window.__auditRetainedAmbientVideo,paused:window.__auditRetainedAmbientVideo?.paused??true,cloudCount:document.querySelectorAll('[data-wallpaper-dynamic-layer]').length})`);
+        const resumedRequests = videoRequests();
+        if (!resumed.sameNode || resumed.paused || resumedRequests.length !== 1) failures.push(`Home return did not resume the retained ambient video without another request: ${JSON.stringify({ resumed, requests: resumedRequests.map((entry) => entry.path) })}`);
+        if (resumed.cloudCount !== 0) failures.push(`Home return mounted ${resumed.cloudCount} CSS cloud layers over the video`);
+        samples.at(-1).routeRoundTrip = { paused, resumed, requests: resumedRequests };
       }
     }
 
@@ -4390,6 +4402,50 @@ async function auditAmbientWallpaperPlayback(client, server) {
     await emulate(client, viewports.find((item) => item.width === 1280 && item.height === 720));
   }
   return { kind:"ambient-wallpaper-playback", name:"current-theme-1080-2160-and-zero-request-fallbacks", samples, failures, status:failures.length?"FAIL":"PASS" };
+}
+
+async function auditLifeRestartGameShell(client, server, output) {
+  const scenarios = [
+    { name:"desktop-standard", width:1280, height:720, mobile:false, expectedCollapsed:true },
+    { name:"desktop-zoom-out-33", width:3840, height:1740, mobile:false, expectedCollapsed:false, emulationScale:1/3 },
+    { name:"phone-portrait", width:390, height:844, mobile:true, expectedCollapsed:true },
+    { name:"phone-landscape", width:844, height:390, mobile:true, expectedCollapsed:true }
+  ];
+  const results = [];
+  for (const scenario of scenarios) {
+    await emulate(client, scenario);
+    await client.send("Page.navigate", { url:`${server.origin}/games/life-restart/index.html?lang=zh&audit-game-shell=${scenario.name}` });
+    await waitFor(client, `document.readyState==='complete'&&document.querySelector('.game-frame-card')?.dataset.toolsCollapsed==='${scenario.expectedCollapsed}'`, `${scenario.name} game shell initialization`);
+    await waitFor(client, `document.querySelector('.game-agent-frame-wrap iframe.game-frame')?.contentDocument?.readyState==='complete'`, `${scenario.name} Life Restart iframe`);
+    await waitFrames(client, 3);
+    const state = await evaluate(client, `(() => {
+      const round=(value)=>Math.round(Number(value||0)*100)/100;
+      const box=(element)=>{if(!element)return null;const value=element.getBoundingClientRect();return {left:round(value.left),top:round(value.top),right:round(value.right),bottom:round(value.bottom),width:round(value.width),height:round(value.height)};};
+      const card=document.querySelector('.game-frame-card');
+      const toggle=document.querySelector('.game-tools-toggle');
+      const wrap=document.querySelector('.game-agent-frame-wrap');
+      const frame=document.querySelector('iframe.game-frame');
+      const tools=document.querySelector('.game-tools');
+      const license=document.querySelector('.license-panel');
+      const agent=document.querySelector('.game-agent-panel');
+      return {innerWidth,innerHeight,pageScale:visualViewport?.scale||1,documentWidth:document.documentElement.scrollWidth,documentHeight:document.documentElement.scrollHeight,card:box(card),toggle:box(toggle),wrap:box(wrap),frame:box(frame),collapsed:card?.dataset.toolsCollapsed||'',expanded:toggle?.getAttribute('aria-expanded')||'',toolsDisplay:getComputedStyle(tools).display,licenseDisplay:getComputedStyle(license).display,agentDisplay:getComputedStyle(agent).display,iframePath:frame?.contentWindow?.location?.pathname||'',iframeLanguage:frame?.contentWindow?.location?.search||''};
+    })()`);
+    const failures = [];
+    if (state.documentWidth > state.innerWidth + 1 || state.documentHeight > state.innerHeight + 1) failures.push(`outer shell scrolls: ${JSON.stringify({ documentWidth:state.documentWidth, documentHeight:state.documentHeight, innerWidth:state.innerWidth, innerHeight:state.innerHeight })}`);
+    if (!state.card || state.card.left < -1 || state.card.right > state.innerWidth + 1 || state.card.width < state.innerWidth - 24) failures.push(`game card does not fill the available width: ${JSON.stringify(state.card)}`);
+    if (state.collapsed !== String(scenario.expectedCollapsed) || state.expanded !== String(!scenario.expectedCollapsed)) failures.push(`tool collapse semantics are wrong: ${JSON.stringify({ collapsed:state.collapsed, expanded:state.expanded })}`);
+    if (!state.toggle || state.toggle.height < 44) failures.push(`tool toggle height ${state.toggle?.height || 0}px < 44px`);
+    if (scenario.expectedCollapsed && (state.toolsDisplay !== "none" || state.licenseDisplay !== "none" || state.agentDisplay !== "none")) failures.push(`collapsed tool panels remain visible: ${JSON.stringify({ tools:state.toolsDisplay, license:state.licenseDisplay, agent:state.agentDisplay })}`);
+    if (!scenario.expectedCollapsed && (state.toolsDisplay === "none" || state.licenseDisplay === "none" || state.agentDisplay === "none")) failures.push(`desktop tool panels were unexpectedly collapsed: ${JSON.stringify({ tools:state.toolsDisplay, license:state.licenseDisplay, agent:state.agentDisplay })}`);
+    if (!state.wrap || state.wrap.width < state.card.width - 6 || state.wrap.height < 180 || state.wrap.bottom > state.card.bottom + 1) failures.push(`Life Restart frame lacks usable space: ${JSON.stringify({ card:state.card, wrap:state.wrap })}`);
+    if (!state.frame || Math.abs(state.frame.width - state.wrap.width) > 1 || Math.abs(state.frame.height - state.wrap.height) > 1) failures.push(`iframe does not fill its wrapper: ${JSON.stringify({ frame:state.frame, wrap:state.wrap })}`);
+    if (state.iframePath !== "/games/life-restart/source/index.html" || !state.iframeLanguage.includes("language=zh-cn")) failures.push(`Life Restart loaded the wrong source or language: ${state.iframePath}${state.iframeLanguage}`);
+    const screenshotFile = `game-shell-life-restart-${scenario.name}.png`;
+    const screenshot = await client.send("Page.captureScreenshot", { format:"png", fromSurface:true, captureBeyondViewport:false });
+    await writeFile(resolve(output, screenshotFile), Buffer.from(screenshot.data, "base64"));
+    results.push({ kind:"game-shell-layout", name:scenario.name, viewport:scenario, state, screenshotFile, failures, status:failures.length?"FAIL":"PASS" });
+  }
+  return results;
 }
 
 async function auditWallpaperPreloadNetwork(client, server) {
@@ -4721,6 +4777,7 @@ async function runReleaseAudit(client, server, options, executable) {
   const wallpaperPreloadNetwork = await auditWallpaperPreloadNetwork(client, server); results.push(...wallpaperPreloadNetwork); wallpaperPreloadNetwork.forEach((item)=>logAuditStatus(item, `OPT-093 wallpaper preload ${item.name}`));
   const reducedMotionNetwork = await auditReducedMotionWallpaperNetwork(client, server); results.push(reducedMotionNetwork); logAuditStatus(reducedMotionNetwork,"OPT-093 reduced-motion optimized wallpaper network");
   const ambientPlayback = await auditAmbientWallpaperPlayback(client, server); results.push(ambientPlayback); logAuditStatus(ambientPlayback,"OPT-093 ambient wallpaper 1080/4K playback and zero-request fallbacks");
+  const gameShell = await auditLifeRestartGameShell(client, server, options.output); results.push(...gameShell); logAuditStatus({failures:gameShell.flatMap((item)=>item.failures),status:gameShell.some((item)=>item.failures.length)?"FAIL":"PASS"}, "OPT-091 Life Restart game shell responsive and zoom layout");
   const optionalBlog = await auditOptionalBlogRoute(client, server.origin, viewports.find((item)=>item.width===1280)); results.push(optionalBlog); logAuditStatus(optionalBlog,"OPT-091 optional unpublished Blog route");
   const lifecycle = await auditLifecycleGrowth(client, server.origin); results.push(lifecycle); logAuditStatus(lifecycle,"OPT-096 lifecycle growth");
   const summary = { audit:"public-site-release-gates", generatedAt:new Date().toISOString(), browser:basename(executable), contract:releaseAuditContract, limitations:["Automated CDP/AX/forced-state smoke is not a WCAG certification or a real NVDA, JAWS, VoiceOver, iOS, or Android test.","Performance budgets are deterministic localhost regression budgets, not field Core Web Vitals.","OPT-100 is local evidence only; this command never commits, pushes, deploys, or calls production."], results };
@@ -4765,6 +4822,15 @@ async function main() {
       const failedResourceChecks = resourceResults.filter((result) => result.failures.length);
       if (failedResourceChecks.length) throw new Error(`${failedResourceChecks.length} Resources visual review check(s) failed`);
       console.log(`public-ui-audit Resources visual review: ok (${resourceResults.length} checks, ${options.output})`);
+      return;
+    }
+    if (options.gameShellOnly) {
+      const gameShellResults = await auditLifeRestartGameShell(client, server, options.output);
+      for (const result of gameShellResults) logAuditStatus(result, `Life Restart game shell ${result.name} -> ${result.screenshotFile}`);
+      await writeFile(resolve(options.output, "game-shell-summary.json"), `${JSON.stringify({ generatedAt:new Date().toISOString(), results:gameShellResults }, null, 2)}\n`, "utf8");
+      const failedGameShellChecks = gameShellResults.filter((result) => result.failures.length);
+      if (failedGameShellChecks.length) throw new Error(`${failedGameShellChecks.length} Life Restart game shell check(s) failed`);
+      console.log(`public-ui-audit game shell: ok (${gameShellResults.length} checks, ${options.output})`);
       return;
     }
     if (options.articleOnly) {

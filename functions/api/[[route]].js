@@ -39,10 +39,10 @@ import {
   toPublicArticle
 } from "./public-content-service.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260811-h3-first-version-video-sr-48fps-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260812-wallpaper-game-display-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
-const PUBLIC_RELEASE_DATE = "2026-08-11";
+const PUBLIC_RELEASE_DATE = "2026-08-12";
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
@@ -90,7 +90,7 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260811-h3-first-version-video-sr-48fps-r1";
+const ARTICLE_SEED_VERSION = "20260812-wallpaper-game-display-r1";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AGENT_AUDIT_RETENTION_DAYS = 180;
@@ -7352,6 +7352,101 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-08-12-wallpaper-game-display-fix',
+        '2026-08-12-wallpaper-game-display-fix',
+        'site-updates',
+        '["网站更新","视频壁纸","游戏区","响应式","流畅度"]',
+        '', 'published', 0, 0,
+        '2026-08-12T07:30:00.000Z',
+        '2026-08-12T07:30:00.000Z',
+        '2026-08-12T07:30:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-08-12-wallpaper-game-display-fix", {
+      zh: {
+        title: "视频壁纸叠层、返回闪烁与游戏显示修复",
+        summary: "视频壁纸启用时不再创建或预热额外的 CSS 动态云，避免出现两层云；离开 Home 只暂停当前视频并保留解码器，返回后直接续播。游戏外壳移除 1280px 固定宽度上限，短屏默认收起存档与 AI 工具并可通过 44px 按钮展开，让人生重开等游戏在浏览器缩放、横屏和窄屏下获得更大的可玩区域。",
+        content_markdown: `# 视频壁纸叠层、返回闪烁与游戏显示修复
+
+本次更新处理首页视频壁纸与游戏独立页面的显示问题，不改动用户确认的视频素材。
+
+## 视频只保留一套云
+
+- 桌面端满足视频播放条件时，不再创建或预热原有 CSS 动态云图层。
+- 手机、低性能、Save-Data、reduced／off 等不播放视频的环境，仍可按原有静态降级策略工作。
+- 静态底图继续常驻，负责视频尚未就绪或播放失败时的无闪兜底。
+
+## 返回 Home 不再重新加载视频
+
+从知识库、视频区、工具区、游戏区、聊天室或关于页离开 Home 时，当前主题视频现在只会暂停，不会清空 \`src\`、销毁节点或释放解码器。返回 Home 后直接续播同一个视频节点，因此不会再次请求、解码和淡入整段壁纸。真正失去播放资格或切换主题时，旧资源仍会正常释放。
+
+## 游戏显示和缩放
+
+- 共享游戏外壳移除了会在浏览器缩放后形成中央小窗的 1280px 固定宽度上限。
+- 视口较窄或高度不超过 720px 时，存档、云端与 AI 工具默认收起，给游戏 iframe 留出更多高度；一个保持 44px 的三语按钮可随时展开。
+- 人生重开模拟器继续保留原游戏的纵向舞台比例和既有触控适配，不通过全局 zoom 或裁切破坏游戏内容。`
+      },
+      en: {
+        title: "Wallpaper Layering, Return Flash, and Game Display Fixes",
+        summary: "When video wallpaper is eligible, the page no longer creates or warms the separate CSS cloud layer, preventing duplicate clouds. Leaving Home now pauses the current video in place and resumes it on return without rebuilding the decoder. The game shell also removes its fixed 1280px cap and collapses save/AI tools by default on short screens behind a 44px toggle, giving Life Restart and other games more usable space under browser zoom, landscape, and narrow layouts.",
+        content_markdown: `# Wallpaper Layering, Return Flash, and Game Display Fixes
+
+This update fixes display problems in the Home video wallpaper and standalone game pages without changing the user-approved video assets.
+
+## One cloud system while video is active
+
+- When desktop video playback is eligible, the original CSS animated cloud layer is no longer created or warmed.
+- Mobile, low-performance, Save-Data, and reduced/off environments still follow their existing static fallback policies.
+- The static base remains mounted as a flash-free fallback while video is not ready or cannot play.
+
+## Returning Home no longer reloads video
+
+Leaving Home for Knowledge, Videos, Resources, Games, Chat, or About now pauses the current-theme video without clearing its \`src\`, removing its node, or releasing its decoder. Returning Home resumes that same node, avoiding another request, decode, and full-wallpaper fade. Old media is still released when playback genuinely becomes ineligible or the theme changes.
+
+## Game display and scaling
+
+- The shared game shell no longer has the fixed 1280px width cap that turned it into a small centered window under browser zoom.
+- On narrow viewports or screens no taller than 720px, save, cloud, and AI tools start collapsed so the iframe receives more height; a trilingual 44px button can expand them at any time.
+- Life Restart keeps the upstream portrait-stage proportion and existing touch adaptation instead of applying a global zoom or crop that could hide game content.`
+      },
+      ja: {
+        title: "動画壁紙の重なり・復帰時のちらつき・ゲーム表示を修正",
+        summary: "動画壁紙を利用できる場合は別の CSS 雲レイヤーを生成・先読みせず、雲の二重表示を防ぎます。Home を離れると現在の動画をその場で一時停止し、戻った際はデコーダーを作り直さず再開します。ゲーム枠の固定 1280px 上限も削除し、短い画面ではセーブ／AI ツールを 44px ボタンの後ろへ初期収納して、人生重開などをブラウザー拡大縮小・横画面・狭い画面で広く表示します。",
+        content_markdown: `# 動画壁紙の重なり・復帰時のちらつき・ゲーム表示を修正
+
+今回は、ユーザーが確認した動画素材を変更せず、Home の動画壁紙と独立ゲームページの表示問題を修正しました。
+
+## 動画再生時は雲を一系統に限定
+
+- デスクトップで動画を再生できる場合、従来の CSS 動く雲レイヤーを生成・先読みしません。
+- モバイル、low performance、Save-Data、reduced／off では従来どおり静止フォールバックを使います。
+- 動画の準備前や再生失敗時に備え、静止背景はちらつきのない常設フォールバックとして残します。
+
+## Home に戻っても動画を再読込しない
+
+Knowledge、Videos、Resources、Games、Chat、About へ移動したとき、現在テーマの動画は \`src\` を消去したりノードやデコーダーを破棄したりせず、その場で一時停止します。Home に戻ると同じ動画ノードを再開するため、再リクエスト、再デコード、壁紙全体の再フェードが発生しません。再生資格を本当に失った場合やテーマ変更時には古い資源を解放します。
+
+## ゲーム表示と拡大縮小
+
+- ブラウザーの拡大縮小時に中央の小窓を作っていた共有ゲーム枠の固定 1280px 上限を削除しました。
+- 幅の狭い画面または高さ 720px 以下では、セーブ、クラウド、AI ツールを初期状態で収納して iframe の高さを確保し、三言語対応の 44px ボタンでいつでも展開できます。
+- 人生重開は元ゲームの縦長ステージ比率と既存のタッチ調整を維持し、内容を隠す全体 zoom や切り抜きは行いません。`
+      }
+    }, "2026-08-12T07:30:00.000Z", "2026-08-12T07:30:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,

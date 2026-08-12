@@ -891,6 +891,7 @@ const wallpaperSwitchRouteMotionReleaseVersion = "20260810-wallpaper-switch-rout
 const videoLinkAutofillReleaseVersion = "20260811-video-link-autofill-r1";
 const h3AmbientWallpapersReleaseVersion = "20260810-h3-ambient-wallpapers-4k-r1";
 const h3FirstVersionVideoReleaseVersion = "20260811-h3-first-version-video-sr-48fps-r1";
+const wallpaperGameDisplayReleaseVersion = "20260812-wallpaper-game-display-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = "20260809-transfer-motion-r2";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
@@ -1320,8 +1321,8 @@ for (const route of lazyPublicRoutes) {
 for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
-  ["./core/wallpaper-ambient.mjs", h3FirstVersionVideoReleaseVersion],
-  ["./data/home-content.mjs", h3FirstVersionVideoReleaseVersion],
+  ["./core/wallpaper-ambient.mjs", wallpaperGameDisplayReleaseVersion],
+  ["./data/home-content.mjs", wallpaperGameDisplayReleaseVersion],
   ["./features/account.mjs", motionPolishReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", transferReleaseVersion]
@@ -1431,6 +1432,9 @@ for (const token of [
   "viewportProxyTested: true",
   "Page.bringToFront"
   ,"--resources-only"
+  ,"--game-shell-only"
+  ,"auditLifeRestartGameShell"
+  ,"desktop-zoom-out-33"
   ,"checkResourceReturnState"
   ,"resources-returned-${lang}-"
   ,"resourceVisualLanguages"
@@ -3329,10 +3333,10 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = motionPolishReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = h3FirstVersionVideoReleaseVersion;
+const currentMainVersion = wallpaperGameDisplayReleaseVersion;
 const currentCssVersion = h3AmbientWallpapersReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
-const currentGameShellVersion = "20260809-browser-game-heartbeat-v1";
+const currentGameShellVersion = "20260812-wallpaper-game-display-r1";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
 const currentLifeRestartMobileTouchVersion = "20260726-life-mobile-touch-r1";
 
@@ -4816,14 +4820,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-11-h3-first-version-video-sr-48fps";
-const finalUpdateSlug = "2026-08-11-h3-first-version-video-sr-48fps";
+const finalUpdateId = "seed-update-2026-08-12-wallpaper-game-display-fix";
+const finalUpdateSlug = "2026-08-12-wallpaper-game-display-fix";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "First-Version H3 Wallpapers at 48fps and 4K";
-const finalPublishedAt = "2026-08-11T10:40:00.000Z";
+const finalTitleEn = "Wallpaper Layering, Return Flash, and Game Display Fixes";
+const finalPublishedAt = "2026-08-12T07:30:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-08-11-h3-first-version-video-sr-48fps",
   "seed-update-2026-08-11-ambient-wallpaper-bfcache-fix",
   "seed-update-2026-08-11-video-link-autofill",
   "seed-update-2026-08-10-h3-ambient-wallpapers-4k",
@@ -4868,6 +4873,7 @@ const changelog20260807Section = markdownSection(changelog, "## 2026-08-07");
 const changelog20260809Section = markdownSection(changelog, "## 2026-08-09");
 const changelog20260810Section = markdownSection(changelog, "## 2026-08-10");
 const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
+const changelog20260812Section = markdownSection(changelog, "## 2026-08-12");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4915,14 +4921,14 @@ if (finalUpdateStarted) {
     "seed-update-2026-08-09-motion-polish",
     "seed-update-2026-08-07-remote-mcp-oauth"
   ].some((updateId) => homeContentModuleJs.includes(updateId))) {
-    fail("js/data/home-content.mjs should remain the exact five-item projection after the first-version H3 release");
+    fail("js/data/home-content.mjs should remain the newest five-item projection after the wallpaper and game display release");
   }
 
   const projectedUpdateIds = [finalUpdateId, ...projectedSupportingReleaseUpdateIds];
   const projectedUpdateIndexes = projectedUpdateIds.map((updateId) => homeContentModuleJs.indexOf(updateId));
   if (projectedUpdateIndexes.some((index) => index < 0)
     || !projectedUpdateIndexes.every((index, offset, list) => offset === 0 || list[offset - 1] < index)) {
-    fail("js/data/home-content.mjs should order the first-version H3 release, BFCache recovery, video-link autofill, prior H3 release, and slim-rim dawn in release order");
+    fail("js/data/home-content.mjs should order the display fix, first-version H3 release, BFCache recovery, video-link autofill, and prior H3 release by descending publication time");
   }
 
   for (const token of [
@@ -5080,7 +5086,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-08-11">2026.08.11</time>',
+    '<time id="top-updated" datetime="2026-08-12">2026.08.12</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${finalCssVersion}`,
     `/css/motion-system.css?v=${finalCssVersion}`,
@@ -5097,17 +5103,29 @@ if (finalUpdateStarted) {
     finalMainVersion,
     finalUpdateId,
     finalUpdateSlug,
-    videoLinkAutofillReleaseVersion,
-    "seed-update-2026-08-11-h3-first-version-video-sr-48fps",
-    "48fps",
-    "BFCache",
+    "动态云",
+    "暂停",
+    "1280px",
+    "44px",
+    "游戏",
     "site-updates",
     "fallback",
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260811Section.includes(token)) {
+    if (!changelog20260812Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
+    }
+  }
+
+  for (const token of [
+    videoLinkAutofillReleaseVersion,
+    "seed-update-2026-08-11-h3-first-version-video-sr-48fps",
+    "48fps",
+    "BFCache"
+  ]) {
+    if (!changelog20260811Section.includes(token)) {
+      fail(`CHANGELOG.md should preserve the 2026-08-11 release token ${token}`);
     }
   }
 

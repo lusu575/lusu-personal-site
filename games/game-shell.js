@@ -56,6 +56,8 @@
       saveMismatch: "存档文件与当前游戏不匹配。",
       saveImported: "存档已导入，正在刷新游戏。",
       importFailed: "导入失败：{message}",
+      showGameTools: "展开存档与 AI 工具",
+      hideGameTools: "收起工具，扩大游戏画面",
       shellTitleSuffix: "鲁肃的个人站",
       licenseLabel: "开源协议：",
       licenseFile: "查看协议文件",
@@ -129,6 +131,8 @@
       saveMismatch: "This save file does not match the current game.",
       saveImported: "Save imported. Reloading the game...",
       importFailed: "Import failed: {message}",
+      showGameTools: "Show save and AI tools",
+      hideGameTools: "Hide tools and enlarge game",
       shellTitleSuffix: "LuSu's Personal Site",
       licenseLabel: "License: ",
       licenseFile: "View license file",
@@ -202,6 +206,8 @@
       saveMismatch: "このセーブファイルは現在のゲームと一致しません。",
       saveImported: "セーブをインポートしました。ゲームを再読み込みしています。",
       importFailed: "インポートに失敗しました: {message}",
+      showGameTools: "セーブ・AI ツールを表示",
+      hideGameTools: "ツールを隠してゲームを拡大",
       shellTitleSuffix: "魯粛の個人サイト",
       licenseLabel: "ライセンス: ",
       licenseFile: "ライセンスファイルを見る",
@@ -378,6 +384,30 @@
   }
 
   applyShellChrome();
+
+  function initializeGameToolsToggle() {
+    const card = document.querySelector(".game-frame-card");
+    const tools = card?.querySelector(".game-tools");
+    if (!card || !tools) return;
+    const button = document.createElement("button");
+    button.className = "game-tools-toggle";
+    button.type = "button";
+    button.setAttribute("aria-controls", "game-tools game-license game-agent-panel");
+    tools.id ||= "game-tools";
+    const collapseByDefault = window.matchMedia?.("(max-width: 860px), (max-height: 720px)")?.matches === true;
+    const setCollapsed = (collapsed) => {
+      card.dataset.toolsCollapsed = String(collapsed);
+      button.setAttribute("aria-expanded", String(!collapsed));
+      button.textContent = t(collapsed ? "showGameTools" : "hideGameTools");
+    };
+    setCollapsed(collapseByDefault);
+    button.addEventListener("click", () => {
+      setCollapsed(card.dataset.toolsCollapsed !== "true");
+    });
+    tools.after(button);
+  }
+
+  initializeGameToolsToggle();
 
   function textElement(tagName, text, className = "") {
     const element = document.createElement(tagName);
@@ -1200,6 +1230,7 @@
     if (!browserAgentUi) {
       const panel = document.createElement("section");
       panel.className = "game-agent-panel";
+      panel.id = "game-agent-panel";
       panel.setAttribute("aria-labelledby", "game-agent-title");
       panel.tabIndex = -1;
 

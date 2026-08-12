@@ -87,7 +87,7 @@ input {
 
 .game-frame-card {
   display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto auto minmax(0, 1fr);
   border: 3px solid #0645b7;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.94);
@@ -121,11 +121,41 @@ input {
 }
 
 .game-frame-card {
-  width: min(1280px, calc(100% - 20px));
+  width: calc(100% - 20px);
   height: calc(100% - 20px);
   min-height: 0;
   margin: 10px auto;
   overflow: hidden;
+}
+
+.game-tools-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin: 6px 10px 0;
+  padding: 7px 12px;
+  border: 2px solid #0c45a8;
+  border-radius: 6px;
+  color: #082f78;
+  background: linear-gradient(180deg, #ffffff 0%, #dceeff 42%, #76b7ff 100%);
+  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 rgba(0, 45, 120, 0.24), 1px 1px 0 rgba(0, 0, 0, 0.18);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.game-frame-card[data-tools-collapsed="true"] .game-tools,
+.game-frame-card[data-tools-collapsed="true"] .license-panel,
+.game-frame-card[data-tools-collapsed="true"] .game-agent-panel {
+  display: none;
+}
+
+.game-frame-card[data-tools-collapsed="true"] {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.game-frame-card[data-tools-collapsed="true"] .game-tools-toggle {
+  margin-bottom: 6px;
 }
 
 .game-tools {
@@ -543,6 +573,10 @@ input {
     width: calc(100% - 12px);
     height: calc(100% - 12px);
     margin: 6px auto;
+  }
+
+  .game-tools-toggle {
+    margin: 6px 6px 0;
   }
 
   .license-panel {

@@ -186,7 +186,7 @@ export function createWallpaperAmbientController(options) {
         if (activeVideo !== video) return;
         const latest = getState();
         const latestResolution = wallpaperAmbientResolution(latest);
-        if (!latest.allowed || latest.hidden || latest.theme !== state.theme || latestResolution !== resolution) {
+        if (!latest.active || latest.hidden || latest.theme !== state.theme || latestResolution !== resolution) {
           releaseActive();
         }
       }
@@ -217,7 +217,7 @@ export function createWallpaperAmbientController(options) {
       }
       const latest = getState();
       const latestResolution = wallpaperAmbientResolution(latest);
-      if (!latest.allowed || latest.hidden || latest.theme !== state.theme || latestResolution !== resolution) {
+      if (!latest.active || latest.hidden || latest.theme !== state.theme || latestResolution !== resolution) {
         releaseWallpaperAmbientVideo(video);
         pendingVideo = null;
         pendingKey = "";
@@ -245,11 +245,11 @@ export function createWallpaperAmbientController(options) {
 
   const sync = () => {
     const state = getState();
-    if (!state.allowed) {
+    if (!state.eligible) {
       destroy();
       return;
     }
-    if (state.hidden) {
+    if (!state.active || state.hidden) {
       generation += 1;
       releasePending();
       activeVideo?.pause?.();

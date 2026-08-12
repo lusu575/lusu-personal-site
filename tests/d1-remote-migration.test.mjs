@@ -467,25 +467,27 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
-  assert.match(verificationSql, /article_seed_version' and value = '20260811-h3-first-version-video-sr-48fps-r1'/);
+  assert.match(verificationSql, /article_seed_version' and value = '20260812-wallpaper-game-display-r1'/);
   const currentReleaseVerificationSql = REMOTE_MIGRATION_VERIFICATION_QUERIES.find((sql) => (
-    sql.includes("h3-first-version-video-sr-48fps-update-article")
+    sql.includes("wallpaper-game-display-fix-update-article")
   ));
-  assert.ok(currentReleaseVerificationSql, "missing current first-version H3 release verification group");
-  assert.match(currentReleaseVerificationSql, /h3-first-version-video-sr-48fps-update-article/);
-  assert.match(currentReleaseVerificationSql, /article_id = 'seed-update-2026-08-11-h3-first-version-video-sr-48fps'/);
-  assert.match(currentReleaseVerificationSql, /slug = '2026-08-11-h3-first-version-video-sr-48fps'/);
+  assert.ok(currentReleaseVerificationSql, "missing current wallpaper and game display release verification group");
+  assert.match(currentReleaseVerificationSql, /wallpaper-game-display-fix-update-article/);
+  assert.match(currentReleaseVerificationSql, /article_id = 'seed-update-2026-08-12-wallpaper-game-display-fix'/);
+  assert.match(currentReleaseVerificationSql, /slug = '2026-08-12-wallpaper-game-display-fix'/);
   assert.match(currentReleaseVerificationSql, /category = 'site-updates'/);
   assert.match(currentReleaseVerificationSql, /status = 'published'/);
   assert.match(currentReleaseVerificationSql, /is_pinned = 0/);
   assert.match(currentReleaseVerificationSql, /cover_image = ''/);
-  assert.match(currentReleaseVerificationSql, /published_at = '2026-08-11T10:40:00.000Z'/);
-  assert.match(currentReleaseVerificationSql, /h3-first-version-video-sr-48fps-update-translations/);
-  assert.match(currentReleaseVerificationSql, /lang = 'zh' and title = '第一版 H3 动态壁纸升级至 48fps 与 4K'/);
-  assert.match(currentReleaseVerificationSql, /lang = 'en' and title = 'First-Version H3 Wallpapers at 48fps and 4K'/);
-  assert.match(currentReleaseVerificationSql, /lang = 'ja' and title = '初版 H3 動画壁紙を48fps・4Kへ更新'/);
+  assert.match(currentReleaseVerificationSql, /published_at = '2026-08-12T07:30:00.000Z'/);
+  assert.match(currentReleaseVerificationSql, /wallpaper-game-display-fix-update-translations/);
+  assert.match(currentReleaseVerificationSql, /lang = 'zh' and title = '视频壁纸叠层、返回闪烁与游戏显示修复'/);
+  assert.match(currentReleaseVerificationSql, /lang = 'en' and title = 'Wallpaper Layering, Return Flash, and Game Display Fixes'/);
+  assert.match(currentReleaseVerificationSql, /lang = 'ja' and title = '動画壁紙の重なり・復帰時のちらつき・ゲーム表示を修正'/);
   assert.match(currentReleaseVerificationSql, /length\(trim\(summary\)\) > 0/);
   assert.match(currentReleaseVerificationSql, /length\(trim\(content_markdown\)\) > 0/);
+  assert.match(verificationSql, /h3-first-version-video-sr-48fps-update-article/);
+  assert.match(verificationSql, /slug = '2026-08-11-h3-first-version-video-sr-48fps'/);
   assert.match(verificationSql, /ambient-wallpaper-bfcache-fix-update-article/);
   assert.match(verificationSql, /slug = '2026-08-11-ambient-wallpaper-bfcache-fix'/);
   assert.match(verificationSql, /published_at = '2026-08-11T03:35:00.000Z'/);

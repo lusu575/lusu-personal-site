@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-12-wallpaper-game-display-fix",
+      "slug": "2026-08-12-wallpaper-game-display-fix",
+      "category": "site-updates",
+      "tags": ["网站更新", "视频壁纸", "游戏区", "响应式", "流畅度"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-12T07:30:00.000Z",
+      "updated_at": "2026-08-12T07:30:00.000Z",
+      "published_at": "2026-08-12T07:30:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.12",
+      "title": {
+        "zh": "视频壁纸叠层、返回闪烁与游戏显示修复",
+        "en": "Wallpaper Layering, Return Flash, and Game Display Fixes",
+        "ja": "動画壁紙の重なり・復帰時のちらつき・ゲーム表示を修正"
+      },
+      "summary": {
+        "zh": "视频壁纸启用时不再创建或预热额外的 CSS 动态云，避免出现两层云；离开 Home 只暂停当前视频并保留解码器，返回后直接续播。游戏外壳移除 1280px 固定宽度上限，短屏默认收起存档与 AI 工具并可通过 44px 按钮展开，让人生重开等游戏在浏览器缩放、横屏和窄屏下获得更大的可玩区域。",
+        "en": "When video wallpaper is eligible, the page no longer creates or warms the separate CSS cloud layer, preventing duplicate clouds. Leaving Home now pauses the current video in place and resumes it on return without rebuilding the decoder. The game shell also removes its fixed 1280px cap and collapses save/AI tools by default on short screens behind a 44px toggle, giving Life Restart and other games more usable space under browser zoom, landscape, and narrow layouts.",
+        "ja": "動画壁紙を利用できる場合は別の CSS 雲レイヤーを生成・先読みせず、雲の二重表示を防ぎます。Home を離れると現在の動画をその場で一時停止し、戻った際はデコーダーを作り直さず再開します。ゲーム枠の固定 1280px 上限も削除し、短い画面ではセーブ／AI ツールを 44px ボタンの後ろへ初期収納して、人生重開などをブラウザー拡大縮小・横画面・狭い画面で広く表示します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-11-h3-first-version-video-sr-48fps",
       "slug": "2026-08-11-h3-first-version-video-sr-48fps",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "桌面 Home 的 morning／day／dusk／night 壁纸加入本地 MiniMax H3 生成的约 5 秒无缝轻动态，只让树冠和真实水面克制变化，并保留慢漂云层与夜间微弱星光。当前主题按物理尺寸只请求 1080p 或 2160p；4K 静态底图先用官方 RealESRGAN 动漫模型一次超分，再叠局部动态，避免逐帧超分闪烁。手机、低性能、Save-Data 与 reduced／off 不请求视频，静态图永久兜底。",
         "en": "The morning, day, dusk, and night wallpapers on desktop Home now have subtle seamless loops of about five seconds generated locally with MiniMax H3. Motion is limited to restrained tree-canopy and real-water changes, alongside the existing slow clouds and faint night stars. Only the current theme requests a 1080p or 2160p file based on physical display size. For 4K, each static base is super-resolved once with the official RealESRGAN anime model before local motion is composited, avoiding per-frame upscaling flicker. Mobile, low-performance, Save-Data, and reduced/off modes make no video requests and always keep the static wallpaper fallback.",
         "ja": "デスクトップ Home の朝・昼・夕方・夜の壁紙に、ローカル MiniMax H3 で生成した約5秒の穏やかなシームレス動画を追加しました。動きは樹冠と実際の水面の小さな変化に限定し、既存のゆっくり流れる雲と夜の弱い星光も保ちます。現在のテーマだけが物理表示サイズに応じて 1080p または 2160p を要求します。4K は静止背景を公式 RealESRGAN アニメモデルで1回だけ超解像化してから局所動画を合成し、フレームごとの超解像によるちらつきを防ぎます。モバイル、low、Save-Data、reduced／off は動画を要求せず、常に静止壁紙へフォールバックします。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-10-wallpaper-switch-slim-dawn",
-      "slug": "2026-08-10-wallpaper-switch-slim-dawn",
-      "category": "site-updates",
-      "tags": ["网站更新", "壁纸", "动效", "Image2", "无障碍"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-10T02:30:00.000Z",
-      "updated_at": "2026-08-10T04:10:00.000Z",
-      "published_at": "2026-08-10T04:10:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.08.10",
-      "title": {
-        "zh": "四段壁纸开关的细框晨曦精修",
-        "en": "Slim-Rim Dawn Polish for the Four-Stage Wallpaper Switch",
-        "ja": "壁紙4段スイッチの細枠・朝焼け調整"
-      },
-      "summary": {
-        "zh": "四段壁纸开关采用更轻薄清晰的陶瓷细框、滚轮环和低位暖橙半日晨雾，让清晨区别于白天。滚轮、场景、天体与四主题 accent 在所有可见桌面公共路由共享同一套可中断动画；整页壁纸 crossfade 与动态云仍由 Home 独占。",
-        "en": "The four-stage wallpaper switch now pairs a slimmer, crisper ceramic rim and roller ring with a low warm-orange half sun and dawn mist, clearly separating morning from day. Its roller, scene, celestial body, and four theme accents share one interruptible animation system across every visible desktop public route; full-page wallpaper crossfades and dynamic clouds remain exclusive to Home.",
-        "ja": "壁紙4段スイッチは、より薄く鮮明なセラミック細枠とローラーリング、低い暖色の半円日と朝霧で朝を昼から明確に分けます。ローラー、シーン、天体、4テーマの accent は表示中の全デスクトップ公開ルートで同じ中断可能なアニメーションを共有し、ページ全体の壁紙 crossfade と動く雲は Home 専用です。"
       }
     }
   ]

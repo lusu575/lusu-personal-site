@@ -1,11 +1,18 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-12 视频壁纸互斥、返回续播与游戏显示契约
+
+- 桌面 Home 的视频壁纸与旧 CSS 动态云必须互斥。只要设备、性能、Save-Data 与 motion 设置满足视频播放资格，`wallpaperCloudAssetCandidates()` 必须返回空列表，动态云同步也不得创建节点；视频素材自身负责云层运动。静态底图仍永久挂载，视频无法就绪时直接显示静态底图，不允许为了失败兜底重新叠加第二套动态云。真正不具备视频资格的旧降级路径保持原行为。
+- route 可见性与视频播放资格是两个状态。离开 Home 或文档隐藏只暂停当前视频，不清空 `src`、不移除节点、不释放解码器；回到 Home 或重新可见时复用同一节点续播，避免重新请求、解码和整屏淡入。只有手机／low／Save-Data／reduced／off 等真正失去播放资格，或主题／分辨率资源发生变化时才销毁旧媒体。
+- 五个独立游戏继续共享单一 `100dvh` shell，但 `.game-frame-card` 不得再使用 1280px 最大宽度；它占满扣除 20px 边距后的可用宽度，避免浏览器缩放后缩成中央小窗。视口宽度不超过 860px 或高度不超过 720px 时，存档、云端、许可证与 AI 面板默认收起到一个至少 44px 的三语按钮后，iframe 使用余下高度；不得用全局 `zoom`、裁切或小于 44px 的触控目标掩盖布局问题。
+- 公开更新 ID／slug 为 `seed-update-2026-08-12-wallpaper-game-display-fix`／`2026-08-12-wallpaper-game-display-fix`，时间为 `2026-08-12T07:30:00.000Z`，公开 API／文章 seed 与主缓存 token 为 `20260812-wallpaper-game-display-r1`。Home 最新五条固定为本次修复、第一版 H3 发布、BFCache 修复、视频单链接候选、8 月 10 日 H3 历史发布；完整历史继续保留 slim-dawn、ceramic-roll 及更早记录。
+
 ## 2026-08-11 第一版 H3 整帧 48fps／4K 动态壁纸发布契约
 
 - 桌面 Home 的 morning／day／dusk／night 当前正式使用用户确认的第一版 MiniMax H3 素材帧。四段都保留第一版整幅画面的轻微树木、云层、水面与光影变化，并严格按源帧 `0..62 + 61..1` 整理为约 5.17 秒的整屏往返循环；最终每段为 48fps、248 帧。第二版过弱的局部 mask／gain 合成不再是生产视频来源，电视机中也没有小女孩或随机 cameo。
 - 正式视频链路固定为：第一版 H3 源帧 `0..62 + 61..1` 组成 24fps 往返序列 → 双向光流补帧到 48fps → 对全部 248 帧使用 `RealESRGAN_x4plus_anime_6B` 逐帧 AI 超分 → 分别输出 1920×1080 与 3840×2160。不得把原始 124 帧全段误写为本次循环来源，也不得再把旧的“静态底图只超分一次，再叠局部 mask／gain 时域差分”描述为当前生产方案。
-- 运行时边界没有扩大：只在桌面 Home、normal performance、Save-Data 关闭且站内 motion 为 full 时请求当前主题的一段 muted／loop／playsinline MP4，并按 CSS 尺寸 × DPR 选择 1080p 或 2160p。手机、low performance、Save-Data、`prefers-reduced-motion`、站内 reduced／off 保持零视频请求；非 Home 或页面隐藏时暂停／释放，静态壁纸永久兜底。motion mode、runtime ready 与 `pageshow` 的 BFCache 恢复协调继续保留。
-- 公开更新 ID／slug 为 `seed-update-2026-08-11-h3-first-version-video-sr-48fps`／`2026-08-11-h3-first-version-video-sr-48fps`，时间为 `2026-08-11T10:40:00.000Z`，公开 API／文章 seed token 为 `20260811-h3-first-version-video-sr-48fps-r1`。融合视频单链接候选后，Home 最新五条固定为本次第一版 H3 发布、BFCache 修复、视频单链接候选、8 月 10 日 H3 历史发布、slim-dawn；完整历史继续保留 ceramic-roll、calm-redesign 及更早记录。
+- 运行时边界没有扩大：只在桌面 Home、normal performance、Save-Data 关闭且站内 motion 为 full 时请求当前主题的一段 muted／loop／playsinline MP4，并按 CSS 尺寸 × DPR 选择 1080p 或 2160p。手机、low performance、Save-Data、`prefers-reduced-motion`、站内 reduced／off 保持零视频请求；静态壁纸永久兜底。非 Home／页面隐藏生命周期的释放行为已由 2026-08-12 的暂停保留与复用规则取代；motion mode、runtime ready 与 `pageshow` 的 BFCache 恢复协调继续保留。
+- 公开更新 ID／slug 为 `seed-update-2026-08-11-h3-first-version-video-sr-48fps`／`2026-08-11-h3-first-version-video-sr-48fps`，时间为 `2026-08-11T10:40:00.000Z`，当次公开 API／文章 seed token 为 `20260811-h3-first-version-video-sr-48fps-r1`。该记录当前是 Home 最新五条中的第二项；视频单链接候选仍在最新五条中，slim-dawn 与更早记录保留在完整历史。
 
 ## 2026-08-11 动态壁纸 BFCache 恢复契约
 

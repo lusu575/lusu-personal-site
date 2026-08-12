@@ -300,7 +300,8 @@ test("4K and high-DPR viewports select 2160p while ordinary desktop stays on 108
 
 test("controller creates only the current theme, never preloads it, and fades only after canplay and play", async () => {
   const harness = createAmbientHarness({
-    allowed: true,
+    eligible: true,
+    active: true,
     hidden: false,
     theme: "day",
     width: 1920,
@@ -350,7 +351,8 @@ test("load and autoplay failures remove the video source and leave the static wa
   for (const failure of ["network", "autoplay"]) {
     await t.test(failure, async () => {
       const harness = createAmbientHarness({
-        allowed: true,
+        eligible: true,
+        active: true,
         hidden: false,
         theme: "morning",
         width: 1920,
@@ -375,9 +377,10 @@ test("load and autoplay failures remove the video source and leave the static wa
   }
 });
 
-test("hidden pages pause in place and disallowed state releases src, decoder, and node", async () => {
+test("hidden pages and sibling routes pause in place while ineligible state releases the decoder", async () => {
   const harness = createAmbientHarness({
-    allowed: true,
+    eligible: true,
+    active: true,
     hidden: false,
     theme: "dusk",
     width: 1920,
@@ -400,7 +403,19 @@ test("hidden pages pause in place and disallowed state releases src, decoder, an
   assert.equal(harness.videos.length, 1);
   assert.equal(video.playCalls, 2, "returning visible resumes the existing video");
 
-  harness.setState({ allowed: false });
+  harness.setState({ active: false });
+  harness.controller.sync();
+  assert.equal(video.paused, true);
+  assert.equal(video.src, originalSrc, "leaving Home must retain the decoded current-theme video");
+  assert.equal(video.removed, false);
+
+  harness.setState({ active: true });
+  harness.controller.sync();
+  await flushController();
+  assert.equal(harness.videos.length, 1);
+  assert.equal(video.playCalls, 3, "returning Home resumes instead of constructing another video");
+
+  harness.setState({ eligible: false, active: false });
   harness.controller.sync();
   assert.equal(video.src, "");
   assert.equal(video.loadCalls, 2, "release must call load after clearing src to free the decoder");
@@ -414,7 +429,8 @@ test("hidden pages pause in place and disallowed state releases src, decoder, an
 
 test("a rejected visibility resume releases the active decoder and restores the static fallback", async () => {
   const harness = createAmbientHarness({
-    allowed: true,
+    eligible: true,
+    active: true,
     hidden: false,
     theme: "morning",
     width: 1920,
@@ -444,7 +460,8 @@ test("a rejected visibility resume releases the active decoder and restores the 
 
 test("an interrupted fade preserves the sampled opacity in the outgoing scene snapshot", async () => {
   const harness = createAmbientHarness({
-    allowed: true,
+    eligible: true,
+    active: true,
     hidden: false,
     theme: "dusk",
     width: 1920,
@@ -475,7 +492,8 @@ test("an interrupted fade preserves the sampled opacity in the outgoing scene sn
 
 test("superseding a pending load removes its media listeners immediately", async () => {
   const harness = createAmbientHarness({
-    allowed: true,
+    eligible: true,
+    active: true,
     hidden: false,
     theme: "night",
     width: 1920,
@@ -487,7 +505,7 @@ test("superseding a pending load removes its media listeners immediately", async
   assert.equal(video.listeners.get("canplay")?.length, 1);
   assert.equal(video.listeners.get("error")?.length, 1);
 
-  harness.setState({ allowed: false });
+  harness.setState({ eligible: false, active: false });
   harness.controller.sync();
   await flushController();
 
@@ -500,7 +518,8 @@ test("superseding a pending load removes its media listeners immediately", async
 
 test("theme changes release the old video immediately and activate only the playable replacement", async () => {
   const harness = createAmbientHarness({
-    allowed: true,
+    eligible: true,
+    active: true,
     hidden: false,
     theme: "day",
     width: 1920,
@@ -534,26 +553,29 @@ test("theme changes release the old video immediately and activate only the play
   });
 });
 
-test("entry policy guarantees zero video requests on mobile, low, Save-Data, reduced, off, and non-Home routes", () => {
+test("entry policy keeps video unavailable on constrained clients and pauses it outside Home", () => {
   const policyStart = mainSource.indexOf("function wallpaperAmbientState()");
   const policyEnd = mainSource.indexOf("function ensureWallpaperAmbientController", policyStart);
   assert.ok(policyStart >= 0 && policyEnd > policyStart, "wallpaper ambient policy must remain explicit");
   const policy = mainSource.slice(policyStart, policyEnd);
   assert.match(policy, /root\.dataset\.motion === "full"/);
-  assert.match(policy, /document\.body\.dataset\.route === "home"/);
+  assert.match(policy, /const eligible = Boolean/);
+  assert.match(policy, /active:\s*eligible && document\.body\.dataset\.route === "home"/);
   assert.match(policy, /document\.documentElement\.dataset\.uiShell !== "mobile"/);
   assert.match(policy, /document\.documentElement\.dataset\.performanceTier !== "low"/);
   assert.match(policy, /connection\?\.saveData !== true/);
   assert.match(policy, /hidden:\s*document\.hidden/);
 
   assert.match(ambientSource, /video\.preload = "none"/);
-  assert.match(ambientSource, /if \(!state\.allowed\) \{\s*destroy\(\)/);
-  assert.match(ambientSource, /if \(state\.hidden\) \{[\s\S]*?releasePending\(\);[\s\S]*?activeVideo\?\.pause\?\.\(\)/);
+  assert.match(ambientSource, /if \(!state\.eligible\) \{\s*destroy\(\)/);
+  assert.match(ambientSource, /if \(!state\.active \|\| state\.hidden\) \{[\s\S]*?releasePending\(\);[\s\S]*?activeVideo\?\.pause\?\.\(\)/);
   assert.doesNotMatch(indexHtml, /\.mp4(?:\?|["'])/i, "the HTML bootstrap must not request any MP4");
   assert.doesNotMatch(indexHtml, /<link\b[^>]*\bas=["']video["']/i);
   assert.doesNotMatch(indexHtml, /<video\b/i);
 
   assert.match(mainSource, /wallpaperAmbientController\?\.takeForSceneSnapshot\?\.\(\)/);
+  assert.match(mainSource, /function dynamicWallpaperIsActive[\s\S]*?!wallpaperAmbientPlaybackEligible\(\)/);
+  assert.match(mainSource, /function wallpaperCloudAssetCandidates[\s\S]*?wallpaperAmbientPlaybackEligible\(\)[\s\S]*?return \[\]/);
   assert.match(mainSource, /querySelectorAll\?\.\("video\.wallpaper-ambient-video"\)\.forEach\(releaseWallpaperAmbientVideo\)/);
   assert.match(mainSource, /querySelectorAll\("video\.wallpaper-ambient-video"\)\.forEach\(releaseWallpaperAmbientVideo\)/);
 });

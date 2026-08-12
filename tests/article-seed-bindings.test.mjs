@@ -33,6 +33,8 @@ const AMBIENT_WALLPAPER_BFCACHE_UPDATE_ID = "seed-update-2026-08-11-ambient-wall
 const AMBIENT_WALLPAPER_BFCACHE_PUBLISHED_AT = "2026-08-11T03:35:00.000Z";
 const H3_FIRST_VERSION_UPDATE_ID = "seed-update-2026-08-11-h3-first-version-video-sr-48fps";
 const H3_FIRST_VERSION_PUBLISHED_AT = "2026-08-11T10:40:00.000Z";
+const WALLPAPER_GAME_DISPLAY_UPDATE_ID = "seed-update-2026-08-12-wallpaper-game-display-fix";
+const WALLPAPER_GAME_DISPLAY_PUBLISHED_AT = "2026-08-12T07:30:00.000Z";
 const WALLPAPER_SWITCH_CERAMIC_UPDATE_ID = "seed-update-2026-08-10-wallpaper-switch-ceramic-roll";
 const WALLPAPER_SWITCH_CERAMIC_PUBLISHED_AT = "2026-08-10T00:20:00.000Z";
 const WALLPAPER_SWITCH_CALM_UPDATE_ID = "seed-update-2026-08-10-wallpaper-switch-calm-redesign";
@@ -41,7 +43,7 @@ const WALLPAPER_SWITCH_SCENE_UPDATE_ID = "seed-update-2026-08-09-wallpaper-switc
 const WALLPAPER_SWITCH_SCENE_PUBLISHED_AT = "2026-08-09T11:15:00.000Z";
 const VIDEO_LINK_AUTOFILL_UPDATE_ID = "seed-update-2026-08-11-video-link-autofill";
 const VIDEO_LINK_AUTOFILL_PUBLISHED_AT = "2026-08-11T00:20:00.000Z";
-const ARTICLE_SEED_VERSION = "20260811-h3-first-version-video-sr-48fps-r1";
+const ARTICLE_SEED_VERSION = "20260812-wallpaper-game-display-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -338,19 +340,19 @@ test("every article seed D1 binding is defined", async () => {
     articleId === H3_FIRST_VERSION_UPDATE_ID
   ));
   assert.ok(h3FirstVersionContent, "the public fallback must include the first-version H3 release");
-  assert.equal(content.updates[0]?.article_id, H3_FIRST_VERSION_UPDATE_ID);
+  assert.equal(content.updates[0]?.article_id, WALLPAPER_GAME_DISPLAY_UPDATE_ID);
   assert.deepEqual(
     homeContent.updates.map(({ article_id: articleId }) => articleId),
     [
+      WALLPAPER_GAME_DISPLAY_UPDATE_ID,
       H3_FIRST_VERSION_UPDATE_ID,
       AMBIENT_WALLPAPER_BFCACHE_UPDATE_ID,
       VIDEO_LINK_AUTOFILL_UPDATE_ID,
-      H3_AMBIENT_WALLPAPERS_UPDATE_ID,
-      WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID
+      H3_AMBIENT_WALLPAPERS_UPDATE_ID
     ],
     "Home must project exactly the newest five public updates in release order"
   );
-  const h3FirstVersionHome = homeContent.updates[0];
+  const h3FirstVersionHome = homeContent.updates[1];
   const { content_markdown: _h3FirstVersionBody, ...h3FirstVersionProjection } = h3FirstVersionContent;
   assert.deepEqual(
     h3FirstVersionHome,
@@ -367,6 +369,21 @@ test("every article seed D1 binding is defined", async () => {
   assert.equal(h3FirstVersionContent.created_at, H3_FIRST_VERSION_PUBLISHED_AT);
   assert.equal(h3FirstVersionContent.updated_at, H3_FIRST_VERSION_PUBLISHED_AT);
   assert.equal(h3FirstVersionContent.published_at, H3_FIRST_VERSION_PUBLISHED_AT);
+
+  const displayFixContent = content.updates[0];
+  const { content_markdown: _displayFixBody, ...displayFixProjection } = displayFixContent;
+  assert.deepEqual(homeContent.updates[0], displayFixProjection);
+  assert.equal(displayFixContent.created_at, WALLPAPER_GAME_DISPLAY_PUBLISHED_AT);
+  const displayFixTranslations = boundStatements.filter(({ params }) => (
+    params[1] === WALLPAPER_GAME_DISPLAY_UPDATE_ID && ["zh", "en", "ja"].includes(params[2])
+  ));
+  assert.equal(displayFixTranslations.length, 3);
+  for (const { params } of displayFixTranslations) {
+    const lang = params[2];
+    assert.equal(params[3], displayFixContent.title[lang]);
+    assert.equal(params[4], displayFixContent.summary[lang]);
+    assert.equal(params[5], displayFixContent.content_markdown[lang]);
+  }
 
   const h3FirstVersionSeed = seedBatch.find(({ sql }) => (
     sql.includes(`'${H3_FIRST_VERSION_UPDATE_ID}'`)
@@ -400,8 +417,8 @@ test("every article seed D1 binding is defined", async () => {
     articleId === AMBIENT_WALLPAPER_BFCACHE_UPDATE_ID
   ));
   assert.ok(ambientWallpaperBfcacheContent, "the public fallback must include the BFCache wallpaper recovery release");
-  assert.equal(content.updates[1]?.article_id, AMBIENT_WALLPAPER_BFCACHE_UPDATE_ID);
-  const ambientWallpaperBfcacheHome = homeContent.updates[1];
+  assert.equal(content.updates[2]?.article_id, AMBIENT_WALLPAPER_BFCACHE_UPDATE_ID);
+  const ambientWallpaperBfcacheHome = homeContent.updates[2];
   const { content_markdown: _bfcacheBody, ...ambientWallpaperBfcacheProjection } = ambientWallpaperBfcacheContent;
   assert.deepEqual(
     ambientWallpaperBfcacheHome,
@@ -451,8 +468,8 @@ test("every article seed D1 binding is defined", async () => {
     articleId === VIDEO_LINK_AUTOFILL_UPDATE_ID
   ));
   assert.ok(videoLinkAutofillContent, "the public fallback must include the link-only video publish update");
-  assert.equal(content.updates[2]?.article_id, VIDEO_LINK_AUTOFILL_UPDATE_ID);
-  const videoLinkAutofillHome = homeContent.updates[2];
+  assert.equal(content.updates[3]?.article_id, VIDEO_LINK_AUTOFILL_UPDATE_ID);
+  const videoLinkAutofillHome = homeContent.updates[3];
   const { content_markdown: _videoLinkAutofillBody, ...videoLinkAutofillProjection } = videoLinkAutofillContent;
   assert.deepEqual(
     videoLinkAutofillHome,
@@ -502,8 +519,8 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /Base64/);
   }
 
-  assert.equal(content.updates[3]?.article_id, H3_AMBIENT_WALLPAPERS_UPDATE_ID);
-  const h3AmbientWallpapersHome = homeContent.updates[3];
+  assert.equal(content.updates[4]?.article_id, H3_AMBIENT_WALLPAPERS_UPDATE_ID);
+  const h3AmbientWallpapersHome = homeContent.updates[4];
   const { content_markdown: _h3AmbientBody, ...h3AmbientWallpapersProjection } = h3AmbientWallpapersContent;
   assert.deepEqual(
     h3AmbientWallpapersHome,
@@ -548,13 +565,11 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchSlimDawnContent, "the public fallback must include the slim-rim dawn polish");
-  assert.equal(content.updates[4]?.article_id, WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID);
-  const wallpaperSwitchSlimDawnHome = homeContent.updates[4];
-  const { content_markdown: _slimDawnBody, ...wallpaperSwitchSlimDawnProjection } = wallpaperSwitchSlimDawnContent;
-  assert.deepEqual(
-    wallpaperSwitchSlimDawnHome,
-    wallpaperSwitchSlimDawnProjection,
-    "the Home projection must match every non-body field from the slim-rim dawn fallback"
+  assert.equal(content.updates[5]?.article_id, WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID);
+  assert.equal(
+    homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID),
+    false,
+    "the slim-rim dawn release must remain in full history outside the five-item Home projection"
   );
   assert.equal(wallpaperSwitchSlimDawnContent.slug, "2026-08-10-wallpaper-switch-slim-dawn");
   assert.equal(wallpaperSwitchSlimDawnContent.category, "site-updates");
@@ -566,7 +581,6 @@ test("every article seed D1 binding is defined", async () => {
   assert.equal(wallpaperSwitchSlimDawnContent.created_at, WALLPAPER_SWITCH_SLIM_DAWN_CREATED_AT);
   assert.equal(wallpaperSwitchSlimDawnContent.updated_at, WALLPAPER_SWITCH_SLIM_DAWN_PUBLISHED_AT);
   assert.equal(wallpaperSwitchSlimDawnContent.published_at, WALLPAPER_SWITCH_SLIM_DAWN_PUBLISHED_AT);
-  assert.equal(wallpaperSwitchSlimDawnHome.date, "2026.08.10");
   assert.deepEqual(wallpaperSwitchSlimDawnContent.title, {
     zh: "四段壁纸开关的细框晨曦精修",
     en: "Slim-Rim Dawn Polish for the Four-Stage Wallpaper Switch",
@@ -615,7 +629,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_CERAMIC_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchCeramicContent, "the public fallback must include the ceramic rolling redesign");
-  assert.equal(content.updates[5]?.article_id, WALLPAPER_SWITCH_CERAMIC_UPDATE_ID);
+  assert.equal(content.updates[6]?.article_id, WALLPAPER_SWITCH_CERAMIC_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_CERAMIC_UPDATE_ID),
     false,
@@ -674,7 +688,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_CALM_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchCalmContent, "the public fallback must retain the calm wallpaper-switch redesign");
-  assert.equal(content.updates[6]?.article_id, WALLPAPER_SWITCH_CALM_UPDATE_ID);
+  assert.equal(content.updates[7]?.article_id, WALLPAPER_SWITCH_CALM_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_CALM_UPDATE_ID),
     false,
@@ -729,7 +743,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_SCENE_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchSceneContent, "the public fallback must include the redesigned wallpaper-switch scene");
-  assert.equal(content.updates[7]?.article_id, WALLPAPER_SWITCH_SCENE_UPDATE_ID);
+  assert.equal(content.updates[8]?.article_id, WALLPAPER_SWITCH_SCENE_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_SCENE_UPDATE_ID),
     false,

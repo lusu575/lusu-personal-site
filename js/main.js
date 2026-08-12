@@ -4,7 +4,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260809-motion-polish-r2";
-import { homeContent } from "./data/home-content.mjs?v=20260811-h3-first-version-video-sr-48fps-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260812-wallpaper-game-display-r1";
 import {
   WALLPAPER_TIME_THEMES,
   createWallpaperTimeOverride,
@@ -20,7 +20,7 @@ import { createJsonResourceCache } from "./core/content-cache.mjs?v=20260718-res
 import {
   createWallpaperAmbientController,
   releaseWallpaperAmbientVideo
-} from "./core/wallpaper-ambient.mjs?v=20260811-h3-first-version-video-sr-48fps-r1";
+} from "./core/wallpaper-ambient.mjs?v=20260812-wallpaper-game-display-r1";
 import { createAccountFeature } from "./features/account.mjs?v=20260809-motion-polish-r2";
 import { createConnectionStatus } from "./features/connection-status.mjs?v=20260726-security-reliability-r1";
 
@@ -2820,7 +2820,9 @@ function wallpaperAssetCandidates(theme) {
 function wallpaperCloudAssetCandidates(theme) {
   const mobile = document.documentElement.dataset.uiShell === "mobile"
     || window.matchMedia?.("(max-width: 760px), (max-height: 520px) and (pointer: coarse)")?.matches;
-  if (mobile || document.documentElement.dataset.motion !== "full") return [];
+  if (mobile
+    || document.documentElement.dataset.motion !== "full"
+    || wallpaperAmbientPlaybackEligible()) return [];
   return (wallpaperCloudLayers[theme] || []).map((name) => (
     `/assets/images/wallpaper-dynamic/${theme}/cloud-${name}.png?v=20260615-all-clouds-natural`
   ));
@@ -3236,17 +3238,18 @@ function wallpaperAmbientState() {
   const stage = document.getElementById("wallpaper-stage");
   const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
   const theme = root?.dataset.time || "";
-  const width = stage?.clientWidth || 0;
-  const height = stage?.clientHeight || 0;
-  return Object.freeze({
-    allowed: Boolean(root && stage && WALLPAPER_TIME_THEMES.includes(theme))
+  const width = stage?.clientWidth || window.innerWidth || 0;
+  const height = stage?.clientHeight || window.innerHeight || 0;
+  const eligible = Boolean(root && stage && WALLPAPER_TIME_THEMES.includes(theme))
       && width > 0
       && height > 0
       && root.dataset.motion === "full"
-      && document.body.dataset.route === "home"
       && document.documentElement.dataset.uiShell !== "mobile"
       && document.documentElement.dataset.performanceTier !== "low"
-      && connection?.saveData !== true,
+      && connection?.saveData !== true;
+  return Object.freeze({
+    eligible,
+    active: eligible && document.body.dataset.route === "home",
     hidden: document.hidden,
     theme,
     width,
@@ -3270,6 +3273,10 @@ function ensureWallpaperAmbientController() {
 
 function syncWallpaperAmbientVideo() {
   ensureWallpaperAmbientController()?.sync();
+}
+
+function wallpaperAmbientPlaybackEligible() {
+  return wallpaperAmbientState().eligible;
 }
 
 function updateWallpaperMotionState() {
@@ -3312,7 +3319,8 @@ function dynamicWallpaperIsActive(root) {
     && !document.hidden
     && document.body.dataset.route === "home"
     && document.documentElement.dataset.uiShell !== "mobile"
-    && document.documentElement.dataset.performanceTier !== "low";
+    && document.documentElement.dataset.performanceTier !== "low"
+    && !wallpaperAmbientPlaybackEligible();
 }
 
 function syncDynamicWallpaperLayers() {

@@ -239,7 +239,7 @@ export async function migrateLocalD1() {
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260811-h3-first-version-video-sr-48fps-r1'
+    where key = 'article_seed_version' and value = '20260812-wallpaper-game-display-r1'
     union all
     select 'game-video-mcp-candidate-update-article',
       case when count(*) = 1 then 1 else 0 end
@@ -269,8 +269,39 @@ export async function migrateLocalD1() {
     from articles where article_id = 'seed-update-2026-08-06-whiteboard-agent-images'
     `),
     ...await queryRows(`
-    select 'video-link-autofill-update-article' as item,
+    select 'wallpaper-game-display-fix-update-article' as item,
       case when count(*) = 1 then 1 else 0 end as present
+    from articles
+    where article_id = 'seed-update-2026-08-12-wallpaper-game-display-fix'
+      and slug = '2026-08-12-wallpaper-game-display-fix'
+      and category = 'site-updates'
+      and status = 'published'
+      and is_pinned = 0
+      and cover_image = ''
+      and published_at = '2026-08-12T07:30:00.000Z'
+    union all
+    select 'wallpaper-game-display-fix-update-translations',
+      case
+        when count(*) = 3
+          and count(distinct lang) = 3
+          and sum(case when lang in ('zh', 'en', 'ja') then 1 else 0 end) = 3
+          and sum(case
+            when (lang = 'zh' and title = '视频壁纸叠层、返回闪烁与游戏显示修复')
+              or (lang = 'en' and title = 'Wallpaper Layering, Return Flash, and Game Display Fixes')
+              or (lang = 'ja' and title = '動画壁紙の重なり・復帰時のちらつき・ゲーム表示を修正')
+            then 1 else 0 end) = 3
+          and sum(case
+            when length(trim(title)) > 0
+              and length(trim(summary)) > 0
+              and length(trim(content_markdown)) > 0
+            then 1 else 0 end) = 3
+        then 1 else 0
+      end
+    from article_translations
+    where article_id = 'seed-update-2026-08-12-wallpaper-game-display-fix'
+    union all
+    select 'video-link-autofill-update-article',
+      case when count(*) = 1 then 1 else 0 end
     from articles
     where article_id = 'seed-update-2026-08-11-video-link-autofill'
       and slug = '2026-08-11-video-link-autofill'
