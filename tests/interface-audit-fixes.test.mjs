@@ -38,6 +38,7 @@ test("the wallpaper and game display fix leads the exact five-item projection wi
   const updateId = "seed-update-2026-08-12-wallpaper-game-display-fix";
   const firstVersionUpdateId = "seed-update-2026-08-11-h3-first-version-video-sr-48fps";
   const priorBfcacheUpdateId = "seed-update-2026-08-11-ambient-wallpaper-bfcache-fix";
+  const videoLinkAutofillUpdateId = "seed-update-2026-08-11-video-link-autofill";
   const priorH3UpdateId = "seed-update-2026-08-10-h3-ambient-wallpapers-4k";
   const priorSlimDawnUpdateId = "seed-update-2026-08-10-wallpaper-switch-slim-dawn";
   const priorCeramicUpdateId = "seed-update-2026-08-10-wallpaper-switch-ceramic-roll";
@@ -75,26 +76,27 @@ test("the wallpaper and game display fix leads the exact five-item projection wi
   assert.equal(homeContent.updates[1].article_id, firstVersionUpdateId);
   assert.equal(content.updates[2].article_id, priorBfcacheUpdateId);
   assert.equal(homeContent.updates[2].article_id, priorBfcacheUpdateId);
-  assert.equal(content.updates[3].article_id, priorH3UpdateId);
-  assert.equal(homeContent.updates[3].article_id, priorH3UpdateId);
-  assert.equal(content.updates[4].article_id, priorSlimDawnUpdateId);
-  assert.equal(homeContent.updates[4].article_id, priorSlimDawnUpdateId);
-  assert.equal(content.updates[5].article_id, priorCeramicUpdateId);
-  assert.equal(content.updates[6].article_id, priorCalmUpdateId);
-  assert.equal(content.updates[7].article_id, priorSceneUpdateId);
-  assert.equal(content.updates[8].article_id, gameVideoMcpUpdateId);
-  assert.equal(content.updates[9].article_id, wallpaperTimeUpdateId);
-  assert.equal(content.updates[10].article_id, motionPolishUpdateId);
-  assert.equal(content.updates[11].article_id, remoteMcpOauthUpdateId);
-  assert.equal(content.updates[12].article_id, lifeRestartAgentUpdateId);
-  assert.equal(content.updates[13].article_id, hextrisAgentUpdateId);
-  assert.equal(content.updates[14].article_id, whiteboardAgentImagesUpdateId);
-  assert.equal(content.updates[15].article_id, agentAuthFormOriginUpdateId);
-  assert.equal(content.updates[16].article_id, japaneseProgressUpdateId);
-  assert.equal(content.updates[17].article_id, agentReadBreadthUpdateId);
-  assert.equal(content.updates[18].article_id, whiteboard2048UpdateId);
-  assert.equal(content.updates[19].article_id, firstPhaseUpdateId);
-  assert.equal(content.updates[20].article_id, websiteGuideUpdateId);
+  assert.equal(content.updates[3].article_id, videoLinkAutofillUpdateId);
+  assert.equal(homeContent.updates[3].article_id, videoLinkAutofillUpdateId);
+  assert.equal(content.updates[4].article_id, priorH3UpdateId);
+  assert.equal(homeContent.updates[4].article_id, priorH3UpdateId);
+  assert.equal(content.updates[5].article_id, priorSlimDawnUpdateId);
+  assert.equal(content.updates[6].article_id, priorCeramicUpdateId);
+  assert.equal(content.updates[7].article_id, priorCalmUpdateId);
+  assert.equal(content.updates[8].article_id, priorSceneUpdateId);
+  assert.equal(content.updates[9].article_id, gameVideoMcpUpdateId);
+  assert.equal(content.updates[10].article_id, wallpaperTimeUpdateId);
+  assert.equal(content.updates[11].article_id, motionPolishUpdateId);
+  assert.equal(content.updates[12].article_id, remoteMcpOauthUpdateId);
+  assert.equal(content.updates[13].article_id, lifeRestartAgentUpdateId);
+  assert.equal(content.updates[14].article_id, hextrisAgentUpdateId);
+  assert.equal(content.updates[15].article_id, whiteboardAgentImagesUpdateId);
+  assert.equal(content.updates[16].article_id, agentAuthFormOriginUpdateId);
+  assert.equal(content.updates[17].article_id, japaneseProgressUpdateId);
+  assert.equal(content.updates[18].article_id, agentReadBreadthUpdateId);
+  assert.equal(content.updates[19].article_id, whiteboard2048UpdateId);
+  assert.equal(content.updates[20].article_id, firstPhaseUpdateId);
+  assert.equal(content.updates[21].article_id, websiteGuideUpdateId);
   assert.ok(content.updates.some((update) => update.article_id === trafficUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === calmWhiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === reliableWhiteboardUpdateId));
@@ -112,7 +114,7 @@ test("the wallpaper and game display fix leads the exact five-item projection wi
 
   for (const path of ["functions/api/[[route]].js", "cloudflare/schema.sql"]) {
     const source = read(path);
-    for (const seededUpdateId of [updateId, firstVersionUpdateId, priorBfcacheUpdateId, priorH3UpdateId, priorSlimDawnUpdateId, priorCeramicUpdateId, priorCalmUpdateId, priorSceneUpdateId, gameVideoMcpUpdateId, wallpaperTimeUpdateId, motionPolishUpdateId, remoteMcpOauthUpdateId]) {
+    for (const seededUpdateId of [updateId, firstVersionUpdateId, priorBfcacheUpdateId, videoLinkAutofillUpdateId, priorH3UpdateId, priorSlimDawnUpdateId, priorCeramicUpdateId, priorCalmUpdateId, priorSceneUpdateId, gameVideoMcpUpdateId, wallpaperTimeUpdateId, motionPolishUpdateId, remoteMcpOauthUpdateId]) {
       assert.ok(source.includes(seededUpdateId), `${path} should include ${seededUpdateId}`);
     }
     for (const title of Object.values(content.updates[0].title)) {
@@ -123,12 +125,15 @@ test("the wallpaper and game display fix leads the exact five-item projection wi
 
 test("BFCache-safe ambient wallpapers, retained motion modules, wallpaper switch assets, and Quick Transfer keep independent cache versions", () => {
   const publicVersion = "20260809-motion-polish-r2";
+  const switchRouteMotionVersion = "20260810-wallpaper-switch-route-motion-r1";
+  const videoLinkAutofillVersion = "20260811-video-link-autofill-r1";
   const ambientAssetVersion = "20260810-h3-ambient-wallpapers-4k-r1";
   const displayFixReleaseVersion = "20260812-wallpaper-game-display-r1";
   const wallpaperAssetVersion = "20260810-wallpaper-time-switch-r6";
   const transferVersion = "20260809-transfer-motion-r2";
   const index = read("index.html");
   const main = read("js/main.js");
+  const changelog = read("CHANGELOG.md");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");
   const resources = read("js/routes/resources.mjs");
 
@@ -143,6 +148,8 @@ test("BFCache-safe ambient wallpapers, retained motion modules, wallpaper switch
   }
   assert.ok(index.includes(`/js/main.js?v=${displayFixReleaseVersion}`));
   assert.ok(main.includes(`wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));
+  assert.ok(changelog.includes(switchRouteMotionVersion), "the wallpaper route-motion release token must remain in project history");
+  assert.ok(changelog.includes(videoLinkAutofillVersion), "the video-link release token must remain in project history");
   const switchContentAssets = [
     ...["morning", "day", "dusk", "night"].map((theme) => `scene-${theme}.png`),
     "frame.png",

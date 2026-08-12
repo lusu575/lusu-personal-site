@@ -39,6 +39,7 @@ const wallpaperGameDisplayUpdateId = "seed-update-2026-08-12-wallpaper-game-disp
 const wallpaperSwitchCeramicUpdateId = "seed-update-2026-08-10-wallpaper-switch-ceramic-roll";
 const wallpaperSwitchCalmUpdateId = "seed-update-2026-08-10-wallpaper-switch-calm-redesign";
 const wallpaperSwitchSceneUpdateId = "seed-update-2026-08-09-wallpaper-switch-scene-redesign";
+const videoLinkAutofillUpdateId = "seed-update-2026-08-11-video-link-autofill";
 
 test("D1 schema initializes an empty database and remains idempotent", () => {
   const db = new DatabaseSync(":memory:");
@@ -269,6 +270,50 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
       assert.match(translation.content_markdown, /BFCache/);
       assert.match(translation.content_markdown, /pageshow/);
       assert.match(translation.content_markdown, /Save-Data/);
+    }
+    assert.equal(
+      db.prepare(`
+        select count(*) as count
+        from articles
+        where article_id = ?
+          and slug = '2026-08-11-video-link-autofill'
+          and category = 'site-updates'
+          and status = 'published'
+          and is_pinned = 0
+          and cover_image = ''
+          and created_at = '2026-08-11T00:20:00.000Z'
+          and updated_at = '2026-08-11T00:20:00.000Z'
+          and published_at = '2026-08-11T00:20:00.000Z'
+      `).get(videoLinkAutofillUpdateId).count,
+      1
+    );
+    assert.equal(
+      db.prepare("select count(*) as count from article_translations where article_id = ?").get(videoLinkAutofillUpdateId).count,
+      3
+    );
+    const videoLinkAutofillContent = content.updates.find(({ article_id: articleId }) => (
+      articleId === videoLinkAutofillUpdateId
+    ));
+    assert.ok(videoLinkAutofillContent);
+    assert.equal(videoLinkAutofillContent.title.en, "Publish a Video with AI from One Link");
+    for (const lang of ["zh", "en", "ja"]) {
+      const translation = db.prepare(`
+        select title, summary, content_markdown, created_at, updated_at
+        from article_translations
+        where article_id = ? and lang = ?
+      `).get(videoLinkAutofillUpdateId, lang);
+      assert.equal(translation.title, videoLinkAutofillContent.title[lang]);
+      assert.equal(translation.summary, videoLinkAutofillContent.summary[lang]);
+      assert.equal(
+        translation.content_markdown.replace(/\r\n/g, "\n"),
+        videoLinkAutofillContent.content_markdown[lang]
+      );
+      assert.equal(translation.created_at, "2026-08-11T00:20:00.000Z");
+      assert.equal(translation.updated_at, "2026-08-11T00:20:00.000Z");
+      assert.match(translation.content_markdown, /video_publish/);
+      assert.match(translation.content_markdown, /operationId/);
+      assert.match(translation.content_markdown, /YouTube/);
+      assert.match(translation.content_markdown, /Bilibili/);
     }
     assert.equal(
       db.prepare(`

@@ -888,6 +888,7 @@ const gameVideoMcpCandidateReleaseVersion = "20260809-game-video-mcp-heartbeat-r
 const motionPolishReleaseVersion = "20260809-motion-polish-r2";
 const wallpaperSwitchSceneReleaseVersion = "20260810-wallpaper-switch-slim-dawn-r1";
 const wallpaperSwitchRouteMotionReleaseVersion = "20260810-wallpaper-switch-route-motion-r1";
+const videoLinkAutofillReleaseVersion = "20260811-video-link-autofill-r1";
 const h3AmbientWallpapersReleaseVersion = "20260810-h3-ambient-wallpapers-4k-r1";
 const h3FirstVersionVideoReleaseVersion = "20260811-h3-first-version-video-sr-48fps-r1";
 const wallpaperGameDisplayReleaseVersion = "20260812-wallpaper-game-display-r1";
@@ -4829,6 +4830,7 @@ const finalPublishedAt = "2026-08-12T07:30:00.000Z";
 const preservedReleaseUpdateIds = [
   "seed-update-2026-08-11-h3-first-version-video-sr-48fps",
   "seed-update-2026-08-11-ambient-wallpaper-bfcache-fix",
+  "seed-update-2026-08-11-video-link-autofill",
   "seed-update-2026-08-10-h3-ambient-wallpapers-4k",
   "seed-update-2026-08-10-wallpaper-switch-slim-dawn",
   "seed-update-2026-08-10-wallpaper-switch-ceramic-roll",
@@ -4890,6 +4892,10 @@ if (!finalUpdateStarted) {
 }
 
 if (finalUpdateStarted) {
+  const finalReleaseDate = finalPublishedAt.slice(0, 10);
+  if (!apiJs.includes(`const PUBLIC_RELEASE_DATE = "${finalReleaseDate}";`)) {
+    fail(`functions/api/[[route]].js PUBLIC_RELEASE_DATE should match ${finalReleaseDate}`);
+  }
   for (const updateId of preservedReleaseUpdateIds) {
     for (const [path, source] of [
       ["js/data/content.mjs", contentModuleJs],
@@ -4922,7 +4928,7 @@ if (finalUpdateStarted) {
   const projectedUpdateIndexes = projectedUpdateIds.map((updateId) => homeContentModuleJs.indexOf(updateId));
   if (projectedUpdateIndexes.some((index) => index < 0)
     || !projectedUpdateIndexes.every((index, offset, list) => offset === 0 || list[offset - 1] < index)) {
-    fail("js/data/home-content.mjs should order the display fix, first-version H3 release, BFCache recovery, prior H3 release, and slim-rim dawn by descending publication time");
+    fail("js/data/home-content.mjs should order the display fix, first-version H3 release, BFCache recovery, video-link autofill, and prior H3 release by descending publication time");
   }
 
   for (const token of [
@@ -5109,6 +5115,31 @@ if (finalUpdateStarted) {
   ]) {
     if (!changelog20260812Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
+    }
+  }
+
+  for (const token of [
+    videoLinkAutofillReleaseVersion,
+    "seed-update-2026-08-11-h3-first-version-video-sr-48fps",
+    "48fps",
+    "BFCache"
+  ]) {
+    if (!changelog20260811Section.includes(token)) {
+      fail(`CHANGELOG.md should preserve the 2026-08-11 release token ${token}`);
+    }
+  }
+
+  for (const token of [
+    adminMotionPolishVersion,
+    transferReleaseVersion,
+    ...preservedReleaseUpdateIds.filter((updateId) => !updateId.startsWith("seed-update-2026-08-11-")),
+    wallpaperTimeSwitchAssetVersion,
+    wallpaperSwitchSceneReleaseVersion,
+    wallpaperSwitchRouteMotionReleaseVersion,
+    h3AmbientWallpapersReleaseVersion
+  ]) {
+    if (!changelog20260810Section.includes(token)) {
+      fail(`CHANGELOG.md should preserve the 2026-08-10 release token ${token}`);
     }
   }
 }

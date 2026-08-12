@@ -10,11 +10,21 @@
 https://lusu575.com/mcp
 ```
 
-截至 2026-08-09，生产 Worker `lusu-site-admin-mcp` 已部署；当前精确 version ID 为 `849d8328-87db-4ac8-819a-ce725fc06349`，内部版本 `0.3.1`，承接 100% 流量，Production D1 migration 已完成。该精确 bundle 的 OAuth protected-resource／authorization-server metadata、未鉴权 `401 WWW-Authenticate` challenge 与非 allowlist pathname `404` 已完成线上 smoke；这些基础检查不替代 DCR、真实浏览器 OAuth 或业务生命周期验收。
+截至 2026-08-11，生产 Worker `lusu-site-admin-mcp` 已部署；当前精确 version ID 为 `849d8328-87db-4ac8-819a-ce725fc06349`，内部版本 `0.3.1`，承接 100% 流量，Production D1 migration 已完成。该精确 bundle 的 OAuth protected-resource／authorization-server metadata、未鉴权 `401 WWW-Authenticate` challenge 与非 allowlist pathname `404` 已完成线上 smoke；这些基础检查不替代 DCR、真实浏览器 OAuth 或业务生命周期验收。
 
 该地址是无状态 Streamable HTTP 端点，不提供旧式 `/sse`，也不接受网站设备码令牌、`lusu_session` Cookie 或 URL 查询参数中的 Bearer token。客户端必须通过该 resource 发现并完成站点 OAuth 2.1 授权。
 
 当前 Worker 的 `tools/list` 精确包含 23 个工具，`site_capabilities` 仍只发现已晋级的 4 项公开文章能力。历史 `fa295db6-302a-4a20-a2b1-ffe1ddafd75b` 已通过九工具文章闭环；外链视频发布、同载荷重放、管理／公开 MCP／公开 HTTP 回读、元数据刷新、CAS 隐藏、确认删除、最终不存在与 RFC 7009 撤销只对历史 `377d494b-8f90-40ad-998f-863d209e1978` 通过，当前 `849d...` 必须重验。视频条目的 `availableTransports` 尚未包含 `remote-mcp`，六项游戏条目的 `availableTransports` 仍为空。当前 `849d...` 已包含 paused `observe` 下行 `pong` 保活，但四款游戏仍须绑定该精确 bundle 与已上线 Pages 字节重跑配对、动作、CAS、至少 6 分钟后台暂停、玩家恢复、确认关闭与撤销闭环。每个新生产 Worker bundle 都必须重新执行适用的真实浏览器 OAuth 与完整闭环，不能复用历史证据。
+
+## 0.4.0 `video_publish` 单链接候选（尚未上线）
+
+下一版候选不增加新工具或 scope：`tools/list` 仍为 23 项，视频发布仍使用既有 `video_publish` 和 `content:write`，调用成功仍直接写入 `status=published`。站长以后可以只告诉 AI 一条 YouTube、Bilibili 或 b23.tv 链接；AI 只需生成唯一 `operationId` 并提交 `originalUrl`。
+
+`title`、`description`、`thumbnailUrl`、`authorName` 与 `publishedAt` 在候选 schema 中都是可选覆盖项。服务端只对省略字段调用固定平台 provider 做有界补全，显式传入值优先。持久收据会在任何网络访问前检查，所以同载荷重试直接回放且不会再次抓取；换意图复用同一 `operationId` 仍冲突。若标题未传且 provider 也取不到标题，则返回 `VIDEO_METADATA_TITLE_UNAVAILABLE`，视频、分类、收据与审计全部零写入。
+
+这仍是 link-only 发布，不下载、上传、转码或托管视频文件，也不接受本机路径、Base64、原始字节或任意 iframe。精确 0.4.0 Worker version 与真实浏览器 OAuth、23 工具发现、最小载荷发布、重放、管理／公开回读及撤销闭环须在部署后回填；当前生产版本和历史验收事实不变。
+
+2026-08-11 的首次候选部署 `9b0bd726-2c15-414c-bdff-fc5179b4e003` 已完成 DCR、PKCE、站长 OAuth 与精确 23 项工具发现，但最小 YouTube 发布因 provider 标题不可用而以 `VIDEO_METADATA_TITLE_UNAVAILABLE` 零写入失败。临时 grant 已撤销，生产已 100% 回滚至 0.3.1 `849d8328-87db-4ac8-819a-ce725fc06349`。仓库候选现以有界流式读取并行合并官方 oEmbed 与 watch page，让页面补简介／发布时间并兜底标题；仍未重新部署或验收。不得把这次失败尝试写成可用性晋级，也不得在站长未重新明确授权时继续 OAuth。
 
 ## 当前 Worker 的 23 个工具
 
@@ -69,7 +79,7 @@ https://lusu575.com/mcp
 - `article_publish` 调用前逐项检查 slug、分类、三语标题／正文、公开时间和 `operationId`。
 - `article_update` 调用前先用 `article_manage_get` 取得最新 `updatedAt`，展示差异并让站长确认。
 - `article_delete` 不得设为“始终允许”；每次都要展示文章 ID／slug、最新 revision 和永久删除后果，再由站长明确批准。
-- `video_publish`／`video_update`／`video_delete` 逐次核对规范化 URL、标题、当前 CAS 与公开状态；删除始终要求独立确认。
+- `video_publish`／`video_update`／`video_delete` 逐次核对规范化 URL、标题、当前 CAS 与公开状态；删除始终要求独立确认。0.4.0 候选允许 `video_publish` 只传 `operationId + originalUrl`，调用成功即产生公开记录。
 - `game_browser_act` 只使用当前 revision 返回的不透明 `actionId`；暂停后必须由玩家页面恢复，关闭要求 `confirm: true`。
 - scope 不足时重新走 OAuth 增量授权，不得要求用户粘贴 token。
 
@@ -165,6 +175,7 @@ ChatGPT 的菜单会随 beta 调整。当前应在账号／工作区允许 Devel
 - `article_publish`：每次新动作生成永久唯一的 `operationId`；完全相同的重试会读回原收据，异载荷复用同一 ID 会冲突。
 - `article_update`：先调用 `article_manage_get` 取得最新 `updatedAt`，再把它作为 `expectedUpdatedAt`。
 - `article_delete`：另需 `content:delete`、最新 `expectedUpdatedAt`、新 `operationId` 和 `confirm: true`。
+- `video_publish`：0.4.0 候选中每个新发布只需唯一 `operationId` 与平台链接；可显式覆盖展示元数据。调用即公开，标题无法由输入或 provider 得到时零写入失败；同意图重试必须先命中原收据，不得再次请求 provider。
 - 账号被降为非管理员、grant 被撤销或 provider token 失效后，下一次管理调用立即拒绝。
 - 每个 AI 客户端首次连接仍须站长本人在正常 OAuth 页面核对并手动 Allow；每个新生产 Worker bundle 也必须重新完成原子发布、同载荷重放、管理回读、CAS 更新、三语公开回读、确认删除／404 与撤销闭环，不得把历史 bundle 的验收写成当前版本成功。
 

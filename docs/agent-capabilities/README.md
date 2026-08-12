@@ -2,6 +2,10 @@
 
 本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前七阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道（含真实图片闭环）、2048 与人生重开模拟器的集成式游戏适配器、独立 GPL 进程边界内的 Hextris 游戏适配器、知识库文章的管理员原子发布／CAS 更新／确认删除、视频／工具／游戏／日语题库的公开只读目录，以及日语账号进度读取与受控答题。生产 OAuth remote MCP 位于 `https://lusu575.com/mcp`，当前精确 Worker version 为 `849d8328-87db-4ac8-819a-ce725fc06349`，内部版本 `0.3.1`，承接 100% 流量；metadata、未鉴权 401 与非 allowlist pathname 404 基础线上点检已通过，但当前 bundle 尚未完成外链视频或四款浏览器游戏的 bundle-specific 生命周期。历史视频验收只绑定 `377d494b-8f90-40ad-998f-863d209e1978`，已上线的 Pages 心跳也曾在 Chrome 后台约 5 分钟强节流验收中断线。视频条目的 `availableTransports` 尚未包含 `remote-mcp`，游戏条目的 `availableTransports` 仍为空；公开 `site_capabilities` 继续只列已晋级的四项文章读取能力。这不是“全站所有功能已经接入”或“浏览器游戏已经可从生产 MCP 接管”的声明。
 
+仓库 0.4.0 候选只扩展既有 `video_publish` 的输入便利性：工具总数仍为 23，scope 仍为 `content:write`，发布结果仍直接是 `status=published`。AI 可以只提交唯一 `operationId` 和 YouTube／Bilibili／b23.tv 链接，其余展示元数据由服务端有界补全；这不是新增工具或当前生产已经升级的声明。
+
+首次候选曾临时部署为精确 Worker `9b0bd726-2c15-414c-bdff-fc5179b4e003`。DCR、PKCE、站长 OAuth 与 23 项工具发现通过，但链接-only YouTube 发布因标题解析失败而零写入返回 `VIDEO_METADATA_TITLE_UNAVAILABLE`；grant 已撤销，生产已回滚到 0.3.1 `849d8328-87db-4ac8-819a-ce725fc06349`。仓库候选随后改为有界并行合并官方 YouTube oEmbed 与 watch page，以后者补简介／发布时间和兜底标题；但该修复尚未重新部署或生产验收。只有站长再次明确授权后才能重跑闭环，registry 保持不变。
+
 ## 1. 先看能力注册表，不要靠猜
 
 统一清单位于 `lib/capabilities/registry.mjs`。每项能力都包含 `id`、`domain`、主 `scope`、风险、幂等性、破坏性以及两组容易混淆的传输字段：
@@ -250,7 +254,7 @@ Hextris 使用相同的语义动作原则，但保持独立 GPL 进程边界：
 - 日语能力只访问固定 catalog、五个 level index 和由合法 `L1-001` 至 `L5-050` ID 推导出的固定 batch。适配器限制 JSON 字节、条目和搜索结果，验证 schema、`contentVersion: 1.0.2`、250 关计数、唯一 ID、64 位 SHA-256、`textLocked: true` 与关卡哈希；输出省略 batch 路径、内部音频文本和构建字段。
 - 所有公开目录参数只接受 zh／en／ja、白名单 ID、1–5 等级和有界 limit／query。URL 必须是固定站内路径或安全 GitHub HTTPS 地址，调用方不能借参数读取任意文件或 URL。
 
-这些目录本身仍是只读发现面；账号日语进度由下节独立 scope 和专用 API 承担，不把浏览器原始存档混入目录响应。工具目录来自本地模块，因此只在 CLI／本地 MCP 可用；游戏和日语数据虽由正式站点提供，当前生产远程 MCP 的九个工具也没有接入这些目录。这保留了第三阶段“没有远程接线”的历史范围，同时以本节当前工具清单为准。
+这些目录本身仍是只读发现面；账号日语进度由下节独立 scope 和专用 API 承担，不把浏览器原始存档混入目录响应。工具目录来自本地模块，因此只在 CLI／本地 MCP 可用；游戏和日语数据虽由正式站点提供，当前生产远程 MCP 的 23 个工具也没有接入这些目录。这保留了第三阶段“没有远程接线”的历史范围，同时以本节当前工具清单为准。
 
 ## 9. 日语账号进度与受控答题
 
@@ -300,6 +304,8 @@ Hextris 使用相同的语义动作原则，但保持独立 GPL 进程边界：
 
 当前 `849d...` bundle 还承载候选公开视频读 `videos_list`／`video_get`，以及六项站长工具：`video_manage_list`、`video_manage_get`、`video_publish`、`video_update`、`video_refresh_metadata`、`video_delete`。这八项的外链记录生产生命周期只在历史 `377d...` 精确 bundle 通过，当前版本必须重验；`content.videos.list/get` 继续不把 remote MCP 放进 `availableTransports`，因此生产 `site_capabilities` 仍只列出四项文章能力。第一阶段只处理 YouTube、Bilibili 与 b23.tv 外链记录；`video_publish` 把记录与审计／幂等收据原子提交，更新和删除要求 `expectedUpdatedAt`，删除另需 `confirm: true`，所有写操作都要求唯一 `operationId`、active grant 和当前管理员复核。
 
+0.4.0 候选不改动上述工具清单、授权或直接发布语义，只把 `video_publish` 的 `title`、`description`、`thumbnailUrl`、`authorName` 与 `publishedAt` 变为可选覆盖项。只有 `operationId` 与 `originalUrl` 必填；省略字段会从固定平台 provider 有界取得，显式字段优先。收据查询和同意图哈希校验发生在 provider 网络访问之前，因此完全相同的重试直接回放原结果；若标题既未提供也无法补全，则以 `VIDEO_METADATA_TITLE_UNAVAILABLE` 失败，并保持视频、分类、收据和审计零写入。显式标题存在时，其他元数据获取失败可使用安全默认值并记录受限错误。该候选的精确生产 Worker version 与真实 OAuth 最小载荷闭环仍须部署后回填，不能复用历史 `377d...` 的验收。
+
 视频候选不接受文件内容。远程 MCP 不读取本机路径、Base64、原始字节或客户端机器上的文件；真实托管上传尚未配置。`video_upload_sessions` 只是为未来独立数据面预留的 schema，不表示上传 API 或 R2 已可用。后续如启用，必须建立私有 R2 二进制数据面，并独立完成分片、配额、内容哈希、扫描、提交、中止、过期与孤儿清理验收。
 
 `content:write` 和 `content:delete` 都是站长专用非默认 scope；管理列表／详情虽然是只读工具，也因包含非公开管理数据而要求 write scope。客户端必须保留 publish／update／delete 的逐次人类审批，尤其不得把 `article_delete` 设为“始终允许”。服务端 scope、管理员实时复核、CAS、幂等和 `confirm: true` 是强制边界，但不能替代调用前对目标和参数的人工确认。
@@ -338,7 +344,7 @@ npm.cmd run check
 
 - 白板读取、图片上传／下载、高层追加和本地导出、主能力层的隔离 2048／人生重开模拟器会话，以及专用 GPL 进程中的隔离 Hextris 会话已经在本地 CLI／stdio MCP 可用；它们不表示公网远程 MCP 写入、白板任意编辑／删除，或浏览器游戏接管已经完成。
 - 五个游戏的安全目录已经可读，其中 2048 与人生重开模拟器是集成式本地会话适配器、Hextris 是独立进程适配器。生产候选已为 2048、Hextris、A Dark Room 与人生重开补齐语义 bridge；Pages ping／pong 与当前 `849d...` paused-observe 下行保活均已部署，但 `game_browser_pair`／`observe`／`actions`／`act`／`pause`／`close` 仍须以该精确 Worker 与已上线 Pages commit 完成 `games:play` OAuth、Durable Object 和四游戏真实浏览器验收后才能进入 `availableTransports`。Kittens Game 的 WET PAWS 条款继续阻止接入，必须先取得明确许可／法律确认；游戏云存档通用写入也仍需单独适配与授权。
-- 外链视频管理只在精确历史 bundle `377d...` 完成生产生命周期，当前 `849d...` 必须重验，registry 远程面仍未晋级。真视频文件上传没有配置；schema 预留、文件名、R2 设计或未来工具 ID 都不能被解释为当前可以上传本机文件。
+- 外链视频管理只在精确历史 bundle `377d...` 完成生产生命周期，当前 `849d...` 必须重验；0.4.0 的最小 `video_publish` 载荷仍是待部署候选，registry 远程面尚未晋级。真视频文件上传没有配置；schema 预留、文件名、R2 设计或未来工具 ID 都不能被解释为当前可以上传本机文件。
 - 日语等级／关卡公开内容和账号进度闭环已经可用；聊天写入、任意完整进度快照写入、游戏存档写入等条目仍只是既有 API 的 inventory 或受限入口，没有通用 CLI/MCP 写适配器。
 - Daily AI News、Tool Radar 的生产发布能力是 `restricted`，不会出现在公开远程 MCP 或通用本地 MCP 中。
 

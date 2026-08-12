@@ -91,6 +91,36 @@ export const content = {
       }
     },
     {
+      "article_id": "seed-update-2026-08-11-video-link-autofill",
+      "slug": "2026-08-11-video-link-autofill",
+      "category": "site-updates",
+      "tags": ["网站更新", "AI 能力", "视频区", "MCP", "安全"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-11T00:20:00.000Z",
+      "updated_at": "2026-08-11T00:20:00.000Z",
+      "published_at": "2026-08-11T00:20:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.11",
+      "title": {
+        "zh": "一条视频链接即可交给 AI 发布",
+        "en": "Publish a Video with AI from One Link",
+        "ja": "動画リンク1本だけでAIから公開"
+      },
+      "summary": {
+        "zh": "既有 video_publish 的 0.4.0 候选把必填输入缩到 operationId 和 YouTube／Bilibili／b23.tv 链接；标题、简介、作者、发布时间与官方封面可由服务端有界补全，调用仍直接公开且不传输视频文件。精确生产版本与真实 OAuth 验收仍待部署后确认。",
+        "en": "The 0.4.0 candidate narrows the existing video_publish tool to an operationId and a YouTube, Bilibili, or b23.tv link. The server can fill bounded title, description, author, publication time, and official cover metadata while the call still publishes directly and never transfers the video file. The exact production version and real OAuth acceptance remain pending deployment.",
+        "ja": "既存の video_publish を拡張する 0.4.0 候補では、必須入力が operationId と YouTube／Bilibili／b23.tv リンクだけになります。タイトル、説明、作者、公開日時、公式サムネイルはサーバーが限定的に補完でき、呼び出しは従来どおり直接公開し、動画ファイルは転送しません。正確な本番版と実 OAuth 検証はデプロイ後に確認します。"
+      },
+      "content_markdown": {
+        "zh": "# 一条视频链接即可交给 AI 发布\n\n视频区正在准备一个更省步骤的 0.4.0 上线候选。它不新增工具：AI 继续调用既有 `video_publish`，但站长只需提供现成的视频链接。\n\n## 最小输入仍然直接公开\n\n- 新动作只要求唯一 `operationId` 和 YouTube、Bilibili 或 b23.tv 链接。\n- 工具名、23 项工具总数和 `content:write` 权限都不变化。\n- 调用成功仍直接写入 `status=published`，中间不产生其他状态。\n\n## 展示信息自动补全\n\n标题、简介、作者、发布时间和平台官方封面都可以省略。服务端只从固定平台 provider 有界取得缺少的字段；站长明确给出的值始终优先。若标题既未提供也无法取得，整次发布会零写入失败，不会留下半成品视频、分类、收据或审计记录。\n\n## 重试先看收据\n\n服务端会在访问平台网络之前检查 `operationId` 对应的调用意图收据。完全相同的重试直接回放原结果，不会再次抓取；换一组输入复用同一个 ID 仍会被拒绝。\n\n## 只保存链接，不搬运视频\n\n本站不会下载、上传、转码或托管平台视频，也不接受本机路径、Base64、原始字节或任意 iframe 地址。当前记录的是仓库 0.4.0 候选；精确 Worker 版本与真实浏览器 OAuth、最小载荷发布、重放和公开回读仍须在实际部署后完成并记录。",
+        "en": "# Publish a Video with AI from One Link\n\nThe Videos area is preparing a smaller 0.4.0 release-candidate workflow. It adds no tool: AI continues to call the existing `video_publish`, while the owner only needs to provide an existing video link.\n\n## Minimal input still publishes directly\n\n- A new action requires only a unique `operationId` and a YouTube, Bilibili, or b23.tv link.\n- The tool name, 23-tool total, and `content:write` permission do not change.\n- A successful call still writes `status=published` directly; with no intermediate state.\n\n## Display metadata can be filled automatically\n\nThe title, description, author, publication time, and official platform cover may all be omitted. The server retrieves only missing fields through bounded fixed-platform providers, and explicit owner values always win. If no title is supplied or resolved, the whole publication fails with zero writes, leaving no partial video, category, receipt, or audit record.\n\n## Retries check the receipt first\n\nBefore any platform network request, the server checks the caller-intent receipt for the `operationId`. An identical retry replays the original result without fetching again; reusing that ID with different input is still rejected.\n\n## Store the link, never move the video\n\nThe site does not download, upload, transcode, or host platform videos, and it accepts no local path, Base64, raw bytes, or arbitrary iframe address. This entry records a repository 0.4.0 candidate; the exact Worker version and real browser OAuth, minimal publish, replay, and public readback checks must still be completed and recorded after deployment.",
+        "ja": "# 動画リンク1本だけでAIから公開\n\n動画欄では、手順を減らす 0.4.0 公開候補を準備しています。新しいツールは追加せず、AI は既存の `video_publish` を使い続け、サイト所有者は既存の動画リンクだけを渡せます。\n\n## 最小入力でも従来どおり直接公開\n\n- 新しい操作に必要なのは、一意な `operationId` と YouTube、Bilibili、または b23.tv のリンクだけです。\n- ツール名、23 ツールという総数、`content:write` 権限は変わりません。\n- 成功時は従来どおり `status=published` で直接保存され、中間状態はありません。\n\n## 表示メタデータを自動補完\n\nタイトル、説明、作者、公開日時、公式プラットフォーム画像は省略できます。サーバーは固定 provider から不足項目だけを上限付きで取得し、所有者が明示した値を常に優先します。タイトルが入力にも取得結果にもなければ、動画、カテゴリ、レシート、監査を一切書き込まずに公開全体を失敗させます。\n\n## 再試行は先にレシートを確認\n\nプラットフォームへ通信する前に、サーバーは `operationId` の呼び出し意図レシートを確認します。同一内容の再試行は再取得せず元の結果を返し、異なる入力で同じ ID を使うと拒否します。\n\n## 保存するのはリンクだけ\n\nサイトは動画をダウンロード、アップロード、変換、保管せず、ローカルパス、Base64、生バイト、任意の iframe URL も受け付けません。現在はリポジトリ内の 0.4.0 候補であり、正確な Worker 版と実ブラウザー OAuth、最小公開、再生、公開読み戻しは実際のデプロイ後に完了して記録する必要があります。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-10-h3-ambient-wallpapers-4k",
       "slug": "2026-08-10-h3-ambient-wallpapers-4k",
       "category": "site-updates",

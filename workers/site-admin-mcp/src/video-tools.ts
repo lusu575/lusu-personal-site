@@ -70,7 +70,7 @@ const StatusSchema = z.enum(["draft", "published", "hidden"]);
 const PublishInputSchema = z.object({
   operationId: OperationIdSchema,
   originalUrl: OriginalUrlSchema,
-  title: z.string().trim().min(1).max(220),
+  title: z.string().trim().min(1).max(220).optional(),
   description: z.string().trim().max(2_000).optional(),
   thumbnailUrl: ThumbnailUrlSchema.optional(),
   authorName: z.string().trim().max(160).optional(),
@@ -198,7 +198,7 @@ export function registerVideoOwnerTools(
     "video_publish",
     {
       title: "Atomically publish an external video record",
-      description: "Atomically publishes a YouTube or Bilibili external-link record with status=published. operationId makes retries safe. It never accepts local paths, base64, or video file bytes.",
+      description: "Atomically publishes a YouTube or Bilibili external-link record, including b23.tv short links, with status=published. Only operationId and originalUrl are required; title and all other metadata fields are optional overrides. Omitted metadata is resolved from the bounded platform provider before publication. operationId makes retries safe. It never accepts local paths, base64, or video file bytes.",
       inputSchema: PublishInputSchema,
       annotations: PublishAnnotations,
       _meta: oauthToolMeta(["content:write"])
