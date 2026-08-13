@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-13-hide-minimax-h3-tools",
+      "slug": "2026-08-13-hide-minimax-h3-tools",
+      "category": "site-updates",
+      "tags": ["网站更新", "工具区", "ComfyUI", "MiniMax H3", "暂时隐藏"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-13T02:00:00.000Z",
+      "updated_at": "2026-08-13T02:00:00.000Z",
+      "published_at": "2026-08-13T02:00:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.13",
+      "title": {
+        "zh": "在线 ComfyUI 工具入口暂时隐藏",
+        "en": "Online ComfyUI Tools Entry Temporarily Hidden",
+        "ja": "オンライン ComfyUI のツール入口を一時非表示"
+      },
+      "summary": {
+        "zh": "工具区暂时隐藏在线 ComfyUI · MiniMax H3 入口；管理员控制台、后端接口和本地执行配置保留，待 Tunnel、Runner 与 GPU canary 完成验收后再重新开放。",
+        "en": "The public Tools area temporarily hides the Online ComfyUI · MiniMax H3 entry; the protected admin console, backend interfaces, and local execution configuration remain available until Tunnel, Runner, and GPU canary acceptance is complete.",
+        "ja": "公開ツール区ではオンライン ComfyUI · MiniMax H3 の入口を一時的に非表示にしました。保護された管理コンソール、バックエンド API、ローカル実行設定は保持し、Tunnel、Runner、GPU canary の受入れ完了後に再公開します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-12-minimax-h3-console",
       "slug": "2026-08-12-minimax-h3-console",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "修复桌面 Home 动态壁纸在浏览器历史返回或 BFCache 恢复后可能停留在静态图的问题。恢复页面时，旧的 off 状态曾先被主模块读取，随后 ui-motion 写回 full 却没有触发壁纸重同步；现在 motion mode、运行时 ready 与 pageshow 都会重新协调视频状态。手机、low performance、Save-Data、reduced／off 的零视频请求策略保持不变。",
         "en": "Fixes a case where the desktop Home ambient wallpaper could remain static after browser history navigation or a BFCache restore. The main module could read a stale off state before ui-motion wrote full back without notifying the wallpaper controller; motion-mode, runtime-ready, and pageshow signals now resynchronize video state. The zero-video-request policy for mobile, low-performance, Save-Data, and reduced/off modes is unchanged.",
         "ja": "ブラウザー履歴の移動や BFCache 復帰後に、デスクトップ Home の動画壁紙が静止画のままになる場合を修正しました。主モジュールが古い off 状態を先に読み、その後 ui-motion が full を書き戻しても壁紙側へ再同期されないことが原因でした。motion mode、runtime ready、pageshow の各タイミングで動画状態を再調整します。モバイル、low performance、Save-Data、reduced／off の動画リクエストを行わない方針は変わりません。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-11-video-link-autofill",
-      "slug": "2026-08-11-video-link-autofill",
-      "category": "site-updates",
-      "tags": ["网站更新", "AI 能力", "视频区", "MCP", "安全"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-11T00:20:00.000Z",
-      "updated_at": "2026-08-11T00:20:00.000Z",
-      "published_at": "2026-08-11T00:20:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.08.11",
-      "title": {
-        "zh": "一条视频链接即可交给 AI 发布",
-        "en": "Publish a Video with AI from One Link",
-        "ja": "動画リンク1本だけでAIから公開"
-      },
-      "summary": {
-        "zh": "既有 video_publish 的 0.4.0 候选把必填输入缩到 operationId 和 YouTube／Bilibili／b23.tv 链接；标题、简介、作者、发布时间与官方封面可由服务端有界补全，调用仍直接公开且不传输视频文件。精确生产版本与真实 OAuth 验收仍待部署后确认。",
-        "en": "The 0.4.0 candidate narrows the existing video_publish tool to an operationId and a YouTube, Bilibili, or b23.tv link. The server can fill bounded title, description, author, publication time, and official cover metadata while the call still publishes directly and never transfers the video file. The exact production version and real OAuth acceptance remain pending deployment.",
-        "ja": "既存の video_publish を拡張する 0.4.0 候補では、必須入力が operationId と YouTube／Bilibili／b23.tv リンクだけになります。タイトル、説明、作者、公開日時、公式サムネイルはサーバーが限定的に補完でき、呼び出しは従来どおり直接公開し、動画ファイルは転送しません。正確な本番版と実 OAuth 検証はデプロイ後に確認します。"
       }
     },
   ]

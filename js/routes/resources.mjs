@@ -173,7 +173,9 @@ export function createResourcesRoute({
   }
 
   function readyResourceItems() {
-    return content.resources.filter((item) => safeResourceUrl(item) || item.action === "quick-transfer");
+    return content.resources
+      .filter((item) => item.showInTools !== false)
+      .filter((item) => safeResourceUrl(item) || item.action === "quick-transfer");
   }
 
   function resourceCardElement(item) {

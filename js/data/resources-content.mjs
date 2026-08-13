@@ -10,6 +10,7 @@ export const resourcesContent = Object.freeze({
       "version": "P2",
       "updated": "2026.08.12",
       "external": false,
+      "showInTools": false,
       "publicCatalog": false,
       "showReadyStatus": false,
       "url": "/admin/minimax-h3.html",

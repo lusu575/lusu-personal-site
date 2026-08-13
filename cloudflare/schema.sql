@@ -14250,7 +14250,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260812-minimax-h3-control-plane-r1', '2026-08-12T08:00:00.000Z')
+values ('article_seed_version', '20260813-hide-minimax-h3-tools-r1', '2026-08-13T02:00:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at
@@ -14398,6 +14398,68 @@ create index if not exists minimax_h3_transfer_tickets_job_status_idx
   on minimax_h3_transfer_tickets(job_id, status, expires_at);
 create index if not exists minimax_h3_transfer_tickets_runner_status_idx
   on minimax_h3_transfer_tickets(runner_id, status, expires_at);
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
+  'seed-update-2026-08-13-hide-minimax-h3-tools',
+  '2026-08-13-hide-minimax-h3-tools',
+  'site-updates',
+  '["网站更新","工具区","ComfyUI","MiniMax H3","暂时隐藏"]',
+  '', 'published', 0, 0,
+  '2026-08-13T02:00:00.000Z',
+  '2026-08-13T02:00:00.000Z',
+  '2026-08-13T02:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-13-hide-minimax-h3-tools-zh',
+    'seed-update-2026-08-13-hide-minimax-h3-tools',
+    'zh',
+    '在线 ComfyUI 工具入口暂时隐藏',
+    '工具区暂时隐藏在线 ComfyUI · MiniMax H3 入口；管理员控制台、后端接口和本地执行配置保留，待 Tunnel、Runner 与 GPU canary 完成验收后再重新开放。',
+    '# 在线 ComfyUI 工具入口暂时隐藏\n\n工具区现在暂时隐藏在线 ComfyUI · MiniMax H3 卡片，避免在远程执行链路尚未完成验收前给访客造成可用承诺。\n\n## 保留的内容\n\n- /admin/minimax-h3.html 管理员控制台、后端 API、Runner、Bridge 和本地 ComfyUI 配置继续保留。\n- 家庭端 ComfyUI 仍只监听 127.0.0.1:8188，Bridge 仍只监听 127.0.0.1:8791。\n- 简约 AI 视频主题 image2 图标资产保留，后续重新开放时可以继续使用。\n\n## 重新开放条件\n\n完成 Cloudflare Tunnel/Access、生产 minimax-h3:execute token、Runner heartbeat 和真实 GPU canary 后，再单独恢复公开入口。',
+    '2026-08-13T02:00:00.000Z',
+    '2026-08-13T02:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-13-hide-minimax-h3-tools-en',
+    'seed-update-2026-08-13-hide-minimax-h3-tools',
+    'en',
+    'Online ComfyUI Tools Entry Temporarily Hidden',
+    'The public Tools area temporarily hides the Online ComfyUI · MiniMax H3 entry; the protected admin console, backend interfaces, and local execution configuration remain available until Tunnel, Runner, and GPU canary acceptance is complete.',
+    '# Online ComfyUI Tools Entry Temporarily Hidden\n\nThe public Tools area now temporarily hides the Online ComfyUI · MiniMax H3 card so it does not imply availability before the remote execution path has completed acceptance.\n\n## What remains\n\n- The /admin/minimax-h3.html admin console, backend APIs, Runner, Bridge, and local ComfyUI configuration remain in place.\n- Home ComfyUI still listens only on 127.0.0.1:8188, and the Bridge still listens only on 127.0.0.1:8791.\n- The simple AI-video-themed image2 icon asset is retained for a later reopening.\n\n## Reopening conditions\n\nThe public entry can return after Cloudflare Tunnel/Access, the production minimax-h3:execute token, Runner heartbeat, and a real GPU canary have all been accepted.',
+    '2026-08-13T02:00:00.000Z',
+    '2026-08-13T02:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-13-hide-minimax-h3-tools-ja',
+    'seed-update-2026-08-13-hide-minimax-h3-tools',
+    'ja',
+    'オンライン ComfyUI のツール入口を一時非表示',
+    '公開ツール区ではオンライン ComfyUI · MiniMax H3 の入口を一時的に非表示にしました。保護された管理コンソール、バックエンド API、ローカル実行設定は保持し、Tunnel、Runner、GPU canary の受入れ完了後に再公開します。',
+    '# オンライン ComfyUI のツール入口を一時非表示\n\n公開ツール区では、リモート実行経路の受入れが完了する前に利用可能だと誤解させないよう、Online ComfyUI · MiniMax H3 のカードを一時的に非表示にしました。\n\n## 保持するもの\n\n- /admin/minimax-h3.html の管理コンソール、バックエンド API、Runner、Bridge、ローカル ComfyUI 設定は保持します。\n- 家庭側 ComfyUI は引き続き 127.0.0.1:8188 のみ、Bridge は 127.0.0.1:8791 のみで待ち受けます。\n- シンプルな AI ビデオテーマの image2 アイコン素材は再公開時のために保持します。\n\n## 再公開の条件\n\nCloudflare Tunnel/Access、production の minimax-h3:execute token、Runner heartbeat、実 GPU canary の受入れがすべて完了した後に、公開入口を個別に戻します。',
+    '2026-08-13T02:00:00.000Z',
+    '2026-08-13T02:00:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
 
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,

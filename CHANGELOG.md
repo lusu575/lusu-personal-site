@@ -2,6 +2,12 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-08-13
+
+- 暂时隐藏公开工具区的在线 ComfyUI · MiniMax H3 卡片，避免 Tunnel、Runner heartbeat、生产 `minimax-h3:execute` token 与真实 GPU canary 尚未完成验收时形成可用承诺；管理员控制台、后端 API、Runner、Bridge、本地 ComfyUI 配置和 image2 简约 AI 视频图标资产继续保留。
+- 资源路由新增 `showInTools: false` 公开显示边界，并同步主模块、Home 更新投影、三语 `site-updates` fallback、Functions seed、schema seed、本地／远端 D1 seed 版本、API 表示版本与缓存 query；公开目录仍保持不含受保护的 H3 能力。
+- 本次公开更新为 `seed-update-2026-08-13-hide-minimax-h3-tools`／`2026-08-13-hide-minimax-h3-tools`，主缓存与 seed token 为 `20260813-hide-minimax-h3-tools-r1`；Functions 与 schema 的三语正文保持同一份内容。
+
 ## 2026-08-12
 
 - MiniMax H3 隔离发布候选保留 `main` 上既有视频、壁纸与游戏改动，并接入 Tools 的站长专用在线 ComfyUI 入口、admin-only `minimax-h3:execute`、P0–P3 API/control-plane、固定 Runner/loopback Bridge 与 H3 D1 schema/index；控制与传输开关仍默认关闭，生产 Runner token、Tunnel/Access 和 GPU canary 未验证前不宣称生成链路在线。
