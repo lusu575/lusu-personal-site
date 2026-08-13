@@ -2,7 +2,7 @@
 
 > 文档版本：1.0
 > 编写日期：2026-08-12
-> 状态：**P0–P3 代码与本地回归已完成，Production D1 的 H3-only 增量迁移已完成；当前为隔离发布候选，执行链路仍默认关闭，Tunnel/Access、生产 token、GPU canary 与跨网络验收未完成**
+> 状态：**P0–P3 代码与本地回归已完成，Production D1 的 H3-only 增量迁移已完成；公开工具区入口暂时隐藏，管理员控制面与执行链路仍默认关闭，Tunnel/Access、生产 token、GPU canary 与跨网络验收未完成**
 > 适用仓库：`F:\lusu575个人站`
 > 适用本机 H3 版本：`F:\AI视频H3\MiniMax-H3-Local\versions\2026-08-04_v4`
 > 目标读者：站点维护者，以及上下文较小、推理能力有限、需要逐项执行的开发模型

@@ -748,6 +748,15 @@ function sqlSingleQuotedValues(source) {
   return values;
 }
 
+function normalizeSeedText(value) {
+  return String(value || "")
+    .replace(/\\r\\n/g, "\n")
+    .replace(/\\n/g, "\n")
+    .replace(/\\r/g, "\r")
+    .replace(/\\t/g, "\t")
+    .replace(/\r\n/g, "\n");
+}
+
 for (const file of requiredFiles) {
   readRequired(file);
 }
@@ -892,10 +901,11 @@ const videoLinkAutofillReleaseVersion = "20260811-video-link-autofill-r1";
 const h3AmbientWallpapersReleaseVersion = "20260810-h3-ambient-wallpapers-4k-r1";
 const h3FirstVersionVideoReleaseVersion = "20260811-h3-first-version-video-sr-48fps-r1";
 const wallpaperGameDisplayReleaseVersion = "20260812-wallpaper-game-display-r1";
+const publicSiteReleaseVersion = "20260813-hide-minimax-h3-tools-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = "20260809-transfer-motion-r2";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
-const resourcesRouteVersion = "20260812-minimax-h3-tools-r1";
+const resourcesRouteVersion = publicSiteReleaseVersion;
 const routeStyleVersion = motionPolishReleaseVersion;
 const publicRouteVersion = (route) => route === "knowledge" || route === "chatroom"
   ? motionPolishReleaseVersion
@@ -1322,7 +1332,7 @@ for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-ambient.mjs", wallpaperGameDisplayReleaseVersion],
-  ["./data/home-content.mjs", wallpaperGameDisplayReleaseVersion],
+  ["./data/home-content.mjs", publicSiteReleaseVersion],
   ["./features/account.mjs", motionPolishReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", resourcesRouteVersion]
@@ -3333,7 +3343,7 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = motionPolishReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = wallpaperGameDisplayReleaseVersion;
+const currentMainVersion = publicSiteReleaseVersion;
 const currentCssVersion = h3AmbientWallpapersReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260812-wallpaper-game-display-r1";
@@ -4658,7 +4668,7 @@ if (!hasPattern(
   fail("js/main.js resource cards should hide version/size/updated metadata until a real resource URL exists");
 }
 
-if (!hasPattern(mainJs, /function\s+readyResourceItems\(\)\s*\{[\s\S]*content\.resources\.filter\(\(item\)\s*=>\s*safeResourceUrl\(item\)\s*\|\|\s*item\.action\s*===\s*["']quick-transfer["']\)/)) {
+if (!hasPattern(mainJs, /function\s+readyResourceItems\(\)\s*\{[\s\S]*return\s+content\.resources[\s\S]*\.filter\(\(item\)\s*=>\s*item\.showInTools\s*!==\s*false\)[\s\S]*\.filter\(\(item\)\s*=>\s*safeResourceUrl\(item\)\s*\|\|\s*item\.action\s*===\s*["']quick-transfer["']\)/)) {
   fail("js/main.js should separate ready resources from placeholder resource drafts");
 }
 
@@ -4820,14 +4830,16 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-12-wallpaper-game-display-fix";
-const finalUpdateSlug = "2026-08-12-wallpaper-game-display-fix";
+const finalUpdateId = "seed-update-2026-08-13-hide-minimax-h3-tools";
+const finalUpdateSlug = "2026-08-13-hide-minimax-h3-tools";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Wallpaper Layering, Return Flash, and Game Display Fixes";
-const finalPublishedAt = "2026-08-12T07:30:00.000Z";
+const finalTitleEn = "Online ComfyUI Tools Entry Temporarily Hidden";
+const finalPublishedAt = "2026-08-13T02:00:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-08-12-minimax-h3-console",
+  "seed-update-2026-08-12-wallpaper-game-display-fix",
   "seed-update-2026-08-11-h3-first-version-video-sr-48fps",
   "seed-update-2026-08-11-ambient-wallpaper-bfcache-fix",
   "seed-update-2026-08-11-video-link-autofill",
@@ -4841,7 +4853,7 @@ const preservedReleaseUpdateIds = [
   "seed-update-2026-08-09-motion-polish",
   "seed-update-2026-08-07-remote-mcp-oauth"
 ];
-const projectedSupportingReleaseUpdateIds = preservedReleaseUpdateIds.slice(0, 3);
+const projectedSupportingReleaseUpdateIds = preservedReleaseUpdateIds.slice(0, 4);
 const finalTranslationMinimums = {
   title: 6,
   summary: 24,
@@ -4874,6 +4886,7 @@ const changelog20260809Section = markdownSection(changelog, "## 2026-08-09");
 const changelog20260810Section = markdownSection(changelog, "## 2026-08-10");
 const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 const changelog20260812Section = markdownSection(changelog, "## 2026-08-12");
+const changelog20260813Section = markdownSection(changelog, "## 2026-08-13");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4921,14 +4934,14 @@ if (finalUpdateStarted) {
     "seed-update-2026-08-09-motion-polish",
     "seed-update-2026-08-07-remote-mcp-oauth"
   ].some((updateId) => homeContentModuleJs.includes(updateId))) {
-    fail("js/data/home-content.mjs should remain the newest five-item projection after the wallpaper and game display release");
+    fail("js/data/home-content.mjs should remain the newest five-item projection after the temporary H3 Tools hide");
   }
 
-  const projectedUpdateIds = ["seed-update-2026-08-12-minimax-h3-console", finalUpdateId, ...projectedSupportingReleaseUpdateIds];
+  const projectedUpdateIds = [finalUpdateId, ...projectedSupportingReleaseUpdateIds];
   const projectedUpdateIndexes = projectedUpdateIds.map((updateId) => homeContentModuleJs.indexOf(updateId));
   if (projectedUpdateIndexes.some((index) => index < 0)
     || !projectedUpdateIndexes.every((index, offset, list) => offset === 0 || list[offset - 1] < index)) {
-    fail("js/data/home-content.mjs should order the MiniMax H3 control plane, display fix, first-version H3 release, BFCache recovery, and video-link autofill by descending publication time");
+    fail("js/data/home-content.mjs should order the hidden MiniMax H3 Tools entry, control plane, display fix, first-version H3 release, and BFCache recovery by descending publication time");
   }
 
   for (const token of [
@@ -5079,14 +5092,14 @@ if (finalUpdateStarted) {
     ]) {
       if (!value || value.trim().length < finalTranslationMinimums[field]) {
         fail(`cloudflare/schema.sql final public update ${lang}.${field} should be populated`);
-      } else if (value.replace(/\r\n/g, "\n") !== apiFinalTranslationValues[lang]?.[field]?.replace(/\r\n/g, "\n")) {
+      } else if (normalizeSeedText(value) !== normalizeSeedText(apiFinalTranslationValues[lang]?.[field])) {
         fail(`Functions and schema final public update ${lang}.${field} should match exactly`);
       }
     }
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-08-12">2026.08.12</time>',
+    '<time id="top-updated" datetime="2026-08-13">2026.08.13</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${finalCssVersion}`,
     `/css/motion-system.css?v=${finalCssVersion}`,
@@ -5103,17 +5116,17 @@ if (finalUpdateStarted) {
     finalMainVersion,
     finalUpdateId,
     finalUpdateSlug,
-    "动态云",
-    "暂停",
-    "1280px",
-    "44px",
-    "游戏",
+    "暂时隐藏",
+    "管理员控制台",
+    "Tunnel",
+    "Runner",
+    "GPU canary",
     "site-updates",
     "fallback",
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260812Section.includes(token)) {
+    if (!changelog20260813Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
@@ -5132,7 +5145,7 @@ if (finalUpdateStarted) {
   for (const token of [
     adminMotionPolishVersion,
     transferReleaseVersion,
-    ...preservedReleaseUpdateIds.filter((updateId) => !updateId.startsWith("seed-update-2026-08-11-")),
+    ...preservedReleaseUpdateIds.filter((updateId) => !/^seed-update-2026-08-(?:11|12|13)-/.test(updateId)),
     wallpaperTimeSwitchAssetVersion,
     wallpaperSwitchSceneReleaseVersion,
     wallpaperSwitchRouteMotionReleaseVersion,

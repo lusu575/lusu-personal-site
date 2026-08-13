@@ -1,5 +1,11 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-13 MiniMax H3 公开工具入口暂时隐藏
+
+- 公开 Tools 路由暂时不渲染 \`minimax-h3\` 卡片：资源条目保留 \`publicCatalog: false\`，并新增 \`showInTools: false\`，由资源路由在生成卡片前过滤。此隐藏只作用于访客工具区，不删除 \`/admin/minimax-h3.html\`、后端 API、Runner、Bridge、D1 控制面或本地配置。
+- 家庭 ComfyUI 与 Bridge 的 loopback 边界、执行／传输默认关闭和 image2 生成的简约 AI 视频主题图标资产保持不变。重新公开前仍必须完成 Cloudflare Tunnel/Access、生产 token、Runner heartbeat 和真实 GPU canary 验收。
+- 公开更新 ID／slug 为 \`seed-update-2026-08-13-hide-minimax-h3-tools\`／\`2026-08-13-hide-minimax-h3-tools\`，时间为 \`2026-08-13T02:00:00.000Z\`；Home 最新五条为暂时隐藏 → H3 控制面上线准备 → 壁纸／游戏显示修复 → 第一版 H3 发布 → BFCache 修复。
+
 ## 2026-08-12 MiniMax H3 隔离生产发布边界
 
 - `main` 已合并 H3 控制面并由 Cloudflare Pages Production 部署到最终 commit `03e8512e80d06853cf3889353db6505d0a91986f`；站长专用在线 ComfyUI · MiniMax H3 工具入口、admin-only `minimax-h3:execute`、P0–P3 控制面与 D1 schema 已进入正式站点，同时保留基线上已有视频、壁纸和游戏功能。Production D1 已完成 H3-only 增量迁移。

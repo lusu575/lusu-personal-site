@@ -277,7 +277,7 @@ export async function migrateLocalD1() {
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260812-minimax-h3-control-plane-r1'
+    where key = 'article_seed_version' and value = '20260813-hide-minimax-h3-tools-r1'
     union all
     select 'game-video-mcp-candidate-update-article',
       case when count(*) = 1 then 1 else 0 end
