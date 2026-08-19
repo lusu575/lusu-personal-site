@@ -278,9 +278,10 @@ export async function migrateLocalD1() {
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
     where key = 'article_seed_version' and value = '20260819-daily-ai-news-rss-r1'
-    union all
-    select 'daily-ai-news-rss-update-article',
-      case when count(*) = 1 then 1 else 0 end
+    `),
+    ...await queryRows(`
+    select 'daily-ai-news-rss-update-article' as item,
+      case when count(*) = 1 then 1 else 0 end as present
     from articles
     where article_id = 'seed-update-2026-08-19-daily-ai-news-rss'
       and slug = '2026-08-19-daily-ai-news-rss'
@@ -292,9 +293,10 @@ export async function migrateLocalD1() {
       case when count(*) = 3 and count(distinct lang) = 3 then 1 else 0 end
     from article_translations
     where article_id = 'seed-update-2026-08-19-daily-ai-news-rss'
-    union all
-    select 'game-video-mcp-candidate-update-article',
-      case when count(*) = 1 then 1 else 0 end
+    `),
+    ...await queryRows(`
+    select 'game-video-mcp-candidate-update-article' as item,
+      case when count(*) = 1 then 1 else 0 end as present
     from articles
     where article_id = 'seed-update-2026-08-09-game-video-mcp-candidate'
       and slug = '2026-08-09-game-video-mcp-candidate'

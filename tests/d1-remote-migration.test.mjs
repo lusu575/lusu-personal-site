@@ -13,6 +13,7 @@ import {
 const schema = readFileSync(new URL("../cloudflare/schema.sql", import.meta.url), "utf8");
 const schemaIndexes = readFileSync(new URL("../cloudflare/schema-indexes.sql", import.meta.url), "utf8");
 const remoteRunnerSource = readFileSync(new URL("../scripts/d1-migrate-remote.mjs", import.meta.url), "utf8");
+const localRunnerSource = readFileSync(new URL("../scripts/d1-migrate-local.mjs", import.meta.url), "utf8");
 const packageData = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 
 function createAdapter(db, events) {
@@ -524,6 +525,21 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /length\(trim\(content_markdown\)\) > 0/);
   assert.match(verificationSql, /whiteboard-agent-images-update-translations/);
   assert.match(verificationSql, /seed-update-2026-08-01-whiteboard-reliable-sketch/);
+});
+
+test("local D1 verification groups stay within the production compound SELECT limit", () => {
+  const groups = [...localRunnerSource.matchAll(/\.\.\.await queryRows\(`([\s\S]*?)`\)/g)]
+    .map((match) => match[1]);
+
+  assert.ok(groups.length > 0, "missing local D1 verification queries");
+  for (const sql of groups) {
+    const terms = 1 + (sql.match(/\bunion\s+all\b/gi)?.length || 0);
+    assert.ok(terms <= 5, `local verification query has ${terms} compound SELECT terms`);
+  }
+
+  const verificationSql = groups.join("\n");
+  assert.match(verificationSql, /daily-ai-news-rss-update-article/);
+  assert.match(verificationSql, /daily-ai-news-rss-update-translations/);
 });
 
 test("H3-only remote migration uses the additive file and H3 verification only", async () => {
