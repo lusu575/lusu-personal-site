@@ -327,7 +327,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 如果网站更新记录通过 seed 维护，必须同时更新 `functions/api/[[route]].js` 的 `articleSeedStatements`、`cloudflare/schema.sql`、`js/data/content.mjs` 的完整 fallback `content.updates`，以及 `js/data/home-content.mjs` 的最近五条无正文摘要投影，避免线上 D1、手动 migration、Home 首屏和 D1 不可用兜底显示不一致。
 - 首页欢迎弹窗右侧“最近更新”自动读取 `site-updates` 分类文章；不要再把右侧更新列表改回只读写死数组。
 - 首页欢迎弹窗“查看更多更新”应跳转到知识库并筛选 `site-updates` 分类。
-- 当前主站不提供公开聚合入口；不要恢复相关按钮、发现链接或公开输出接口，除非用户重新明确要求，并同步补齐三语文案、种子、构建守卫和部署说明。
+- 当前主站只提供每日 AI 新闻专用的公开 RSS 聚合入口 `/api/feeds/daily-ai-news.xml?lang=zh|en|ja`。入口在“关于我”介绍文字下方独立低调展示，并通过页面 head 自动发现；不要扩展为全站 feed、首页主按钮、写入能力或其他公开聚合接口，除非用户再次明确要求，并同步补齐三语文案、种子、构建守卫和部署说明。
 - 修改文章系统 schema、接口、前台知识库渲染或发布流程时，必须同步更新 `PROJECT_CONTEXT.md` 和 `CHANGELOG.md`。
 - 文章发布时间和聊天室消息时间必须按用户所在时区显示；文章发布时间不显示时区名，聊天室消息仍按聊天规则显示时间信息；后端保存/返回时间应保持 ISO/UTC 语义，前端格式化时再转换到用户本机时区，避免把 UTC 误当成本地时间。后台文章编辑器里的发布时间应显示为管理员本地时间，保存前转换为 UTC ISO，后端必须再次规范化 `published_at`。
 - 从知识库文章详情关闭窗口或返回桌面后，再次打开知识库应回到知识库首页，不应继续停留在上一次文章详情。

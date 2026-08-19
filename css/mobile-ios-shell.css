@@ -3091,6 +3091,17 @@ html[data-ui-shell="mobile"] .about-social-link {
   height: 44px;
 }
 
+html[data-ui-shell="mobile"] .about-rss-row {
+  gap: 8px;
+  min-height: 52px;
+  padding: 6px 7px 6px 9px;
+}
+
+html[data-ui-shell="mobile"] .about-rss-button {
+  min-height: 44px;
+  padding-inline: 10px;
+}
+
 html[data-ui-shell="mobile"] .profile-avatar {
   width: 100%;
   height: clamp(160px, 26dvh, 180px);

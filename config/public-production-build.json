@@ -114,6 +114,9 @@
     "tools/japanese-subtext/index.html",
     "tools/whiteboard/index.html"
   ],
+  "runtimeReferences": [
+    "/api/feeds/daily-ai-news.xml"
+  ],
   "forbiddenOutputSegments": [
     ".git",
     ".github",

@@ -23,6 +23,7 @@
   <meta name="twitter:image:alt" content="鲁肃个人站的像素海岸桌面景观">
   <title>鲁肃的个人站</title>
   <link rel="canonical" href="https://lusu575.com/?lang=zh">
+  <link id="daily-ai-news-feed-link" rel="alternate" type="application/rss+xml" title="每日 AI 新闻 RSS" href="/api/feeds/daily-ai-news.xml?lang=zh">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png?v=20260611-unified-tv-icon">
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png?v=20260611-unified-tv-icon">
   <link rel="manifest" href="/manifest.webmanifest">
@@ -126,9 +127,9 @@
     })();
   </script>
   <script src="/js/mobile-shell.js?v=20260809-motion-polish-r2"></script>
-  <link rel="stylesheet" href="/css/style.css?v=20260810-h3-ambient-wallpapers-4k-r1">
-  <link rel="stylesheet" data-mobile-shell-style href="/css/mobile-ios-shell.css?v=20260810-h3-ambient-wallpapers-4k-r1">
-  <link rel="stylesheet" href="/css/motion-system.css?v=20260810-h3-ambient-wallpapers-4k-r1">
+  <link rel="stylesheet" href="/css/style.css?v=20260819-daily-ai-news-rss-r1">
+  <link rel="stylesheet" data-mobile-shell-style href="/css/mobile-ios-shell.css?v=20260819-daily-ai-news-rss-r1">
+  <link rel="stylesheet" href="/css/motion-system.css?v=20260819-daily-ai-news-rss-r1">
 </head>
 <body data-route="home">
   <a class="skip-link" href="#main-content" data-modal-background data-i18n="skipToMain">跳到主内容</a>
@@ -224,7 +225,7 @@
           <button class="lang-button" type="button" data-lang="en" aria-pressed="false">EN</button>
           <button class="lang-button" type="button" data-lang="ja" aria-pressed="false">日本語</button>
         </nav>
-        <span class="top-updated"><span data-i18n="lastUpdatedLabel">最近更新日期</span>: <time id="top-updated" datetime="2026-08-13">2026.08.13</time></span>
+        <span class="top-updated"><span data-i18n="lastUpdatedLabel">最近更新日期</span>: <time id="top-updated" datetime="2026-08-19">2026.08.19</time></span>
       </div>
     </header>
 
@@ -485,6 +486,15 @@
                 <div><dt data-i18n="statusLabel">网站状态</dt><dd data-i18n="statusValue">持续建设中</dd></div>
               </dl>
               <p class="about-copy" data-i18n="aboutCopy">你好，我是鲁肃。这里是我的个人站，用来记录 AI、游戏、工具、资源和一些杂谈。</p>
+              <div class="about-rss-row">
+                <span class="about-rss-copy">
+                  <strong data-i18n="dailyAiNewsRssTitle">每日 AI 新闻</strong>
+                  <small data-i18n="dailyAiNewsRssHint">供 RSS 阅读器与只读 Agent 订阅</small>
+                </span>
+                <a class="xp-button about-rss-button" id="daily-ai-news-rss-button" href="/api/feeds/daily-ai-news.xml?lang=zh" target="_blank" rel="noopener noreferrer" aria-label="订阅每日 AI 新闻 RSS" data-i18n-aria-label="dailyAiNewsRssAria">
+                  <span data-i18n="dailyAiNewsRssButton">RSS 订阅</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -579,6 +589,6 @@
 
   <script src="/js/telemetry.js?v=20260802-traffic-budget-r1"></script>
   <script src="/js/ui-motion.js?v=20260809-motion-polish-r2"></script>
-  <script type="module" src="/js/main.js?v=20260813-hide-minimax-h3-tools-r1"></script>
+  <script type="module" src="/js/main.js?v=20260819-daily-ai-news-rss-r1"></script>
 </body>
 </html>

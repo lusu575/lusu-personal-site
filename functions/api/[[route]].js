@@ -44,11 +44,15 @@ import {
   toPublicArticle
 } from "./public-content-service.mjs";
 import { shouldSkipAnalyticsRequest } from "./analytics-traffic-classifier.mjs";
+import {
+  buildDailyAiNewsRss,
+  normalizeDailyAiNewsFeedLanguage
+} from "./daily-ai-news-feed.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260813-hide-minimax-h3-tools-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260819-daily-ai-news-rss-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
-const PUBLIC_RELEASE_DATE = "2026-08-13";
+const PUBLIC_RELEASE_DATE = "2026-08-19";
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
@@ -96,7 +100,7 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260813-hide-minimax-h3-tools-r1";
+const ARTICLE_SEED_VERSION = "20260819-daily-ai-news-rss-r1";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AGENT_AUDIT_RETENTION_DAYS = 180;
@@ -384,6 +388,16 @@ export async function onRequest(context) {
       await ensureArticleSchema(env);
       await seedArticleTestData(env);
       return await getSitemap(request, env);
+    }
+    if (
+      request.method === "GET"
+      && parts[0] === "feeds"
+      && parts[1] === "daily-ai-news.xml"
+      && !parts[2]
+    ) {
+      await ensureArticleSchema(env);
+      await seedArticleTestData(env);
+      return await getDailyAiNewsFeed(request, env);
     }
     const machineDeliveryChannel = parts[0] === "automation"
       ? articleDeliveryChannelConfig(parts[1])
@@ -2569,6 +2583,30 @@ async function getArticles(request, env) {
     maxAge: 30,
     staleWhileRevalidate: 120,
     etagSeed: JSON.stringify(payload, (key, value) => key === "view_count" ? 0 : value)
+  });
+}
+
+async function getDailyAiNewsFeed(request, env) {
+  const url = new URL(request.url);
+  const lang = normalizeDailyAiNewsFeedLanguage(url.searchParams.get("lang"));
+  const articles = await queryPublishedArticles(env, {
+    lang,
+    category: "daily-ai-news",
+    limit: 50
+  });
+  const feedUrl = new URL("/api/feeds/daily-ai-news.xml", PUBLIC_SITE_ORIGIN);
+  feedUrl.searchParams.set("lang", lang);
+  const xml = buildDailyAiNewsRss({
+    articles: articles.map((row) => toPublicArticle(row)),
+    lang,
+    origin: PUBLIC_SITE_ORIGIN,
+    feedUrl: feedUrl.toString()
+  });
+  return cacheableResponse(request, xml, {
+    contentType: "application/rss+xml; charset=utf-8",
+    maxAge: 300,
+    staleWhileRevalidate: 1800,
+    etagSeed: [PUBLIC_API_REPRESENTATION_VERSION, xml]
   });
 }
 
@@ -7391,6 +7429,47 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-08-19-daily-ai-news-rss',
+        '2026-08-19-daily-ai-news-rss',
+        'site-updates',
+        '["网站更新","每日 AI 新闻","RSS","Agent"]',
+        '', 'published', 0, 0,
+        '2026-08-19T09:00:00.000Z',
+        '2026-08-19T09:00:00.000Z',
+        '2026-08-19T09:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-08-19-daily-ai-news-rss", {
+      zh: {
+        title: "每日 AI 新闻 RSS 订阅入口",
+        summary: "“关于我”介绍文字下方新增一个低调的 RSS 订阅入口；公开 feed 仅输出已发布的每日 AI 新闻，提供中英日三种语言，供 RSS 阅读器和只读 Agent 每日抓取。",
+        content_markdown: "# 每日 AI 新闻 RSS 订阅入口\n\n“关于我”页面的介绍文字下方现在有一个独立、低调的 RSS 订阅区，不与社交账号混在一起，也不会占用首页主入口。\n\n## 给阅读器和 Agent 的稳定入口\n\n- 订阅地址为 `/api/feeds/daily-ai-news.xml?lang=zh`，语言可切换为 `en` 或 `ja`。\n- feed 只包含 `daily-ai-news` 分类中已经发布的文章，最多返回最近 50 期。\n- 每条只提供标题、摘要、发布时间和站内文章链接，不开放管理、写入或其他站点权限。\n\n## 低调但可发现\n\n页面 head 同时提供 RSS 自动发现声明。普通访客不会在首页看到额外按钮，需要订阅的人可以在“关于我”页底部找到入口。"
+      },
+      en: {
+        title: "Daily AI News RSS Feed",
+        summary: "A low-profile RSS entry now sits below the About introduction. The public feed contains only published Daily AI News in Chinese, English, or Japanese for RSS readers and read-only agents.",
+        content_markdown: "# Daily AI News RSS Feed\n\nThe About page now has a separate, low-profile RSS subscription row below the introduction. It stays apart from social accounts and does not take over a primary Home entry.\n\n## A stable endpoint for readers and agents\n\n- The feed is available at `/api/feeds/daily-ai-news.xml?lang=en`; use `zh` or `ja` for the other languages.\n- It contains only published articles in the `daily-ai-news` category, capped at the latest 50 editions.\n- Each item exposes only its title, summary, publication time, and on-site article link. It grants no admin, write, or broader site access.\n\n## Quiet but discoverable\n\nThe page head also declares RSS autodiscovery. Regular visitors do not get another Home button, while readers who need the feed can find it at the bottom of About."
+      },
+      ja: {
+        title: "毎日AIニュースのRSS配信",
+        summary: "「About」の紹介文の下に控えめなRSS入口を追加しました。公開feedは公開済みの毎日AIニュースだけを中・英・日の三言語で配信し、RSSリーダーと読み取り専用Agentが利用できます。",
+        content_markdown: "# 毎日AIニュースのRSS配信\n\n「About」ページの紹介文の下に、独立した控えめなRSS購読欄を追加しました。SNSアカウントとは分け、Homeの主要入口も増やしていません。\n\n## リーダーとAgent向けの安定した入口\n\n- 購読先は `/api/feeds/daily-ai-news.xml?lang=ja` です。中国語は `zh`、英語は `en` を使います。\n- `daily-ai-news` カテゴリで公開済みの記事だけを、最新50件まで配信します。\n- 各項目に含むのはタイトル、要約、公開時刻、サイト内記事リンクだけで、管理・書き込み・その他のサイト権限は与えません。\n\n## 控えめでも見つけられる\n\nページheadにはRSS自動検出も宣言しています。通常の訪問者向けにHomeボタンを増やさず、必要な人だけが「About」下部から見つけられます。"
+      }
+    }, "2026-08-19T09:00:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,

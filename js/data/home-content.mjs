@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-19-daily-ai-news-rss",
+      "slug": "2026-08-19-daily-ai-news-rss",
+      "category": "site-updates",
+      "tags": ["网站更新", "每日 AI 新闻", "RSS", "Agent"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-19T09:00:00.000Z",
+      "updated_at": "2026-08-19T09:00:00.000Z",
+      "published_at": "2026-08-19T09:00:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.19",
+      "title": {
+        "zh": "每日 AI 新闻 RSS 订阅入口",
+        "en": "Daily AI News RSS Feed",
+        "ja": "毎日AIニュースのRSS配信"
+      },
+      "summary": {
+        "zh": "“关于我”介绍文字下方新增一个低调的 RSS 订阅入口；公开 feed 仅输出已发布的每日 AI 新闻，提供中英日三种语言，供 RSS 阅读器和只读 Agent 每日抓取。",
+        "en": "A low-profile RSS entry now sits below the About introduction. The public feed contains only published Daily AI News in Chinese, English, or Japanese for RSS readers and read-only agents.",
+        "ja": "「About」の紹介文の下に控えめなRSS入口を追加しました。公開feedは公開済みの毎日AIニュースだけを中・英・日の三言語で配信し、RSSリーダーと読み取り専用Agentが利用できます。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-13-hide-minimax-h3-tools",
       "slug": "2026-08-13-hide-minimax-h3-tools",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "桌面 Home 的 morning／day／dusk／night 已改用用户确认的第一版 MiniMax H3 整帧动态，不再使用第二版局部 mask／gain 合成。每段整理为整屏往返循环，先用双向光流补至 48fps、共 248 帧，再用 RealESRGAN_x4plus_anime_6B 逐帧超分，交付 1080p／2160p；没有小女孩或电视 cameo，手机、Save-Data 与 reduced／off 降级边界不变。",
         "en": "The morning, day, dusk, and night wallpapers on desktop Home now use the user-approved first-version full-frame MiniMax H3 motion instead of the second version's local mask/gain composite. Each clip is arranged as a full-frame ping-pong loop, bidirectionally optical-flow interpolated to 48fps and 248 frames, then super-resolved frame by frame with RealESRGAN_x4plus_anime_6B for 1080p/2160p delivery. No girl or TV cameo is included, and the mobile, Save-Data, and reduced/off fallback boundaries are unchanged.",
         "ja": "デスクトップ Home の朝・昼・夕方・夜の壁紙を、ユーザーが確認した初版 MiniMax H3 の全画面モーションへ切り替え、第二版の局所 mask／gain 合成を廃止しました。各動画を全画面の往復ループに整え、双方向オプティカルフローで 48fps・全248フレームへ補間してから、RealESRGAN_x4plus_anime_6B でフレームごとに超解像し、1080p／2160p を用意しています。少女やテレビの cameo は含まず、モバイル、Save-Data、reduced／off のフォールバック条件も変わりません。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-11-ambient-wallpaper-bfcache-fix",
-      "slug": "2026-08-11-ambient-wallpaper-bfcache-fix",
-      "category": "site-updates",
-      "tags": ["网站更新", "壁纸", "可靠性", "BFCache", "无障碍"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-11T03:35:00.000Z",
-      "updated_at": "2026-08-11T03:35:00.000Z",
-      "published_at": "2026-08-11T03:35:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.08.11",
-      "title": {
-        "zh": "修复动态壁纸的历史返回恢复",
-        "en": "Ambient Wallpaper Recovery After History Navigation",
-        "ja": "履歴移動後の動画壁紙復帰を修正"
-      },
-      "summary": {
-        "zh": "修复桌面 Home 动态壁纸在浏览器历史返回或 BFCache 恢复后可能停留在静态图的问题。恢复页面时，旧的 off 状态曾先被主模块读取，随后 ui-motion 写回 full 却没有触发壁纸重同步；现在 motion mode、运行时 ready 与 pageshow 都会重新协调视频状态。手机、low performance、Save-Data、reduced／off 的零视频请求策略保持不变。",
-        "en": "Fixes a case where the desktop Home ambient wallpaper could remain static after browser history navigation or a BFCache restore. The main module could read a stale off state before ui-motion wrote full back without notifying the wallpaper controller; motion-mode, runtime-ready, and pageshow signals now resynchronize video state. The zero-video-request policy for mobile, low-performance, Save-Data, and reduced/off modes is unchanged.",
-        "ja": "ブラウザー履歴の移動や BFCache 復帰後に、デスクトップ Home の動画壁紙が静止画のままになる場合を修正しました。主モジュールが古い off 状態を先に読み、その後 ui-motion が full を書き戻しても壁紙側へ再同期されないことが原因でした。motion mode、runtime ready、pageshow の各タイミングで動画状態を再調整します。モバイル、low performance、Save-Data、reduced／off の動画リクエストを行わない方針は変わりません。"
       }
     },
   ]

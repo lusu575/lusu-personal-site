@@ -691,6 +691,10 @@ async function rewriteJapaneseAudioManifest(outputRoot, provenance) {
 }
 
 async function verifyEntrypointReferences(outputRoot, policy) {
+  const runtimeReferences = new Set((policy.runtimeReferences || []).map((value) => new URL(
+    String(value),
+    "https://production.invalid/"
+  ).pathname));
   for (const relative of policy.htmlEntrypoints) {
     const html = await readFile(path.join(outputRoot, ...relative.split("/")), "utf8");
     const base = new URL(toPosix(relative), "https://production.invalid/");
@@ -699,6 +703,7 @@ async function verifyEntrypointReferences(outputRoot, policy) {
       if (/^(?:#|data:|mailto:|tel:|javascript:)/i.test(value)) continue;
       const resolved = new URL(value, base);
       if (resolved.origin !== base.origin) continue;
+      if (runtimeReferences.has(resolved.pathname)) continue;
       const decodedPath = decodeURIComponent(resolved.pathname).replace(/^\/+/, "");
       const targetRelative = decodedPath ? normalizeRelative(decodedPath) : "index.html";
       const target = path.join(outputRoot, ...targetRelative.split("/"));

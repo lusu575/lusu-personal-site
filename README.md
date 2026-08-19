@@ -1,5 +1,7 @@
 # lusu-personal-site
 
+每日 AI 新闻提供一个低调的只读 RSS 入口：`/api/feeds/daily-ai-news.xml?lang=zh`（也支持 `en`、`ja`）。公开按钮位于“关于我”介绍文字下方；feed 只包含已发布的 `daily-ai-news`，不提供写入或管理能力。
+
 ## 多人实时在线画板
 
 - 当前独立版本为 `1.0.7`；受管 Agent 通道支持真实 PNG／JPEG／WebP 上传、当前房下载与只追加图片放置，Pages 主入口只把精确 raster POST 和精确 Yjs scene POST 交给完整 Agent 鉴权。公共画板与所有密码房的新建元素继续统一使用暖白纸张、石墨线条、hachure 填充与高 roughness 的铅笔草图默认值，当前不按房型提供第二套主题。

@@ -901,11 +901,11 @@ const videoLinkAutofillReleaseVersion = "20260811-video-link-autofill-r1";
 const h3AmbientWallpapersReleaseVersion = "20260810-h3-ambient-wallpapers-4k-r1";
 const h3FirstVersionVideoReleaseVersion = "20260811-h3-first-version-video-sr-48fps-r1";
 const wallpaperGameDisplayReleaseVersion = "20260812-wallpaper-game-display-r1";
-const publicSiteReleaseVersion = "20260813-hide-minimax-h3-tools-r1";
+const publicSiteReleaseVersion = "20260819-daily-ai-news-rss-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = "20260809-transfer-motion-r2";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
-const resourcesRouteVersion = publicSiteReleaseVersion;
+const resourcesRouteVersion = "20260813-hide-minimax-h3-tools-r1";
 const routeStyleVersion = motionPolishReleaseVersion;
 const publicRouteVersion = (route) => route === "knowledge" || route === "chatroom"
   ? motionPolishReleaseVersion
@@ -1329,7 +1329,7 @@ for (const route of lazyPublicRoutes) {
 }
 
 for (const [modulePath, expectedVersion] of [
-  ["./core/i18n.mjs", motionPolishReleaseVersion],
+  ["./core/i18n.mjs", publicSiteReleaseVersion],
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-ambient.mjs", wallpaperGameDisplayReleaseVersion],
   ["./data/home-content.mjs", publicSiteReleaseVersion],
@@ -3344,7 +3344,7 @@ const publicModulesVersion = motionPolishReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = publicSiteReleaseVersion;
-const currentCssVersion = h3AmbientWallpapersReleaseVersion;
+const currentCssVersion = publicSiteReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260812-wallpaper-game-display-r1";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
@@ -3371,13 +3371,13 @@ if (styleVersions.length !== 1 || styleVersions[0] !== currentCssVersion) {
 }
 
 const mobileShellStyleVersions = assetQueryVersions(indexHtml, "/css/mobile-ios-shell.css");
-if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== h3AmbientWallpapersReleaseVersion) {
-  fail(`index.html /css/mobile-ios-shell.css query should appear once as ${h3AmbientWallpapersReleaseVersion}`);
+if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== publicSiteReleaseVersion) {
+  fail(`index.html /css/mobile-ios-shell.css query should appear once as ${publicSiteReleaseVersion}`);
 }
 
 const motionCssVersions = assetQueryVersions(indexHtml, "/css/motion-system.css");
-if (motionCssVersions.length !== 1 || motionCssVersions[0] !== h3AmbientWallpapersReleaseVersion) {
-  fail(`index.html /css/motion-system.css query should appear once as ${h3AmbientWallpapersReleaseVersion}`);
+if (motionCssVersions.length !== 1 || motionCssVersions[0] !== publicSiteReleaseVersion) {
+  fail(`index.html /css/motion-system.css query should appear once as ${publicSiteReleaseVersion}`);
 }
 
 if (countLiteral(quickTransferLoaderJs, transferLazyVersion) !== 1) {
@@ -4830,14 +4830,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-13-hide-minimax-h3-tools";
-const finalUpdateSlug = "2026-08-13-hide-minimax-h3-tools";
+const finalUpdateId = "seed-update-2026-08-19-daily-ai-news-rss";
+const finalUpdateSlug = "2026-08-19-daily-ai-news-rss";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Online ComfyUI Tools Entry Temporarily Hidden";
-const finalPublishedAt = "2026-08-13T02:00:00.000Z";
+const finalTitleEn = "Daily AI News RSS Feed";
+const finalPublishedAt = "2026-08-19T09:00:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-08-13-hide-minimax-h3-tools",
   "seed-update-2026-08-12-minimax-h3-console",
   "seed-update-2026-08-12-wallpaper-game-display-fix",
   "seed-update-2026-08-11-h3-first-version-video-sr-48fps",
@@ -4887,6 +4888,7 @@ const changelog20260810Section = markdownSection(changelog, "## 2026-08-10");
 const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 const changelog20260812Section = markdownSection(changelog, "## 2026-08-12");
 const changelog20260813Section = markdownSection(changelog, "## 2026-08-13");
+const changelog20260819Section = markdownSection(changelog, "## 2026-08-19 每日 AI 新闻 RSS 订阅");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4934,14 +4936,14 @@ if (finalUpdateStarted) {
     "seed-update-2026-08-09-motion-polish",
     "seed-update-2026-08-07-remote-mcp-oauth"
   ].some((updateId) => homeContentModuleJs.includes(updateId))) {
-    fail("js/data/home-content.mjs should remain the newest five-item projection after the temporary H3 Tools hide");
+    fail("js/data/home-content.mjs should remain the newest five-item projection after the Daily AI News RSS release");
   }
 
   const projectedUpdateIds = [finalUpdateId, ...projectedSupportingReleaseUpdateIds];
   const projectedUpdateIndexes = projectedUpdateIds.map((updateId) => homeContentModuleJs.indexOf(updateId));
   if (projectedUpdateIndexes.some((index) => index < 0)
     || !projectedUpdateIndexes.every((index, offset, list) => offset === 0 || list[offset - 1] < index)) {
-    fail("js/data/home-content.mjs should order the hidden MiniMax H3 Tools entry, control plane, display fix, first-version H3 release, and BFCache recovery by descending publication time");
+    fail("js/data/home-content.mjs should order the RSS release, hidden MiniMax H3 Tools entry, control plane, display fix, and first-version H3 release by descending publication time");
   }
 
   for (const token of [
@@ -5099,7 +5101,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-08-13">2026.08.13</time>',
+    '<time id="top-updated" datetime="2026-08-19">2026.08.19</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${finalCssVersion}`,
     `/css/motion-system.css?v=${finalCssVersion}`,
@@ -5116,17 +5118,15 @@ if (finalUpdateStarted) {
     finalMainVersion,
     finalUpdateId,
     finalUpdateSlug,
-    "暂时隐藏",
-    "管理员控制台",
-    "Tunnel",
-    "Runner",
-    "GPU canary",
+    "每日 AI 新闻",
+    "RSS",
+    "只读",
     "site-updates",
     "fallback",
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260813Section.includes(token)) {
+    if (!changelog20260819Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
@@ -5157,15 +5157,21 @@ if (finalUpdateStarted) {
   }
 }
 
-for (const [name, source] of [
-  ["index.html", indexHtml],
-  ["css/style.css", styleCss],
-  ["js/main.js", mainJs],
-  ["functions/api/[[route]].js", apiJs]
-]) {
-  if (/data-rss|rssFeed|syncRssLinks|rss\.xml|feed\.xml|application\/rss\+xml|rss-button|rss-icon/i.test(source)) {
-    fail(`${name} should not keep RSS subscription entry points or feed code`);
-  }
+if (!hasPattern(indexHtml, /<link\b(?=[^>]*rel="alternate")(?=[^>]*type="application\/rss\+xml")(?=[^>]*href="\/api\/feeds\/daily-ai-news\.xml\?lang=zh")[^>]*>/)
+  || !indexHtml.includes('class="about-rss-row"')
+  || !indexHtml.includes('id="daily-ai-news-rss-button"')) {
+  fail("index.html should expose Daily AI News RSS only through head discovery and the About footer row");
+}
+if (!styleCss.includes(".about-rss-row") || !mainJs.includes("function syncDailyAiNewsFeedLinks")) {
+  fail("Daily AI News RSS About UI should retain its low-profile style and language-aware link sync");
+}
+if (!hasPattern(apiJs, /parts\[0\]\s*===\s*"feeds"[\s\S]{0,160}?parts\[1\]\s*===\s*"daily-ai-news\.xml"/)
+  || !hasPattern(apiJs, /category:\s*"daily-ai-news"[\s\S]{0,80}?limit:\s*50/)
+  || !apiJs.includes('contentType: "application/rss+xml; charset=utf-8"')) {
+  fail("Functions should keep the public RSS route restricted to the latest 50 published Daily AI News entries");
+}
+if (/data-social-link="rss"|data-article-category="rss"/i.test(indexHtml)) {
+  fail("Daily AI News RSS must not appear as a social account or Home content category action");
 }
 
 const migrationPackageData = parseJsonSource("package.json", packageJson);

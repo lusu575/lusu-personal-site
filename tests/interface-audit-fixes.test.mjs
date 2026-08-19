@@ -69,7 +69,8 @@ test("the MiniMax H3 console update leads the exact five-item projection without
     import("../js/data/home-content.mjs")
   ]);
 
- assert.deepEqual(content.updates.slice(0, 22).map((update) => update.article_id), [
+ assert.deepEqual(content.updates.slice(0, 23).map((update) => update.article_id), [
+    "seed-update-2026-08-19-daily-ai-news-rss",
     "seed-update-2026-08-13-hide-minimax-h3-tools",
    minimaxH3UpdateId,
     updateId,
@@ -93,9 +94,9 @@ test("the MiniMax H3 console update leads the exact five-item projection without
     agentReadBreadthUpdateId,
     whiteboard2048UpdateId,
  ]);
-  assert.equal(content.updates[0].slug, "2026-08-13-hide-minimax-h3-tools");
-  assert.equal(content.updates[0].published_at, "2026-08-13T02:00:00.000Z");
-  assert.equal(homeContent.updates[0].article_id, "seed-update-2026-08-13-hide-minimax-h3-tools");
+  assert.equal(content.updates[0].slug, "2026-08-19-daily-ai-news-rss");
+  assert.equal(content.updates[0].published_at, "2026-08-19T09:00:00.000Z");
+  assert.equal(homeContent.updates[0].article_id, "seed-update-2026-08-19-daily-ai-news-rss");
   assert.ok(content.updates.some((update) => update.article_id === trafficUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === calmWhiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === reliableWhiteboardUpdateId));
@@ -128,7 +129,7 @@ test("BFCache-safe ambient wallpapers, retained motion modules, wallpaper switch
   const videoLinkAutofillVersion = "20260811-video-link-autofill-r1";
   const ambientAssetVersion = "20260810-h3-ambient-wallpapers-4k-r1";
   const displayFixReleaseVersion = "20260812-wallpaper-game-display-r1";
-  const publicSiteReleaseVersion = "20260813-hide-minimax-h3-tools-r1";
+  const publicSiteReleaseVersion = "20260819-daily-ai-news-rss-r1";
   const wallpaperAssetVersion = "20260810-wallpaper-time-switch-r6";
   const transferVersion = "20260809-transfer-motion-r2";
   const index = read("index.html");
@@ -143,9 +144,10 @@ test("BFCache-safe ambient wallpapers, retained motion modules, wallpaper switch
   ]) {
     assert.ok(index.includes(`${asset}?v=${publicVersion}`), `${asset} should use ${publicVersion}`);
   }
-  for (const asset of ["/css/style.css", "/css/mobile-ios-shell.css", "/css/motion-system.css"]) {
-    assert.ok(index.includes(`${asset}?v=${ambientAssetVersion}`), `${asset} should use ${ambientAssetVersion}`);
+  for (const asset of ["/css/style.css", "/css/mobile-ios-shell.css"]) {
+    assert.ok(index.includes(`${asset}?v=${publicSiteReleaseVersion}`), `${asset} should use ${publicSiteReleaseVersion}`);
   }
+  assert.ok(index.includes(`/css/motion-system.css?v=${publicSiteReleaseVersion}`));
   assert.ok(index.includes(`/js/main.js?v=${publicSiteReleaseVersion}`));
   assert.ok(main.includes(`wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));
   assert.ok(changelog.includes(switchRouteMotionVersion), "the wallpaper route-motion release token must remain in project history");
@@ -183,14 +185,14 @@ test("BFCache-safe ambient wallpapers, retained motion modules, wallpaper switch
   assert.match(index, /class="wallpaper-time-roller-atlas" data-atlas-cell="roller" data-src="\/assets\/images\/wallpaper-switch\/node-atlas\.png\?v=20260810-wallpaper-time-switch-r6" width="192" height="960"/);
   assert.doesNotMatch(index, /wallpaper-switch\/(?:time-track|time-selector|fx-(?:morning|day|dusk|night)|node-inactive|atmosphere-(?:morning|day|dusk|night)-(?:ambient|far|mid|accent|atlas))\.png/);
   assert.ok(main.includes(`const routeStyleVersion = "${publicVersion}"`));
-  assert.ok(main.includes(`./core/i18n.mjs?v=${publicVersion}`));
+  assert.ok(main.includes(`./core/i18n.mjs?v=${publicSiteReleaseVersion}`));
   assert.ok(main.includes(`./core/wallpaper-time.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./data/home-content.mjs?v=${publicSiteReleaseVersion}`));
   assert.ok(main.includes(`./core/wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));
   assert.ok(main.includes(`./features/account.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/knowledge.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/chatroom.mjs?v=${publicVersion}`));
-  const resourcesVersion = publicSiteReleaseVersion;
+  const resourcesVersion = "20260813-hide-minimax-h3-tools-r1";
   assert.ok(main.includes(`./routes/resources.mjs?v=${resourcesVersion}`));
   assert.ok(main.includes(`./data/resources-content.mjs?v=${resourcesVersion}`));
   for (const token of [

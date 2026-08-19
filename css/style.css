@@ -2992,6 +2992,50 @@ html:not([data-ui-shell="mobile"]):lang(zh) .about-copy {
   text-wrap: pretty;
 }
 
+.about-rss-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 42px;
+  margin-top: 8px;
+  padding: 6px 8px 6px 10px;
+  border: 1px solid #c8d9f2;
+  border-radius: 5px;
+  background: #f4f8fd;
+  color: #304866;
+}
+
+.about-rss-copy {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.about-rss-copy strong {
+  color: #244a7b;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.about-rss-copy small {
+  color: #61738a;
+  font-size: 12px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.about-rss-button {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 4px 10px;
+  color: #214c7f;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
 .about-social-links {
   display: flex;
   flex-wrap: wrap;
