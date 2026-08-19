@@ -10021,9 +10021,1353 @@ Homeから「ツール」を開き、「オンラインホワイトボード」�
       en: {
         title: "Knowledge Article and Caption Links Restored",
         summary: "Absolute HTTPS Markdown links in Tool Radar body copy and explicit image captions are safely clickable again, while all seven real visuals now carry real dimensions and more reliable capture waits.",
-        content_markdown: "# Knowledge Article and Caption Links Restored\n\nThe Tool Radar article kept its verified official Markdown links, but the previous inline renderer handled only bold text and code. Links in body copy and explicit image captions therefore appeared as raw markup. This update restores safe links and completes the sizing and capture behavior for all seven real visuals.\n\n## Links return without weakening the safety boundary\n\n- Body copy and explicit captions turn only absolute HTTPS Markdown addresses into clickable links.\n- Unsafe schemes such as `javascript:` and `data:`, relative addresses, and URLs containing a username or password are rejected and never become clickable entries.\n- Links are still built with DOM nodes and `textContent`, never unprocessed HTML. External pages open in a new window with `noreferrer noopener` isolation.\n\n## Seven real
-... 145090 bytes omitted ...
-at
+        content_markdown: "# Knowledge Article and Caption Links Restored\n\nThe Tool Radar article kept its verified official Markdown links, but the previous inline renderer handled only bold text and code. Links in body copy and explicit image captions therefore appeared as raw markup. This update restores safe links and completes the sizing and capture behavior for all seven real visuals.\n\n## Links return without weakening the safety boundary\n\n- Body copy and explicit captions turn only absolute HTTPS Markdown addresses into clickable links.\n- Unsafe schemes such as `javascript:` and `data:`, relative addresses, and URLs containing a username or password are rejected and never become clickable entries.\n- Links are still built with DOM nodes and `textContent`, never unprocessed HTML. External pages open in a new window with `noreferrer noopener` isolation.\n\n## Seven real visuals reserve their real aspect ratios\n\n- All seven real Tool Radar images from official sites, documentation, or repositories now register their actual `width` and `height`.\n- The browser reserves the correct aspect ratio before lazy loading begins, reducing layout movement while reading a long article.\n- After the capture tool scrolls to its target, it waits for visible images for a bounded period before saving the final screenshot. A timeout still fails explicitly instead of waiting forever.\n\n## Existing content and sources stay intact\n\nThis update changes only safe Markdown presentation, image dimensions, and capture waiting. The Tool Radar article URL, narrative order, official image sources, and weekly publishing rules remain unchanged."
+      },
+      ja: {
+        title: "知識庫の本文と画像キャプションのリンクを復元",
+        summary: "Tool Radar の本文と明示的な画像キャプションにある絶対 HTTPS Markdown リンクを安全にクリックできるよう復元し、7枚の実画像に実寸と安定した取得待機を追加しました。",
+        content_markdown: "# 知識庫の本文と画像キャプションのリンクを復元\n\nTool Radar 記事には確認済みの公式 Markdown リンクが残っていましたが、従来のインライン描画は太字とコードだけを処理していたため、本文と明示的な画像キャプションのリンクが記号のまま表示されていました。今回、安全なリンクを復元し、7枚の実画像の寸法と取得時の安定性も整えました。\n\n## 安全境界を緩めずにリンクを復元\n\n- 本文と明示的なキャプションでは、絶対 HTTPS の Markdown アドレスだけをクリック可能なリンクにします。\n- `javascript:` や `data:` などの危険なスキーム、相対アドレス、ユーザー名やパスワードを含む URL は拒否し、クリック可能にしません。\n- リンクは引き続き DOM と `textContent` で構築し、未処理 HTML は挿入しません。外部ページは新しいウィンドウで開き、`noreferrer noopener` で分離します。\n\n## 7枚の実画像で実際の縦横比を予約\n\n- 公式サイト、公式文書、公式リポジトリから採用した Tool Radar の実画像7枚に、実際の `width` と `height` を登録しました。\n- 遅延読み込みの開始前に正しい縦横比を予約し、長文閲覧中に画像が現れたときのレイアウト移動を減らします。\n- 取得ツールは対象位置までスクロールしたあと、表示中の画像が読み込まれるまで上限付きで待ってから最終スクリーンショットを保存します。時間切れは無限待機せず明示的に失敗します。\n\n## 既存の記事と出典は維持\n\n今回変更するのは安全な Markdown 表示、画像寸法、取得待機だけです。Tool Radar の記事 URL、本文順、公式画像の出典、週次公開ルールは変更しません。"
+      }
+    }, "2026-07-29T02:14:00.000Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-29-tool-radar-real-visuals',
+        '2026-07-29-tool-radar-real-visuals',
+        'site-updates',
+        '["网站更新","工具雷达","真实界面","图片来源","自动化"]',
+        '', 'published', 0, 0,
+        '2026-07-29T01:10:00.000Z',
+        '2026-07-29T01:10:00.000Z',
+        '2026-07-29T01:10:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-29-tool-radar-real-visuals", {
+      zh: {
+        title: "工具雷达改用真实官方界面图",
+        summary: "首期 7 张自绘概念图已换成官网、官方文档或官方仓库里的真实界面、案例与成果；每周工作流同步禁止自绘、生成和统一模板图。",
+        content_markdown: "# 工具雷达改用真实官方界面图\n\n工具雷达首期文章保留原链接、标题、正文顺序和发布时间，只把七张难以看懂的自绘概念图换成与对应工具直接相关的真实图片。\n\n## 现在每张图都说明一件具体的事\n\n- 60fps 与 Mobbin 展示真实图库和产品流程分类，不再用抽象方框代替设计参考。\n- ChatCut 与 Remotion 展示实际编辑器、成片预览、AI 操作记录、参数和时间线。\n- Repomix、Context7 与 Pinokio 分别展示仓库打包结果、文档问答界面和安装前的脚本来源确认。\n- 每张图都增加了三语 alt 与图注，明确告诉读者应该看哪里，并链接对应的官方来源页。\n\n## 以后每周都按同一规则取图\n\n图片必须先从网上发现，再回到工具官网、官方功能页、官方文档、官方仓库或官方媒体核实。只接受真实产品界面、官方案例或真实成果；本站自绘说明图、AI 生成图、统一模板卡、仿界面图、搜索缩略图和第三方转载图都会被校验器拒绝。找不到合格实图时，文章保留文字，不再画一张替代图凑版面。\n\n## 来源与发布检查\n\n采用的图片保存官方来源、直接素材或精确截图位置、权利说明、核对时间和 SHA-256，并复制为本站资源而不是外链热链。新图片先随 GitHub 主分支部署，线上字节核对一致后再切换文章引用。"
+      },
+      en: {
+        title: "Tool Radar Now Uses Real Official Product Visuals",
+        summary: "Seven site-drawn concept diagrams have been replaced with real interfaces, examples, and outputs from official sites, docs, or repositories, while the weekly workflow now rejects drawn, generated, and template visuals.",
+        content_markdown: "# Tool Radar Now Uses Real Official Product Visuals\n\nThe first Tool Radar article keeps its original link, title, narrative order, and publication time. Only the seven hard-to-read site-drawn concept diagrams have been replaced with real visuals directly tied to each tool.\n\n## Every image now has one concrete job\n\n- 60fps and Mobbin show real galleries and product-flow categories instead of abstract boxes standing in for design references.\n- ChatCut and Remotion show actual editors, output previews, AI action history, props, and timelines.\n- Repomix, Context7, and Pinokio show packed repository output, a documentation-question interface, and the source check before installation.\n- Every image has trilingual alt text and a caption that tells the reader what to inspect and links to the corresponding official source page.\n\n## The same rule applies every week\n\nImages must first be discovered online and then verified against the tool's official site, feature page, documentation, repository, or official media. Only real product interfaces, official examples, or real outputs are accepted. Site-drawn diagrams, AI-generated pictures, uniform template cards, simulated interfaces, search thumbnails, and third-party reposts fail validation. If no qualified real visual exists, the article keeps the text and uses no substitute image.\n\n## Source and release checks\n\nEach adopted image records its official source, direct asset or exact capture target, rights note, review time, and SHA-256. It is stored with the site rather than hotlinked. New bytes deploy from the GitHub main branch and the article switches only after the production file matches the reviewed hash."
+      },
+      ja: {
+        title: "ツールレーダーを実際の公式画面へ更新",
+        summary: "初回の自作概念図7枚を、公式サイト・文書・リポジトリの実画面、事例、成果へ置き換え、週次フローでも自作・生成・共通テンプレート画像を禁止しました。",
+        content_markdown: "# ツールレーダーを実際の公式画面へ更新\n\n初回ツールレーダー記事は、元のリンク、タイトル、本文順、公開時刻を維持し、分かりにくかった自作概念図7枚だけを各ツールに直接関係する実画像へ置き換えました。\n\n## 各画像が一つの具体的な役割を持つ\n\n- 60fps と Mobbin は、抽象的な箱ではなく、実際のギャラリーと製品フローの分類を示します。\n- ChatCut と Remotion は、実際のエディター、完成プレビュー、AI の操作記録、Props、タイムラインを示します。\n- Repomix、Context7、Pinokio は、リポジトリのパック結果、文書質問画面、インストール前のスクリプト出所確認をそれぞれ示します。\n- すべての画像に3言語の alt とキャプションを付け、注目する場所と対応する公式情報源を明確にしました。\n\n## 毎週同じ規則で画像を選ぶ\n\n画像はまずオンラインで見つけ、ツールの公式サイト、機能ページ、文書、公式リポジトリ、公式メディアへ戻って確認します。実際の製品画面、公式事例、実際の成果だけを採用し、サイト自作図、AI 生成画像、共通テンプレートカード、模擬画面、検索サムネイル、第三者転載は検証で拒否します。合格する実画像がなければ、文章だけを残し、代替図は作りません。\n\n## 出典と公開確認\n\n採用画像には、公式出典、直接素材または正確な取得位置、権利上の説明、確認時刻、SHA-256 を保存し、外部ホットリンクではなくサイト資産として保持します。新しい画像を GitHub の main から先に配備し、本番上のバイト列が確認済みハッシュと一致してから記事を切り替えます。"
+      }
+    }, "2026-07-29T01:10:00.000Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-29-tool-radar-live',
+        '2026-07-29-tool-radar-live',
+        'site-updates',
+        '["网站更新","工具雷达","知识库","自动化","多语言"]',
+        '', 'published', 0, 0,
+        '2026-07-28T16:45:00.000Z',
+        '2026-07-28T16:45:00.000Z',
+        '2026-07-28T16:45:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-29-tool-radar-live", {
+      zh: {
+        title: "工具雷达正式上线并开启周更",
+        summary: "知识库“工具雷达”正式上线，首期 7 工具三语文章已发布；独立去重、原创说明图与每周二 22:00 自动任务同步启用。",
+        content_markdown: "# 工具雷达正式上线并开启周更\n\n知识库新增固定分类“工具雷达”，并发布首期 7 个工具的中文、英文和日文完整文章。它面向不熟悉设计、动效、开发或部署术语的普通读者，重点讲清每个工具是什么、能做什么、能省下哪些步骤、怎么开始以及需要注意的限制。\n\n## 首期内容\n\n- 首期沿一条真实工作线介绍 60fps、Mobbin、ChatCut、Remotion、Repomix、Context7 与 Pinokio，从找参考、做视频、补代码上下文与最新文档，一直走到本地 AI 环境。\n- 每个工具都有收费、登录、中文支持、本地部署与 AI 接入的紧凑上手信息，不把文章排成冷冰冰的参数表。\n- 每项穿插一张基于已核实事实制作的本站原创说明图；图片不复制产品界面，先随站点部署，再由投递器核对线上 SHA-256 后公开正文。\n\n## 每周自动更新\n\n- 本机 Codex 任务固定在每周二北京时间 22:00 启动，广泛发现近期热门、实用、有趣或新奇的工具，并生成三语文章。\n- 每期目标介绍 6–10 个达到质量门槛的新工具，少于 3 个时不发布，也不会为了数量加入低价值内容。\n- 同类工具可以在不同周继续介绍，但同一个产品只收录一次。服务端目录阻止相同工具键和官网 URL；改名、换域名或被收购的候选还要人工核对历史名称和别名。\n\n## 发布安全\n\n工具事实优先回到官方网站、官方文档、价格页和可靠案例核对。专用投递通道、凭证与自动公开互相独立；运行记录、图片、三语结构、永久去重或线上回读任一失败，本期都会停止，不发布半成品。"
+      },
+      en: {
+        title: "Tool Radar Is Live with Weekly Publishing",
+        summary: "Tool Radar is live in Knowledge with a trilingual first edition covering seven tools; independent deduplication, original explanatory visuals, and the Tuesday 22:00 automation are active.",
+        content_markdown: "# Tool Radar Is Live with Weekly Publishing\n\nKnowledge now has a permanent Tool Radar category and a complete first edition in Chinese, English, and Japanese covering seven tools. It is written for readers who may not know the vocabulary of design, motion, development, or deployment, so each section explains what a tool is, what it can do, which work it removes, how to begin, and what limits matter.\n\n## The first edition\n\n- The first issue follows one practical workflow through 60fps, Mobbin, ChatCut, Remotion, Repomix, Context7, and Pinokio: find references, make video, supply repository context and current documentation, then get local AI running.\n- Each tool includes compact pricing, sign-in, Chinese support, local deployment, and AI setup details without turning the article into a cold specification sheet.\n- Every entry uses one original explanatory visual based on verified facts. These visuals do not copy product interfaces; they are deployed with the site first, and the delivery client checks their production SHA-256 before publishing the article.\n\n## Weekly automation\n\n- A local Codex task starts every Tuesday at 22:00 Beijing time, searches broadly for useful, interesting, unusual, or recently discussed tools, and produces all three language editions.\n- Each issue targets 6–10 worthwhile tools, publishes nothing with fewer than three, and never fills space with low-value entries.\n- Similar tools may appear in different weeks, but the same product is covered once. The server blocks matching tool keys and canonical URLs, while suspected renames, domain moves, or acquisitions also require a manual historical-name and alias review.\n\n## Publishing safeguards\n\nClaims are checked against official product pages, documentation, pricing, and reliable examples. The dedicated channel, credential, and automatic-publishing switch remain independent; any failure in the run record, visuals, trilingual structure, permanent deduplication, or public readback closes the issue without publishing a partial article."
+      },
+      ja: {
+        title: "ツールレーダーを公開し、週次更新を開始",
+        summary: "知識庫の「ツールレーダー」を正式公開し、7ツールの初回3言語記事を掲載しました。独立重複防止、オリジナル説明図、毎週火曜22時の自動タスクも有効です。",
+        content_markdown: "# ツールレーダーを公開し、週次更新を開始\n\n知識庫に固定分類「ツールレーダー」を追加し、7つのツールを扱う初回記事を中国語・英語・日本語で公開しました。デザイン、モーション、開発、導入の専門用語を知らない読者にも、各ツールが何か、何ができるか、どの手間を省けるか、どこから始めるか、どの制約に注意するかが分かる構成です。\n\n## 初回の記事\n\n- 60fps、Mobbin、ChatCut、Remotion、Repomix、Context7、Pinokio を、参考探し、動画制作、リポジトリ文脈と最新文書の補完、ローカル AI の起動という一つの作業順で紹介します。\n- 各ツールには、料金、ログイン、中国語対応、ローカル導入、AI 接続の情報を短くまとめ、冷たい仕様表にはしていません。\n- 各項目に、確認済みの事実を基に制作したサイト独自の説明図を1枚掲載します。製品画面は複製せず、画像を先にサイトへ配備し、配信前に本番上の SHA-256 を照合します。\n\n## 毎週の自動更新\n\n- ローカル Codex タスクは毎週火曜日の北京時間22時に開始し、便利、実用的、面白い、珍しい、または最近注目されたツールを広く探して3言語の記事を作成します。\n- 1回につき質を満たす6～10件を目安にし、3件未満なら公開せず、件数合わせの低価値な項目も追加しません。\n- 同分野の別製品は別の週に紹介できますが、同一製品は一度だけです。同じツールキーと公式 URL はサーバーが拒否し、改名、ドメイン移転、買収が疑われる候補は旧名称と別名も人手で確認します。\n\n## 公開時の安全策\n\n内容は公式製品ページ、文書、料金、信頼できる事例へ戻って確認します。専用チャンネル、認証情報、自動公開は独立したままです。実行記録、画像、3言語構造、恒久的な重複防止、公開後の読み戻しのどれかが失敗した場合、その回は途中の記事を公開せず停止します。"
+      }
+    }, "2026-07-28T16:45:00.000Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-28-knowledge-archive-visibility',
+        '2026-07-28-knowledge-archive-visibility',
+        'site-updates',
+        '["网站更新","知识库","文章列表","分类","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-28T05:30:00.000Z',
+        '2026-07-28T05:30:00.000Z',
+        '2026-07-28T05:30:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-28-knowledge-archive-visibility", {
+      zh: {
+        title: "知识库完整归档恢复",
+        summary: "公共文章列表不再被 50 条上限截断；取消置顶的旧文章及其分类会继续出现在知识库，并可通过搜索与加载更多访问。",
+        content_markdown: "# 知识库完整归档恢复\n\n本次修复取消置顶后旧文章在知识库列表中消失的问题。\n\n## 问题原因\n\n- 文章详情仍然是已发布状态，也没有被删除。\n- 公共列表接口只返回最新 50 条摘要；文章取消置顶后按原发布日期排序，刚好落在第 50 条之外。\n- 分类按钮由当前列表动态生成，因此唯一使用“AI”分类的文章被截断时，分类也会一起消失。\n\n## 修复内容\n\n- 公共文章摘要归档容量提升到 500 条，并由知识库前端明确请求同一容量。\n- 首屏仍只显示 12 条，继续通过“加载更多”逐批展开；搜索和分类则可以覆盖完整归档。\n- 取消置顶现在只改变排序，不会改变发布状态，也不会让旧文章或其分类从知识库消失。\n\n## 回归检查\n\n- 使用超过 50 条文章的受控数据验证旧文章和“AI”分类仍可发现。\n- 保留网站更新只出现在专属 Tab、置顶排序优先和三语文章回退等既有规则。"
+      },
+      en: {
+        title: "Knowledge Archive Visibility Restored",
+        summary: "The public article list no longer stops at 50 items. Older unpinned articles and their categories remain available through search and Load more.",
+        content_markdown: "# Knowledge Archive Visibility Restored\n\nThis update fixes older articles disappearing from the Knowledge list after they are unpinned.\n\n## Cause\n\n- The article detail remained published and was never deleted.\n- The public list API returned only the newest 50 summaries. Once unpinned, the article returned to its original publication date and fell just beyond that boundary.\n- Category buttons are derived from the returned list, so the AI category disappeared with its only truncated article.\n\n## Fix\n\n- The public article-summary archive now supports 500 records, and the Knowledge client explicitly requests that same capacity.\n- The first screen still renders only 12 cards and expands in batches through Load more, while search and category discovery cover the complete archive.\n- Unpinning now changes ordering only; it does not change publication state or remove an older article or its category from Knowledge.\n\n## Regression coverage\n\n- Controlled data with more than 50 articles verifies that the older article and AI category remain discoverable.\n- Existing rules for the dedicated Site Updates tab, pinned ordering, and trilingual fallbacks remain intact."
+      },
+      ja: {
+        title: "知識庫の全記事表示を復元",
+        summary: "公開記事一覧の50件制限を解消し、固定解除した過去記事と分類を検索や「さらに表示」から引き続き参照できるようにしました。",
+        content_markdown: "# 知識庫の全記事表示を復元\n\n固定表示を解除した過去記事が知識庫一覧から消える問題を修正しました。\n\n## 原因\n\n- 記事詳細は公開状態のままで、削除されていませんでした。\n- 公開一覧 API が最新 50 件の概要だけを返していたため、固定解除後に元の公開日順へ戻った記事が 50 件の境界外へ移動しました。\n- 分類ボタンは取得した一覧から生成するため、唯一の対象記事とともに「AI」分類も消えていました。\n\n## 修正内容\n\n- 公開記事概要の取得上限を 500 件へ広げ、知識庫側も同じ件数を明示して取得します。\n- 初期表示はこれまでどおり 12 件だけで、「さらに表示」により段階的に展開します。検索と分類は全取得範囲を対象にします。\n- 固定解除は並び順だけを変更し、公開状態や過去記事、分類の表示可否には影響しません。\n\n## 回帰確認\n\n- 50 件を超える制御データで、過去記事と「AI」分類を引き続き見つけられることを確認します。\n- 更新履歴の専用タブ、固定記事の優先表示、3 言語フォールバックの既存ルールも維持します。"
+      }
+    }, "2026-07-28T05:30:00.000Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-28-article-pin-sidebar-navigation',
+        '2026-07-28-article-pin-sidebar-navigation',
+        'site-updates',
+        '["网站更新","知识库","文章管理","阅读体验","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-28T05:20:00.000Z',
+        '2026-07-28T05:20:00.000Z',
+        '2026-07-28T05:20:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-28-article-pin-sidebar-navigation", {
+      zh: {
+        title: "文章置顶与目录定位修复",
+        summary: "后台取消置顶不再被种子还原；返回按钮与目录合并为同一固定侧栏，目录点击会把目标标题对齐并同步高亮。",
+        content_markdown: "# 文章置顶与目录定位修复\n\n本次继续修正知识库文章管理和长文阅读导航。\n\n## 后台置顶状态\n\n- “从提问到上线：普通人如何用 AI Agent 放大执行力”已恢复为未置顶。\n- 该文章的初始化种子改为只在首次建库时插入，不再在冷启动时覆盖后台保存的置顶状态和版本时间。\n- 线上已有错误状态通过一次性修复标记清理；以后在后台重新置顶或取消置顶都会保留。\n\n## 固定阅读侧栏\n\n- “返回文章列表”现在位于文章目录上方，并与目录共用同一个固定侧栏，不会在正文滚动后覆盖目录。\n- 桌面和横屏侧栏整体保持原位；窄屏按可读空间重新排版，按钮和目录仍保持独立间距。\n\n## 目录跳转\n\n- 点击目录时使用文章正文容器的精确滚动位置，将目标标题对齐到阅读区顶部安全线。\n- 跳转完成后，目录高亮、地址锚点和标题焦点同步到同一章节，不再停留在上一项。\n- 回归检查覆盖桌面、手机竖屏、短竖屏和手机横屏，并继续验证目录末项不裁切。"
+      },
+      en: {
+        title: "Article Pinning and Contents Navigation Fixes",
+        summary: "Admin pin choices now survive seed refreshes. The back control and contents share one anchored sidebar, and contents clicks align and highlight the requested heading.",
+        content_markdown: "# Article Pinning and Contents Navigation Fixes\n\nThis update continues the Knowledge article-management and long-reading navigation fixes.\n\n## Admin pin state\n\n- “From Prompt to Production: How Ordinary People Can Amplify Execution with AI Agents” is restored to unpinned.\n- Its initialization seed now inserts metadata only on a fresh database, so cold starts no longer overwrite an admin pin choice or row revision.\n- A one-time repair marker clears the existing incorrect state; later pin and unpin actions remain under admin control.\n\n## Anchored reading sidebar\n\n- Back to Article List now sits above the contents and both controls belong to one anchored sidebar, so the back control cannot cover the contents after scrolling.\n- The whole sidebar stays in place on desktop and landscape layouts. Narrow screens reflow the same controls with independent spacing.\n\n## Contents navigation\n\n- A contents click scrolls the article detail container to an exact safe line near the top of the reader.\n- The selected contents item, URL anchor, and heading focus now move to the same chapter instead of remaining on the previous one.\n- Regression checks cover desktop, phone portrait, short portrait, and phone landscape while retaining the final-item clipping checks."
+      },
+      ja: {
+        title: "記事の固定表示と目次移動を修正",
+        summary: "管理画面の固定表示設定を seed が戻さないようにし、戻る操作と目次を同じ固定サイドバーへまとめ、目次移動時の見出し位置と選択表示を同期しました。",
+        content_markdown: "# 記事の固定表示と目次移動を修正\n\n知識庫の記事管理と長文ナビゲーションを引き続き修正しました。\n\n## 管理画面の固定表示\n\n- 「質問から公開まで：AI Agent で実行力を広げる方法」を固定表示なしへ戻しました。\n- この文章の初期 seed は新規データベースへの初回挿入だけにし、コールドスタート時に管理画面の固定表示設定や更新時刻を上書きしません。\n- 既存の誤った状態は一度だけ実行する修正マーカーで解除し、その後の固定／解除は管理画面の選択を保持します。\n\n## 固定された閲覧サイドバー\n\n- 「記事一覧へ戻る」を目次の上へ移し、二つを同じ固定サイドバーにまとめました。本文を動かしても戻る操作が目次へ重なりません。\n- デスクトップと横画面ではサイドバー全体を固定し、狭い画面では同じ操作を読みやすい間隔で再配置します。\n\n## 目次からの移動\n\n- 目次を押すと記事詳細コンテナだけを動かし、対象見出しを閲覧領域上部の安全な位置へ正確に合わせます。\n- 選択中の目次、URL のアンカー、見出しフォーカスを同じ章へ同期し、前の項目に残らないようにしました。\n- デスクトップ、スマートフォン縦画面、短い縦画面、横画面で確認し、末尾項目の切れも引き続き検査します。"
+      }
+    }, "2026-07-28T05:20:00.000Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-28-knowledge-reader-welcome-fixes',
+        '2026-07-28-knowledge-reader-welcome-fixes',
+        'site-updates',
+        '["网站更新","知识库","阅读体验","筛选","欢迎弹窗","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-28T03:15:00.000Z',
+        '2026-07-28T03:15:00.000Z',
+        '2026-07-28T03:15:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-28-knowledge-reader-welcome-fixes", {
+      zh: {
+        title: "知识库阅读与每日欢迎修复",
+        summary: "修复文章目录多行高亮与底部裁切，固定返回和回顶控件，更新日志仅留在专属 Tab，并恢复每天首次打开时的欢迎弹窗。",
+        content_markdown: "# 知识库阅读与每日欢迎修复\n\n本次修复知识库长目录、文章内导航、更新记录筛选和欢迎窗口的日常触发。\n\n## 阅读区布局\n\n- 目录项取消固定高度，以统一行高和上下内边距随多行标题自然撑高；选中高亮不再压住文字。\n- 目录滚动区按可用高度布局，并在右侧和底部预留滚动安全空间，最后几条标题可以完整滚入视野。\n- “返回文章列表”固定在阅读区左上角，正文或目录滚动时保持原位。\n- “回到顶部”固定在正文阅读卡片右下角、任务栏或移动 Dock 上方；点击后只滚动文章正文容器。\n\n## 更新记录筛选\n\n- 网站更新日志不再出现在“全部”Tab 的列表与计数中。\n- 全部更新仍保留在“更新记录”专属 Tab，搜索和文章直链继续可用。\n\n## 每日欢迎与回归检查\n\n- 欢迎窗口按访问设备的本地自然日记录；每天首次打开任意公开页面时显示一次，打开后立即记录当天，避免同一天重复打扰。\n- 已覆盖桌面、窄屏竖向、短屏竖向和横向手机尺寸，检查标题换行、目录末尾、固定控件、正文回顶及 Tab 筛选。"
+      },
+      en: {
+        title: "Knowledge Reading and Daily Welcome Fixes",
+        summary: "Fixed multiline contents highlighting and bottom clipping, anchored article navigation, limited Site Updates to its dedicated tab, and restored the welcome window on the first open of each day.",
+        content_markdown: "# Knowledge Reading and Daily Welcome Fixes\n\nThis update fixes long contents lists, in-article navigation, Site Updates filtering, and the daily welcome trigger.\n\n## Reader layout\n\n- Contents items no longer use a fixed height. Consistent line height and vertical padding let multiline titles grow naturally without the active highlight covering text.\n- The contents scroller uses its available height and keeps right and bottom safety space, so the final titles can scroll fully into view.\n- Back to Article List stays anchored at the upper-left of the reader while the article or contents list moves.\n- Back to Top stays at the lower-right of the reading card above the taskbar or mobile Dock, and it scrolls only the article detail container.\n\n## Site Updates filtering\n\n- Site Updates no longer appear in the All tab list or count.\n- Every update remains available in the dedicated Site Updates tab, while search and direct article links continue to work.\n\n## Daily welcome and regression coverage\n\n- The welcome window records the visitor device local calendar day. It opens once on the first public-page visit of each day and records that day immediately to avoid repeated prompts.\n- Desktop, narrow portrait, short portrait, and landscape phone sizes are covered for title wrapping, contents endings, anchored controls, article return-to-top behavior, and tab filtering."
+      },
+      ja: {
+        title: "知識庫の閲覧と毎日のウェルカム表示を修正",
+        summary: "複数行目次の強調表示と末尾の切れを直し、記事ナビゲーションを固定し、更新履歴を専用タブだけに限定して、毎日の初回表示でウェルカム画面が開くようにしました。",
+        content_markdown: "# 知識庫の閲覧と毎日のウェルカム表示を修正\n\n長い目次、記事内ナビゲーション、更新履歴の絞り込み、ウェルカム画面の日次表示を修正しました。\n\n## 閲覧レイアウト\n\n- 目次項目の固定高さをなくし、統一した行間と上下余白で複数行タイトルが自然に伸びるようにしました。選択中の強調枠も文字に重なりません。\n- 目次のスクロール領域は利用可能な高さを使い、右側と末尾に安全余白を確保するため、最後の見出しまで完全に表示できます。\n- 「記事一覧へ戻る」は閲覧領域の左上に固定し、本文や目次を動かしても位置を保ちます。\n- 「トップへ戻る」は本文カード右下のタスクバーまたはモバイル Dock の上に固定し、記事詳細コンテナだけを先頭へ戻します。\n\n## 更新履歴の絞り込み\n\n- サイト更新履歴は「すべて」タブの一覧と件数に含めません。\n- すべての更新履歴は専用の「更新履歴」タブで引き続き表示し、検索と記事への直接リンクも利用できます。\n\n## 毎日のウェルカム表示と回帰確認\n\n- ウェルカム画面は閲覧端末のローカル日付を記録します。毎日の最初の公開ページ表示で一度だけ開き、その場で当日を記録して同日の再表示を防ぎます。\n- デスクトップ、狭い縦画面、短い縦画面、横向きスマートフォンで、タイトル折り返し、目次末尾、固定操作、本文の先頭復帰、タブ絞り込みを確認します。"
+      }
+    }, "2026-07-28T03:15:00.000Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-28-daily-ai-news-coverage-review',
+        '2026-07-28-daily-ai-news-coverage-review',
+        'site-updates',
+        '["网站更新","每日AI新闻","新闻覆盖","多语言","质量复核"]',
+        '', 'published', 0, 0,
+        '2026-07-28T01:03:00.000Z',
+        '2026-07-28T01:03:00.000Z',
+        '2026-07-28T01:03:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-28-daily-ai-news-coverage-review", {
+      zh: {
+        title: "每日 AI 新闻覆盖与复核升级",
+        summary: "每日 AI 新闻新增重点厂商与产业主题覆盖审阅、低产出二次检查及多语言可靠来源，并让标题直接显示当天头条。",
+        content_markdown: "# 每日 AI 新闻覆盖与复核升级\n\n针对 7 月 28 日日报内容偏少的问题，本次加强了每日 AI 新闻的发现与发布前复核，并补充修订当天文章。\n\n## 覆盖范围更完整\n\n- 新增重点 AI 厂商、基础模型、芯片与存储、机器人、智能设备、数据中心、能源、网络及科技金融等主题的固定覆盖审阅。\n- 不再局限于中英文消息；其他语言的可靠报道和官方信息也会进入候选范围，之后再按时效、可信度和重要性统一筛选。\n\n## 低产出再次核对\n\n- 新闻数量仍不写死，也不会用低价值内容凑数；若初选结果异常偏少，发布前必须再次检查重点公司、主题和遗漏候选。\n- 去重会区分重复报道与真正的新进展，避免预告后的正式发布、权重开放或关键事实更新被一并忽略。\n\n## 7 月 28 日文章\n\n- 已重新核对此前 24 小时内的候选，补充重要进展并修订中、英、日三语文章。\n- 文章标题改为“每日 AI 新闻｜当天要闻标题”，不再只显示日期。\n- 正文继续保持完整文章、三段结构和逐条简短 AI 解读，不向读者堆放来源链接。"
+      },
+      en: {
+        title: "Daily AI News Coverage and Review Expanded",
+        summary: "Daily AI News now reviews priority companies and industry topics, performs a second pass for thin editions, accepts reliable multilingual sources, and surfaces the lead story in each title.",
+        content_markdown: "# Daily AI News Coverage and Review Expanded\n\nAfter the July 28 edition proved too thin, this update strengthens discovery and the pre-publication review, and expands that day's article.\n\n## Broader coverage\n\n- A fixed coverage review now checks priority AI developers, foundation models, chips and storage, robotics, smart devices, data centers, energy, networking, and technology finance.\n- Reliable reporting and official information in other languages can enter the candidate pool alongside Chinese and English material, before a common review of recency, trustworthiness, and importance.\n\n## A second pass for thin editions\n\n- The article still has no fixed story count and will not use low-value filler. If the initial selection is unusually small, a second check of priority companies, topics, and possible omissions is required before publication.\n- Deduplication now distinguishes repeated coverage from a material new development, so an official release, open-weight milestone, or important factual update after an earlier announcement is not discarded with duplicates.\n\n## July 28 edition\n\n- Candidates from the exact preceding 24 hours were checked again, important developments were added, and the Chinese, English, and Japanese editions were revised.\n- Each title now uses “Daily AI News | lead-story headline” instead of showing only a date.\n- The article keeps its complete narrative, three-part structure, and short AI explanation for every story without piling source links into the reader-facing text."
+      },
+      ja: {
+        title: "毎日AIニュースの収集・再確認を強化",
+        summary: "毎日AIニュースに重点企業・産業テーマの網羅確認、件数が少ない場合の再確認、多言語の信頼できる情報源を追加し、タイトルには当日のトップニュースを表示します。",
+        content_markdown: "# 毎日AIニュースの収集・再確認を強化\n\n7月28日版の記事数が少なすぎたことを受け、ニュース発見と公開前の確認を強化し、同日版も補足改訂しました。\n\n## 収集範囲を拡大\n\n- 重点AI企業、基盤モデル、半導体・ストレージ、ロボット、スマートデバイス、データセンター、エネルギー、ネットワーク、テクノロジー金融を固定の網羅確認対象に加えました。\n- 中国語と英語だけに限定せず、他言語の信頼できる報道や公式情報も候補へ含め、鮮度、信頼性、重要度を共通基準で確認します。\n\n## 件数が少ない場合は再確認\n\n- 掲載数は固定せず、価値の低い情報で埋めることもしません。初回選定が不自然に少ない場合は、重点企業、テーマ、見落とした候補を公開前にもう一度確認します。\n- 重複報道と実質的な新展開を区別し、予告後の正式公開、オープンウェイト化、重要事実の更新まで重複として除外しないようにします。\n\n## 7月28日版\n\n- 直前の正確な24時間に含まれる候補を再確認し、重要な動きを追加して中国語・英語・日本語版を改訂しました。\n- タイトルは日付だけでなく「毎日AIニュース｜当日のトップニュース見出し」を表示します。\n- 読者向け本文は、完結した記事、3部構成、各ニュースの短いAI解説を維持し、参照リンクを大量に並べません。"
+      }
+    }, "2026-07-28T01:03:00.000Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-28-daily-ai-news-reader-format',
+        '2026-07-28-daily-ai-news-reader-format',
+        'site-updates',
+        '["网站更新","知识库","每日AI新闻","阅读体验"]',
+        '', 'published', 0, 0,
+        '2026-07-27T20:40:00.000Z',
+        '2026-07-27T20:40:00.000Z',
+        '2026-07-27T20:40:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-28-daily-ai-news-reader-format", {
+      zh: {
+        title: "每日 AI 新闻阅读格式调整",
+        summary: "每日 AI 新闻详情不再重复摘要和采集窗口，正文直接进入要闻；目录改为列出每条新闻标题，测试占位文章已删除。",
+        content_markdown: "# 每日 AI 新闻阅读格式调整\n\n本次根据实际阅读反馈，收紧了“每日 AI 新闻”的详情展示与固定生成格式。\n\n## 阅读更直接\n\n- 文章详情不再重复显示摘要。\n- 正文标题后直接进入“今日要闻”，不再向读者展示采集时间和筛选说明；严格的 24 小时窗口仍保留在内部工作流中。\n\n## 目录与内容清理\n\n- 文章目录改为逐条列出全部新闻的一句话标题，不再只显示“今日要闻 / 主要新闻 / 传闻”三个栏目。\n- 已删除用于早期链路验证的测试占位文章。\n\n## 后续规则\n\n工作流文档和自动校验已同步锁定这些要求，之后每天生成的三语日报都会沿用同一格式。"
+      },
+      en: {
+        title: "Daily AI News Reading Format Updated",
+        summary: "Daily AI News now opens directly with the stories, without a repeated summary or collection-window paragraph. Its contents list every headline, and the test placeholder is removed.",
+        content_markdown: "# Daily AI News Reading Format Updated\n\nThis update tightens the Daily AI News reader and its permanent generation format based on real reading feedback.\n\n## A more direct reading flow\n\n- Article details no longer repeat the summary.\n- The body now moves from the title straight into Lead Story. Collection times and selection notes stay inside the workflow, while the exact 24-hour rule remains enforced.\n\n## Contents and cleanup\n\n- The contents panel now lists every one-line story headline instead of only Lead Story, More News, and Rumors.\n- The early test placeholder article has been removed.\n\n## Future editions\n\nThe workflow guide and validator now lock these rules, so future Chinese, English, and Japanese editions keep the same format."
+      },
+      ja: {
+        title: "毎日AIニュースの閲覧形式を更新",
+        summary: "毎日AIニュースは概要や収集時間を繰り返さず記事へ直接入り、目次には全ニュース見出しを表示します。テスト用記事も削除しました。",
+        content_markdown: "# 毎日AIニュースの閲覧形式を更新\n\n実際の閲覧フィードバックに基づき、「毎日AIニュース」の表示と固定生成形式を整理しました。\n\n## すぐ本文へ\n\n- 記事詳細では概要を重ねて表示しません。\n- タイトルの直後から「今日のトップニュース」へ入り、収集時間や選定説明は読者向け本文に出しません。正確な24時間ルールは内部ワークフローで引き続き厳守します。\n\n## 目次と整理\n\n- 目次は「トップニュース / 主なニュース / 噂」の3区分だけでなく、すべてのニュース見出しを一件ずつ表示します。\n- 初期確認用のテスト記事を削除しました。\n\n## 今後の記事\n\nワークフロー文書と自動検証にも同じ規則を固定し、今後の中国語・英語・日本語版すべてでこの形式を継続します。"
+      }
+    }, "2026-07-27T20:40:00.000Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-27-daily-ai-news-inbox',
+        '2026-07-27-daily-ai-news-inbox',
+        'site-updates',
+        '["网站更新","知识库","AI新闻","Admin"]',
+        '', 'published', 0, 0,
+        '2026-07-27T13:06:00.000Z',
+        '2026-07-27T16:05:00.000Z',
+        '2026-07-27T16:05:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-27-daily-ai-news-inbox", {
+      zh: {
+        title: "每日 AI 新闻正式上线",
+        summary: "知识库“每日 AI 新闻”正式接入 Horizon 与 Codex：每天北京时间 7 点开始整理前 24 小时内容，三语稿通过检查后在 8 点前自动公开。",
+        content_markdown: "# 每日 AI 新闻正式上线\n\n知识库“每日 AI 新闻”已经接入 Horizon 与 Codex 的固定日更流程，并以完整中文、英文、日文文章公开。\n\n## 每日流程\n\n- 每天北京时间 7 点开始，只处理此前精确 24 小时内发布的消息。\n- Horizon 必须先完成多来源采集、网址归一和重复合并；Codex 再做一手核实、重要性筛选、近 30 天去重和三语成文。\n- 正文继续使用“今日要闻 / 主要新闻 / 传闻”三段结构，每条保留简短、具体的 AI 解读，不向读者堆放来源链接。\n\n## 发布安全\n\n- 只有三语内容、时间窗口、来源记录、结构和去重检查全部通过，专用通道才会公开文章。\n- Horizon 不可用、验证失败或运行超过北京时间 8 点时，当天任务停止发布并留下失败记录，不用不完整内容凑数。\n- 后台仍可随时暂停通道、关闭自动公开、轮换或撤销凭证，并查看最近投递结果。\n\n## 首次上线\n\n正式上线使用 7 月 27 日三语样稿走完整生产链路验证；测试占位文章仍会明确标注，不会冒充真实新闻。"
+      },
+      en: {
+        title: "Daily AI News Goes Live",
+        summary: "Daily AI News now runs through Horizon and Codex: each Beijing-time day starts at 07:00, covers the prior 24 hours, and publishes the validated Chinese, English, and Japanese edition by 08:00.",
+        content_markdown: "# Daily AI News Goes Live\n\nKnowledge’s Daily AI News is now connected to a fixed Horizon and Codex publishing flow, with complete Chinese, English, and Japanese editions.\n\n## Daily flow\n\n- Work starts every day at 07:00 Beijing time and only covers items published in the exact preceding 24 hours.\n- Horizon must first collect from multiple sources, normalize URLs, and merge duplicates. Codex then verifies primary material, applies the editorial threshold, checks the previous 30 days, and writes the three editions.\n- Each article keeps the Lead Story, More News, and Rumors structure, with one brief and specific AI take per item and no pile of source links for readers to open.\n\n## Publishing safeguards\n\n- The dedicated channel publishes only after all three languages, the time window, source record, structure, and duplicate checks pass.\n- If Horizon is unavailable, validation fails, or the run reaches 08:00 Beijing time, that day stops without publishing incomplete filler.\n- Admin can still pause the channel, disable automatic publishing, rotate or revoke its credential, and review recent delivery results.\n\n## First live run\n\nThe July 27 trilingual edition is used to verify the complete production path. The placeholder remains clearly labelled and cannot be mistaken for real news."
+      },
+      ja: {
+        title: "毎日AIニュース正式稼働",
+        summary: "「毎日AIニュース」は Horizon と Codex に正式接続され、北京時間の毎朝7時に直前24時間分の処理を始め、検証済みの中・英・日3言語版を8時までに自動公開します。",
+        content_markdown: "# 毎日AIニュース正式稼働\n\n知識庫の「毎日AIニュース」は、Horizon と Codex による固定の日次公開フローへ接続され、中国語・英語・日本語の完全版を公開します。\n\n## 毎日の流れ\n\n- 毎日北京時間7時に開始し、直前の正確な24時間に公開された情報だけを扱います。\n- まず Horizon が複数ソースの収集、URL正規化、重複統合を行い、その後 Codex が一次情報の確認、重要度判定、過去30日との重複確認、3言語の記事作成を行います。\n- 本文は「今日のトップニュース / 主なニュース / 噂」の3部構成を保ち、各項目に短く具体的なAI解説を付け、読者向け本文には大量の参照リンクを並べません。\n\n## 公開時の安全策\n\n- 3言語、時間範囲、出典記録、構成、重複確認のすべてを通過した場合だけ、専用チャンネルが記事を公開します。\n- Horizon が利用できない、検証に失敗する、または北京時間8時を過ぎた場合は、不完全な記事を公開せず、その日の処理を停止して失敗を記録します。\n- 管理画面では引き続きチャンネルの一時停止、自動公開の無効化、認証情報の更新・失効、最近の配信結果の確認ができます。\n\n## 初回公開\n\n7月27日の3言語版で本番経路全体を検証します。プレースホルダー記事は引き続きテスト用と明記され、実際のニュースとは区別されます。"
+      }
+    }, "2026-07-27T16:05:00.000Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-26-security-reliability-hardening',
+        '2026-07-26-security-reliability-hardening',
+        'site-updates',
+        '["security","reliability","Admin","Cloudflare","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-26T14:58:00.000Z',
+        '2026-07-26T14:58:00.000Z',
+        '2026-07-26T14:58:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-26-security-reliability-hardening", {
+      zh: {
+        title: "全站安全与可靠性加固",
+        summary: "一次性加固账号入口、统计写入、D1 迁移、后台并发编辑与互传治理，并为文章分享、游戏和日语工具补齐超时、降级与离线回退。",
+        content_markdown: "# 全站安全与可靠性加固\n\n本轮把公开站点、Cloudflare 后端和管理后台作为一个完整系统复检，集中修复会影响账号安全、数据一致性、失败恢复和发布可信度的问题。\n\n## 账号、接口与统计\n\n- 账号与写接口限制请求体、来源和内容类型；登录、注册采用不暴露账号是否存在的响应，并按网络来源与账号标识实施退避限流。\n- 密码派生提高成本，旧密码在成功登录后渐进升级；服务端错误只返回稳定错误码，不把内部异常细节交给浏览器。\n- 页面、点击和文章浏览写入增加频率上限、重复抑制与有界保留，避免机器人或重复刷新无限放大 D1 写入。\n\n## 数据与后台一致性\n\n- 旧 D1 会先补齐缺失列，再执行依赖这些列的索引和完整 schema；全新数据库仍可一次初始化。\n- 文章、视频、视频分类与社交链接使用版本匹配写入；多个后台标签页同时编辑时，陈旧页面会收到冲突提示，不再静默覆盖较新的内容。\n- 临时互传管理区分部分成功与完全成功，设置写入使用条件更新，列表搜索、危险确认、重复操作锁和 R2 清理失败都有可恢复状态。\n\n## 公开访问与离线回退\n\n- 游戏目录和日语工具的可选 manifest 都有超时与本地回退；网络服务变慢时不会阻塞本地内容和已有存档。\n- 首页壁纸预载与真正渲染复用同一资源选择，避免重复下载。\n- `/articles/<slug>` 现在由边缘函数输出文章专属标题、摘要、Open Graph、Twitter、规范链接和结构化数据；脚本不可用时仍保留安全的可读正文回退。\n\n## 发布边界\n\n- 全站补齐基础安全响应头与采样可观测性；CI 的第三方 Actions 固定到不可变提交，并执行完整测试、构建、可重复产物和浏览器发布审计。\n- 这些改动不公开 session、密码、完整 IP、访客隐藏标识或后台草稿，也不改变 GitHub main 触发 Cloudflare Pages 自动部署的正式流程。"
+      },
+      en: {
+        title: "Sitewide Security and Reliability Hardening",
+        summary: "Hardened account entry, analytics writes, D1 migrations, concurrent admin editing, and Transfer governance while adding timeouts, degradation paths, and offline fallbacks for articles, games, and the Japanese tool.",
+        content_markdown: "# Sitewide Security and Reliability Hardening\n\nThis pass reviews the public site, Cloudflare backend, and admin area as one system, fixing issues that could affect account security, data consistency, failure recovery, and release confidence.\n\n## Accounts, APIs, and analytics\n\n- Account and write endpoints now bound request bodies, origins, and content types. Sign-in and registration avoid revealing whether an account exists, with backoff limits applied by network source and account identifier.\n- Password derivation is more expensive, and older hashes upgrade gradually after a successful sign-in. Server errors expose stable codes instead of internal exception details.\n- Page, click, and article-view writes now have rate ceilings, duplicate suppression, and bounded retention so bots or repeated refreshes cannot grow D1 writes without limit.\n\n## Data and admin consistency\n\n- Legacy D1 databases add missing columns before dependent indexes and the complete schema run; fresh databases still initialize in one pass.\n- Articles, videos, video categories, and social links use version-matched writes. When multiple admin tabs edit the same record, a stale tab reports a conflict instead of silently overwriting newer content.\n- Quick Transfer governance distinguishes partial success from full success, uses conditional setting updates, and provides recoverable states for list search, dangerous confirmations, duplicate-action locks, and failed R2 cleanup.\n\n## Public access and offline fallback\n\n- The game catalog and optional Japanese-tool manifests have timeouts and local fallbacks, so slow network services do not block local content or existing saves.\n- Home wallpaper preload and rendering now share the same asset selection, avoiding duplicate downloads.\n- `/articles/<slug>` now receives article-specific title, summary, Open Graph, Twitter, canonical, and structured metadata at the edge, with a safe readable fallback when scripts are unavailable.\n\n## Release boundary\n\n- The site now ships baseline security headers and sampled observability. CI pins third-party Actions to immutable commits and runs the complete tests, build, reproducible-output check, and browser release audits.\n- These changes do not expose sessions, passwords, full IP addresses, hidden visitor identifiers, or admin drafts, and the official release path remains GitHub main triggering Cloudflare Pages."
+      },
+      ja: {
+        title: "サイト全体のセキュリティと信頼性を強化",
+        summary: "アカウント入口、分析書き込み、D1 移行、管理画面の同時編集、転送管理を強化し、記事・ゲーム・日本語ツールへタイムアウト、縮退、オフライン復帰を追加しました。",
+        content_markdown: "# サイト全体のセキュリティと信頼性を強化\n\n公開サイト、Cloudflare バックエンド、管理画面を一つのシステムとして再点検し、アカウント安全性、データ整合性、障害復旧、公開品質に影響する問題をまとめて修正しました。\n\n## アカウント・API・分析\n\n- アカウント系と書き込み API は本文サイズ、送信元、Content-Type を制限します。ログインと登録ではアカウントの存在を推測できない応答を使い、ネットワーク元とアカウント識別子の両方で段階的に制限します。\n- パスワード導出コストを高め、古いハッシュはログイン成功後に順次更新します。サーバー内部の例外詳細はブラウザーへ返さず、安定したエラーコードだけを公開します。\n- ページ、クリック、記事閲覧の書き込みに上限、重複抑制、有限の保存期間を設け、ボットや連続更新で D1 書き込みが無制限に増えないようにしました。\n\n## データと管理画面の整合性\n\n- 旧 D1 は不足列を先に追加し、その後で依存インデックスと完全な schema を適用します。新規データベースは従来どおり一度で初期化できます。\n- 記事、動画、動画分類、ソーシャルリンクは版を照合して保存します。複数の管理タブで同じ項目を編集した場合、古い画面は新しい内容を黙って上書きせず競合を通知します。\n- 一時転送管理は部分成功と完全成功を区別し、設定を条件付きで更新します。検索、危険操作の確認、重複操作ロック、R2 削除失敗も復旧可能な状態として扱います。\n\n## 公開アクセスとオフライン復帰\n\n- ゲーム一覧と日本語ツールの任意 manifest にタイムアウトとローカル復帰を追加し、ネットワークが遅くてもローカル内容や既存保存を妨げません。\n- Home の壁紙は事前読み込みと実表示で同じ素材選択を使い、重複ダウンロードを避けます。\n- `/articles/<slug>` はエッジで記事固有のタイトル、概要、Open Graph、Twitter、canonical、構造化データを返し、スクリプトが使えない場合も安全な可読本文を残します。\n\n## 公開工程\n\n- 基本セキュリティヘッダーとサンプリング観測を追加しました。CI の外部 Actions は不変コミットへ固定し、全テスト、ビルド、再現可能な成果物、ブラウザー公開監査を実行します。\n- session、パスワード、完全な IP、非公開 visitor 識別子、管理下書きは公開せず、正式な公開経路も GitHub main から Cloudflare Pages を起動する方式のままです。"
+      }
+    }, "2026-07-26T14:58:00.000Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-26-chatroom-icon-redraw',
+        '2026-07-26-chatroom-icon-redraw',
+        'site-updates',
+        '["UI","Chat","icon","Pixel Art","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-26T10:58:00.000Z',
+        '2026-07-26T10:58:00.000Z',
+        '2026-07-26T10:58:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-26-chatroom-icon-redraw", {
+      zh: {
+        title: "匿名聊天室图标重绘",
+        summary: "重新绘制匿名聊天室图标，缩小可见主体并增加均衡透明留白；Home、窗口、任务栏、欢迎入口与聊天头像现统一使用新图，旧图资源已移除。",
+        content_markdown: "# 匿名聊天室图标重绘\n\n本轮更新匿名聊天室的完整公开图标身份：Home 入口的视觉重量与同组图标协调，窗口和聊天中的小尺寸槽位也统一使用同一张新图，旧图资源不再保留。\n\n## 图标调整\n\n- 新图继续使用小型 XP 聊天终端与粉色、青色双气泡，保持 Windows XP、Pixel Art 与 Y2K 桌面风格。\n- 唯一生产资源为 96×96 RGBA PNG `icon-chatroom.png`，可见主体从旧图的 93×90 缩小到 71×73，并在四边保留 10–13px 透明安全区。\n- 现有桌面 82px 与移动 Home 54px 映射继续使用；标题栏、任务栏、欢迎入口与头像保留各自既有的小槽位 contain 映射，因此不同位置都保持适度尺寸。\n- Home、窗口标题栏、桌面任务栏／移动 Dock、欢迎快捷入口、Chat 页头与消息头像现统一引用新图；`icon-chatroom-clean.png` 和旧原图均已移除。\n\n## 功能边界\n\n匿名聊天室路由、普通大厅、前端加密密码房、消息轮询、会话、发送与纯文本安全渲染均未修改。本轮只调整图标资产、缓存版本和对应视觉回归。"
+      },
+      en: {
+        title: "Anonymous Chat Icon Redrawn",
+        summary: "Redrew the Anonymous Chat icon with a smaller silhouette and balanced transparent padding. Home, windows, the taskbar, welcome shortcuts, and chat avatars now share the new asset, and the legacy artwork is removed.",
+        content_markdown: "# Anonymous Chat Icon Redrawn\n\nThis pass updates the complete public icon identity for Anonymous Chat. The Home entry now matches the visual weight of its neighbors, while the smaller window and chat slots use the same new artwork. Legacy icon assets are no longer retained.\n\n## Icon adjustment\n\n- The new artwork keeps a compact XP chat terminal with coral and cyan speech bubbles, preserving the Windows XP, Pixel Art, and Y2K desktop style.\n- The sole production asset is the 96×96 RGBA PNG `icon-chatroom.png`. Its visible silhouette is reduced from the old 93×90 footprint to 71×73, with 10–13px of transparent safety padding on every side.\n- Existing 82px desktop and 54px mobile Home mappings remain in place. Titlebar, taskbar, welcome, and avatar slots keep their existing contain sizing, so every placement remains appropriately sized.\n- Home, window titlebars, the desktop taskbar and mobile Dock, welcome shortcuts, the Chat header, and message avatars now share the new asset. `icon-chatroom-clean.png` and the legacy source artwork have been removed.\n\n## Functional boundary\n\nThe Anonymous Chat route, public lobby, browser-encrypted password rooms, polling, sessions, sending, and plain-text safety rendering are unchanged. This update only changes icon assets, cache versions, and related visual regression coverage."
+      },
+      ja: {
+        title: "匿名チャットアイコンを再描画",
+        summary: "匿名チャットアイコンを描き直し、見える輪郭を小さくして透明余白を均等化しました。Home、ウィンドウ、タスクバー、ウェルカム入口、チャットのアバターを新しい素材へ統一し、旧素材は削除しました。",
+        content_markdown: "# 匿名チャットアイコンを再描画\n\n今回は匿名チャットの公開アイコン全体を更新しました。Home 入口は周囲と同じ視覚的な重さに揃え、ウィンドウやチャット内の小さい枠も同じ新素材へ統一し、旧アイコン素材は残していません。\n\n## アイコン調整\n\n- 新しい絵は小型の XP チャット端末とピンク・シアンの2つの吹き出しを保ち、Windows XP、Pixel Art、Y2K のデスクトップ表現に合わせています。\n- 本番素材は 96×96 RGBA PNG の `icon-chatroom.png` だけです。見える輪郭を従来の 93×90 から 71×73 に縮め、四辺へ 10–13px の透明な安全余白を設けました。\n- デスクトップ 82px、モバイル Home 54px の既存表示設定は維持します。タイトルバー、タスクバー、ウェルカム入口、アバターも従来の小さい枠で contain 表示を続け、各位置で適度な大きさを保ちます。\n- Home、ウィンドウのタイトルバー、デスクトップのタスクバー／モバイル Dock、ウェルカムショートカット、Chat ヘッダー、メッセージのアバターを新素材へ統一し、`icon-chatroom-clean.png` と旧原画は削除しました。\n\n## 機能の境界\n\n匿名チャットのルート、公開ロビー、ブラウザー暗号化パスワード部屋、ポーリング、セッション、送信、プレーンテキスト安全描画は変更していません。今回はアイコン素材、キャッシュ版、関連する視覚回帰だけを更新しています。"
+      }
+    }, "2026-07-26T10:58:00.000Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-26-interface-audit-fixes',
+        '2026-07-26-interface-audit-fixes',
+        'site-updates',
+        '["mobile","Games","UI","privacy","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-26T08:58:00.000Z',
+        '2026-07-26T08:58:00.000Z',
+        '2026-07-26T08:58:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-26-interface-audit-fixes", {
+      zh: {
+        title: "全界面移动适配与游戏体验修复",
+        summary: "完成全部公开界面复检，修复 A Dark Room、Kittens Game、Life Restart、2048 与 Hextris 五款游戏的手机适配、触控和滚动问题，并收紧弹窗层级与第三方请求边界。",
+        content_markdown: "# 全界面移动适配与游戏体验修复\n\n本轮基于全界面截图和几何点检，集中修复移动游戏首屏、触控尺寸、嵌入页面宽度、弹窗层级及外部请求边界，同时保持桌面布局和现有存档功能不变。\n\n## 移动游戏\n\n- A Dark Room 与 Kittens Game 不再沿用固定桌面宽度，手机上可在当前视口内完整使用，并保留桌面原布局。A Dark Room 在同页横竖屏切换时会重算两层滑轨、当前偏移与资源面板归属；Kittens Game 顶部工具栏在窄屏自然换为两行，Steam 与 Version 信息不再裁切，全部可见关键控件保持至少 44px。\n- Life Restart 只在粗指针移动环境启用运行时适配：主操作与所有可见 `btn*` hitArea 至少 44px，竖屏把工具与主流程分开，短横屏改为底部横排；细指针桌面几何保持原样。\n- 2048 的“新游戏”和 Hextris 的核心控制扩大为移动端友好的触控尺寸。\n- 五个游戏共用壳在短屏上压缩工具区，让游戏画面成为主要滚动区域，避免外层页面与 iframe 同时纵向滚动。\n\n## 本地化与隐私\n\n- A Dark Room 的音频提示随中文、英文和日文界面切换。\n- Kittens Game 移除上游 Google Analytics，并禁用仅适用于原站的 KGNet 与 localhost 本地桥接请求；文档语言随站点同步，未选择主题不再预载或发起外部字体请求。本站自己的本地存档和账号云存档不受影响。\n\n## 公共界面细节\n\n- 短屏欢迎窗增加可读容量；视频无法内嵌时改用紧凑决策窗，不再留下大面积空白。\n- 桌面弹窗遮罩提高层级对比度，工具和关于页面的长文案使用更自然的换行。\n\n## 全面回归\n\n公开首页、知识库、视频、工具、游戏、聊天、关于、文章阅读器与五个游戏均按桌面和关键手机尺寸复检，并覆盖中文、英文与日文可见文案、横向溢出、滚动所有者和 44px 触控目标。"
+      },
+      en: {
+        title: "Sitewide Mobile and Game Experience Fixes",
+        summary: "Completed a full public-interface recheck, fixing mobile layout, touch, and scrolling across five games—A Dark Room, Kittens Game, Life Restart, 2048, and Hextris—while tightening modal hierarchy and third-party request boundaries.",
+        content_markdown: "# Sitewide Mobile and Game Experience Fixes\n\nThis pass uses full-interface screenshots and geometry checks to fix mobile game first screens, touch sizes, embedded-document widths, modal hierarchy, and external request boundaries while preserving desktop layouts and existing save behavior.\n\n## Mobile games\n\n- A Dark Room and Kittens Game no longer inherit fixed desktop widths on phones. Their complete interfaces fit the current viewport, and their desktop layouts remain intact. A Dark Room now recomputes both sliders, the active offset, and store-panel ownership during same-page orientation changes; the Kittens Game top toolbar wraps naturally into two rows on narrow screens, keeps Steam and Version fully visible, and maintains at least 44px for every visible critical control.\n- Life Restart enables its runtime adaptation only for coarse pointers: the primary action and every visible `btn*` hit area are at least 44px, portrait separates tools from the main flow, and short landscape places them in a bottom row, while fine-pointer desktop geometry stays unchanged.\n- The New Game action in 2048 and the core Hextris controls now provide mobile-friendly touch targets.\n- The shared shell for all five games compacts its tools on short screens so the game surface owns the primary scroll instead of creating competing outer-page and iframe scrolling.\n\n## Localization and privacy\n\n- The A Dark Room audio prompt follows the Chinese, English, or Japanese interface language.\n- Kittens Game removes upstream Google Analytics and disables KGNet plus the localhost bridge that only applied to the original host. Its document language follows the site, and unselected themes no longer preload or trigger external font requests. This does not affect the site's own local saves or account cloud saves.\n\n## Public-interface details\n\n- The short-screen welcome sheet exposes more readable content. Failed video embeds now use a compact decision sheet instead of a mostly empty full-screen player.\n- Desktop modal dimming has clearer depth, and long copy on Tools and About wraps more naturally.\n\n## Full regression\n\nHome, Knowledge, Videos, Tools, Games, Chat, About, the article reader, and all five games were rechecked at desktop and critical phone sizes, covering Chinese, English, and Japanese copy, horizontal overflow, scroll ownership, and 44px touch targets."
+      },
+      ja: {
+        title: "全画面のモバイル・ゲーム体験修正",
+        summary: "公開画面を全面再点検し、A Dark Room、Kittens Game、Life Restart、2048、Hextris の5ゲームでモバイル配置・タッチ・スクロールを修正。モーダル階層と外部通信の境界も整えました。",
+        content_markdown: "# 全画面のモバイル・ゲーム体験修正\n\n全画面のスクリーンショットと要素寸法の点検を基に、モバイルゲームの初期画面、タッチ寸法、埋め込み文書幅、モーダル階層、外部通信の境界を修正しました。デスクトップ配置と既存の保存機能は維持しています。\n\n## モバイルゲーム\n\n- A Dark Room と Kittens Game はスマートフォンで固定デスクトップ幅を使わず、現在の表示幅に収まり、デスクトップの元の配置も維持します。A Dark Room は同じ画面で端末を回転した時も、2段のスライダー、現在位置、資源パネルの所属を再計算します。Kittens Game の上部ツールバーは狭い画面で自然に2段へ折り返し、Steam と Version を欠けずに表示し、見えている主要操作をすべて44px以上に保ちます。\n- Life Restart は粗いポインター環境だけで実行時レイアウトを切り替えます。主操作と表示中のすべての `btn*` ヒット領域を44px以上にし、縦画面ではツールを主フローから分離、短い横画面では下部の横並びにします。細かいポインターのデスクトップ配置は変更しません。\n- 2048 の「新しいゲーム」と Hextris の主要操作を、モバイルで押しやすい寸法に広げました。\n- 5ゲーム共通シェルは短い画面でツール部を圧縮し、外側ページと iframe の二重縦スクロールを避けてゲーム面を主スクロールにします。\n\n## 多言語とプライバシー\n\n- A Dark Room の音声案内は中国語・英語・日本語の画面言語に合わせて表示します。\n- Kittens Game から上流の Google Analytics を削除し、元サイト専用の KGNet と localhost ブリッジを無効化しました。文書言語は当サイトに合わせ、未選択テーマの事前読み込みと外部フォント通信も行いません。当サイトのローカル保存とアカウント用クラウド保存には影響しません。\n\n## 公開画面の調整\n\n- 短い画面のウェルカムシートで読める範囲を増やしました。動画を埋め込めない場合は、大きな空白のある全画面ではなくコンパクトな選択シートを表示します。\n- デスクトップのモーダル背景を明確にし、ツールと About の長文を自然に折り返します。\n\n## 全面回帰\n\nHome、Knowledge、Videos、Tools、Games、Chat、About、記事リーダー、5ゲームをデスクトップと主要モバイル寸法で再点検し、中国語・英語・日本語、横方向のはみ出し、スクロール所有者、44px タッチ対象を確認しました。"
+      }
+    }, "2026-07-26T08:58:00.000Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-26-resources-to-tools',
+        '2026-07-26-resources-to-tools',
+        'site-updates',
+        '["UI","i18n","Tools","compatibility","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-26T06:55:36.099Z',
+        '2026-07-26T06:55:36.099Z',
+        '2026-07-26T06:55:36.099Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-26-resources-to-tools", {
+      zh: {
+        title: "资源区正式更名为工具区",
+        summary: "公开栏目名称已统一为“工具区 / Tools / ツール”，内部 resources 路由、旧 #resources 链接、临时互传和全部功能保持不变。",
+        content_markdown: "# 资源区正式更名为工具区\n\n公开栏目现在统一使用中文“工具区”、English “Tools”、日本語“ツール”，让入口名称更准确地对应当前的软件、临时互传和学习工具。\n\n## 显示名称\n\n- 首页桌面入口、窗口标题、任务栏、移动 Dock、Appbar、文档标题、空状态和临时互传返回操作已同步三种语言。\n- 旧文章标签中的“资源区 / Resources / リソース”会继续兼容，但显示时统一为新名称。\n\n## 功能兼容\n\n- 内部 route、hash、DOM、CSS、模块、API 和统计键继续使用稳定的 resources / resource-* 技术标识。\n- 既有 #resources 收藏链接、筛选状态、临时互传、工具卡片和后台统计归组均保持可用，不迁移或删除任何数据。\n\n## 点检\n\n构建和三语浏览器审计会同时检查首页入口、窗口标题、文档元信息、Dock、临时互传返回按钮及 #resources 深链，防止只改到部分界面。"
+      },
+      en: {
+        title: "Resources Area Renamed to Tools",
+        summary: "The public section name is now Tools across Chinese, English, and Japanese, while the resources route, existing #resources links, Quick Transfer, and all behavior remain unchanged.",
+        content_markdown: "# Resources Area Renamed to Tools\n\nThe public section now uses Tools in English, 工具区 in Chinese, and ツール in Japanese so the label accurately matches the software, Quick Transfer, and learning tools available there.\n\n## Display name\n\n- The Home desktop entry, window title, taskbar, mobile Dock, Appbar, document metadata, empty states, and Quick Transfer return actions now use the same trilingual name.\n- Legacy article tags containing 资源区, Resources, or リソース remain accepted and render with the new display name.\n\n## Compatibility\n\n- Stable technical identifiers remain resources and resource-* across the route, hash, DOM, CSS, modules, APIs, analytics, and audits.\n- Existing #resources bookmarks, filters, Quick Transfer, tool cards, and analytics grouping continue to work without data migration or deletion.\n\n## QA\n\nBuild checks and trilingual browser audits now verify the Home entry, section title, document metadata, Dock, Quick Transfer return buttons, and the #resources deep link so partial renames are caught."
+      },
+      ja: {
+        title: "リソース欄をツールへ名称変更",
+        summary: "公開欄の名称を中国語・英語・日本語で「ツール」に統一し、resources ルート、既存の #resources リンク、一時転送、すべての機能は変更していません。",
+        content_markdown: "# リソース欄をツールへ名称変更\n\n公開欄の表示名を日本語「ツール」、中文「工具区」、English「Tools」に統一し、ソフトウェア、一時転送、学習ツールという現在の内容に合わせました。\n\n## 表示名\n\n- Home のデスクトップ入口、ウィンドウタイトル、タスクバー、モバイル Dock、Appbar、文書メタデータ、空状態、一時転送の戻る操作を3言語で同期しました。\n- 過去の記事タグにある「资源区 / Resources / リソース」は互換入力として維持し、画面では新しい名称を表示します。\n\n## 互換性\n\n- route、hash、DOM、CSS、モジュール、API、統計、監査の技術識別子は resources / resource-* のままです。\n- 既存の #resources ブックマーク、絞り込み、一時転送、ツールカード、統計グループはデータ移行や削除なしで引き続き利用できます。\n\n## 点検\n\nビルドと3言語ブラウザー監査で Home 入口、欄タイトル、文書メタデータ、Dock、一時転送の戻るボタン、#resources 直リンクを確認し、一部だけ旧名称が残る回帰を防ぎます。"
+      }
+    }, "2026-07-26T06:55:36.099Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-26-mobile-article-first-screen',
+        '2026-07-26-mobile-article-first-screen',
+        'site-updates',
+        '["mobile","Knowledge","accessibility","QA","UI"]',
+        '', 'published', 0, 0,
+        '2026-07-26T06:31:45.722Z',
+        '2026-07-26T06:31:45.722Z',
+        '2026-07-26T06:31:45.722Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-26-mobile-article-first-screen", {
+      zh: {
+        title: "手机文章首屏与全站点检修复",
+        summary: "修复手机知识库文章首屏大面积空白、短横屏英文资源卡裁切，并补齐 Dock、回顶按钮、目录语言与图片说明等无障碍细节。",
+        content_markdown: "# 手机文章首屏与全站点检修复\n\n本轮针对手机知识库文章首屏的大面积空白做了根因修复，并把同一批移动端、短屏和无障碍问题统一纳入回归点检。\n\n## 首屏与短屏布局\n\n- 根因是按需加载的知识库路由样式插到了移动端样式之后，同等优先级下重新写回了桌面阅读侧栏的最小高度。现在所有路由样式固定插在移动端样式之前，并保留高优先级移动端保护规则。\n- 359×500、390×844 与 844×390 三种关键手机尺寸都会在首屏直接露出正文，不再由目录区域撑出空白。\n- 短横屏英文资源卡改为按内容高度排布，说明、标签和 44px 主操作都保持在卡片内部。\n\n## 阅读与无障碍\n\n- 阅读进度按正文末尾计算，不再把 Dock 安全留白算进正文；回到顶部后焦点交还给文章标题。\n- 收起的 Dock 同时使用 inert、aria-hidden 与视觉隐藏，不再留下可聚焦的透明项目。\n- 目录使用文章实际语言，长标题可换行或横向显露，内部按钮存在时不再给容器增加重复 Tab 停靠点。\n- 图片由可见说明文字负责朗读，装饰性图片使用空替代文本，避免读屏重复播报。\n\n## 统一点检\n\n文章阅读器已覆盖三种关键手机尺寸、中文／英文／日文与回退语言；资源页同时复验三种语言和短横屏返回流程。构建门禁还会持续检查样式加载顺序、首屏正文容量、单一滚动所有者、触控尺寸与焦点行为。"
+      },
+      en: {
+        title: "Mobile Article First-Screen and Sitewide QA Fix",
+        summary: "Fixed the large blank area above mobile Knowledge articles and clipped English resource cards in short landscape, while completing Dock, back-to-top, TOC-language, and image-caption accessibility details.",
+        content_markdown: "# Mobile Article First-Screen and Sitewide QA Fix\n\nThis pass fixes the root cause of the large blank area above mobile Knowledge articles and adds the related mobile, short-screen, and accessibility cases to the shared regression audit.\n\n## First-screen and short-screen layout\n\n- Lazy Knowledge route CSS was being inserted after the mobile stylesheet, allowing an equal-specificity desktop sidebar minimum height to win. Route styles now always load before the mobile authority, with a defensive mobile guard retained.\n- At 359×500, 390×844, and 844×390, article body copy is visible on the first screen instead of being pushed down by the TOC area.\n- English resource cards in short landscape now use content-sized rows, keeping descriptions, tags, and the 44px primary action inside each card.\n\n## Reading and accessibility\n\n- Reading progress ends at the article body instead of counting Dock safety padding, and back-to-top activation returns focus to the article title.\n- A collapsed Dock is inert, aria-hidden, and visually hidden, leaving no transparent focusable items.\n- The TOC follows the article's actual language, long titles wrap or reveal horizontally, and containers with interactive children no longer create a duplicate Tab stop.\n- Visible captions provide image descriptions while the corresponding image uses empty alt text, preventing duplicate screen-reader announcements.\n\n## Unified QA\n\nThe article reader now covers three critical mobile sizes, Chinese, English, Japanese, and fallback-language content. Resources are also rechecked across all three languages and the short-landscape return flow. Build gates continue to verify stylesheet order, first-screen body capacity, a single scroll owner, touch sizes, and focus behavior."
+      },
+      ja: {
+        title: "モバイル記事初期画面と全体点検の修正",
+        summary: "モバイルのナレッジ記事上部に生じる大きな空白と短い横画面での英語リソースカードの欠けを修正し、Dock、先頭へ戻る操作、目次言語、画像説明のアクセシビリティも整えました。",
+        content_markdown: "# モバイル記事初期画面と全体点検の修正\n\nモバイルのナレッジ記事上部に大きな空白が生じる根本原因を修正し、関連するモバイル、短い画面、アクセシビリティの項目を共通回帰点検へ追加しました。\n\n## 初期画面と短い画面のレイアウト\n\n- 遅延読み込みされるナレッジのルート CSS がモバイル CSS の後ろに挿入され、同じ詳細度のデスクトップ用サイドバー最小高さが再適用されていました。ルート CSS は必ずモバイル CSS より前に読み込み、モバイル側の保護規則も維持します。\n- 359×500、390×844、844×390 の各サイズで、目次領域に押し下げられず初期画面から本文が見えるようになりました。\n- 短い横画面の英語リソースカードは内容に応じた高さとなり、説明、タグ、44px の主操作がカード内に収まります。\n\n## 閲覧とアクセシビリティ\n\n- 読了率は Dock 用の安全余白を含めず本文末尾で完了し、先頭へ戻る操作後は記事タイトルへフォーカスを移します。\n- 折りたたんだ Dock は inert、aria-hidden、視覚非表示を同時に使い、透明なフォーカス項目を残しません。\n- 目次は記事の実際の言語を使用し、長いタイトルは折り返しまたは横方向に表示します。内部に操作要素がある場合、コンテナへ重複した Tab 停止位置を追加しません。\n- 画像説明は表示中のキャプションが担当し、画像の alt は空にしてスクリーンリーダーの重複読み上げを防ぎます。\n\n## 統一点検\n\n記事リーダーは3つの主要モバイルサイズ、中国語・英語・日本語とフォールバック言語を対象にしました。リソース画面も3言語と短い横画面からの復帰を再確認します。ビルドゲートでは CSS 順序、初期画面の本文量、単一スクロール所有者、タッチサイズ、フォーカス挙動を継続して検証します。"
+      }
+    }, "2026-07-26T06:31:45.722Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-26-trust-safety-status',
+        '2026-07-26-trust-safety-status',
+        'site-updates',
+        '["Games","Quick Transfer","reliability","security","UI"]',
+        '', 'published', 0, 0,
+        '2026-07-26T04:54:16.752Z',
+        '2026-07-26T04:54:16.752Z',
+        '2026-07-26T04:54:16.752Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-26-trust-safety-status", {
+      zh: {
+        title: "30 项功能与界面优化完成",
+        summary: "完成云存档与互传安全、真实连接与恢复流程、搜索筛选、三语无障碍，以及资源和游戏卡片等 30 项可验证优化。",
+        content_markdown: "# 30 项功能与界面优化完成\n\n本轮把功能可靠性、真实状态、搜索与筛选、三语无障碍和移动端卡片层级一起收口，并继续保持 Windows XP、Pixel Art 与 Y2K 桌面风格。\n\n## 云存档、互传与连接状态\n\n- 云存档写入加入 CAS 版本校验；冲突时暂停全部上传，并提供备份本地、恢复云端、保留本地覆盖云端和稍后决定。\n- 临时互传明确安全边界：文字使用浏览器端 AES-GCM；文件依靠 HTTPS、私有 R2 与服务端鉴权，不宣称口令端到端加密，也不提供病毒扫描。\n- 桌面托盘使用检测中、在线、服务降级和离线四种真实状态，严格校验数据库健康，并在后台暂停退避重试。\n\n## 恢复、搜索与筛选\n\n- 账号状态检查加入超时和原位重试；聊天室增加真实重连、手动重试，密码房切换防重复提交，历史读取失败不会误报进入成功。\n- 知识库搜索支持多关键词 AND 匹配，筛选和搜索会重置真实滚动位置与历史快照。\n- 视频与资源筛选重建后恢复键盘焦点；视频空分类把“显示全部”设为主操作，网站更新为次操作。\n\n## 三语与无障碍\n\n- 首屏会尽早同步页面语言；文章回退内容使用实际内容语言，移动语言按钮完整显示当前语言并播报下一语言。\n- 聊天密码错误、字数计数和互传口令说明都与对应控件关联；上传区域保留原生文件选择器，不再伪装成额外键盘按钮。\n\n## 资源与游戏卡片\n\n- 手机资源卡完整显示说明，把事实字段、标签和主操作分层，短横屏继续保持操作可见。\n- 游戏卡直接显示中、英、日支持情况，简介最多三行，更多信息使用 44px 原生展开控件；后台刷新失败时明确提示正在显示已缓存列表。"
+      },
+      en: {
+        title: "30 Functional and UI Improvements Completed",
+        summary: "Thirty verified improvements now cover cloud-save and transfer safety, truthful connection and recovery flows, search and filtering, trilingual accessibility, plus resource and game cards.",
+        content_markdown: "# 30 Functional and UI Improvements Completed\n\nThis pass closes out functional reliability, truthful state, search and filtering, trilingual accessibility, and mobile card hierarchy while retaining the Windows XP, Pixel Art, and Y2K desktop style.\n\n## Cloud saves, transfer, and connection state\n\n- Cloud-save writes now use compare-and-swap version checks. A conflict pauses every upload path and offers local backup, restore cloud, keep local and overwrite cloud, or decide later.\n- Quick Transfer now states the real boundary: text uses browser-side AES-GCM; files rely on HTTPS, private R2 storage, and server authorization, with no passphrase end-to-end encryption or malware scanning claim.\n- The desktop tray uses four real states—checking, online, degraded, and offline—strictly verifies database health, and pauses backoff checks in the background.\n\n## Recovery, search, and filtering\n\n- Account checks have a timeout and in-place retry. Chat has truthful reconnect and manual retry, password-room switching is single-flight, and failed history never reports successful entry.\n- Knowledge search supports multi-token AND matching, while searches and filters reset the real scroll owner and history snapshot.\n- Video and resource filters restore keyboard focus after rebuilding. Empty video categories make Show all the primary action and site updates secondary.\n\n## Trilingual accessibility\n\n- The first paint applies the requested document language early. Fallback articles expose their actual content language, and the mobile language control shows the full current language while announcing the next one.\n- Chat password errors, character counts, and Transfer passphrase guidance are associated with their controls. The upload area keeps native file pickers instead of pretending to be another keyboard button.\n\n## Resource and game cards\n\n- Mobile resource cards show their full description and separate facts, tags, and the primary action; short landscape keeps the action visible.\n- Game cards expose Chinese, English, and Japanese support directly, allow three summary lines, and use a native 44px disclosure for secondary details. A failed background refresh clearly says the cached catalog is still on screen."
+      },
+      ja: {
+        title: "機能・UI 改善 30 項目を完了",
+        summary: "クラウド保存と転送の安全性、正確な接続・復旧、検索と絞り込み、3言語アクセシビリティ、リソースとゲームカードを含む検証可能な30項目を改善しました。",
+        content_markdown: "# 機能・UI 改善 30 項目を完了\n\n機能の信頼性、正確な状態表示、検索と絞り込み、3言語アクセシビリティ、モバイルカードの階層をまとめて改善し、Windows XP、Pixel Art、Y2K のデスクトップ表現は維持しました。\n\n## クラウド保存・転送・接続状態\n\n- クラウド保存の書き込みに CAS 版照合を追加しました。競合時はすべてのアップロードを停止し、ローカルのバックアップ、クラウドの復元、ローカルを残して上書き、後で決める、を選べます。\n- 一時転送の境界を明記しました。テキストはブラウザー側 AES-GCM、ファイルは HTTPS・非公開 R2・サーバー認可で保護され、パスフレーズによる E2E 暗号化やマルウェア検査は行いません。\n- デスクトップトレイは確認中、オンライン、サービス低下、オフラインの4状態を実際に判定し、DB 健全性も確認。バックグラウンドでは再試行を停止します。\n\n## 復旧・検索・絞り込み\n\n- アカウント確認にタイムアウトとその場での再試行を追加。チャットは正確な再接続と手動再試行に対応し、パスワード部屋の切替は単一実行、履歴失敗時は入室成功と表示しません。\n- ナレッジ検索は複数語の AND 検索に対応し、検索・絞り込み時に実際のスクロール領域と履歴スナップショットを先頭へ戻します。\n- 動画とリソースの絞り込みは再描画後にキーボードフォーカスを復元。空の動画カテゴリでは「すべて表示」を主操作、サイト更新を副操作にしました。\n\n## 3言語アクセシビリティ\n\n- 初回描画で要求された文書言語を早めに適用し、フォールバック記事には実際の本文言語を設定。モバイル言語ボタンは現在の言語名を完全表示し、次の言語も読み上げます。\n- チャットのパスワードエラー、文字数、転送のパスフレーズ説明を各入力に関連付けました。アップロード領域は偽のキーボードボタンを持たず、標準のファイル選択を使います。\n\n## リソースとゲームカード\n\n- モバイルのリソースカードは説明を省略せず、事実情報・タグ・主操作を分離。短い横画面でも操作を表示します。\n- ゲームカードは中国語・英語・日本語対応を直接表示し、概要は3行、詳細は44pxの標準開閉操作に整理。バックグラウンド更新失敗時はキャッシュ済み一覧であることを明示します。"
+      }
+    }, "2026-07-26T04:54:16.752Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-21-desktop-taskbar-active',
+        '2026-07-21-desktop-taskbar-active',
+        'site-updates',
+        '["UI","taskbar","desktop","accessibility"]',
+        '', 'published', 0, 0,
+        '2026-07-21T00:41:00.711Z',
+        '2026-07-21T00:41:00.711Z',
+        '2026-07-21T00:41:00.711Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-21-desktop-taskbar-active", {
+      zh: {
+        title: "桌面任务栏选中态降噪",
+        summary: "移除 PC 端当前任务按钮的黄色底边、外描边和常亮光晕，保留蓝色按下层级与键盘焦点环；移动 Dock 不变。",
+        content_markdown: "# 桌面任务栏选中态降噪\n\nPC 端底部任务栏的当前窗口按钮已移除黄色底边、黄色外描边与持续发光效果，让桌面更安静，也更贴近蓝色 Neo-XP 的窗口层级。\n\n## 调整内容\n\n- 当前任务继续使用蓝色按下背景、内凹边缘和清楚的文字对比，不会失去“当前窗口”识别。\n- 只有键盘操作触发的 focus-visible 焦点环继续保留，避免视觉降噪影响可访问性。\n- 移动端 Dock 的透明选中底板、滑动和触控范围完全不变。\n\n本次同步检查 Home 与 Knowledge 的桌面任务栏，并更新缓存版本，避免浏览器继续显示旧的黄色光晕。"
+      },
+      en: {
+        title: "Desktop Taskbar Active-State Polish",
+        summary: "The desktop active task button drops its yellow edge and persistent glow while retaining a blue pressed hierarchy and keyboard focus ring; the mobile Dock is unchanged.",
+        content_markdown: "# Desktop Taskbar Active-State Polish\n\nThe active window button in the PC taskbar no longer uses a yellow bottom edge, yellow outer outline, or persistent glow. The desktop now reads more calmly while retaining its blue Neo-XP hierarchy.\n\n## What changed\n\n- The current task keeps its blue pressed background, inset edge, and clear text contrast, so the active window remains obvious.\n- The focus-visible ring still appears for keyboard navigation, preserving an explicit accessible focus indicator.\n- The mobile Dock selection surface, scrolling, and touch geometry are unchanged.\n\nHome and Knowledge were checked with the desktop taskbar, and the public cache version was advanced so browsers do not retain the old yellow glow."
+      },
+      ja: {
+        title: "デスクトップタスクバーの選択表示調整",
+        summary: "デスクトップの選択中タスクボタンから黄色の縁と常時グローを外し、青い押下階層とキーボードフォーカスリングを維持。モバイル Dock は変更しません。",
+        content_markdown: "# デスクトップタスクバーの選択表示調整\n\nPC 版の下部タスクバーで、選択中ウィンドウのボタンに付いていた黄色の下線、外枠、常時グローを削除しました。青い Neo-XP の階層は維持しつつ、画面を落ち着かせています。\n\n## 変更内容\n\n- 現在のタスクは青い押下背景、内側の段差、十分な文字コントラストを保ち、選択中であることを明確に示します。\n- キーボード操作時の focus-visible リングは残し、アクセシブルなフォーカス表示を維持します。\n- モバイル Dock の選択面、横スクロール、タッチ領域は変更していません。\n\nHome と Knowledge のデスクトップタスクバーを確認し、古い黄色グローがキャッシュに残らないよう公開バージョンも更新しました。"
+      }
+    }, "2026-07-21T00:41:00.711Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-20-ui-motion-polish',
+        '2026-07-20-ui-motion-polish',
+        'site-updates',
+        '["UI","motion","accessibility","mobile","Chat","Videos"]',
+        '', 'published', 0, 0,
+        '2026-07-20T14:53:30.199Z',
+        '2026-07-20T14:53:30.199Z',
+        '2026-07-20T14:53:30.199Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-20-ui-motion-polish", {
+      zh: {
+        title: "全站界面与动效精修",
+        summary: "完成聊天短屏、视频卡片、知识库、资源区、欢迎窗口与移动 Dock 的系统化精修，并统一加载、错误、键盘焦点和减少动效体验。",
+        content_markdown: "# 全站界面与动效精修\n\n本轮围绕美观度、UI 结构和动效反馈完成 30 项集中优化，继续保留 Windows XP、Pixel Art 与 Y2K 桌面语言。\n\n## 排版与布局\n\n- 聊天室在 1280×720、短竖屏和手机横屏中重新分配标题、房间切换、消息流与输入区空间，输入框和页脚不再被裁切。\n- 视频封面统一为真实 16:9，失败操作收进卡片；欢迎快捷入口、最近更新、知识库正文和资源元信息获得更清楚的层级与可读宽度。\n- 移动欢迎页只保留一个滚动容器，文章 Appbar 保留路由身份，Dock 字号、触控区和横屏排列同步校准。\n\n## 交互与状态\n\n- 视频封面改为原生按钮并支持键盘；加载、空状态与错误状态采用一致结构，重试后恢复焦点，慢速 iframe 也避免旧计时器覆盖新结果。\n- 禁用控件不再播放按压反馈，桌面 CTA 增加清楚的悬停状态，任务栏活动项、系统消息对比度和各路由强调色更容易辨认。\n\n## 动效与偏好\n\n- 最大化与还原改用真实前后几何差值，关闭与最小化反馈方向统一。\n- “减少动效”与“关闭动效”会同步停止 Dock 平滑移动、骨架循环和硬编码过渡；主题切换不再创建无效的整页快照。\n\n本轮同时复核首页与各 App 的桌面、窄竖屏、短屏和手机横屏组合，并保持中、英、日三语内容与 44px 触控边界。"
+      },
+      en: {
+        title: "Site-wide UI and Motion Polish",
+        summary: "Chat on short screens, video cards, Knowledge, Resources, the welcome window, and the mobile Dock are systematically refined, with unified loading, error, keyboard-focus, and reduced-motion behavior.",
+        content_markdown: "# Site-wide UI and Motion Polish\n\nThis release completes 30 focused improvements across visual quality, UI structure, and motion feedback while retaining the Windows XP, Pixel Art, and Y2K desktop language.\n\n## Typography and layout\n\n- Chat now allocates title, room controls, message history, composer, and footer space correctly at 1280×720, short portrait screens, and mobile landscape, so the composer remains visible.\n- Video covers use a true 16:9 frame and failure actions stay inside each card. Welcome shortcuts, recent updates, Knowledge reading width, and Resources metadata now have clearer hierarchy.\n- Mobile Welcome keeps one scroll owner, article Appbars retain route identity, and Dock type, touch geometry, and landscape alignment are recalibrated.\n\n## Interaction and states\n\n- Video covers are native buttons with keyboard support. Loading, empty, and error states share one structure; retry restores focus, and stale iframe timers can no longer replace a newer result.\n- Disabled controls no longer animate as pressed. Desktop CTAs gain visible hover feedback, while active taskbar items, system-message contrast, and subtle route accents are easier to distinguish.\n\n## Motion preferences\n\n- Maximize and restore use real before-and-after geometry, with consistent close and minimize direction.\n- Reduced and off motion also stop Dock smoothing, skeleton loops, and hard-coded transitions. Theme changes no longer create a redundant full-page snapshot.\n\nThe pass rechecks Home and every App across desktop, narrow portrait, short-screen, and mobile-landscape layouts while preserving Chinese, English, and Japanese content and 44px touch targets."
+      },
+      ja: {
+        title: "サイト全体の UI・モーション調整",
+        summary: "短い画面のチャット、動画カード、ナレッジ、リソース、ウェルカム画面、モバイル Dock を整理し、読み込み・エラー・キーボードフォーカス・モーション低減の挙動も統一しました。",
+        content_markdown: "# サイト全体の UI・モーション調整\n\nWindows XP、Pixel Art、Y2K のデスクトップ表現を維持しながら、見た目、UI 構造、モーションフィードバックを中心に 30 項目を改善しました。\n\n## 文字組みとレイアウト\n\n- 1280×720、短い縦画面、モバイル横画面のチャットで、タイトル、ルーム切替、履歴、入力欄、フッターの配分を調整し、入力欄が切れないようにしました。\n- 動画サムネイルを正しい 16:9 に統一し、失敗時の操作をカード内に整理。ウェルカムのショートカット、最近の更新、ナレッジ本文、リソースのメタ情報も読みやすくしました。\n- モバイルのウェルカムはスクロール領域を一つにし、記事 Appbar にはルート名を残しています。Dock の文字、タッチ領域、横画面配置も再調整しました。\n\n## 操作と状態表示\n\n- 動画サムネイルはキーボードで操作できる標準ボタンになりました。読み込み、空、エラー表示を統一し、再試行後のフォーカスを復元。古い iframe timer が新しい結果を上書きする競合も防ぎます。\n- 無効な操作には押下アニメーションを出さず、デスクトップ CTA の hover、タスクバーの選択状態、システムメッセージのコントラスト、各ルートの控えめな accent を明確にしました。\n\n## モーション設定\n\n- 最大化と復元は実際の前後座標を使い、閉じる・最小化の方向も統一しました。\n- モーション低減・停止時は Dock の滑らかな移動、スケルトンのループ、固定時間の transition も停止します。テーマ変更時の不要な全画面 snapshot も削除しました。\n\nHome と各 App をデスクトップ、狭い縦画面、短い画面、モバイル横画面で再確認し、中・英・日 3 言語と 44px のタッチ領域を維持しています。"
+      }
+    }, "2026-07-20T14:53:30.199Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-19-historical-video-thumbnail-cache',
+        '2026-07-19-historical-video-thumbnail-cache',
+        'site-updates',
+        '["Videos","Bilibili","cache","ETag","reliability"]',
+        '', 'published', 0, 0,
+        '2026-07-19T11:56:27.825Z',
+        '2026-07-19T11:56:27.825Z',
+        '2026-07-19T11:56:27.825Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-19-historical-video-thumbnail-cache", {
+      zh: {
+        title: "历史视频封面缓存恢复",
+        summary: "历史上传的 B 站封面并未丢失；公开视频 ETag 与封面代理地址现已完整版本化，旧浏览器会自动丢弃曾缓存的空封面，无需重新上传。",
+        content_markdown: "# 历史视频封面缓存恢复\n\n历史 B 站视频的手动封面仍完整保存在数据库中，公开封面端点也能返回有效图片。本次修复针对旧浏览器仍显示空封面的缓存兼容问题。\n\n## 根因与恢复\n\n- 旧版 `/api/videos` 的 ETag 只根据视频行更新时间生成。封面解析逻辑更新后数据库没有变化，浏览器因此收到 304，并继续复用修复前的空封面响应。\n- 公开视频列表与单条详情的 ETag 现在根据完整公开响应生成，任何封面 URL、尺寸或分类表示变化都会得到新的缓存标识。\n- 本地上传封面的同源代理 URL 会携带视频更新时间版本；历史空缓存会立即失效，之后重新上传封面也不会继续看到旧图。\n\n## 验证\n\n线上 11 张历史 B 站封面逐一返回有效 JPEG，并在全新浏览器中正常显示。修复不修改或重新编码数据库中的原始封面，也不需要管理员再次上传。"
+      },
+      en: {
+        title: "Historical Video Thumbnail Cache Recovery",
+        summary: "Previously uploaded Bilibili covers were still intact; complete response ETags and versioned thumbnail proxy URLs now make existing browsers discard cached empty covers without requiring another upload.",
+        content_markdown: "# Historical Video Thumbnail Cache Recovery\n\nThe manually uploaded covers for older Bilibili videos remain intact in the database, and every public thumbnail endpoint returns a valid image. This fix addresses cached empty covers in existing browsers.\n\n## Cause and recovery\n\n- The previous `/api/videos` ETag was derived only from video-row timestamps. When thumbnail interpretation changed without a database edit, browsers received 304 and reused the pre-fix response with empty cover fields.\n- Video-list and single-video ETags now derive from the complete public representation, so changes to cover URLs, dimensions, categories, or other public fields produce a new cache identity.\n- Same-origin proxy URLs for uploaded covers now carry the video update version. Historical empty caches are bypassed immediately, and later cover replacements cannot remain stuck on an older image.\n\n## Verification\n\nAll 11 historical Bilibili covers on the live site returned valid JPEG responses and rendered in a clean browser profile. The recovery neither rewrites the stored cover data nor requires another admin upload."
+      },
+      ja: {
+        title: "過去の動画サムネイルキャッシュ復旧",
+        summary: "以前アップロードした Bilibili サムネイルは失われていません。完全なレスポンス ETag とバージョン付きプロキシ URL により、既存ブラウザーもキャッシュ済みの空表示を破棄し、再アップロードなしで復旧します。",
+        content_markdown: "# 過去の動画サムネイルキャッシュ復旧\n\n以前の Bilibili 動画に手動アップロードしたサムネイルはデータベースに残っており、公開サムネイル endpoint も有効な画像を返しています。今回は既存ブラウザーに残った空表示キャッシュを修正しました。\n\n## 原因と復旧\n\n- 旧 `/api/videos` の ETag は動画行の更新時刻だけから生成されていました。サムネイル解釈を修正しても DB 行が変わらないため、ブラウザーは 304 を受け取り、修正前の空サムネイル応答を再利用していました。\n- 動画一覧と単体動画の ETag は完全な公開レスポンスから生成するようになり、URL、寸法、分類などの公開表現が変われば新しいキャッシュ識別子になります。\n- アップロード済み画像の同一 origin プロキシ URL には動画更新版を付与します。過去の空キャッシュを直ちに回避し、今後サムネイルを差し替えた場合も古い画像に固定されません。\n\n## 検証\n\n本番サイトの過去の Bilibili サムネイル 11 枚がすべて有効な JPEG を返し、新規ブラウザープロファイルで表示されることを確認しました。保存済み画像の書き換えや管理画面からの再アップロードは不要です。"
+      }
+    }, "2026-07-19T11:56:27.825Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-19-content-experience-fixes',
+        '2026-07-19-content-experience-fixes',
+        'site-updates',
+        '["Knowledge","Videos","Resources","Games","account","UI"]',
+        '', 'published', 0, 0,
+        '2026-07-19T04:04:44.666Z',
+        '2026-07-19T04:04:44.666Z',
+        '2026-07-19T04:04:44.666Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-07-19-content-experience-fixes", {
+      zh: {
+        title: "知识库、视频、图标与账号体验修复",
+        summary: "网站更新日志全部取消置顶，知识库窗口只保留关闭键；恢复后台上传的 B 站封面并移除封面圆圈，替换临时互传和五款游戏的独立图标，同时修正登录、注册与登录后账号界面。",
+        content_markdown: "# 知识库、视频、图标与账号体验修复\n\n本次修复集中处理知识库、视频、资源、游戏和账号入口中影响日常使用的显示问题。\n\n## 知识库\n\n- 已有的网站更新记录全部取消置顶，后台今后创建或修改 `site-updates` 时也会强制保持非置顶。前端同时忽略更新日志的旧置顶值，避免缓存数据重新露出置顶标记。\n- 知识库标题栏删除最小化和缩放／还原按钮，只保留真实可用的关闭操作。\n\n## 视频与图标\n\n- 公开视频接口现在接受后台上传流程实际会生成的最大 960×540 封面，同时继续限制文件为 320KB，B 站手动上传封面可以正常显示。\n- 视频卡片封面上的蓝色圆形覆盖层已移除。\n- 临时互传入口和五款游戏均换成图像生成的独立透明图标，不再复用通用图标或代码绘制几何图形。\n\n## 账号界面\n\n- 登录模式只显示邮箱和一次密码；确认密码只在注册模式出现。\n- 登录成功后完整隐藏登录／注册表单，只显示登录成功状态和退出账号按钮。"
+      },
+      en: {
+        title: "Knowledge, Video, Icon, and Account Fixes",
+        summary: "Site update logs are no longer pinned and the Knowledge window keeps only Close; uploaded Bilibili covers are restored, thumbnail circles removed, Quick Transfer and five games receive distinct icons, and account login, registration, and signed-in states are corrected.",
+        content_markdown: "# Knowledge, Video, Icon, and Account Fixes\n\nThis release resolves visible daily-use issues across Knowledge, Videos, Resources, Games, and the account entry.\n\n## Knowledge\n\n- Every existing site update is unpinned. Future admin creates and edits in `site-updates` are also forced to remain unpinned, while the public list defensively ignores stale pinned values from cached data.\n- The Knowledge titlebar removes minimize and maximize/restore controls and keeps only the working Close action.\n\n## Video and icons\n\n- The public video API now accepts the 960×540 maximum generated by the admin upload flow while retaining the 320 KB byte limit, so manually uploaded Bilibili covers render again.\n- The blue circular overlay has been removed from video-card thumbnails.\n- Quick Transfer and all five games now use distinct generated transparent icons instead of shared generic art or code-drawn geometry.\n\n## Account interface\n\n- Login shows email and one password field; confirmation appears only during registration.\n- After sign-in, the complete login/registration form is hidden and only the signed-in success state and Log out action remain."
+      },
+      ja: {
+        title: "ナレッジ・動画・アイコン・アカウントの修正",
+        summary: "サイト更新ログの固定を解除し、ナレッジ画面は閉じる操作だけにしました。Bilibili のアップロード済みサムネイルを復旧し、円形表示を削除。一時転送と5ゲームに個別アイコンを追加し、ログイン・登録・ログイン後表示も修正しました。",
+        content_markdown: "# ナレッジ・動画・アイコン・アカウントの修正\n\n今回は、ナレッジ、動画、リソース、ゲーム、アカウント入口で日常利用に影響する表示問題を修正しました。\n\n## ナレッジ\n\n- 既存のサイト更新をすべて固定解除しました。今後も管理画面で `site-updates` を作成・編集すると固定されず、公開一覧は古いキャッシュの固定値も無視します。\n- ナレッジのタイトルバーから最小化と最大化／復元を削除し、実際に動作する閉じる操作だけを残しました。\n\n## 動画とアイコン\n\n- 公開動画 API は管理画面のアップロード処理が生成する最大 960×540 を受け入れ、320KB の上限は維持します。手動アップロードした Bilibili サムネイルが再び表示されます。\n- 動画カードのサムネイル上にあった青い円形表示を削除しました。\n- 一時転送と5つのゲームは、共通アイコンやコード描画ではなく、それぞれ異なる生成済み透明アイコンを使用します。\n\n## アカウント画面\n\n- ログインはメールと1回のパスワードだけを表示し、確認用パスワードは登録時だけ表示します。\n- ログイン後はログイン／登録フォーム全体を隠し、ログイン成功表示とログアウト操作だけを残します。"
+      }
+    }, "2026-07-19T04:04:44.666Z"),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-19-service-recovery',
+        '2026-07-19-service-recovery',
+        'site-updates',
+        '["Knowledge","Japanese","Quick Transfer","reliability","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-18T17:35:00.000Z',
+        '2026-07-18T17:35:00.000Z',
+        '2026-07-18T17:35:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-18-resource-icons-layout',
+        '2026-07-18-resource-icons-layout',
+        'site-updates',
+        '["Resources","Quick Transfer","UI","mobile","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-18T15:35:00.000Z',
+        '2026-07-18T15:35:00.000Z',
+        '2026-07-18T15:35:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-18-public-site-100-complete',
+        '2026-07-18-public-site-100-complete',
+        'site-updates',
+        '["performance","UX","accessibility","mobile","security","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-18T04:00:00.000Z',
+        '2026-07-18T04:00:00.000Z',
+        '2026-07-18T04:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-18-reliable-forms-reading-chat',
+        '2026-07-18-reliable-forms-reading-chat',
+        'site-updates',
+        '["account","reading","chat","privacy","accessibility","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-18T00:26:00.000Z',
+        '2026-07-18T00:26:00.000Z',
+        '2026-07-18T00:26:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      delete from article_translations
+      where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
+    `),
+    env.DB.prepare(`
+      delete from articles
+      where article_id in ('seed-xp-site-notes', 'seed-local-ai-workflow', 'seed-fallback-check')
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-18-route-lazy-transfer',
+        '2026-07-18-route-lazy-transfer',
+        'site-updates',
+        '["performance","lazy-loading","routes","transfer","UX","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-17T23:35:00.000Z',
+        '2026-07-17T23:35:00.000Z',
+        '2026-07-17T23:35:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-18-mobile-viewport-keyboard',
+        '2026-07-18-mobile-viewport-keyboard',
+        'site-updates',
+        '["mobile","viewport","keyboard","focus","accessibility","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-17T22:08:00.000Z',
+        '2026-07-17T22:08:00.000Z',
+        '2026-07-17T22:08:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-18-mobile-scroll-recovery',
+        '2026-07-18-mobile-scroll-recovery',
+        'site-updates',
+        '["mobile","scroll","focus","accessibility","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-17T21:32:00.000Z',
+        '2026-07-17T21:32:00.000Z',
+        '2026-07-17T21:32:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-18-frame-pipeline-low-performance',
+        '2026-07-18-frame-pipeline-low-performance',
+        'site-updates',
+        '["performance","viewport","mobile","accessibility","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-17T21:12:00.000Z',
+        '2026-07-17T21:12:00.000Z',
+        '2026-07-17T21:12:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-18-route-lifecycle-mobile-css',
+        '2026-07-18-route-lifecycle-mobile-css',
+        'site-updates',
+        '["performance","lifecycle","mobile","CSS","QA"]',
+        '', 'published', 0, 0,
+        '2026-07-17T20:48:00.000Z',
+        '2026-07-17T20:48:00.000Z',
+        '2026-07-17T20:48:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-18-route-metadata-modal-focus',
+        '2026-07-18-route-metadata-modal-focus',
+        'site-updates',
+        '["SEO","metadata","accessibility","dialog","navigation"]',
+        '', 'published', 0, 0,
+        '2026-07-17T20:22:00.000Z',
+        '2026-07-17T20:22:00.000Z',
+        '2026-07-17T20:22:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-18-knowledge-history-restoration',
+        '2026-07-18-knowledge-history-restoration',
+        'site-updates',
+        '["Knowledge","navigation","history","state","accessibility"]',
+        '', 'published', 0, 0,
+        '2026-07-17T20:01:00.000Z',
+        '2026-07-17T20:01:00.000Z',
+        '2026-07-17T20:01:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-18-focus-popover-caret',
+        '2026-07-18-focus-popover-caret',
+        'site-updates',
+        '["accessibility","navigation","account","Quick Transfer","UI"]',
+        '', 'published', 0, 0,
+        '2026-07-17T19:42:00.000Z',
+        '2026-07-17T19:42:00.000Z',
+        '2026-07-17T19:42:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-18-theme-accessibility-foundation',
+        '2026-07-18-theme-accessibility-foundation',
+        'site-updates',
+        '["performance","accessibility","theme","navigation","UI"]',
+        '', 'published', 0, 0,
+        '2026-07-17T18:53:00.000Z',
+        '2026-07-17T18:53:00.000Z',
+        '2026-07-17T18:53:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-17-mobile-transfer-send-fix',
+        '2026-07-17-mobile-transfer-send-fix',
+        'site-updates',
+        '["mobile","Knowledge","Quick Transfer","attachments","UI"]',
+        '', 'published', 0, 0,
+        '2026-07-16T18:45:00.000Z',
+        '2026-07-16T18:45:00.000Z',
+        '2026-07-16T18:45:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-16-mobile-transfer-ui-polish',
+        '2026-07-16-mobile-transfer-ui-polish',
+        'site-updates',
+        '["mobile","Quick Transfer","UI","accessibility"]',
+        '', 'published', 0, 0,
+        '2026-07-16T13:30:00.000Z',
+        '2026-07-16T13:30:00.000Z',
+        '2026-07-16T13:30:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-16-quick-transfer',
+        '2026-07-16-quick-transfer',
+        'site-updates',
+        '["Quick Transfer","R2","files","security"]',
+        '', 'published', 0, 0,
+        '2026-07-16T10:00:00.000Z',
+        '2026-07-16T10:00:00.000Z',
+        '2026-07-16T10:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-14-japanese-subtext-retry-hotfix',
+        '2026-07-14-japanese-subtext-retry-hotfix',
+        'site-updates',
+        '["Japanese","learning","accessibility","bugfix"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-07-14T02:20:00.000Z',
+        '2026-07-14T02:20:00.000Z',
+        '2026-07-14T02:20:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-11-japanese-subtext-trainer',
+        '2026-07-11-japanese-subtext-trainer',
+        'site-updates',
+        '["Japanese","listening","learning","tools"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-07-10T17:30:00.000Z',
+        '2026-07-10T17:30:00.000Z',
+        '2026-07-10T17:30:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-10-premium-interaction-mobile-os',
+        '2026-07-10-premium-interaction-mobile-os',
+        'site-updates',
+        '["design","mobile","interaction","accessibility"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-07-10T16:20:00.000Z',
+        '2026-07-10T16:20:00.000Z',
+        '2026-07-10T16:20:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-07-06-private-chat-rooms',
+        '2026-07-06-private-chat-rooms',
+        'site-updates',
+        '["网站更新","聊天室","隐私"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-07-06T08:00:00.000Z',
+        '2026-07-06T08:00:00.000Z',
+        '2026-07-06T08:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-06-15-managed-video-system',
+        '2026-06-15-managed-video-system',
+        'site-updates',
+        '["网站更新","视频区","后台"]',
+        '',
+        'published',
+        0,
+        0,
+        '2026-06-15T08:30:00.000Z',
+        '2026-06-15T08:30:00.000Z',
+        '2026-06-15T08:30:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    env.DB.prepare(`
+      insert into article_translations (
+        translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+      ) values
+        (
+          'seed-update-2026-06-15-managed-video-system-zh',
+          'seed-update-2026-06-15-managed-video-system',
+          'zh',
+          '视频区改造成可管理系统',
+          '视频区现在支持后台管理 YouTube 和 Bilibili 链接，并可在站内播放。',
+          '# 视频区改造成可管理系统
+
+这次更新把原来的占位视频卡片改成真实的视频管理系统。
+
+## 更新内容
+
+- 后台新增视频管理，可以输入 YouTube、Bilibili 或 b23.tv 链接并自动识别平台。
+- 服务端会规范化播放器地址，抓取标题、作者、简介和封面，并缓存到 D1。
+- 主站视频区改为读取 \`/api/videos\`，分类标签由后台视频分类动态生成。
+- 视频点击后在 XP 风格窗口内播放，不再跳转外站。
+- 后台新增视频分类管理，可以新增、编辑、停用、排序和安全删除分类。',
+          '2026-06-15T08:30:00.000Z',
+          '2026-06-15T08:30:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-15-managed-video-system-en',
+          'seed-update-2026-06-15-managed-video-system',
+          'en',
+          'Managed Video System',
+          'The videos section now supports managed YouTube and Bilibili links with inline playback.',
+          '# Managed Video System
+
+This update turns the old placeholder video cards into a real managed video system.
+
+## What changed
+
+- The admin area can now create and edit videos from YouTube, Bilibili, or b23.tv links.
+- The server normalizes embed URLs, fetches metadata, and caches title, author, description, and thumbnail data in D1.
+- The public videos section now reads from \`/api/videos\`, with category tabs generated from admin-managed video categories.
+- Videos open inside the XP-style site window instead of jumping to an external site.
+- A new admin category manager supports creating, editing, disabling, sorting, and safely deleting video categories.',
+          '2026-06-15T08:30:00.000Z',
+          '2026-06-15T08:30:00.000Z'
+        ),
+        (
+          'seed-update-2026-06-15-managed-video-system-ja',
+          'seed-update-2026-06-15-managed-video-system',
+          'ja',
+          '動画欄を管理できる仕組みに変更',
+          '動画欄で YouTube と Bilibili のリンクを管理し、サイト内で再生できるようになりました。',
+          '# 動画欄を管理できる仕組みに変更
+
+今回の更新で、仮置きだった動画カードを実際に管理できる動画システムに変更しました。
+
+## 変更内容
+
+- 管理画面から YouTube、Bilibili、b23.tv のリンクを登録できるようになりました。
+- サーバー側で埋め込み URL を正規化し、タイトル、作者、説明、サムネイルを取得して D1 に保存します。
+- 公開側の動画欄は \`/api/videos\` から読み込み、分類タブも管理画面の動画分類から生成します。
+- 動画は外部サイトへ移動せず、XP 風のウィンドウ内で再生します。
+- 動画分類の追加、編集、停止、並び替え、安全な削除に対応しました。',
+          '2026-06-15T08:30:00.000Z',
+          '2026-06-15T08:30:00.000Z'
+        )
+      on conflict(article_id, lang) do update set
+        title = excluded.title,
+        summary = excluded.summary,
+        content_markdown = excluded.content_markdown,
+        updated_at = excluded.updated_at
+    `),
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
       ) values
         ('seed-xp-site-notes', 'xp-site-notes', 'site', '["个人站","记录"]', '', 'published', 1, 0, '2026-06-11T00:00:00.000Z', '2026-06-11T00:00:00.000Z', '2026-06-11T00:00:00.000Z'),
         ('seed-local-ai-workflow', 'local-ai-workflow', 'ai', '["AI","工具"]', '', 'published', 0, 0, '2026-06-11T00:01:00.000Z', '2026-06-11T00:01:00.000Z', '2026-06-11T00:01:00.000Z'),
