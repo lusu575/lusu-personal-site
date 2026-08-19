@@ -3,8 +3,8 @@ import {
   isI18nNodeInScope,
   normalizeLanguage,
   translationFor
-} from "./core/i18n.mjs?v=20260809-motion-polish-r2";
-import { homeContent } from "./data/home-content.mjs?v=20260813-hide-minimax-h3-tools-r1";
+} from "./core/i18n.mjs?v=20260819-daily-ai-news-rss-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260819-daily-ai-news-rss-r1";
 import {
   WALLPAPER_TIME_THEMES,
   createWallpaperTimeOverride,
@@ -787,6 +787,13 @@ function setLinkHref(selector, href) {
   }
 }
 
+function syncDailyAiNewsFeedLinks(lang = currentLang) {
+  const normalizedLang = ["zh", "en", "ja"].includes(lang) ? lang : "zh";
+  const href = `/api/feeds/daily-ai-news.xml?lang=${encodeURIComponent(normalizedLang)}`;
+  setLinkHref("#daily-ai-news-feed-link", href);
+  setLinkHref("#daily-ai-news-rss-button", href);
+}
+
 function applyDocumentMeta({
   documentTitle,
   siteTitle,
@@ -1182,6 +1189,7 @@ function setLanguage(lang, options = {}) {
   }
   document.documentElement.lang = nextLanguage === "zh" ? "zh-CN" : nextLanguage;
   syncDocumentMeta(nextLanguage);
+  syncDailyAiNewsFeedLinks(nextLanguage);
 
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     if (!isI18nNodeInScope(node, activePage)) return;

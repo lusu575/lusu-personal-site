@@ -2,6 +2,12 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-08-19 每日 AI 新闻 RSS 订阅
+
+- 新增只读公开接口 `GET /api/feeds/daily-ai-news.xml?lang=zh|en|ja`，仅输出最近 50 期已发布的 `daily-ai-news` 文章；RSS 2.0 内容包含标题、摘要、发布时间和站内文章链接，不扩大管理或写入权限。
+- “关于我”介绍文字下方新增独立、低权重的三语订阅栏，不与社交账号混排；页面 head 增加 RSS 自动发现，切换语言时按钮与发现链接同步更新。
+- RSS 响应补齐 XML 转义、安全响应头、强 ETag 和缓存策略；`site-updates` 公开记录为 `seed-update-2026-08-19-daily-ai-news-rss`／`2026-08-19-daily-ai-news-rss`，Functions seed、schema seed、Home 最近五条与本地 fallback 同步，发布版本为 `20260819-daily-ai-news-rss-r1`。
+
 ## 2026-08-19
 
 - 上线免费额度爬虫保护：统一识别 Googlebot／GoogleOther／Applebot／Bingbot、GPTBot／OAI Search／Meta、SEO 爬虫、安全扫描器、Headless／脚本工具和站内 synthetic monitor。`POST /api/analytics/{identify,page-view,click}` 在任何 D1 schema、访客身份、限流桶或事件写入前返回 `recorded:false`；公开文章仍可正常抓取，但跳过文章阅读事件、访客 Cookie 和 `view_count` 写入。真人浏览器、登录、存档、Chat、Transfer、Whiteboard 与内容读取不受影响。

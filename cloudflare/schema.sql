@@ -1077,6 +1077,68 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-08-19-daily-ai-news-rss',
+  '2026-08-19-daily-ai-news-rss',
+  'site-updates',
+  '["网站更新","每日 AI 新闻","RSS","Agent"]',
+  '', 'published', 0, 0,
+  '2026-08-19T09:00:00.000Z',
+  '2026-08-19T09:00:00.000Z',
+  '2026-08-19T09:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-19-daily-ai-news-rss-zh',
+    'seed-update-2026-08-19-daily-ai-news-rss',
+    'zh',
+    '每日 AI 新闻 RSS 订阅入口',
+    '“关于我”介绍文字下方新增一个低调的 RSS 订阅入口；公开 feed 仅输出已发布的每日 AI 新闻，提供中英日三种语言，供 RSS 阅读器和只读 Agent 每日抓取。',
+    '# 每日 AI 新闻 RSS 订阅入口\n\n“关于我”页面的介绍文字下方现在有一个独立、低调的 RSS 订阅区，不与社交账号混在一起，也不会占用首页主入口。\n\n## 给阅读器和 Agent 的稳定入口\n\n- 订阅地址为 `/api/feeds/daily-ai-news.xml?lang=zh`，语言可切换为 `en` 或 `ja`。\n- feed 只包含 `daily-ai-news` 分类中已经发布的文章，最多返回最近 50 期。\n- 每条只提供标题、摘要、发布时间和站内文章链接，不开放管理、写入或其他站点权限。\n\n## 低调但可发现\n\n页面 head 同时提供 RSS 自动发现声明。普通访客不会在首页看到额外按钮，需要订阅的人可以在“关于我”页底部找到入口。',
+    '2026-08-19T09:00:00.000Z',
+    '2026-08-19T09:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-19-daily-ai-news-rss-en',
+    'seed-update-2026-08-19-daily-ai-news-rss',
+    'en',
+    'Daily AI News RSS Feed',
+    'A low-profile RSS entry now sits below the About introduction. The public feed contains only published Daily AI News in Chinese, English, or Japanese for RSS readers and read-only agents.',
+    '# Daily AI News RSS Feed\n\nThe About page now has a separate, low-profile RSS subscription row below the introduction. It stays apart from social accounts and does not take over a primary Home entry.\n\n## A stable endpoint for readers and agents\n\n- The feed is available at `/api/feeds/daily-ai-news.xml?lang=en`; use `zh` or `ja` for the other languages.\n- It contains only published articles in the `daily-ai-news` category, capped at the latest 50 editions.\n- Each item exposes only its title, summary, publication time, and on-site article link. It grants no admin, write, or broader site access.\n\n## Quiet but discoverable\n\nThe page head also declares RSS autodiscovery. Regular visitors do not get another Home button, while readers who need the feed can find it at the bottom of About.',
+    '2026-08-19T09:00:00.000Z',
+    '2026-08-19T09:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-19-daily-ai-news-rss-ja',
+    'seed-update-2026-08-19-daily-ai-news-rss',
+    'ja',
+    '毎日AIニュースのRSS配信',
+    '「About」の紹介文の下に控えめなRSS入口を追加しました。公開feedは公開済みの毎日AIニュースだけを中・英・日の三言語で配信し、RSSリーダーと読み取り専用Agentが利用できます。',
+    '# 毎日AIニュースのRSS配信\n\n「About」ページの紹介文の下に、独立した控えめなRSS購読欄を追加しました。SNSアカウントとは分け、Homeの主要入口も増やしていません。\n\n## リーダーとAgent向けの安定した入口\n\n- 購読先は `/api/feeds/daily-ai-news.xml?lang=ja` です。中国語は `zh`、英語は `en` を使います。\n- `daily-ai-news` カテゴリで公開済みの記事だけを、最新50件まで配信します。\n- 各項目に含むのはタイトル、要約、公開時刻、サイト内記事リンクだけで、管理・書き込み・その他のサイト権限は与えません。\n\n## 控えめでも見つけられる\n\nページheadにはRSS自動検出も宣言しています。通常の訪問者向けにHomeボタンを増やさず、必要な人だけが「About」下部から見つけられます。',
+    '2026-08-19T09:00:00.000Z',
+    '2026-08-19T09:00:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-08-11-h3-first-version-video-sr-48fps',
   '2026-08-11-h3-first-version-video-sr-48fps',
   'site-updates',
@@ -14250,7 +14312,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260813-hide-minimax-h3-tools-r1', '2026-08-13T02:00:00.000Z')
+values ('article_seed_version', '20260819-daily-ai-news-rss-r1', '2026-08-19T09:00:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

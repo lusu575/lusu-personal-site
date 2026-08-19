@@ -1,5 +1,11 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-19 每日 AI 新闻 RSS 与“关于我”低调入口
+
+- 主站恢复一个严格限域的公开聚合面：`GET /api/feeds/daily-ai-news.xml?lang=zh|en|ja`。feed 只查询 `status = published` 且分类为 `daily-ai-news` 的最近 50 期，输出标题、摘要、发布时间和站内文章链接；它不提供写入、管理、其他分类或全站数据。
+- “关于我”页的 RSS 入口独立放在介绍文字下方，不与社交账号混排，也不增加首页主按钮。入口文案和链接跟随 zh／en／ja 切换，页面 head 同时声明 RSS autodiscovery。
+- RSS 响应使用 `application/rss+xml; charset=utf-8`、XML 转义、安全响应头、强 ETag 与短缓存；公开表示／文章 seed／主模块缓存版本统一为 `20260819-daily-ai-news-rss-r1`。网站更新记录为 `seed-update-2026-08-19-daily-ai-news-rss`。
+
 ## 2026-08-19 免费额度爬虫遥测保护
 
 - `functions/api/analytics-traffic-classifier.mjs` 是公共遥测统一的自动化客户端分类入口。已知搜索、AI、SEO、安全扫描、synthetic monitor、Headless 与脚本工具访问 `POST /api/analytics/identify|page-view|click` 时，必须在 `ensureCoreSchema`、匿名身份、Cookie、限流桶和 D1 事件之前返回 `recorded:false`。

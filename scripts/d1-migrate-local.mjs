@@ -277,7 +277,21 @@ export async function migrateLocalD1() {
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260813-hide-minimax-h3-tools-r1'
+    where key = 'article_seed_version' and value = '20260819-daily-ai-news-rss-r1'
+    union all
+    select 'daily-ai-news-rss-update-article',
+      case when count(*) = 1 then 1 else 0 end
+    from articles
+    where article_id = 'seed-update-2026-08-19-daily-ai-news-rss'
+      and slug = '2026-08-19-daily-ai-news-rss'
+      and category = 'site-updates'
+      and status = 'published'
+      and published_at = '2026-08-19T09:00:00.000Z'
+    union all
+    select 'daily-ai-news-rss-update-translations',
+      case when count(*) = 3 and count(distinct lang) = 3 then 1 else 0 end
+    from article_translations
+    where article_id = 'seed-update-2026-08-19-daily-ai-news-rss'
     union all
     select 'game-video-mcp-candidate-update-article',
       case when count(*) = 1 then 1 else 0 end
