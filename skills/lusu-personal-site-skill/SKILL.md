@@ -374,6 +374,13 @@ $env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wran
 - 最新 Cloudflare 部署来源应为 GitHub `main` 的最新提交。
 - `lusu575.com` 和 `www.lusu575.com` 应指向同一个 Cloudflare Pages 项目和同一个 GitHub `main` 构建产物。
 
+## 爬虫与免费额度保护规则
+
+- `functions/api/analytics-traffic-classifier.mjs` 是匿名遥测的统一自动化客户端分类入口。已知搜索／AI／SEO 爬虫、安全扫描、synthetic monitor、Headless 与脚本工具必须在 analytics schema、访客身份、Cookie、限流桶和 D1 事件之前返回 `recorded:false`。
+- 公开文章继续向爬虫返回内容以保持收录，但不得为已识别自动化客户端写文章阅读事件、访客资料或 `view_count`。登录、存档、Chat、Transfer、Whiteboard 与内容读取等必要业务不能受遥测分类器影响。
+- User-Agent 分类只是高置信启发式；必须覆盖 `GoogleOther` 等真实观测名称，新增规则要有回归测试。不得按国家、单页行为或普通浏览器版本判定爬虫，也不得为了美化报表删除历史遥测。
+- 代码级遥测短路不等于 Cloudflare WAF。未实际创建并回读自定义规则时不得宣称边缘拦截已启用；不要用全站 Pages middleware 让免费静态资产转入 Functions 计额。
+
 ## GPTWork 与运行时 Secret 规则
 
 - 可复现开发基线是 Node.js 22.13+、`npm ci`、固定 Wrangler 版本和仓库中的 lockfile；不得依赖父目录 `node_modules`、本机全局包或未记录的安装步骤。

@@ -2,6 +2,11 @@
 
 > 管理后台专用说明：本文档只记录 `/admin/` 管理后台的私有维护记录，不等同于主站根目录 `CHANGELOG.md`。后台私有更新不写入主站知识库 `site-updates`，也不展示到首页最近更新。
 
+## 2026-08-19
+
+- 免费额度保护新增统一自动化客户端分类：已知搜索／AI／SEO 爬虫、安全扫描、synthetic monitor 与 Headless／脚本工具在匿名遥测 schema、身份、Cookie、限流桶和事件写入前短路；公开文章仍可抓取但不累计这些客户端的阅读事件。
+- 历史爬虫统计不删除，会随时间窗自然退出。Cloudflare 自定义 WAF 当前仍无编辑权限，后台不得显示或暗示扫描路径已在边缘拦截。
+
 ## 2026-08-12
 
 - MiniMax H3 隔离发布候选把受保护控制面、Runner register/heartbeat、固定控制器、T2V 闸门与 loopback Bridge/Range 下载接入 `main` 基线；控制与传输开关默认关闭，生产 Agent token、Tunnel/Access 与 GPU canary 仍需现场配置和核验。

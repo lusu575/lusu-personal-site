@@ -534,6 +534,31 @@ test("analytics writes are source checked and duplicate page views are collapsed
   }
 });
 
+test("known crawlers bypass analytics before schema, identity, and rate-limit writes", async () => {
+  const { onRequest } = await freshApi("analytics-crawler-bypass");
+  const DB = new D1Database();
+  try {
+    const response = await invoke(onRequest, DB, apiRequest("analytics/page-view", {
+      method: "POST",
+      headers: {
+        "CF-Connecting-IP": "203.0.113.21",
+        "User-Agent": "Mozilla/5.0 (compatible; GoogleOther)"
+      },
+      body: { path: "/articles/:slug?lang=en", route: "knowledge", lang: "en" }
+    }));
+    assert.equal(response.status, 200, await response.clone().text());
+    assert.deepEqual(await response.json(), { ok: true, recorded: false });
+    assert.equal(visitorCookie(response), "");
+    assert.equal(
+      DB.sqlite.prepare("select count(*) as count from sqlite_master where type = 'table'").get().count,
+      0,
+      "crawler telemetry must return before any D1 schema work"
+    );
+  } finally {
+    DB.close();
+  }
+});
+
 test("admin traffic controls expose honest write pressure, use CAS, and can shed telemetry writes", async () => {
   const { onRequest } = await freshApi("traffic-control");
   const DB = new D1Database();

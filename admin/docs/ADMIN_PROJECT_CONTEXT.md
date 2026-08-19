@@ -1,5 +1,10 @@
 # 鲁肃个人站管理后台专用 PROJECT_CONTEXT
 
+## 2026-08-19 免费额度爬虫遥测保护
+
+- 已知搜索／AI／SEO 爬虫、安全扫描器和自动化工具在进入匿名遥测 schema、访客身份、限流桶与事件写入前返回 `recorded:false`；文章仍对爬虫可读，但不累计阅读事件或访客 Cookie。
+- 后台历史统计不会被破坏性清空，会随查询窗口和 180 天保留自然恢复到真人流量结构。当前没有可写的 Cloudflare 自定义 WAF 权限，后台状态不得暗示边缘扫描拦截已经启用。
+
 ## 2026-08-12 MiniMax H3 控制面与控制台
 
 - H3 Agent 使用非默认、管理员专属 `minimax-h3:execute`；线上授权必须在包含该 scope 的隔离 Pages 发布后进行。固定控制器、锁定工作流、ComfyUI 与 RTX 5080 preflight 已通过，但生产 token、Tunnel/Access 和 GPU canary 仍需现场配置与核验。

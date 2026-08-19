@@ -43,6 +43,7 @@ import {
   queryPublishedArticles,
   toPublicArticle
 } from "./public-content-service.mjs";
+import { shouldSkipAnalyticsRequest } from "./analytics-traffic-classifier.mjs";
 
 export const PUBLIC_API_REPRESENTATION_VERSION = "20260813-hide-minimax-h3-tools-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
@@ -265,6 +266,15 @@ export async function onRequest(context) {
     const minimaxH3AgentRoute = parts[0] === "agent" && parts[1] === "minimax-h3";
     if (!transferRoute && !agentAuthRoute && !minimaxH3AgentRoute) {
       assertMainApiMutationRequest(request, parts);
+    }
+
+    if (
+      request.method === "POST"
+      && parts[0] === "analytics"
+      && ["identify", "page-view", "click"].includes(parts[1])
+      && shouldSkipAnalyticsRequest(request)
+    ) {
+      return json({ ok: true, recorded: false });
     }
 
     await ensureCoreSchema(env);
@@ -2704,6 +2714,10 @@ async function getArticle(request, env, slug) {
     return response;
   }
 
+  if (shouldSkipAnalyticsRequest(request)) {
+    return response;
+  }
+
   let cookieIdentity = getOrCreateVisitorIdentity(request);
   try {
     const view = await recordArticleView(request, env, row, row.lang || lang);
@@ -4486,6 +4500,9 @@ async function recordClickEvent(request, env) {
 }
 
 async function recordArticleView(request, env, article, lang) {
+  if (shouldSkipAnalyticsRequest(request)) {
+    return { cookieIdentity: null, recorded: false };
+  }
   await ensureAnalyticsSchema(env);
   const identity = await analyticsIdentityForRequest(request, env);
   if (!analyticsReadSourceIsTrusted(request)) {

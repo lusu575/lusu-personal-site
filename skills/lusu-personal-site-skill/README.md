@@ -138,6 +138,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - GPTWork / 全新克隆开发固定使用 Node.js 22.13+、`npm ci`、仓库 lockfile 和本地 D1；纯本地环境使用 `.env.example` -> `.dev.vars`，GPTWork 使用 process Secrets 且不创建 `.dev.vars`。不得依赖固定盘符、父目录依赖、本机全局工具或生产数据库。
 - Cloudflare Production 必须检查 D1 binding `DB`，并配置独立、随机、至少 32 字节的 `CHAT_IP_HASH_SALT`、`ANALYTICS_IP_HASH_SALT` 与四个画板 Secret；Pages 读取四个画板值，Worker 只读取匹配的 `WHITEBOARD_INTERNAL_SECRET`。根配置提交态的 Preview 保持 API 关闭且不绑定 D1/R2/DO；只有独立 Preview 数据资源、DO、Origin 与 Secret 全部完成且 Worker 已先部署后才可接入并启用，且不得提交真实值、固定 fallback 或跨环境／跨用途复用。
 - IP hash 使用按 `chat` / `analytics` 隔离的 HMAC-SHA256。聊天消息和网络来源禁言带非敏感密钥代次；Secret 轮换后旧消息只供审计、旧网络禁言标记失效，服务端拒绝从旧代次新建禁言。
+- 已知搜索／AI／SEO 爬虫、安全扫描、synthetic monitor、Headless 与脚本工具会在匿名遥测接触 D1、身份、Cookie 和限流前短路；文章仍可被收录但不累计这些客户端的阅读事件。分类规则基于真实 User-Agent 证据和回归测试，不按国家或单页行为猜测；代码短路不等同未获权限的 Cloudflare 自定义 WAF。
 - 普通 CI / GPTWork 不需要 Cloudflare API Token、生产 D1 权限、本机 TTS 配置、模型权重或参考声线；`output/`、Wrangler 状态、依赖和本地 TTS 配置均不得提交。
 - 项目已配置真实 `npm run lint`、`npm run typecheck` 和 `npm run whiteboard:test`；CI／release 验证必须实际运行，不能替换为空成功占位。迁移清单见 `docs/GPTWORK_MIGRATION_READINESS.md`。
 - 后续新增游戏时，必须在游戏标签或信息里标明中文、English、日本語是否支持。

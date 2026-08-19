@@ -1,5 +1,12 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-19 免费额度爬虫遥测保护
+
+- `functions/api/analytics-traffic-classifier.mjs` 是公共遥测统一的自动化客户端分类入口。已知搜索、AI、SEO、安全扫描、synthetic monitor、Headless 与脚本工具访问 `POST /api/analytics/identify|page-view|click` 时，必须在 `ensureCoreSchema`、匿名身份、Cookie、限流桶和 D1 事件之前返回 `recorded:false`。
+- 公开文章继续向爬虫返回正文以维持收录，但这些请求不写文章阅读事件、访客资料或累计浏览数。普通浏览器与账号、存档、Chat、Transfer、Whiteboard 等必要业务不受分类器影响。
+- User-Agent 只是高置信启发式而非身份认证；规则必须覆盖不含 `bot` 字样的 `GoogleOther`。不得根据国家、单页访问或普通浏览器版本把访客判为爬虫。历史遥测不删除，会随 180 天保留和后台时间窗自然退出。
+- Cloudflare 当前连接缺少自定义 WAF 编辑权限，因此 CMS／Secret 探测路径没有新增线上边缘规则。不要增加全站 Pages middleware 让原本免费的静态资产转入 Functions 计额；取得 WAF 权限后应单独复核、创建并回读窄范围规则。
+
 ## 2026-08-13 MiniMax H3 公开工具入口暂时隐藏
 
 - 公开 Tools 路由暂时不渲染 \`minimax-h3\` 卡片：资源条目保留 \`publicCatalog: false\`，并新增 \`showInTools: false\`，由资源路由在生成卡片前过滤。此隐藏只作用于访客工具区，不删除 \`/admin/minimax-h3.html\`、后端 API、Runner、Bridge、D1 控制面或本地配置。

@@ -43,6 +43,9 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 - Cloudflare Analytics Token 只能作为 Pages Production Secret 注入服务端；不得返回浏览器、拼入 DOM、日志、错误详情、测试快照、文档值或 Git。Account ID 与 Database ID 也从运行时环境读取，Preview 不得复用 Production Token。
 - 设置保存使用 `site_runtime_state.traffic_control_settings_v1` 与 `expectedUpdatedAt` 条件更新；缺版本拒绝，陈旧版本返回 409。自动刷新可以更新指标，但 dirty 表单、revision 基线与冲突提示必须保留，不能静默覆盖管理员输入。
 - 自适应采样和开关只允许作用于匿名访客识别、页面浏览、点击和文章阅读等非必要遥测。登录／注册、账号会话、游戏云存档、Chat、Transfer、Whiteboard、管理员操作和内容写入不得被自动关停；要减少这些业务写入必须另做明确评审和授权。
+- 已知搜索／AI／SEO 爬虫、安全扫描、synthetic monitor、Headless 与脚本客户端必须在匿名遥测 schema、身份、Cookie、限流和事件写入前短路；公开文章仍可抓取，但不得因此写文章阅读事件或累计 `view_count`。
+- 自动化客户端分类是基于真实观测 User-Agent 的高置信启发式，必须覆盖 `GoogleOther` 等不含 `bot` 的已知名称。不得按国家、单页访问或普通浏览器版本判定爬虫；历史数据不得为美化报表而破坏性删除。
+- 代码级遥测短路不等于 Cloudflare WAF。没有创建并回读 `http_request_firewall_custom` 规则前，后台和维护记录不得宣称扫描路径已在边缘拦截；也不得用全站 Pages middleware 让静态资源进入 Functions 计额。
 - 当前免费额度保护默认值固定为 30,000／50,000 估算行；正常档页面／点击／文章 100%／100%／100%，预警档 25%／10%／50%，硬保护档 0%／0%／10%。低写入预案使用 20,000／35,000、50%／25%／75%、10%／0%／25%、0%／0%／0%。只有存量设置仍精确等于旧默认 JSON 时才允许 compare-and-swap 迁移；不得用版本升级覆盖管理员自定义策略。
 - 默认阈值与采样要在 schema、API 默认值、后台输入和测试中保持一致。修改默认值、估算系数或保护范围时同步更新项目上下文、后台上下文、页面内私有更新、根与后台 changelog，并重新验证关闭某分项后对应原始事件确实不落库。阈值必须为必要业务留出清晰余量，不能把免费额度全部分配给可丢弃遥测。
 

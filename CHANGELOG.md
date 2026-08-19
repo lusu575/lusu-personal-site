@@ -2,6 +2,11 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-08-19
+
+- 上线免费额度爬虫保护：统一识别 Googlebot／GoogleOther／Applebot／Bingbot、GPTBot／OAI Search／Meta、SEO 爬虫、安全扫描器、Headless／脚本工具和站内 synthetic monitor。`POST /api/analytics/{identify,page-view,click}` 在任何 D1 schema、访客身份、限流桶或事件写入前返回 `recorded:false`；公开文章仍可正常抓取，但跳过文章阅读事件、访客 Cookie 和 `view_count` 写入。真人浏览器、登录、存档、Chat、Transfer、Whiteboard 与内容读取不受影响。
+- 生产只读分析显示此前近 30 天北美／欧洲站内页面浏览约 95% 可明确归为爬虫。历史遥测不做破坏性删除，会随保留期和后台统计时间窗自然退出；Cloudflare 自定义 WAF 仍因当前连接缺少编辑权限而未启用，不得把代码级遥测短路误写成边缘 WAF 拦截。
+
 ## 2026-08-13
 
 - 暂时隐藏公开工具区的在线 ComfyUI · MiniMax H3 卡片，避免 Tunnel、Runner heartbeat、生产 `minimax-h3:execute` token 与真实 GPU canary 尚未完成验收时形成可用承诺；管理员控制台、后端 API、Runner、Bridge、本地 ComfyUI 配置和 image2 简约 AI 视频图标资产继续保留。
