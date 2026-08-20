@@ -1,5 +1,13 @@
 # PROJECT_CONTEXT.md
 
+## 2026-08-20 匿名互动界面与 H3 来源返回
+
+- 聊天室 composer 使用单个相对定位输入壳：textarea、字数提示与 44px 发送按钮在同一输入面内；消息列表不得再使用人为的大底部 padding，移动端最终覆盖也必须维持这一结构。
+- 聊天室和在线画板的密码房入口均提供 zh／en／ja 的“？”说明。桌面悬浮／键盘聚焦可见，触屏使用原生 details 点击；Chat 的 24 小时规则按最后消息清理，Whiteboard 按最后参与者退出后 24 小时删除，不得混写。
+- 在线画板大厅版本为 1.0.8，入口背景来自 Image2 并保存 PNG／WebP 与来源 manifest；卡片继续使用真实 HTML 和 XP／Pixel／Y2K 外壳，房间协作与保留协议未改变。
+- `/admin/minimax-h3.html` 使用 `?from=admin|tools` 决定返回目标。后台导航必须带 `from=admin`，工具目录带 `from=tools`；直接访问回到公共工具区。
+- 当前公开记录为 `seed-update-2026-08-20-chat-whiteboard-ui-fixes`，公开表示／文章 seed／主缓存 token 为 `20260820-chat-whiteboard-ui-r1`。
+
 ## 2026-08-19 每日 AI 新闻 RSS 与“关于我”低调入口
 
 - 主站恢复一个严格限域的公开聚合面：`GET /api/feeds/daily-ai-news.xml?lang=zh|en|ja`。feed 只查询 `status = published` 且分类为 `daily-ai-news` 的最近 50 期，输出标题、摘要、发布时间和站内文章链接；它不提供写入、管理、其他分类或全站数据。

@@ -90,7 +90,14 @@ input:disabled {
 .whiteboard-page {
   overflow: auto;
   overscroll-behavior: contain;
-  background: #69b8f5;
+  background-color: #d7ecfa;
+  background-image: url("/assets/images/whiteboard/lobby-background.png?v=20260820-whiteboard-lobby-r1");
+  background-image: image-set(
+    url("/assets/images/whiteboard/lobby-background.webp?v=20260820-whiteboard-lobby-r1") type("image/webp"),
+    url("/assets/images/whiteboard/lobby-background.png?v=20260820-whiteboard-lobby-r1") type("image/png")
+  );
+  background-position: center;
+  background-size: cover;
 }
 
 .lobby-header,
@@ -111,6 +118,7 @@ input:disabled {
 
 .lobby-header {
   min-height: 60px;
+  box-shadow: inset 0 1px 0 #7db6ff, inset 0 -1px 0 #0a2e78;
 }
 
 .header-link,
@@ -133,6 +141,19 @@ input:disabled {
   background: #fff;
 }
 
+.lobby-header .header-link,
+.lobby-header .language-links a {
+  border: 2px outset #d7e9ff;
+  border-radius: 4px;
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.42);
+}
+
+.lobby-header .header-link:hover,
+.lobby-header .language-links a:hover,
+.lobby-header .language-links a.is-active {
+  background: #eef6ff;
+}
+
 .language-links {
   display: flex;
   gap: 6px;
@@ -140,20 +161,36 @@ input:disabled {
 }
 
 .lobby-main {
-  width: min(1080px, calc(100% - 24px));
+  width: min(1020px, calc(100% - 24px));
   margin: 0 auto;
-  padding: 32px 0 calc(32px + env(safe-area-inset-bottom));
+  padding: 28px 0 calc(32px + env(safe-area-inset-bottom));
 }
 
 .lobby-intro {
-  max-width: 760px;
-  margin-bottom: 22px;
-  padding: 22px;
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  width: min(820px, 100%);
+  margin: 0 auto 18px;
+  padding: 18px 22px;
   color: var(--wb-ink);
-  background: var(--wb-paper);
-  border: 3px solid var(--wb-blue-dark);
-  border-radius: 8px;
-  box-shadow: 5px 6px 0 rgba(0, 35, 120, 0.24);
+  background: rgba(255, 249, 223, 0.95);
+  border: 2px solid var(--wb-blue-dark);
+  border-radius: 7px;
+  box-shadow: 4px 5px 0 rgba(0, 35, 120, 0.25), inset 1px 1px 0 #fff;
+}
+
+.lobby-app-icon {
+  width: 86px;
+  height: 86px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(3px 3px 0 rgba(14, 54, 113, 0.2));
+}
+
+.lobby-intro-copy {
+  min-width: 0;
 }
 
 .section-label {
@@ -205,20 +242,30 @@ input:disabled {
 .lobby-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 14px;
 }
 
 .lobby-card {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
-  padding: 20px;
-  background: var(--wb-panel);
-  border: 3px solid var(--wb-blue-dark);
-  border-radius: 8px;
-  box-shadow: 4px 5px 0 rgba(0, 35, 120, 0.2);
+  min-height: 190px;
+  padding: 17px 18px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 2px solid var(--wb-blue-dark);
+  border-radius: 6px;
+  box-shadow: 4px 5px 0 rgba(0, 35, 120, 0.2), inset 1px 1px 0 #fff;
+}
+
+.lobby-card-heading {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
 }
 
 .lobby-card h2,
@@ -241,6 +288,16 @@ input:disabled {
   width: 100%;
 }
 
+.private-card form {
+  margin-top: auto;
+}
+
+.public-card > .whiteboard-button,
+.recent-card > .whiteboard-button,
+.identity-card .identity-panel > .whiteboard-button {
+  margin-top: auto;
+}
+
 .password-field span,
 .field-caption {
   color: var(--wb-blue-dark);
@@ -252,8 +309,8 @@ input:disabled {
   width: 100%;
   min-height: 48px;
   padding: 10px 12px;
-  border: 2px solid var(--wb-line);
-  border-radius: 5px;
+  border: 2px inset #b7c7dd;
+  border-radius: 3px;
   color: var(--wb-ink);
   background: #fff;
 }
@@ -279,6 +336,11 @@ input:disabled {
   text-decoration: none;
 }
 
+.lobby-main .whiteboard-button {
+  border: 2px outset #bed9ff;
+  border-radius: 4px;
+}
+
 .whiteboard-button:hover:not(:disabled),
 .export-actions button:hover:not(:disabled),
 .members-heading button:hover:not(:disabled),
@@ -291,6 +353,60 @@ input:disabled {
   color: #fff;
   background: var(--wb-blue);
   border-color: var(--wb-blue-dark);
+}
+
+.room-help {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.room-help summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  min-height: 30px;
+  padding: 0;
+  border: 2px outset #d7e9ff;
+  border-radius: 50%;
+  color: var(--wb-blue-dark);
+  background: #eef6ff;
+  font-weight: 900;
+  line-height: 1;
+  list-style: none;
+}
+
+.room-help summary::-webkit-details-marker {
+  display: none;
+}
+
+.room-help-popover {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 7px);
+  right: 0;
+  display: none;
+  width: min(340px, calc(100vw - 38px));
+  padding: 10px 12px;
+  border: 2px solid #86a8d1;
+  border-radius: 6px;
+  color: #27364d;
+  background: #fffdf3;
+  box-shadow: 4px 4px 0 rgba(32, 72, 122, 0.2);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.room-help[open] .room-help-popover,
+.room-help:focus-within .room-help-popover {
+  display: block;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .room-help:hover .room-help-popover {
+    display: block;
+  }
 }
 
 .whiteboard-button.is-primary:hover:not(:disabled) {
@@ -367,10 +483,10 @@ input:disabled {
 }
 
 .share-note {
-  margin: 18px 0 0;
+  margin: 16px 0 0;
   padding: 12px;
   color: var(--wb-ink);
-  background: var(--wb-paper);
+  background: rgba(255, 249, 223, 0.95);
   border: 2px solid var(--wb-blue-dark);
   line-height: 1.6;
 }
@@ -625,11 +741,27 @@ noscript {
   }
 
   .lobby-intro {
-    padding: 18px;
+    grid-template-columns: 66px minmax(0, 1fr);
+    gap: 12px;
+    padding: 15px;
+  }
+
+  .lobby-app-icon {
+    width: 66px;
+    height: 66px;
   }
 
   .lobby-grid {
     grid-template-columns: 1fr;
+  }
+
+  .lobby-card {
+    min-height: 0;
+  }
+
+  .room-help summary {
+    width: 44px;
+    min-height: 44px;
   }
 
   .board-shell {

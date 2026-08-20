@@ -3,8 +3,8 @@ import {
   isI18nNodeInScope,
   normalizeLanguage,
   translationFor
-} from "./core/i18n.mjs?v=20260819-daily-ai-news-rss-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260819-daily-ai-news-rss-r1";
+} from "./core/i18n.mjs?v=20260820-chat-whiteboard-ui-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260820-chat-whiteboard-ui-r1";
 import {
   WALLPAPER_TIME_THEMES,
   createWallpaperTimeOverride,
@@ -419,7 +419,7 @@ function safeStorageRemove(key) {
   }
 }
 
-const routeStyleVersion = "20260809-motion-polish-r2";
+const routeStyleVersion = "20260820-chat-whiteboard-ui-r1";
 const routeStyleHrefs = Object.freeze({
   knowledge: `/css/routes/knowledge.css?v=${routeStyleVersion}`,
   videos: `/css/routes/videos.css?v=${routeStyleVersion}`,
@@ -499,8 +499,8 @@ const routeModuleRegistry = createRouteModuleRegistry({
       import("./data/videos-content.mjs?v=20260718-resource-icons-layout-r1")
     ]), ([{ createVideosRoute }, { videosContent }]) => instantiateVideosRoute(createVideosRoute, videosContent)),
     resources: () => Promise.all([
-      import("./routes/resources.mjs?v=20260813-hide-minimax-h3-tools-r1"),
-      import("./data/resources-content.mjs?v=20260813-hide-minimax-h3-tools-r1")
+      import("./routes/resources.mjs?v=20260820-chat-whiteboard-ui-r1"),
+      import("./data/resources-content.mjs?v=20260820-chat-whiteboard-ui-r1")
     ]).then(([{ createResourcesRoute }, { resourcesContent }]) => instantiateResourcesRoute(createResourcesRoute, resourcesContent)),
     games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260726-security-reliability-r1"),
       ({ createGamesRoute }) => instantiateGamesRoute(createGamesRoute)),

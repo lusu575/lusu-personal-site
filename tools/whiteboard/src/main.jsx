@@ -37,7 +37,7 @@ import {
 } from "./assets.js";
 
 const RECENT_ROOM_KEY = "lusu-whiteboard-recent-room-v1";
-const WHITEBOARD_VERSION = "1.0.7";
+const WHITEBOARD_VERSION = "1.0.8";
 const NAME_COOLDOWN_MS = 30_000;
 const PASSWORD_MIN_LENGTH = 4;
 const PASSWORD_MAX_LENGTH = 128;
@@ -263,12 +263,22 @@ function Lobby({
   return (
     <main className="lobby-main">
       <section className="lobby-intro" aria-labelledby="whiteboard-heading">
-        <p className="section-label">
-          LUSU LIVE CANVAS
-          <span className="subproject-version">v{WHITEBOARD_VERSION}</span>
-        </p>
-        <h1 id="whiteboard-heading">{t("title")}</h1>
-        <p>{t("subtitle")}</p>
+        <img
+          alt=""
+          aria-hidden="true"
+          className="lobby-app-icon"
+          height="192"
+          src="/assets/images/generated-icons/whiteboard.png?v=20260820-whiteboard-lobby-r1"
+          width="192"
+        />
+        <div className="lobby-intro-copy">
+          <p className="section-label">
+            LUSU LIVE CANVAS
+            <span className="subproject-version">v{WHITEBOARD_VERSION}</span>
+          </p>
+          <h1 id="whiteboard-heading">{t("title")}</h1>
+          <p>{t("subtitle")}</p>
+        </div>
       </section>
 
       <section className="lobby-grid" aria-label={t("title")}>
@@ -294,7 +304,7 @@ function Lobby({
           )}
         </article>
 
-        <article className="lobby-card">
+        <article className="lobby-card public-card">
           <h2>{t("publicTitle")}</h2>
           <p>{t("publicDescription")}</p>
           <button
@@ -307,8 +317,14 @@ function Lobby({
           </button>
         </article>
 
-        <article className="lobby-card">
-          <h2>{t("privateTitle")}</h2>
+        <article className="lobby-card private-card">
+          <div className="lobby-card-heading">
+            <h2>{t("privateTitle")}</h2>
+            <details className="room-help">
+              <summary aria-label={t("passwordHelpLabel")} title={t("passwordHelpLabel")}>?</summary>
+              <div className="room-help-popover" role="note">{t("passwordHelp")}</div>
+            </details>
+          </div>
           <p>{t("privateDescription")}</p>
           <form onSubmit={submitPrivate}>
             <label className="password-field">

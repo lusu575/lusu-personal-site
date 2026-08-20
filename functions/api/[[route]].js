@@ -49,10 +49,10 @@ import {
   normalizeDailyAiNewsFeedLanguage
 } from "./daily-ai-news-feed.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260819-daily-ai-news-rss-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260820-chat-whiteboard-ui-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
-const PUBLIC_RELEASE_DATE = "2026-08-19";
+const PUBLIC_RELEASE_DATE = "2026-08-20";
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
@@ -100,7 +100,7 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260819-daily-ai-news-rss-r1";
+const ARTICLE_SEED_VERSION = "20260820-chat-whiteboard-ui-r1";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AGENT_AUDIT_RETENTION_DAYS = 180;
@@ -7429,6 +7429,47 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-08-20-chat-whiteboard-ui-fixes',
+        '2026-08-20-chat-whiteboard-ui-fixes',
+        'site-updates',
+        '["网站更新","匿名聊天室","在线画板","界面优化"]',
+        '', 'published', 0, 0,
+        '2026-08-20T08:00:00.000Z',
+        '2026-08-20T08:00:00.000Z',
+        '2026-08-20T08:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-08-20-chat-whiteboard-ui-fixes", {
+      zh: {
+        title: "聊天室与在线画板界面修复",
+        summary: "聊天室移除消息区和输入区的异常留白，把发送按钮收进输入框；聊天室与在线画板的密码房均新增三语说明，画板大厅也使用 Image2 像素背景重绘并修正卡片对齐。",
+        content_markdown: "# 聊天室与在线画板界面修复\n\n这次更新集中修正匿名互动工具的入口与输入体验，不改变房间密码、消息或画布的服务端边界。\n\n## 聊天室\n\n- 移除消息列表底部多余的保留空间，以及输入框与底部状态之间被网格撑出的空白。\n- 发送按钮改成输入框右下角的紧凑圆形操作，字数提示同样留在输入框内。\n- 密码房按钮旁新增“？”说明，桌面悬浮或聚焦、移动端点击都能查看，并提供中英日文案。\n\n## 在线画板 1.0.8\n\n- 大厅使用 Image2 生成的 XP／Pixel Art／Y2K 像素背景，并提供 WebP 与 PNG 回退。\n- 标题、身份、公共房、密码房和最近使用卡片重新对齐，移动端保持单列。\n- 密码房说明明确同密码进入同一画板、密码需单独分享，以及最后参与者退出 24 小时后的自动删除规则。"
+      },
+      en: {
+        title: "Chat and Whiteboard Interface Fixes",
+        summary: "Chat no longer leaves oversized gaps around the log and composer, and its send action now sits inside the input. Chat and Whiteboard add trilingual password-room help, while the Whiteboard lobby gains an Image2 pixel background and aligned cards.",
+        content_markdown: "# Chat and Whiteboard Interface Fixes\n\nThis release improves the entry and input experience for anonymous collaboration without changing server-side password, message, or canvas boundaries.\n\n## Anonymous Chat\n\n- Removes the extra reserved space below the message list and the grid-created gap between the composer and footer.\n- Moves the send action into a compact circular button at the lower-right of the input, alongside the character count.\n- Adds a question-mark guide beside Password room, available by hover or focus on desktop and tap on mobile, with Chinese, English, and Japanese copy.\n\n## Online Whiteboard 1.0.8\n\n- Gives the lobby an Image2-generated XP, pixel-art, and Y2K background with WebP and PNG fallback assets.\n- Realigns the title, identity, public, password, and recent-room cards while retaining a single-column mobile layout.\n- Explains that the same password opens the same board, passwords should be shared separately, and the board is deleted 24 hours after its last participant leaves."
+      },
+      ja: {
+        title: "チャットとオンライン画板のUI修正",
+        summary: "チャットのログ・入力欄にあった大きな余白をなくし、送信ボタンを入力欄内へ移しました。チャットとオンライン画板に三言語のパスワード説明を追加し、画板の入口もImage2のピクセル背景と整列したカードへ刷新しました。",
+        content_markdown: "# チャットとオンライン画板のUI修正\n\n匿名コラボレーション機能の入口と入力体験を改善しました。パスワード、メッセージ、キャンバスのサーバー側境界は変更していません。\n\n## 匿名チャット\n\n- メッセージ一覧下部の余分な予約領域と、入力欄とフッターの間にグリッドが作っていた空白を削除しました。\n- 送信操作を入力欄右下の小さな丸ボタンへ移し、文字数表示も入力欄内に収めました。\n- パスワード部屋の横に「？」説明を追加し、デスクトップではホバー／フォーカス、モバイルではタップで中・英・日の説明を確認できます。\n\n## オンライン画板 1.0.8\n\n- Image2で生成したXP／Pixel Art／Y2Kの背景を入口に採用し、WebPとPNGのフォールバックを用意しました。\n- タイトル、匿名名、公開、パスワード、最近のルームカードを整列し、モバイルでは一列表示を維持します。\n- 同じパスワードで同じ画板に入り、パスワードは別経路で共有し、最後の参加者が退出して24時間後に削除されることを説明します。"
+      }
+    }, "2026-08-20T08:00:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,

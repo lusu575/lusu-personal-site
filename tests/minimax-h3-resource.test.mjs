@@ -8,6 +8,8 @@ import { resourcesContent } from "../js/data/resources-content.mjs";
 const iconPath = new URL("../assets/images/generated-icons/minimax-h3.png", import.meta.url);
 const manifestPath = new URL("../assets/images/generated-icons/minimax-h3.source.json", import.meta.url);
 const consolePath = new URL("../admin/minimax-h3.html", import.meta.url);
+const consoleScriptPath = new URL("../admin/minimax-h3.js", import.meta.url);
+const adminIndexPath = new URL("../admin/index.html", import.meta.url);
 const resourcesRoutePath = new URL("../js/routes/resources.mjs", import.meta.url);
 
 test("Tools keeps the protected Online ComfyUI MiniMax H3 entry out of the public card list", () => {
@@ -15,7 +17,7 @@ test("Tools keeps the protected Online ComfyUI MiniMax H3 entry out of the publi
   assert.ok(resource);
   assert.equal(resource.external, false);
   assert.equal(resource.showInTools, false);
-  assert.equal(resource.url, "/admin/minimax-h3.html");
+  assert.equal(resource.url, "/admin/minimax-h3.html?from=tools");
   assert.match(resource.iconSrc, /^assets\/images\/generated-icons\/minimax-h3\.png\?v=/);
   assert.match(resource.iconDataUrl, /^data:image\/png;base64,[A-Za-z0-9+/=]+$/);
   assert.equal(resource.title.zh, "在线 ComfyUI · MiniMax H3");
@@ -64,4 +66,17 @@ test("MiniMax H3 console keeps the protected status-shell boundary", async () =>
   assert.match(html, /受保护的站长控制台/);
   assert.doesNotMatch(html, /<iframe\b/i);
   assert.doesNotMatch(html, /<form[^>]+action=/i);
+});
+
+test("MiniMax H3 returns to the entry surface that opened it", async () => {
+  const [html, script, adminIndex] = await Promise.all([
+    readFile(consolePath, "utf8"),
+    readFile(consoleScriptPath, "utf8"),
+    readFile(adminIndexPath, "utf8"),
+  ]);
+  assert.match(html, /data-h3-back/);
+  assert.match(adminIndex, /minimax-h3\.html\?from=admin/);
+  assert.match(script, /requestedSource === "admin" \|\| requestedSource === "tools"/);
+  assert.match(script, /backLink\.href = "\/admin\/"/);
+  assert.match(script, /backLink\.href = "\/#resources"/);
 });

@@ -1,0 +1,36 @@
+{
+  "asset": "assets/images/whiteboard/lobby-background.png",
+  "generator": "image2",
+  "prompt": "Production-ready background artwork for the lobby of a Chinese personal website's real-time collaborative whiteboard. Match a Windows XP + pixel art + Y2K web aesthetic: warm cream paper, sky blue and cobalt UI colors, peach accents, tiny pixel clouds, stars, cursors, pencils, sticky notes, and simple sketch marks around the outer edges. Keep the center bright and low-detail so real HTML cards and multilingual text stay readable. No text, no logo, no buttons, no browser frame, no people, no photorealism. Wide 16:9 composition, crisp pixel-art edges with gentle nostalgic softness, accessible contrast, polished production asset.",
+  "generatedOutput": {
+    "width": 1672,
+    "height": 941,
+    "format": "png",
+    "sha256": "dc4ea312be584aa745cfd1b4df2e61bc266ba7ba9f04b51ae2807fe916fd6954"
+  },
+  "publishedOutputs": [
+    {
+      "path": "assets/images/whiteboard/lobby-background.png",
+      "width": 1672,
+      "height": 941,
+      "format": "png",
+      "sha256": "dc4ea312be584aa745cfd1b4df2e61bc266ba7ba9f04b51ae2807fe916fd6954"
+    },
+    {
+      "path": "assets/images/whiteboard/lobby-background.webp",
+      "width": 1672,
+      "height": 941,
+      "format": "webp",
+      "sha256": "26d2071cba3d1209f2040d9a15855b7341200b3884124e0561b32b485e8a92d5"
+    }
+  ],
+  "postProcessing": {
+    "codeDrawnOrComposited": false,
+    "operations": [
+      {
+        "operation": "mechanical WebP compression",
+        "quality": 82
+      }
+    ]
+  }
+}

@@ -55,15 +55,16 @@ test("passwords are ephemeral while collaboration uses incremental Yjs frames", 
   assert.doesNotMatch(api, /canvas|sceneElements|elements:/);
 });
 
-test("whiteboard custom UI does not embed code-drawn image material", async () => {
+test("whiteboard custom UI uses the generated lobby artwork without code-drawn image material", async () => {
   const css = await read("tools/whiteboard/whiteboard.css");
   assert.doesNotMatch(css, /data:image|clip-path|polygon\(|linear-gradient|radial-gradient/i);
-  assert.doesNotMatch(css, /url\(/i);
+  assert.match(css, /assets\/images\/whiteboard\/lobby-background\.webp/);
+  assert.match(css, /assets\/images\/whiteboard\/lobby-background\.png/);
 });
 
-test("whiteboard exposes v1.0.7 and gives every room the same editable pencil sketch style", async () => {
+test("whiteboard exposes v1.0.8 and gives every room the same editable pencil sketch style", async () => {
   const main = await read("tools/whiteboard/src/main.jsx");
-  assert.match(main, /const WHITEBOARD_VERSION = "1\.0\.7"/);
+  assert.match(main, /const WHITEBOARD_VERSION = "1\.0\.8"/);
   assert.match(main, /const ALL_ROOM_SKETCH_APP_STATE = Object\.freeze/);
   assert.match(main, /function createAllRoomSketchInitialData\(\)/);
   assert.match(main, /initialData=\{sketchInitialData\}/);
