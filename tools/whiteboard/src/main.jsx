@@ -922,6 +922,16 @@ function App() {
 
   return (
     <div className="whiteboard-page">
+      <picture aria-hidden="true" className="lobby-background">
+        <source
+          srcSet="/assets/images/whiteboard/lobby-background.webp?v=20260820-whiteboard-lobby-r1"
+          type="image/webp"
+        />
+        <img
+          alt=""
+          src="/assets/images/whiteboard/lobby-background.png?v=20260820-whiteboard-lobby-r1"
+        />
+      </picture>
       <header className="lobby-header">
         <a className="header-link" href={`/?lang=${lang}#resources`}>
           {t("backToTools")}

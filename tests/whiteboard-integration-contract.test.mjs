@@ -57,9 +57,10 @@ test("passwords are ephemeral while collaboration uses incremental Yjs frames", 
 
 test("whiteboard custom UI uses the generated lobby artwork without code-drawn image material", async () => {
   const css = await read("tools/whiteboard/whiteboard.css");
+  const main = await read("tools/whiteboard/src/main.jsx");
   assert.doesNotMatch(css, /data:image|clip-path|polygon\(|linear-gradient|radial-gradient/i);
-  assert.match(css, /assets\/images\/whiteboard\/lobby-background\.webp/);
-  assert.match(css, /assets\/images\/whiteboard\/lobby-background\.png/);
+  assert.match(main, /assets\/images\/whiteboard\/lobby-background\.webp/);
+  assert.match(main, /assets\/images\/whiteboard\/lobby-background\.png/);
 });
 
 test("whiteboard exposes v1.0.8 and gives every room the same editable pencil sketch style", async () => {
