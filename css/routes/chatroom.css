@@ -32,7 +32,7 @@
 
 .chatroom-header {
   display: grid;
-  grid-template-columns: auto minmax(160px, 1fr) minmax(0, 220px);
+  grid-template-columns: auto minmax(160px, 1fr) minmax(0, 260px);
   gap: 14px;
   align-items: center;
   padding: 16px;
@@ -122,7 +122,7 @@
   justify-content: flex-end;
   gap: 8px;
   min-width: 0;
-  max-width: min(220px, 100%);
+  max-width: min(260px, 100%);
   font-size: 14px;
   font-weight: 900;
   overflow-wrap: anywhere;
@@ -158,6 +158,66 @@
   min-width: 78px;
   padding: 5px 9px;
   font-size: 13px;
+}
+
+.chat-room-help {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.chat-room-help summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  min-height: 28px;
+  padding: 0;
+  border: 2px outset #d6e8ff;
+  border-radius: 50%;
+  color: #073a91;
+  background: #edf5ff;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+  list-style: none;
+  box-shadow: inset 1px 1px 0 #fff;
+}
+
+.chat-room-help summary::-webkit-details-marker {
+  display: none;
+}
+
+.chat-room-help summary:focus-visible {
+  outline: 3px solid #ffd42a;
+  outline-offset: 2px;
+}
+
+.chat-room-help-popover {
+  position: absolute;
+  z-index: 12;
+  top: calc(100% + 7px);
+  right: 0;
+  display: none;
+  width: min(330px, calc(100vw - 40px));
+  padding: 10px 12px;
+  border: 2px solid #86a8d1;
+  border-radius: 7px;
+  color: #24344b;
+  background: #fffdf3;
+  box-shadow: 4px 4px 0 rgba(32, 72, 122, 0.2);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.55;
+  text-align: left;
+}
+
+.chat-room-help[open] .chat-room-help-popover,
+.chat-room-help:focus-within .chat-room-help-popover {
+  display: block;
+}
+
+.chat-room-help:hover .chat-room-help-popover {
+  display: block;
 }
 
 .chat-private-room-panel {
@@ -258,7 +318,7 @@ html[data-ui-shell="mobile"] .chat-private-room-panel .chat-private-safety[open]
   height: auto;
   min-height: 0;
   margin: 0 16px;
-  padding: 16px 16px 66px;
+  padding: 16px;
   overflow: auto;
   border: 2px inset #acb3bd;
   background:
@@ -272,7 +332,7 @@ html[data-ui-shell="mobile"] .chat-private-room-panel .chat-private-safety[open]
   position: absolute;
   z-index: 4;
   right: 28px;
-  bottom: 138px;
+  bottom: 116px;
   min-width: 44px;
   min-height: 44px;
   max-width: min(260px, calc(100% - 56px));
@@ -414,25 +474,22 @@ body[data-motion="off"] .chat-unread-button:not([hidden]) {
 }
 
 .chatroom-compose {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    "message send"
-    "counter send";
-  grid-template-rows: minmax(0, auto) auto;
-  gap: 4px 10px;
-  align-items: stretch;
-  padding: 10px 16px 7px;
+  display: block;
+  padding: 8px 16px 5px;
   background: #f5efe4;
 }
 
+.chatroom-input-shell {
+  position: relative;
+  min-width: 0;
+}
+
 .chatroom-compose textarea {
-  grid-area: message;
   width: 100%;
-  min-height: 58px;
+  min-height: 72px;
   max-height: 112px;
   resize: vertical;
-  padding: 10px 12px;
+  padding: 10px 112px 28px 12px;
   border: 2px inset #b9bdc5;
   border-radius: 4px;
   color: var(--xp-text);
@@ -443,9 +500,10 @@ body[data-motion="off"] .chat-unread-button:not([hidden]) {
 }
 
 .chatroom-counter {
-  grid-area: counter;
-  align-self: center;
-  justify-self: end;
+  position: absolute;
+  right: 60px;
+  bottom: 10px;
+  z-index: 2;
   min-width: 62px;
   padding: 0 2px;
   color: #526174;
@@ -457,20 +515,20 @@ body[data-motion="off"] .chat-unread-button:not([hidden]) {
 }
 
 .chat-send-button {
-  grid-area: send;
-  align-self: stretch;
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 3;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  min-width: 96px;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
   min-height: 44px;
-  max-width: 100%;
-  padding: 7px 12px;
-  font-size: 14px;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  padding: 8px;
+  border-radius: 50%;
+  white-space: nowrap;
 }
 
 .chat-send-button span {

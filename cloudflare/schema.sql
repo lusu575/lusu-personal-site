@@ -1077,6 +1077,110 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-08-20-chat-whiteboard-ui-fixes',
+  '2026-08-20-chat-whiteboard-ui-fixes',
+  'site-updates',
+  '["网站更新","匿名聊天室","在线画板","界面优化"]',
+  '', 'published', 0, 0,
+  '2026-08-20T08:00:00.000Z',
+  '2026-08-20T08:00:00.000Z',
+  '2026-08-20T08:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-20-chat-whiteboard-ui-fixes-zh',
+    'seed-update-2026-08-20-chat-whiteboard-ui-fixes',
+    'zh',
+    '聊天室与在线画板界面修复',
+    '聊天室移除消息区和输入区的异常留白，把发送按钮收进输入框；聊天室与在线画板的密码房均新增三语说明，画板大厅也使用 Image2 像素背景重绘并修正卡片对齐。',
+    '# 聊天室与在线画板界面修复
+
+这次更新集中修正匿名互动工具的入口与输入体验，不改变房间密码、消息或画布的服务端边界。
+
+## 聊天室
+
+- 移除消息列表底部多余的保留空间，以及输入框与底部状态之间被网格撑出的空白。
+- 发送按钮改成输入框右下角的紧凑圆形操作，字数提示同样留在输入框内。
+- 密码房按钮旁新增“？”说明，桌面悬浮或聚焦、移动端点击都能查看，并提供中英日文案。
+
+## 在线画板 1.0.8
+
+- 大厅使用 Image2 生成的 XP／Pixel Art／Y2K 像素背景，并提供 WebP 与 PNG 回退。
+- 标题、身份、公共房、密码房和最近使用卡片重新对齐，移动端保持单列。
+- 密码房说明明确同密码进入同一画板、密码需单独分享，以及最后参与者退出 24 小时后的自动删除规则。',
+    '2026-08-20T08:00:00.000Z',
+    '2026-08-20T08:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-20-chat-whiteboard-ui-fixes-en',
+    'seed-update-2026-08-20-chat-whiteboard-ui-fixes',
+    'en',
+    'Chat and Whiteboard Interface Fixes',
+    'Chat no longer leaves oversized gaps around the log and composer, and its send action now sits inside the input. Chat and Whiteboard add trilingual password-room help, while the Whiteboard lobby gains an Image2 pixel background and aligned cards.',
+    '# Chat and Whiteboard Interface Fixes
+
+This release improves the entry and input experience for anonymous collaboration without changing server-side password, message, or canvas boundaries.
+
+## Anonymous Chat
+
+- Removes the extra reserved space below the message list and the grid-created gap between the composer and footer.
+- Moves the send action into a compact circular button at the lower-right of the input, alongside the character count.
+- Adds a question-mark guide beside Password room, available by hover or focus on desktop and tap on mobile, with Chinese, English, and Japanese copy.
+
+## Online Whiteboard 1.0.8
+
+- Gives the lobby an Image2-generated XP, pixel-art, and Y2K background with WebP and PNG fallback assets.
+- Realigns the title, identity, public, password, and recent-room cards while retaining a single-column mobile layout.
+- Explains that the same password opens the same board, passwords should be shared separately, and the board is deleted 24 hours after its last participant leaves.',
+    '2026-08-20T08:00:00.000Z',
+    '2026-08-20T08:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-20-chat-whiteboard-ui-fixes-ja',
+    'seed-update-2026-08-20-chat-whiteboard-ui-fixes',
+    'ja',
+    'チャットとオンライン画板のUI修正',
+    'チャットのログ・入力欄にあった大きな余白をなくし、送信ボタンを入力欄内へ移しました。チャットとオンライン画板に三言語のパスワード説明を追加し、画板の入口もImage2のピクセル背景と整列したカードへ刷新しました。',
+    '# チャットとオンライン画板のUI修正
+
+匿名コラボレーション機能の入口と入力体験を改善しました。パスワード、メッセージ、キャンバスのサーバー側境界は変更していません。
+
+## 匿名チャット
+
+- メッセージ一覧下部の余分な予約領域と、入力欄とフッターの間にグリッドが作っていた空白を削除しました。
+- 送信操作を入力欄右下の小さな丸ボタンへ移し、文字数表示も入力欄内に収めました。
+- パスワード部屋の横に「？」説明を追加し、デスクトップではホバー／フォーカス、モバイルではタップで中・英・日の説明を確認できます。
+
+## オンライン画板 1.0.8
+
+- Image2で生成したXP／Pixel Art／Y2Kの背景を入口に採用し、WebPとPNGのフォールバックを用意しました。
+- タイトル、匿名名、公開、パスワード、最近のルームカードを整列し、モバイルでは一列表示を維持します。
+- 同じパスワードで同じ画板に入り、パスワードは別経路で共有し、最後の参加者が退出して24時間後に削除されることを説明します。',
+    '2026-08-20T08:00:00.000Z',
+    '2026-08-20T08:00:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-08-19-daily-ai-news-rss',
   '2026-08-19-daily-ai-news-rss',
   'site-updates',
@@ -14312,7 +14416,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260819-daily-ai-news-rss-r1', '2026-08-19T09:00:00.000Z')
+values ('article_seed_version', '20260820-chat-whiteboard-ui-r1', '2026-08-20T08:00:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

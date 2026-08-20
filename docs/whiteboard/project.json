@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "online-whiteboard",
   "name": "LuSu Online Whiteboard",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "versionStep": "0.0.1",
   "governanceRoot": "docs/whiteboard",
   "documents": [
@@ -22,6 +22,7 @@
     "lib/capabilities/tool-contracts/whiteboard.mjs",
     "assets/images/generated-icons/whiteboard.png",
     "assets/images/generated-icons/whiteboard.source.json",
+    "assets/images/whiteboard/",
     "tests/whiteboard-service-api.test.mjs",
     "tests/whiteboard-capability.test.mjs",
     "tests/whiteboard-integration-contract.test.mjs"

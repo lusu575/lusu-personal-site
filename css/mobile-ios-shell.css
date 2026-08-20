@@ -4416,6 +4416,58 @@ html[data-ui-shell="mobile"] .online-dot {
   }
 }
 
+/* 2026-08-20 chat composer: keep the send action inside the text field on
+   every mobile geometry and remove the obsolete empty grid track below it. */
+html[data-ui-shell="mobile"] .chatroom-compose {
+  display: block;
+  padding: 7px 10px 4px;
+}
+
+html[data-ui-shell="mobile"] .chatroom-input-shell {
+  position: relative;
+  min-width: 0;
+}
+
+html[data-ui-shell="mobile"] .chatroom-compose textarea {
+  width: 100%;
+  min-height: 66px;
+  max-height: 108px;
+  padding: 9px 108px 27px 10px;
+}
+
+html[data-ui-shell="mobile"] .chatroom-counter {
+  position: absolute;
+  right: 58px;
+  bottom: 10px;
+  z-index: 2;
+}
+
+html[data-ui-shell="mobile"] .chat-send-button {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  z-index: 3;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 8px;
+  border-radius: 50%;
+}
+
+html[data-ui-shell="mobile"] .chat-room-help summary {
+  width: 44px;
+  min-height: 44px;
+}
+
+html[data-ui-shell="mobile"] .chat-room-help-popover {
+  width: min(320px, calc(100vw - 24px));
+}
+
+html[data-ui-shell="mobile"] .chatroom-log {
+  padding-bottom: 10px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html[data-ui-shell="mobile"] .site-shell::before {
     transform: none;
@@ -5621,7 +5673,7 @@ html[data-ui-shell="mobile"][data-input-method="keyboard"] :is(
     display: grid;
     grid-column: 2;
     grid-row: 2;
-    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
     justify-content: stretch;
     gap: 6px;
     width: 100%;

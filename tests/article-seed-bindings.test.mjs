@@ -37,6 +37,7 @@ const MINIMAX_H3_CONSOLE_UPDATE_ID = "seed-update-2026-08-12-minimax-h3-console"
 const MINIMAX_H3_CONSOLE_PUBLISHED_AT = "2026-08-12T08:00:00.000Z";
 const HIDE_MINIMAX_H3_TOOLS_UPDATE_ID = "seed-update-2026-08-13-hide-minimax-h3-tools";
 const DAILY_AI_NEWS_RSS_UPDATE_ID = "seed-update-2026-08-19-daily-ai-news-rss";
+const CHAT_WHITEBOARD_UI_UPDATE_ID = "seed-update-2026-08-20-chat-whiteboard-ui-fixes";
 const HIDE_MINIMAX_H3_TOOLS_PUBLISHED_AT = "2026-08-13T02:00:00.000Z";
 const WALLPAPER_GAME_DISPLAY_UPDATE_ID = "seed-update-2026-08-12-wallpaper-game-display-fix";
 const WALLPAPER_GAME_DISPLAY_PUBLISHED_AT = "2026-08-12T07:30:00.000Z";
@@ -48,7 +49,7 @@ const WALLPAPER_SWITCH_SCENE_UPDATE_ID = "seed-update-2026-08-09-wallpaper-switc
 const WALLPAPER_SWITCH_SCENE_PUBLISHED_AT = "2026-08-09T11:15:00.000Z";
 const VIDEO_LINK_AUTOFILL_UPDATE_ID = "seed-update-2026-08-11-video-link-autofill";
 const VIDEO_LINK_AUTOFILL_PUBLISHED_AT = "2026-08-11T00:20:00.000Z";
-const ARTICLE_SEED_VERSION = "20260819-daily-ai-news-rss-r1";
+const ARTICLE_SEED_VERSION = "20260820-chat-whiteboard-ui-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -353,15 +354,15 @@ test("every article seed D1 binding is defined", async () => {
     articleId === HIDE_MINIMAX_H3_TOOLS_UPDATE_ID
   ));
   assert.ok(hideMinimaxH3ToolsContent, "the public fallback must include the temporary H3 Tools hide release");
-  assert.equal(content.updates[0]?.article_id, DAILY_AI_NEWS_RSS_UPDATE_ID);
+  assert.equal(content.updates[0]?.article_id, CHAT_WHITEBOARD_UI_UPDATE_ID);
   assert.deepEqual(
     homeContent.updates.map(({ article_id: articleId }) => articleId),
     [
+      CHAT_WHITEBOARD_UI_UPDATE_ID,
       DAILY_AI_NEWS_RSS_UPDATE_ID,
       HIDE_MINIMAX_H3_TOOLS_UPDATE_ID,
       MINIMAX_H3_CONSOLE_UPDATE_ID,
-      WALLPAPER_GAME_DISPLAY_UPDATE_ID,
-      H3_FIRST_VERSION_UPDATE_ID
+      WALLPAPER_GAME_DISPLAY_UPDATE_ID
     ],
     "Home must project exactly the newest five public updates in release order"
   );
@@ -399,7 +400,7 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /Runner/);
     assert.match(params[5], /GPU canary/);
   }
-  const minimaxH3ConsoleHome = homeContent.updates[2];
+  const minimaxH3ConsoleHome = homeContent.updates[3];
   const { content_markdown: _minimaxH3ConsoleBody, ...minimaxH3ConsoleProjection } = minimaxH3ConsoleContent;
   assert.deepEqual(
     minimaxH3ConsoleHome,
@@ -409,13 +410,6 @@ test("every article seed D1 binding is defined", async () => {
   assert.equal(minimaxH3ConsoleContent.created_at, MINIMAX_H3_CONSOLE_PUBLISHED_AT);
   assert.equal(minimaxH3ConsoleContent.updated_at, MINIMAX_H3_CONSOLE_PUBLISHED_AT);
   assert.equal(minimaxH3ConsoleContent.published_at, MINIMAX_H3_CONSOLE_PUBLISHED_AT);
-  const h3FirstVersionHome = homeContent.updates[4];
-  const { content_markdown: _h3FirstVersionBody, ...h3FirstVersionProjection } = h3FirstVersionContent;
-  assert.deepEqual(
-    h3FirstVersionHome,
-    h3FirstVersionProjection,
-    "the Home projection must match every non-body field from the first-version H3 fallback"
-  );
   assert.equal(h3FirstVersionContent.slug, "2026-08-11-h3-first-version-video-sr-48fps");
   assert.equal(h3FirstVersionContent.category, "site-updates");
   assert.equal(h3FirstVersionContent.status, "published");
@@ -431,7 +425,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_GAME_DISPLAY_UPDATE_ID
   ));
   const { content_markdown: _displayFixBody, ...displayFixProjection } = displayFixContent;
-  assert.deepEqual(homeContent.updates[3], displayFixProjection);
+  assert.deepEqual(homeContent.updates[4], displayFixProjection);
   assert.equal(displayFixContent.created_at, WALLPAPER_GAME_DISPLAY_PUBLISHED_AT);
   const displayFixTranslations = boundStatements.filter(({ params }) => (
     params[1] === WALLPAPER_GAME_DISPLAY_UPDATE_ID && ["zh", "en", "ja"].includes(params[2])
@@ -519,7 +513,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === VIDEO_LINK_AUTOFILL_UPDATE_ID
   ));
   assert.ok(videoLinkAutofillContent, "the public fallback must include the link-only video publish update");
-  assert.equal(content.updates[6]?.article_id, VIDEO_LINK_AUTOFILL_UPDATE_ID);
+  assert.equal(content.updates[7]?.article_id, VIDEO_LINK_AUTOFILL_UPDATE_ID);
   const videoLinkAutofillHome = homeContent.updates.find(({ article_id: articleId }) => articleId === VIDEO_LINK_AUTOFILL_UPDATE_ID);
   const { content_markdown: _videoLinkAutofillBody, ...videoLinkAutofillProjection } = videoLinkAutofillContent;
   assert.equal(videoLinkAutofillHome, undefined, "the video link autofill release must remain outside the newest five Home projection");
@@ -565,7 +559,7 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /Base64/);
   }
 
-  assert.equal(content.updates[7]?.article_id, H3_AMBIENT_WALLPAPERS_UPDATE_ID);
+  assert.equal(content.updates[8]?.article_id, H3_AMBIENT_WALLPAPERS_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === H3_AMBIENT_WALLPAPERS_UPDATE_ID),
     false,
@@ -609,7 +603,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchSlimDawnContent, "the public fallback must include the slim-rim dawn polish");
-  assert.equal(content.updates[8]?.article_id, WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID);
+  assert.equal(content.updates[9]?.article_id, WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID),
     false,
@@ -673,7 +667,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_CERAMIC_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchCeramicContent, "the public fallback must include the ceramic rolling redesign");
-  assert.equal(content.updates[9]?.article_id, WALLPAPER_SWITCH_CERAMIC_UPDATE_ID);
+  assert.equal(content.updates[10]?.article_id, WALLPAPER_SWITCH_CERAMIC_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_CERAMIC_UPDATE_ID),
     false,
@@ -732,7 +726,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_CALM_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchCalmContent, "the public fallback must retain the calm wallpaper-switch redesign");
-  assert.equal(content.updates[10]?.article_id, WALLPAPER_SWITCH_CALM_UPDATE_ID);
+  assert.equal(content.updates[11]?.article_id, WALLPAPER_SWITCH_CALM_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_CALM_UPDATE_ID),
     false,
@@ -787,7 +781,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_SCENE_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchSceneContent, "the public fallback must include the redesigned wallpaper-switch scene");
-  assert.equal(content.updates[11]?.article_id, WALLPAPER_SWITCH_SCENE_UPDATE_ID);
+  assert.equal(content.updates[12]?.article_id, WALLPAPER_SWITCH_SCENE_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_SCENE_UPDATE_ID),
     false,

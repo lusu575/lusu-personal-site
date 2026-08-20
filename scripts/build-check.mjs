@@ -901,12 +901,12 @@ const videoLinkAutofillReleaseVersion = "20260811-video-link-autofill-r1";
 const h3AmbientWallpapersReleaseVersion = "20260810-h3-ambient-wallpapers-4k-r1";
 const h3FirstVersionVideoReleaseVersion = "20260811-h3-first-version-video-sr-48fps-r1";
 const wallpaperGameDisplayReleaseVersion = "20260812-wallpaper-game-display-r1";
-const publicSiteReleaseVersion = "20260819-daily-ai-news-rss-r1";
+const publicSiteReleaseVersion = "20260820-chat-whiteboard-ui-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = "20260809-transfer-motion-r2";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
-const resourcesRouteVersion = "20260813-hide-minimax-h3-tools-r1";
-const routeStyleVersion = motionPolishReleaseVersion;
+const resourcesRouteVersion = "20260820-chat-whiteboard-ui-r1";
+const routeStyleVersion = publicSiteReleaseVersion;
 const publicRouteVersion = (route) => route === "knowledge" || route === "chatroom"
   ? motionPolishReleaseVersion
   : (route === "resources" ? resourcesRouteVersion : routeLazyVersion);
@@ -4463,9 +4463,9 @@ if (!hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\
 if (!hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*380px\)[\s\S]*\.chat-private-room-panel[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+auto[\s\S]*\.chat-private-room-panel small\s*\{\s*display:\s*none/)
   || !hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*760px\)\s*and\s*\(max-height:\s*720px\)\s*and\s*\(orientation:\s*portrait\)[\s\S]*\.chatroom-header\s*\{[\s\S]*height:\s*90px[\s\S]*\.chat-private-room-panel\s*\{[\s\S]*height:\s*46px[\s\S]*\.chatroom-log\s*\{[\s\S]*margin:\s*2px\s+5px[\s\S]*\.chatroom-compose\s*\{[\s\S]*grid-template-rows:\s*44px[\s\S]*\.chatroom-counter\s*\{[\s\S]*position:\s*absolute[\s\S]*\.chatroom-footer\s*\{[\s\S]*height:\s*45px/)
   || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-window\s*\{\s*display:\s*grid;\s*grid-template-rows:\s*auto\s+auto\s+minmax\(0,\s*1fr\)\s+auto\s+auto/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-compose\s*\{[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto;[\s\S]*grid-template-rows:\s*minmax\(44px,\s*auto\)\s+17px/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-counter\s*\{[\s\S]*position:\s*static;[\s\S]*grid-column:\s*1;[\s\S]*grid-row:\s*2/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chat-send-button\s*\{[\s\S]*grid-column:\s*2;[\s\S]*grid-row:\s*1\s*\/\s*3[\s\S]*min-height:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-input-shell\s*\{[\s\S]*position:\s*relative/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-counter\s*\{[\s\S]*position:\s*absolute;[\s\S]*right:\s*58px/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chat-send-button\s*\{[\s\S]*position:\s*absolute;[\s\S]*min-width:\s*44px[\s\S]*border-radius:\s*50%/)
   || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-autoscroll\s*\{[\s\S]*min-height:\s*44px/)) {
   fail("css/mobile-ios-shell.css should keep password and chat controls reachable on narrow and soft-keyboard portrait viewports");
 }
@@ -4830,14 +4830,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-19-daily-ai-news-rss";
-const finalUpdateSlug = "2026-08-19-daily-ai-news-rss";
+const finalUpdateId = "seed-update-2026-08-20-chat-whiteboard-ui-fixes";
+const finalUpdateSlug = "2026-08-20-chat-whiteboard-ui-fixes";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Daily AI News RSS Feed";
-const finalPublishedAt = "2026-08-19T09:00:00.000Z";
+const finalTitleEn = "Chat and Whiteboard Interface Fixes";
+const finalPublishedAt = "2026-08-20T08:00:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-08-19-daily-ai-news-rss",
   "seed-update-2026-08-13-hide-minimax-h3-tools",
   "seed-update-2026-08-12-minimax-h3-console",
   "seed-update-2026-08-12-wallpaper-game-display-fix",
@@ -4889,6 +4890,7 @@ const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 const changelog20260812Section = markdownSection(changelog, "## 2026-08-12");
 const changelog20260813Section = markdownSection(changelog, "## 2026-08-13");
 const changelog20260819Section = markdownSection(changelog, "## 2026-08-19 每日 AI 新闻 RSS 订阅");
+const changelog20260820Section = markdownSection(changelog, "## 2026-08-20 聊天室、在线画板与 H3 返回修复");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4936,14 +4938,14 @@ if (finalUpdateStarted) {
     "seed-update-2026-08-09-motion-polish",
     "seed-update-2026-08-07-remote-mcp-oauth"
   ].some((updateId) => homeContentModuleJs.includes(updateId))) {
-    fail("js/data/home-content.mjs should remain the newest five-item projection after the Daily AI News RSS release");
+    fail("js/data/home-content.mjs should remain the newest five-item projection after the chat and whiteboard UI release");
   }
 
   const projectedUpdateIds = [finalUpdateId, ...projectedSupportingReleaseUpdateIds];
   const projectedUpdateIndexes = projectedUpdateIds.map((updateId) => homeContentModuleJs.indexOf(updateId));
   if (projectedUpdateIndexes.some((index) => index < 0)
     || !projectedUpdateIndexes.every((index, offset, list) => offset === 0 || list[offset - 1] < index)) {
-    fail("js/data/home-content.mjs should order the RSS release, hidden MiniMax H3 Tools entry, control plane, display fix, and first-version H3 release by descending publication time");
+    fail("js/data/home-content.mjs should order the chat/whiteboard UI release, RSS release, hidden H3 entry, control plane, and display fix by descending publication time");
   }
 
   for (const token of [
@@ -5101,7 +5103,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-08-19">2026.08.19</time>',
+    '<time id="top-updated" datetime="2026-08-20">2026.08.20</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${finalCssVersion}`,
     `/css/motion-system.css?v=${finalCssVersion}`,
@@ -5118,15 +5120,14 @@ if (finalUpdateStarted) {
     finalMainVersion,
     finalUpdateId,
     finalUpdateSlug,
-    "每日 AI 新闻",
-    "RSS",
-    "只读",
-    "site-updates",
-    "fallback",
+    "匿名聊天室",
+    "在线画板",
+    "Image2",
+    "H3",
     "Functions seed",
     "schema seed"
   ]) {
-    if (!changelog20260819Section.includes(token)) {
+    if (!changelog20260820Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
@@ -5145,7 +5146,7 @@ if (finalUpdateStarted) {
   for (const token of [
     adminMotionPolishVersion,
     transferReleaseVersion,
-    ...preservedReleaseUpdateIds.filter((updateId) => !/^seed-update-2026-08-(?:11|12|13)-/.test(updateId)),
+    ...preservedReleaseUpdateIds.filter((updateId) => !/^seed-update-2026-08-(?:11|12|13|19)-/.test(updateId)),
     wallpaperTimeSwitchAssetVersion,
     wallpaperSwitchSceneReleaseVersion,
     wallpaperSwitchRouteMotionReleaseVersion,

@@ -4,6 +4,34 @@
   const root = document.querySelector(".h3-console");
   if (!root) return;
 
+  const backLink = root.querySelector("[data-h3-back]");
+  if (backLink) {
+    const requestedSource = new URLSearchParams(window.location.search).get("from");
+    let source = requestedSource === "admin" || requestedSource === "tools"
+      ? requestedSource
+      : "";
+    if (!source && document.referrer) {
+      try {
+        const referrer = new URL(document.referrer);
+        if (referrer.origin === window.location.origin) {
+          source = referrer.pathname.startsWith("/admin/")
+            && referrer.pathname !== "/admin/minimax-h3.html"
+            ? "admin"
+            : "tools";
+        }
+      } catch {
+        // A malformed referrer falls back to the public Tools entry.
+      }
+    }
+    if (source === "admin") {
+      backLink.href = "/admin/";
+      backLink.textContent = "返回管理后台";
+    } else {
+      backLink.href = "/#resources";
+      backLink.textContent = "返回工具区";
+    }
+  }
+
   const motionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
   const syncMotionState = () => { root.dataset.motion = motionQuery?.matches ? "reduced" : "full"; };
   syncMotionState();

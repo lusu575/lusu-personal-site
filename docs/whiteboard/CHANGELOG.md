@@ -2,6 +2,13 @@
 
 本日志只记录在线画板子项目。根项目发布历史仍写入仓库根 `CHANGELOG.md`。
 
+## 1.0.8 - 2026-08-20
+
+- 使用 Image2 生成并保留来源清单的像素画大厅背景，以暖纸、XP 蓝和 Y2K 像素元素统一主站视觉；WebP 为首选资源，PNG 作为兼容回退。
+- 重排大厅标题、身份、公共画板、密码房和最近使用卡片，统一边框、间距、操作落点与移动端单列布局。
+- 密码房标题旁新增“？”说明：桌面悬浮或聚焦、移动端点击均可查看；中英日文案说明同密码入同房、密码需单独分享，以及最后参与者退出 24 小时后的自动删除边界。
+- 本次仅修改大厅视觉与说明，不改变密码归一化、房间映射、WebSocket/Yjs 协作、匿名身份或数据保留逻辑。
+
 ## 1.0.7 - 2026-08-06
 
 - 修复授权生产闭环发现的第二个 Pages 主 mutation gate 漏项：精确的 `POST /api/whiteboard/agent/scene` 且 `Content-Type: application/vnd.yjs-update` 的请求现在可跳过 JSON 内容类型门禁，继续进入既有 Agent Bearer、`whiteboard:write`、tokenId 绑定房间令牌、operation ID、正文上限与 Durable Object 只追加场景校验。
