@@ -365,7 +365,7 @@ async function freePort() {
   return address.port;
 }
 
-async function getJson(url, limit = 10_000) {
+async function getJson(url, limit = 30_000) {
   const started = Date.now(); let last;
   while (Date.now() - started < limit) {
     try { const response = await fetch(url, { cache: "no-store" }); if (response.ok) return response.json(); last = new Error(`HTTP ${response.status}`); }
@@ -409,7 +409,7 @@ class CDP {
 async function startChrome(executable) {
   const port = await freePort();
   const profile = await mkdtemp(join(tmpdir(), "lusu-public-ui-audit-"));
-  const child = spawn(executable, ["--headless=new", `--remote-debugging-port=${port}`, "--remote-debugging-address=127.0.0.1", `--user-data-dir=${profile}`, "--disable-background-networking", "--disable-default-apps", "--disable-extensions", "--disable-sync", "--metrics-recording-only", "--mute-audio", "--no-default-browser-check", "--no-first-run", "--force-device-scale-factor=1", "about:blank"], { stdio: ["ignore", "ignore", "pipe"], windowsHide: true });
+  const child = spawn(executable, ["--headless=new", `--remote-debugging-port=${port}`, "--remote-debugging-address=127.0.0.1", `--user-data-dir=${profile}`, "--disable-background-networking", "--disable-dev-shm-usage", "--disable-default-apps", "--disable-extensions", "--disable-sync", "--metrics-recording-only", "--mute-audio", "--no-default-browser-check", "--no-first-run", "--force-device-scale-factor=1", "about:blank"], { stdio: ["ignore", "ignore", "pipe"], windowsHide: true });
   let stderr = ""; child.stderr.on("data", (chunk) => { stderr = `${stderr}${chunk}`.slice(-8000); });
   try {
     await getJson(`http://127.0.0.1:${port}/json/version`);
