@@ -130,6 +130,63 @@
   <link rel="stylesheet" href="/css/style.css?v=20260820-chat-whiteboard-ui-r1">
   <link rel="stylesheet" data-mobile-shell-style href="/css/mobile-ios-shell.css?v=20260820-chat-whiteboard-ui-r1">
   <link rel="stylesheet" href="/css/motion-system.css?v=20260820-chat-whiteboard-ui-r1">
+  <style id="pixel-cursor-r2">
+    @media (hover: hover) and (pointer: fine) and (forced-colors: none) {
+      html,
+      body,
+      .site-shell {
+        cursor: url("/assets/images/cursors/default.png?v=20260820-pixel-cursor-r2") 2 2, default !important;
+      }
+
+      :where(
+        a[href],
+        button:not(:disabled),
+        summary,
+        select:not(:disabled),
+        label[for],
+        [role="button"]:not([aria-disabled="true"]),
+        [data-article-slug],
+        [data-video-id],
+        input:is([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"]):not(:disabled)
+      ) {
+        cursor: url("/assets/images/cursors/pointer.png?v=20260820-pixel-cursor-r2") 13 2, pointer !important;
+      }
+
+      :where(
+        input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not(:disabled),
+        textarea:not(:disabled),
+        [contenteditable]:not([contenteditable="false"])
+      ) {
+        cursor: url("/assets/images/cursors/text.png?v=20260820-pixel-cursor-r2") 16 16, text !important;
+      }
+
+      :where([draggable="true"], .is-draggable) {
+        cursor: url("/assets/images/cursors/grab.png?v=20260820-pixel-cursor-r2") 16 16, grab !important;
+      }
+
+      :where(button:disabled, input:disabled, select:disabled, textarea:disabled, [aria-disabled="true"], [inert]) {
+        cursor: url("/assets/images/cursors/not-allowed.png?v=20260820-pixel-cursor-r2") 16 16, not-allowed !important;
+      }
+
+      :where([aria-busy="true"], .is-loading, .is-busy, [data-state="loading"]) {
+        cursor: url("/assets/images/cursors/progress.png?v=20260820-pixel-cursor-r2") 16 16, progress !important;
+      }
+
+      :where(
+        .is-ui-pressed:not(:disabled):not([aria-disabled="true"]),
+        a[href]:active,
+        button:not(:disabled):active,
+        summary:active,
+        [role="button"]:not([aria-disabled="true"]):active
+      ) {
+        cursor: url("/assets/images/cursors/pressed.png?v=20260820-pixel-cursor-r2") 14 3, pointer !important;
+      }
+
+      :where(canvas, iframe, [data-native-cursor]) {
+        cursor: auto !important;
+      }
+    }
+  </style>
 </head>
 <body data-route="home">
   <a class="skip-link" href="#main-content" data-modal-background data-i18n="skipToMain">跳到主内容</a>
