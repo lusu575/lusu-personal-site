@@ -1,0 +1,25 @@
+{
+  "version": "20260820-pixel-cursor-r1",
+  "generator": "image2",
+  "reference": {
+    "description": "User-approved black-and-white pixel line-art cursor sheet with a redrawn single-ring prohibited state.",
+    "generatedFile": "exec-b0dbf315-9d02-4480-af39-4a4ec18ca4b0.png",
+    "sha256": "e89fda26abd011afde9e17d366e068ae6c97e1b8fb0dfb6e0a06c5840cc98654"
+  },
+  "processing": "Mechanical crop, exterior background flood removal, nearest-neighbor resize, palette reduction, hard alpha threshold, and 32x32 transparent canvas placement. pressed.png is pointer.png shifted one pixel down/right.",
+  "constraints": [
+    "No yellow pixels",
+    "Transparent RGBA PNG",
+    "Native CSS cursor rendering only",
+    "Touch and precision drawing surfaces keep their native cursor behavior"
+  ],
+  "files": {
+    "default.png": { "sha256": "1e9bfbc50f4c2e7f5f57c3830f442bdf36c3132e0b0075e4ea59630f70bab3db", "hotspot": [1, 1] },
+    "pointer.png": { "sha256": "1f7a45df42137c8e675cf9f925e20516c3097d6ae2e60ad6bddef4a6b40555a3", "hotspot": [11, 1] },
+    "pressed.png": { "sha256": "c0696ec985960e2e8d8b88a0c25b81a32989b7bb6dcbc2b26eed59d39dea315f", "hotspot": [11, 1] },
+    "text.png": { "sha256": "5bc4145d4689a65d723e78126d90bbcb877bc79a3c2c0eca1058c6542a7a68bc", "hotspot": [16, 16] },
+    "grab.png": { "sha256": "489403328e8980e222325782beb9137219857886e95da606728884fc8c2d5068", "hotspot": [16, 16] },
+    "not-allowed.png": { "sha256": "6963281142ad473f72b45916f606108a73a96a56f38f051fb809afda0c48e70c", "hotspot": [16, 16] },
+    "progress.png": { "sha256": "20954ec1eacee2c9eb231e51fe892e32cec3cf223b9f165e31d38a8848a6ad46", "hotspot": [1, 1] }
+  }
+}
