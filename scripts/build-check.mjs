@@ -901,11 +901,11 @@ const videoLinkAutofillReleaseVersion = "20260811-video-link-autofill-r1";
 const h3AmbientWallpapersReleaseVersion = "20260810-h3-ambient-wallpapers-4k-r1";
 const h3FirstVersionVideoReleaseVersion = "20260811-h3-first-version-video-sr-48fps-r1";
 const wallpaperGameDisplayReleaseVersion = "20260812-wallpaper-game-display-r1";
-const publicSiteReleaseVersion = "20260820-chat-whiteboard-ui-r1";
+const publicSiteReleaseVersion = "20260820-chat-whiteboard-ui-r2";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = "20260809-transfer-motion-r2";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
-const resourcesRouteVersion = "20260820-chat-whiteboard-ui-r1";
+const resourcesRouteVersion = "20260820-chat-whiteboard-ui-r2";
 const routeStyleVersion = publicSiteReleaseVersion;
 const publicRouteVersion = (route) => route === "knowledge" || route === "chatroom"
   ? motionPolishReleaseVersion
@@ -4464,8 +4464,8 @@ if (!hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*380px\)[\s\S]*\.chat
   || !hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*760px\)\s*and\s*\(max-height:\s*720px\)\s*and\s*\(orientation:\s*portrait\)[\s\S]*\.chatroom-header\s*\{[\s\S]*height:\s*90px[\s\S]*\.chat-private-room-panel\s*\{[\s\S]*height:\s*46px[\s\S]*\.chatroom-log\s*\{[\s\S]*margin:\s*2px\s+5px[\s\S]*\.chatroom-compose\s*\{[\s\S]*grid-template-rows:\s*44px[\s\S]*\.chatroom-counter\s*\{[\s\S]*position:\s*absolute[\s\S]*\.chatroom-footer\s*\{[\s\S]*height:\s*45px/)
   || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-window\s*\{\s*display:\s*grid;\s*grid-template-rows:\s*auto\s+auto\s+minmax\(0,\s*1fr\)\s+auto\s+auto/)
   || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-input-shell\s*\{[\s\S]*position:\s*relative/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-counter\s*\{[\s\S]*position:\s*absolute;[\s\S]*right:\s*58px/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chat-send-button\s*\{[\s\S]*position:\s*absolute;[\s\S]*min-width:\s*44px[\s\S]*border-radius:\s*50%/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-counter\s*\{[\s\S]*position:\s*absolute;[\s\S]*right:\s*68px/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chat-send-button\s*\{[\s\S]*position:\s*absolute;[\s\S]*min-width:\s*52px[\s\S]*border-radius:\s*4px/)
   || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-autoscroll\s*\{[\s\S]*min-height:\s*44px/)) {
   fail("css/mobile-ios-shell.css should keep password and chat controls reachable on narrow and soft-keyboard portrait viewports");
 }

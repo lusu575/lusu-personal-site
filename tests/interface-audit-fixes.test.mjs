@@ -131,7 +131,7 @@ test("BFCache-safe ambient wallpapers, retained motion modules, wallpaper switch
   const videoLinkAutofillVersion = "20260811-video-link-autofill-r1";
   const ambientAssetVersion = "20260810-h3-ambient-wallpapers-4k-r1";
   const displayFixReleaseVersion = "20260812-wallpaper-game-display-r1";
-  const publicSiteReleaseVersion = "20260820-chat-whiteboard-ui-r1";
+  const publicSiteReleaseVersion = "20260820-chat-whiteboard-ui-r2";
   const wallpaperAssetVersion = "20260810-wallpaper-time-switch-r6";
   const transferVersion = "20260809-transfer-motion-r2";
   const index = read("index.html");
@@ -194,7 +194,7 @@ test("BFCache-safe ambient wallpapers, retained motion modules, wallpaper switch
   assert.ok(main.includes(`./features/account.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/knowledge.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/chatroom.mjs?v=${publicVersion}`));
-  const resourcesVersion = "20260820-chat-whiteboard-ui-r1";
+  const resourcesVersion = "20260820-chat-whiteboard-ui-r2";
   assert.ok(main.includes(`./routes/resources.mjs?v=${resourcesVersion}`));
   assert.ok(main.includes(`./data/resources-content.mjs?v=${resourcesVersion}`));
   for (const token of [
