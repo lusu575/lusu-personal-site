@@ -813,7 +813,6 @@ async function buildCandidate(outputRoot) {
     ["style", "css/style.css", "site"],
     ["mobile", "css/mobile-ios-shell.css", "mobile-shell"],
     ["motion", "css/motion-system.css", "motion"],
-    ["cursor", "css/cursor-system.css", "cursor-system"],
     ["knowledge", "css/routes/knowledge.css", "route-knowledge"],
     ["videos", "css/routes/videos.css", "route-videos"],
     ["games", "css/routes/games.css", "route-games"],
@@ -888,7 +887,6 @@ async function buildCandidate(outputRoot) {
     ["/css/style.css", styleAssets.style],
     ["/css/mobile-ios-shell.css", styleAssets.mobile],
     ["/css/motion-system.css", styleAssets.motion],
-    ["/css/cursor-system.css", styleAssets.cursor],
     ["/js/mobile-shell.js", scriptAssets.mobile],
     ["/js/telemetry.js", scriptAssets.telemetry],
     ["/js/ui-motion.js", scriptAssets.motion],
@@ -920,7 +918,7 @@ async function buildCandidate(outputRoot) {
   const entries = {
     site: {
       html: "/index.html",
-      css: [styleAssets.style, styleAssets.mobile, styleAssets.motion, styleAssets.cursor],
+      css: [styleAssets.style, styleAssets.mobile, styleAssets.motion],
       routeCss: [styleAssets.knowledge, styleAssets.videos, styleAssets.games, styleAssets.chatroom],
       scripts: [scriptAssets.mobile, scriptAssets.telemetry, scriptAssets.motion, main]
     },

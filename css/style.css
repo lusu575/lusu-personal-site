@@ -4653,3 +4653,62 @@ html[lang="ja"] :where(p, li, dd, dt, button, label, summary, .markdown-body, .m
     mask-image: none !important;
   }
 }
+
+/* User-approved pixel cursor set. Native cursor URLs avoid follower lag; the
+   capability gate keeps touch, forced-colors, canvases, and embedded tools on
+   their platform or application-owned cursor behavior. */
+@media (hover: hover) and (pointer: fine) and (forced-colors: none) {
+  html,
+  body,
+  .site-shell {
+    cursor: url("../assets/images/cursors/default.png?v=20260820-pixel-cursor-r1") 1 1, default !important;
+  }
+
+  :where(
+    a[href],
+    button:not(:disabled),
+    summary,
+    select:not(:disabled),
+    label[for],
+    [role="button"]:not([aria-disabled="true"]),
+    [data-article-slug],
+    [data-video-id],
+    input:is([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"]):not(:disabled)
+  ) {
+    cursor: url("../assets/images/cursors/pointer.png?v=20260820-pixel-cursor-r1") 11 1, pointer !important;
+  }
+
+  :where(
+    input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not(:disabled),
+    textarea:not(:disabled),
+    [contenteditable]:not([contenteditable="false"])
+  ) {
+    cursor: url("../assets/images/cursors/text.png?v=20260820-pixel-cursor-r1") 16 16, text !important;
+  }
+
+  :where([draggable="true"], .is-draggable) {
+    cursor: url("../assets/images/cursors/grab.png?v=20260820-pixel-cursor-r1") 16 16, grab !important;
+  }
+
+  :where(button:disabled, input:disabled, select:disabled, textarea:disabled, [aria-disabled="true"], [inert]) {
+    cursor: url("../assets/images/cursors/not-allowed.png?v=20260820-pixel-cursor-r1") 16 16, not-allowed !important;
+  }
+
+  :where([aria-busy="true"], .is-loading, .is-busy, [data-state="loading"]) {
+    cursor: url("../assets/images/cursors/progress.png?v=20260820-pixel-cursor-r1") 1 1, progress !important;
+  }
+
+  :where(
+    .is-ui-pressed:not(:disabled):not([aria-disabled="true"]),
+    a[href]:active,
+    button:not(:disabled):active,
+    summary:active,
+    [role="button"]:not([aria-disabled="true"]):active
+  ) {
+    cursor: url("../assets/images/cursors/pressed.png?v=20260820-pixel-cursor-r1") 11 1, pointer !important;
+  }
+
+  :where(canvas, iframe, [data-native-cursor]) {
+    cursor: auto !important;
+  }
+}
