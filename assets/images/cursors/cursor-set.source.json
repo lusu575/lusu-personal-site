@@ -1,5 +1,5 @@
 {
-  "version": "20260820-pixel-cursor-r2",
+  "version": "20260820-pixel-cursor-r3",
   "generator": "image2",
   "reference": {
     "description": "User-selected six-icon pixel cursor sheet with black outlines, ivory fills, localized pale-yellow shading, a red prohibited state, and a gold hourglass.",
@@ -12,6 +12,7 @@
     "Preserve the reference's localized pale-yellow and gold pixels",
     "Transparent RGBA PNG with binary 0/255 alpha",
     "Visible artwork is 26 to 28 pixels tall rather than browser-scaled",
+    "The default runtime cursor uses a new physical filename so edge caches that ignore query strings cannot serve the previous artwork",
     "Native CSS cursor rendering only",
     "Touch, canvas, iframe, and forced-colors surfaces keep native or application-owned cursor behavior"
   ],
@@ -22,6 +23,9 @@
     "grab.png": [135, 596, 268, 315],
     "not-allowed.png": [593, 621, 272, 278],
     "progress.png": [1059, 604, 199, 307]
+  },
+  "runtimeAliases": {
+    "default-r2.png": { "source": "default.png", "sha256": "4ff83660a490db37a0291756efd8ab458021a7cce25ba38885684b6fbc50aede" }
   },
   "files": {
     "default.png": { "sha256": "4ff83660a490db37a0291756efd8ab458021a7cce25ba38885684b6fbc50aede", "hotspot": [2, 2], "visibleBounds": [2, 2, 18, 28] },
