@@ -1104,7 +1104,7 @@ insert into article_translations (
     'seed-update-2026-08-20-chat-whiteboard-ui-fixes',
     'zh',
     '聊天室与在线画板界面修复',
-    '聊天室移除消息区和输入区的异常留白，把发送按钮收进输入框；聊天室与在线画板的密码房均新增三语说明，画板大厅也使用 Image2 像素背景重绘并修正卡片对齐。',
+    '聊天室移除消息区和输入区的异常留白，把发送按钮收进输入框并改为清晰的方角 XP 操作；聊天室密码房说明改为悬浮显示，在线画板保留三语说明和 Image2 像素大厅。',
     '# 聊天室与在线画板界面修复
 
 这次更新集中修正匿名互动工具的入口与输入体验，不改变房间密码、消息或画布的服务端边界。
@@ -1112,8 +1112,8 @@ insert into article_translations (
 ## 聊天室
 
 - 移除消息列表底部多余的保留空间，以及输入框与底部状态之间被网格撑出的空白。
-- 发送按钮改成输入框右下角的紧凑圆形操作，字数提示同样留在输入框内。
-- 密码房按钮旁新增“？”说明，桌面悬浮或聚焦、移动端点击都能查看，并提供中英日文案。
+- 发送按钮改成输入框右下角的紧凑方角 XP 操作，并放大发送图标；字数提示仍留在输入框内。
+- 密码房按钮旁的“？”说明改为鼠标悬浮显示、移开隐藏，点击不再切换；键盘聚焦仍可查看，并提供中英日文案。
 
 ## 在线画板 1.0.8
 
@@ -1128,7 +1128,7 @@ insert into article_translations (
     'seed-update-2026-08-20-chat-whiteboard-ui-fixes',
     'en',
     'Chat and Whiteboard Interface Fixes',
-    'Chat no longer leaves oversized gaps around the log and composer, and its send action now sits inside the input. Chat and Whiteboard add trilingual password-room help, while the Whiteboard lobby gains an Image2 pixel background and aligned cards.',
+    'Chat removes oversized gaps and places a clearer square-corner XP send key inside the input. Its password-room guide now appears on hover, while Whiteboard keeps trilingual help and its Image2 pixel lobby.',
     '# Chat and Whiteboard Interface Fixes
 
 This release improves the entry and input experience for anonymous collaboration without changing server-side password, message, or canvas boundaries.
@@ -1136,8 +1136,8 @@ This release improves the entry and input experience for anonymous collaboration
 ## Anonymous Chat
 
 - Removes the extra reserved space below the message list and the grid-created gap between the composer and footer.
-- Moves the send action into a compact circular button at the lower-right of the input, alongside the character count.
-- Adds a question-mark guide beside Password room, available by hover or focus on desktop and tap on mobile, with Chinese, English, and Japanese copy.
+- Moves the send action into a compact square-corner XP key at the lower-right of the input and enlarges its send glyph; the character count remains inside the field.
+- Changes the question-mark guide to appear on pointer hover and hide on pointer leave instead of toggling on click. Keyboard focus can still reveal the trilingual guide.
 
 ## Online Whiteboard 1.0.8
 
@@ -1152,7 +1152,7 @@ This release improves the entry and input experience for anonymous collaboration
     'seed-update-2026-08-20-chat-whiteboard-ui-fixes',
     'ja',
     'チャットとオンライン画板のUI修正',
-    'チャットのログ・入力欄にあった大きな余白をなくし、送信ボタンを入力欄内へ移しました。チャットとオンライン画板に三言語のパスワード説明を追加し、画板の入口もImage2のピクセル背景と整列したカードへ刷新しました。',
+    'チャットの余分な空白をなくし、入力欄内の送信操作を見やすい角型XPボタンにしました。チャットのパスワード説明はホバー表示となり、画板は三言語説明とImage2のピクセル入口を維持します。',
     '# チャットとオンライン画板のUI修正
 
 匿名コラボレーション機能の入口と入力体験を改善しました。パスワード、メッセージ、キャンバスのサーバー側境界は変更していません。
@@ -1160,8 +1160,8 @@ This release improves the entry and input experience for anonymous collaboration
 ## 匿名チャット
 
 - メッセージ一覧下部の余分な予約領域と、入力欄とフッターの間にグリッドが作っていた空白を削除しました。
-- 送信操作を入力欄右下の小さな丸ボタンへ移し、文字数表示も入力欄内に収めました。
-- パスワード部屋の横に「？」説明を追加し、デスクトップではホバー／フォーカス、モバイルではタップで中・英・日の説明を確認できます。
+- 送信操作を入力欄右下の小さな角型XPボタンへ変更し、送信アイコンを拡大しました。文字数表示も入力欄内に維持します。
+- 「？」説明はマウスを重ねると表示し、外すと非表示になる方式へ変更しました。クリックでは切り替わらず、キーボードフォーカスでは三言語説明を確認できます。
 
 ## オンライン画板 1.0.8
 
@@ -14416,7 +14416,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260820-chat-whiteboard-ui-r1', '2026-08-20T08:00:00.000Z')
+values ('article_seed_version', '20260820-chat-whiteboard-ui-r2', '2026-08-20T08:00:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

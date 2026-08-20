@@ -83,7 +83,7 @@ export const MINIMAX_H3_REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     select 'minimax-h3-article-seed-version',
       case when count(*) = 1 then 1 else 0 end
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260820-chat-whiteboard-ui-r1'
+    where key = 'article_seed_version' and value = '20260820-chat-whiteboard-ui-r2'
   `
 ]);
 
@@ -365,7 +365,7 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260820-chat-whiteboard-ui-r1'
+    where key = 'article_seed_version' and value = '20260820-chat-whiteboard-ui-r2'
     union all
     select 'game-video-mcp-candidate-update-article',
       case when count(*) = 1 then 1 else 0 end

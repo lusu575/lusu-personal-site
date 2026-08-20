@@ -849,8 +849,12 @@ test("Chat route CSS keeps the disclosure touch target and does not hide its mob
   assert.match(css, /html\[data-ui-shell="mobile"\] \.chat-private-room-panel \.chat-private-safety\[open\] > small\s*\{[\s\S]*?display:\s*block;/);
   assert.match(css, /\.chat-send-button:disabled\s*\{/);
   assert.match(css, /\.chatroom-input-shell\s*\{[\s\S]*?position:\s*relative;/);
-  assert.match(css, /\.chat-send-button\s*\{[\s\S]*?position:\s*absolute;[\s\S]*?min-width:\s*44px;[\s\S]*?border-radius:\s*50%;/);
+  assert.match(css, /\.chat-send-button\s*\{[\s\S]*?position:\s*absolute;[\s\S]*?min-width:\s*52px;[\s\S]*?border-radius:\s*4px;/);
   assert.match(css, /\.chat-room-help-popover\s*\{[\s\S]*?position:\s*absolute;/);
+  assert.match(css, /\.chat-room-help:hover \.chat-room-help-popover[\s\S]*?display:\s*block;/);
+  assert.doesNotMatch(css, /\.chat-room-help\[open\]/);
+  assert.match(html, /class="chat-room-help-trigger"[^>]*aria-describedby="chat-private-room-help-popover"/);
+  assert.doesNotMatch(html, /<details class="chat-room-help">/);
   assert.match(html, /data-i18n="chatPrivateRoomHelp"/);
   assert.match(css, /\.chat-unread-button\s*\{[\s\S]*?min-height:\s*44px;/);
   assert.match(css, /html\[data-ui-shell="mobile"\] #chat-feedback\s*\{[\s\S]*?text-overflow:\s*clip;[\s\S]*?white-space:\s*normal;/);

@@ -21,9 +21,9 @@ export const homeContent = Object.freeze({
         "ja": "チャットとオンライン画板のUI修正"
       },
       "summary": {
-        "zh": "聊天室移除消息区和输入区的异常留白，把发送按钮收进输入框；聊天室与在线画板的密码房均新增三语说明，画板大厅也使用 Image2 像素背景重绘并修正卡片对齐。",
-        "en": "Chat no longer leaves oversized gaps around the log and composer, and its send action now sits inside the input. Chat and Whiteboard add trilingual password-room help, while the Whiteboard lobby gains an Image2 pixel background and aligned cards.",
-        "ja": "チャットのログ・入力欄にあった大きな余白をなくし、送信ボタンを入力欄内へ移しました。チャットとオンライン画板に三言語のパスワード説明を追加し、画板の入口もImage2のピクセル背景と整列したカードへ刷新しました。"
+        "zh": "聊天室移除消息区和输入区的异常留白，把发送按钮收进输入框并改为清晰的方角 XP 操作；聊天室密码房说明改为悬浮显示，在线画板保留三语说明和 Image2 像素大厅。",
+        "en": "Chat removes oversized gaps and places a clearer square-corner XP send key inside the input. Its password-room guide now appears on hover, while Whiteboard keeps trilingual help and its Image2 pixel lobby.",
+        "ja": "チャットの余分な空白をなくし、入力欄内の送信操作を見やすい角型XPボタンにしました。チャットのパスワード説明はホバー表示となり、画板は三言語説明とImage2のピクセル入口を維持します。"
       }
     },
     {

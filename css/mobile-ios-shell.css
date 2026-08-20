@@ -4437,7 +4437,7 @@ html[data-ui-shell="mobile"] .chatroom-compose textarea {
 
 html[data-ui-shell="mobile"] .chatroom-counter {
   position: absolute;
-  right: 58px;
+  right: 68px;
   bottom: 10px;
   z-index: 2;
 }
@@ -4447,15 +4447,15 @@ html[data-ui-shell="mobile"] .chat-send-button {
   right: 7px;
   bottom: 7px;
   z-index: 3;
-  width: 44px;
-  min-width: 44px;
+  width: 52px;
+  min-width: 52px;
   height: 44px;
   min-height: 44px;
-  padding: 8px;
-  border-radius: 50%;
+  padding: 5px;
+  border-radius: 4px;
 }
 
-html[data-ui-shell="mobile"] .chat-room-help summary {
+html[data-ui-shell="mobile"] .chat-room-help-trigger {
   width: 44px;
   min-height: 44px;
 }
@@ -5467,6 +5467,53 @@ html[data-ui-shell="mobile"] body[data-motion="off"] :is(
     height: auto;
     aspect-ratio: 16 / 9;
   }
+}
+
+/* 2026-08-20 chat control polish: preserve one composer input surface at
+   every mobile geometry and use the same compact XP send key as desktop. */
+html[data-ui-shell="mobile"] .chatroom-compose {
+  display: block;
+  padding: 7px 10px 4px;
+}
+
+html[data-ui-shell="mobile"] .chatroom-input-shell {
+  position: relative;
+  min-width: 0;
+}
+
+html[data-ui-shell="mobile"] .chatroom-compose textarea {
+  width: 100%;
+  min-height: 66px;
+  max-height: 108px;
+  padding: 9px 136px 27px 10px;
+}
+
+html[data-ui-shell="mobile"] .chatroom-counter {
+  position: absolute;
+  right: 68px;
+  bottom: 10px;
+  z-index: 2;
+}
+
+html[data-ui-shell="mobile"] .chat-send-button {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  z-index: 3;
+  grid-column: auto;
+  grid-row: auto;
+  width: 52px;
+  min-width: 52px;
+  height: 44px;
+  min-height: 44px;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+html[data-ui-shell="mobile"] .send-bubble-icon,
+html[data-ui-shell="mobile"] .chatroom-window.is-private-room .send-bubble-icon {
+  width: 34px;
+  height: 34px;
 }
 
 /* Wallpaper time control. On mobile Home it leaves the crowded account row
