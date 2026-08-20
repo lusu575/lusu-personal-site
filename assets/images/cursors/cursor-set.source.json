@@ -1,25 +1,35 @@
 {
-  "version": "20260820-pixel-cursor-r1",
+  "version": "20260820-pixel-cursor-r2",
   "generator": "image2",
   "reference": {
-    "description": "User-approved black-and-white pixel line-art cursor sheet with a redrawn single-ring prohibited state.",
-    "generatedFile": "exec-b0dbf315-9d02-4480-af39-4a4ec18ca4b0.png",
-    "sha256": "e89fda26abd011afde9e17d366e068ae6c97e1b8fb0dfb6e0a06c5840cc98654"
+    "description": "User-selected six-icon pixel cursor sheet with black outlines, ivory fills, localized pale-yellow shading, a red prohibited state, and a gold hourglass.",
+    "uploadedFile": "320b4394-f6ef-4032-a9e9-33c9b101054d.png",
+    "dimensions": [1448, 1086],
+    "sha256": "1234a0376c84d2706a1b8658e24527ca030296734240414d1ca6f4f20dd7d8fd"
   },
-  "processing": "Mechanical crop, exterior background flood removal, nearest-neighbor resize, palette reduction, hard alpha threshold, and 32x32 transparent canvas placement. pressed.png is pointer.png shifted one pixel down/right.",
+  "processing": "Mechanical six-cell crop from the selected reference, exterior-canvas removal, nearest-neighbor point sampling, and placement on a 32x32 transparent canvas. Source RGB samples are retained without recoloring, palette replacement, smoothing, or shape redesign. pressed.png is pointer.png shifted one pixel down and right.",
   "constraints": [
-    "No yellow pixels",
-    "Transparent RGBA PNG",
+    "Preserve the reference's localized pale-yellow and gold pixels",
+    "Transparent RGBA PNG with binary 0/255 alpha",
+    "Visible artwork is 26 to 28 pixels tall rather than browser-scaled",
     "Native CSS cursor rendering only",
-    "Touch and precision drawing surfaces keep their native cursor behavior"
+    "Touch, canvas, iframe, and forced-colors surfaces keep native or application-owned cursor behavior"
   ],
+  "sourceCrops": {
+    "default.png": [190, 142, 202, 314],
+    "pointer.png": [584, 141, 271, 324],
+    "text.png": [1085, 167, 151, 276],
+    "grab.png": [135, 596, 268, 315],
+    "not-allowed.png": [593, 621, 272, 278],
+    "progress.png": [1059, 604, 199, 307]
+  },
   "files": {
-    "default.png": { "sha256": "1e9bfbc50f4c2e7f5f57c3830f442bdf36c3132e0b0075e4ea59630f70bab3db", "hotspot": [1, 1] },
-    "pointer.png": { "sha256": "1f7a45df42137c8e675cf9f925e20516c3097d6ae2e60ad6bddef4a6b40555a3", "hotspot": [11, 1] },
-    "pressed.png": { "sha256": "c0696ec985960e2e8d8b88a0c25b81a32989b7bb6dcbc2b26eed59d39dea315f", "hotspot": [11, 1] },
-    "text.png": { "sha256": "5bc4145d4689a65d723e78126d90bbcb877bc79a3c2c0eca1058c6542a7a68bc", "hotspot": [16, 16] },
-    "grab.png": { "sha256": "489403328e8980e222325782beb9137219857886e95da606728884fc8c2d5068", "hotspot": [16, 16] },
-    "not-allowed.png": { "sha256": "6963281142ad473f72b45916f606108a73a96a56f38f051fb809afda0c48e70c", "hotspot": [16, 16] },
-    "progress.png": { "sha256": "20954ec1eacee2c9eb231e51fe892e32cec3cf223b9f165e31d38a8848a6ad46", "hotspot": [1, 1] }
+    "default.png": { "sha256": "4ff83660a490db37a0291756efd8ab458021a7cce25ba38885684b6fbc50aede", "hotspot": [2, 2], "visibleBounds": [2, 2, 18, 28] },
+    "pointer.png": { "sha256": "a6161d7b40791200051849514428e7c08aefb2a00983b5e7cca53c1f3d5918ba", "hotspot": [13, 2], "visibleBounds": [5, 2, 23, 28] },
+    "pressed.png": { "sha256": "0f00d748050cf77bdb4316f4c523b8667d0a88de52e4ba646d2a1cb853520d18", "hotspot": [14, 3], "visibleBounds": [6, 3, 23, 28] },
+    "text.png": { "sha256": "e1b11af0a5bf86571b0146d74c449c91bf2ebfeca09b413fa81d3d45464f55de", "hotspot": [16, 16], "visibleBounds": [9, 2, 15, 28] },
+    "grab.png": { "sha256": "9d3a85f1f354f1821b75c0ee88ff3e1fc9b20e1af0d72cb59a50557ebc8ed388", "hotspot": [16, 16], "visibleBounds": [4, 2, 24, 28] },
+    "not-allowed.png": { "sha256": "a79729bf99d79181fbe45b31b9cb12f9dceb6e990d80ef6e16df00d840bafb37", "hotspot": [16, 16], "visibleBounds": [3, 3, 26, 26] },
+    "progress.png": { "sha256": "3237a711999d420beeb71392ec2fcef6aff20d598fcbfa88d47b9fd76273d629", "hotspot": [16, 16], "visibleBounds": [7, 2, 18, 28] }
   }
 }
