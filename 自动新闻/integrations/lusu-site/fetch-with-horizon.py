@@ -9,6 +9,8 @@ import json
 import logging
 import math
 import re
+import shutil
+import subprocess
 import sys
 from contextvars import ContextVar
 from datetime import date, datetime, timedelta, timezone
@@ -19,6 +21,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 INTEGRATION_ROOT = Path(__file__).resolve().parent
 DEFAULT_CONFIG = INTEGRATION_ROOT / "horizon.config.json"
 DEFAULT_DISCOVERY_QUERIES = INTEGRATION_ROOT / "discovery-queries.json"
+DEFAULT_PUBLIC_X_PROFILES = INTEGRATION_ROOT / "public-x-profiles.json"
+PUBLIC_X_FETCHER = INTEGRATION_ROOT / "fetch-public-x.mjs"
 SHANGHAI = timezone(timedelta(hours=8), name="Asia/Shanghai")
 MAX_LOOKBACK_HOURS = 168
 QUERY_ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -107,12 +111,17 @@ USAGE_POLICY_CHANGE_RE = re.compile(
     r"\bremove(?:s|d|ing)?\b|\blift(?:s|ed|ing)?\b|"
     r"\bincrease(?:s|d|ing)?\b|\bdecrease(?:s|d|ing)?\b|"
     r"\breduc(?:e|es|ed|ing|tion)\b|\bimprov(?:e|es|ed|ing|ement)\b|"
-    r"\bchang(?:e|es|ed|ing)\b|"
+    r"\bchang(?:e|es|ed|ing)\b|\bupdat(?:e|es|ed|ing)\b|"
     r"リセット|復活|再開|解除|停止|一時停止|改善|変更|増加|減少|"
     r"重置|恢复|恢復|重啟|重启|重新启用|重新啟用|解除|暂停|暫停|"
     r"调整|調整|提高|降低|增加|减少|減少|改善|变化|變化|"
     r"초기화|복원|재개|중단|해제|개선|변경|상향|하향"
     r")",
+    re.IGNORECASE,
+)
+CODEX_NON_USAGE_RESET_RE = re.compile(
+    r"(?:\bpassword\b|\btheme\b|\beditor\b|\bsettings?\b|"
+    r"\bconfiguration\b|\bpreferences?\b)",
     re.IGNORECASE,
 )
 
@@ -200,6 +209,7 @@ MODEL_PRODUCT_SUBJECT_RE = re.compile(
     r"(?:"
     r"\b(?:model|weights?|checkpoint|GPT[\s-]?\d|Claude[\s-]?\d|"
     r"Gemini[\s-]?\d|Kimi[\s-]?K\d|GLM[\s-]?\d|Qwen[\s-]?\d|"
+    r"DeepSeek|Grok(?:[\s-]?Bot)?|LTX(?:[\s-]?\d(?:\.\d)?)?|"
     r"Seedance|Seedream|Sora|Veo|EXAONE|HyperCLOVA|Solar)\b|"
     r"模型|大模型|权重|モデル|重み|모델|가중치"
     r")",
@@ -209,11 +219,12 @@ CAPABILITY_AVAILABILITY_ACTION_RE = re.compile(
     r"(?:"
     r"\b(?:update(?:s|d|ing)?|upgrade(?:s|d|ing)?|add(?:s|ed|ing)?|"
     r"enable(?:s|d|ing)?|available|availability|access|roll(?:s|ed|ing)?[\s-]?out|"
+    r"teas(?:e|es|ed|ing)|hint(?:s|ed|ing)?|coming[\s-]?soon|surprise|"
     r"delay(?:s|ed|ing)?|postpone(?:s|d|ing)?|pause(?:s|d|ing)?|"
     r"resume(?:s|d|ing)?|retire(?:s|d|ing)?|discontinue(?:s|d|ing)?)\b|"
-    r"更新|升级|新增|开放|可用|接入|公测|内测|下线|停止|暂停|恢复|延期|推迟|未上线|"
-    r"更新|アップデート|提供|利用可能|アクセス|延期|中止|停止|再開|"
-    r"업데이트|업그레이드|추가|사용[\s-]?가능|제공|접근|지연|연기|중단|종료|재개"
+    r"更新|升级|新增|开放|可用|接入|公测|内测|预告|暗示|即将|惊喜|下线|停止|暂停|恢复|延期|推迟|未上线|"
+    r"更新|アップデート|提供|利用可能|アクセス|予告|示唆|近日|延期|中止|停止|再開|"
+    r"업데이트|업그레이드|추가|사용[\s-]?가능|제공|접근|예고|암시|출시[\s-]?예정|지연|연기|중단|종료|재개"
     r")",
     re.IGNORECASE,
 )
@@ -403,7 +414,7 @@ def resolve_window(
     *,
     now: datetime | None = None,
 ) -> tuple[date, datetime, datetime]:
-    """Resolve either an explicit interval or a backward-compatible Shanghai day."""
+    """Resolve the exact 07:00-to-07:00 Shanghai reporting interval."""
 
     if bool(start_value) != bool(end_value):
         raise ValueError("--start and --end must be supplied together")
@@ -419,8 +430,12 @@ def resolve_window(
             if report_date
             else (now or datetime.now(SHANGHAI)).astimezone(SHANGHAI).date()
         )
-        window_start = datetime.combine(target_date, datetime.min.time(), SHANGHAI)
-        window_end = window_start + timedelta(days=1)
+        window_end = datetime.combine(
+            target_date,
+            datetime.min.time(),
+            SHANGHAI,
+        ) + timedelta(hours=7)
+        window_start = window_end - timedelta(days=1)
 
     duration = window_end.astimezone(timezone.utc) - window_start.astimezone(timezone.utc)
     if duration <= timedelta(0):
@@ -682,6 +697,38 @@ def is_material_usage_policy_change(text: str) -> bool:
     )
 
 
+def is_contextual_codex_usage_policy_change(item: Any) -> bool:
+    """Protect terse Codex reset headlines when provenance supplies context."""
+
+    metadata = item.metadata
+    source_ids = set(
+        metadata_string_list(
+            metadata,
+            "must_review_source_ids",
+            "must_review_source_id",
+        )
+    )
+    query_ids = set(
+        metadata_string_list(
+            metadata,
+            "must_review_query_ids",
+            "must_review_query_id",
+        )
+    )
+    has_codex_provenance = bool(
+        "reddit-codex" in source_ids
+        or query_ids & {"codex-operations-en", "codex-usage-policy-en"}
+    )
+    # Keep the contextual exception headline-scoped so an unrelated body/comment
+    # mention of an editor or setting cannot suppress a genuine usage reset.
+    text = item_editorial_signal_text(item)
+    return bool(
+        has_codex_provenance
+        and USAGE_POLICY_CHANGE_RE.search(text)
+        and not CODEX_NON_USAGE_RESET_RE.search(text)
+    )
+
+
 def item_editorial_signal_text(item: Any) -> str:
     """Return headline-level text for conservative change classification."""
 
@@ -778,8 +825,9 @@ def apply_editorial_signals(items: list) -> None:
         )
         if metadata.get("must_review"):
             signals.update(focused_editorial_signals(item))
-        if metadata.get("must_review") and is_material_usage_policy_change(
-            item_search_text(item)
+        if metadata.get("must_review") and (
+            is_material_usage_policy_change(item_search_text(item))
+            or is_contextual_codex_usage_policy_change(item)
         ):
             signals.add("usage-policy-change")
         if signals:
@@ -978,6 +1026,29 @@ def build_coverage_manifest(
             DIRECT_REVIEW_SOURCE_TYPES.items()
         )
     ]
+    declared_review_source_ids = {entry["id"] for entry in review_sources}
+    for source_id in sorted(
+        set(review_source_candidate_ids) - declared_review_source_ids
+    ):
+        source_rows = [
+            row for row in candidate_rows
+            if source_id in row["mustReviewSourceIds"]
+        ]
+        lanes = sorted({
+            lane
+            for row in source_rows
+            for lane in row["reviewLanes"]
+            if lane != PRIORITY_DISCOVERY_REVIEW_LANE
+        })
+        review_sources.append({
+            "id": source_id,
+            "sourceType": source_rows[0]["sourceType"] if source_rows else "",
+            "sourceName": source_rows[0]["sourceName"] if source_rows else source_id,
+            "reviewLane": lanes[0] if lanes else PRIORITY_DISCOVERY_REVIEW_LANE,
+            "candidateIds": sorted(
+                review_source_candidate_ids.get(source_id, set())
+            ),
+        })
 
     review_lanes = []
     catalog_review_lanes = {
@@ -1454,6 +1525,47 @@ async def retry_failed_rss(
     }
 
 
+async def fetch_public_x_profiles(
+    runtime: Any,
+    window_start: datetime,
+    window_end: datetime,
+) -> tuple[list, list[dict[str, Any]]]:
+    """Fetch bounded public profile pages without claiming API completeness."""
+
+    node = shutil.which("node")
+    if not node:
+        return [], [{"status": "failure", "errorType": "NodeNotFound"}]
+    process = await asyncio.to_thread(
+        subprocess.run,
+        [
+            node,
+            str(PUBLIC_X_FETCHER),
+            "--config",
+            str(DEFAULT_PUBLIC_X_PROFILES),
+            "--start",
+            window_start.isoformat(),
+            "--end",
+            window_end.isoformat(),
+        ],
+        capture_output=True,
+        check=False,
+    )
+    if process.returncode != 0:
+        return [], [{
+            "status": "failure",
+            "errorType": "PublicXFetcherFailed",
+            "detail": process.stderr.decode("utf-8", errors="replace")[-300:],
+        }]
+    try:
+        payload = json.loads(process.stdout.decode("utf-8"))
+        return dicts_to_items(runtime, payload["items"]), payload["report"]
+    except (KeyError, TypeError, ValueError) as exc:
+        return [], [{
+            "status": "failure",
+            "errorType": type(exc).__name__,
+        }]
+
+
 def required_query_failure_ids(
     query_report: list[dict[str, Any]],
 ) -> list[str]:
@@ -1529,6 +1641,11 @@ async def run() -> dict:
         window_end,
         concurrency=discovery_catalog["queryConcurrency"],
     )
+    public_x_items, public_x_report = await fetch_public_x_profiles(
+        runtime,
+        window_start,
+        window_end,
+    )
 
     storage = make_storage(runtime, config_path)
     orchestrator = make_orchestrator(runtime, config, storage)
@@ -1536,9 +1653,10 @@ async def run() -> dict:
         dicts_to_items(runtime, raw_items)
         + retried_items
         + topic_items
+        + public_x_items
     )
     merged_items = orchestrator.merge_cross_source_duplicates(combined_items)
-    apply_query_provenance(merged_items, topic_items)
+    apply_query_provenance(merged_items, topic_items + public_x_items)
     apply_direct_source_review_provenance(merged_items, combined_items)
     apply_complete_candidate_review_policy(merged_items)
     apply_editorial_signals(merged_items)
@@ -1549,6 +1667,7 @@ async def run() -> dict:
         fetch_result["raw_before_merge"]
         + len(retried_items)
         + len(topic_items)
+        + len(public_x_items)
     )
     fetch_result["raw_before_merge"] = raw_before_merge
     fetch_result["fetched"] = len(raw_items)
@@ -1585,6 +1704,7 @@ async def run() -> dict:
             "optional_rss_failures": optional_rss_failures,
             "required_rss_failures": required_rss_failures,
             "topic_queries": topic_query_report,
+            "public_x_profiles": public_x_report,
             "topic_query_failures": topic_failures,
             "required_topic_query_failures": required_topic_failures,
             "window_start": window_start.isoformat(),
@@ -1672,6 +1792,7 @@ async def run() -> dict:
                 "fetchReport": fetch_result.get("fetch_report"),
                 "rssRetry": rss_retry,
                 "topicQueries": topic_query_report,
+                "publicXProfiles": public_x_report,
                 "candidateIndexPath": relative_artifact_path(candidate_index_path),
                 "candidateIndexSha256": candidate_index_sha256,
                 "coverageManifestPath": relative_artifact_path(
@@ -1697,6 +1818,7 @@ async def run() -> dict:
         "windowCount": len(window_items),
         "exactDayCount": len(window_items),
         "topicQueries": topic_query_report,
+        "publicXProfiles": public_x_report,
         "fetchStatus": fetch_status,
         "rssRetry": rss_retry,
         "candidatesPath": str(candidates_path.resolve()),

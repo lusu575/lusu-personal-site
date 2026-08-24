@@ -99,7 +99,7 @@ class FetchWindowTests(unittest.TestCase):
     ) -> None:
         self.assertEqual(MODULE.parse_args([]).hours, 24)
 
-    def test_date_mode_remains_available(self) -> None:
+    def test_date_mode_uses_the_exact_preceding_0700_window(self) -> None:
         report_date, window_start, window_end = MODULE.resolve_window(
             "2026-07-27",
             None,
@@ -107,7 +107,8 @@ class FetchWindowTests(unittest.TestCase):
         )
 
         self.assertEqual(report_date.isoformat(), "2026-07-27")
-        self.assertEqual(window_start.utcoffset(), timedelta(hours=8))
+        self.assertEqual(window_start.isoformat(), "2026-07-26T07:00:00+08:00")
+        self.assertEqual(window_end.isoformat(), "2026-07-27T07:00:00+08:00")
         self.assertEqual(window_end - window_start, timedelta(days=1))
 
 
@@ -132,20 +133,32 @@ class DiscoveryQueryTests(unittest.TestCase):
             "ai-policy-lobbying-en",
             "ai-lobbying-en",
             "codex-operations-en",
+            "codex-usage-policy-en",
+            "xai-grok-products-en",
             "developer-products-en",
+            "opencode-product-en",
             "qoder-product-en",
             "openrouter-product-en",
             "gpt-live-product-en",
             "developer-ai-en",
             "open-model-policy-en",
             "open-weight-releases-en",
+            "qwen-open-weights-en",
+            "ltx-video-releases-en",
             "open-models-en",
+            "demis-hassabis-gemini-en",
+            "demis-hassabis-science-en",
+            "demis-hassabis-strategy-en",
+            "demis-hassabis-broad-en",
             "moonshot-kimi-zh",
             "zhipu-glm-zh",
             "qwen-products-zh",
             "alibaba-ai-ecosystem-zh",
             "minimax-products-zh",
+            "deepseek-model-releases-zh",
+            "deepseek-model-releases-en",
             "deepseek-products-zh",
+            "deepseek-broad-zh",
             "hunyuan-products-zh",
             "ernie-products-zh",
             "bytedance-models-zh",
@@ -376,6 +389,8 @@ class DiscoveryQueryTests(unittest.TestCase):
             "china-semiconductor-en",
             "china-semiconductor-ja",
             "china-semiconductor-ko",
+            "demis-hassabis-broad-en",
+            "deepseek-broad-zh",
         ]:
             self.assertFalse(by_id[supplemental_id]["required"])
             self.assertFalse(by_id[supplemental_id]["mustReview"])
@@ -397,6 +412,29 @@ class DiscoveryQueryTests(unittest.TestCase):
             "developer-product-operations",
         )
         self.assertIn("thsottiaux", tibo_query["query"])
+        self.assertIn("OpenAI Engineer", tibo_query["query"])
+        for teaser_term in ["surprise", "tease", "preview", "hint"]:
+            self.assertIn(teaser_term, tibo_query["query"])
+        codex_usage_query = by_id["codex-usage-policy-en"]
+        self.assertTrue(codex_usage_query["required"])
+        self.assertTrue(codex_usage_query["mustReview"])
+        self.assertEqual(
+            codex_usage_query["reviewLane"],
+            "developer-product-operations",
+        )
+        for query_id, lane in {
+            "xai-grok-products-en": "frontier-product-operations",
+            "qwen-open-weights-en": "open-weight-releases",
+            "ltx-video-releases-en": "global-video-model-releases",
+            "deepseek-model-releases-en": "china-model-releases",
+        }.items():
+            with self.subTest(query_id=query_id):
+                entry = by_id[query_id]
+                self.assertTrue(entry["required"])
+                self.assertTrue(entry["mustReview"])
+                self.assertEqual(entry["reviewLane"], lane)
+        for term in ["Codex", "usage limit", "quota", "reset", "weekly limit"]:
+            self.assertIn(term, codex_usage_query["query"])
         self.assertEqual(
             {
                 entry["language"]
@@ -460,6 +498,47 @@ class DiscoveryQueryTests(unittest.TestCase):
             1 <= entry["maxResults"] <= MODULE.GOOGLE_NEWS_SAFE_RESULT_LIMIT
             for entry in queries
         ))
+
+    def test_high_volume_demis_and_deepseek_queries_are_sharded(self) -> None:
+        catalog = MODULE.load_discovery_catalog(
+            Path(__file__).with_name("discovery-queries.json")
+        )
+        by_id = {entry["id"]: entry for entry in catalog["queries"]}
+
+        required_shards = {
+            "demis-hassabis-en": "google-ai-products",
+            "demis-hassabis-gemini-en": "google-ai-products",
+            "demis-hassabis-science-en": "google-ai-products",
+            "demis-hassabis-strategy-en": "google-ai-products",
+            "deepseek-model-releases-zh": "china-model-releases",
+            "deepseek-products-zh": "china-product-releases",
+        }
+        for query_id, review_lane in required_shards.items():
+            with self.subTest(query_id=query_id):
+                entry = by_id[query_id]
+                self.assertTrue(entry["required"])
+                self.assertTrue(entry["mustReview"])
+                self.assertEqual(entry["priority"], "priority")
+                self.assertEqual(entry["reviewLane"], review_lane)
+                self.assertEqual(
+                    entry["maxResults"],
+                    MODULE.GOOGLE_NEWS_SAFE_RESULT_LIMIT,
+                )
+
+        self.assertIn("-Gemini", by_id["demis-hassabis-en"]["query"])
+        self.assertIn("-AlphaFold", by_id["demis-hassabis-en"]["query"])
+        self.assertIn("-Isomorphic", by_id["demis-hassabis-en"]["query"])
+        for broad_id in ["demis-hassabis-broad-en", "deepseek-broad-zh"]:
+            with self.subTest(query_id=broad_id):
+                entry = by_id[broad_id]
+                self.assertFalse(entry["required"])
+                self.assertFalse(entry["mustReview"])
+                self.assertEqual(entry["priority"], "standard")
+
+        self.assertNotEqual(
+            by_id["deepseek-model-releases-zh"]["query"],
+            by_id["deepseek-products-zh"]["query"],
+        )
 
     def test_korean_open_model_queries_are_required_non_overlapping_shards(
         self,
@@ -1137,6 +1216,52 @@ class MustReviewProvenanceTests(unittest.TestCase):
                 title,
             )
 
+    def test_grok_qwen_ltx_deepseek_and_tibo_leads_receive_focused_signals(
+        self,
+    ) -> None:
+        cases = [
+            (
+                "Introducing Grok Bot",
+                ["frontier-product-operations"],
+                {"capability-availability-change", "major-model-product-change"},
+            ),
+            (
+                "Qwen3.8-2.4T-A95B open weights released",
+                ["open-weight-releases"],
+                {"capability-availability-change", "major-model-product-change"},
+            ),
+            (
+                "LTX-2.5 open weights released with ComfyUI support",
+                ["global-video-model-releases"],
+                {"capability-availability-change", "major-model-product-change"},
+            ),
+            (
+                "DeepSeek V4 Pro 0813 released for production API use",
+                ["china-model-releases"],
+                {"capability-availability-change", "major-model-product-change"},
+            ),
+            (
+                "OpenAI engineer teases a Codex surprise coming soon",
+                ["developer-product-operations"],
+                {"capability-availability-change", "developer-tool-change"},
+            ),
+        ]
+        for title, review_lanes, expected in cases:
+            with self.subTest(title=title):
+                item = SimpleNamespace(
+                    title=title,
+                    summary="",
+                    content="",
+                    metadata={
+                        "must_review": True,
+                        "review_lanes": review_lanes,
+                    },
+                )
+                MODULE.apply_editorial_signals([item])
+                self.assertTrue(
+                    expected.issubset(set(item.metadata["editorial_signals"]))
+                )
+
     def test_media_rss_model_and_tool_releases_receive_product_signals(
         self,
     ) -> None:
@@ -1251,6 +1376,90 @@ class MustReviewProvenanceTests(unittest.TestCase):
 
         self.assertNotIn("editorial_signals", item.metadata)
         self.assertNotIn("must_review", item.metadata)
+
+    def test_terse_codex_reset_titles_use_direct_source_context(self) -> None:
+        items = [
+            SimpleNamespace(
+                title="Tibo just reset",
+                summary="",
+                content="The reset showed up while I was working in the editor.",
+                metadata={
+                    "must_review": True,
+                    "must_review_source_ids": ["reddit-codex"],
+                },
+            ),
+            SimpleNamespace(
+                title="Week reset this morning",
+                summary="",
+                content="",
+                metadata={
+                    "must_review": True,
+                    "must_review_source_ids": ["reddit-codex"],
+                },
+            ),
+            SimpleNamespace(
+                title="Just got a Codex reset... is something coming up?",
+                summary="",
+                content="",
+                metadata={
+                    "must_review": True,
+                    "must_review_source_ids": ["reddit-codex"],
+                },
+            ),
+            SimpleNamespace(
+                title="Behold - history's most useless reset!",
+                summary="",
+                content="",
+                metadata={
+                    "must_review": True,
+                    "must_review_source_ids": ["reddit-codex"],
+                },
+            ),
+        ]
+
+        MODULE.apply_editorial_signals(items)
+
+        self.assertTrue(all(
+            item.metadata["editorial_signals"] == ["usage-policy-change"]
+            for item in items
+        ))
+
+    def test_tibo_rate_limit_update_is_usage_policy(self) -> None:
+        item = SimpleNamespace(
+            title="@thsottiaux: Update on rate limits in Codex",
+            summary="",
+            content=(
+                "We found inefficiencies with images in long sessions and "
+                "high p95+ usage for Computer History."
+            ),
+            metadata={
+                "must_review": True,
+                "must_review_query_ids": ["codex-operations-en"],
+                "review_lanes": ["developer-product-operations"],
+            },
+        )
+
+        MODULE.apply_editorial_signals([item])
+
+        self.assertIn(
+            "usage-policy-change",
+            item.metadata["editorial_signals"],
+        )
+
+    def test_codex_editor_reset_is_not_usage_policy(self) -> None:
+        item = SimpleNamespace(
+            title="How do I reset my Codex editor theme settings?",
+            summary="",
+            content="",
+            metadata={
+                "must_review": True,
+                "must_review_source_ids": ["reddit-codex"],
+            },
+        )
+
+        MODULE.apply_editorial_signals([item])
+
+        self.assertNotIn("editorial_signals", item.metadata)
 
     def test_generic_token_or_model_efficiency_news_is_not_usage_policy(
         self,

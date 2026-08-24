@@ -222,7 +222,7 @@
     },
     {
       "id": "demis-hassabis-en",
-      "query": "\"Demis Hassabis\" (DeepMind OR AI)",
+      "query": "\"Demis Hassabis\" DeepMind -Gemini -AlphaFold -Isomorphic",
       "language": "en",
       "country": "US",
       "maxResults": 100,
@@ -232,6 +232,56 @@
       "priority": "priority",
       "mustReview": true,
       "reviewLane": "google-ai-products"
+    },
+    {
+      "id": "demis-hassabis-gemini-en",
+      "query": "\"Demis Hassabis\" Gemini",
+      "language": "en",
+      "country": "US",
+      "maxResults": 100,
+      "category": "ai-primary-watch",
+      "coverageGroup": "global-frontier",
+      "required": true,
+      "priority": "priority",
+      "mustReview": true,
+      "reviewLane": "google-ai-products"
+    },
+    {
+      "id": "demis-hassabis-science-en",
+      "query": "\"Demis Hassabis\" (AlphaFold OR Isomorphic)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 100,
+      "category": "ai-primary-watch",
+      "coverageGroup": "global-frontier",
+      "required": true,
+      "priority": "priority",
+      "mustReview": true,
+      "reviewLane": "google-ai-products"
+    },
+    {
+      "id": "demis-hassabis-strategy-en",
+      "query": "\"Demis Hassabis\" (safety OR regulation OR policy OR partnership OR investment OR acquisition OR energy OR jobs)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 100,
+      "category": "ai-primary-watch",
+      "coverageGroup": "global-frontier",
+      "required": true,
+      "priority": "priority",
+      "mustReview": true,
+      "reviewLane": "google-ai-products"
+    },
+    {
+      "id": "demis-hassabis-broad-en",
+      "query": "\"Demis Hassabis\" (DeepMind OR AI)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 100,
+      "category": "ai-primary-watch",
+      "coverageGroup": "global-frontier",
+      "required": false,
+      "priority": "standard"
     },
     {
       "id": "frontier-product-operations-en",
@@ -331,7 +381,33 @@
     },
     {
       "id": "codex-operations-en",
-      "query": "(\"Thibault Sottiaux\" OR \"Tibo Codex\" OR thsottiaux) (Codex OR \"ChatGPT Work\") (launch OR release OR availability OR usage OR limit OR quota OR reset OR context OR model OR feature)",
+      "query": "((\"Thibault Sottiaux\" OR \"Tibo Codex\" OR thsottiaux) OR (\"OpenAI Engineer\" AND Codex)) (launch OR release OR availability OR usage OR limit OR quota OR reset OR context OR model OR feature OR surprise OR tease OR preview OR hint OR soon OR milestone OR users)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 100,
+      "category": "developer-ai-watch",
+      "coverageGroup": "developer-ai",
+      "required": true,
+      "priority": "priority",
+      "mustReview": true,
+      "reviewLane": "developer-product-operations"
+    },
+    {
+      "id": "xai-grok-products-en",
+      "query": "(\"Grok Bot\" OR ((xAI OR SpaceXAI) AND Grok)) (introduce OR launch OR release OR preview OR availability OR agent OR model OR weights OR update)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 100,
+      "category": "ai-product-operations-watch",
+      "coverageGroup": "global-frontier",
+      "required": true,
+      "priority": "priority",
+      "mustReview": true,
+      "reviewLane": "frontier-product-operations"
+    },
+    {
+      "id": "codex-usage-policy-en",
+      "query": "(Codex OR \"ChatGPT Work\") (\"usage limit\" OR \"rate limit\" OR quota OR reset OR \"weekly limit\" OR \"five-hour limit\" OR \"5-hour limit\")",
       "language": "en",
       "country": "US",
       "maxResults": 100,
@@ -344,7 +420,7 @@
     },
     {
       "id": "developer-products-en",
-      "query": "(\"Claude Code\" OR Qoder OR OpenRouter OR \"GitHub Copilot\" OR Cursor OR \"GPT-Live\")",
+      "query": "(\"Claude Code\" OR Qoder OR OpenCode OR OpenRouter OR \"GitHub Copilot\" OR Cursor OR \"GPT-Live\")",
       "language": "en",
       "country": "US",
       "maxResults": 35,
@@ -352,6 +428,19 @@
       "coverageGroup": "developer-ai",
       "required": false,
       "priority": "priority"
+    },
+    {
+      "id": "opencode-product-en",
+      "query": "OpenCode (launch OR release OR update OR access OR limits OR pricing OR quota OR model OR preview OR soon)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 100,
+      "category": "developer-ai-watch",
+      "coverageGroup": "developer-ai",
+      "required": true,
+      "priority": "priority",
+      "mustReview": true,
+      "reviewLane": "developer-product-operations"
     },
     {
       "id": "claude-code-product-en",
@@ -441,6 +530,32 @@
       "priority": "priority",
       "mustReview": true,
       "reviewLane": "open-weight-releases"
+    },
+    {
+      "id": "qwen-open-weights-en",
+      "query": "(Qwen OR Qwen3.8 OR \"Qwen 3.8\") (\"open weights\" OR \"open-weight\" OR \"model weights\" OR checkpoint OR Hugging Face OR ModelScope)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 100,
+      "category": "open-model-watch",
+      "coverageGroup": "open-models",
+      "required": true,
+      "priority": "priority",
+      "mustReview": true,
+      "reviewLane": "open-weight-releases"
+    },
+    {
+      "id": "ltx-video-releases-en",
+      "query": "(LTX OR LTX-2.5 OR \"LTX 2.5\" OR Lightricks) (launch OR release OR \"open weights\" OR open-weight OR checkpoint OR API OR availability OR ComfyUI)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 100,
+      "category": "video-model-watch",
+      "coverageGroup": "multimodal-models",
+      "required": true,
+      "priority": "priority",
+      "mustReview": true,
+      "reviewLane": "global-video-model-releases"
     },
     {
       "id": "open-model-labs-en",
@@ -636,8 +751,8 @@
       "reviewLane": "china-product-releases"
     },
     {
-      "id": "deepseek-products-zh",
-      "query": "(DeepSeek OR 深度求索) (发布 OR 上线 OR 开源 OR 权重 OR 更新 OR 模型 OR 产品 OR API)",
+      "id": "deepseek-model-releases-zh",
+      "query": "(DeepSeek OR 深度求索) (\"新模型\" OR \"正式发布\" OR \"开源权重\" OR \"上线 API\" OR \"模型更新\" OR \"版本更新\")",
       "language": "zh-CN",
       "country": "CN",
       "ceid": "CN:zh-Hans",
@@ -648,6 +763,45 @@
       "priority": "priority",
       "mustReview": true,
       "reviewLane": "china-model-releases"
+    },
+    {
+      "id": "deepseek-model-releases-en",
+      "query": "(DeepSeek OR \"DeepSeek V4\" OR \"DeepSeek V4 Pro\") (launch OR release OR GA OR production OR model OR API OR weights OR availability OR update)",
+      "language": "en",
+      "country": "US",
+      "maxResults": 100,
+      "category": "china-model-watch",
+      "coverageGroup": "china-models",
+      "required": true,
+      "priority": "priority",
+      "mustReview": true,
+      "reviewLane": "china-model-releases"
+    },
+    {
+      "id": "deepseek-products-zh",
+      "query": "(DeepSeek OR 深度求索) (\"产品上线\" OR \"功能上线\" OR \"开放 API\" OR \"API 上线\" OR \"可用范围\" OR \"价格调整\" OR \"额度调整\" OR \"用量规则\" OR \"服务更新\")",
+      "language": "zh-CN",
+      "country": "CN",
+      "ceid": "CN:zh-Hans",
+      "maxResults": 100,
+      "category": "china-model-watch",
+      "coverageGroup": "china-models",
+      "required": true,
+      "priority": "priority",
+      "mustReview": true,
+      "reviewLane": "china-product-releases"
+    },
+    {
+      "id": "deepseek-broad-zh",
+      "query": "(DeepSeek OR 深度求索) (发布 OR 上线 OR 开源 OR 权重 OR 更新 OR 模型 OR 产品 OR API)",
+      "language": "zh-CN",
+      "country": "CN",
+      "ceid": "CN:zh-Hans",
+      "maxResults": 100,
+      "category": "china-model-watch",
+      "coverageGroup": "china-models",
+      "required": false,
+      "priority": "standard"
     },
     {
       "id": "hunyuan-products-zh",

@@ -150,7 +150,7 @@ export function assertProductionSchedule(run, {
       confirmRunSha256
     })) {
       throw new Error(
-        "--manual-recovery 只允许站长明确授权后，在北京时间当天 08:00 至次日 00:00"
+        "--manual-recovery 只允许站长明确授权后，在北京时间当天 07:00 至次日 00:00"
         + " 投递日期、固定窗口与完整稿件指纹均已双确认的 schemaVersion 4 稿件。"
       );
     }
@@ -178,16 +178,13 @@ export function assertProductionSchedule(run, {
     throw new Error(`生产投递只允许当天运行记录；当前北京时间日期为 ${reportDate}。`);
   }
   const startAt = Date.parse(`${reportDate}T07:00:00+08:00`);
-  const deadlineAt = Date.parse(`${reportDate}T08:00:00+08:00`);
+  const deadlineAt = Date.parse(`${shiftIsoDate(reportDate, 1)}T00:00:00+08:00`);
   if (nowMs < startAt) {
     throw new Error("尚未到北京时间 07:00，拒绝提前生产投递。");
   }
-  if (nowMs >= deadlineAt) {
-    throw new Error("已到北京时间 08:00 硬截止，拒绝迟到补发。");
-  }
   const remainingMs = deadlineAt - nowMs;
   if (remainingMs < MINIMUM_REMAINING_WINDOW_MS) {
-    throw new Error("距离北京时间 08:00 不足 45 秒，拒绝发起可能越过截止线的请求。");
+    throw new Error("距离北京时间当天投递截止不足 45 秒，拒绝发起可能跨日的请求。");
   }
   return { deadlineAt, remainingMs };
 }
@@ -211,7 +208,7 @@ export function isAuthorizedManualRecovery(run, {
   }
   const previousDate = shiftIsoDate(confirmReportDate, -1);
   const nextDate = shiftIsoDate(confirmReportDate, 1);
-  const allowedFrom = Date.parse(`${confirmReportDate}T08:00:00+08:00`);
+  const allowedFrom = Date.parse(`${confirmReportDate}T07:00:00+08:00`);
   const expiresAt = Date.parse(`${nextDate}T00:00:00+08:00`);
   return Number.isFinite(nowMs)
     && nowMs >= allowedFrom

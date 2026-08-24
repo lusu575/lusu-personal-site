@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "profiles": [
+    {
+      "handle": "thsottiaux",
+      "sourceId": "public-x-thsottiaux",
+      "queryId": "codex-operations-en",
+      "coverageGroup": "developer-ai",
+      "reviewLane": "developer-product-operations"
+    },
+    {
+      "handle": "opencode",
+      "sourceId": "public-x-opencode",
+      "queryId": "opencode-product-en",
+      "coverageGroup": "developer-ai",
+      "reviewLane": "developer-product-operations"
+    },
+    {
+      "handle": "Alibaba_Qwen",
+      "sourceId": "public-x-alibaba-qwen",
+      "queryId": "qwen-open-weights-en",
+      "coverageGroup": "china-open-models",
+      "reviewLane": "open-weight-releases"
+    },
+    {
+      "handle": "ltx_io",
+      "sourceId": "public-x-ltx-io",
+      "queryId": "ltx-video-releases-en",
+      "coverageGroup": "multimodal-models",
+      "reviewLane": "global-video-model-releases"
+    },
+    {
+      "handle": "xai",
+      "sourceId": "public-x-xai",
+      "queryId": "xai-grok-products-en",
+      "coverageGroup": "global-frontier",
+      "reviewLane": "frontier-product-operations"
+    },
+    {
+      "handle": "OpenAI",
+      "sourceId": "public-x-openai",
+      "queryId": "openai-product-operations-en",
+      "coverageGroup": "global-frontier",
+      "reviewLane": "openai-product-operations"
+    },
+    {
+      "handle": "deepseek_ai",
+      "sourceId": "public-x-deepseek",
+      "queryId": "deepseek-model-releases-en",
+      "coverageGroup": "china-models",
+      "reviewLane": "china-model-releases"
+    },
+    {
+      "handle": "Kimi_Moonshot",
+      "sourceId": "public-x-kimi",
+      "queryId": "moonshot-kimi-zh",
+      "coverageGroup": "china-models",
+      "reviewLane": "china-model-releases"
+    },
+    {
+      "handle": "MiniMax__AI",
+      "sourceId": "public-x-minimax",
+      "queryId": "minimax-products-zh",
+      "coverageGroup": "china-models",
+      "reviewLane": "china-product-releases"
+    },
+    {
+      "handle": "MistralAI",
+      "sourceId": "public-x-mistral",
+      "queryId": "frontier-labs-people-en",
+      "coverageGroup": "global-frontier",
+      "reviewLane": "frontier-product-operations"
+    },
+    {
+      "handle": "runwayml",
+      "sourceId": "public-x-runway",
+      "queryId": "global-video-models-en-primary",
+      "coverageGroup": "multimodal-models",
+      "reviewLane": "global-video-model-releases"
+    }
+  ]
+}

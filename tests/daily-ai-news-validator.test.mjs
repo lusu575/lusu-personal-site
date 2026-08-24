@@ -9,6 +9,7 @@ import {
   isHistoricalOneShotWindow,
   isRegisteredLegacyCoverageManifest,
   readAndValidateRun,
+  validateMergedPriorityEventIdentities,
   validateRun
 } from "../自动新闻/integrations/lusu-site/validate-draft.mjs";
 import {
@@ -778,15 +779,15 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   assert.equal(workflow.calendar.windowStartLocalTime, "07:00");
   assert.equal(workflow.calendar.windowEndLocalTime, "07:00");
   assert.equal(workflow.calendar.generationStartLocalTime, "07:00");
-  assert.equal(workflow.calendar.publishDeadlineLocalTime, "08:00");
-  assert.equal(workflow.calendar.deadlinePolicy, "fail-closed");
+  assert.equal(workflow.calendar.publishDeadlineLocalTime, "next-day-00:00");
+  assert.equal(workflow.calendar.deadlinePolicy, "same-report-date-fail-closed");
   assert.equal(workflow.calendar.historicalOneShot.requiresExplicitFlag, "--one-shot-history");
   assert.equal(
     workflow.calendar.manualRecovery.authorizationSource,
     "explicit-site-owner-request-in-interactive-codex-task"
   );
   assert.equal(workflow.calendar.manualRecovery.automaticSchedulerAllowed, false);
-  assert.equal(workflow.calendar.manualRecovery.allowedFromLocalTime, "08:00");
+  assert.equal(workflow.calendar.manualRecovery.allowedFromLocalTime, "07:00");
   assert.equal(workflow.calendar.manualRecovery.expiresAtLocalTime, "next-day-00:00");
   assert.deepEqual(workflow.calendar.manualRecovery.requiresConfirmations, [
     "--confirm-report-date",
@@ -803,6 +804,10 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   assert.equal(workflow.collection.languagePolicy, "any-reliable-language");
   assert.deepEqual(workflow.collection.seedLanguages, ["en", "zh-CN", "ja", "ko"]);
   assert.equal(workflow.collection.coverageReview.lowVolumeTrigger, 5);
+  assert.equal(
+    workflow.collection.coverageReview.lowVolumeAction,
+    "mandatory-second-pass-then-fail-closed-below-minimum"
+  );
   assert.equal(
     workflow.collection.coverageReview.mustReviewCandidateSource,
     "coverage_manifest.json.mustReviewCandidateIds"
@@ -834,7 +839,7 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   );
   assert.equal(
     workflow.collection.coverageReview.lowVolumeAction,
-    "mandatory-second-pass-without-filler"
+    "mandatory-second-pass-then-fail-closed-below-minimum"
   );
   assert.equal(workflow.article.styleGuide, "ARTICLE_STYLE.md");
   assert.equal(workflow.article.intro.allowed, false);
@@ -866,6 +871,27 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
     )
   );
   assert.equal(workflow.selection.lowVolumeTrigger, 5);
+  assert.equal(workflow.selection.minimumSelectedStories, 5);
+  assert.equal(
+    workflow.selection.minimumSelectedStoriesEffectiveReportDate,
+    "2026-08-10"
+  );
+  assert.equal(workflow.selection.minimumRumorStories, 0);
+  assert.equal(
+    workflow.selection.relaxedRumorPolicyEffectiveReportDate,
+    "2026-08-13"
+  );
+  assert.equal(workflow.selection.confirmedStoryMinimumScore, 6);
+  assert.equal(workflow.selection.rumorStoryMinimumScore, 5);
+  assert.equal(
+    workflow.selection.lowerRumorGateEffectiveReportDate,
+    "2026-08-24"
+  );
+  assert.equal(workflow.selection.sections.rumor.minimumItems, 0);
+  assert.equal(workflow.selection.sections.rumor.maxItems, null);
+  assert.equal(workflow.selection.sections.rumor.minimumIsFloorNotQuota, true);
+  assert.equal(workflow.selection.sections.rumor.retainAllThresholdClearingItems, true);
+  assert.equal(workflow.selection.sections.rumor.minimumScore, 5);
   assert.equal(
     workflow.selection.coverageAuditContract.secondPassRepeatsAllRequiredSignoffs,
     true
@@ -950,7 +976,8 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   assert.equal(workflow.delivery.autoPublish, true);
   assert.equal(workflow.delivery.schedulerEnabled, true);
   assert.equal(workflow.delivery.failurePolicy, "fail-closed");
-  assert.equal(workflow.delivery.automaticLatePublishForbidden, true);
+  assert.equal(workflow.delivery.automaticLatePublishForbidden, false);
+  assert.equal(workflow.delivery.sameReportDatePublicationAllowedAfter08, true);
   assert.equal(workflow.delivery.manualRecoveryReference, "MANUAL_RECOVERY.md");
   assert.equal(workflow.compatibility.formalRunSchemaVersion, 4);
   assert.equal(workflow.compatibility.historicalOneShotSchemaVersion, 3);
@@ -1007,8 +1034,12 @@ test("schema 3 is rejected for formal runs", () => {
   assert.throws(() => validateRun(oldFormalRun), /schemaVersion 4/);
 });
 
-test("Daily AI News section counts stay flexible outside the single lead", () => {
+test("Daily AI News validator fails closed when fewer than five stories are selected", () => {
   const run = validRun();
+  run.reportDate = "2026-08-10";
+  run.windowStart = "2026-08-09T07:00:00+08:00";
+  run.windowEnd = "2026-08-10T07:00:00+08:00";
+  run.delivery.slug = "daily-ai-news-2026-08-10";
   run.candidates = [run.candidates[0]];
   run.selection.selectedStoryKeys = [run.candidates[0].storyKey];
   run.delivery.translations = {
@@ -1029,7 +1060,10 @@ test("Daily AI News section counts stay flexible outside the single lead", () =>
     }
   };
 
-  assert.doesNotThrow(() => validateRun(run));
+  assert.throws(
+    () => validateRun(run),
+    /只有 1 条入选新闻，少于站长规定的最低 5 条.*必须停止投递/
+  );
 });
 
 test("Daily AI News validator requires exactly one confirmed lead", () => {
@@ -1092,6 +1126,14 @@ test("Daily AI News validator locks section order without repeating rumor discla
       "这条消息尚未得到官方确认，目前只有二手说法"
     );
   assert.throws(() => validateRun(repeatedWording), /传闻正文不得重复书写“未证实”类提示/);
+
+  const attributedChineseReport = clone(validRun());
+  attributedChineseReport.delivery.translations.zh.content_markdown =
+    attributedChineseReport.delivery.translations.zh.content_markdown.replace(
+      "目前只有二手说法，缺少公司公告或其他可独立核验的材料，因此仅记录事件、关键金额、可能影响和仍会变化的条件。",
+      "据雷峰网报道，厂商在世界机器人大会展示了一套面向工业生产的新系统，现场公布了多项性能数据，但这些数字仍需长期运行和第三方测试独立验证。"
+    );
+  assert.doesNotThrow(() => validateRun(attributedChineseReport));
 
   const noConditionalLanguage = clone(validRun());
   noConditionalLanguage.delivery.translations.en.content_markdown =
@@ -1847,6 +1889,92 @@ test("all-discovered review fails closed on August 3 style classification and sc
   );
 });
 
+test("Daily AI News validator allows fewer than five evidence-qualified rumors", () => {
+  const run = validRun();
+  run.reportDate = "2026-08-24";
+  run.windowStart = "2026-08-23T07:00:00+08:00";
+  run.windowEnd = "2026-08-24T07:00:00+08:00";
+  run.delivery.slug = "daily-ai-news-2026-08-24";
+  run.delivery.idempotencyKey = "daily-ai-news:2026-08-24:validator-test";
+  run.selection.importanceThreshold = 6;
+  run.selection.rumorImportanceThreshold = 5;
+  run.candidates.find((item) => item.section === "rumor").importance = 5;
+  run.coverageAudit.secondPass = {
+    required: false,
+    completed: false,
+    signedOffQueryIds: [],
+    signedOffGroupIds: []
+  };
+  for (const storyKey of ["confirmed-main-two", "confirmed-main-three"]) {
+    run.candidates.push(candidate({
+      storyKey,
+      section: "main",
+      verification: "confirmed",
+      aiTake: "它补充了另一项达到门槛的确认进展，而不是为了满足传闻数量而添加内容。"
+    }));
+    run.selection.selectedStoryKeys.push(storyKey);
+  }
+  const extraSections = {
+    zh: [
+      "### 第二条确认新闻\n\n这是一条独立、位于窗口内并达到门槛的确认新闻，正文提供足够信息供读者理解实际变化。\n\n**AI 解读：** 它补充了有效信息，不用于填充传闻栏目。",
+      "### 第三条确认新闻\n\n另一条独立确认新闻说明了不同事件的参与方、变化范围和读者可采取的下一步行动。\n\n**AI 解读：** 价值来自独立事件本身，而不是栏目数量。"
+    ],
+    en: [
+      "### A second confirmed item\n\nThis independent in-window item clears the publication threshold and gives readers enough detail to understand the practical change.\n\n**AI take:** It adds useful information without padding the rumor section.",
+      "### A third confirmed item\n\nAnother independent confirmed item explains a different event, its scope and the next practical action for readers.\n\n**AI take:** Its value comes from the event itself, not a section count."
+    ],
+    ja: [
+      "### 2件目の確認済みニュース\n\n期間内の独立した確認済みニュースとして基準を満たし、実際の変化を理解できる情報を整理します。\n\n**AI解説：** 噂欄を埋めるためではなく、有用な情報を追加します。",
+      "### 3件目の確認済みニュース\n\n別の独立した出来事について、関係者、範囲、読者が取れる次の行動を説明します。\n\n**AI解説：** 価値は件数ではなく、出来事そのものにあります。"
+    ]
+  };
+  const rumorHeadings = { zh: "## 传闻", en: "## Rumors", ja: "## 噂" };
+  for (const lang of ["zh", "en", "ja"]) {
+    run.delivery.translations[lang].content_markdown =
+      run.delivery.translations[lang].content_markdown.replace(
+        `\n${rumorHeadings[lang]}`,
+        `\n${extraSections[lang].join("\n\n")}\n\n${rumorHeadings[lang]}`
+      );
+  }
+  for (const runCandidate of run.candidates) {
+    runCandidate.publishedDate = "2026-08-24";
+    runCandidate.publishedAt = "2026-08-24T06:00:00+08:00";
+  }
+  assert.doesNotThrow(() => validateRun(run));
+});
+
+test("Daily AI News validator keeps the historical six-point rumor gate", () => {
+  const run = validRun();
+  run.selection.importanceThreshold = 6;
+  run.selection.rumorImportanceThreshold = 5;
+  run.candidates.find((item) => item.section === "rumor").importance = 5;
+  assert.throws(
+    () => validateRun(run),
+    /低于重要性门槛却被选入/
+  );
+});
+
+test("priority review rejects cross-event merges caused by secondary title mentions", () => {
+  assert.throws(
+    () => validateMergedPriorityEventIdentities([
+      {
+        candidateId: "candidate-grok",
+        decision: "selected",
+        eventKey: "grok-4-6",
+        eventStage: "release"
+      },
+      {
+        candidateId: "candidate-deepseek-title-also-mentions-grok",
+        decision: "merged",
+        representativeCandidateId: "candidate-grok",
+        eventKey: "deepseek-v4-pro-0813",
+        eventStage: "release"
+      }
+    ]),
+    /不得因次要提及而跨事件 merged/
+  );
+});
+
 test("all-discovered review rejects rotating hash score and note palettes", async (t) => {
   const fixture = await writeFormalCoverageFixture(t, {
     withPriorityReview: true,
@@ -2019,21 +2147,21 @@ test("Daily AI News keeps the 27 July 23:00 sample behind an explicit one-shot",
   }));
 });
 
-test("Daily AI News production delivery enforces Beijing 07:00-08:00 and current date", () => {
+test("Daily AI News production delivery allows the full Beijing report date after 07:00", () => {
   const run = validRun();
   const openWindow = assertProductionSchedule(run, {
     now: new Date("2026-07-26T23:30:00.000Z")
   });
-  assert.equal(openWindow.deadlineAt, Date.parse("2026-07-27T08:00:00+08:00"));
+  assert.equal(openWindow.deadlineAt, Date.parse("2026-07-28T00:00:00+08:00"));
 
   assert.throws(() => assertProductionSchedule(run, {
     now: new Date("2026-07-26T22:59:59.000Z")
   }), /尚未到北京时间 07:00/);
-  assert.throws(() => assertProductionSchedule(run, {
+  assert.doesNotThrow(() => assertProductionSchedule(run, {
     now: new Date("2026-07-27T00:00:00.000Z")
-  }), /08:00 硬截止/);
+  }));
   assert.throws(() => assertProductionSchedule(run, {
-    now: new Date("2026-07-26T23:59:30.000Z")
+    now: new Date("2026-07-27T15:59:30.000Z")
   }), /不足 45 秒/);
 
   const historical = clone(run);
@@ -2223,19 +2351,19 @@ test("Daily AI News manual recovery requires same-day double confirmation", () =
     ...confirmation
   }));
 
-  assert.throws(() => assertProductionSchedule(recovery, {
+  assert.doesNotThrow(() => assertProductionSchedule(recovery, {
     now: authorizedAt
-  }), /08:00 硬截止/);
+  }));
   assert.throws(() => assertProductionSchedule(recovery, {
     now: authorizedAt,
     confirmReportDate: confirmation.confirmReportDate,
     confirmRunSha256: confirmation.confirmRunSha256
   }), /只能与 --manual-recovery/);
-  assert.throws(() => assertProductionSchedule(recovery, {
+  assert.doesNotThrow(() => assertProductionSchedule(recovery, {
     now: new Date("2026-07-27T07:59:59+08:00"),
     manualRecovery: true,
     ...confirmation
-  }), /当天 08:00 至次日 00:00/);
+  }));
   assert.doesNotThrow(() => assertProductionSchedule(recovery, {
     now: new Date("2026-07-27T23:59:15+08:00"),
     manualRecovery: true,
@@ -2250,7 +2378,7 @@ test("Daily AI News manual recovery requires same-day double confirmation", () =
     now: new Date("2026-07-28T00:00:00+08:00"),
     manualRecovery: true,
     ...confirmation
-  }), /当天 08:00 至次日 00:00/);
+  }), /当天 07:00 至次日 00:00/);
 
   assert.equal(isAuthorizedManualRecovery(recovery, {
     now: authorizedAt,

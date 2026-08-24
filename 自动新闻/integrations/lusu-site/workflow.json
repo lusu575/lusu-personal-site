@@ -8,9 +8,9 @@
     "windowStartLocalTime": "07:00",
     "windowEndLocalTime": "07:00",
     "generationStartLocalTime": "07:00",
-    "publishDeadlineLocalTime": "08:00",
+    "publishDeadlineLocalTime": "next-day-00:00",
     "datePrecisionPolicy": "exact-timestamp-required",
-    "deadlinePolicy": "fail-closed",
+    "deadlinePolicy": "same-report-date-fail-closed",
     "historicalOneShot": {
       "reportDate": "2026-07-27",
       "windowStart": "2026-07-26T23:00:00+08:00",
@@ -20,7 +20,7 @@
     "manualRecovery": {
       "authorizationSource": "explicit-site-owner-request-in-interactive-codex-task",
       "automaticSchedulerAllowed": false,
-      "allowedFromLocalTime": "08:00",
+      "allowedFromLocalTime": "07:00",
       "expiresAtLocalTime": "next-day-00:00",
       "sameShanghaiCalendarDayOnly": true,
       "requiresExplicitFlag": "--manual-recovery",
@@ -71,7 +71,7 @@
       "protectedEventReviewRequiredRegardlessOfSelectedCount": true,
       "lowVolumeTrigger": 5,
       "lowVolumeMeaning": "selected-story-count",
-      "lowVolumeAction": "mandatory-second-pass-without-filler"
+      "lowVolumeAction": "mandatory-second-pass-then-fail-closed-below-minimum"
     }
   },
   "selection": {
@@ -93,6 +93,9 @@
         "duplicate"
       ],
       "selectedDuplicateAllowed": false,
+      "selectedAndMergedPriorityDecisionsRequireEventIdentityEffectiveReportDate": "2026-08-13",
+      "mergedMustMatchRepresentativeEventIdentity": true,
+      "secondaryTitleMentionNeverEstablishesMergeIdentity": true,
       "materialUpdateRequires": [
         "priorStoryKey",
         "materialDifference"
@@ -328,8 +331,20 @@
       "insufficientEvidenceMustNotInventFirstPublicationTime": true,
       "completedAt": "strictly-after-candidateIndexReviewedAt"
     },
+    "minimumSelectedStories": 5,
+    "minimumSelectedStoriesEffectiveReportDate": "2026-08-10",
+    "minimumRumorStories": 0,
+    "relaxedRumorPolicyEffectiveReportDate": "2026-08-13",
+    "lowerRumorGateEffectiveReportDate": "2026-08-24",
+    "confirmedStoryMinimumScore": 6,
+    "rumorStoryMinimumScore": 5,
+    "rumorEvidenceBases": [
+      "attributed-first-party-teaser",
+      "two-independent-reliable-reports",
+      "one-attributed-reliable-report"
+    ],
     "lowVolumeTrigger": 5,
-    "lowVolumeRule": "Fewer than five selected stories requires a complete second coverage pass, but never lowers the importance threshold or forces filler.",
+    "lowVolumeRule": "Fewer than five selected stories requires a complete second coverage pass and then fails closed without publication if the run still has fewer than five; the importance threshold never drops and filler is forbidden.",
     "editorialScoring": "Codex applies Horizon-compatible importance criteria to the current Horizon candidate artifact",
     "selectedItemContract": {
       "requiredFields": [
@@ -361,16 +376,23 @@
         "verification": "confirmed"
       },
       "rumor": {
+        "minimumItems": 0,
         "maxItems": null,
+        "minimumIsFloorNotQuota": true,
+        "retainAllThresholdClearingItems": true,
         "verification": "unverified",
-        "requiresWhyUnverified": true
+        "requiresWhyUnverified": true,
+        "minimumScore": 5,
+        "allowsAttributedFirstPartyTeaser": true,
+        "allowsTwoIndependentReliableReports": true,
+        "allowsOneAttributedReliableReportEffectiveReportDate": "2026-08-24"
       }
     }
   },
   "evidence": {
     "preferPrimarySources": true,
     "allowRumors": true,
-    "rumorPolicy": "Rumors are allowed only in the isolated rumor section, must use conditional language, and must never be stated as fact. Do not repeat an unverified disclaimer inside every item.",
+    "rumorPolicy": "Effective 2026-08-24, the isolated rumor section has no item-count floor and uses score 5. A rumor may be supported by an attributed first-party public teaser, one attributable reliable direct report, or at least two independent reliable direct reports. Conditional language and a specific whyUnverified remain mandatory; no rumor may be stated as fact or filled from discovery-only aggregators, anonymous screenshots, duplicates, or pure speculation.",
     "keepSourceUrlsInternalOnly": true
   },
   "article": {
@@ -488,7 +510,8 @@
     "autoPublish": true,
     "schedulerEnabled": true,
     "failurePolicy": "fail-closed",
-    "automaticLatePublishForbidden": true,
+    "automaticLatePublishForbidden": false,
+    "sameReportDatePublicationAllowedAfter08": true,
     "manualRecoveryReference": "MANUAL_RECOVERY.md"
   },
   "compatibility": {

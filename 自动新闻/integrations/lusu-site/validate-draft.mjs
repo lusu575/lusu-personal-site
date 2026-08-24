@@ -20,7 +20,15 @@ const LEGACY_COVERAGE_MANIFEST = Object.freeze({
 });
 const CANDIDATE_ARTIFACT_SCHEMA_VERSION = 2;
 const CANDIDATE_INDEX_SCHEMA_VERSION = 1;
-const LOW_VOLUME_TRIGGER = 5;
+const MINIMUM_SELECTED_STORIES = 5;
+const MINIMUM_SELECTED_STORIES_EFFECTIVE_DATE = "2026-08-10";
+const MINIMUM_RUMOR_STORIES = 0;
+const RELAXED_RUMOR_POLICY_EFFECTIVE_DATE = "2026-08-13";
+const LOWER_RUMOR_GATE_EFFECTIVE_DATE = "2026-08-24";
+const CONFIRMED_STORY_MINIMUM_SCORE = 6;
+const LEGACY_RUMOR_STORY_MINIMUM_SCORE = 6;
+const RUMOR_STORY_MINIMUM_SCORE = 5;
+const LOW_VOLUME_TRIGGER = MINIMUM_SELECTED_STORIES;
 const PRODUCTION_WINDOW_END_LOCAL_TIME = "07:00";
 const HISTORICAL_ONE_SHOT_WINDOW = Object.freeze({
   reportDate: "2026-07-27",
@@ -79,9 +87,20 @@ const PROTECTED_EVENT_VERIFICATION_STATUSES = new Set([
   "insufficient-evidence"
 ]);
 const PROTECTED_EVENT_DISPOSITIONS = new Set(["selected", "rejected"]);
+const RUMOR_EVIDENCE_BASES = new Set([
+  "attributed-first-party-teaser",
+  "two-independent-reliable-reports",
+  "one-attributed-reliable-report"
+]);
 const DEGENERATE_REVIEW_MIN_CANDIDATES = 50;
 const DEGENERATE_SCORE_TEMPLATE_RATIO = 0.9;
 const DEGENERATE_SCORE_PALETTE_MAX = 8;
+
+function rumorMinimumScore(reportDate) {
+  return reportDate >= LOWER_RUMOR_GATE_EFFECTIVE_DATE
+    ? RUMOR_STORY_MINIMUM_SCORE
+    : LEGACY_RUMOR_STORY_MINIMUM_SCORE;
+}
 const DEGENERATE_NARRATIVE_PALETTE_MAX = 32;
 const PROTECTED_EVENT_MIN_SUMMARY_LENGTH = 24;
 const PROTECTED_EVENT_MIN_RATIONALE_LENGTH = 12;
@@ -113,7 +132,7 @@ const ARTICLE_STRUCTURE = {
     aiTakeMarker: "**AI 解读：**",
     forbiddenRumorLabelPattern: /^\*\*(?:核实状态|确认状态)[：:]/,
     forbiddenRepeatedRumorWordingPattern: /未获?官方证实|尚未(?:得到|获得)?(?:官方)?确认|待核实/,
-    rumorConditionalPattern: /据(?:报道|悉)|可能|或将|正在商谈|计划|预计|传出|有望|若|拟/,
+    rumorConditionalPattern: /据(?:报道|悉|[^，。；\n]{1,24}报道)|可能|或将|正在商谈|计划|预计|传出|有望|若|拟/,
     genericAiTakePattern: /^(?:这(?:条|项)(?:新闻|消息)?(?:很|非常)?)?(?:值得关注|影响很大|意义重大|未来可期)[。！!]?$/i
   },
   en: {
@@ -236,6 +255,23 @@ export function validateRun(run, { allowHistoricalOneShot = false } = {}) {
   if (!Number.isFinite(threshold) || threshold < 0 || threshold > 10) {
     errors.push("重要性门槛必须是 0 至 10 的数字。");
   }
+  if (reportDate >= RELAXED_RUMOR_POLICY_EFFECTIVE_DATE
+    && threshold !== CONFIRMED_STORY_MINIMUM_SCORE) {
+    errors.push(
+      `已确认新闻重要性门槛必须是 ${CONFIRMED_STORY_MINIMUM_SCORE}。`
+    );
+  }
+  const rumorThreshold = reportDate >= RELAXED_RUMOR_POLICY_EFFECTIVE_DATE
+    ? Number(run.selection?.rumorImportanceThreshold)
+    : threshold;
+  const expectedRumorThreshold = rumorMinimumScore(reportDate);
+  if (reportDate >= RELAXED_RUMOR_POLICY_EFFECTIVE_DATE
+    && rumorThreshold !== expectedRumorThreshold) {
+    errors.push(
+      `传闻重要性门槛必须是 ${expectedRumorThreshold}，`
+      + `已确认新闻仍使用 ${CONFIRMED_STORY_MINIMUM_SCORE} 分门槛。`
+    );
+  }
   if (run.selection?.maxItems !== null) {
     errors.push("maxItems 必须为 null，新闻数量不能写死。");
   }
@@ -288,7 +324,11 @@ export function validateRun(run, { allowHistoricalOneShot = false } = {}) {
         && (publishedAt < windowStart || publishedAt >= windowEnd)) {
         errors.push(`${label} 不在发布前 24 小时窗口内。`);
       }
-      if (importance < threshold) {
+      const selectedThreshold = reportDate >= RELAXED_RUMOR_POLICY_EFFECTIVE_DATE
+        && item?.section === "rumor"
+        ? expectedRumorThreshold
+        : threshold;
+      if (importance < selectedThreshold) {
         errors.push(`${label} 低于重要性门槛却被选入。`);
       }
       if (!String(item?.whyWorth || "").trim()) {
@@ -298,8 +338,12 @@ export function validateRun(run, { allowHistoricalOneShot = false } = {}) {
     }
   }
 
-  if (!selected.length) {
-    errors.push("本运行没有入选新闻；这种情况应报告“今日无稿”，而不是生成空文章。");
+  if (reportDate >= MINIMUM_SELECTED_STORIES_EFFECTIVE_DATE
+    && selected.length < MINIMUM_SELECTED_STORIES) {
+    errors.push(
+      `本运行只有 ${selected.length} 条入选新闻，少于站长规定的最低 ${MINIMUM_SELECTED_STORIES} 条；`
+      + "必须停止投递并排查发现、核验或编辑链路，不能生成或发布低于最低数量的文章。"
+    );
   }
   const sectionCounts = countSelectedSections(selected);
   if (sectionCounts.lead !== 1) {
@@ -386,7 +430,7 @@ function validateCoverageAudit(audit, selectedCount, errors) {
   if (secondPass.required !== secondPassRequired) {
     errors.push(
       `coverageAudit.secondPass.required 必须为 ${secondPassRequired}；`
-      + `少于 ${LOW_VOLUME_TRIGGER} 条只触发二次审阅，不代表最低刊发数量。`
+      + `少于 ${LOW_VOLUME_TRIGGER} 条必须完成二次审阅，并在仍不足最低数量时停止投递。`
     );
   }
   if (secondPassRequired) {
@@ -1035,6 +1079,8 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
   const decisionsByCandidateId = new Map();
   const selectedStoryKeys = new Set();
   const allIndexIds = new Set(indexById.keys());
+  const requiresEventIdentity = String(run.reportDate || "")
+    >= RELAXED_RUMOR_POLICY_EFFECTIVE_DATE;
 
   for (const [index, entry] of priorityReview.decisions.entries()) {
     const label = `coverageAudit.priorityReview.decisions[${index}]`;
@@ -1121,6 +1167,25 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
           `${label}.sourceCandidateIds 必须与入选新闻 ${storyKey} 的 sourceCandidateIds 一致。`
         );
       }
+      if (requiresEventIdentity) {
+        const eventKey = String(entry.eventKey || "");
+        const eventStage = String(entry.eventStage || "");
+        if (eventKey !== String(selectedRunCandidate.eventKey || "")
+          || eventStage !== String(selectedRunCandidate.eventStage || "")) {
+          throw new Error(
+            `${label}.eventKey/eventStage 必须与实际入选新闻一致，不能按标题中的次要提及跨事件合并。`
+          );
+        }
+        const minimumScore = selectedRunCandidate.section === "rumor"
+          ? rumorMinimumScore(String(run.reportDate || ""))
+          : CONFIRMED_STORY_MINIMUM_SCORE;
+        if (scoreTotal < minimumScore) {
+          throw new Error(
+            `${label} 的 ${selectedRunCandidate.section} 入选评分为 ${scoreTotal}，`
+            + `低于该栏目的最低 ${minimumScore} 分。`
+          );
+        }
+      }
       selectedStoryKeys.add(storyKey);
     } else if (decision === "merged") {
       const representativeCandidateId = String(entry.representativeCandidateId || "");
@@ -1162,11 +1227,15 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
           `${label} 是明确的用量／限额规则变化，不得以重要性不足、例行消息或超出范围为由拒绝；应核验一手来源，重复事件则 merged。`
         );
       }
-      if (protectedEditorialClass && scoreTotal >= 7
+      const protectedMinimumScore = String(run.reportDate || "")
+        >= RELAXED_RUMOR_POLICY_EFFECTIVE_DATE
+        ? CONFIRMED_STORY_MINIMUM_SCORE
+        : 7;
+      if (protectedEditorialClass && scoreTotal >= protectedMinimumScore
         && rejectionReason !== "outside-publication-window") {
         throw new Error(
           `重点候选 ${candidateId} 属于受保护的重要变化类别，`
-          + "评分达到 7 分后不得拒绝。"
+          + `评分达到 ${protectedMinimumScore} 分后不得拒绝。`
         );
       }
     }
@@ -1259,6 +1328,30 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
     if (!stringArray(representative.sourceCandidateIds).includes(candidateId)) {
       throw new Error(
         `代表候选 ${representativeCandidateId} 的 sourceCandidateIds 必须包含并入候选 ${candidateId}。`
+      );
+    }
+  }
+  if (requiresEventIdentity) {
+    validateMergedPriorityEventIdentities([...decisionsByCandidateId.values()]);
+  }
+}
+
+export function validateMergedPriorityEventIdentities(decisions) {
+  const byCandidateId = new Map(
+    decisions.map((entry) => [String(entry?.candidateId || ""), entry])
+  );
+  for (const entry of decisions) {
+    if (entry?.decision !== "merged") {
+      continue;
+    }
+    const candidateId = String(entry.candidateId || "");
+    const representativeCandidateId = String(entry.representativeCandidateId || "");
+    const representative = byCandidateId.get(representativeCandidateId);
+    if (String(entry.eventKey || "") !== String(representative?.eventKey || "")
+      || String(entry.eventStage || "") !== String(representative?.eventStage || "")) {
+      throw new Error(
+        `重点候选 ${candidateId} 与代表候选 ${representativeCandidateId} 的 eventKey/eventStage 不一致；`
+        + "同一标题提到多个模型或产品时，不得因次要提及而跨事件 merged。"
       );
     }
   }
@@ -1479,6 +1572,7 @@ function validateProtectedEventReview({
     }
 
     const rejectionReason = String(event.rejectionReason || "");
+    let selectedCandidate = null;
     if (disposition === "selected") {
       if (representativeDecision?.decision !== "selected") {
         throw new Error(`${label} 的代表候选必须在 priorityReview 中标为 selected。`);
@@ -1496,7 +1590,7 @@ function validateProtectedEventReview({
           );
         }
       }
-      const selectedCandidate = selectedRunCandidates.get(
+      selectedCandidate = selectedRunCandidates.get(
         String(representativeDecision.storyKey || "")
       );
       if (String(selectedCandidate?.eventKey || "") !== eventKey
@@ -1537,6 +1631,31 @@ function validateProtectedEventReview({
         `${label}.reliableSourceUrls 只能包含不重复的 HTTPS 官方／可靠直达来源，`
         + "不得使用 Google News、Reddit、Hacker News 或 Bing 聚合页。"
       );
+    }
+    if (String(run.reportDate || "") >= RELAXED_RUMOR_POLICY_EFFECTIVE_DATE
+      && selectedCandidate?.section === "rumor") {
+      const rumorEvidenceBasis = String(event.rumorEvidenceBasis || "");
+      const oneReportAllowed = String(run.reportDate || "")
+        >= LOWER_RUMOR_GATE_EFFECTIVE_DATE;
+      if (!RUMOR_EVIDENCE_BASES.has(rumorEvidenceBasis)
+        || (rumorEvidenceBasis === "one-attributed-reliable-report"
+          && !oneReportAllowed)) {
+        throw new Error(
+          `${label}.rumorEvidenceBasis 必须说明传闻来自当事人公开预告，`
+          + (oneReportAllowed
+            ? "一篇有明确归属的可靠直接报道，或至少两家独立可靠媒体的直接报道。"
+            : "或至少两家独立可靠媒体的直接报道。")
+        );
+      }
+      if (rumorEvidenceBasis === "two-independent-reliable-reports") {
+        const reliableHosts = new Set(reliableSourceUrls.map(evidenceHostname));
+        reliableHosts.delete("");
+        if (reliableHosts.size < 2) {
+          throw new Error(
+            `${label} 使用双媒体传闻门禁时，必须提供至少两个独立可靠来源域名。`
+          );
+        }
+      }
     }
     const firstReliablePublishedAt = parseTimestamp(
       event.firstReliablePublishedAt
@@ -2092,6 +2211,14 @@ function isDirectReliableEvidenceUrl(value) {
     ));
   } catch {
     return false;
+  }
+}
+
+function evidenceHostname(value) {
+  try {
+    return new URL(String(value)).hostname.toLowerCase().replace(/^www\./, "");
+  } catch {
+    return "";
   }
 }
 
