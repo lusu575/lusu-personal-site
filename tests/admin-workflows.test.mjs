@@ -52,7 +52,7 @@ test("admin safely switches independent Daily AI News and Tool Radar delivery co
   assert.match(html, /本机定时任务 ai-7-8 已启用，每日 07:00 开始/);
   assert.match(html, /时区：Asia\/Shanghai；每个栏目的开关、自动公开和凭证彼此独立/);
   assert.match(html, /admin\.css\?v=20260809-admin-motion-polish-r2/);
-  assert.match(html, /admin\.js\?v=20260809-admin-motion-polish-r2/);
+  assert.match(html, /admin\.js\?v=20260827-private-room-lifecycle-r1/);
   assert.doesNotMatch(html, /本轮只准备入口，不创建定时任务/);
   for (const id of [
     "automation-channel-select",

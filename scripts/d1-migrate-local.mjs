@@ -277,7 +277,7 @@ export async function migrateLocalD1() {
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260820-chat-whiteboard-ui-r2'
+    where key = 'article_seed_version' and value = '20260827-private-room-lifecycle-r1'
     `),
     ...await queryRows(`
     select 'daily-ai-news-rss-update-article' as item,

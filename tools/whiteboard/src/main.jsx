@@ -37,7 +37,7 @@ import {
 } from "./assets.js";
 
 const RECENT_ROOM_KEY = "lusu-whiteboard-recent-room-v1";
-const WHITEBOARD_VERSION = "1.0.8";
+const WHITEBOARD_VERSION = "1.0.9";
 const NAME_COOLDOWN_MS = 30_000;
 const PASSWORD_MIN_LENGTH = 4;
 const PASSWORD_MAX_LENGTH = 128;

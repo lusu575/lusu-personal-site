@@ -52,8 +52,8 @@ export const resourcesContent = Object.freeze({
       "toolId": "whiteboard",
       "capabilityDomain": "whiteboard",
       "iconSrc": "assets/images/generated-icons/whiteboard.png?v=20260730-online-whiteboard-r1",
-      "version": "v1.0.8",
-      "updated": "2026.08.20",
+      "version": "v1.0.9",
+      "updated": "2026.08.27",
       "external": false,
       "showReadyStatus": false,
       "url": "/tools/whiteboard/",
@@ -96,13 +96,13 @@ export const resourcesContent = Object.freeze({
       "capabilityDomain": "transfer",
       "action": "quick-transfer",
       "iconSrc": "assets/images/generated-icons/quick-transfer.png?v=20260719-content-experience-fixes-r1",
-      "version": "v1.0.11",
+      "version": "v1.0.12",
       "retention": {
         "zh": "24 小时",
         "en": "24 hours",
         "ja": "24時間"
       },
-      "updated": "2026.08.09",
+      "updated": "2026.08.27",
       "external": false,
       "title": {
         "zh": "临时互传",
@@ -110,9 +110,9 @@ export const resourcesContent = Object.freeze({
         "ja": "一時転送"
       },
       "desc": {
-        "zh": "登录后可在口令房间中发送浏览器端 AES-GCM 加密文字，以及通过 HTTPS、私有 R2 和服务端鉴权保护的图片、视频与文件；内容在发布完成 24 小时后失效。",
-        "en": "After signing in, share text encrypted in the browser with AES-GCM, plus images, videos, and files protected by HTTPS, private R2 storage, and server-side authorization. Items expire 24 hours after publishing completes.",
-        "ja": "ログイン後、合言葉の部屋でブラウザー側で AES-GCM 暗号化したテキストと、HTTPS・非公開 R2・サーバー認可で保護される画像／動画／ファイルを共有できます。内容は公開完了から24時間後に失効します。"
+        "zh": "登录后可在口令房间中发送浏览器端 AES-GCM 加密文字，以及通过 HTTPS、私有 R2 和服务端鉴权保护的图片、视频与文件；内容在发布完成 24 小时后失效，过期或关闭的房间会彻底删除。",
+        "en": "After signing in, share text encrypted in the browser with AES-GCM, plus images, videos, and files protected by HTTPS, private R2 storage, and server-side authorization. Items expire after 24 hours, and expired or closed rooms are permanently deleted.",
+        "ja": "ログイン後、合言葉の部屋でブラウザー側で AES-GCM 暗号化したテキストと、HTTPS・非公開 R2・サーバー認可で保護される画像／動画／ファイルを共有できます。内容は24時間後に失効し、期限切れまたは閉鎖した部屋は完全に削除されます。"
       },
       "actionLabel": {
         "zh": "打开",

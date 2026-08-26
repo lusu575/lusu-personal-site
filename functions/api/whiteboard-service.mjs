@@ -709,18 +709,10 @@ async function handleAdminWhiteboardApi(context, parts, adminUser) {
       "room-delete"
     );
     if (response.ok) {
-      const now = new Date().toISOString();
       await env.DB.batch([
-        env.DB.prepare(`
-          update whiteboard_rooms
-          set status = 'deleting', updated_at = ?
-          where room_id = ?
-        `).bind(now, room.room_id),
-        env.DB.prepare(`
-          update whiteboard_bans
-          set active = 0, updated_at = ?
-          where room_id = ? and active = 1
-        `).bind(now, room.room_id)
+        env.DB.prepare("delete from whiteboard_assets where room_id = ?").bind(room.room_id),
+        env.DB.prepare("delete from whiteboard_bans where room_id = ?").bind(room.room_id),
+        env.DB.prepare("delete from whiteboard_rooms where room_id = ?").bind(room.room_id)
       ]);
     }
     return response;

@@ -132,3 +132,75 @@ test("Chat replays one committed public/private message for a stable client requ
     db.close();
   }
 });
+
+test("admin password-room deletion removes every message and the same room key reads as new", async () => {
+  const db = new D1Database();
+  const sessionToken = "chat-admin-room-delete-session";
+  const room = `room_${"z".repeat(32)}`;
+  const now = new Date().toISOString();
+  try {
+    db.sqlite.prepare("insert into users (id, email, password_hash, role, created_at, updated_at) values (?, ?, '', 'admin', ?, ?)")
+      .run("chat-admin-1", "chat-admin@example.test", now, now);
+    db.sqlite.prepare("insert into sessions (token_hash, user_id, created_at, expires_at) values (?, ?, ?, ?)")
+      .run(await sha256Hex(sessionToken), "chat-admin-1", now, "2099-01-01T00:00:00.000Z");
+    const insert = db.sqlite.prepare(`
+      insert into anonymous_chat_messages (
+        message_id, visitor_id, client_id, nickname, content, created_at, hidden,
+        ip_hash, ip_hash_key_id, ip_prefix, room_key, encrypted, client_request_id
+      ) values (?, ?, '', ?, ?, ?, 0, ?, 'test', '', ?, 1, '')
+    `);
+    insert.run("chat-room-delete-message-1", "visitor-room-delete-1", "Guest 1", "ciphertext.one", now, "hash-1", room);
+    insert.run("chat-room-delete-message-2", "visitor-room-delete-2", "Guest 2", "ciphertext.two", now, "hash-2", room);
+    db.sqlite.prepare(`
+      insert into anonymous_chat_messages (
+        message_id, visitor_id, client_id, nickname, content, created_at, hidden,
+        ip_hash, ip_hash_key_id, ip_prefix, room_key, encrypted, client_request_id
+      ) values ('chat-public-preserved', 'visitor-public', '', 'Public', 'keep me', ?, 0,
+        'hash-public', 'test', '', 'public', 0, '')
+    `).run(now);
+
+    const deleted = await onRequest({
+      request: new Request(`https://example.test/api/admin/chat/rooms/${encodeURIComponent(room)}`, {
+        method: "DELETE",
+        headers: {
+          Cookie: `lusu_session=${sessionToken}`,
+          Origin: "https://example.test"
+        }
+      }),
+      env: { DB: db, ...envSecrets },
+      waitUntil() {}
+    });
+    assert.equal(deleted.status, 200, await deleted.clone().text());
+    assert.equal((await deleted.json()).deletedMessages, 2);
+    assert.equal(db.sqlite.prepare("select count(*) as count from anonymous_chat_messages where room_key = ?").get(room).count, 0);
+    assert.equal(db.sqlite.prepare("select count(*) as count from anonymous_chat_messages where room_key = 'public'").get().count, 1);
+
+    const reentered = await onRequest({
+      request: new Request(`https://example.test/api/chat/messages?room=${encodeURIComponent(room)}`),
+      env: { DB: db, ...envSecrets },
+      waitUntil() {}
+    });
+    assert.equal(reentered.status, 200, await reentered.clone().text());
+    assert.deepEqual((await reentered.json()).messages, []);
+
+    const publicDelete = await onRequest({
+      request: new Request("https://example.test/api/admin/chat/rooms/public", {
+        method: "DELETE",
+        headers: {
+          Cookie: `lusu_session=${sessionToken}`,
+          Origin: "https://example.test"
+        }
+      }),
+      env: { DB: db, ...envSecrets },
+      waitUntil() {}
+    });
+    assert.equal(publicDelete.status, 409);
+  } finally {
+    db.close();
+  }
+});
+
+async function sha256Hex(value) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}

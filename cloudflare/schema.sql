@@ -961,6 +961,110 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-08-27-password-room-reset',
+  '2026-08-27-password-room-reset',
+  'site-updates',
+  '["网站更新","密码房","文件互传","在线画板","移动端"]',
+  '', 'published', 0, 0,
+  '2026-08-27T04:00:00.000Z',
+  '2026-08-27T04:00:00.000Z',
+  '2026-08-27T04:00:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-08-27-password-room-reset-zh',
+    'seed-update-2026-08-27-password-room-reset',
+    'zh',
+    '密码房可彻底删除并重新开始',
+    '互传、聊天室和在线画板的密码房在过期或管理删除后彻底清除存储，同一密码再进入会得到新空房；手机上取消或拒绝上传选择后也可立即重试。',
+    '# 密码房可彻底删除并重新开始
+
+这次统一了三种密码房的生命周期：房间过期或被管理员删除后，不保留备份，也不继续占用旧存储。
+
+## 三种房间都能干净重建
+
+- Quick Transfer 会清除加密文字、文件、未完成分片上传、R2 对象和房间记录。
+- 聊天室会清除私密密码房的全部消息，公共大厅不受影响。
+- 在线画板会清除画布、图片、房间状态和数据库索引。
+
+完整删除后，输入同一密码会创建全新空房。如果存储删除中途失败，房间保持锁定并等待重试，不会把半删除状态伪报成成功。
+
+## 手机上传可重新打开
+
+图片和文件现在由独立按钮打开系统选择器。即使手快取消、选错相册或文件、拒绝权限，或想重选同一文件，都可以再点一次继续。',
+    '2026-08-27T04:00:00.000Z',
+    '2026-08-27T04:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-27-password-room-reset-en',
+    'seed-update-2026-08-27-password-room-reset',
+    'en',
+    'Password Rooms Can Be Deleted and Restarted Cleanly',
+    'Expired or admin-deleted password rooms in Transfer, Chat, and Whiteboard now release their stored data so the same password starts a clean room. Mobile upload pickers can also be reopened after cancellation, a denied permission, or a wrong choice.',
+    '# Password Rooms Can Be Deleted and Restarted Cleanly
+
+This release aligns the lifecycle of all three password-room tools. Once a room expires or is deleted by an administrator, no backup or reusable tombstone remains.
+
+## A clean restart for every room type
+
+- Quick Transfer removes encrypted text, files, unfinished multipart uploads, R2 objects, sessions, and the room record.
+- Chat removes every message in the private password room while protecting the public lobby.
+- Online Whiteboard removes its canvas, images, room state, and database indexes.
+
+After deletion completes, entering the same password creates a fresh empty room. If storage cleanup fails partway through, the room stays locked and retryable instead of reporting a partial deletion as success.
+
+## Mobile uploads reopen reliably
+
+Photo and file actions now open the system picker through explicit buttons. Cancelling, choosing the wrong source, denying permission, or selecting the same file again no longer leaves upload controls stuck; tap the action again to retry.',
+    '2026-08-27T04:00:00.000Z',
+    '2026-08-27T04:00:00.000Z'
+  ),
+  (
+    'seed-update-2026-08-27-password-room-reset-ja',
+    'seed-update-2026-08-27-password-room-reset',
+    'ja',
+    '合言葉の部屋を完全削除して新しく開始可能に',
+    '転送・チャット・オンライン画板の合言葉ルームは、期限切れまたは管理削除後に保存データを完全に解放し、同じ合言葉で新しい空ルームを開始します。モバイルの選択をキャンセル・拒否・間違えた後もすぐ再実行できます。',
+    '# 合言葉の部屋を完全削除して新しく開始可能に
+
+3種類の合言葉ルームのライフサイクルを統一しました。期限切れまたは管理削除後に、バックアップや再利用される墓石は残りません。
+
+## どのルームも空の状態から再開
+
+- Quick Transfer は暗号化テキスト、ファイル、未完了の分割アップロード、R2 オブジェクト、セッション、ルーム記録を削除します。
+- チャットは私密ルームの全メッセージを削除し、公開ロビーは保護します。
+- オンライン画板はキャンバス、画像、ルーム状態、データベース索引を削除します。
+
+削除完了後、同じ合言葉を入力すると新しい空ルームが作成されます。保存領域の削除が途中で失敗した場合は、ルームをロックして再試行可能に保ちます。
+
+## モバイルで選択ダイアログを再度開けます
+
+写真とファイルは独立したボタンからシステム選択画面を開きます。キャンセル、間違った入力元、権限拒否、同じファイルの再選択後も、もう一度タップして続行できます。',
+    '2026-08-27T04:00:00.000Z',
+    '2026-08-27T04:00:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-08-12-wallpaper-game-display-fix',
   '2026-08-12-wallpaper-game-display-fix',
   'site-updates',
@@ -14416,7 +14520,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260820-chat-whiteboard-ui-r2', '2026-08-20T08:00:00.000Z')
+values ('article_seed_version', '20260827-private-room-lifecycle-r1', '2026-08-27T04:00:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

@@ -2,6 +2,12 @@
 
 本日志只记录临时互传子项目。根项目发布历史仍写入仓库根 `CHANGELOG.md`。
 
+## 1.0.12 - 2026-08-27
+
+- 过期房间与后台“删除房间”改为物理清除：中止未完成 Multipart，删除 R2 对象、文字／文件条目、上传会话和房间记录；不做备份，完成后同一密码创建全新空房。
+- 删除中部分存储失败时房间保持 `deleting` 并锁定写入，后台、清理任务或下次加入可安全重试，不留可继续使用的半删除房间。
+- 手机端图片与文件改为明确按钮触发隐藏 picker；每次触发前清空 input，取消、选错来源、权限被拒或重选同一文件后都可再次打开系统选择器。
+
 ## 1.0.11 - 2026-08-12
 
 - Governance-only patch: the shared Agent Auth registry now carries the owner-only `minimax-h3:execute` scope for the protected MiniMax H3 control plane. Quick Transfer protocol, encryption, private R2, quota, authentication, and expiry semantics are unchanged.

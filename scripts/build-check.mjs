@@ -901,11 +901,11 @@ const videoLinkAutofillReleaseVersion = "20260811-video-link-autofill-r1";
 const h3AmbientWallpapersReleaseVersion = "20260810-h3-ambient-wallpapers-4k-r1";
 const h3FirstVersionVideoReleaseVersion = "20260811-h3-first-version-video-sr-48fps-r1";
 const wallpaperGameDisplayReleaseVersion = "20260812-wallpaper-game-display-r1";
-const publicSiteReleaseVersion = "20260820-chat-whiteboard-ui-r2";
+const publicSiteReleaseVersion = "20260827-private-room-lifecycle-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
-const transferReleaseVersion = "20260809-transfer-motion-r2";
+const transferReleaseVersion = "20260827-private-room-lifecycle-r1";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
-const resourcesRouteVersion = "20260820-chat-whiteboard-ui-r2";
+const resourcesRouteVersion = "20260827-private-room-lifecycle-r1";
 const routeStyleVersion = publicSiteReleaseVersion;
 const publicRouteVersion = (route) => route === "knowledge" || route === "chatroom"
   ? motionPolishReleaseVersion
@@ -2412,7 +2412,7 @@ for (const asset of ["admin.css", "admin.js"]) {
 }
 
 const adminSafetyCacheVersion = adminMotionPolishVersion;
-const adminPublicContentVersion = adminMotionPolishVersion;
+const adminPublicContentVersion = publicSiteReleaseVersion;
 if (!adminHtml.includes(`/admin/admin.css?v=${adminSafetyCacheVersion}`)
   || !adminHtml.includes(`/admin/admin.js?v=${adminPublicContentVersion}`)) {
   fail("admin CSS and JS must use their current cache versions");
@@ -4830,14 +4830,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-20-chat-whiteboard-ui-fixes";
-const finalUpdateSlug = "2026-08-20-chat-whiteboard-ui-fixes";
+const finalUpdateId = "seed-update-2026-08-27-password-room-reset";
+const finalUpdateSlug = "2026-08-27-password-room-reset";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Chat and Whiteboard Interface Fixes";
-const finalPublishedAt = "2026-08-20T08:00:00.000Z";
+const finalTitleEn = "Password Rooms Can Be Deleted and Restarted Cleanly";
+const finalPublishedAt = "2026-08-27T04:00:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-08-20-chat-whiteboard-ui-fixes",
   "seed-update-2026-08-19-daily-ai-news-rss",
   "seed-update-2026-08-13-hide-minimax-h3-tools",
   "seed-update-2026-08-12-minimax-h3-console",
@@ -4891,6 +4892,7 @@ const changelog20260812Section = markdownSection(changelog, "## 2026-08-12");
 const changelog20260813Section = markdownSection(changelog, "## 2026-08-13");
 const changelog20260819Section = markdownSection(changelog, "## 2026-08-19 每日 AI 新闻 RSS 订阅");
 const changelog20260820Section = markdownSection(changelog, "## 2026-08-20 聊天室、在线画板与 H3 返回修复");
+const changelog20260827Section = markdownSection(changelog, "## 2026-08-27");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4938,14 +4940,14 @@ if (finalUpdateStarted) {
     "seed-update-2026-08-09-motion-polish",
     "seed-update-2026-08-07-remote-mcp-oauth"
   ].some((updateId) => homeContentModuleJs.includes(updateId))) {
-    fail("js/data/home-content.mjs should remain the newest five-item projection after the chat and whiteboard UI release");
+    fail("js/data/home-content.mjs should remain the newest five-item projection after the password-room lifecycle release");
   }
 
   const projectedUpdateIds = [finalUpdateId, ...projectedSupportingReleaseUpdateIds];
   const projectedUpdateIndexes = projectedUpdateIds.map((updateId) => homeContentModuleJs.indexOf(updateId));
   if (projectedUpdateIndexes.some((index) => index < 0)
     || !projectedUpdateIndexes.every((index, offset, list) => offset === 0 || list[offset - 1] < index)) {
-    fail("js/data/home-content.mjs should order the chat/whiteboard UI release, RSS release, hidden H3 entry, control plane, and display fix by descending publication time");
+    fail("js/data/home-content.mjs should order the password-room, chat/whiteboard UI, RSS, hidden H3 entry, and control-plane releases by descending publication time");
   }
 
   for (const token of [
@@ -5103,7 +5105,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-08-20">2026.08.20</time>',
+    '<time id="top-updated" datetime="2026-08-27">2026.08.27</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${finalCssVersion}`,
     `/css/motion-system.css?v=${finalCssVersion}`,
@@ -5120,14 +5122,13 @@ if (finalUpdateStarted) {
     finalMainVersion,
     finalUpdateId,
     finalUpdateSlug,
-    "匿名聊天室",
+    "密码房",
+    "Quick Transfer",
     "在线画板",
-    "Image2",
-    "H3",
-    "Functions seed",
-    "schema seed"
+    "1.0.12",
+    "1.0.9"
   ]) {
-    if (!changelog20260820Section.includes(token)) {
+    if (!changelog20260827Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
@@ -5145,8 +5146,7 @@ if (finalUpdateStarted) {
 
   for (const token of [
     adminMotionPolishVersion,
-    transferReleaseVersion,
-    ...preservedReleaseUpdateIds.filter((updateId) => !/^seed-update-2026-08-(?:11|12|13|19)-/.test(updateId)),
+    ...preservedReleaseUpdateIds.filter((updateId) => !/^seed-update-2026-08-(?:11|12|13|19|20)-/.test(updateId)),
     wallpaperTimeSwitchAssetVersion,
     wallpaperSwitchSceneReleaseVersion,
     wallpaperSwitchRouteMotionReleaseVersion,

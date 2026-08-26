@@ -49,10 +49,10 @@ import {
   normalizeDailyAiNewsFeedLanguage
 } from "./daily-ai-news-feed.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260820-chat-whiteboard-ui-r2";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260827-private-room-lifecycle-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
-const PUBLIC_RELEASE_DATE = "2026-08-20";
+const PUBLIC_RELEASE_DATE = "2026-08-27";
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
@@ -100,7 +100,7 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260820-chat-whiteboard-ui-r2";
+const ARTICLE_SEED_VERSION = "20260827-private-room-lifecycle-r1";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AGENT_AUDIT_RETENTION_DAYS = 180;
@@ -523,6 +523,9 @@ export async function onRequest(context) {
       }
       if (request.method === "DELETE" && parts[2] === "messages" && parts[3]) {
         return await deleteAdminChatMessage(request, env, parts[3]);
+      }
+      if (request.method === "DELETE" && parts[2] === "rooms" && parts[3]) {
+        return await deleteAdminPrivateChatRoom(request, env, parts[3]);
       }
       if (request.method === "GET" && parts[2] === "bans") {
         return await getAdminChatBans(request, env);
@@ -4853,6 +4856,21 @@ async function deleteAdminChatMessage(request, env, messageId) {
   return json({ ok: true });
 }
 
+async function deleteAdminPrivateChatRoom(request, env, roomKeyValue) {
+  await requireAdmin(request, env);
+  const roomKey = normalizeChatRoomKey(roomKeyValue);
+  if (!isPrivateChatRoom(roomKey)) {
+    return json({ error: "公共聊天室不能按房间删除。" }, 409);
+  }
+  const result = await env.DB.prepare("delete from anonymous_chat_messages where room_key = ?")
+    .bind(roomKey).run();
+  return json({
+    ok: true,
+    roomKey,
+    deletedMessages: Number(result.meta?.changes || 0)
+  });
+}
+
 async function getAdminChatBans(request, env) {
   await requireAdmin(request, env);
   const currentIpHashKeyId = await chatIpHashKeyId(runtimeSecret(env, "CHAT_IP_HASH_SALT"));
@@ -7429,6 +7447,47 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-08-27-password-room-reset',
+        '2026-08-27-password-room-reset',
+        'site-updates',
+        '["网站更新","密码房","文件互传","在线画板","移动端"]',
+        '', 'published', 0, 0,
+        '2026-08-27T04:00:00.000Z',
+        '2026-08-27T04:00:00.000Z',
+        '2026-08-27T04:00:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-08-27-password-room-reset", {
+      zh: {
+        title: "密码房可彻底删除并重新开始",
+        summary: "互传、聊天室和在线画板的密码房在过期或管理删除后彻底清除存储，同一密码再进入会得到新空房；手机上取消或拒绝上传选择后也可立即重试。",
+        content_markdown: "# 密码房可彻底删除并重新开始\n\n这次统一了三种密码房的生命周期：房间过期或被管理员删除后，不保留备份，也不继续占用旧存储。\n\n## 三种房间都能干净重建\n\n- Quick Transfer 会清除加密文字、文件、未完成分片上传、R2 对象和房间记录。\n- 聊天室会清除私密密码房的全部消息，公共大厅不受影响。\n- 在线画板会清除画布、图片、房间状态和数据库索引。\n\n完整删除后，输入同一密码会创建全新空房。如果存储删除中途失败，房间保持锁定并等待重试，不会把半删除状态伪报成成功。\n\n## 手机上传可重新打开\n\n图片和文件现在由独立按钮打开系统选择器。即使手快取消、选错相册或文件、拒绝权限，或想重选同一文件，都可以再点一次继续。"
+      },
+      en: {
+        title: "Password Rooms Can Be Deleted and Restarted Cleanly",
+        summary: "Expired or admin-deleted password rooms in Transfer, Chat, and Whiteboard now release their stored data so the same password starts a clean room. Mobile upload pickers can also be reopened after cancellation, a denied permission, or a wrong choice.",
+        content_markdown: "# Password Rooms Can Be Deleted and Restarted Cleanly\n\nThis release aligns the lifecycle of all three password-room tools. Once a room expires or is deleted by an administrator, no backup or reusable tombstone remains.\n\n## A clean restart for every room type\n\n- Quick Transfer removes encrypted text, files, unfinished multipart uploads, R2 objects, sessions, and the room record.\n- Chat removes every message in the private password room while protecting the public lobby.\n- Online Whiteboard removes its canvas, images, room state, and database indexes.\n\nAfter deletion completes, entering the same password creates a fresh empty room. If storage cleanup fails partway through, the room stays locked and retryable instead of reporting a partial deletion as success.\n\n## Mobile uploads reopen reliably\n\nPhoto and file actions now open the system picker through explicit buttons. Cancelling, choosing the wrong source, denying permission, or selecting the same file again no longer leaves upload controls stuck; tap the action again to retry."
+      },
+      ja: {
+        title: "合言葉の部屋を完全削除して新しく開始可能に",
+        summary: "転送・チャット・オンライン画板の合言葉ルームは、期限切れまたは管理削除後に保存データを完全に解放し、同じ合言葉で新しい空ルームを開始します。モバイルの選択をキャンセル・拒否・間違えた後もすぐ再実行できます。",
+        content_markdown: "# 合言葉の部屋を完全削除して新しく開始可能に\n\n3種類の合言葉ルームのライフサイクルを統一しました。期限切れまたは管理削除後に、バックアップや再利用される墓石は残りません。\n\n## どのルームも空の状態から再開\n\n- Quick Transfer は暗号化テキスト、ファイル、未完了の分割アップロード、R2 オブジェクト、セッション、ルーム記録を削除します。\n- チャットは私密ルームの全メッセージを削除し、公開ロビーは保護します。\n- オンライン画板はキャンバス、画像、ルーム状態、データベース索引を削除します。\n\n削除完了後、同じ合言葉を入力すると新しい空ルームが作成されます。保存領域の削除が途中で失敗した場合は、ルームをロックして再試行可能に保ちます。\n\n## モバイルで選択ダイアログを再度開けます\n\n写真とファイルは独立したボタンからシステム選択画面を開きます。キャンセル、間違った入力元、権限拒否、同じファイルの再選択後も、もう一度タップして続行できます。"
+      }
+    }, "2026-08-27T04:00:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,

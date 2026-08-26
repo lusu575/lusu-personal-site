@@ -1,4 +1,4 @@
-const TRANSFER_VERSION = "20260809-transfer-motion-r2";
+const TRANSFER_VERSION = "20260827-private-room-lifecycle-r1";
 const FRAGMENT_PATH = "/fragments/quick-transfer.html";
 const FRAGMENT_CANONICAL_PATH = "/fragments/quick-transfer";
 const ALLOWED_FRAGMENT_PATHS = Object.freeze([FRAGMENT_PATH, FRAGMENT_CANONICAL_PATH]);
@@ -33,6 +33,7 @@ const EXPECTED_IDS = Object.freeze([
   "transfer-feed",
   "transfer-feedback",
   "transfer-file-input",
+  "transfer-file-picker",
   "transfer-generate-password",
   "transfer-leave-room",
   "transfer-login-button",
@@ -41,6 +42,7 @@ const EXPECTED_IDS = Object.freeze([
   "transfer-network-status",
   "transfer-pending-attachments",
   "transfer-photo-input",
+  "transfer-photo-picker",
   "transfer-quota-card",
   "transfer-refresh-button",
   "transfer-room",
@@ -114,13 +116,19 @@ function parseAndValidateFragment(source) {
   const password = root.querySelector("#transfer-room-password");
   const photo = root.querySelector("#transfer-photo-input");
   const file = root.querySelector("#transfer-file-input");
+  const photoPicker = root.querySelector("#transfer-photo-picker");
+  const filePicker = root.querySelector("#transfer-file-picker");
   if (password?.getAttribute("type") !== "password"
     || password?.getAttribute("autocomplete") !== "off"
     || photo?.getAttribute("type") !== "file"
     || photo?.getAttribute("accept") !== "image/*"
     || !photo?.hasAttribute("multiple")
     || file?.getAttribute("type") !== "file"
-    || !file?.hasAttribute("multiple")) {
+    || !file?.hasAttribute("multiple")
+    || photoPicker?.getAttribute("type") !== "button"
+    || photoPicker?.getAttribute("aria-controls") !== "transfer-photo-input"
+    || filePicker?.getAttribute("type") !== "button"
+    || filePicker?.getAttribute("aria-controls") !== "transfer-file-input") {
     throw new Error("Quick Transfer fragment controls do not match the local contract.");
   }
   return root;

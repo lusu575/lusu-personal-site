@@ -272,7 +272,7 @@
       const actions = actionCell();
       actions.append(
         action("清空", true, (button) => roomAction(row, "clear", button)),
-        action("关闭", true, (button) => roomAction(row, "close", button))
+        action("删除房间", true, (button) => roomAction(row, "close", button))
       );
       body.append(tableRow([
         code(row.id),
@@ -444,17 +444,17 @@
   async function roomAction(row, actionName, busyTarget) {
     const clearing = actionName === "clear";
     const confirmed = await confirmAction({
-      title: clearing ? "清空互传房间" : "关闭互传房间",
+      title: clearing ? "清空互传房间" : "永久删除互传房间",
       message: clearing
         ? "系统会逐项删除房间中的 R2 文件和数据库记录。某项失败时会保留该项并列出重试信息。"
-        : "关闭后普通成员不能再继续使用这个房间；已有内容不会随关闭自动删除。",
+        : "房间、加密文字、R2 文件和未完成的 Multipart 上传都会永久删除。",
       details: [
         `房间：${row.id}`,
         `当前项目：${row.item_count || 0} 项`,
-        clearing ? `预计释放：${bytes(row.active_bytes)}` : "如需释放存储，关闭后仍需执行清空。",
-        clearing ? "不可撤销；删除失败的项目会原样保留。" : "关闭不可由当前页面自动恢复。"
+        clearing ? `预计释放：${bytes(row.active_bytes)}` : `预计释放：${bytes(row.active_bytes)}`,
+        clearing ? "不可撤销；删除失败的项目会原样保留。" : "不可恢复；同一密码再进入时会创建全新空房间，删除失败时可直接重试。"
       ],
-      confirmLabel: clearing ? "确认清空房间" : "确认关闭房间"
+      confirmLabel: clearing ? "确认清空房间" : "确认永久删除"
     });
     if (!confirmed) {
       return;
@@ -462,8 +462,8 @@
     const endpoint = `/api/admin/transfer/room/${encodeURIComponent(row.id)}/${actionName}`;
     const operation = () => api(endpoint, { method: "POST", json: {} });
     await runMutation(operation, {
-      successMessage: clearing ? "房间内容已全部清空。" : "房间已关闭。",
-      partialRetry: clearing ? operation : null,
+      successMessage: clearing ? "房间内容已全部清空。" : "房间与全部存储已永久删除。",
+      partialRetry: operation,
       busyTarget
     });
   }

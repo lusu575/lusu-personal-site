@@ -61,6 +61,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - Chat 还必须通过 1280×720 短桌面回归：标题、身份／房间两行控制、日志、输入区和页脚都在任务栏上方，只有日志可收缩；字数计数放入输入状态行，媒体几何只写在 `mobile-ios-shell.css`。
 - Chat 重试复用稳定 `clientRequestId`，服务端在限流前重放首次成功消息，并用 `(visitor_id, room_key, client_request_id)` 唯一索引防并发重复；私聊随机 IV 不得破坏幂等。旧 D1 必须先补 `client_request_id` 列再建索引。
 - 公共 Chat 不返回服务端隐藏 visitor id；密码、私聊、草稿、Secret、完整标识不进入 DOM 泄漏、持久存储、History、日志或 telemetry，外链/iframe/fragment 白名单不得放宽。
+- 私密 Chat 到期或管理员删除、Quick Transfer 过期或后台删除，以及画板管理删除都必须清掉该房全部数据，不备份；同一密码再进入必须是新空房。Transfer 部分删除失败时保持 `deleting` 和写入锁并可重试，画板 DO／R2 成功后还要删除 D1 room、asset 和 ban 索引。
 - 文章 translation seed 每次都要显式传 UTC ISO 时间；全量 bind 测试必须拒绝 `undefined`。schema guard 不得夹带全量 seed；跨隔离实例使用 `site_runtime_state.article_seed_version`，版本匹配时零 seed 写入，变更时全部 seed 成功后才写新标记。Quick Transfer fragment 只允许同源 `/fragments/quick-transfer.html` 与 Cloudflare clean URL `/fragments/quick-transfer` 两个精确路径。
 - 后台流量保护只采样或关闭非必要 identify／page view／click／article view 遥测，不能影响登录、存档、Chat、Transfer 或 Whiteboard；当前默认 30,000／50,000 估算行，硬保护页面／点击／文章为 0%／0%／10%，只迁移精确旧默认而不覆盖自定义设置。公共判定复用最多 5 分钟用量快照，后台 30 秒刷新绕过该缓存。设置使用 revision/CAS，dirty 输入不被自动刷新覆盖。站内写入系数必须明确是估算，只有实际连接只读 Cloudflare Analytics 后才能展示官方 `rowsWritten`，Token 不得下发或提交。
 - 生产冒烟保持低频、有界超时／重试和明确请求预算，复用 sitemap 文章 slug 检查健康、Home、canonical／hreflang、文章直达页和哈希资产；GitHub workflow、Dashboard `www` 跳转与 RUM 都只能在真实提交／配置／运行后声称启用。
@@ -84,7 +85,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - 公共与密码画板当前必须共用同一套暖纸、石墨、hachure、高 roughness 铅笔草图默认值。画布无变化时不得写入；可见页保活使用不唤醒休眠 DO 的 WebSocket auto-response，隐藏页有界排空后停放连接，空公共房不周期轮询，密码房只保留真实待办与 24 小时删除 Alarm。普通短暂波动不弹大横幅，持续重连只显示延迟的小状态。
 - 画板与 Quick Transfer 必须分别维护 `docs/whiteboard/` 和 `docs/transfer/` 下的 `VERSION`、`project.json`、`README.md`、`CHANGELOG.md`、`AGENTS.md` 及指向它的 `AGENT.md`。任何子项目 tracked path 变化都必须相对基线精确增加 `0.0.1`、写独立更新日志、同步受影响文档和根 `CHANGELOG.md`，并通过 `npm run check:subprojects`。共享能力适配器或目录元数据若改变受管工具的能力域、固定入口或协议语义，先把专属契约放入该子项目可追踪路径再升版；不要用通用实现位置绕过治理，也不要用宽泛路径让无关视频／游戏变化误升版。多个子项目共享可见目录时，用 `visibleVersionChecks` 的项目锚点、有界窗口和精确 `{{version}}` 模板校验本项目条目，不能让其他卡片的同版本号掩盖漏改。未改变的子项目保持自己的版本与内部 asset cache key，不随主站或另一子项目的发布字符串连带滚动。
 - 画板部署顺序固定为本地迁移／Lint／类型／测试／构建，获授权后远端 D1 migration、先部署 DO Worker、核对 Pages external binding、最后合并 `main` 触发 Pages。根配置提交态的 Preview 使用 `PREVIEW_API_DISABLED=true` 和空 D1/R2/DO bindings，不得引用尚未部署的 Preview Worker；独立 Preview 资源全部迁移、配置和验收且 Worker 已先部署前不得接入 Pages 或开启 API。回滚先回 Pages 入口/binding、再部署兼容 Worker，并保留 namespace、migration 与数据；远端未核实时不得声称已上线。完整规则见 `docs/whiteboard/README.md`、`workers/whiteboard/README.md` 和 `cloudflare/README.md`。
-- Transfer 设置以 revision / `expectedUpdatedAt` 条件保存；房间清空、清理和上传 ready 转换检查真实 D1 changes。部分失败必须返回非 2xx 与可重试对象，并清理并发竞态产生的孤立 R2 对象，不能伪报完成。
+- Transfer 设置以 revision / `expectedUpdatedAt` 条件保存；房间清空、清理和上传 ready 转换检查真实 D1 changes。过期或管理删除必须中止 Multipart 并物理删除全部 R2／D1 房间数据；部分失败必须返回非 2xx 与可重试对象，保持写入锁，并清理并发竞态产生的孤立 R2 对象，不能伪报完成。
 - Quick Transfer 只能称文字为浏览器 AES-GCM 加密；图片、视频和文件不使用房间口令加密，只由 HTTPS、私有 R2 与服务端鉴权保护，且不做病毒／恶意软件扫描。明文口令不发服务器，配额按滚动 24 小时描述，公开卡片、房间提示和历史 seed 不得扩大安全承诺。
 - 工具区同列表工具卡必须共享网格宽度和卡片高度节奏；zh/en/ja 的标题、元信息、说明与 CTA 不得相交或被 `nowrap`、隐藏滚动条、裁剪吞掉。
 - Knowledge 使用 NFKC 多词 AND 搜索，并在搜索／筛选时复位真实滚动和 History；Videos／工具区（内部 `resources` route）重建分类按钮后恢复同一焦点，空视频分类优先提供“显示全部”。首屏只接受 zh／en／ja 并尽早设置文档语言，文章 fallback 标注实际内容语言。

@@ -1,5 +1,11 @@
 # 鲁肃个人站管理后台专用 PROJECT_CONTEXT
 
+## 2026-08-27 密码房整房删除
+
+- 聊天室管理可从任一私密房消息永久删除该 room key 的全部消息；公共大厅拒绝整房删除。操作不可恢复，同一密码再进入是全新空房。
+- `/admin/transfer.html` 的“关闭”改为“删除房间”：中止 Multipart，删除 R2 对象与 D1 房间全数据。部分失败保持锁定和重试入口，不得显示成功或恢复使用。
+- 在线画板删除继续要求空私房且 DO 成功，然后 Pages 删除 D1 room、asset 和 ban 索引，不留 `deleting` 墓碑。后台 JS 与 Transfer JS 缓存 token 为 `20260827-private-room-lifecycle-r1`。
+
 ## 2026-08-20 MiniMax H3 来源返回契约
 
 - 后台侧栏进入 H3 必须携带 `?from=admin`，控制台返回链接指向 `/admin/` 并显示“返回管理后台”。公共工具目录使用 `?from=tools`，返回 `/#resources`。

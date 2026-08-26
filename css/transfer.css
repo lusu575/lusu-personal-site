@@ -634,7 +634,7 @@
 .transfer-file-picker { display: inline-flex; min-height: 44px; align-items: center; gap: 5px; cursor: pointer; }
 .transfer-file-picker .transfer-icon { --transfer-icon-size: 25px; }
 .transfer-file-picker.is-disabled { cursor: not-allowed; opacity: .62; }
-.transfer-file-picker input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.transfer-file-input { position: fixed; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
 .transfer-tasks {
   min-width: 0;

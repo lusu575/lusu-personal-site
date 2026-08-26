@@ -515,6 +515,98 @@ test("room clear reports partial failure as non-2xx and preserves retryable obje
   assert.equal(db.sqlite.prepare("select id from transfer_items where id = ?").get(failedItemId), undefined);
 });
 
+test("admin room close permanently deletes storage and lets the same password create a clean room", async () => {
+  const reusableRoomKey = `transfer_${"C".repeat(43)}`;
+  const oldRoomId = "admin-room-hard-delete-0001";
+  const itemId = "admin-room-hard-delete-item-0001";
+  const objectKey = "transfer/2099-01-01/admin-room-hard-delete-item-0001";
+  const createdAt = "2026-07-20T01:02:03.000Z";
+  const expiresAt = "2099-07-20T01:02:03.000Z";
+  db.sqlite.prepare(`
+    insert into transfer_rooms (id, room_key, created_by, status, created_at, last_activity_at)
+    values (?, ?, 'user-1', 'open', ?, ?)
+  `).run(oldRoomId, reusableRoomKey, createdAt, createdAt);
+  await bucket.put(objectKey, new Uint8Array([1, 2, 3]));
+  db.sqlite.prepare(`
+    insert into transfer_items (
+      id, room_id, uploader_user_id, uploader_role_snapshot, item_type, original_filename,
+      display_filename, r2_object_key, mime_type, size_bytes, upload_mode, upload_status,
+      created_at, completed_at, expires_at
+    ) values (?, ?, 'user-1', 'user', 'file', 'gone.bin', 'gone.bin', ?,
+      'application/octet-stream', 3, 'simple', 'ready', ?, ?, ?)
+  `).run(itemId, oldRoomId, objectKey, createdAt, createdAt, expiresAt);
+
+  const closed = await call(`admin/transfer/room/${oldRoomId}/close`, {
+    method: "POST",
+    token: adminToken,
+    ...jsonBody({})
+  });
+  assert.equal(closed.status, 200, await closed.clone().text());
+  assert.equal((await closed.json()).deleted, true);
+  assert.equal(await bucket.head(objectKey), null);
+  assert.equal(db.sqlite.prepare("select id from transfer_rooms where id = ?").get(oldRoomId), undefined);
+  assert.equal(db.sqlite.prepare("select id from transfer_items where id = ?").get(itemId), undefined);
+
+  const joined = await call("transfer/room/join", {
+    method: "POST",
+    token: userToken,
+    ...jsonBody({ roomKey: reusableRoomKey })
+  });
+  assert.equal(joined.status, 200, await joined.clone().text());
+  const newRoom = (await joined.json()).room;
+  assert.notEqual(newRoom.id, oldRoomId);
+  const listed = await call(`transfer/room/items?room=${encodeURIComponent(reusableRoomKey)}`, { token: userToken });
+  assert.equal((await listed.json()).items.length, 0);
+});
+
+test("failed room deletion stays retryable and same-password join finishes cleanup before rebuilding", async () => {
+  const reusableRoomKey = `transfer_${"D".repeat(43)}`;
+  const oldRoomId = "admin-room-delete-retry-0001";
+  const itemId = "admin-room-delete-retry-item-0001";
+  const objectKey = "transfer/2099-01-01/admin-room-delete-retry-item-0001";
+  const createdAt = "2026-07-20T01:02:03.000Z";
+  const expiresAt = "2099-07-20T01:02:03.000Z";
+  db.sqlite.prepare(`
+    insert into transfer_rooms (id, room_key, created_by, status, created_at, last_activity_at)
+    values (?, ?, 'user-1', 'open', ?, ?)
+  `).run(oldRoomId, reusableRoomKey, createdAt, createdAt);
+  await bucket.put(objectKey, new Uint8Array([4]));
+  db.sqlite.prepare(`
+    insert into transfer_items (
+      id, room_id, uploader_user_id, uploader_role_snapshot, item_type, original_filename,
+      display_filename, r2_object_key, mime_type, size_bytes, upload_mode, upload_status,
+      created_at, completed_at, expires_at
+    ) values (?, ?, 'user-1', 'user', 'file', 'retry.bin', 'retry.bin', ?,
+      'application/octet-stream', 1, 'simple', 'ready', ?, ?, ?)
+  `).run(itemId, oldRoomId, objectKey, createdAt, createdAt, expiresAt);
+  bucket.failDeleteKeys.add(objectKey);
+
+  const closed = await call(`admin/transfer/room/${oldRoomId}/close`, {
+    method: "POST",
+    token: adminToken,
+    ...jsonBody({})
+  });
+  assert.equal(closed.status, 502);
+  assert.equal(db.sqlite.prepare("select status from transfer_rooms where id = ?").get(oldRoomId).status, "deleting");
+
+  const blockedJoin = await call("transfer/room/join", {
+    method: "POST",
+    token: userToken,
+    ...jsonBody({ roomKey: reusableRoomKey })
+  });
+  assert.equal(blockedJoin.status, 503);
+  bucket.failDeleteKeys.delete(objectKey);
+
+  const rebuilt = await call("transfer/room/join", {
+    method: "POST",
+    token: userToken,
+    ...jsonBody({ roomKey: reusableRoomKey })
+  });
+  assert.equal(rebuilt.status, 200, await rebuilt.clone().text());
+  assert.notEqual((await rebuilt.json()).room.id, oldRoomId);
+  assert.equal(await bucket.head(objectKey), null);
+});
+
 test("a logged-in user can join a room and send encrypted text", async () => {
   const joined = await call("transfer/room/join", {
     method: "POST",
@@ -925,6 +1017,42 @@ test("cleanup makes expired objects unavailable and removes their R2 data", asyn
   assert.equal(cleaned.deletedItems >= 1, true);
   assert.equal(await bucket.head(key), null);
   assert.equal(db.sqlite.prepare("select id from transfer_items where id = ?").get(itemId), undefined);
+});
+
+test("cleanup physically removes an expired room so the same password starts empty", async () => {
+  const reusableRoomKey = `transfer_${"E".repeat(43)}`;
+  const oldRoomId = "expired-room-hard-delete-0001";
+  const itemId = "expired-room-hard-delete-item-0001";
+  const objectKey = "transfer/2000-01-01/expired-room-hard-delete-item-0001";
+  const expired = "2000-01-01T00:00:00.000Z";
+  db.sqlite.prepare(`
+    insert into transfer_rooms (id, room_key, created_by, status, created_at, last_activity_at)
+    values (?, ?, 'user-1', 'open', ?, ?)
+  `).run(oldRoomId, reusableRoomKey, expired, expired);
+  await bucket.put(objectKey, new Uint8Array([5]));
+  db.sqlite.prepare(`
+    insert into transfer_items (
+      id, room_id, uploader_user_id, uploader_role_snapshot, item_type, original_filename,
+      display_filename, r2_object_key, mime_type, size_bytes, upload_mode, upload_status,
+      created_at, completed_at, expires_at
+    ) values (?, ?, 'user-1', 'user', 'file', 'expired-room.bin', 'expired-room.bin', ?,
+      'application/octet-stream', 1, 'simple', 'ready', ?, ?, ?)
+  `).run(itemId, oldRoomId, objectKey, expired, expired, expired);
+
+  const cleaned = await runTransferCleanup(env, { limit: 100 });
+  assert.equal(cleaned.status, "success");
+  assert.equal(db.sqlite.prepare("select id from transfer_rooms where id = ?").get(oldRoomId), undefined);
+  assert.equal(await bucket.head(objectKey), null);
+
+  const joined = await call("transfer/room/join", {
+    method: "POST",
+    token: userToken,
+    ...jsonBody({ roomKey: reusableRoomKey })
+  });
+  assert.equal(joined.status, 200, await joined.clone().text());
+  assert.notEqual((await joined.json()).room.id, oldRoomId);
+  const listed = await call(`transfer/room/items?room=${encodeURIComponent(reusableRoomKey)}`, { token: userToken });
+  assert.equal((await listed.json()).items.length, 0);
 });
 
 test("admin cleanup returns a retryable non-2xx payload when an R2 object cannot be deleted", async () => {

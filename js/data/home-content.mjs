@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-08-27-password-room-reset",
+      "slug": "2026-08-27-password-room-reset",
+      "category": "site-updates",
+      "tags": ["网站更新", "密码房", "文件互传", "在线画板", "移动端"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-08-27T04:00:00.000Z",
+      "updated_at": "2026-08-27T04:00:00.000Z",
+      "published_at": "2026-08-27T04:00:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.08.27",
+      "title": {
+        "zh": "密码房可彻底删除并重新开始",
+        "en": "Password Rooms Can Be Deleted and Restarted Cleanly",
+        "ja": "合言葉の部屋を完全削除して新しく開始可能に"
+      },
+      "summary": {
+        "zh": "互传、聊天室和在线画板的密码房在过期或管理删除后彻底清除存储，同一密码再进入会得到新空房；手机上取消或拒绝上传选择后也可立即重试。",
+        "en": "Expired or admin-deleted password rooms in Transfer, Chat, and Whiteboard now release their stored data so the same password starts a clean room. Mobile upload pickers can also be reopened after cancellation, a denied permission, or a wrong choice.",
+        "ja": "転送・チャット・オンライン画板の合言葉ルームは、期限切れまたは管理削除後に保存データを完全に解放し、同じ合言葉で新しい空ルームを開始します。モバイルの選択をキャンセル・拒否・間違えた後もすぐ再実行できます。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-20-chat-whiteboard-ui-fixes",
       "slug": "2026-08-20-chat-whiteboard-ui-fixes",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "工具区新增站长专用的在线 ComfyUI · MiniMax H3 控制台，接入受保护的 Runner、固定控制器、本机 ComfyUI、Bridge 与任务状态读取；执行和传输开关仍默认关闭。",
         "en": "Tools now includes a private Online ComfyUI · MiniMax H3 console with protected Runner, pinned controller, local ComfyUI, Bridge, and job-state checks; execution and transfer remain disabled by default.",
         "ja": "ツールに所有者専用のオンライン ComfyUI · MiniMax H3 コンソールを追加しました。保護された Runner、固定コントローラー、ローカル ComfyUI、Bridge、ジョブ状態を確認できますが、実行と転送は既定で無効です。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-12-wallpaper-game-display-fix",
-      "slug": "2026-08-12-wallpaper-game-display-fix",
-      "category": "site-updates",
-      "tags": ["网站更新", "视频壁纸", "游戏区", "响应式", "流畅度"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-12T07:30:00.000Z",
-      "updated_at": "2026-08-12T07:30:00.000Z",
-      "published_at": "2026-08-12T07:30:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.08.12",
-      "title": {
-        "zh": "视频壁纸叠层、返回闪烁与游戏显示修复",
-        "en": "Wallpaper Layering, Return Flash, and Game Display Fixes",
-        "ja": "動画壁紙の重なり・復帰時のちらつき・ゲーム表示を修正"
-      },
-      "summary": {
-        "zh": "视频壁纸启用时不再创建或预热额外的 CSS 动态云，避免出现两层云；离开 Home 只暂停当前视频并保留解码器，返回后直接续播。游戏外壳移除 1280px 固定宽度上限，短屏默认收起存档与 AI 工具并可通过 44px 按钮展开，让人生重开等游戏在浏览器缩放、横屏和窄屏下获得更大的可玩区域。",
-        "en": "When video wallpaper is eligible, the page no longer creates or warms the separate CSS cloud layer, preventing duplicate clouds. Leaving Home now pauses the current video in place and resumes it on return without rebuilding the decoder. The game shell also removes its fixed 1280px cap and collapses save/AI tools by default on short screens behind a 44px toggle, giving Life Restart and other games more usable space under browser zoom, landscape, and narrow layouts.",
-        "ja": "動画壁紙を利用できる場合は別の CSS 雲レイヤーを生成・先読みせず、雲の二重表示を防ぎます。Home を離れると現在の動画をその場で一時停止し、戻った際はデコーダーを作り直さず再開します。ゲーム枠の固定 1280px 上限も削除し、短い画面ではセーブ／AI ツールを 44px ボタンの後ろへ初期収納して、人生重開などをブラウザー拡大縮小・横画面・狭い画面で広く表示します。"
       }
     },
   ]

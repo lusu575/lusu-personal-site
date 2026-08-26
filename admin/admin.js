@@ -190,7 +190,7 @@ const panelMeta = {
   automation: ["自动投递", "分别管理“每日 AI 新闻”和“工具雷达”的投递状态、连接凭证、自动公开与最近记录。"],
   videos: ["视频管理", "输入视频链接后由服务端识别并缓存标题、简介、发布时间和封面，也可上传本地封面。"],
   videoCategories: ["视频分类管理", "维护视频区顶部标签，支持新增、编辑、停用、排序和安全删除。"],
-  chat: ["聊天室管理", "编辑、隐藏、删除聊天记录，按隐藏用户标识或网络来源禁言。"],
+  chat: ["聊天室管理", "编辑、隐藏、删除聊天记录，按隐藏用户标识或网络来源禁言，或彻底删除整个密码房。"],
   whiteboards: ["在线画板管理", "查看公共画板和密码房连接、容量与生命周期，并执行锁定、清空、移除、封禁和异常房间删除。"],
   accounts: ["账号管理", "查看注册账号、重置密码、确认登录履历和近期活跃。"],
   socialLinks: ["社交链接", "维护主站关于我窗口里的社交入口跳转。"],
@@ -204,6 +204,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-08-27",
+    title: "密码房彻底删除与重新建房",
+    body: "后台新增聊天密码房整房删除，Quick Transfer 关闭改为清除房间、文件和 Multipart 数据，在线画板删除成功后同步清除 D1 索引。完整删除后，同一密码会进入全新空房间；存储删除失败时保持锁定并可重试。"
+  },
   {
     date: "2026-08-12",
     title: "MiniMax H3 控制面上线准备",
@@ -6377,6 +6382,10 @@ function isEncryptedChatMessage(message) {
   return Number(message?.encrypted) === 1;
 }
 
+function isPrivateChatMessage(message) {
+  return Boolean(message?.room_key) && message.room_key !== "public";
+}
+
 function isCurrentChatIpHash(message) {
   return Number(message?.ip_hash_current) === 1;
 }
@@ -6477,6 +6486,7 @@ function syncChatActionState() {
   const saveButton = $("#chat-form-admin button[type='submit']");
   const toggleButton = $("#toggle-chat-hidden");
   const deleteButton = $("#delete-chat-message");
+  const deleteRoomButton = $("#delete-chat-room");
   const visitorBanButton = $("#ban-chat-visitor");
   const ipBanButton = $("#ban-chat-ip");
   const actionButtons = [
@@ -6512,6 +6522,19 @@ function syncChatActionState() {
   if (deleteButton) {
     deleteButton.textContent = state.chatActionBusyMode === "delete" ? "删除中..." : "删除";
     syncButtonHint(deleteButton, chatActionButtonHint("删除当前聊天记录", hasMessage, busy));
+  }
+  if (deleteRoomButton) {
+    const privateRoom = isPrivateChatMessage(message);
+    deleteRoomButton.disabled = busy || !privateRoom;
+    deleteRoomButton.setAttribute("aria-busy", busy ? "true" : "false");
+    deleteRoomButton.setAttribute("aria-disabled", deleteRoomButton.disabled ? "true" : "false");
+    deleteRoomButton.textContent = state.chatActionBusyMode === "deleteRoom" ? "删除房间中..." : "删除整个密码房";
+    syncButtonHint(
+      deleteRoomButton,
+      privateRoom
+        ? chatActionButtonHint("永久删除当前密码房的全部消息", hasMessage, busy)
+        : "公共大厅不能整房删除；请先选择密码房消息"
+    );
   }
   if (visitorBanButton) {
     const missingVisitorId = hasMessage && !message.visitor_id;
@@ -6618,6 +6641,7 @@ function chatActionBusyFilterTitle() {
     save: "正在保存聊天记录，完成后再调整筛选",
     toggle: "正在处理聊天可见性，完成后再调整筛选",
     delete: "正在删除聊天记录，完成后再调整筛选",
+    deleteRoom: "正在删除密码房，完成后再调整筛选",
     banVisitor: "正在禁言用户标识，完成后再调整筛选",
     banIp: "正在禁言网络来源，完成后再调整筛选"
   }[state.chatActionBusyMode] || "正在处理聊天记录，完成后再调整筛选";
@@ -6647,6 +6671,7 @@ function chatActionBusyFormTitle() {
     save: "正在保存聊天记录，完成后再编辑表单",
     toggle: "正在处理聊天可见性，完成后再编辑表单",
     delete: "正在删除聊天记录，完成后再编辑表单",
+    deleteRoom: "正在删除密码房，完成后再编辑表单",
     banVisitor: "正在禁言用户标识，完成后再编辑表单",
     banIp: "正在禁言网络来源，完成后再编辑表单"
   }[state.chatActionBusyMode] || "正在处理聊天记录，完成后再编辑表单";
@@ -6760,6 +6785,42 @@ async function deleteChatMessage() {
     resetChatForm();
     await loadChatMessages();
     setElementText($("#chat-selected-id"), `已删除 ${message.nickname || message.message_id} · 操作人 ${state.user?.email || "当前管理员"}`);
+  } catch (error) {
+    showChatActionError(error);
+  } finally {
+    setChatActionBusy("");
+  }
+}
+
+async function deleteChatRoom() {
+  if (state.chatActionBusy) {
+    return;
+  }
+  const message = selectedChatMessage();
+  if (!message || !isPrivateChatMessage(message)) {
+    return;
+  }
+  if (!(await confirmEditorCanLeave("chat", "删除密码房会丢弃当前房间全部消息和尚未保存的编辑内容。"))) {
+    return;
+  }
+  const confirmed = await openConfirmDialog({
+    title: "永久删除整个密码房",
+    object: `密码房 ${message.room_key}`,
+    state: `当前选中：${message.nickname || "未命名访客"} · ${formatTime(message.created_at) || message.message_id}`,
+    impact: "这个密码房的全部消息会被立即永久删除。",
+    recovery: "不可恢复；同一密码再次进入时会创建全新的空房间。",
+    confirmLabel: "删除整个密码房"
+  });
+  if (!confirmed) {
+    return;
+  }
+  setChatActionBusy("deleteRoom");
+  try {
+    const result = await api(`/api/admin/chat/rooms/${encodeURIComponent(message.room_key)}`, { method: "DELETE" });
+    state.selectedMessageId = "";
+    resetChatForm();
+    await loadChatMessages();
+    setElementText($("#chat-selected-id"), `已彻底删除密码房（${formatNumber(result.deletedMessages || 0)} 条消息） · 操作人 ${state.user?.email || "当前管理员"}`);
   } catch (error) {
     showChatActionError(error);
   } finally {
@@ -9145,6 +9206,7 @@ function bindEvents() {
   $("#chat-form-admin").addEventListener("submit", saveChatMessage);
   $("#toggle-chat-hidden").addEventListener("click", toggleChatHidden);
   $("#delete-chat-message").addEventListener("click", deleteChatMessage);
+  $("#delete-chat-room").addEventListener("click", deleteChatRoom);
   $("#ban-chat-visitor").addEventListener("click", () => banSelectedChat("visitor"));
   $("#ban-chat-ip").addEventListener("click", () => banSelectedChat("ip_hash"));
   $("#refresh-bans").addEventListener("click", refreshBans);

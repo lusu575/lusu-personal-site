@@ -2,6 +2,11 @@
 
 本日志只记录在线画板子项目。根项目发布历史仍写入仓库根 `CHANGELOG.md`。
 
+## 1.0.9 - 2026-08-27
+
+- 管理员删除空密码房时，先由 Durable Object 完成画布、图片和权威状态删除，成功后 Pages 再同步删除 `whiteboard_rooms`、`whiteboard_assets` 和 `whiteboard_bans` 索引，不再保留 `deleting` 墓碑。
+- 完整删除后，同一密码会进入全新空画板；DO 内部协议、Worker 源码和 24 小时 Alarm 逻辑未改变。
+
 ## 1.0.8 - 2026-08-20
 
 - 使用 Image2 生成并保留来源清单的像素画大厅背景，以暖纸、XP 蓝和 Y2K 像素元素统一主站视觉；WebP 为首选资源，PNG 作为兼容回退。

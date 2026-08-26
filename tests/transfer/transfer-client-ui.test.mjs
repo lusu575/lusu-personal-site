@@ -70,10 +70,10 @@ test("Quick Transfer exposes a gallery picker without forcing camera capture", (
   assert.match(photoInput, /accept="image\/\*"/);
   assert.match(photoInput, /\bmultiple\b/);
   assert.doesNotMatch(photoInput, /\bcapture(?:=|\s|>)/i);
-  assert.match(fragment, /id="transfer-file-input" type="file" multiple/);
+  assert.match(fragment, /id="transfer-file-input"[^>]*type="file"[^>]*multiple/);
 });
 
-test("Quick Transfer exposes password guidance and keeps only native file pickers keyboard-actionable", () => {
+test("Quick Transfer exposes password guidance and explicit keyboard-actionable picker buttons", () => {
   const passwordInput = fragment.match(/<input id="transfer-room-password"[^>]*>/)?.[0] || "";
   const uploadZone = fragment.match(/<div class="transfer-upload-zone" id="transfer-upload-zone"[^>]*>/)?.[0] || "";
   assert.match(passwordInput, /aria-describedby="transfer-security-note transfer-feedback"/);
@@ -83,8 +83,19 @@ test("Quick Transfer exposes password guidance and keeps only native file picker
   assert.doesNotMatch(client, /listen\(refs\.uploadZone, "keydown"/);
   assert.doesNotMatch(client, /function handleUploadZoneKeydown/);
   assert.doesNotMatch(client, /refs\.uploadZone\?\.setAttribute\("aria-disabled"/);
-  assert.match(fragment, /<label class="xp-button transfer-file-picker transfer-photo-picker">[\s\S]*id="transfer-photo-input" type="file"/);
-  assert.match(fragment, /<label class="xp-button transfer-file-picker">[\s\S]*id="transfer-file-input" type="file"/);
+  assert.match(fragment, /<button class="xp-button transfer-file-picker transfer-photo-picker" id="transfer-photo-picker" type="button" aria-controls="transfer-photo-input"/);
+  assert.match(fragment, /<button class="xp-button transfer-file-picker" id="transfer-file-picker" type="button" aria-controls="transfer-file-input"/);
+  assert.doesNotMatch(fragment, /<label class="xp-button transfer-file-picker/);
+});
+
+test("Quick Transfer rearms mobile pickers after cancel, denial, or choosing the same file", () => {
+  assert.match(client, /listen\(refs\.photoPicker, "click", \(\) => openFilePicker\(refs\.photoInput\)\)/);
+  assert.match(client, /listen\(refs\.filePicker, "click", \(\) => openFilePicker\(refs\.fileInput\)\)/);
+  assert.match(client, /listen\(refs\.photoInput, "cancel", \(\) => resetFilePicker\(refs\.photoInput\)\)/);
+  assert.match(client, /listen\(refs\.fileInput, "cancel", \(\) => resetFilePicker\(refs\.fileInput\)\)/);
+  assert.match(client, /function openFilePicker\(input\)[\s\S]*resetFilePicker\(input\)[\s\S]*input\.showPicker\(\)[\s\S]*input\.click\(\)/);
+  assert.match(client, /function resetFilePicker\(input\)[\s\S]*input\.value = ""/);
+  assert.match(client, /\[refs\.photoPicker, refs\.filePicker\][\s\S]*picker\.disabled = !available/);
 });
 
 test("Quick Transfer has no eager CSS, client, fragment DOM, or API request", () => {

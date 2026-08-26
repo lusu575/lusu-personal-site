@@ -671,13 +671,14 @@
                 <details class="danger-actions-menu">
                   <summary>更多治理操作</summary>
                   <div class="danger-actions-body">
-                    <p>删除不可恢复；禁言会影响该用户或网络来源后续发言。</p>
+                    <p>删除不可恢复；删除整个密码房会清空全部消息，同一密码再进入时会创建全新空房间。</p>
                     <label>禁言原因<input name="ban_reason" maxlength="200" placeholder="说明本次治理原因"></label>
                     <label>禁言时长（小时，0 为长期）<input name="ban_hours" type="number" min="0" max="8760" value="24"></label>
                     <div class="form-actions">
                       <button class="xp-button warning" type="button" id="ban-chat-visitor" disabled>禁言用户标识</button>
                       <button class="xp-button warning" type="button" id="ban-chat-ip" disabled>禁言网络来源</button>
                       <button class="xp-button danger" type="button" id="delete-chat-message" disabled>永久删除消息</button>
+                      <button class="xp-button danger" type="button" id="delete-chat-room" disabled>删除整个密码房</button>
                     </div>
                   </div>
                 </details>
@@ -982,6 +983,6 @@
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20260809-admin-motion-polish-r2"></script>
+  <script src="/admin/admin.js?v=20260827-private-room-lifecycle-r1"></script>
 </body>
 </html>

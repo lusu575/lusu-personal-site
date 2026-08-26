@@ -71,6 +71,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - Chat 发送失败重试必须复用同一 `clientRequestId`，新草稿或上一次已成功后才生成新 ID。服务端要在限流前重放首次成功结果，依靠 `(visitor_id, room_key, client_request_id)` 唯一索引防止并发重复；私聊不得因随机 IV 密文改变而产生第二条消息。旧 D1 先补 `client_request_id` 列、后建依赖索引。
 - Chat 密码房进入和返回公开房必须单飞，相关按钮在切换期间进入真实 busy/disabled 状态；只有目标房间历史读取成功后才显示 ready。短密码错误要关联密码输入并设置 `aria-invalid`，失败恢复后焦点回到可继续操作的位置。
 - 公共 Chat 绝不回退暴露服务端隐藏 visitor id；密码、私聊、草稿、Secret、完整标识不得进入 DOM 泄漏、storage、History、console 或 telemetry。修改渲染、链接、iframe、媒体或 Transfer fragment 时必须运行安全边界测试。
+- 私密 Chat 到期或管理员整房删除时必须清除该 room key 的全部消息，不备份；同一密码后续只能进入新空房。公共大厅不得整房删除。
 - 每次调用 `articleTranslationsStatements()` 都必须传入确定的 UTC ISO seed 时间；D1 会拒绝 `undefined` bind。文章或更新 seed 改动后必须运行全量 seed binding 回归和三语文章 API smoke，不能只靠静态 SQL 存在性判断。
 - Cloudflare Pages 可能把 `/fragments/quick-transfer.html` 规范化到 `/fragments/quick-transfer`。互传 loader 只允许这两个同源精确 pathname；不得用前缀、后缀、尾斜杠或跨源规则代替精确白名单。
 - 本地预览交付前先请求 `/api/health`。根 `.dev.vars` 必须包含两个互不相同且至少 32 bytes 的本地隐私盐，值只在本机生成、不得输出或提交；缺失会让全部 API 在进入业务路由前统一返回 503。
@@ -226,7 +227,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 图片只接受严格容器边界、关键块段、声明尺寸、像素和容量校验后的真实 PNG/JPEG/WebP 字节；该边界不宣称完整像素解码。图片保存到私有 R2 `whiteboard/v1/<roomId>/<assetId>`；画布只保存资源 ID 与权威元数据投影，不长期保存大 Base64，不允许 URL、危险 SVG／HTML 或跨房读取。Agent 图片上传／原图读取必须额外要求非默认 `whiteboard:assets`，scene 图片分支只接受已完成 R2 提交的当前房 `ImageMeta`，由可信内部 header 向 DO 表达授权；普通 write-only Agent 继续拒绝图片。上传必须以独立 operation ID + byte hash 幂等，pending 资源不能被场景引用，锁定房不能新传或续传。场景仍只追加，可复用未修改的规范资源记录和多次放置同图，但不得改删既有元素／资源或创建孤立资源。
 - Pages 全局 mutation gate 必须先执行精确同源检查，再只按完整方法、路由段和规范化 MIME 识别白板二进制入口：`POST /api/whiteboard/assets` 与 `POST /api/whiteboard/agent/assets` 仅限 PNG／JPEG／WebP，`POST /api/whiteboard/agent/scene` 仅限 `application/vnd.yjs-update`。不得使用前缀、通配路径、`image/*` 或 `/agent/*` 宽泛豁免，也不得在门禁 helper 中消费正文。安全 CLI 请求只能继续进入后续 Agent Bearer、scope、tokenId 绑定房间令牌、operation ID、正文／容量和图片／只追加场景校验；回归必须锁定精确入口缺令牌为 401、跨源为 403 且 schema 未写入、相邻路径／错误方法／错误 MIME 为 415。
 - 在线画板的入口图标、插画与装饰素材只允许使用 image2 生成并保存为项目内图片；每项素材 manifest 必须锁定 generator=image2、生成/发布尺寸、最终 SHA-256，并列出仅允许的机械 resize，守卫同时校验真实图片。不得用 CSS、Canvas、SVG 路径或代码几何拼凑素材；CSS 只承担布局、状态和响应式交互。
-- 公共房 `public-v1` 永不按空房 TTL 删除。密码房最后一条有效连接关闭或心跳超时后写 `emptySince` 与 `deleteAt = +24h`；重入取消旧 Alarm，再次为空重新计时。Alarm 必须再次检查连接、截止时间和代次，幂等清理房间 R2 前缀、D1 索引与 DO 状态，失败时重试。
+- 公共房 `public-v1` 永不按空房 TTL 删除。密码房最后一条有效连接关闭或心跳超时后写 `emptySince` 与 `deleteAt = +24h`；重入取消旧 Alarm，再次为空重新计时。Alarm 必须再次检查连接、截止时间和代次，幂等清理房间 R2 前缀、D1 索引与 DO 状态，失败时重试。管理员删除在 DO／R2 成功后必须删掉 D1 room、asset 和 ban 索引，不保留 `deleting` 墓碑；同一密码再进入是新空画板。
 - 在线画板和 Quick Transfer 是根项目下的独立子项目，治理根分别为 `docs/whiteboard/` 和 `docs/transfer/`。修改各自 `project.json` 定义的 tracked paths 时，必须把该子项目 `VERSION` 和显示版本相对基线精确增加 `0.0.1`，在独立 `CHANGELOG.md` 写本次版本，并同步 `README.md`、`AGENTS.md`、其他受影响文档与根 `CHANGELOG.md`。共享能力适配器或目录元数据一旦新增／改变某个受管工具的能力域、固定入口或协议语义，必须先把专属契约抽到该子项目可追踪的路径并正常升版，不能因实现文件位于通用目录而绕过治理；也不能用宽泛共享路径让无关的视频／游戏改动误触子项目升版。多个子项目共用一个可见目录文件时，`visibleVersionChecks` 必须用项目专属锚点、有界窗口和含 `{{version}}` 的精确模板锁定本项目条目，不能用全文件 `includes(version)` 让其他条目的同版本号掩盖漏改。主站或另一子项目发版不得仅为统一发布字符串而滚动未改变子项目的内部 asset cache key；真实修改受治理 loader 时仍必须正常升版。`AGENT.md` 仅可指向唯一权威 `AGENTS.md`，不得复制出第二份漂移规则；提交前必须在当前分支相对 `origin/main` 运行 `npm run check:subprojects`。
 - 保留服务端人数、连接、消息、对象、文档、图片与频率上限；Origin、匿名凭证、房间票据、IP 哈希限流、跨房资源访问和异常连接都必须 fail closed。日志不得记录明文密码、完整画布、完整 IP 或公开完整匿名 ID。
 - 管理后台必须复用 `users.role = admin` 鉴权，提供概览、房间状态、容量、短错误码与去重错误／自动清理聚合计数、公共房清空／锁定、连接移除、匿名 ID／IP 哈希临时封禁及空密码房删除；默认只显示截断标识，危险操作保持确认与审计。错误指标不得保存请求载荷或画布内容。
@@ -402,7 +403,7 @@ $env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wran
 - 未登录用户从手机 Tools App（内部 `resources` route）打开临时互传时必须能直接到达登录操作；不能只代理点击在非 Home 路由被隐藏的 `.topbar-actions`，账号弹窗也不能留在 `display: none` 的祖先内。
 - 互传房间的消息流、上传任务和输入区必须在 359x500、375x667、390x844、430x932、844x390 及软键盘 `visualViewport` 缩小时保持可到达。手机房间保持单一 `.transfer-room` 滚动路径，composer 必须留在正常文档流，不能用 sticky / fixed 层覆盖已发送卡片；仅把 composer 改成 `position: static` 不够，竖屏房间必须使用纵向 Flex，toolbar/feed/composer/tasks 直接子项不可收缩，让消息按真实内容高度撑开，短横屏再显式恢复双栏 Grid。验收必须测量 composer 与图片、文件卡的二维交集为零，不得用嵌套滚动、过度 overscroll containment 或固定高度把登录、发送或上传操作锁在视口外。
 - 普通互传默认 95 MiB/文件并受个人、房间、频率和全站免费池的服务端限制；管理员大文件必须使用 R2 Multipart。“不限频次”不等于无限并发或突破 R2 平台/账单边界。
-- Transfer 设置必须以服务端 revision / `expectedUpdatedAt` 条件更新；清空房间、定时清理、简单上传和 Multipart ready 转换必须检查真实 D1 changes。只完成部分对象时返回非 2xx、失败对象和可重试信息；并发删除或 ready 竞态产生的 R2 对象必须清理，不能把部分失败或孤立对象伪报为成功。
+- Transfer 设置必须以服务端 revision / `expectedUpdatedAt` 条件更新；清空房间、定时清理、简单上传和 Multipart ready 转换必须检查真实 D1 changes。房间过期或管理删除必须中止 Multipart，物理删除 R2 与 D1 全部房间数据，不保留备份或占用口令的墓碑；同一密码后续创建新空房。只完成部分对象时返回非 2xx，保持 `deleting` 与写入锁并允许后台、清理任务或下次加入重试；并发删除或 ready 竞态产生的 R2 对象必须清理，不能伪报成功。
 - 房间明文口令不得发送服务端或进入 D1/R2/日志；文字可称浏览器 AES-GCM，文件只准确描述为 HTTPS + 私有 R2 + 服务端鉴权，未实现可靠流式 E2EE 或病毒扫描时不得声称已实现。
 - 互传列表与下载必须以 `expires_at` 做 24 小时逻辑过期；独立 `workers/transfer-cleanup/` Worker 和 R2 生命周期兜底都要保留。
 - R2 桶、Pages Production/Preview binding、清理 Worker、生命周期规则和 Cloudflare 官方预算提醒均是 Dashboard 人工步骤，代码交付不得虚假声称已配置完成。

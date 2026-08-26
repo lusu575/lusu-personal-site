@@ -88,6 +88,8 @@ WebSocket ticket 的 `jti` 在 DO storage 中以 5 分钟过期时间原子消�
 - `{"action":"unban","kind":"anonymousId|ipHash","key":"..."}`
 - `{"action":"delete-room"}`，仅允许无连接的密码房；公共房只能清空。
 
+管理员删除请求在 DO 成功删除画布、R2 图片和权威状态后，由 Pages 同步删除 D1 的 room、asset 和 ban fleet index；不保留可占用密码的 `deleting` 墓碑。本次未修改 Worker 协议或 DO 源码。
+
 ## WebSocket 协议
 
 二进制帧首字节是消息类型：

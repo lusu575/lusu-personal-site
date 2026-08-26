@@ -2,6 +2,12 @@
 
 > 管理后台专用说明：本文档只记录 `/admin/` 管理后台的私有维护记录，不等同于主站根目录 `CHANGELOG.md`。后台私有更新不写入主站知识库 `site-updates`，也不展示到首页最近更新。
 
+## 2026-08-27
+
+- 聊天室治理新增私密密码房整房永久删除，公共大厅受保护；同一密码后续进入时是全新空房。
+- Quick Transfer 后台“关闭”改为彻底删除房间与全部 R2／Multipart／D1 数据，部分失败可重试；在线画板删除成功后同步清除 D1 room、asset 和 ban 索引。
+- 后台主脚本与 Transfer 脚本 query 更新为 `20260827-private-room-lifecycle-r1`。
+
 ## 2026-08-20
 
 - 修复 MiniMax H3 从后台进入后错误返回公共网站的问题：后台导航现在打开 `/admin/minimax-h3.html?from=admin`，控制台据此显示“返回管理后台”并回到 `/admin/`。

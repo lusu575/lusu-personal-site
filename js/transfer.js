@@ -94,7 +94,7 @@
   }
 
   function cacheRefs() {
-    ["app", "feedback", "live-summary", "login-gate", "room-entry", "room", "room-password", "quota-card", "room-mode", "feed", "text-input", "photo-input", "file-input", "pending-attachments", "send-button", "upload-zone", "upload-help", "task-list", "network-status", "drop-overlay"]
+    ["app", "feedback", "live-summary", "login-gate", "room-entry", "room", "room-password", "quota-card", "room-mode", "feed", "text-input", "photo-picker", "photo-input", "file-picker", "file-input", "pending-attachments", "send-button", "upload-zone", "upload-help", "task-list", "network-status", "drop-overlay"]
       .forEach((name) => { refs[toCamel(name)] = document.getElementById(`transfer-${name}`); });
     refs.resourceCategories = document.getElementById("resource-categories");
     refs.resourceList = document.getElementById("resource-list");
@@ -194,8 +194,12 @@
     listen(document.getElementById("transfer-leave-room"), "click", leaveRoom);
     listen(document.getElementById("transfer-refresh-button"), "click", () => refreshItems(true));
     listen(document.getElementById("transfer-text-form"), "submit", sendComposer);
+    listen(refs.photoPicker, "click", () => openFilePicker(refs.photoInput));
+    listen(refs.filePicker, "click", () => openFilePicker(refs.fileInput));
     listen(refs.photoInput, "change", (event) => stageFiles(event.target.files));
     listen(refs.fileInput, "change", (event) => stageFiles(event.target.files));
+    listen(refs.photoInput, "cancel", () => resetFilePicker(refs.photoInput));
+    listen(refs.fileInput, "cancel", () => resetFilePicker(refs.fileInput));
     listen(refs.dropSurface, "dragenter", handleWindowDragEnter);
     listen(refs.dropSurface, "dragover", handleWindowDragOver);
     listen(refs.dropSurface, "dragleave", handleWindowDragLeave);
@@ -307,8 +311,8 @@
     if (refs.photoInput) refs.photoInput.disabled = !available;
     if (refs.fileInput) refs.fileInput.disabled = !available;
     refs.uploadZone?.classList.toggle("is-disabled", !available);
-    [refs.photoInput, refs.fileInput].forEach((input) => {
-      const picker = input?.closest(".transfer-file-picker");
+    [refs.photoPicker, refs.filePicker].forEach((picker) => {
+      if (picker) picker.disabled = !available;
       picker?.classList.toggle("is-disabled", !available);
       picker?.setAttribute("aria-disabled", String(!available));
     });
@@ -1005,8 +1009,26 @@
   }
 
   function resetFilePickers() {
-    if (refs.photoInput) refs.photoInput.value = "";
-    if (refs.fileInput) refs.fileInput.value = "";
+    resetFilePicker(refs.photoInput);
+    resetFilePicker(refs.fileInput);
+  }
+
+  function resetFilePicker(input) {
+    if (input) input.value = "";
+  }
+
+  function openFilePicker(input) {
+    if (!input || input.disabled || !canAcceptFiles()) return;
+    resetFilePicker(input);
+    if (typeof input.showPicker === "function") {
+      try {
+        input.showPicker();
+        return;
+      } catch {
+        // Some mobile browsers expose showPicker but only permit the legacy click path.
+      }
+    }
+    input.click();
   }
 
   function sameFile(left, right) {

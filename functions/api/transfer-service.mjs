@@ -218,7 +218,8 @@ async function handleAdminTransferApi(context, parts) {
     return transferJson(result, result.ok ? 200 : 502);
   }
   if (request.method === "POST" && parts[0] === "room" && parts[1] && parts[2] === "close") {
-    return transferJson(await adminCloseRoom(env, session, parts[1]));
+    const result = await adminCloseRoom(env, session, parts[1]);
+    return transferJson(result, result.ok ? 200 : 502);
   }
   if (request.method === "POST" && parts[0] === "normal-upload-switch") {
     const body = await readBoundedJson(request);
@@ -299,6 +300,17 @@ async function publicTransferConfig(env, session) {
 }
 
 async function joinTransferRoom(env, roomKey, userId) {
+  const existing = await env.DB.prepare("select * from transfer_rooms where room_key = ?").bind(roomKey).first();
+  if (existing && existing.status !== "open") {
+    const purged = await purgeTransferRoom(env, existing.id);
+    if (!purged.ok) {
+      throw new TransferHttpError(
+        "旧房间仍在清理中，请稍后重试。",
+        503,
+        "TRANSFER_ROOM_DELETE_PENDING"
+      );
+    }
+  }
   const now = nowIso();
   await env.DB.prepare(`
     insert into transfer_rooms (id, room_key, created_by, status, created_at, last_activity_at)
@@ -396,15 +408,20 @@ async function createTransferText(env, session, body) {
     expires_at: expiresAt
   };
   try {
-    await env.DB.prepare(`
+    const result = await env.DB.prepare(`
       insert into transfer_items (
         id, room_id, uploader_user_id, uploader_role_snapshot, item_type, encrypted,
         text_ciphertext, upload_mode, upload_status, created_at, completed_at, expires_at, idempotency_key
-      ) values (?, ?, ?, ?, 'text', 1, ?, 'text', 'ready', ?, ?, ?, ?)
+      )
+      select ?, ?, ?, ?, 'text', 1, ?, 'text', 'ready', ?, ?, ?, ?
+      where exists (select 1 from transfer_rooms where id = ? and status = 'open')
     `).bind(
       item.id, item.room_id, item.uploader_user_id, item.uploader_role_snapshot,
-      item.text_ciphertext, now, now, expiresAt, idempotencyKey
+      item.text_ciphertext, now, now, expiresAt, idempotencyKey, room.id
     ).run();
+    if (statementChanges(result) !== 1) {
+      throw new TransferHttpError("这个互传房间已经关闭。", 423, "TRANSFER_ROOM_CLOSED");
+    }
   } catch (error) {
     const replay = await findIdempotentItem(env, session.user.id, idempotencyKey);
     if (!replay) throw error;
@@ -484,7 +501,8 @@ async function uploadSimpleObject(context, session) {
     const readyResult = await env.DB.prepare(`
       update transfer_items set upload_status = 'ready', size_bytes = ?, etag = ?, completed_at = ?, expires_at = ?
       where id = ? and upload_status = 'uploading'
-    `).bind(declaredSize, head.etag || "", completeAt, addHoursIso(settings.retentionHours), itemId).run();
+        and exists (select 1 from transfer_rooms where id = ? and status = 'open')
+    `).bind(declaredSize, head.etag || "", completeAt, addHoursIso(settings.retentionHours), itemId, room.id).run();
     if (statementChanges(readyResult) !== 1) {
       throw new TransferHttpError(
         "上传记录已被删除或取消，已清理刚写入的文件对象。",
@@ -528,17 +546,22 @@ async function uploadSimpleObject(context, session) {
 
 async function reserveSimpleUpload(env, session, room, upload, settings) {
   if (session.user.role === "admin") {
-    await env.DB.prepare(`
+    const result = await env.DB.prepare(`
       insert into transfer_items (
         id, room_id, uploader_user_id, uploader_role_snapshot, item_type, original_filename,
         display_filename, r2_object_key, mime_type, size_bytes, upload_mode, upload_status,
         created_at, expires_at, idempotency_key
-      ) values (?, ?, ?, 'admin', ?, ?, ?, ?, ?, ?, 'simple', 'uploading', ?, ?, ?)
+      )
+      select ?, ?, ?, 'admin', ?, ?, ?, ?, ?, ?, 'simple', 'uploading', ?, ?, ?
+      where exists (select 1 from transfer_rooms where id = ? and status = 'open')
     `).bind(
       upload.itemId, room.id, session.user.id, itemTypeFromMime(upload.mimeType),
       upload.filename, upload.filename, upload.objectKey, upload.mimeType, upload.declaredSize,
-      upload.now, upload.expiresAt, upload.idempotencyKey
+      upload.now, upload.expiresAt, upload.idempotencyKey, room.id
     ).run();
+    if (statementChanges(result) !== 1) {
+      throw new TransferHttpError("这个互传房间已经关闭。", 423, "TRANSFER_ROOM_CLOSED");
+    }
     return;
   }
 
@@ -553,6 +576,8 @@ async function reserveSimpleUpload(env, session, room, upload, settings) {
     )
     select ?, ?, ?, 'user', ?, ?, ?, ?, ?, ?, 'simple', 'uploading', ?, ?, ?
     where
+      exists (select 1 from transfer_rooms where id = ? and status = 'open')
+      and
       (select count(*) from transfer_items where uploader_user_id = ? and upload_status = 'uploading') < ?
       and (select count(*) from transfer_items where uploader_user_id = ? and created_at >= ?) < ?
       and (select coalesce(sum(size_bytes), 0) from transfer_audit_log where actor_user_id = ? and action = 'upload_completed' and created_at >= ?) + ? <= ?
@@ -563,6 +588,7 @@ async function reserveSimpleUpload(env, session, room, upload, settings) {
   `).bind(
     upload.itemId, room.id, session.user.id, itemTypeFromMime(upload.mimeType), upload.filename,
     upload.filename, upload.objectKey, upload.mimeType, upload.declaredSize, upload.now, upload.expiresAt, upload.idempotencyKey,
+    room.id,
     session.user.id, settings.normalUserConcurrentUploads,
     session.user.id, recentMinute, settings.normalUserInitPerMinute,
     session.user.id, since24h, upload.declaredSize, settings.normalUser24hBytes,
@@ -622,28 +648,35 @@ async function initializeMultipartUpload(context, session, body) {
   await recordR2Operations(env, { classA: 1 });
   const expiresAt = addHoursIso(settings.uploadSessionHours);
   try {
-    await env.DB.batch([
+    const initializationResults = await env.DB.batch([
       env.DB.prepare(`
         insert into transfer_items (
           id, room_id, uploader_user_id, uploader_role_snapshot, item_type, original_filename,
           display_filename, r2_object_key, mime_type, size_bytes, upload_mode, upload_status,
           created_at, expires_at, idempotency_key
-        ) values (?, ?, ?, 'admin', ?, ?, ?, ?, ?, ?, 'multipart', 'uploading', ?, ?, ?)
+        )
+        select ?, ?, ?, 'admin', ?, ?, ?, ?, ?, ?, 'multipart', 'uploading', ?, ?, ?
+        where exists (select 1 from transfer_rooms where id = ? and status = 'open')
       `).bind(
         itemId, room.id, session.user.id, itemTypeFromMime(mimeType), filename, filename,
-        objectKey, mimeType, declaredSize, now, expiresAt, idempotencyKey
+        objectKey, mimeType, declaredSize, now, expiresAt, idempotencyKey, room.id
       ),
       env.DB.prepare(`
         insert into transfer_upload_sessions (
           id, item_id, room_id, user_id, user_role_snapshot, object_key, r2_upload_id,
           filename, mime_type, declared_size_bytes, part_size_bytes, expected_parts,
           status, created_at, updated_at, expires_at
-        ) values (?, ?, ?, ?, 'admin', ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?, ?)
+        )
+        select ?, ?, ?, ?, 'admin', ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?, ?
+        where exists (select 1 from transfer_items where id = ?)
       `).bind(
         sessionId, itemId, room.id, session.user.id, objectKey, multipart.uploadId,
-        filename, mimeType, declaredSize, partSize, expectedParts, now, now, expiresAt
+        filename, mimeType, declaredSize, partSize, expectedParts, now, now, expiresAt, itemId
       )
     ]);
+    if (statementChanges(initializationResults[0]) !== 1 || statementChanges(initializationResults[1]) !== 1) {
+      throw new TransferHttpError("这个互传房间已经关闭。", 423, "TRANSFER_ROOM_CLOSED");
+    }
   } catch (error) {
     try {
       await multipart.abort();
@@ -786,8 +819,14 @@ async function completeMultipartUpload(context, session, body) {
   `).bind(sessionId).all();
   const parts = partRows.results || [];
   validateCompleteParts(row, parts);
-  await env.DB.prepare("update transfer_upload_sessions set status = 'completing', updated_at = ? where id = ?")
-    .bind(nowIso(), sessionId).run();
+  const completingResult = await env.DB.prepare(`
+    update transfer_upload_sessions set status = 'completing', updated_at = ?
+    where id = ? and status = 'active'
+      and exists (select 1 from transfer_rooms where id = ? and status = 'open')
+  `).bind(nowIso(), sessionId, row.room_id).run();
+  if (statementChanges(completingResult) !== 1) {
+    throw new TransferHttpError("这个互传房间已经关闭或上传任务已失效。", 423, "TRANSFER_ROOM_CLOSED");
+  }
   let object = await env.TRANSFER_BUCKET.head(row.object_key);
   await recordR2Operations(env, { classB: 1 });
   if (!object || Number(object.size) !== Number(row.declared_size_bytes)) {
@@ -813,7 +852,8 @@ async function completeMultipartUpload(context, session, body) {
       update transfer_items set upload_status = 'ready', size_bytes = ?, etag = ?,
         completed_at = ?, expires_at = ?, last_error = ''
       where id = ? and upload_status = 'uploading'
-    `).bind(Number(verified.size), verified.etag || object?.etag || "", completedAt, expiresAt, row.item_id),
+        and exists (select 1 from transfer_rooms where id = ? and status = 'open')
+    `).bind(Number(verified.size), verified.etag || object?.etag || "", completedAt, expiresAt, row.item_id, row.room_id),
     env.DB.prepare(`
       update transfer_upload_sessions set status = 'completed', updated_at = ?, completed_at = ?
       where id = ? and status = 'completing'
@@ -1025,7 +1065,7 @@ async function activeRoomByKey(env, roomKey) {
 
 async function ownedUploadSession(env, session, sessionId, roomKey, allowAny) {
   const row = await env.DB.prepare(`
-    select s.*, r.room_key from transfer_upload_sessions s
+    select s.*, r.room_key, r.status as room_status from transfer_upload_sessions s
     join transfer_rooms r on r.id = s.room_id
     where s.id = ? and r.room_key = ?
   `).bind(sessionId, roomKey).first();
@@ -1034,6 +1074,9 @@ async function ownedUploadSession(env, session, sessionId, roomKey, allowAny) {
   }
   if (!allowAny && row.user_id !== session.user.id) {
     throw new TransferHttpError("不能操作其他账号的上传任务。", 403, "TRANSFER_SESSION_FORBIDDEN");
+  }
+  if (row.room_status !== "open") {
+    throw new TransferHttpError("这个互传房间已经关闭。", 423, "TRANSFER_ROOM_CLOSED");
   }
   if (!MULTIPART_ACTIVE_STATUSES.includes(row.status) && row.status !== "completed" && row.status !== "aborted") {
     throw new TransferHttpError("上传任务当前不能继续。", 409, "TRANSFER_SESSION_INACTIVE");
@@ -1404,14 +1447,140 @@ async function adminClearRoom(env, session, roomIdValue) {
 
 async function adminCloseRoom(env, session, roomIdValue) {
   const roomId = normalizeId(roomIdValue, "房间编号无效。", "TRANSFER_ROOM_INVALID");
-  const result = await env.DB.prepare(`
-    update transfer_rooms set status = 'closed', closed_at = ?, closed_by = ? where id = ?
-  `).bind(nowIso(), session.user.id, roomId).run();
-  if (Number(result.meta?.changes || 0) !== 1) {
+  const room = await env.DB.prepare("select id from transfer_rooms where id = ?").bind(roomId).first();
+  if (!room) {
     throw new TransferHttpError("房间不存在。", 404, "TRANSFER_ROOM_NOT_FOUND");
   }
-  await audit(env, session.user.id, "room_closed", roomId, "", 0, "");
-  return { ok: true, roomId };
+  const result = await purgeTransferRoom(env, roomId, {
+    closedBy: session.user.id
+  });
+  try {
+    await audit(
+      env,
+      session.user.id,
+      result.ok ? "room_deleted" : "room_delete_partial",
+      roomId,
+      "",
+      result.deletedBytes,
+      ""
+    );
+  } catch (error) {
+    console.error(JSON.stringify({
+      message: "transfer room deletion audit failed",
+      code: safeErrorCode(error),
+      roomId
+    }));
+  }
+  return {
+    ...result,
+    error: result.ok ? undefined : "房间删除尚未完成；残留对象已锁定，清理任务会继续重试。",
+    retry: result.ok ? undefined : { roomId, action: "close" }
+  };
+}
+
+async function purgeTransferRoom(env, roomId, options = {}) {
+  const closedAt = nowIso();
+  const transition = await env.DB.prepare(`
+    update transfer_rooms
+    set status = 'deleting', closed_at = ?, closed_by = ?
+    where id = ?
+  `).bind(closedAt, options.closedBy || "system", roomId).run();
+  if (statementChanges(transition) !== 1) {
+    return {
+      ok: true,
+      status: "deleted",
+      roomId,
+      deleted: false,
+      deletedItems: 0,
+      deletedBytes: 0,
+      abortedUploads: 0,
+      failures: []
+    };
+  }
+
+  const [sessionRows, itemRows] = await Promise.all([
+    env.DB.prepare("select * from transfer_upload_sessions where room_id = ?").bind(roomId).all(),
+    env.DB.prepare("select * from transfer_items where room_id = ?").bind(roomId).all()
+  ]);
+  const sessions = sessionRows.results || [];
+  const items = itemRows.results || [];
+  const failures = [];
+  let abortedUploads = 0;
+
+  for (const upload of sessions) {
+    if (!upload.r2_upload_id || upload.status === "completed" || upload.status === "aborted") continue;
+    try {
+      await env.TRANSFER_BUCKET.resumeMultipartUpload(upload.object_key, upload.r2_upload_id).abort();
+      abortedUploads += 1;
+    } catch (error) {
+      if (!isMissingR2Resource(error)) {
+        failures.push(operationFailure("upload", upload.id, upload.filename || upload.object_key, error));
+      }
+    }
+  }
+
+  const objectKeys = new Set([
+    ...items.map((item) => item.r2_object_key),
+    ...sessions.map((upload) => upload.object_key)
+  ].filter(Boolean));
+  for (const objectKey of objectKeys) {
+    try {
+      await env.TRANSFER_BUCKET.delete(objectKey);
+    } catch (error) {
+      failures.push(operationFailure("object", objectKey, objectKey, error));
+    }
+  }
+
+  if (failures.length) {
+    return {
+      ok: false,
+      status: "partial",
+      roomId,
+      deleted: false,
+      deletedItems: 0,
+      deletedBytes: 0,
+      abortedUploads,
+      failed: failures.length,
+      failures
+    };
+  }
+
+  try {
+    await env.DB.batch([
+      env.DB.prepare(`
+        delete from transfer_upload_parts
+        where upload_session_id in (select id from transfer_upload_sessions where room_id = ?)
+      `).bind(roomId),
+      env.DB.prepare("delete from transfer_upload_sessions where room_id = ?").bind(roomId),
+      env.DB.prepare("delete from transfer_items where room_id = ?").bind(roomId),
+      env.DB.prepare("delete from transfer_rooms where id = ? and status = 'deleting'").bind(roomId)
+    ]);
+  } catch (error) {
+    const databaseFailure = operationFailure("room", roomId, roomId, error);
+    return {
+      ok: false,
+      status: "partial",
+      roomId,
+      deleted: false,
+      deletedItems: 0,
+      deletedBytes: 0,
+      abortedUploads,
+      failed: 1,
+      failures: [databaseFailure]
+    };
+  }
+
+  return {
+    ok: true,
+    status: "deleted",
+    roomId,
+    deleted: true,
+    deletedItems: items.length,
+    deletedBytes: items.reduce((total, item) => total + Number(item.size_bytes || 0), 0),
+    abortedUploads,
+    failed: 0,
+    failures: []
+  };
 }
 
 export async function runTransferCleanup(env, options = {}) {
@@ -1423,6 +1592,7 @@ export async function runTransferCleanup(env, options = {}) {
   let deletedItems = 0;
   let deletedBytes = 0;
   let abortedUploads = 0;
+  let deletedRooms = 0;
   let failed = 0;
   let orphanObjects = 0;
   const failures = [];
@@ -1431,6 +1601,25 @@ export async function runTransferCleanup(env, options = {}) {
     insert into transfer_cleanup_runs (id, started_at, status, trigger_type)
     values (?, ?, 'running', ?)
   `).bind(runId, startedAt, options.triggerType || "manual").run();
+
+  const terminalRooms = await env.DB.prepare(`
+    select id from transfer_rooms
+    where status in ('closed', 'deleting')
+    order by closed_at asc, last_activity_at asc
+    limit ?
+  `).bind(limit).all();
+  for (const room of terminalRooms.results || []) {
+    const result = await purgeTransferRoom(env, room.id, { closedBy: options.actorUserId || "system" });
+    if (result.ok) {
+      deletedRooms += result.deleted ? 1 : 0;
+      deletedItems += result.deletedItems;
+      deletedBytes += result.deletedBytes;
+      abortedUploads += result.abortedUploads;
+    } else {
+      failed += result.failed;
+      failures.push(...result.failures);
+    }
+  }
 
   const sessions = await env.DB.prepare(`
     select * from transfer_upload_sessions
@@ -1477,8 +1666,8 @@ export async function runTransferCleanup(env, options = {}) {
       await audit(env, options.actorUserId || "system", "expired_item_deleted", item.room_id, item.id, Number(item.size_bytes || 0), item.mime_type || "");
       await env.DB.batch([
         env.DB.prepare("delete from transfer_items where id = ?").bind(item.id),
-        env.DB.prepare("update transfer_rooms set sync_generation = sync_generation + 1, last_activity_at = ? where id = ?")
-          .bind(nowIso(), item.room_id)
+        env.DB.prepare("update transfer_rooms set sync_generation = sync_generation + 1 where id = ?")
+          .bind(item.room_id)
       ]);
       deletedItems += 1;
       deletedBytes += Number(item.size_bytes || 0);
@@ -1516,13 +1705,26 @@ export async function runTransferCleanup(env, options = {}) {
     }
   }
 
-  await env.DB.prepare(`
-    delete from transfer_rooms
+  const emptyRooms = await env.DB.prepare(`
+    select id from transfer_rooms
     where status = 'open'
       and last_activity_at <= ?
       and not exists (select 1 from transfer_items i where i.room_id = transfer_rooms.id)
       and not exists (select 1 from transfer_upload_sessions s where s.room_id = transfer_rooms.id and s.status in ('active','completing'))
-  `).bind(new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()).run();
+    limit ?
+  `).bind(new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), limit).all();
+  for (const room of emptyRooms.results || []) {
+    const result = await purgeTransferRoom(env, room.id, { closedBy: options.actorUserId || "system" });
+    if (result.ok) {
+      deletedRooms += result.deleted ? 1 : 0;
+      deletedItems += result.deletedItems;
+      deletedBytes += result.deletedBytes;
+      abortedUploads += result.abortedUploads;
+    } else {
+      failed += result.failed;
+      failures.push(...result.failures);
+    }
+  }
   const finishedAt = nowIso();
   await env.DB.prepare(`
     update transfer_cleanup_runs set finished_at = ?, status = ?, deleted_items = ?, deleted_bytes = ?,
@@ -1537,6 +1739,7 @@ export async function runTransferCleanup(env, options = {}) {
     deletedItems,
     deletedBytes,
     abortedUploads,
+    deletedRooms,
     orphanObjects,
     failed,
     failures: failures.slice(0, 100),
@@ -2274,6 +2477,11 @@ function maskEmail(value) {
 
 function safeErrorCode(error) {
   return error instanceof TransferHttpError ? error.code : String(error?.name || "transfer_error").slice(0, 80);
+}
+
+function isMissingR2Resource(error) {
+  const message = String(error?.message || error || "").toLowerCase();
+  return message.includes("not found") || message.includes("nosuchupload") || message.includes("no such upload");
 }
 
 function operationFailure(type, id, label, error) {

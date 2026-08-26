@@ -1566,7 +1566,7 @@ test("a D1 index failure cannot prevent the Durable Object from enforcing a ban"
   );
 });
 
-test("deleting a private room deactivates its D1 bans", async (t) => {
+test("deleting a private room removes its D1 metadata and lets the same password start clean", async (t) => {
   const harness = createHarness();
   t.after(() => harness.close());
   const password = "delete-room-ban-cleanup";
@@ -1613,15 +1613,19 @@ test("deleting a private room deactivates its D1 bans", async (t) => {
     }
   );
   assert.equal(response.status, 200, await response.clone().text());
-  assert.deepEqual(
-    {
-      ...harness.DB.sqlite.prepare(`
-        select r.status, b.active
-        from whiteboard_rooms r
-        join whiteboard_bans b on b.room_id = r.room_id
-        where r.room_id = ?
-      `).get(roomId)
-    },
-    { status: "deleting", active: 0 }
+  assert.equal(
+    harness.DB.sqlite.prepare("select count(*) as count from whiteboard_rooms where room_id = ?").get(roomId).count,
+    0
+  );
+  assert.equal(
+    harness.DB.sqlite.prepare("select count(*) as count from whiteboard_bans where room_id = ?").get(roomId).count,
+    0
+  );
+
+  const rejoined = await join(harness, { type: "private", password });
+  assert.equal(rejoined.response.status, 200);
+  assert.equal(
+    harness.DB.sqlite.prepare("select count(*) as count from whiteboard_rooms where room_id = ?").get(roomId).count,
+    0
   );
 });

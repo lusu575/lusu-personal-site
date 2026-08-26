@@ -7,7 +7,7 @@
     <div class="transfer-app-heading">
       <span class="transfer-icon transfer-icon-app" aria-hidden="true"></span>
       <div>
-        <h2 id="transfer-app-title"><span data-transfer-copy="title">临时互传</span><small class="transfer-project-version" data-project-version="1.0.11">v1.0.11</small></h2>
+        <h2 id="transfer-app-title"><span data-transfer-copy="title">临时互传</span><small class="transfer-project-version" data-project-version="1.0.12">v1.0.12</small></h2>
         <p data-transfer-copy="retention">内容在发布完成 24 小时后自动失效。</p>
       </div>
     </div>
@@ -56,8 +56,10 @@
         <span class="transfer-icon transfer-icon-upload" aria-hidden="true"></span>
         <div class="transfer-upload-copy"><strong data-transfer-copy="dropTitle">添加照片或文件</strong><p id="transfer-upload-help"></p></div>
         <div class="transfer-picker-actions">
-          <label class="xp-button transfer-file-picker transfer-photo-picker"><span class="transfer-icon transfer-icon-image" aria-hidden="true"></span><span data-transfer-copy="choosePhoto">选择照片</span><input id="transfer-photo-input" type="file" accept="image/*" multiple></label>
-          <label class="xp-button transfer-file-picker"><span class="transfer-icon transfer-icon-file" aria-hidden="true"></span><span data-transfer-copy="chooseFile">选择文件</span><input id="transfer-file-input" type="file" multiple></label>
+          <button class="xp-button transfer-file-picker transfer-photo-picker" id="transfer-photo-picker" type="button" aria-controls="transfer-photo-input"><span class="transfer-icon transfer-icon-image" aria-hidden="true"></span><span data-transfer-copy="choosePhoto">选择照片</span></button>
+          <button class="xp-button transfer-file-picker" id="transfer-file-picker" type="button" aria-controls="transfer-file-input"><span class="transfer-icon transfer-icon-file" aria-hidden="true"></span><span data-transfer-copy="chooseFile">选择文件</span></button>
+          <input id="transfer-photo-input" class="transfer-file-input" type="file" accept="image/*" multiple>
+          <input id="transfer-file-input" class="transfer-file-input" type="file" multiple>
         </div>
       </div>
     </form>
