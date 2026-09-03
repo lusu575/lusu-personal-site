@@ -200,6 +200,28 @@ class DiscoveryQueryTests(unittest.TestCase):
             "sovereign-ai-ko",
             "chip-partnerships-en",
             "chip-partnerships-ko",
+            "ai-graphics-rendering-en",
+            "nvidia-dlss-rendering-en",
+            "amd-fsr-rendering-en",
+            "intel-xess-rendering-en",
+            "neural-rendering-tech-en",
+            "frame-generation-en",
+            "ai-graphics-rendering-zh",
+            "gpu-products-en",
+            "gpu-products-zh",
+            "consumer-edge-ai-en",
+            "consumer-edge-ai-zh",
+            "doubao-phone-zh",
+            "ai-phone-launches-zh",
+            "ai-phone-capabilities-zh",
+            "ai-pc-releases-zh",
+            "ai-wearable-device-releases-zh",
+            "consumer-edge-ai-ja",
+            "consumer-edge-ai-ko",
+            "applied-ai-products-en",
+            "applied-ai-products-zh",
+            "applied-ai-industries-en",
+            "applied-ai-industries-zh",
             "tech-finance-zh",
         }.issubset(query_ids))
         self.assertEqual(catalog["queryConcurrency"], 2)
@@ -217,6 +239,12 @@ class DiscoveryQueryTests(unittest.TestCase):
         groups_by_id = {
             entry["id"]: entry for entry in catalog["coverageGroups"]
         }
+        for group_id in [
+            "graphics-compute",
+            "consumer-edge-ai",
+            "applied-ai",
+        ]:
+            self.assertTrue(groups_by_id[group_id]["required"])
         self.assertTrue(groups_by_id["multimodal-models"]["required"])
         self.assertEqual(
             groups_by_id["multimodal-models"]["priority"],
@@ -348,6 +376,51 @@ class DiscoveryQueryTests(unittest.TestCase):
             for term in required_terms:
                 self.assertIn(term, entry["query"])
 
+        expanded_ai_queries = {
+            "nvidia-dlss-rendering-en": (
+                "graphics-compute",
+                "ai-graphics-releases",
+                ["DLSS", "ray reconstruction", "NVIDIA", "RTX"],
+            ),
+            "frame-generation-en": (
+                "graphics-compute",
+                "ai-graphics-releases",
+                ["frame generation", "DLSS", "FSR", "XeSS"],
+            ),
+            "gpu-products-zh": (
+                "graphics-compute",
+                "gpu-product-releases",
+                ["显卡", "英伟达", "AMD", "Intel", "国产显卡"],
+            ),
+            "doubao-phone-zh": (
+                "consumer-edge-ai",
+                "consumer-edge-ai-releases",
+                ["豆包手机", "豆包手机助手"],
+            ),
+            "ai-wearable-device-releases-zh": (
+                "consumer-edge-ai",
+                "consumer-edge-ai-releases",
+                ["AI眼镜", "AI玩具", "端侧AI设备", "智能终端"],
+            ),
+            "applied-ai-industries-en": (
+                "applied-ai",
+                "applied-ai-product-releases",
+                ["AI healthcare", "AI science", "AI cybersecurity", "AI manufacturing"],
+            ),
+        }
+        for query_id, (group_id, lane, terms) in expanded_ai_queries.items():
+            entry = by_id[query_id]
+            self.assertTrue(entry["required"])
+            self.assertTrue(entry["mustReview"])
+            self.assertEqual(entry["coverageGroup"], group_id)
+            self.assertEqual(entry["reviewLane"], lane)
+            self.assertEqual(
+                entry["maxResults"],
+                MODULE.GOOGLE_NEWS_SAFE_RESULT_LIMIT,
+            )
+            for term in terms:
+                self.assertIn(term, entry["query"])
+
         focused_japanese_product_queries = {
             "openai-product-operations-ja": "openai-product-operations",
             "anthropic-product-operations-ja": "anthropic-products-policy",
@@ -391,9 +464,85 @@ class DiscoveryQueryTests(unittest.TestCase):
             "china-semiconductor-ko",
             "demis-hassabis-broad-en",
             "deepseek-broad-zh",
+            "ai-graphics-rendering-en",
+            "consumer-edge-ai-zh",
         ]:
             self.assertFalse(by_id[supplemental_id]["required"])
             self.assertFalse(by_id[supplemental_id]["mustReview"])
+
+    def test_high_volume_expanded_ai_queries_are_sharded(self) -> None:
+        catalog = MODULE.load_discovery_catalog(
+            Path(__file__).with_name("discovery-queries.json")
+        )
+        queries = catalog["queries"]
+        by_id = {entry["id"]: entry for entry in queries}
+        required_shards = {
+            "nvidia-dlss-rendering-en": "ai-graphics-releases",
+            "amd-fsr-rendering-en": "ai-graphics-releases",
+            "intel-xess-rendering-en": "ai-graphics-releases",
+            "neural-rendering-tech-en": "ai-graphics-releases",
+            "frame-generation-en": "ai-graphics-releases",
+            "doubao-phone-zh": "consumer-edge-ai-releases",
+            "ai-phone-launches-zh": "consumer-edge-ai-releases",
+            "ai-phone-capabilities-zh": "consumer-edge-ai-releases",
+            "ai-pc-releases-zh": "consumer-edge-ai-releases",
+            "ai-wearable-device-releases-zh": "consumer-edge-ai-releases",
+        }
+        for query_id, review_lane in required_shards.items():
+            with self.subTest(query_id=query_id):
+                entry = by_id[query_id]
+                self.assertTrue(entry["required"])
+                self.assertTrue(entry["mustReview"])
+                self.assertEqual(entry["priority"], "priority")
+                self.assertEqual(entry["reviewLane"], review_lane)
+                self.assertEqual(
+                    entry["maxResults"],
+                    MODULE.GOOGLE_NEWS_SAFE_RESULT_LIMIT,
+                )
+
+        for broad_id in [
+            "ai-graphics-rendering-en",
+            "consumer-edge-ai-zh",
+        ]:
+            with self.subTest(query_id=broad_id):
+                entry = by_id[broad_id]
+                self.assertFalse(entry["required"])
+                self.assertFalse(entry["mustReview"])
+                self.assertEqual(entry["priority"], "standard")
+                self.assertIsNone(entry["reviewLane"])
+
+        graphics_text = "\n".join(
+            by_id[query_id]["query"]
+            for query_id in required_shards
+            if by_id[query_id]["coverageGroup"] == "graphics-compute"
+        )
+        for alias in [
+            "DLSS",
+            "FSR Redstone",
+            "XeSS",
+            "neural rendering",
+            "neural shader",
+            "AI upscaling",
+            "frame generation",
+        ]:
+            self.assertIn(alias, graphics_text)
+
+        device_text = "\n".join(
+            by_id[query_id]["query"]
+            for query_id in required_shards
+            if by_id[query_id]["coverageGroup"] == "consumer-edge-ai"
+        )
+        for alias in [
+            "豆包手机",
+            "AI手机",
+            "AI电脑",
+            "AI眼镜",
+            "AI耳机",
+            "AI可穿戴",
+            "AI玩具",
+            "端侧AI设备",
+        ]:
+            self.assertIn(alias, device_text)
 
         must_review_queries = [
             entry for entry in queries if entry["mustReview"]
@@ -1178,6 +1327,30 @@ class MustReviewProvenanceTests(unittest.TestCase):
                 ["data-center-infrastructure"],
                 ["data-centers"],
                 "strategic-hardware-infrastructure-change",
+            ),
+            (
+                "NVIDIA releases DLSS neural rendering update",
+                ["ai-graphics-releases"],
+                ["graphics-compute"],
+                "strategic-hardware-infrastructure-change",
+            ),
+            (
+                "AMD ships a new Radeon AI graphics card",
+                ["gpu-product-releases"],
+                ["graphics-compute"],
+                "strategic-hardware-infrastructure-change",
+            ),
+            (
+                "豆包手机助手正式上线端侧 AI 功能",
+                ["consumer-edge-ai-releases"],
+                ["consumer-edge-ai"],
+                "strategic-hardware-infrastructure-change",
+            ),
+            (
+                "Hospital deploys AI healthcare screening system",
+                ["applied-ai-product-releases"],
+                ["applied-ai"],
+                "capability-availability-change",
             ),
             (
                 "AI robotics startup raises $300 million Series C",

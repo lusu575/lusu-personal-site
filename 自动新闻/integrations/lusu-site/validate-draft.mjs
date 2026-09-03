@@ -1111,6 +1111,30 @@ function validatePriorityReviewProvenance({ run, manifest, indexItems }) {
     const candidateEditorialSignals = stringArray(
       indexById.get(candidateId)?.editorialSignals
     );
+    const reviewMethod = String(entry.reviewMethod || "codex-editorial");
+    if (reviewMethod === "programmatic-prescreen") {
+      const allowedPreFilterReasons = new Set([
+        "outside-publication-window",
+        "missing-usable-content",
+        "low-signal-community-discovery",
+        "low-signal-aggregator-discovery",
+        "no-protected-change-signal"
+      ]);
+      const indexedCandidate = indexById.get(candidateId);
+      if (decision !== "rejected"
+        || editorialClass !== "other"
+        || entry.substantiveChange !== false
+        || scoreTotal !== 0
+        || candidateEditorialSignals.length > 0
+        || indexedCandidate?.sourceType === "rss"
+        || !allowedPreFilterReasons.has(String(entry.preFilterReason || ""))) {
+        throw new Error(
+          `${label} 的 programmatic-prescreen 只能客观排除无信号、非 RSS、零分的 other 候选。`
+        );
+      }
+    } else if (reviewMethod !== "codex-editorial") {
+      throw new Error(`${label}.reviewMethod 必须是 codex-editorial 或 programmatic-prescreen。`);
+    }
     const usagePolicyChange = candidateEditorialSignals.includes(
       USAGE_POLICY_CHANGE_SIGNAL
     );
@@ -1388,16 +1412,19 @@ function editorialClassesForSignals(signals) {
 }
 
 export function validateNonDegeneratePriorityReview(decisions) {
-  if (decisions.length < DEGENERATE_REVIEW_MIN_CANDIDATES) {
+  const editorialDecisions = decisions.filter(
+    (entry) => String(entry?.reviewMethod || "codex-editorial") !== "programmatic-prescreen"
+  );
+  if (editorialDecisions.length < DEGENERATE_REVIEW_MIN_CANDIDATES) {
     return;
   }
-  if (decisions.every((entry) => String(entry?.editorialClass) === "other")) {
+  if (editorialDecisions.every((entry) => String(entry?.editorialClass) === "other")) {
     throw new Error(
       "priorityReview 审稿退化：候选量充足但全部被统一标为 other，必须重新分类审阅。"
     );
   }
 
-  const rejected = decisions.filter((entry) => entry?.decision === "rejected");
+  const rejected = editorialDecisions.filter((entry) => entry?.decision === "rejected");
   if (rejected.length < DEGENERATE_REVIEW_MIN_CANDIDATES) {
     return;
   }
@@ -1556,17 +1583,23 @@ function validateProtectedEventReview({
     const representativeDecision = decisionsByCandidateId.get(
       representativeCandidateId
     );
+    if (String(representativeDecision?.editorialClass || "") !== editorialClass) {
+      throw new Error(`${label} 的代表候选分类必须与事件主分类一致。`);
+    }
 
     for (const candidateId of candidateIds) {
       const decision = decisionsByCandidateId.get(candidateId);
       if (!decision) {
         throw new Error(`${label} 的候选 ${candidateId} 缺少 priorityReview 处置。`);
       }
-      if (String(decision.editorialClass || "") !== editorialClass
-        || decision.substantiveChange !== event.substantiveChange
+      // One semantic event can legitimately carry multiple protected signals
+      // (for example, a device rollout and its capability availability). Each
+      // candidate's class is already checked against its own indexed signals;
+      // the representative anchors the event's primary class here.
+      if (decision.substantiveChange !== event.substantiveChange
         || priorityScoreSignature(decision.score) !== eventScoreSignature) {
         throw new Error(
-          `${label} 的候选 ${candidateId} 分类、实质变化或评分与事件复核不一致。`
+          `${label} 的候选 ${candidateId} 实质变化或评分与事件复核不一致。`
         );
       }
     }

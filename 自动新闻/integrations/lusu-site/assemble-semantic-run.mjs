@@ -1,6 +1,8 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { assertAiTakeFitsFact } from './article-copy-constraints.mjs';
+import { candidateEditorialClass } from './editorial-class-provenance.mjs';
 
 const CONFIRMED_STORY_MINIMUM_SCORE = 6;
 const RUMOR_STORY_MINIMUM_SCORE = 5;
@@ -215,6 +217,17 @@ for (const rawStory of editorialPackage.stories || []) {
     if (!translation?.headline || !translation?.fact || !translation?.aiTake) {
       throw new Error(`Story ${rawStory.storyKey} lacks complete ${lang} copy.`);
     }
+    assertAiTakeFitsFact({
+      fact: translation.fact,
+      aiTake: translation.aiTake,
+      label: `Story ${rawStory.storyKey} ${lang} AI take`,
+    });
+  }
+  if (rawStory.section === 'rumor' && semanticEvent.status !== 'rumor') {
+    throw new Error(`Rumor story must originate from a rumor semantic event: ${rawStory.storyKey}`);
+  }
+  if (rawStory.section !== 'rumor' && semanticEvent.status !== 'confirmed') {
+    throw new Error(`Confirmed story must originate from a confirmed semantic event: ${rawStory.storyKey}`);
   }
   if (rawStory.section === 'rumor') {
     if (rawStory.verification !== 'unverified'
@@ -253,7 +266,12 @@ if (stories.length < 5 || confirmedCount < 1) {
 }
 for (const event of effectiveEvents) {
   const identity = `${event.eventKey}/${event.eventStage}`;
-  if (event.score.total >= 6 && !selectedEventIdentities.has(identity)) {
+  const eventMinimumScore = event.status === 'rumor'
+    ? RUMOR_STORY_MINIMUM_SCORE
+    : CONFIRMED_STORY_MINIMUM_SCORE;
+  if (event.score.total >= eventMinimumScore
+    && event.recommendedRejectionReason !== 'outside-publication-window'
+    && !selectedEventIdentities.has(identity)) {
     throw new Error(`Threshold-clearing semantic event is not selected: ${identity}`);
   }
 }
@@ -320,9 +338,14 @@ const priorityReview = items.map((item) => {
       decision: isRepresentative ? 'selected' : 'merged',
       eventKey: story.eventKey,
       eventStage: story.eventStage,
-      editorialClass: story.editorialClass,
+      // Preserve each candidate's reviewed protected class when multiple signal
+      // classes resolve to the same public event. The event identity still
+      // points to the selected representative, but provenance validation must
+      // evaluate the candidate against its own indexed editorial signals.
+      editorialClass: candidateEditorialClass(semantic, story),
       substantiveChange: true,
       score: story.score,
+      reviewMethod: semantic.reviewMethod || 'codex-editorial',
       note: isRepresentative
         ? semantic.note
         : `${semantic.note} 该候选与代表稿属于同一语义事件和同一阶段。`,
@@ -339,10 +362,15 @@ const priorityReview = items.map((item) => {
     candidateId: item.candidateId,
     decision: 'rejected',
     rejectionReason,
-    editorialClass: event?.editorialClass || semantic.editorialClass,
+    // A rejected protected event can contain exact-title aliases discovered by
+    // different focused lanes. Keep the already-finalized per-candidate class;
+    // the event object only supplies a fallback for legacy/non-Codex records.
+    editorialClass: candidateEditorialClass(semantic, event),
     substantiveChange: event?.substantiveChange ?? semantic.substantiveChange,
     score: event?.score || semantic.score,
     note: event?.evidenceSummary || semantic.note,
+    reviewMethod: semantic.reviewMethod || 'codex-editorial',
+    ...(semantic.preFilterReason ? { preFilterReason: semantic.preFilterReason } : {}),
   };
 });
 const priorityById = new Map(priorityReview.map((entry) => [entry.candidateId, entry]));
@@ -400,6 +428,17 @@ const protectedEventReview = effectiveEvents.map((rawSemanticEvent) => {
   const verifiedOutsideWindow = hasVerifiedDirectEvidence
     && Number.isFinite(firstPublishedTime)
     && (firstPublishedTime < windowStartTime || firstPublishedTime >= windowEndTime);
+  if (rejectionReason === 'outside-publication-window'
+    && (!hasVerifiedDirectEvidence || !verifiedOutsideWindow)) {
+    throw new Error(
+      `Rejected event ${identity} uses outside-publication-window without timed outside-window direct evidence.`,
+    );
+  }
+  if (verifiedOutsideWindow && rejectionReason !== 'outside-publication-window') {
+    throw new Error(
+      `Rejected event ${identity} has outside-window direct evidence and must use outside-publication-window.`,
+    );
+  }
   return {
     eventKey: semanticEvent.eventKey,
     eventStage: semanticEvent.eventStage,
@@ -489,7 +528,7 @@ const dailyRun = {
   timezone: 'Asia/Shanghai',
   windowStart: manifest.windowStart,
   windowEnd: manifest.windowEnd,
-  collectionMethod: 'Horizon native fetch with exact-window discovery, checkpointed semantic candidate review, and evidence-backed protected-event review',
+  collectionMethod: 'Horizon native fetch with exact-window discovery, objective programmatic pre-screening, Codex editorial review, and evidence-backed protected-event review',
   horizonRun: {
     runId: manifest.horizonRunId,
     candidatesPath: `data/mcp-runs/${manifest.horizonRunId}/daily_candidates.json`,
@@ -529,9 +568,9 @@ const dailyRun = {
   },
   candidates: selectedCandidates,
   delivery: {
-    idempotencyKey: `daily-ai-news:${manifest.reportDate}:manual-recovery-semantic-v1`,
+    idempotencyKey: `daily-ai-news:${manifest.reportDate}:horizon-codex-v1`,
     slug: `daily-ai-news-${manifest.reportDate}`,
-    source: 'Daily AI News Horizon owner-authorized manual recovery',
+    source: 'Daily AI News Horizon scheduled Codex review',
     tags: ['每日AI新闻', 'AI', '科技新闻'],
     translations: deliveryTranslations,
   },

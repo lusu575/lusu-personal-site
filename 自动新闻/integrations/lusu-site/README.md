@@ -22,15 +22,16 @@
 
 ## 固定编辑规则
 
+- 每日 AI 新闻使用增量扩充口径：现有模型、开发工具、开放权重、多模态、芯片／存储、机器人、自动驾驶、基础设施、科技金融和监管／安全覆盖不得删减；新增 GPU／显卡与生成式图形、消费级／端侧 AI 设备、泛 AI 产品与行业落地三组 required 多语言发现。DLSS、豆包手机等只是查询别名示例，不是只收这些品牌或品类的白名单。
 - 从 2026-08-24 起，已确认新闻继续使用 6 分门槛，传闻使用 5 分门槛；同一事件阶段只写一次，近 30 天无实质进展的不重复。预告、正式发布、权重上线、许可证、技术报告等阶段只有出现实质新事实时才可作为 material update 再写。
 - 重大模型或产品发布、能力／可用范围变化、用量规则变化、实用开发者工具更新、可信且显著的价格或额度变化，以及重大芯片／存储／机器人／智能设备／自动驾驶／数据中心基础设施、科技金融和 AI 监管／安全事件，达到对应门槛后必须入选或并入同一事件。已确认新闻仍须可靠直达证据；5 分传闻还须满足“一条可归属的一手公开预告”“一条具名可靠直达报道”或“两条相互独立的可靠直达报道”之一，并在正文使用条件语气。临时促销、纯娱乐和小型维护通常不收录。
-- Horizon 会在对应聚焦通道中为上述八类变化标注受保护的 `editorialSignals`。信号不代表必须刊发，但必须进入匹配类别深审，不能统一归成 `other + 4 分`。专用信号按用量规则、价格／额度、重大科技金融、监管／安全、芯片／基础设施的顺序优先；模型、能力和开发工具多信号候选可使用任一实际匹配的受保护类别。`below-importance-threshold` 表示确有实质变化但未达门槛，`no-material-change` 则表示没有实质变化，两者不得混用。
+- Horizon 会在对应聚焦通道中为上述受保护变化标注 `editorialSignals`。信号不代表必须刊发，但必须进入匹配类别深审，不能统一归成 `other + 4 分`。专用信号按用量规则、价格／额度、重大科技金融、监管／安全、芯片／基础设施的顺序优先；模型、能力和开发工具多信号候选可使用任一实际匹配的受保护类别。`below-importance-threshold` 表示确有实质变化但未达门槛，`no-material-change` 则表示没有实质变化，两者不得混用。
 - 每一条写入 candidate index 的候选都必须留下入选、合并或具体拒绝结论；`priority` 只决定审阅先后，不能缩小完整处置范围。这条规则不因来源可选、查询发生截断或本期已经选出 5 条以上而取消。视频、图像和语音模型的重大版本、上线／延期、开放范围、API 与权重变化使用独立多语言聚焦查询，不能只依赖综合模型厂商搜索。
 - coverage manifest 新增 `protectedEventReviewPolicy: evidence-backed-protected-events-v1`。每期必须在 `coverageAudit.protectedEventReview` 中恰好覆盖全部编辑信号、RSS、受保护类别和 selected／merged 候选；按 `eventKey + eventStage` 聚类，逐事件保留官方／可靠直达 HTTPS 来源、当前阶段首次可靠发布时间、证据摘要和四项具体评分理由。入选事件必须在窗口内完成可靠核验；找不到证据时如实使用 `insufficient-evidence` 且不得伪填时间。
 - 禁止按候选 ID、hash、数组下标或固定轮换模板生成分类、分数、拒绝理由或证据记录。大量拒稿只轮换不超过 8 组评分和不超过 32 种结论模板也会 fail closed；结构字段齐全不能替代逐事件判断。
 - TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网和 36氪属于可选补充。Reddit 与 Hacker News 只用于早期发现；其标题、评论和发帖时间不能单独支撑正式事实或时间资格，候选必须回到官方、可靠媒体或其他一手来源核验。站长已授权把 Tibo `@thsottiaux` 的 X 帖子纳入选题；链路不再使用会返回同名医疗噪声的 Bing RSS，而是用 required 的 `codex-operations-en` 聚焦查询同时检索 Tibo 姓名、账号及 Codex／ChatGPT Work 运营变化。公开索引返回的 X、媒体和社区候选都进入完整处置范围；这不是完整登录时间线或 X API。
 - 正文固定为“今日要闻 / 主要新闻 / 传闻”三段；要闻恰好一条且已经核实，传闻单独放置并使用条件语气。
-- 每条新闻是一段事实正文，末尾是一至两句、明显更短的 AI 解读。
+- 每条新闻是一段事实正文，末尾是一至两句、12–240 字且严格短于事实段可见字符数 80% 的 AI 解读。
 - 中文、英文、日文使用同一组事实、栏目和核实状态。
 - 对外文章不放网址、链接、来源列表、参考资料、评分或抓取过程；证据只留在内部运行记录。
 
@@ -41,8 +42,8 @@
 - `fetch-with-horizon.py`：调用 Horizon 原生服务，以受控并发执行发现查询；只传 `--date` 时也固定使用该报告日前一日 07:00 至当日 07:00 的上海时间半开窗口。失败查询最多重试两次，仍失败则与真实空结果分开记录。Google News 查询最多保留 99 条并请求第 100 条作为探针，实际返回第 100 条时判定截断并关闭 required 覆盖；只有 99 条不误报。它还通过共享代理客户端读取 `public-x-profiles.json` 中指定账号的公开主页，将尚未被搜索引擎收录的官方帖纳入候选；解析器兼容当前 `itemID + schema.org meta` 与旧版 `data-tweet-id` 标记，发现未知结构时失败关闭而不是误报空结果。这只是公开索引补充，不声称是登录时间线或 X API。精确窗口内全部候选都会加入 `complete-discovery-review` 必审通道；`priority` 仅控制顺序。候选索引直接写入确定性 UTF-8 字节并据此计算 SHA-256。
 - `candidate_index.json`：本次 Horizon 运行生成的紧凑候选索引，只含审阅所需的标题、时间、来源和覆盖归属，不含大段正文。
 - `coverage_manifest.json`：schemaVersion 2 的机器可校验清单，记录本次 required query、required group、语言、命中数、结果上限状态、指定 review source 和 review lane。新运行声明 `priorityReviewPolicy: all-discovered-candidates` 与 `protectedEventReviewPolicy: evidence-backed-protected-events-v1`，包含 `complete-discovery-review` 通道，并让兼容字段 `mustReviewCandidateIds` 覆盖 candidate index 的全部候选编号。
-- `semantic-editorial-review.py`：对同一 candidate index 做可断点续跑的内容语义审阅；候选 ID 只用于回填关联，不参与分类、评分或拒稿。它会校验索引实际字节 SHA-256，先覆盖全部候选，再按明确 reach／magnitude／practical value／evidence 锚点对编辑信号、RSS 和实际受保护类别进行事件聚类与证据复核。默认使用 32 条候选／8 个事件的紧凑批次与四路受控并发；llama.cpp 使用四个 16K slot 及量化 KV cache，避免完整 30 天去重账本叠加事件输出预算后超过单 slot 上下文而被端点以 HTTP 400 拒绝。30 天历史和本轮已选去重账本保留全部事件身份，但摘要各自截为 120 字，避免后半程账本增长再次挤占输出上下文。同一批内只放一个相同 `eventKey`，让同主题不同阶段即使由模型返回语义 ref 也能无歧义关联，禁止按响应顺序猜测；事件批次连续三次无法给出完整合法结构时，会确定性对半拆分后重新审阅，单事件仍失败则照常 fail closed，不接受残缺输出。每一波使用不可变去重帐本快照，避免线程竞态。正式定时任务不再传 `--automatic-deadline`，不会因 07:50 或 08:00 到时而中止。中断时保留 `semantic_editorial_review.checkpoint.json`，`--restart-event-reviews` 可保留全候选判断并仅重做事件层，全部完成后写 `semantic_editorial_review.json`。默认可连接指定 OpenAI-compatible 语义审阅端点，或在本机配置已审批的 llama.cpp 模型；端点和模型不可用时失败关闭，HTTP 错误会保留有界响应详情供诊断。
-- `assemble-semantic-run.mjs`：只接受完整语义审阅台账与已核实的三语编辑事实包，反查全候选处置、事件身份、直达证据、已确认 6 分／传闻 5 分门槛和整期最低数量后生成 schema-v4 `daily_run.json`；传闻不设最低数量。不接受按标题正则或固定评分临时编造的审稿结果。人工终审纠正必须写入事实包的 `eventOverrides`：拒稿带四项低于对应门槛的具体语义理由，同事件同阶段别名则精确 `merged` 到目标事件并合并全部候选来源。
+- `codex-editorial-review.py`：校验 candidate index 精确字节 SHA-256，先做客观程序预筛和精确标题初步聚类，输出分批 `codex_editorial_review.queue.json`；任何带 editorial signal 或 RSS 的候选都禁止预筛掉。当前定时任务的 Codex 逐批完成真正的分类、事件合并、直达证据核验、四项评分、选稿建议与事实边界，写 `codex_editorial_review.response.json`，再用同一命令的 `--finalize` 严格验证并合成下游兼容的 `semantic_editorial_review.json`。预筛和 Codex 结果合计必须恰好覆盖全部候选，事件台账必须精确覆盖全部信号、RSS、受保护类别、selected 与 merged 候选；finalize 还会在组装前锁住信号类别映射、同事件成员的类别／状态／实质变化／评分、confirmed 6 分与 rumor 5 分门槛，以及可靠首发时间与窗口外拒绝理由。任何缺项、跨索引响应、聚合页证据、重叠事件或不一致判断都失败关闭。正式链路不再启动 Gemma、llama.cpp 或其他本地语义评分模型。
+- `assemble-semantic-run.mjs`：只接受完整语义审阅台账与已核实的三语编辑事实包，反查全候选处置、事件身份、直达证据、已确认 6 分／传闻 5 分门槛、三语 AI 解读长度和整期最低数量后生成 schema-v4 `daily_run.json`；传闻不设最低数量。不接受按标题正则或固定评分临时编造的审稿结果。人工终审纠正必须写入事实包的 `eventOverrides`：拒稿带四项低于对应门槛的具体语义理由，同事件同阶段别名则精确 `merged` 到目标事件并合并全部候选来源。可纠正的本地作者错误必须回到 Codex 响应或编辑事实包修复并重跑受影响门禁，不能直接改 `daily_run.json`，也不能留下尚未重跑的修正后关闭任务。
 - `workflow.json`：schemaVersion 4 的同报告日 07:00 至次日 00:00 生产时间、完整覆盖审阅、事件阶段去重、成文、fail-closed 与当天人工恢复边界。
 - `ARTICLE_STYLE.md`：固定标题、栏目、事实段、AI 解读和传闻标准。
 - `AUTOMATION_PROMPT.md`：每日 Codex 任务的完整说明。

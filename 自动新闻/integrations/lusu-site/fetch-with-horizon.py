@@ -163,26 +163,33 @@ MODEL_RELEASE_ONLY_REVIEW_LANES = {
     "voice-model-releases",
 }
 CAPABILITY_REVIEW_LANES = MAJOR_MODEL_REVIEW_LANES | {
+    "applied-ai-product-releases",
     "developer-product-operations",
     "developer-product-releases",
 }
+APPLIED_AI_REVIEW_LANES = {"applied-ai-product-releases"}
 DEVELOPER_TOOL_REVIEW_LANES = {
     "developer-product-operations",
     "developer-product-releases",
 }
 PRICE_QUOTA_REVIEW_LANES = CAPABILITY_REVIEW_LANES
 STRATEGIC_TECH_REVIEW_LANES = {
+    "ai-graphics-releases",
     "autonomous-driving-releases",
     "china-semiconductor-breakthroughs",
     "chips-storage-releases",
+    "consumer-edge-ai-releases",
     "data-center-infrastructure",
+    "gpu-product-releases",
     "robotics-device-releases",
 }
 STRATEGIC_TECH_COVERAGE_GROUPS = {
     "autonomous-driving",
     "china-semiconductor",
     "chips-storage",
+    "consumer-edge-ai",
     "data-centers",
+    "graphics-compute",
     "robotics-devices",
 }
 TECH_FINANCE_REVIEW_LANES = {"major-tech-finance"}
@@ -259,6 +266,8 @@ STRATEGIC_TECH_ACTION_RE = re.compile(
     rf"(?:{MODEL_RELEASE_ACTION_RE.pattern}|"
     r"\b(?:approv(?:e|es|ed|al)|permit(?:s|ted|ting)?|deploy(?:s|ed|ing)?|"
     r"build(?:s|ing)?|built|expand(?:s|ed|ing)?|invest(?:s|ed|ing|ment)?|"
+    r"update(?:s|d|ing)?|upgrade(?:s|d|ing)?|enable(?:s|d|ing)?|"
+    r"integrat(?:e|es|ed|ing|ion)|support(?:s|ed|ing)?|ship(?:s|ped|ping)?|"
     r"buy(?:s|ing)?|bought|acquir(?:e|es|ed|ing)|produc(?:e|es|ed|ing|tion)|"
     r"mass[\s-]?produc(?:e|es|ed|ing|tion)|validat(?:e|es|ed|ing|ion)|"
     r"tape[\s-]?out|prototype|breakthrough|deliver(?:s|ed|ing)?|contract)\b|"
@@ -767,6 +776,10 @@ def focused_editorial_signals(item: Any) -> set[str]:
         and (
             MODEL_RELEASE_ACTION_RE.search(text)
             or CAPABILITY_AVAILABILITY_ACTION_RE.search(text)
+            or (
+                lanes & APPLIED_AI_REVIEW_LANES
+                and STRATEGIC_TECH_ACTION_RE.search(text)
+            )
         )
     ):
         signals.add(EDITORIAL_SIGNAL_CAPABILITY)

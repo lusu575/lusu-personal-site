@@ -51,6 +51,22 @@
       "ja",
       "ko"
     ],
+    "coverageMode": "additive-broad-ai-ecosystem",
+    "preserveExistingCoverage": true,
+    "examplesAreAliasesNotScopeLimits": true,
+    "coverageDomains": [
+      "frontier-models-and-products",
+      "developer-ai-and-agents",
+      "open-and-multimodal-models",
+      "chips-storage-and-semiconductor-equipment",
+      "gpu-graphics-and-generative-rendering",
+      "consumer-and-on-device-ai",
+      "robotics-and-autonomous-driving",
+      "applied-ai-products-and-industries",
+      "data-center-energy-cooling-and-networking",
+      "major-tech-finance",
+      "ai-policy-and-safety"
+    ],
     "queryConcurrency": 2,
     "candidateIndexRequired": true,
     "coverageManifestRequired": true,
@@ -72,10 +88,30 @@
       "lowVolumeTrigger": 5,
       "lowVolumeMeaning": "selected-story-count",
       "lowVolumeAction": "mandatory-second-pass-then-fail-closed-below-minimum"
+    },
+    "editorialReview": {
+      "policy": "programmatic-prescreen-codex-editorial-v1",
+      "prepareEntrypoint": "npm.cmd run ai-news:semantic-review -- --run-dir <run-dir>",
+      "queueArtifact": "codex_editorial_review.queue.json",
+      "responseArtifact": "codex_editorial_review.response.json",
+      "finalizeEntrypoint": "npm.cmd run ai-news:semantic-review -- --run-dir <run-dir> --finalize <response-json>",
+      "editorialJudge": "current-scheduled-codex-task",
+      "localSemanticModelAllowed": false,
+      "programmaticPrescreenScope": "objective-window-content-source-and-protected-change-signal-checks-only",
+      "editorialSignalAndRssBypassPrescreen": true,
+      "combinedDispositionScope": "exactly-all-candidate-index-items-once",
+      "finalizeChecks": [
+        "editorial-signal-to-class-mapping",
+        "event-member-class-status-substantive-change-and-score-consistency",
+        "reliable-first-publication-window-to-rejection-reason-consistency",
+        "confirmed-score-6-and-rumor-score-5-selection-thresholds"
+      ],
+      "localAuthoringCorrectionPolicy": "repair-the-upstream-response-or-editorial-package-and-rerun-every-affected-gate; never-close-with-an-unapplied-edit",
+      "failClosed": true
     }
   },
   "selection": {
-    "importanceThreshold": 7,
+    "importanceThreshold": 6,
     "maxItems": null,
     "dedupeWithinRun": true,
     "dedupeLookbackDays": 30,
@@ -194,7 +230,7 @@
         "major-tech-finance",
         "ai-policy-safety"
       ],
-      "protectedSelectionThreshold": 7,
+      "protectedSelectionThreshold": 6,
       "protectedAtOrAboveThreshold": "must-be-selected-or-merged",
       "protectedSelectedOrMergedRequiresSubstantiveChange": true,
       "candidateEditorialSignals": {

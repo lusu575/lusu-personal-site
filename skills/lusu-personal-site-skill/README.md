@@ -1,6 +1,8 @@
 # 鲁肃个人网站专用Skill
 
-Daily AI News 四并发语义审稿按单 slot 核算上下文；当前默认 32 条候选／8 个事件、每 slot 16K。事件请求 HTTP 400 时保留有界响应详情并失败关闭，不得用空复核继续组装。
+Daily AI News 现由定时任务中的 Codex 主审；程序只做客观预筛和初步聚类，任何 editorial signal／RSS 候选都必须进入 Codex 队列。正式链路不再启动 Gemma 或 llama.cpp，预筛与 Codex 结果必须合计恰好覆盖全部候选并通过受保护事件证据校验。
+
+2026-09-02 至 2026-09-03 的回归表明：高流量宽查询只能作 supplemental，完整签收由具体 required 分片承担；精确标题事件的代表候选锚定主类别，无论入选还是拒稿，成员 priority decision 都保留各自 finalize 后的合法类别。事件键与阶段必须由 Codex 直接提交为最多 120 字符的规范小写内部 ID，finalize 不得截断或静默改写。
 
 公共遥测现在用 `functions/api/analytics-traffic-classifier.mjs` 在任何 D1 schema、身份、Cookie 或限流写入前排除已知搜索／AI／SEO 爬虫、安全扫描、synthetic monitor 和脚本工具；GoogleOther 必须作为无 `bot` 字样的显式回归。公开抓取继续允许，不按国家封禁，也不把单页／零点击直接判成机器人。WordPress／Secret 探测只能在 Cloudflare WAF 拦截，不能用全站 Pages middleware 把免费静态流量转进 Functions；没有 WAF 写权限时必须记录未上线。
 

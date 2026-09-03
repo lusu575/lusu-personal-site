@@ -10,6 +10,7 @@ import {
   isRegisteredLegacyCoverageManifest,
   readAndValidateRun,
   validateMergedPriorityEventIdentities,
+  validateNonDegeneratePriorityReview,
   validateRun
 } from "../自动新闻/integrations/lusu-site/validate-draft.mjs";
 import {
@@ -883,6 +884,7 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   );
   assert.equal(workflow.selection.confirmedStoryMinimumScore, 6);
   assert.equal(workflow.selection.rumorStoryMinimumScore, 5);
+  assert.equal(workflow.selection.importanceThreshold, 6);
   assert.equal(
     workflow.selection.lowerRumorGateEffectiveReportDate,
     "2026-08-24"
@@ -911,7 +913,16 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   );
   assert.equal(
     workflow.selection.priorityReviewContract.protectedSelectionThreshold,
-    7
+    6
+  );
+  assert.deepEqual(
+    workflow.collection.editorialReview.finalizeChecks,
+    [
+      "editorial-signal-to-class-mapping",
+      "event-member-class-status-substantive-change-and-score-consistency",
+      "reliable-first-publication-window-to-rejection-reason-consistency",
+      "confirmed-score-6-and-rumor-score-5-selection-thresholds"
+    ]
   );
   assert.equal(
     workflow.selection.priorityReviewContract.protectedSelectedOrMergedRequiresSubstantiveChange,
@@ -1975,6 +1986,20 @@ test("priority review rejects cross-event merges caused by secondary title menti
   );
 });
 
+test("objective programmatic pre-screen decisions are excluded from semantic template checks", () => {
+  const prescreen = Array.from({ length: 60 }, (_, index) => ({
+    candidateId: `candidate-${index}`,
+    decision: "rejected",
+    editorialClass: "other",
+    substantiveChange: false,
+    score: { reach: 0, magnitude: 0, practicalValue: 0, evidence: 0, total: 0 },
+    note: "This candidate was objectively excluded by the auditable low-signal pre-screen.",
+    reviewMethod: "programmatic-prescreen",
+    preFilterReason: "low-signal-aggregator-discovery"
+  }));
+  assert.doesNotThrow(() => validateNonDegeneratePriorityReview(prescreen));
+});
+
 test("all-discovered review rejects rotating hash score and note palettes", async (t) => {
   const fixture = await writeFormalCoverageFixture(t, {
     withPriorityReview: true,
@@ -2030,6 +2055,41 @@ test("new manifests require evidence-backed protected event review", async (t) =
   await assert.rejects(
     () => readAndValidateRun(fixture.runPath),
     /缺少 protectedEventReview/
+  );
+});
+
+test("protected event review allows merged aliases to retain their own protected class", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true,
+    completeReviewPolicy: true,
+    protectedEventReviewPolicy: true
+  });
+  const selectedEvent = fixture.run.coverageAudit.protectedEventReview.events
+    .find((event) => event.disposition === "selected"
+      && event.candidateIds.length > 1);
+  const mergedDecision = fixture.run.coverageAudit.priorityReview.decisions
+    .find((decision) => decision.candidateId !== selectedEvent.representativeCandidateId
+      && selectedEvent.candidateIds.includes(decision.candidateId));
+  mergedDecision.editorialClass = "capability-availability";
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
+});
+
+test("protected event review keeps the representative anchored to the event class", async (t) => {
+  const fixture = await writeFormalCoverageFixture(t, {
+    withPriorityReview: true,
+    completeReviewPolicy: true,
+    protectedEventReviewPolicy: true
+  });
+  const selectedEvent = fixture.run.coverageAudit.protectedEventReview.events
+    .find((event) => event.disposition === "selected");
+  const representativeDecision = fixture.run.coverageAudit.priorityReview.decisions
+    .find((decision) => decision.candidateId === selectedEvent.representativeCandidateId);
+  representativeDecision.editorialClass = "capability-availability";
+  await writeFile(fixture.runPath, `${JSON.stringify(fixture.run, null, 2)}\n`);
+  await assert.rejects(
+    () => readAndValidateRun(fixture.runPath),
+    /代表候选分类必须与事件主分类一致/
   );
 });
 

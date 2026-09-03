@@ -20,7 +20,8 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 
 ## 公开主站发布收口规则
 
-- Daily AI News 本地语义审稿的并发上下文必须按单 slot 计算，不能只看 llama.cpp 的总 `-c`：完整 30 天去重账本、事件输入和输出 token 预算之和必须低于每 slot 容量。当前默认保持 32 条候选／8 个事件、四路并发和每 slot 16K；同批 `eventKey` 必须唯一，让同主题不同阶段的语义 ref 保持无歧义且禁止按响应顺序关联。端点 HTTP 400 必须保留有界响应详情并失败关闭，不能把空事件复核签成成功。
+- Daily AI News 正式审稿由当前定时任务中的 Codex 主审，不再自动启动 Gemma、llama.cpp 或其他本地语义评分模型。程序化预筛只能客观排除窗口外、无可用内容、无受保护信号且缺少 AI 主体与实质变化组合的低信号发现；任何 editorial signal 或 RSS 候选必须进入 Codex 队列。Codex 必须逐批完成语义分类、事件聚合、直达证据、四项评分、选稿建议和事实边界，`--finalize` 再验证预筛与 Codex 合计恰好处置全索引并精确覆盖全部受保护事件。
+- Codex 响应在组装前必须锁住信号类别、事件一致性、可靠首发时间和拒绝理由。精确标题队列可聚合不同保护信号；代表候选锚定事件主类别，无论入选还是拒稿，成员 priority decision 都保留各自 finalize 后的合法类别，事件主类别不得再次覆盖成员。`eventKey` 与 `eventStage` 必须是最多 120 字符的规范小写内部 ID，finalize 只能校验而不得截断或静默改写。
 
 - AI 能力层以 `lib/capabilities/registry.mjs` 为唯一声明源。`transport` 是长期目标接入面，`availableTransports` 是当前已实现的真实接入面；CLI、MCP、文档与公开更新只能宣告后者。复合授权必须用冻结的 `requiredScopes`（全部满足）和 `anyOfScopes`（非空时至少一个）机器字段表达，不能只靠单值 `scope` 或自然语言。新增或改动能力时要先更新 registry 的权限、副作用、确认需求和实际 transport，再共享同一服务适配层；不得在 CLI、本地 MCP 和远程 MCP 重复业务规则。
 - 本地 CLI 和 stdio MCP 使用账号持有者确认的设备码授权，令牌按 `content:read`、`videos:write`、`transfer:read`、`transfer:write`、`transfer:delete`、`whiteboard:read`、`whiteboard:write`、`whiteboard:assets`、`japanese-subtext:progress:read`、`japanese-subtext:progress:write` 最小化请求；默认不授予视频写入、删除、画板或日语进度 scope。Quick Transfer 查看／下载属于 read，进房／发文字／上传属于 write，项目删除和分片上传中止属于 delete；画板 write 只隐含场景 read，图片上传必须同时具有 write+assets，原图读取必须具有 assets 加 read/write。设备码轮询遇到网络／中止或明确瞬态 HTTP 故障时，只能在设备码有效期内有界退避，且不得输出 token、代理或底层网络细节。Agent Bearer 令牌永远是普通机器角色，不能继承 admin 或访问管理接口；知识库与视频 Agent 只能走各自 transport-neutral 专用服务，浏览器后台继续只接受 HttpOnly 会话。
@@ -338,7 +339,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 - 从知识库文章详情关闭窗口或返回桌面后，再次打开知识库应回到知识库首页，不应继续停留在上一次文章详情。
 
 - 已确认的今日要闻／主要新闻使用 6 分门槛并要求可靠直达证据；从 report date 2026-08-24 起，传闻使用 5 分门槛且不设最低数量，所有达到相应门槛的独立内容仍必须保留。传闻可由有归属的当事人公开预告、一篇有明确归属的可靠直达报道，或至少两家独立可靠媒体直达报道支撑，仍须记录 `whyUnverified` 与 `rumorEvidenceBasis` 并保持条件语气；聚合页、匿名截图、重复事件和纯猜测不能凑数。required query 必须单独覆盖 Tibo／Codex 预告、xAI Grok 产品、Qwen 开放权重、LTX 视频模型和英文 DeepSeek 发布。priority review 的 selected／merged 必须携带自身 `eventKey + eventStage`，merged 与代表项必须完全一致，标题中的竞品或对比提及绝不能跨事件合并。
-- Horizon 产出 candidate index 后，正式运行必须执行可断点的 `ai-news:semantic-review`；自动任务不再附加 `--automatic-deadline`，使用默认 32 条候选／16 个事件批次和四路受控并发，并允许在同一报告日内完成；08:00 不再触发中止。并发必须按波次使用不可变去重帐本，禁止多线程边读边改同一帐本。只有在索引实际字节 SHA-256 一致、全部候选完成内容语义处置、全部必审事件完成证据复核后，才能使用 `ai-news:assemble` 从审阅台账与已核实三语事实包生成 schema-v4 稿件。候选 ID 只允许用于输出关联；禁止用标题正则、固定分数、ID／数组位置或循环模板替代语义审稿。语义端点或已配置模型不可用时必须 fail closed，不得退化生成可发布记录。
+- Horizon 产出 candidate index 后，正式运行先执行 `ai-news:semantic-review` 生成客观预筛台账与 Codex 队列；当前 Codex 逐批主审后写结构化响应，再以同一命令的 `--finalize` 验证并生成完整审阅台账。只有索引实际字节 SHA-256 一致、预筛与 Codex 合计恰好处置全部候选、全部信号／RSS／受保护／selected／merged 事件完成直达证据复核后，才能使用 `ai-news:assemble`。候选 ID 只允许用于输出关联；禁止标题正则、固定分数、ID／数组位置或循环模板判断，禁止回退启动本地模型。
 - 语义事件复核必须用明确的全球／重大市场 reach、变化幅度、即时实用性和证据强度锚点，并把既往已发摘要与本轮先前已选事件带入后续批次做别名去重。人工纠正不能静默改台账：低于门槛的拒绝要在 `eventOverrides` 写精确事件身份、四项低于 6 分的评分与具体理由；同事件同阶段别名要显式合并到精确目标事件并把候选来源并入代表稿。
 
 ## 管理后台与埋点规则

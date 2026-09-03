@@ -18,7 +18,7 @@
     "audit:public-ui:release": "node scripts/public-ui-audit.mjs --release-only",
     "audit:a-dark-room": "node tests/a-dark-room-responsive-browser.audit.mjs",
     "ai-news:horizon:fetch": "自动新闻\\.venv\\Scripts\\python.exe 自动新闻\\integrations\\lusu-site\\fetch-with-horizon.py",
-    "ai-news:semantic-review": "自动新闻\\.venv\\Scripts\\python.exe 自动新闻\\integrations\\lusu-site\\semantic-editorial-review.py",
+    "ai-news:semantic-review": "自动新闻\\.venv\\Scripts\\python.exe 自动新闻\\integrations\\lusu-site\\codex-editorial-review.py",
     "ai-news:assemble": "node \"自动新闻/integrations/lusu-site/assemble-semantic-run.mjs\"",
     "ai-news:validate": "node \"自动新闻/integrations/lusu-site/validate-draft.mjs\"",
     "ai-news:deliver:local": "node \"自动新闻/integrations/lusu-site/deliver-local.mjs\"",
