@@ -80,9 +80,17 @@ test("Unpublished Blog has no top-level dead end and legacy hashes merge into Kn
   assert.equal(blogManifest.publishedCount, publishedCount, "Blog availability projection must match published fallback content");
   assert.equal(publishedCount, 0);
   assert.equal((index.match(/data-blog-entry[^>]*hidden/g) || []).length, 2);
+  assert.match(index, /data-route="blog" data-blog-entry data-mobile-home-excluded hidden/);
+  assert.match(
+    mobileCss,
+    /html\[data-ui-shell="mobile"\]\s+\.desktop-icons\s+\[data-mobile-home-excluded\],[\s\S]*?html\[data-ui-shell="mobile"\]\s+\.desktop-icons\s+\[data-blog-entry\]\[hidden\]\s*\{\s*display:\s*none;/,
+    "mobile Home must permanently exclude Talk and preserve optional hidden states"
+  );
   assert.doesNotMatch(index, /class="notepad-menu"/);
-  assert.match(main, /requestedRoute === "blog" && !blogRouteAvailable \? "knowledge" : requestedRoute/);
-  assert.match(main, /parsed\.route === "blog" && !blogRouteAvailable[\s\S]*syncBrowserUrl\("knowledge", "", \{ replaceEntry: true \}\)/);
+  assert.match(main, /const mobileBlogRouteRetired = \(\) => document\.documentElement\.dataset\.uiShell === "mobile"/);
+  assert.match(main, /requestedRoute === "blog" && blogRouteUnavailable\(\) \? "knowledge" : requestedRoute/);
+  assert.match(main, /parsed\.route === "blog" && blogRouteUnavailable\(\)[\s\S]*syncBrowserUrl\("knowledge", "", \{ replaceEntry: true \}\)/);
+  assert.match(main, /window\.addEventListener\("lusu:shellchange",[\s\S]*event\.detail\?\.shell === "mobile"[\s\S]*document\.body\.dataset\.route === "blog"[\s\S]*navigate\("knowledge"/);
 });
 
 test("Published Blog cards never render a pretend disabled menu action", () => {

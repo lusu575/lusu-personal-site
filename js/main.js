@@ -4,7 +4,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260827-private-room-lifecycle-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260827-private-room-lifecycle-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260902-mobile-blog-retired-r1";
 import {
   WALLPAPER_TIME_THEMES,
   createWallpaperTimeOverride,
@@ -271,6 +271,8 @@ const normalizedTagLabelKeys = new Map(Object.keys(tagLabels).map((key) => [key.
 
 const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
 const blogRouteAvailable = Number(blogManifest.publishedCount) > 0;
+const mobileBlogRouteRetired = () => document.documentElement.dataset.uiShell === "mobile";
+const blogRouteUnavailable = () => !blogRouteAvailable || mobileBlogRouteRetired();
 const coreRouter = createRouter({ routes: pageIds });
 const {
   parseRouteHash,
@@ -1340,7 +1342,7 @@ let navigationRequestId = 0;
 function navigate(route, options = {}) {
   const requestId = ++navigationRequestId;
   const requestedRoute = pageIds.includes(route) ? route : "home";
-  const nextRoute = requestedRoute === "blog" && !blogRouteAvailable ? "knowledge" : requestedRoute;
+  const nextRoute = requestedRoute === "blog" && blogRouteUnavailable() ? "knowledge" : requestedRoute;
   const previousRoute = pageIds.includes(document.body.dataset.route) ? document.body.dataset.route : "home";
   if (previousRoute === "home") {
     captureRouteIconRects();
@@ -1509,7 +1511,7 @@ function updateNavigationState(route) {
 
 function syncRouteFromLocation(options = {}) {
   let parsed = parseRouteLocation();
-  const redirectedUnavailableBlog = parsed.route === "blog" && !blogRouteAvailable;
+  const redirectedUnavailableBlog = parsed.route === "blog" && blogRouteUnavailable();
   if (redirectedUnavailableBlog) {
     parsed = { route: "knowledge", articleSlug: "" };
     syncBrowserUrl("knowledge", "", { replaceEntry: true });
@@ -2000,10 +2002,10 @@ function publishedBlogItems() {
 
 function syncOptionalRouteEntries() {
   document.querySelectorAll("[data-blog-entry]").forEach((entry) => {
-    entry.hidden = !blogRouteAvailable;
+    entry.hidden = !blogRouteAvailable || mobileBlogRouteRetired();
   });
   const blogPage = document.getElementById("blog");
-  if (blogPage) blogPage.setAttribute("aria-hidden", String(!blogRouteAvailable));
+  if (blogPage) blogPage.setAttribute("aria-hidden", String(blogRouteUnavailable()));
   syncDesktopIconRovingTabindex();
 }
 
@@ -4044,6 +4046,16 @@ window.addEventListener("hashchange", () => {
 
 window.addEventListener("popstate", () => {
   syncRouteFromLocation({ focusWindow: true });
+});
+
+window.addEventListener("lusu:shellchange", (event) => {
+  syncOptionalRouteEntries();
+  if (event.detail?.shell === "mobile" && document.body.dataset.route === "blog") {
+    navigate("knowledge", {
+      motion: false,
+      historyState: { replaceEntry: true }
+    });
+  }
 });
 
 document.querySelector(".skip-link")?.addEventListener("click", (event) => {

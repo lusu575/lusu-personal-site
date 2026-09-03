@@ -34,7 +34,8 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the password-room lifecycle update leads the exact five-item projection without losing release history", async () => {
+test("the mobile Talk retirement leads the five-item trilingual projection while older updates remain archived", async () => {
+  const mobileBlogRetiredUpdateId = "seed-update-2026-09-02-mobile-blog-retired";
   const passwordRoomResetUpdateId = "seed-update-2026-08-27-password-room-reset";
   const chatWhiteboardUiUpdateId = "seed-update-2026-08-20-chat-whiteboard-ui-fixes";
   const minimaxH3UpdateId = "seed-update-2026-08-12-minimax-h3-console";
@@ -71,7 +72,8 @@ test("the password-room lifecycle update leads the exact five-item projection wi
     import("../js/data/home-content.mjs")
   ]);
 
- assert.deepEqual(content.updates.slice(0, 25).map((update) => update.article_id), [
+ assert.deepEqual(content.updates.slice(0, 26).map((update) => update.article_id), [
+    mobileBlogRetiredUpdateId,
     passwordRoomResetUpdateId,
     chatWhiteboardUiUpdateId,
     "seed-update-2026-08-19-daily-ai-news-rss",
@@ -98,9 +100,10 @@ test("the password-room lifecycle update leads the exact five-item projection wi
     agentReadBreadthUpdateId,
     whiteboard2048UpdateId,
  ]);
-  assert.equal(content.updates[0].slug, "2026-08-27-password-room-reset");
-  assert.equal(content.updates[0].published_at, "2026-08-27T04:00:00.000Z");
-  assert.equal(homeContent.updates[0].article_id, passwordRoomResetUpdateId);
+  assert.equal(content.updates[0].slug, "2026-09-02-mobile-blog-retired");
+  assert.equal(content.updates[0].published_at, "2026-09-02T07:20:00.000Z");
+  assert.equal(content.updates[1].article_id, passwordRoomResetUpdateId);
+  assert.equal(homeContent.updates[0].article_id, mobileBlogRetiredUpdateId);
   assert.ok(content.updates.some((update) => update.article_id === trafficUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === calmWhiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === reliableWhiteboardUpdateId));
@@ -108,6 +111,15 @@ test("the password-room lifecycle update leads the exact five-item projection wi
   assert.ok(content.updates.some((update) => update.article_id === whiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === knowledgeUpdateId));
   assert.equal(homeContent.updates.length, 5);
+  assert.deepEqual(homeContent.updates.map((update) => update.article_id), [
+    mobileBlogRetiredUpdateId,
+    passwordRoomResetUpdateId,
+    chatWhiteboardUiUpdateId,
+    "seed-update-2026-08-19-daily-ai-news-rss",
+    "seed-update-2026-08-13-hide-minimax-h3-tools"
+  ]);
+  assert.ok(content.updates.some((update) => update.article_id === minimaxH3UpdateId));
+  assert.ok(!homeContent.updates.some((update) => update.article_id === minimaxH3UpdateId));
   for (const lang of ["zh", "en", "ja"]) {
     assert.ok(content.updates[0].title[lang]);
     assert.ok(content.updates[0].summary[lang]);
@@ -127,13 +139,14 @@ test("the password-room lifecycle update leads the exact five-item projection wi
   }
 });
 
-test("BFCache-safe ambient wallpapers, retained motion modules, wallpaper switch assets, and Quick Transfer keep independent cache versions", () => {
+test("mobile Talk retirement and retained public modules keep independent cache versions", () => {
   const publicVersion = "20260809-motion-polish-r2";
   const switchRouteMotionVersion = "20260810-wallpaper-switch-route-motion-r1";
   const videoLinkAutofillVersion = "20260811-video-link-autofill-r1";
   const ambientAssetVersion = "20260810-h3-ambient-wallpapers-4k-r1";
   const displayFixReleaseVersion = "20260812-wallpaper-game-display-r1";
   const publicSiteReleaseVersion = "20260827-private-room-lifecycle-r1";
+  const mobileBlogVersion = "20260902-mobile-blog-retired-r1";
   const wallpaperAssetVersion = "20260810-wallpaper-time-switch-r6";
   const transferVersion = "20260827-private-room-lifecycle-r1";
   const index = read("index.html");
@@ -148,11 +161,11 @@ test("BFCache-safe ambient wallpapers, retained motion modules, wallpaper switch
   ]) {
     assert.ok(index.includes(`${asset}?v=${publicVersion}`), `${asset} should use ${publicVersion}`);
   }
-  for (const asset of ["/css/style.css", "/css/mobile-ios-shell.css"]) {
+  for (const asset of ["/css/style.css", "/css/motion-system.css"]) {
     assert.ok(index.includes(`${asset}?v=${publicSiteReleaseVersion}`), `${asset} should use ${publicSiteReleaseVersion}`);
   }
-  assert.ok(index.includes(`/css/motion-system.css?v=${publicSiteReleaseVersion}`));
-  assert.ok(index.includes(`/js/main.js?v=${publicSiteReleaseVersion}`));
+  assert.ok(index.includes(`/css/mobile-ios-shell.css?v=${mobileBlogVersion}`));
+  assert.ok(index.includes(`/js/main.js?v=${mobileBlogVersion}`));
   assert.ok(main.includes(`wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));
   assert.ok(changelog.includes(switchRouteMotionVersion), "the wallpaper route-motion release token must remain in project history");
   assert.ok(changelog.includes(videoLinkAutofillVersion), "the video-link release token must remain in project history");
@@ -191,7 +204,7 @@ test("BFCache-safe ambient wallpapers, retained motion modules, wallpaper switch
   assert.ok(main.includes(`const routeStyleVersion = "${publicSiteReleaseVersion}"`));
   assert.ok(main.includes(`./core/i18n.mjs?v=${publicSiteReleaseVersion}`));
   assert.ok(main.includes(`./core/wallpaper-time.mjs?v=${publicVersion}`));
-  assert.ok(main.includes(`./data/home-content.mjs?v=${publicSiteReleaseVersion}`));
+  assert.ok(main.includes(`./data/home-content.mjs?v=${mobileBlogVersion}`));
   assert.ok(main.includes(`./core/wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));
   assert.ok(main.includes(`./features/account.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/knowledge.mjs?v=${publicVersion}`));

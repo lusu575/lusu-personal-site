@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-09-02-mobile-blog-retired",
+      "slug": "2026-09-02-mobile-blog-retired",
+      "category": "site-updates",
+      "tags": ["网站更新", "移动端", "杂谈区", "导航", "界面"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-09-02T07:20:00.000Z",
+      "updated_at": "2026-09-02T07:20:00.000Z",
+      "published_at": "2026-09-02T07:20:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.09.02",
+      "title": {
+        "zh": "手机端杂谈区入口下线",
+        "en": "Talk Removed from Mobile Home",
+        "ja": "モバイルホームから雑談入口を削除"
+      },
+      "summary": {
+        "zh": "手机端首页已移除“杂谈区”入口，避免未开放栏目继续占用 App 网格；桌面端导航、既有路由与内容数据保持不变。",
+        "en": "The Talk entry has been removed from mobile Home so an unpublished section no longer occupies the App grid. Desktop navigation, route behavior, and content data remain unchanged.",
+        "ja": "モバイルのホーム画面から「雑談」の入口を外し、未公開の項目が App グリッドを占有しないようにしました。デスクトップのナビゲーション、ルート動作、コンテンツデータは変更していません。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-27-password-room-reset",
       "slug": "2026-08-27-password-room-reset",
       "category": "site-updates",
@@ -99,31 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "工具区暂时隐藏在线 ComfyUI · MiniMax H3 入口；管理员控制台、后端接口和本地执行配置保留，待 Tunnel、Runner 与 GPU canary 完成验收后再重新开放。",
         "en": "The public Tools area temporarily hides the Online ComfyUI · MiniMax H3 entry; the protected admin console, backend interfaces, and local execution configuration remain available until Tunnel, Runner, and GPU canary acceptance is complete.",
         "ja": "公開ツール区ではオンライン ComfyUI · MiniMax H3 の入口を一時的に非表示にしました。保護された管理コンソール、バックエンド API、ローカル実行設定は保持し、Tunnel、Runner、GPU canary の受入れ完了後に再公開します。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-12-minimax-h3-console",
-      "slug": "2026-08-12-minimax-h3-console",
-      "category": "site-updates",
-      "tags": ["网站更新", "工具区", "ComfyUI", "MiniMax H3", "AI"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-12T08:00:00.000Z",
-      "updated_at": "2026-08-12T08:00:00.000Z",
-      "published_at": "2026-08-12T08:00:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.08.12",
-      "title": {
-        "zh": "在线 ComfyUI 控制面上线准备",
-        "en": "Online ComfyUI Control Plane Ready for Launch",
-        "ja": "オンライン ComfyUI 制御面の公開準備"
-      },
-      "summary": {
-        "zh": "工具区新增站长专用的在线 ComfyUI · MiniMax H3 控制台，接入受保护的 Runner、固定控制器、本机 ComfyUI、Bridge 与任务状态读取；执行和传输开关仍默认关闭。",
-        "en": "Tools now includes a private Online ComfyUI · MiniMax H3 console with protected Runner, pinned controller, local ComfyUI, Bridge, and job-state checks; execution and transfer remain disabled by default.",
-        "ja": "ツールに所有者専用のオンライン ComfyUI · MiniMax H3 コンソールを追加しました。保護された Runner、固定コントローラー、ローカル ComfyUI、Bridge、ジョブ状態を確認できますが、実行と転送は既定で無効です。"
       }
     },
   ]

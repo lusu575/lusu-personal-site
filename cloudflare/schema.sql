@@ -961,6 +961,95 @@ insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,
   view_count, created_at, updated_at, published_at
 ) values (
+  'seed-update-2026-09-02-mobile-blog-retired',
+  '2026-09-02-mobile-blog-retired',
+  'site-updates',
+  '["网站更新","移动端","杂谈区","导航","界面"]',
+  '', 'published', 0, 0,
+  '2026-09-02T07:20:00.000Z',
+  '2026-09-02T07:20:00.000Z',
+  '2026-09-02T07:20:00.000Z'
+)
+on conflict(article_id) do update set
+  slug = excluded.slug,
+  category = excluded.category,
+  tags = excluded.tags,
+  cover_image = excluded.cover_image,
+  status = excluded.status,
+  is_pinned = excluded.is_pinned,
+  updated_at = excluded.updated_at,
+  published_at = excluded.published_at;
+
+insert into article_translations (
+  translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at
+) values
+  (
+    'seed-update-2026-09-02-mobile-blog-retired-zh',
+    'seed-update-2026-09-02-mobile-blog-retired',
+    'zh',
+    '手机端杂谈区入口下线',
+    '手机端首页已移除“杂谈区”入口，避免未开放栏目继续占用 App 网格；桌面端导航、既有路由与内容数据保持不变。',
+    '# 手机端杂谈区入口下线
+
+手机端首页不再显示“杂谈区”。该栏目尚未开放，不应继续占用有限的 App 网格，也不应让访客误以为存在可用内容。
+
+## 本次调整
+
+- 从手机端 Home 的 App 网格移除“杂谈区”入口。
+- 继续保留知识库、视频区、工具区、游戏区、匿名聊天室与关于我等现有入口。
+- 桌面端导航、栏目路由、三语内容和后台数据均未改动。
+- 旧的未开放杂谈链接继续按既有规则回到知识库，不新增空白页或失效按钮。',
+    '2026-09-02T07:20:00.000Z',
+    '2026-09-02T07:20:00.000Z'
+  ),
+  (
+    'seed-update-2026-09-02-mobile-blog-retired-en',
+    'seed-update-2026-09-02-mobile-blog-retired',
+    'en',
+    'Talk Removed from Mobile Home',
+    'The Talk entry has been removed from mobile Home so an unpublished section no longer occupies the App grid. Desktop navigation, route behavior, and content data remain unchanged.',
+    '# Talk Removed from Mobile Home
+
+The mobile Home screen no longer shows Talk. The section is not published, so it should not occupy the limited App grid or suggest that usable content is available.
+
+## What changed
+
+- Removed the Talk entry from the mobile Home App grid.
+- Kept Knowledge, Videos, Tools, Games, Anonymous Chat, and About available as before.
+- Left desktop navigation, route behavior, trilingual content, and backend data unchanged.
+- Legacy links to the unpublished Talk route continue to follow the existing redirect to Knowledge, without adding an empty page or dead control.',
+    '2026-09-02T07:20:00.000Z',
+    '2026-09-02T07:20:00.000Z'
+  ),
+  (
+    'seed-update-2026-09-02-mobile-blog-retired-ja',
+    'seed-update-2026-09-02-mobile-blog-retired',
+    'ja',
+    'モバイルホームから雑談入口を削除',
+    'モバイルのホーム画面から「雑談」の入口を外し、未公開の項目が App グリッドを占有しないようにしました。デスクトップのナビゲーション、ルート動作、コンテンツデータは変更していません。',
+    '# モバイルホームから雑談入口を削除
+
+モバイルのホーム画面では「雑談」を表示しないようにしました。未公開の項目が限られた App グリッドを占有したり、利用できる内容があるように見えたりしないようにするためです。
+
+## 変更内容
+
+- モバイル Home の App グリッドから「雑談」の入口を削除しました。
+- Knowledge、Videos、Tools、Games、匿名チャット、About など既存の入口はそのままです。
+- デスクトップのナビゲーション、ルート動作、3言語コンテンツ、バックエンドデータは変更していません。
+- 未公開の「雑談」への旧リンクは、従来どおり Knowledge に移動し、空ページや無効なボタンは追加しません。',
+    '2026-09-02T07:20:00.000Z',
+    '2026-09-02T07:20:00.000Z'
+  )
+on conflict(article_id, lang) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content_markdown = excluded.content_markdown,
+  updated_at = excluded.updated_at;
+
+insert into articles (
+  article_id, slug, category, tags, cover_image, status, is_pinned,
+  view_count, created_at, updated_at, published_at
+) values (
   'seed-update-2026-08-27-password-room-reset',
   '2026-08-27-password-room-reset',
   'site-updates',
@@ -14520,7 +14609,7 @@ on conflict(article_id) do update set
   published_at = excluded.published_at;
 
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260827-private-room-lifecycle-r1', '2026-08-27T04:00:00.000Z')
+values ('article_seed_version', '20260902-mobile-blog-retired-r1', '2026-09-02T07:20:00.000Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

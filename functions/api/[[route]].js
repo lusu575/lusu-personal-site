@@ -49,10 +49,10 @@ import {
   normalizeDailyAiNewsFeedLanguage
 } from "./daily-ai-news-feed.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260827-private-room-lifecycle-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260902-mobile-blog-retired-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
-const PUBLIC_RELEASE_DATE = "2026-08-27";
+const PUBLIC_RELEASE_DATE = "2026-09-02";
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
@@ -100,7 +100,7 @@ const DATA_CLEANUP_STATE_KEY = "api_periodic_data_cleanup";
 const DATA_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const DATA_CLEANUP_DELETE_LIMIT = 5000;
 const ARTICLE_SEED_STATE_KEY = "article_seed_version";
-const ARTICLE_SEED_VERSION = "20260827-private-room-lifecycle-r1";
+const ARTICLE_SEED_VERSION = "20260902-mobile-blog-retired-r1";
 const LOGIN_EVENT_RETENTION_DAYS = 365;
 const ANALYTICS_EVENT_RETENTION_DAYS = 180;
 const AGENT_AUDIT_RETENTION_DAYS = 180;
@@ -7447,6 +7447,47 @@ const DAILY_AI_NEWS_2026_07_27_READER_PATCH = Object.freeze({
 function articleSeedStatements(env) {
   // Seed timestamps must be UTC ISO strings; the UI converts them to each visitor's local time.
   return [
+    env.DB.prepare(`
+      insert into articles (
+        article_id, slug, category, tags, cover_image, status, is_pinned,
+        view_count, created_at, updated_at, published_at
+      ) values (
+        'seed-update-2026-09-02-mobile-blog-retired',
+        '2026-09-02-mobile-blog-retired',
+        'site-updates',
+        '["网站更新","移动端","杂谈区","导航","界面"]',
+        '', 'published', 0, 0,
+        '2026-09-02T07:20:00.000Z',
+        '2026-09-02T07:20:00.000Z',
+        '2026-09-02T07:20:00.000Z'
+      )
+      on conflict(article_id) do update set
+        slug = excluded.slug,
+        category = excluded.category,
+        tags = excluded.tags,
+        cover_image = excluded.cover_image,
+        status = excluded.status,
+        is_pinned = excluded.is_pinned,
+        updated_at = excluded.updated_at,
+        published_at = excluded.published_at
+    `),
+    ...articleTranslationsStatements(env, "seed-update-2026-09-02-mobile-blog-retired", {
+      zh: {
+        title: "手机端杂谈区入口下线",
+        summary: "手机端首页已移除“杂谈区”入口，避免未开放栏目继续占用 App 网格；桌面端导航、既有路由与内容数据保持不变。",
+        content_markdown: "# 手机端杂谈区入口下线\n\n手机端首页不再显示“杂谈区”。该栏目尚未开放，不应继续占用有限的 App 网格，也不应让访客误以为存在可用内容。\n\n## 本次调整\n\n- 从手机端 Home 的 App 网格移除“杂谈区”入口。\n- 继续保留知识库、视频区、工具区、游戏区、匿名聊天室与关于我等现有入口。\n- 桌面端导航、栏目路由、三语内容和后台数据均未改动。\n- 旧的未开放杂谈链接继续按既有规则回到知识库，不新增空白页或失效按钮。"
+      },
+      en: {
+        title: "Talk Removed from Mobile Home",
+        summary: "The Talk entry has been removed from mobile Home so an unpublished section no longer occupies the App grid. Desktop navigation, route behavior, and content data remain unchanged.",
+        content_markdown: "# Talk Removed from Mobile Home\n\nThe mobile Home screen no longer shows Talk. The section is not published, so it should not occupy the limited App grid or suggest that usable content is available.\n\n## What changed\n\n- Removed the Talk entry from the mobile Home App grid.\n- Kept Knowledge, Videos, Tools, Games, Anonymous Chat, and About available as before.\n- Left desktop navigation, route behavior, trilingual content, and backend data unchanged.\n- Legacy links to the unpublished Talk route continue to follow the existing redirect to Knowledge, without adding an empty page or dead control."
+      },
+      ja: {
+        title: "モバイルホームから雑談入口を削除",
+        summary: "モバイルのホーム画面から「雑談」の入口を外し、未公開の項目が App グリッドを占有しないようにしました。デスクトップのナビゲーション、ルート動作、コンテンツデータは変更していません。",
+        content_markdown: "# モバイルホームから雑談入口を削除\n\nモバイルのホーム画面では「雑談」を表示しないようにしました。未公開の項目が限られた App グリッドを占有したり、利用できる内容があるように見えたりしないようにするためです。\n\n## 変更内容\n\n- モバイル Home の App グリッドから「雑談」の入口を削除しました。\n- Knowledge、Videos、Tools、Games、匿名チャット、About など既存の入口はそのままです。\n- デスクトップのナビゲーション、ルート動作、3言語コンテンツ、バックエンドデータは変更していません。\n- 未公開の「雑談」への旧リンクは、従来どおり Knowledge に移動し、空ページや無効なボタンは追加しません。"
+      }
+    }, "2026-09-02T07:20:00.000Z"),
     env.DB.prepare(`
       insert into articles (
         article_id, slug, category, tags, cover_image, status, is_pinned,
