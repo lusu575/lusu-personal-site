@@ -5,6 +5,7 @@
 - 2026-09-03 自动运行 `run-20260902T230158Z-12509278` 在精确窗口抓取 2,033 个候选并完成 Codex 主审和 12 条三语组稿，失败点是最终 provenance 校验；生产 POST 为 0。一个 Fable／Mythos 精确标题簇由不同 focused lane 命中，代表候选同时带能力与设备战略信号，三个别名候选只带能力信号。finalize 已把逐候选类别无歧义归一，组装器的拒稿分支却再次用事件主类别覆盖了它们。
 - 入选或拒稿的受保护事件都使用同一分类溯源规则：每个 priority decision 优先保留 finalize 后的逐候选 `editorialClass`，事件级 `editorialClass` 只锚定代表候选和事件主类别，不能覆盖成员自己的合法保护类别。成员的 `eventKey + eventStage`、状态、实质变化、评分以及拒稿理由仍必须与同一事件一致。
 - Codex 提交的 `eventKey` 与 `eventStage` 是编辑身份，不允许 finalize 用截断等方式静默改写。两者必须在 finalize 阶段即满足最多 120 字符的规范小写内部 ID；超长、尾随连字符或其他非法形式应直接退回作者响应修正，不能拖到最终运行校验才暴露。
+- 当天恢复稿最终保留 12 个独立达标事件（11 条 confirmed、1 条 rumor），以 canonical SHA-256 `1b2db4694751bcbc5db3e04c35a45d6bdbd6e531c05218fdf008d2e02a9fa1d4` 完成双确认且只发送一次生产 POST。结果为 `published`、`duplicate=false`，公开 slug `daily-ai-news-2026-09-03` 的 zh／en／ja 回读全部通过。
 
 ## 2026-09-02 每日 AI 新闻发现截断与跨信号事件修复
 
