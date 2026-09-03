@@ -902,6 +902,8 @@ const h3AmbientWallpapersReleaseVersion = "20260810-h3-ambient-wallpapers-4k-r1"
 const h3FirstVersionVideoReleaseVersion = "20260811-h3-first-version-video-sr-48fps-r1";
 const wallpaperGameDisplayReleaseVersion = "20260812-wallpaper-game-display-r1";
 const publicSiteReleaseVersion = "20260827-private-room-lifecycle-r1";
+const mobileBlogRetiredReleaseVersion = "20260902-mobile-blog-retired-r1";
+const homeContentReleaseVersion = mobileBlogRetiredReleaseVersion;
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = "20260827-private-room-lifecycle-r1";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
@@ -1332,7 +1334,7 @@ for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", publicSiteReleaseVersion],
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-ambient.mjs", wallpaperGameDisplayReleaseVersion],
-  ["./data/home-content.mjs", publicSiteReleaseVersion],
+  ["./data/home-content.mjs", homeContentReleaseVersion],
   ["./features/account.mjs", motionPolishReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", resourcesRouteVersion]
@@ -3343,7 +3345,7 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = motionPolishReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = publicSiteReleaseVersion;
+const currentMainVersion = homeContentReleaseVersion;
 const currentCssVersion = publicSiteReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260812-wallpaper-game-display-r1";
@@ -3371,8 +3373,8 @@ if (styleVersions.length !== 1 || styleVersions[0] !== currentCssVersion) {
 }
 
 const mobileShellStyleVersions = assetQueryVersions(indexHtml, "/css/mobile-ios-shell.css");
-if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== publicSiteReleaseVersion) {
-  fail(`index.html /css/mobile-ios-shell.css query should appear once as ${publicSiteReleaseVersion}`);
+if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== mobileBlogRetiredReleaseVersion) {
+  fail(`index.html /css/mobile-ios-shell.css query should appear once as ${mobileBlogRetiredReleaseVersion}`);
 }
 
 const motionCssVersions = assetQueryVersions(indexHtml, "/css/motion-system.css");
@@ -4478,6 +4480,13 @@ if (!hasPattern(mobileIosShellCss, /#transfer-app\s+\.transfer-network-status\s*
   fail("css/mobile-ios-shell.css should keep the lazy Quick Transfer network status at the readable mobile caption size");
 }
 
+if (!hasPattern(indexHtml, /data-route="blog"\s+data-blog-entry\s+data-mobile-home-excluded\s+hidden/)
+  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.desktop-icons\s+\[data-mobile-home-excluded\],[\s\S]*?html\[data-ui-shell="mobile"\]\s+\.desktop-icons\s+\[data-blog-entry\]\[hidden\]\s*\{\s*display:\s*none/)
+  || !hasPattern(mainEntryJs, /const\s+mobileBlogRouteRetired\s*=\s*\(\)\s*=>\s*document\.documentElement\.dataset\.uiShell\s*===\s*"mobile"/)
+  || !hasPattern(mainEntryJs, /lusu:shellchange[\s\S]*event\.detail\?\.shell\s*===\s*"mobile"[\s\S]*document\.body\.dataset\.route\s*===\s*"blog"[\s\S]*navigate\("knowledge"/)) {
+  fail("mobile Home and direct navigation must keep the retired Talk route hidden and redirected without changing desktop availability");
+}
+
 if (!hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.mobile-dock-scroll\s*\{[\s\S]*overflow-x:\s*auto[\s\S]*touch-action:\s*pan-x/)
   || !hasPattern(mobileIosShellCss, /body\[data-mobile-dock="collapsed"\]\s+\.xp-taskbar\s*\{[\s\S]*transform:\s*translate3d/)
   || !hasPattern(mobileIosShellCss, /body\[data-mobile-dock="collapsed"\]\s+\.mobile-dock-scroll\s*\{[^}]*visibility:\s*hidden/)
@@ -4830,14 +4839,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-08-27-password-room-reset";
-const finalUpdateSlug = "2026-08-27-password-room-reset";
+const finalUpdateId = "seed-update-2026-09-02-mobile-blog-retired";
+const finalUpdateSlug = "2026-09-02-mobile-blog-retired";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Password Rooms Can Be Deleted and Restarted Cleanly";
-const finalPublishedAt = "2026-08-27T04:00:00.000Z";
+const finalTitleEn = "Talk Removed from Mobile Home";
+const finalPublishedAt = "2026-09-02T07:20:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-08-27-password-room-reset",
   "seed-update-2026-08-20-chat-whiteboard-ui-fixes",
   "seed-update-2026-08-19-daily-ai-news-rss",
   "seed-update-2026-08-13-hide-minimax-h3-tools",
@@ -4893,6 +4903,7 @@ const changelog20260813Section = markdownSection(changelog, "## 2026-08-13");
 const changelog20260819Section = markdownSection(changelog, "## 2026-08-19 每日 AI 新闻 RSS 订阅");
 const changelog20260820Section = markdownSection(changelog, "## 2026-08-20 聊天室、在线画板与 H3 返回修复");
 const changelog20260827Section = markdownSection(changelog, "## 2026-08-27");
+const changelog20260902Section = markdownSection(changelog, "## 2026-09-02");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4940,14 +4951,14 @@ if (finalUpdateStarted) {
     "seed-update-2026-08-09-motion-polish",
     "seed-update-2026-08-07-remote-mcp-oauth"
   ].some((updateId) => homeContentModuleJs.includes(updateId))) {
-    fail("js/data/home-content.mjs should remain the newest five-item projection after the password-room lifecycle release");
+    fail("js/data/home-content.mjs should remain the newest five-item projection after the mobile Talk retirement");
   }
 
   const projectedUpdateIds = [finalUpdateId, ...projectedSupportingReleaseUpdateIds];
   const projectedUpdateIndexes = projectedUpdateIds.map((updateId) => homeContentModuleJs.indexOf(updateId));
   if (projectedUpdateIndexes.some((index) => index < 0)
     || !projectedUpdateIndexes.every((index, offset, list) => offset === 0 || list[offset - 1] < index)) {
-    fail("js/data/home-content.mjs should order the password-room, chat/whiteboard UI, RSS, hidden H3 entry, and control-plane releases by descending publication time");
+    fail("js/data/home-content.mjs should order the mobile Talk, password-room, chat/whiteboard UI, RSS, and hidden H3 releases by descending publication time");
   }
 
   for (const token of [
@@ -5105,9 +5116,9 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-08-27">2026.08.27</time>',
+    '<time id="top-updated" datetime="2026-09-02">2026.09.02</time>',
     `/css/style.css?v=${finalCssVersion}`,
-    `/css/mobile-ios-shell.css?v=${finalCssVersion}`,
+    `/css/mobile-ios-shell.css?v=${mobileBlogRetiredReleaseVersion}`,
     `/css/motion-system.css?v=${finalCssVersion}`,
     `/js/mobile-shell.js?v=${motionPolishReleaseVersion}`,
     `/js/ui-motion.js?v=${motionPolishReleaseVersion}`,
@@ -5122,6 +5133,18 @@ if (finalUpdateStarted) {
     finalMainVersion,
     finalUpdateId,
     finalUpdateSlug,
+    "杂谈区",
+    "data-mobile-home-excluded",
+    "site-updates"
+  ]) {
+    if (!changelog20260902Section.includes(token)) {
+      fail(`CHANGELOG.md final public update sync missing ${token}`);
+    }
+  }
+
+  for (const token of [
+    publicSiteReleaseVersion,
+    "seed-update-2026-08-27-password-room-reset",
     "密码房",
     "Quick Transfer",
     "在线画板",
@@ -5146,7 +5169,7 @@ if (finalUpdateStarted) {
 
   for (const token of [
     adminMotionPolishVersion,
-    ...preservedReleaseUpdateIds.filter((updateId) => !/^seed-update-2026-08-(?:11|12|13|19|20)-/.test(updateId)),
+    ...preservedReleaseUpdateIds.filter((updateId) => !/^seed-update-2026-08-(?:11|12|13|19|20|27)-/.test(updateId)),
     wallpaperTimeSwitchAssetVersion,
     wallpaperSwitchSceneReleaseVersion,
     wallpaperSwitchRouteMotionReleaseVersion,

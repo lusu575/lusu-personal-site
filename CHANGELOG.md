@@ -9,6 +9,13 @@
 - 完整重跑又发现 Codex 作者给出的长事件键会被 finalize 静默截到 120 字符并留下尾部连字符，直到最终 validator 才失败。finalize 现在直接要求事件键和阶段是最多 120 字符的规范小写内部 ID，不再截断或改变 Codex 身份；作者必须回到响应生成文件修正后再重跑。
 - 修复上线后按站长明确授权完成同日人工补发：canonical SHA-256 为 `1b2db4694751bcbc5db3e04c35a45d6bdbd6e531c05218fdf008d2e02a9fa1d4`，生产接口返回 `published`、`duplicate=false`，slug 为 `daily-ai-news-2026-09-03`。本次只执行一次生产 POST，随后 zh／en／ja 公开回读全部通过。
 
+## 2026-09-02 手机端杂谈区入口下线
+
+- 手机端杂谈区入口正式下线：Mobile Home 不再显示或聚焦 Blog，手机直达／History／桌面转移动壳的 `#blog` 统一替换为 Knowledge；桌面端可选 Blog 行为保持不变。
+- 修复移动 `.desktop-icon { display: flex; }` 把原生 `hidden` 入口重新显示的级联问题，新增 `data-mobile-home-excluded` 与高特异性 computed-style 守卫，并将桌面 1280×720、手机 390×844 的可选 Blog 路由纳入 Headless 发布审计。
+- 新增 `seed-update-2026-09-02-mobile-blog-retired` 三语 `site-updates`，同步完整 fallback、Home 最新五条、Functions／schema seed、D1 marker、公开缓存和测试；版本标识为 `20260902-mobile-blog-retired-r1`。
+- 校准 Quick Transfer 的 Headless 请求预算为当前 60 个确定性同源请求，纳入此前新增的四枚像素鼠标资源；未修改字节数、耗时、布局偏移或内存预算。
+
 ## 2026-09-02 每日 AI 新闻发现截断与跨信号事件修复
 
 - 新增 GPU／图形和消费级端侧 AI 范围后，两条高流量宽查询命中 max-plus-one 截断探针并让 required 覆盖失败关闭。宽父查询现保留为 supplemental，DLSS、FSR、XeSS、神经渲染、帧生成、豆包手机、AI 手机、AI PC 与 AI 穿戴改由独立 required 分片完整签收。

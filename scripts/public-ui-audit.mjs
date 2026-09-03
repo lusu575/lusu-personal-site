@@ -4195,7 +4195,7 @@ function logAuditStatus(result, label) {
 
 const releaseAuditContract = Object.freeze({
   routes: auditRoutes,
-  optionalRoutes: Object.freeze({ blog: "unpublished-and-redirected-to-knowledge" }),
+  optionalRoutes: Object.freeze({ blog: "mobile-retired-desktop-optional-and-mobile-redirected-to-knowledge" }),
   languages: Object.keys(semanticLanguages),
   viewports: viewports.map(({ name, width, height, mobile }) => ({ name, width, height, mobile })),
   themes: timeThemes,
@@ -4695,7 +4695,7 @@ async function auditPerformanceTraces(client, server, output) {
     { name:"route-switch", route:"home", action:async()=>{await setAuditRoute(client,"resources");await stable(client,"resources");} },
     { name:"long-article", route:"article", action:async()=>{} },
     { name:"chat", route:"chatroom", action:async()=>{} },
-    { name:"transfer", route:"resources", maxRequests:56, action:async()=>{await openQuickTransferFromCta(client);} }
+    { name:"transfer", route:"resources", maxRequests:60, action:async()=>{await openQuickTransferFromCta(client);} }
   ];
   const budgets = { requests:55, encodedBytes:12*1024*1024, decodedBytes:24*1024*1024, loadMs:4000, cls:.2, tbtMs:350, nodes:6500, listeners:800, heapBytes:96*1024*1024 };
   const results = [];
@@ -4778,7 +4778,14 @@ async function runReleaseAudit(client, server, options, executable) {
   const reducedMotionNetwork = await auditReducedMotionWallpaperNetwork(client, server); results.push(reducedMotionNetwork); logAuditStatus(reducedMotionNetwork,"OPT-093 reduced-motion optimized wallpaper network");
   const ambientPlayback = await auditAmbientWallpaperPlayback(client, server); results.push(ambientPlayback); logAuditStatus(ambientPlayback,"OPT-093 ambient wallpaper 1080/4K playback and zero-request fallbacks");
   const gameShell = await auditLifeRestartGameShell(client, server, options.output); results.push(...gameShell); logAuditStatus({failures:gameShell.flatMap((item)=>item.failures),status:gameShell.some((item)=>item.failures.length)?"FAIL":"PASS"}, "OPT-091 Life Restart game shell responsive and zoom layout");
-  const optionalBlog = await auditOptionalBlogRoute(client, server.origin, viewports.find((item)=>item.width===1280)); results.push(optionalBlog); logAuditStatus(optionalBlog,"OPT-091 optional unpublished Blog route");
+  for (const viewport of [
+    viewports.find((item)=>item.width===1280),
+    viewports.find((item)=>item.width===390 && item.height===844)
+  ]) {
+    const optionalBlog = await auditOptionalBlogRoute(client, server.origin, viewport);
+    results.push(optionalBlog);
+    logAuditStatus(optionalBlog, `OPT-091 optional unpublished Blog route ${viewport.width}x${viewport.height}`);
+  }
   const lifecycle = await auditLifecycleGrowth(client, server.origin); results.push(lifecycle); logAuditStatus(lifecycle,"OPT-096 lifecycle growth");
   const summary = { audit:"public-site-release-gates", generatedAt:new Date().toISOString(), browser:basename(executable), contract:releaseAuditContract, limitations:["Automated CDP/AX/forced-state smoke is not a WCAG certification or a real NVDA, JAWS, VoiceOver, iOS, or Android test.","Performance budgets are deterministic localhost regression budgets, not field Core Web Vitals.","OPT-100 is local evidence only; this command never commits, pushes, deploys, or calls production."], results };
   await writeFile(resolve(options.output,"release-summary.json"), `${JSON.stringify(summary,null,2)}\n`, "utf8");
@@ -4901,7 +4908,11 @@ async function main() {
       const matrix = await auditSemanticMatrix(client, server.origin, viewport, languages); results.push(...matrix); const matrixFailures = matrix.filter((item) => item.failures.length); console.log(`${matrixFailures.length ? "FAIL" : "PASS"} semantics ${viewport.width}x${viewport.height} ${languages.join("/")} (${matrix.length} checks)`);
     }
     const metadataViewport = viewports.find((item) => item.width === 1280 && item.height === 720);
-    const optionalBlog = await auditOptionalBlogRoute(client, server.origin, metadataViewport); results.push(optionalBlog); logAuditStatus(optionalBlog, "OPT-050 unpublished Blog entry and legacy redirect");
+    for (const viewport of [metadataViewport, viewports.find((item) => item.width === 390 && item.height === 844)]) {
+      const optionalBlog = await auditOptionalBlogRoute(client, server.origin, viewport);
+      results.push(optionalBlog);
+      logAuditStatus(optionalBlog, `OPT-050 unpublished Blog entry and legacy redirect ${viewport.width}x${viewport.height}`);
+    }
     const contentRoutes = await auditResourcesAndGamesHierarchy(client, server.origin, viewports.find((item) => item.width === 1440 && item.height === 900)); results.push(contentRoutes); logAuditStatus(contentRoutes, "OPT-046/047/048/049 Resources and Games hierarchy");
     const articleMetadata = await auditArticleMetadataLanguages(client, server.origin, metadataViewport); results.push(...articleMetadata); console.log(`${articleMetadata.some((item) => item.failures.length) ? "FAIL" : "PASS"} article metadata zh/en/ja (${articleMetadata.length} checks)`);
     articleMetadata.filter((item) => item.failures.length).forEach((item) => console.error(`${item.name}: ${item.failures.join("; ")}`));

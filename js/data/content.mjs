@@ -1,6 +1,36 @@
 export const content = {
   updates: [
     {
+      "article_id": "seed-update-2026-09-02-mobile-blog-retired",
+      "slug": "2026-09-02-mobile-blog-retired",
+      "category": "site-updates",
+      "tags": ["网站更新", "移动端", "杂谈区", "导航", "界面"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-09-02T07:20:00.000Z",
+      "updated_at": "2026-09-02T07:20:00.000Z",
+      "published_at": "2026-09-02T07:20:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.09.02",
+      "title": {
+        "zh": "手机端杂谈区入口下线",
+        "en": "Talk Removed from Mobile Home",
+        "ja": "モバイルホームから雑談入口を削除"
+      },
+      "summary": {
+        "zh": "手机端首页已移除“杂谈区”入口，避免未开放栏目继续占用 App 网格；桌面端导航、既有路由与内容数据保持不变。",
+        "en": "The Talk entry has been removed from mobile Home so an unpublished section no longer occupies the App grid. Desktop navigation, route behavior, and content data remain unchanged.",
+        "ja": "モバイルのホーム画面から「雑談」の入口を外し、未公開の項目が App グリッドを占有しないようにしました。デスクトップのナビゲーション、ルート動作、コンテンツデータは変更していません。"
+      },
+      "content_markdown": {
+        "zh": "# 手机端杂谈区入口下线\n\n手机端首页不再显示“杂谈区”。该栏目尚未开放，不应继续占用有限的 App 网格，也不应让访客误以为存在可用内容。\n\n## 本次调整\n\n- 从手机端 Home 的 App 网格移除“杂谈区”入口。\n- 继续保留知识库、视频区、工具区、游戏区、匿名聊天室与关于我等现有入口。\n- 桌面端导航、栏目路由、三语内容和后台数据均未改动。\n- 旧的未开放杂谈链接继续按既有规则回到知识库，不新增空白页或失效按钮。",
+        "en": "# Talk Removed from Mobile Home\n\nThe mobile Home screen no longer shows Talk. The section is not published, so it should not occupy the limited App grid or suggest that usable content is available.\n\n## What changed\n\n- Removed the Talk entry from the mobile Home App grid.\n- Kept Knowledge, Videos, Tools, Games, Anonymous Chat, and About available as before.\n- Left desktop navigation, route behavior, trilingual content, and backend data unchanged.\n- Legacy links to the unpublished Talk route continue to follow the existing redirect to Knowledge, without adding an empty page or dead control.",
+        "ja": "# モバイルホームから雑談入口を削除\n\nモバイルのホーム画面では「雑談」を表示しないようにしました。未公開の項目が限られた App グリッドを占有したり、利用できる内容があるように見えたりしないようにするためです。\n\n## 変更内容\n\n- モバイル Home の App グリッドから「雑談」の入口を削除しました。\n- Knowledge、Videos、Tools、Games、匿名チャット、About など既存の入口はそのままです。\n- デスクトップのナビゲーション、ルート動作、3言語コンテンツ、バックエンドデータは変更していません。\n- 未公開の「雑談」への旧リンクは、従来どおり Knowledge に移動し、空ページや無効なボタンは追加しません。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-08-27-password-room-reset",
       "slug": "2026-08-27-password-room-reset",
       "category": "site-updates",

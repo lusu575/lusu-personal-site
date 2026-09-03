@@ -2084,6 +2084,13 @@ html[data-ui-shell="mobile"] .desktop-icons {
   margin: 0;
 }
 
+/* Talk is retired from Mobile Home. Keep the explicit mobile exclusion and
+   every optional hidden state above the tile display rule below. */
+html[data-ui-shell="mobile"] .desktop-icons [data-mobile-home-excluded],
+html[data-ui-shell="mobile"] .desktop-icons [data-blog-entry][hidden] {
+  display: none;
+}
+
 html[data-ui-shell="mobile"] .desktop-icon {
   display: flex;
   flex-direction: column;

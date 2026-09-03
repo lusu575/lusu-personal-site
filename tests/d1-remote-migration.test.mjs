@@ -469,7 +469,7 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
-  assert.match(verificationSql, /article_seed_version' and value = '20260827-private-room-lifecycle-r1'/);
+  assert.match(verificationSql, /article_seed_version' and value = '20260902-mobile-blog-retired-r1'/);
   const currentReleaseVerificationSql = REMOTE_MIGRATION_VERIFICATION_QUERIES.find((sql) => (
     sql.includes("wallpaper-game-display-fix-update-article")
   ));

@@ -7,6 +7,12 @@
 - Codex 提交的 `eventKey` 与 `eventStage` 是编辑身份，不允许 finalize 用截断等方式静默改写。两者必须在 finalize 阶段即满足最多 120 字符的规范小写内部 ID；超长、尾随连字符或其他非法形式应直接退回作者响应修正，不能拖到最终运行校验才暴露。
 - 当天恢复稿最终保留 12 个独立达标事件（11 条 confirmed、1 条 rumor），以 canonical SHA-256 `1b2db4694751bcbc5db3e04c35a45d6bdbd6e531c05218fdf008d2e02a9fa1d4` 完成双确认且只发送一次生产 POST。结果为 `published`、`duplicate=false`，公开 slug `daily-ai-news-2026-09-03` 的 zh／en／ja 回读全部通过。
 
+## 2026-09-02 手机端杂谈区入口下线
+
+- 杂谈区从移动壳下线：Mobile Home 的 App 网格不再显示入口，手机直达或历史记录中的 `#blog` 统一替换为 Knowledge；从桌面 Blog 切换到移动壳时也会立即退出，桌面端既有可选栏目、三语文案和内容数据保持不变。
+- 此前的“幽灵入口”来自后加载的移动 `.desktop-icon { display: flex; }` 覆盖原生 `hidden`。现在 Home 图标使用明确的 `data-mobile-home-excluded` 契约，并以更高特异性的移动规则同时守住永久排除和可选入口的 `hidden` 状态；测试与 Headless 发布审计会在 390×844 读取 computed style 和路由回退。
+- 本次公开缓存与 article seed 标识为 `20260902-mobile-blog-retired-r1`，三语 `site-updates` 为 `seed-update-2026-09-02-mobile-blog-retired`，已同步 Home 五条摘要、Functions seed 与 schema seed。
+
 ## 2026-09-02 每日 AI 新闻发现截断与跨信号事件修复
 
 - GPU／图形和消费端 AI 的两条宽查询曾命中第 100 条 max-plus-one 探针，required 覆盖因此失败关闭。宽父查询现只作 supplemental，具体厂商、技术和设备类别由独立 required 分片完整签收，范围没有删减。
