@@ -68,6 +68,57 @@ test("public X parser remains compatible with legacy data-tweet-id markup", () =
   assert.equal(result.items[0].content, "Legacy markup remains readable.");
 });
 
+test("public X parser reads current React relay records and applies the exact window", () => {
+  const inWindowMs = Date.parse("2026-09-03T06:30:00.000Z");
+  const afterWindowMs = Date.parse("2026-09-03T23:12:09.000Z");
+  const html = [
+    '<article class="flex flex-col gap-1">',
+    '<script>',
+    `__typename:"Tweet",rest_id:"2095500000000000001",core:{},details:{__typename:"TBirdData",full_text:"Banked reset \\"confirmed\\".\\nCodex usage fixes shipped.",created_at_ms:${inWindowMs}}`,
+    `__typename:"Tweet",rest_id:"2095500000000000002",core:{},details:{__typename:"TBirdData",full_text:"After-window update.",created_at_ms:${afterWindowMs}}`,
+    '</script>',
+    '<a href="/thsottiaux/status/2095500000000000001">post</a>',
+    '<a data-href="/thsottiaux/status/2095500000000000002">post</a>',
+    '</article>'
+  ].join("");
+
+  const result = extractPublicProfilePosts(html, {
+    handle: "thsottiaux",
+    profile,
+    windowStart: "2026-09-02T23:00:00.000Z",
+    windowEnd: "2026-09-03T23:00:00.000Z",
+    fetchedAt: "2026-09-04T00:20:00.000Z"
+  });
+
+  assert.equal(result.articleCount, 1);
+  assert.equal(result.parsedCount, 2);
+  assert.equal(result.items.length, 1);
+  assert.equal(result.items[0].id, "twitter:public-profile:2095500000000000001");
+  assert.equal(
+    result.items[0].content,
+    'Banked reset "confirmed".\nCodex usage fixes shipped.'
+  );
+  assert.equal(
+    result.items[0].url,
+    "https://x.com/thsottiaux/status/2095500000000000001"
+  );
+});
+
+test("public X parser fails closed when current articles contain no parseable records", () => {
+  assert.throws(
+    () => extractPublicProfilePosts(
+      '<article class="flex flex-col gap-1"><a href="/thsottiaux/status/123">post</a></article>',
+      {
+        handle: "thsottiaux",
+        profile,
+        windowStart: "2026-09-02T23:00:00.000Z",
+        windowEnd: "2026-09-03T23:00:00.000Z"
+      }
+    ),
+    /article markup is unsupported/
+  );
+});
+
 test("public X parser fails closed when posts use unknown article markup", () => {
   assert.throws(
     () => extractPublicProfilePosts(

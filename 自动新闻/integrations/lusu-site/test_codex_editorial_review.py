@@ -186,6 +186,50 @@ class CodexEditorialReviewTests(unittest.TestCase):
         end = MODULE.parse_time("2026-08-28T23:00:00Z")
         self.assertIsNone(MODULE.prescreen_reason(candidate, start, end))
 
+    def test_public_x_candidate_cannot_be_programmatically_prescreened(self):
+        candidate = self.candidate(
+            "public-x",
+            title="A deliberately vague first-party teaser",
+            url="https://x.com/example/status/123",
+            sourceType="twitter",
+            mustReviewQueryIds=["example-focused-query"],
+            mustReviewSourceIds=["public-x-example"],
+        )
+        start = MODULE.parse_time("2026-08-27T23:00:00Z")
+        end = MODULE.parse_time("2026-08-28T23:00:00Z")
+        self.assertIsNone(MODULE.prescreen_reason(candidate, start, end))
+
+    def test_prepare_keeps_public_x_review_provenance_in_queue(self):
+        public_x = self.candidate(
+            "public-x",
+            title="A deliberately vague first-party teaser",
+            url="https://x.com/example/status/123",
+            sourceType="twitter",
+            mustReviewQueryIds=["example-focused-query"],
+            mustReviewSourceIds=["public-x-example"],
+        )
+        fixture = self.fixture()
+        candidates = [*fixture[3], public_x]
+        writes = {}
+        with patch.object(
+            MODULE,
+            "load_inputs",
+            return_value=(fixture[0], fixture[1], {"items": candidates}, candidates),
+        ), patch.object(MODULE, "sha256_bytes", return_value="a" * 64), patch.object(
+            MODULE,
+            "write_json",
+            side_effect=lambda path, value: writes.__setitem__(path.name, value),
+        ):
+            MODULE.prepare(Path("run"), 200)
+        queued_item = next(
+            item
+            for batch in writes["codex_editorial_review.queue.json"]["batches"]
+            for item in batch["items"]
+            if "public-x" in item["candidateIds"]
+        )
+        self.assertEqual(queued_item["mustReviewQueryIds"], ["example-focused-query"])
+        self.assertEqual(queued_item["mustReviewSourceIds"], ["public-x-example"])
+
     def test_candidate_class_normalization_honors_a_unique_narrower_signal(self):
         self.assertEqual(
             MODULE.normalize_candidate_editorial_class(
@@ -208,6 +252,48 @@ class CodexEditorialReviewTests(unittest.TestCase):
         self.assertEqual(
             MODULE.title_signature("Qwen releases Model X | Example News"),
             MODULE.title_signature("Qwen releases Model X - Another Source"),
+        )
+
+    def test_prepare_separates_incompatible_signal_contracts_for_same_title(self):
+        candidates = [
+            self.candidate(
+                "specialized",
+                title="Company launches one AI product",
+                editorialSignals=[
+                    "strategic-hardware-infrastructure-change",
+                    "capability-availability-change",
+                ],
+            ),
+            self.candidate(
+                "product-choice",
+                title="Company launches one AI product",
+                editorialSignals=[
+                    "major-model-product-change",
+                    "capability-availability-change",
+                ],
+            ),
+        ]
+        fixture = self.fixture()
+        writes = {}
+        with patch.object(
+            MODULE,
+            "load_inputs",
+            return_value=(fixture[0], fixture[1], {"items": candidates}, candidates),
+        ), patch.object(MODULE, "sha256_bytes", return_value="a" * 64), patch.object(
+            MODULE,
+            "write_json",
+            side_effect=lambda path, value: writes.__setitem__(path.name, value),
+        ):
+            MODULE.prepare(Path("run"), 200)
+        queue_items = [
+            item
+            for batch in writes["codex_editorial_review.queue.json"]["batches"]
+            for item in batch["items"]
+        ]
+        self.assertEqual(len(queue_items), 2)
+        self.assertEqual(
+            {tuple(item["candidateIds"]) for item in queue_items},
+            {("specialized",), ("product-choice",)},
         )
 
     def test_finalize_accepts_consistent_signal_event_and_window_contract(self):

@@ -12,11 +12,11 @@
 ## 正式时间规则
 
 - 时区固定为 `Asia/Shanghai`。
-- 每天 07:00 开始，采集和文章窗口固定为 `[前一日 07:00, 当日 07:00)`。
+- 定时任务仍每天 07:00 触发；每次执行的采集和文章窗口为 `[前一报告日已保存的采集启动时刻, 本次执行实际采集启动时刻)`。同日每次新执行都替换当前日期锚点并向后推进右边界，左边界仍取上一报告日锚点。
 - 时间资格以事件当前阶段第一次由可靠来源公开的可核对时间为准；聚合器的收录／刷新时间和社区发帖时间不能代替它。
-- 抓取、复核、生成、校验、投递和公开允许在同一报告日 07:00 至次日 00:00 完成；08:00 不再是硬截止。
+- 抓取、复核、生成、校验、投递和公开允许在本次执行实际采集启动后至报告日次日 00:00 完成；08:00 不再是硬截止。
 - 任何验证失败、通道异常或内容门禁失败仍会停止本期；不会降级成草稿，也不会跨报告日自动重试。
-- 当天自动任务失败后，只有站长在交互任务中明确要求补发时，才可按 `MANUAL_RECOVERY.md` 在当天 07:00 至次日 00:00 使用双确认人工入口；它不是自动任务的无授权重试分支。
+- 当天自动任务失败后，只有站长在交互任务中明确要求补发时，才可按 `MANUAL_RECOVERY.md` 以恢复执行的实际启动时刻生成新右边界，并在该时刻至次日 00:00 使用双确认人工入口；它不是自动任务的无授权重试分支。
 - 新闻条数不写死也不设上限；没有 confirmed 候选可以承担要闻时，结果为“今日无稿”。从 2026-08-10 起整期至少 5 条；从 report date 2026-08-17 起传闻栏目不设最低数量，但所有达到相应门槛的独立内容都必须保留。
 - 第一轮少于 5 条会触发强制二次覆盖审阅；复查后整期仍不足最低数量时必须 fail closed，不能少发或用低价值内容凑数。传闻少于 5 条本身不再构成失败。
 
@@ -39,12 +39,12 @@
 
 - `horizon.config.json`：本站 AI 新闻源配置，不含密钥。TechCrunch AI、VentureBeat AI、Ars Technica AI、雷峰网和 36氪属于可选补充；单源失败不阻断。Reddit、Hacker News 等社区源只用于早期发现，不抓取评论串；它们返回的候选仍须处置，正式新闻和时间资格必须回到规范原帖、可靠媒体或其他一手来源核验。Tibo 由 `discovery-queries.json` 中的 required 聚焦查询覆盖。
   - `discovery-queries.json`：使用 `any-reliable-language` 语言政策，至少提供英文、简体中文、日文、韩文检索种子；宽泛查询只作补充，重点人物、产品运营变化、Thinking Machines／LG AI Research 等开放模型实验室、韩国模型厂商、各家中国模型厂商和主要视频／图像／语音产品使用拆分后的独立 required 查询。韩国开放模型固定拆为 EXAONE 开放、EXAONE 发布、LG 其他、NAVER／HyperCLOVA、Upstage／Solar 五条互补韩文查询，避免跨厂商大查询触发 99+1 截断；字节跳动固定拆为豆包中英产品、Seed 通用模型、SeedRealtime／Seed-ASR／Seed-TTS／全双工语音以及 Seedance／Seedream／Dreamina 创意模型查询。文件不含密钥。
-- `fetch-with-horizon.py`：调用 Horizon 原生服务，以受控并发执行发现查询；只传 `--date` 时也固定使用该报告日前一日 07:00 至当日 07:00 的上海时间半开窗口。失败查询最多重试两次，仍失败则与真实空结果分开记录。Google News 查询最多保留 99 条并请求第 100 条作为探针，实际返回第 100 条时判定截断并关闭 required 覆盖；只有 99 条不误报。它还通过共享代理客户端读取 `public-x-profiles.json` 中指定账号的公开主页，将尚未被搜索引擎收录的官方帖纳入候选；解析器兼容当前 `itemID + schema.org meta` 与旧版 `data-tweet-id` 标记，发现未知结构时失败关闭而不是误报空结果。这只是公开索引补充，不声称是登录时间线或 X API。精确窗口内全部候选都会加入 `complete-discovery-review` 必审通道；`priority` 仅控制顺序。候选索引直接写入确定性 UTF-8 字节并据此计算 SHA-256。
+- `fetch-with-horizon.py`：调用 Horizon 原生服务，以受控并发执行发现查询；只传 `--date` 时读取上一报告日已保存锚点，以本次执行实际启动时刻替换当前日期锚点，形成连续上海时间半开窗口。失败查询最多重试两次，仍失败则与真实空结果分开记录。Google News 查询最多保留 99 条并请求第 100 条作为探针，实际返回第 100 条时判定截断并关闭 required 覆盖；只有 99 条不误报。它还通过共享代理客户端读取 `public-x-profiles.json` 中指定账号的公开主页，将尚未被搜索引擎收录的官方帖纳入候选；解析器同时支持 legacy 标记和当前 React relay 记录，只接受当前 profile DOM 中的同账号 status ID 并关联 `full_text + created_at_ms`，发现未知结构时失败关闭而不是误报空结果。这只是公开索引补充，不声称是登录时间线或 X API。精确窗口内全部候选都会加入 `complete-discovery-review` 必审通道；`priority` 仅控制顺序。候选索引直接写入确定性 UTF-8 字节并据此计算 SHA-256。
 - `candidate_index.json`：本次 Horizon 运行生成的紧凑候选索引，只含审阅所需的标题、时间、来源和覆盖归属，不含大段正文。
 - `coverage_manifest.json`：schemaVersion 2 的机器可校验清单，记录本次 required query、required group、语言、命中数、结果上限状态、指定 review source 和 review lane。新运行声明 `priorityReviewPolicy: all-discovered-candidates` 与 `protectedEventReviewPolicy: evidence-backed-protected-events-v1`，包含 `complete-discovery-review` 通道，并让兼容字段 `mustReviewCandidateIds` 覆盖 candidate index 的全部候选编号。
 - `codex-editorial-review.py`：校验 candidate index 精确字节 SHA-256，先做客观程序预筛和精确标题初步聚类，输出分批 `codex_editorial_review.queue.json`；任何带 editorial signal 或 RSS 的候选都禁止预筛掉。当前定时任务的 Codex 逐批完成真正的分类、事件合并、直达证据核验、四项评分、选稿建议与事实边界，写 `codex_editorial_review.response.json`，再用同一命令的 `--finalize` 严格验证并合成下游兼容的 `semantic_editorial_review.json`。预筛和 Codex 结果合计必须恰好覆盖全部候选，事件台账必须精确覆盖全部信号、RSS、受保护类别、selected 与 merged 候选；finalize 还会在组装前锁住信号类别映射、同事件成员的类别／状态／实质变化／评分、confirmed 6 分与 rumor 5 分门槛，以及可靠首发时间与窗口外拒绝理由。任何缺项、跨索引响应、聚合页证据、重叠事件或不一致判断都失败关闭。正式链路不再启动 Gemma、llama.cpp 或其他本地语义评分模型。
 - `assemble-semantic-run.mjs`：只接受完整语义审阅台账与已核实的三语编辑事实包，反查全候选处置、事件身份、直达证据、已确认 6 分／传闻 5 分门槛、三语 AI 解读长度和整期最低数量后生成 schema-v4 `daily_run.json`；传闻不设最低数量。不接受按标题正则或固定评分临时编造的审稿结果。人工终审纠正必须写入事实包的 `eventOverrides`：拒稿带四项低于对应门槛的具体语义理由，同事件同阶段别名则精确 `merged` 到目标事件并合并全部候选来源。可纠正的本地作者错误必须回到 Codex 响应或编辑事实包修复并重跑受影响门禁，不能直接改 `daily_run.json`，也不能留下尚未重跑的修正后关闭任务。
-- `workflow.json`：schemaVersion 4 的同报告日 07:00 至次日 00:00 生产时间、完整覆盖审阅、事件阶段去重、成文、fail-closed 与当天人工恢复边界。
+- `workflow.json`：schemaVersion 4 的连续采集锚点、同报告日至次日 00:00 生产时间、完整覆盖审阅、事件阶段去重、成文、fail-closed 与当天人工恢复边界。
 - `ARTICLE_STYLE.md`：固定标题、栏目、事实段、AI 解读和传闻标准。
 - `AUTOMATION_PROMPT.md`：每日 Codex 任务的完整说明。
 - `MANUAL_RECOVERY.md`：仅供站长在交互任务中明确授权的同日报告人工补发说明；自动任务不得使用。
@@ -157,7 +157,7 @@ npm.cmd run ai-news:configure:production -- --confirm-production
 示例中的日期每天由任务按北京时间换算。正式运行记录使用 schemaVersion 4，并引用同一次 Horizon 运行的 `daily_candidates.json`、`candidate_index.json` 与 `coverage_manifest.json`：
 
 ```powershell
-npm.cmd run ai-news:horizon:fetch -- --date 2026-07-29 --start 2026-07-28T07:00:00+08:00 --end 2026-07-29T07:00:00+08:00
+npm.cmd run ai-news:horizon:fetch -- --date 2026-09-04
 npm.cmd run ai-news:validate -- --run 自动新闻/integrations/lusu-site/runs/2026-07-29.json
 npm.cmd run ai-news:deliver:production -- --run 自动新闻/integrations/lusu-site/runs/2026-07-29.json
 ```
@@ -168,7 +168,7 @@ npm.cmd run ai-news:deliver:production -- --run 自动新闻/integrations/lusu-s
 
 如果自动任务失败，不能仅凭失败状态自行补发。只有站长在当前 Codex 交互任务中明确要求重新生成并公开当天日报后，才读取并严格执行 `MANUAL_RECOVERY.md`。
 
-人工流程继续使用同一天的固定 `[前一日 07:00, 当日 07:00)` 新闻窗口，并先完成正式 schemaVersion 4 校验。随后先用只读模式输出已经验证的完整稿件指纹：
+人工流程以“上一报告日已保存的采集启动时刻”为左边界、以本次恢复执行的实际采集启动时刻为新右边界，并先完成正式 schemaVersion 4 校验。随后先用只读模式输出已经验证的完整稿件指纹：
 
 ```powershell
 npm.cmd run ai-news:deliver:production -- --run <本期运行记录> --print-run-sha256

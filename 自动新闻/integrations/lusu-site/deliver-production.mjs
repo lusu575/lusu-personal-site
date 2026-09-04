@@ -21,6 +21,8 @@ const SHA256_PATTERN = /^[a-f0-9]{64}$/;
 const PUBLIC_READBACK_RETRY_DELAYS_MS = Object.freeze([250, 750]);
 const PUBLIC_READBACK_ATTEMPT_TIMEOUT_MS = 10_000;
 const TRANSIENT_READBACK_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
+const CONTINUOUS_WINDOW_POLICY = "previous-collection-start-to-current-execution-start-v2";
+const CONTINUOUS_WINDOW_EFFECTIVE_DATE = "2026-09-04";
 
 export function parseProductionArgs(argv = process.argv.slice(2)) {
   let runPath = "";
@@ -150,8 +152,8 @@ export function assertProductionSchedule(run, {
       confirmRunSha256
     })) {
       throw new Error(
-        "--manual-recovery 只允许站长明确授权后，在北京时间当天 07:00 至次日 00:00"
-        + " 投递日期、固定窗口与完整稿件指纹均已双确认的 schemaVersion 4 稿件。"
+        "--manual-recovery 只允许站长明确授权后，在当日采集开始至次日 00:00"
+        + " 投递日期、连续采集窗口与完整稿件指纹均已双确认的 schemaVersion 4 稿件。"
       );
     }
     const deadlineAt = Date.parse(
@@ -177,10 +179,10 @@ export function assertProductionSchedule(run, {
   if (run.reportDate !== reportDate) {
     throw new Error(`生产投递只允许当天运行记录；当前北京时间日期为 ${reportDate}。`);
   }
-  const startAt = Date.parse(`${reportDate}T07:00:00+08:00`);
+  const startAt = Date.parse(run.collectionStartedAt || `${reportDate}T07:00:00+08:00`);
   const deadlineAt = Date.parse(`${shiftIsoDate(reportDate, 1)}T00:00:00+08:00`);
   if (nowMs < startAt) {
-    throw new Error("尚未到北京时间 07:00，拒绝提前生产投递。");
+    throw new Error("尚未到本期采集启动时刻，拒绝提前生产投递。");
   }
   const remainingMs = deadlineAt - nowMs;
   if (remainingMs < MINIMUM_REMAINING_WINDOW_MS) {
@@ -206,9 +208,13 @@ export function isAuthorizedManualRecovery(run, {
     || !SHA256_PATTERN.test(confirmRunSha256)) {
     return false;
   }
-  const previousDate = shiftIsoDate(confirmReportDate, -1);
   const nextDate = shiftIsoDate(confirmReportDate, 1);
-  const allowedFrom = Date.parse(`${confirmReportDate}T07:00:00+08:00`);
+  const usesContinuousWindow = confirmReportDate >= CONTINUOUS_WINDOW_EFFECTIVE_DATE;
+  const allowedFrom = Date.parse(
+    usesContinuousWindow
+      ? run?.collectionStartedAt
+      : `${confirmReportDate}T07:00:00+08:00`
+  );
   const expiresAt = Date.parse(`${nextDate}T00:00:00+08:00`);
   return Number.isFinite(nowMs)
     && nowMs >= allowedFrom
@@ -217,8 +223,12 @@ export function isAuthorizedManualRecovery(run, {
     && run?.schemaVersion === 4
     && run?.reportDate === confirmReportDate
     && run?.timezone === "Asia/Shanghai"
-    && run?.windowStart === `${previousDate}T07:00:00+08:00`
-    && run?.windowEnd === `${confirmReportDate}T07:00:00+08:00`
+    && (usesContinuousWindow
+      ? run?.windowPolicy === CONTINUOUS_WINDOW_POLICY
+        && run?.previousCollectionStartedAt === run?.windowStart
+        && run?.collectionStartedAt === run?.windowEnd
+      : run?.windowStart === `${shiftIsoDate(confirmReportDate, -1)}T07:00:00+08:00`
+        && run?.windowEnd === `${confirmReportDate}T07:00:00+08:00`)
     && run?.delivery?.slug === `daily-ai-news-${confirmReportDate}`
     && canonicalRunSha256(run) === confirmRunSha256;
 }

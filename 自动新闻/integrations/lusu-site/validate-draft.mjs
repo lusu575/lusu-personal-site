@@ -30,6 +30,9 @@ const LEGACY_RUMOR_STORY_MINIMUM_SCORE = 6;
 const RUMOR_STORY_MINIMUM_SCORE = 5;
 const LOW_VOLUME_TRIGGER = MINIMUM_SELECTED_STORIES;
 const PRODUCTION_WINDOW_END_LOCAL_TIME = "07:00";
+const CONTINUOUS_WINDOW_POLICY = "previous-collection-start-to-current-execution-start-v2";
+const CONTINUOUS_WINDOW_EFFECTIVE_DATE = "2026-09-04";
+const MAX_CONTINUOUS_WINDOW_MS = 48 * 60 * 60 * 1000;
 const HISTORICAL_ONE_SHOT_WINDOW = Object.freeze({
   reportDate: "2026-07-27",
   windowStart: "2026-07-26T23:00:00+08:00",
@@ -219,15 +222,32 @@ export function validateRun(run, { allowHistoricalOneShot = false } = {}) {
   const windowEnd = parseTimestamp(run.windowEnd);
   if (windowStart === null || windowEnd === null) {
     errors.push("windowStart 和 windowEnd 必须是带时区的有效时间。");
-  } else if (windowEnd - windowStart !== 24 * 60 * 60 * 1000) {
-    errors.push("新闻采集窗口必须恰好为发布前 24 小时。");
   }
-  const isProductionWindow = String(run.windowStart || "").endsWith("+08:00")
+  const usesContinuousWindow = reportDate >= CONTINUOUS_WINDOW_EFFECTIVE_DATE;
+  const isLegacyProductionWindow = run.windowStart === `${shiftIsoDate(reportDate, -1)}T07:00:00+08:00`
     && run.windowEnd === `${reportDate}T${PRODUCTION_WINDOW_END_LOCAL_TIME}:00+08:00`;
+  const isContinuousWindow = windowStart !== null
+    && windowEnd !== null
+    && windowEnd > windowStart
+    && windowEnd - windowStart < MAX_CONTINUOUS_WINDOW_MS
+    && String(run.windowStart || "").endsWith("+08:00")
+    && String(run.windowEnd || "").endsWith("+08:00")
+    && shanghaiDateFromTimestamp(windowStart) === shiftIsoDate(reportDate, -1)
+    && shanghaiDateFromTimestamp(windowEnd) === reportDate
+    && run.windowPolicy === CONTINUOUS_WINDOW_POLICY
+    && run.previousCollectionStartedAt === run.windowStart
+    && run.collectionStartedAt === run.windowEnd
+    && /^run-\d{8}T\d{6}Z-[a-z0-9]+$/.test(String(run.previousCollectionRunId || ""))
+    && /^run-\d{8}T\d{6}Z-[a-z0-9]+$/.test(String(run.collectionAnchorRunId || ""));
   const isAllowedHistoricalWindow = allowHistoricalOneShot
     && run.schemaVersion === HISTORICAL_SCHEMA_VERSION
     && isHistoricalOneShotWindow(run);
-  if (!isProductionWindow && !isAllowedHistoricalWindow) {
+  if (usesContinuousWindow && !isContinuousWindow) {
+    errors.push(
+      "正式每日工作流必须使用前一日保存的采集启动时刻至本轮实际启动时刻的连续半开窗口，"
+      + "并携带可核对的采集锚点。"
+    );
+  } else if (!usesContinuousWindow && !isLegacyProductionWindow && !isAllowedHistoricalWindow) {
     errors.push(
       "正式每日工作流必须使用北京时间前一日 07:00 至当日 07:00 的固定 24 小时窗口；"
       + "历史 2026-07-27 23:00 样稿只允许通过显式 one-shot 参数验证。"
@@ -238,6 +258,9 @@ export function validateRun(run, { allowHistoricalOneShot = false } = {}) {
   }
   if (!/^run-\d{8}T\d{6}Z-[a-z0-9]+$/.test(String(run.horizonRun?.runId || ""))) {
     errors.push("缺少有效的 Horizon runId。");
+  }
+  if (usesContinuousWindow && run.collectionAnchorRunId !== run.horizonRun?.runId) {
+    errors.push("本轮采集锚点 run id 必须与 Horizon runId 一致。");
   }
   if (!String(run.horizonRun?.candidatesPath || "").startsWith("data/mcp-runs/")) {
     errors.push("缺少 Horizon daily_candidates.json 路径。");
@@ -502,7 +525,8 @@ async function validateHorizonProvenance(run, horizonRoot) {
     || candidates.reportDate !== run.reportDate
     || candidates.timezone !== run.timezone
     || candidates.windowStart !== run.windowStart
-    || candidates.windowEnd !== run.windowEnd) {
+    || candidates.windowEnd !== run.windowEnd
+    || !collectionWindowIdentityMatches(candidates, run)) {
     throw new Error("Horizon 候选文件与运行记录不一致。");
   }
 
@@ -1903,9 +1927,25 @@ function assertArtifactIdentity(artifact, run, label) {
     || artifact.reportDate !== run.reportDate
     || artifact.timezone !== run.timezone
     || artifact.windowStart !== run.windowStart
-    || artifact.windowEnd !== run.windowEnd) {
+    || artifact.windowEnd !== run.windowEnd
+    || !collectionWindowIdentityMatches(artifact, run)) {
     throw new Error(`${label} 与运行记录不一致。`);
   }
+}
+
+function collectionWindowIdentityMatches(artifact, run) {
+  if (run.reportDate < CONTINUOUS_WINDOW_EFFECTIVE_DATE) {
+    return true;
+  }
+  return artifact.windowPolicy === run.windowPolicy
+    && artifact.previousCollectionStartedAt === run.previousCollectionStartedAt
+    && artifact.collectionStartedAt === run.collectionStartedAt
+    && artifact.previousCollectionRunId === run.previousCollectionRunId
+    && artifact.collectionAnchorRunId === run.collectionAnchorRunId;
+}
+
+function shanghaiDateFromTimestamp(timestamp) {
+  return new Date(timestamp + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }
 
 function resolveHorizonArtifactPath(horizonRoot, allowedRoot, value, label) {
@@ -2337,6 +2377,18 @@ function parseTimestamp(value) {
   }
   const timestamp = Date.parse(text);
   return Number.isFinite(timestamp) ? timestamp : null;
+}
+
+function shiftIsoDate(value, days) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ""));
+  if (!match) {
+    return "";
+  }
+  return new Date(Date.UTC(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]) + days
+  )).toISOString().slice(0, 10);
 }
 
 function requestedPath() {

@@ -17,6 +17,40 @@ const metaContent = (block, itemProp) => block.match(
   new RegExp(`<meta content="([^"]*)" itemProp="${itemProp}"\\/>`)
 )?.[1];
 
+const escapeRegex = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const decodeRelayString = (value) => {
+  try {
+    return JSON.parse(`"${value}"`);
+  } catch {
+    throw new Error("Public X relay payload contains an invalid post string.");
+  }
+};
+
+const extractRelayProfilePosts = (html, handle) => {
+  const ownStatusIds = new Set(
+    [...String(html).matchAll(new RegExp(
+      `(?:href|data-href)="/?${escapeRegex(handle)}/status/(\\d+)"`,
+      "gi"
+    ))].map((match) => match[1])
+  );
+  const records = [];
+  const relayPattern = /__typename:"Tweet",rest_id:"(\d+)"[\s\S]{0,24000}?__typename:"TBirdData"[\s\S]{0,4000}?full_text:"((?:\\.|[^"\\])*)"[\s\S]{0,2000}?created_at_ms:(\d+)/g;
+  for (const match of String(html).matchAll(relayPattern)) {
+    const [, id, encodedText, createdAtMs] = match;
+    if (!ownStatusIds.has(id)) continue;
+    const timestamp = Number(createdAtMs);
+    if (!Number.isSafeInteger(timestamp)) continue;
+    records.push({
+      id,
+      publishedAt: new Date(timestamp).toISOString(),
+      url: `https://x.com/${handle}/status/${id}`,
+      text: decodeRelayString(encodedText)
+    });
+  }
+  return records;
+};
+
 export function extractPublicProfilePosts(html, {
   handle,
   profile,
@@ -38,33 +72,14 @@ export function extractPublicProfilePosts(html, {
   const items = [];
   const seenTweetIds = new Set();
   let parsedCount = 0;
-  for (let index = 0; index < articleStarts.length; index += 1) {
-    const tag = articleStarts[index][0];
-    const block = String(html).slice(
-      articleStarts[index].index,
-      articleStarts[index + 1]?.index ?? String(html).length
-    );
-    const id = tag.match(/data-tweet-id="(\d+)"/)?.[1]
-      || tag.match(/itemID="https:\/\/x\.com\/i\/status\/(\d+)"/)?.[1]
-      || metaContent(block, "identifier");
-    const publishedAt = metaContent(block, "datePublished");
-    const url = metaContent(block, "url");
-    const text = metaContent(block, "text");
-    const urlHandle = String(url || "").match(
-      /^https:\/\/x\.com\/([^/]+)\/status\/(\d+)$/i
-    );
-    if (!id || !urlHandle || urlHandle[2] !== id
-      || urlHandle[1].toLowerCase() !== handle.toLowerCase()
-      || !publishedAt || text === undefined) {
-      continue;
-    }
+  const addParsedPost = ({ id, publishedAt, url, text }) => {
+    if (seenTweetIds.has(id)) return;
+    seenTweetIds.add(id);
     parsedCount += 1;
     const timestamp = Date.parse(publishedAt);
-    if (!Number.isFinite(timestamp) || timestamp < startMs || timestamp >= endMs
-      || seenTweetIds.has(id)) {
-      continue;
+    if (!Number.isFinite(timestamp) || timestamp < startMs || timestamp >= endMs) {
+      return;
     }
-    seenTweetIds.add(id);
     const content = decodeHtml(text);
     items.push({
       id: `twitter:public-profile:${id}`,
@@ -90,6 +105,34 @@ export function extractPublicProfilePosts(html, {
       },
       ai_tags: []
     });
+  };
+  for (let index = 0; index < articleStarts.length; index += 1) {
+    const tag = articleStarts[index][0];
+    const block = String(html).slice(
+      articleStarts[index].index,
+      articleStarts[index + 1]?.index ?? String(html).length
+    );
+    const id = tag.match(/data-tweet-id="(\d+)"/)?.[1]
+      || tag.match(/itemID="https:\/\/x\.com\/i\/status\/(\d+)"/)?.[1]
+      || metaContent(block, "identifier");
+    const publishedAt = metaContent(block, "datePublished");
+    const url = metaContent(block, "url");
+    const text = metaContent(block, "text");
+    const urlHandle = String(url || "").match(
+      /^https:\/\/x\.com\/([^/]+)\/status\/(\d+)$/i
+    );
+    if (!id || !urlHandle || urlHandle[2] !== id
+      || urlHandle[1].toLowerCase() !== handle.toLowerCase()
+      || !publishedAt || text === undefined) {
+      continue;
+    }
+    addParsedPost({ id, publishedAt, url, text });
+  }
+  for (const post of extractRelayProfilePosts(html, handle)) {
+    addParsedPost(post);
+  }
+  if (articleStarts.length > 0 && parsedCount === 0) {
+    throw new Error("Public X profile contains posts but its article markup is unsupported.");
   }
   return {
     items,

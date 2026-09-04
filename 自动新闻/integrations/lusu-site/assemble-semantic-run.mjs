@@ -528,7 +528,12 @@ const dailyRun = {
   timezone: 'Asia/Shanghai',
   windowStart: manifest.windowStart,
   windowEnd: manifest.windowEnd,
-  collectionMethod: 'Horizon native fetch with exact-window discovery, objective programmatic pre-screening, Codex editorial review, and evidence-backed protected-event review',
+  windowPolicy: manifest.windowPolicy,
+  previousCollectionStartedAt: manifest.previousCollectionStartedAt,
+  collectionStartedAt: manifest.collectionStartedAt,
+  previousCollectionRunId: manifest.previousCollectionRunId,
+  collectionAnchorRunId: manifest.collectionAnchorRunId,
+  collectionMethod: 'Horizon native fetch with continuous collection-anchor window discovery, objective programmatic pre-screening, Codex editorial review, and evidence-backed protected-event review',
   horizonRun: {
     runId: manifest.horizonRunId,
     candidatesPath: `data/mcp-runs/${manifest.horizonRunId}/daily_candidates.json`,

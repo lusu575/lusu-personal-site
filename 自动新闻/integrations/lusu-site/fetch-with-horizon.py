@@ -34,6 +34,9 @@ EXPECTED_LOW_VOLUME_TRIGGER = 5
 PRIORITY_REVIEW_POLICY = "all-discovered-candidates"
 PRIORITY_DISCOVERY_REVIEW_LANE = "complete-discovery-review"
 PROTECTED_EVENT_REVIEW_POLICY = "evidence-backed-protected-events-v1"
+CONTINUOUS_WINDOW_POLICY = "previous-collection-start-to-current-execution-start-v2"
+COLLECTION_ANCHOR_DIRECTORY = "collection-anchors"
+RUN_ID_TIMESTAMP_RE = re.compile(r"^(run-(\d{8}T\d{6}Z)-[a-z0-9]+)$")
 GOOGLE_NEWS_MAX_RETRIES = 2
 GOOGLE_NEWS_RETRY_DELAY_SECONDS = 0.25
 GOOGLE_NEWS_REQUEST_TIMEOUT_SECONDS = 10.0
@@ -423,7 +426,7 @@ def resolve_window(
     *,
     now: datetime | None = None,
 ) -> tuple[date, datetime, datetime]:
-    """Resolve the exact 07:00-to-07:00 Shanghai reporting interval."""
+    """Resolve an explicitly supplied interval or the legacy fixed interval."""
 
     if bool(start_value) != bool(end_value):
         raise ValueError("--start and --end must be supplied together")
@@ -454,6 +457,139 @@ def resolve_window(
             f"the requested window must not exceed {MAX_LOOKBACK_HOURS} hours"
         )
     return target_date, window_start, window_end
+
+
+def run_started_at_from_id(run_id: str) -> datetime | None:
+    """Read Horizon's immutable UTC creation timestamp from a run id."""
+
+    match = RUN_ID_TIMESTAMP_RE.fullmatch(run_id)
+    if not match:
+        return None
+    return datetime.strptime(match.group(2), "%Y%m%dT%H%M%SZ").replace(
+        tzinfo=timezone.utc
+    )
+
+
+def read_collection_anchor(path: Path, target_date: date) -> dict[str, str] | None:
+    """Read and validate one persisted daily collection-start anchor."""
+
+    if not path.is_file():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        started_at = parse_iso_datetime(
+            str(payload.get("collectionStartedAt") or ""),
+            "collectionStartedAt",
+        )
+    except (OSError, ValueError, json.JSONDecodeError):
+        return None
+    if payload.get("reportDate") != target_date.isoformat() \
+            or started_at.astimezone(SHANGHAI).date() != target_date:
+        return None
+    return {
+        "reportDate": target_date.isoformat(),
+        "collectionStartedAt": started_at.astimezone(SHANGHAI).isoformat(),
+        "sourceRunId": str(payload.get("sourceRunId") or ""),
+    }
+
+
+def discover_legacy_collection_anchor(
+    runs_root: Path,
+    target_date: date,
+) -> dict[str, str] | None:
+    """Migrate the earliest pre-policy Horizon start for one Shanghai date."""
+
+    matches: list[tuple[datetime, str]] = []
+    if not runs_root.is_dir():
+        return None
+    for path in runs_root.iterdir():
+        if not path.is_dir():
+            continue
+        started_at = run_started_at_from_id(path.name)
+        if started_at is None or started_at.astimezone(SHANGHAI).date() != target_date:
+            continue
+        matches.append((started_at, path.name))
+    if not matches:
+        return None
+    started_at, run_id = min(matches)
+    return {
+        "reportDate": target_date.isoformat(),
+        "collectionStartedAt": started_at.astimezone(SHANGHAI).isoformat(),
+        "sourceRunId": run_id,
+    }
+
+
+def ensure_collection_anchor(
+    runs_root: Path,
+    target_date: date,
+    *,
+    now: datetime,
+    allow_create: bool,
+    replace_existing: bool = False,
+) -> dict[str, str]:
+    """Load a previous anchor or start a new collection execution anchor."""
+
+    anchor_root = runs_root / COLLECTION_ANCHOR_DIRECTORY
+    anchor_path = anchor_root / f"{target_date.isoformat()}.json"
+    anchor = None if replace_existing else read_collection_anchor(anchor_path, target_date)
+    if anchor is None and not replace_existing:
+        anchor = discover_legacy_collection_anchor(runs_root, target_date)
+    if anchor is None:
+        if not allow_create:
+            raise ValueError(
+                f"no previous collection start is available for {target_date.isoformat()}"
+            )
+        started_at = now.astimezone(SHANGHAI)
+        if started_at.date() != target_date:
+            raise ValueError("the current collection start is outside the report date")
+        anchor = {
+            "reportDate": target_date.isoformat(),
+            "collectionStartedAt": started_at.isoformat(),
+            "sourceRunId": "",
+        }
+    anchor_root.mkdir(parents=True, exist_ok=True)
+    write_utf8_artifact(
+        anchor_path,
+        json.dumps(anchor, ensure_ascii=False, indent=2) + "\n",
+    )
+    return anchor
+
+
+def resolve_continuous_window(
+    report_date: str | None,
+    runs_root: Path,
+    *,
+    now: datetime | None = None,
+) -> tuple[date, datetime, datetime, dict[str, str], dict[str, str]]:
+    """Resolve [yesterday's saved collection start, this execution's start)."""
+
+    current = (now or datetime.now(timezone.utc)).astimezone(SHANGHAI)
+    target_date = date.fromisoformat(report_date) if report_date else current.date()
+    current_anchor = ensure_collection_anchor(
+        runs_root,
+        target_date,
+        now=current,
+        allow_create=True,
+        replace_existing=True,
+    )
+    previous_anchor = ensure_collection_anchor(
+        runs_root,
+        target_date - timedelta(days=1),
+        now=current,
+        allow_create=False,
+    )
+    window_start = parse_iso_datetime(
+        previous_anchor["collectionStartedAt"],
+        "previous collection start",
+    )
+    window_end = parse_iso_datetime(
+        current_anchor["collectionStartedAt"],
+        "current collection start",
+    )
+    duration = window_end.astimezone(timezone.utc) - window_start.astimezone(timezone.utc)
+    if duration <= timedelta(0) or duration > timedelta(hours=MAX_LOOKBACK_HOURS):
+        raise ValueError("the continuous collection window has an invalid duration")
+    return target_date, window_start, window_end, previous_anchor, current_anchor
 
 
 def required_lookback_hours(
@@ -922,6 +1058,9 @@ def build_coverage_manifest(
     window_items: list[dict[str, Any]],
     candidate_index_path: Path,
     candidate_index_sha256: str,
+    window_policy: str = "legacy-fixed-24-hour-window-v1",
+    previous_collection_run_id: str = "",
+    collection_anchor_run_id: str = "",
 ) -> dict[str, Any]:
     """Build the machine-checkable discovery coverage contract."""
 
@@ -1112,6 +1251,11 @@ def build_coverage_manifest(
         "windowStart": window_start.isoformat(),
         "windowEnd": window_end.isoformat(),
         "windowSemantics": "left-closed-right-open",
+        "windowPolicy": window_policy,
+        "previousCollectionStartedAt": window_start.isoformat(),
+        "collectionStartedAt": window_end.isoformat(),
+        "previousCollectionRunId": previous_collection_run_id,
+        "collectionAnchorRunId": collection_anchor_run_id,
         "fetchStatus": fetch_status,
         "languagePolicy": catalog["languagePolicy"],
         "seedLanguages": catalog["seedLanguages"],
@@ -1612,14 +1756,27 @@ def finalized_fetch_status(
 
 async def run() -> dict:
     args = parse_args()
-    target_date, window_start, window_end = resolve_window(
-        args.report_date,
-        args.start,
-        args.end,
-    )
+    runs_root = REPO_ROOT / "data" / "mcp-runs"
+    if args.start or args.end:
+        target_date, window_start, window_end = resolve_window(
+            args.report_date,
+            args.start,
+            args.end,
+        )
+        window_policy = "explicit-window-v1"
+        previous_collection_anchor = {"sourceRunId": ""}
+        current_collection_anchor = {"sourceRunId": ""}
+    else:
+        (
+            target_date,
+            window_start,
+            window_end,
+            previous_collection_anchor,
+            current_collection_anchor,
+        ) = resolve_continuous_window(args.report_date, runs_root)
+        window_policy = CONTINUOUS_WINDOW_POLICY
     effective_hours = required_lookback_hours(args.hours, window_start)
 
-    runs_root = REPO_ROOT / "data" / "mcp-runs"
     config_path = Path(args.config).resolve()
     discovery_queries_path = Path(args.discovery_queries).resolve()
     discovery_catalog = load_discovery_catalog(discovery_queries_path)
@@ -1638,6 +1795,20 @@ async def run() -> dict:
         rss_logger.removeHandler(rss_failure_recorder)
 
     run_id = fetch_result["run_id"]
+    if window_policy == CONTINUOUS_WINDOW_POLICY:
+        current_collection_anchor = {
+            **current_collection_anchor,
+            "sourceRunId": run_id,
+        }
+        write_utf8_artifact(
+            runs_root / COLLECTION_ANCHOR_DIRECTORY / f"{target_date.isoformat()}.json",
+            json.dumps(current_collection_anchor, ensure_ascii=False, indent=2) + "\n",
+        )
+        collection_anchor_run_id = run_id
+        previous_collection_run_id = previous_collection_anchor.get("sourceRunId") or ""
+    else:
+        collection_anchor_run_id = ""
+        previous_collection_run_id = ""
     raw_items = service.run_store.load_items(run_id, "raw")
     runtime = load_runtime(REPO_ROOT)
     config = load_config(runtime, config_path)
@@ -1723,6 +1894,9 @@ async def run() -> dict:
             "window_start": window_start.isoformat(),
             "window_end": window_end.isoformat(),
             "window_semantics": "left-closed-right-open",
+            "window_policy": window_policy,
+            "previous_collection_run_id": previous_collection_run_id,
+            "collection_anchor_run_id": collection_anchor_run_id,
             "fetch_status": fetch_status,
         },
     )
@@ -1747,6 +1921,11 @@ async def run() -> dict:
         "windowStart": window_start.isoformat(),
         "windowEnd": window_end.isoformat(),
         "windowSemantics": "left-closed-right-open",
+        "windowPolicy": window_policy,
+        "previousCollectionStartedAt": window_start.isoformat(),
+        "collectionStartedAt": window_end.isoformat(),
+        "previousCollectionRunId": previous_collection_run_id,
+        "collectionAnchorRunId": collection_anchor_run_id,
         "languagePolicy": discovery_catalog["languagePolicy"],
         "seedLanguages": discovery_catalog["seedLanguages"],
         "itemCount": len(window_items),
@@ -1767,6 +1946,9 @@ async def run() -> dict:
         target_date=target_date,
         window_start=window_start,
         window_end=window_end,
+        window_policy=window_policy,
+        previous_collection_run_id=previous_collection_run_id,
+        collection_anchor_run_id=collection_anchor_run_id,
         fetch_status=fetch_status,
         catalog=discovery_catalog,
         query_report=topic_query_report,
@@ -1792,6 +1974,11 @@ async def run() -> dict:
                 "windowStart": window_start.isoformat(),
                 "windowEnd": window_end.isoformat(),
                 "windowSemantics": "left-closed-right-open",
+                "windowPolicy": window_policy,
+                "previousCollectionStartedAt": window_start.isoformat(),
+                "collectionStartedAt": window_end.isoformat(),
+                "previousCollectionRunId": previous_collection_run_id,
+                "collectionAnchorRunId": collection_anchor_run_id,
                 "lookbackHours": effective_hours,
                 "requestedLookbackHours": args.hours,
                 "rawBeforeMerge": raw_before_merge,
@@ -1826,6 +2013,11 @@ async def run() -> dict:
         "reportDate": target_date.isoformat(),
         "windowStart": window_start.isoformat(),
         "windowEnd": window_end.isoformat(),
+        "windowPolicy": window_policy,
+        "previousCollectionStartedAt": window_start.isoformat(),
+        "collectionStartedAt": window_end.isoformat(),
+        "previousCollectionRunId": previous_collection_run_id,
+        "collectionAnchorRunId": collection_anchor_run_id,
         "rawBeforeMerge": raw_before_merge,
         "rawAfterHorizonMerge": fetch_result["fetched"],
         "windowCount": len(window_items),

@@ -99,7 +99,7 @@ class FetchWindowTests(unittest.TestCase):
     ) -> None:
         self.assertEqual(MODULE.parse_args([]).hours, 24)
 
-    def test_date_mode_uses_the_exact_preceding_0700_window(self) -> None:
+    def test_legacy_resolver_remains_available_for_explicit_compatibility(self) -> None:
         report_date, window_start, window_end = MODULE.resolve_window(
             "2026-07-27",
             None,
@@ -110,6 +110,71 @@ class FetchWindowTests(unittest.TestCase):
         self.assertEqual(window_start.isoformat(), "2026-07-26T07:00:00+08:00")
         self.assertEqual(window_end.isoformat(), "2026-07-27T07:00:00+08:00")
         self.assertEqual(window_end - window_start, timedelta(days=1))
+
+    def test_continuous_window_migrates_earliest_daily_run_starts(self) -> None:
+        anchors = {
+            "2026-09-03": {
+                "reportDate": "2026-09-03",
+                "collectionStartedAt": "2026-09-03T07:01:58+08:00",
+                "sourceRunId": "run-20260902T230158Z-previous",
+            },
+            "2026-09-04": {
+                "reportDate": "2026-09-04",
+                "collectionStartedAt": "2026-09-04T07:02:25+08:00",
+                "sourceRunId": "run-20260903T230225Z-current",
+            },
+        }
+        with patch.object(
+            MODULE,
+            "ensure_collection_anchor",
+            side_effect=lambda _root, target, **_kwargs: anchors[target.isoformat()],
+        ):
+            report_date, window_start, window_end, previous, current = (
+                MODULE.resolve_continuous_window(
+                    "2026-09-04",
+                    Path("runs"),
+                    now=datetime.fromisoformat("2026-09-04T09:00:00+08:00"),
+                )
+            )
+
+            self.assertEqual(report_date.isoformat(), "2026-09-04")
+            self.assertEqual(window_start.isoformat(), "2026-09-03T07:01:58+08:00")
+            self.assertEqual(window_end.isoformat(), "2026-09-04T07:02:25+08:00")
+            self.assertEqual(previous["sourceRunId"], "run-20260902T230158Z-previous")
+            self.assertEqual(current["sourceRunId"], "run-20260903T230225Z-current")
+
+    def test_continuous_window_uses_each_execution_start_and_keeps_previous_anchor(self) -> None:
+        def anchor_for(_root, target, *, now, allow_create, replace_existing=False):
+            key = target.isoformat()
+            if key == "2026-09-03":
+                return {
+                    "reportDate": key,
+                    "collectionStartedAt": "2026-09-03T07:01:58+08:00",
+                    "sourceRunId": "run-20260902T230158Z-previous",
+                }
+            if allow_create and replace_existing:
+                return {
+                    "reportDate": key,
+                    "collectionStartedAt": now.isoformat(),
+                    "sourceRunId": "",
+                }
+            raise AssertionError("unexpected anchor request")
+
+        with patch.object(MODULE, "ensure_collection_anchor", side_effect=anchor_for):
+            first = MODULE.resolve_continuous_window(
+                "2026-09-04",
+                Path("runs"),
+                now=datetime.fromisoformat("2026-09-04T08:15:40+08:00"),
+            )
+            retry = MODULE.resolve_continuous_window(
+                "2026-09-04",
+                Path("runs"),
+                now=datetime.fromisoformat("2026-09-04T10:45:00+08:00"),
+            )
+
+            self.assertEqual(first[2].isoformat(), "2026-09-04T08:15:40+08:00")
+            self.assertEqual(retry[2].isoformat(), "2026-09-04T10:45:00+08:00")
+            self.assertEqual(first[1], retry[1])
 
 
 class DiscoveryQueryTests(unittest.TestCase):
@@ -222,6 +287,14 @@ class DiscoveryQueryTests(unittest.TestCase):
             "applied-ai-products-zh",
             "applied-ai-industries-en",
             "applied-ai-industries-zh",
+            "autonomous-driving-launches-en",
+            "autonomous-driving-tesla-direct-en",
+            "autonomous-driving-tesla-reliable-en",
+            "autonomous-driving-wayve-direct-en",
+            "autonomous-driving-wayve-reliable-en",
+            "autonomous-driving-operators-en",
+            "autonomous-driving-regulatory-en",
+            "autonomous-driving-deployments-en",
             "tech-finance-zh",
         }.issubset(query_ids))
         self.assertEqual(catalog["queryConcurrency"], 2)
@@ -466,6 +539,7 @@ class DiscoveryQueryTests(unittest.TestCase):
             "deepseek-broad-zh",
             "ai-graphics-rendering-en",
             "consumer-edge-ai-zh",
+            "autonomous-driving-launches-en",
         ]:
             self.assertFalse(by_id[supplemental_id]["required"])
             self.assertFalse(by_id[supplemental_id]["mustReview"])
@@ -647,6 +721,54 @@ class DiscoveryQueryTests(unittest.TestCase):
             1 <= entry["maxResults"] <= MODULE.GOOGLE_NEWS_SAFE_RESULT_LIMIT
             for entry in queries
         ))
+
+    def test_high_volume_autonomous_driving_query_is_sharded(self) -> None:
+        catalog = MODULE.load_discovery_catalog(
+            Path(__file__).with_name("discovery-queries.json")
+        )
+        by_id = {entry["id"]: entry for entry in catalog["queries"]}
+        broad = by_id["autonomous-driving-launches-en"]
+        self.assertFalse(broad["required"])
+        self.assertFalse(broad["mustReview"])
+        self.assertEqual(broad["priority"], "standard")
+        self.assertIsNone(broad["reviewLane"])
+
+        shard_ids = [
+            "autonomous-driving-tesla-direct-en",
+            "autonomous-driving-tesla-reliable-en",
+            "autonomous-driving-wayve-direct-en",
+            "autonomous-driving-wayve-reliable-en",
+            "autonomous-driving-operators-en",
+            "autonomous-driving-regulatory-en",
+            "autonomous-driving-deployments-en",
+        ]
+        for query_id in shard_ids:
+            with self.subTest(query_id=query_id):
+                entry = by_id[query_id]
+                self.assertTrue(entry["required"])
+                self.assertTrue(entry["mustReview"])
+                self.assertEqual(entry["priority"], "standard")
+                self.assertEqual(
+                    entry["reviewLane"],
+                    "autonomous-driving-releases",
+                )
+                self.assertEqual(
+                    entry["maxResults"],
+                    MODULE.GOOGLE_NEWS_SAFE_RESULT_LIMIT,
+                )
+
+        shard_text = "\n".join(by_id[query_id]["query"] for query_id in shard_ids)
+        for term in [
+            "Tesla Cybercab",
+            "Wayve",
+            "Uber",
+            "Waymo",
+            "Zoox",
+            "approval",
+            "permit",
+            "production",
+        ]:
+            self.assertIn(term, shard_text)
 
     def test_high_volume_demis_and_deepseek_queries_are_sharded(self) -> None:
         catalog = MODULE.load_discovery_catalog(

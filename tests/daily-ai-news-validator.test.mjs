@@ -775,10 +775,20 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
   );
 
   assert.equal(workflow.schemaVersion, 4);
-  assert.equal(workflow.calendar.mode, "fixed-24-hour-window");
-  assert.equal(workflow.calendar.windowHours, 24);
-  assert.equal(workflow.calendar.windowStartLocalTime, "07:00");
-  assert.equal(workflow.calendar.windowEndLocalTime, "07:00");
+  assert.equal(workflow.calendar.mode, "continuous-collection-anchor-window");
+  assert.equal(
+    workflow.calendar.windowPolicy,
+    "previous-collection-start-to-current-execution-start-v2"
+  );
+  assert.equal(
+    workflow.calendar.windowStartSource,
+    "previous-report-date-saved-collection-start"
+  );
+  assert.equal(
+    workflow.calendar.windowEndSource,
+    "current-execution-actual-collection-start"
+  );
+  assert.equal(workflow.calendar.retryAnchorPolicy, "new-execution-replaces-current-date-anchor");
   assert.equal(workflow.calendar.generationStartLocalTime, "07:00");
   assert.equal(workflow.calendar.publishDeadlineLocalTime, "next-day-00:00");
   assert.equal(workflow.calendar.deadlinePolicy, "same-report-date-fail-closed");
@@ -788,7 +798,7 @@ test("Daily AI News workflow declares the permanent three-section contract", asy
     "explicit-site-owner-request-in-interactive-codex-task"
   );
   assert.equal(workflow.calendar.manualRecovery.automaticSchedulerAllowed, false);
-  assert.equal(workflow.calendar.manualRecovery.allowedFromLocalTime, "07:00");
+  assert.equal(workflow.calendar.manualRecovery.allowedFrom, "current-report-date-collection-start");
   assert.equal(workflow.calendar.manualRecovery.expiresAtLocalTime, "next-day-00:00");
   assert.deepEqual(workflow.calendar.manualRecovery.requiresConfirmations, [
     "--confirm-report-date",
@@ -2157,19 +2167,53 @@ test("protected event review accepts evidence-backed outside-window rejections",
   await assert.doesNotReject(() => readAndValidateRun(fixture.runPath));
 });
 
-test("Daily AI News validator enforces the exact 24-hour publication window", () => {
+test("Daily AI News validator keeps the legacy fixed window before continuous anchors", () => {
   const outsideWindow = clone(validRun());
   outsideWindow.candidates[1].publishedAt = "2026-07-26T06:59:59+08:00";
   assert.throws(() => validateRun(outsideWindow), /不在发布前 24 小时窗口内/);
 
   const wrongWindowLength = clone(validRun());
   wrongWindowLength.windowStart = "2026-07-26T06:00:00+08:00";
-  assert.throws(() => validateRun(wrongWindowLength), /必须恰好为发布前 24 小时/);
+  assert.throws(() => validateRun(wrongWindowLength), /前一日 07:00 至当日 07:00/);
 
   const wrongCutoff = clone(validRun());
   wrongCutoff.windowStart = "2026-07-26T06:00:00+08:00";
   wrongCutoff.windowEnd = "2026-07-27T06:00:00+08:00";
   assert.throws(() => validateRun(wrongCutoff), /前一日 07:00 至当日 07:00/);
+});
+
+test("Daily AI News validator accepts only a continuous adjacent-day anchor window from 2026-09-04", () => {
+  const run = clone(validRun());
+  run.reportDate = "2026-09-04";
+  run.windowStart = "2026-09-03T07:01:58+08:00";
+  run.windowEnd = "2026-09-04T07:02:25+08:00";
+  run.windowPolicy = "previous-collection-start-to-current-execution-start-v2";
+  run.previousCollectionStartedAt = run.windowStart;
+  run.collectionStartedAt = run.windowEnd;
+  run.previousCollectionRunId = "run-20260902T230158Z-previous";
+  run.collectionAnchorRunId = "run-20260903T230225Z-current";
+  run.delivery.slug = "daily-ai-news-2026-09-04";
+  run.delivery.idempotencyKey = "daily-ai-news:2026-09-04:validator-test";
+  for (const item of run.candidates) {
+    item.publishedDate = run.reportDate;
+    item.publishedAt = "2026-09-04T06:00:00+08:00";
+  }
+  let modernPolicyError;
+  try {
+    validateRun(run);
+  } catch (error) {
+    modernPolicyError = error;
+  }
+  assert.doesNotMatch(String(modernPolicyError?.message || ""), /连续半开窗口/);
+
+  const movedRetryWindow = clone(run);
+  movedRetryWindow.windowEnd = "2026-09-04T09:30:00+08:00";
+  assert.throws(() => validateRun(movedRetryWindow), /连续半开窗口/);
+
+  const wrongPreviousDay = clone(run);
+  wrongPreviousDay.windowStart = "2026-09-02T23:59:59+08:00";
+  wrongPreviousDay.previousCollectionStartedAt = wrongPreviousDay.windowStart;
+  assert.throws(() => validateRun(wrongPreviousDay), /连续半开窗口/);
 });
 
 test("Daily AI News validator keeps formal article copy free of links", () => {
@@ -2216,7 +2260,7 @@ test("Daily AI News production delivery allows the full Beijing report date afte
 
   assert.throws(() => assertProductionSchedule(run, {
     now: new Date("2026-07-26T22:59:59.000Z")
-  }), /尚未到北京时间 07:00/);
+  }), /尚未到本期采集启动时刻/);
   assert.doesNotThrow(() => assertProductionSchedule(run, {
     now: new Date("2026-07-27T00:00:00.000Z")
   }));
@@ -2438,7 +2482,7 @@ test("Daily AI News manual recovery requires same-day double confirmation", () =
     now: new Date("2026-07-28T00:00:00+08:00"),
     manualRecovery: true,
     ...confirmation
-  }), /当天 07:00 至次日 00:00/);
+  }), /当日采集开始至次日 00:00/);
 
   assert.equal(isAuthorizedManualRecovery(recovery, {
     now: authorizedAt,
@@ -2495,6 +2539,32 @@ test("Daily AI News manual recovery requires same-day double confirmation", () =
     manualRecovery: true,
     ...confirmation
   }), /不能同时启用/);
+});
+
+test("Daily AI News manual recovery binds continuous-window dates and the exact run hash", () => {
+  const recovery = validRun();
+  recovery.reportDate = "2026-09-04";
+  recovery.windowStart = "2026-09-03T07:01:58+08:00";
+  recovery.windowEnd = "2026-09-04T07:02:25+08:00";
+  recovery.windowPolicy = "previous-collection-start-to-current-execution-start-v2";
+  recovery.previousCollectionStartedAt = recovery.windowStart;
+  recovery.collectionStartedAt = recovery.windowEnd;
+  recovery.previousCollectionRunId = "run-20260902T230158Z-previous";
+  recovery.collectionAnchorRunId = "run-20260903T230225Z-current";
+  recovery.delivery.slug = "daily-ai-news-2026-09-04";
+  recovery.delivery.idempotencyKey = "daily-ai-news:2026-09-04:validator-test";
+  const hash = canonicalRunSha256(recovery);
+
+  assert.equal(isAuthorizedManualRecovery(recovery, {
+    now: new Date("2026-09-04T07:02:25+08:00"),
+    confirmReportDate: recovery.reportDate,
+    confirmRunSha256: hash
+  }), true);
+  assert.equal(isAuthorizedManualRecovery(recovery, {
+    now: new Date("2026-09-04T07:02:24+08:00"),
+    confirmReportDate: recovery.reportDate,
+    confirmRunSha256: hash
+  }), false);
 });
 
 test("Daily AI News production delivery verifies all three public article representations", async () => {

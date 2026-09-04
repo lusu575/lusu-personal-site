@@ -188,6 +188,17 @@ def editorial_classes_for_signals(signals: Any) -> set[str] | None:
     return compatible or None
 
 
+def editorial_signal_contract(signals: Any) -> tuple[str, ...]:
+    """Return the exact class choice contract used when forming review refs.
+
+    Similar headlines must not share a ref when their signals require different
+    Codex class choices. Otherwise a single ref can become impossible to
+    finalize: the ref accepts only a specialized class while one of its member
+    candidates requires a different multi-choice product class.
+    """
+    return tuple(sorted(editorial_classes_for_signals(signals) or ()))
+
+
 def normalize_candidate_editorial_class(
     reviewed_class: str,
     signals: Any,
@@ -252,7 +263,11 @@ def load_inputs(run_dir: Path) -> tuple[Path, dict[str, Any], dict[str, Any], li
 
 def prescreen_reason(candidate: dict[str, Any], start: datetime, end: datetime) -> str | None:
     signals = candidate.get("editorialSignals") or []
-    if signals or candidate.get("sourceType") == "rss":
+    must_review_sources = candidate.get("mustReviewSourceIds") or []
+    is_public_x_lead = candidate.get("sourceType") == "twitter" or any(
+        str(source_id).startswith("public-x-") for source_id in must_review_sources
+    )
+    if signals or candidate.get("sourceType") == "rss" or is_public_x_lead:
         return None
     published = parse_time(candidate.get("publishedAt"))
     if published is None or published < start or published >= end:
@@ -316,10 +331,11 @@ def prepare(run_dir: Path, batch_size: int) -> int:
         else:
             programmatic.append(programmatic_decision(candidate, reason))
 
-    clusters: dict[str, list[dict[str, Any]]] = {}
+    clusters: dict[tuple[str, tuple[str, ...]], list[dict[str, Any]]] = {}
     for candidate in review_candidates:
         signature = title_signature(candidate.get("title")) or f"unclustered:{candidate['id']}"
-        clusters.setdefault(signature, []).append(candidate)
+        cluster_key = (signature, editorial_signal_contract(candidate.get("editorialSignals")))
+        clusters.setdefault(cluster_key, []).append(candidate)
     ordered = sorted(
         clusters.values(),
         key=lambda group: (
@@ -340,6 +356,8 @@ def prepare(run_dir: Path, batch_size: int) -> int:
             "sourceNames": list(dict.fromkeys(str(item.get("sourceName") or "") for item in group)),
             "editorialSignals": sorted({signal for item in group for signal in item.get("editorialSignals") or []}),
             "queryIds": sorted({query for item in group for query in item.get("queryIds") or []}),
+            "mustReviewQueryIds": sorted({query for item in group for query in item.get("mustReviewQueryIds") or []}),
+            "mustReviewSourceIds": sorted({source for item in group for source in item.get("mustReviewSourceIds") or []}),
             "content": list(dict.fromkeys(visible_text(item.get("content"), 600) for item in group if item.get("content"))),
         })
     batches = [
