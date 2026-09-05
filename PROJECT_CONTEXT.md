@@ -1,5 +1,12 @@
 # PROJECT_CONTEXT.md
 
+## 2026-09-05 每日 AI 新闻多来源 required 查询修复
+
+- 2026-09-05 自动运行 `run-20260904T230217Z-c1512235` 和同日首次恢复运行 `run-20260905T014052Z-0758d5d1` 都正确使用连续采集锚点并分别写盘 2,342、2,489 个候选，但 `autonomous-driving-tesla-reliable-en` 在 Google News 返回第 100 条探针后失败关闭。两次运行都停在 Horizon 发现阶段，Codex 审稿、组装、正式校验和生产 POST 均未发生。
+- 该查询把 Reuters、CNBC、TechCrunch、The Verge 四个 `site:` 限定用 OR 合并。Google News 对多站点 OR 组合的匹配范围比表达式字面含义更宽，结果中混入大量与 Cybercab 无关的站内内容；这使昨天完成的实体级分片仍然结构性超限。
+- Tesla／Cybercab 与 Wayve／Uber 的直源和可靠媒体入口现进一步按发布方拆成 12 条 required + must-review 来源分片，每条查询恰好一个 `site:`，多来源父查询只保留 supplemental。当天目标窗口实探的单分片最高为 The Verge/Cybercab 42 条，其余为 0–20 条，均未触发第 100 条；回归测试禁止 required 查询重新出现 `OR site:`。
+- 以后 Google News required 查询即使主题已经按实体拆分，也不能把多个发布方 `site:` 用 OR 合并。每个官方站点或可靠媒体必须独立成为可签收、可失败关闭的 required 来源分片，并在配置变更上线前对当前目标窗口执行 max-plus-one 实探；宽查询只能补充召回，不能承担完整性签收。
+
 ## 2026-09-04 每日 AI 新闻自动驾驶发现分片修复
 
 - 2026-09-04 自动运行 `run-20260903T230225Z-8e990f7a` 使用正确的上海时间精确窗口 `[2026-09-03 07:00, 2026-09-04 07:00)`，已写盘 2,318 个候选；失败发生在 Horizon required query 签收。`autonomous-driving-launches-en` 返回第 100 条截断探针，系统按设计关闭运行，语义审稿、组装、正式校验和生产 POST 均未开始。

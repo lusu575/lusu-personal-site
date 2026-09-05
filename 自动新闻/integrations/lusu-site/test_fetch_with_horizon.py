@@ -288,10 +288,18 @@ class DiscoveryQueryTests(unittest.TestCase):
             "applied-ai-industries-en",
             "applied-ai-industries-zh",
             "autonomous-driving-launches-en",
-            "autonomous-driving-tesla-direct-en",
-            "autonomous-driving-tesla-reliable-en",
-            "autonomous-driving-wayve-direct-en",
-            "autonomous-driving-wayve-reliable-en",
+            "autonomous-driving-tesla-official-en",
+            "autonomous-driving-tesla-x-en",
+            "autonomous-driving-tesla-reuters-en",
+            "autonomous-driving-tesla-cnbc-en",
+            "autonomous-driving-tesla-techcrunch-en",
+            "autonomous-driving-tesla-verge-en",
+            "autonomous-driving-wayve-official-en",
+            "autonomous-driving-wayve-uber-en",
+            "autonomous-driving-wayve-reuters-en",
+            "autonomous-driving-wayve-cnbc-en",
+            "autonomous-driving-wayve-techcrunch-en",
+            "autonomous-driving-wayve-verge-en",
             "autonomous-driving-operators-en",
             "autonomous-driving-regulatory-en",
             "autonomous-driving-deployments-en",
@@ -733,11 +741,22 @@ class DiscoveryQueryTests(unittest.TestCase):
         self.assertEqual(broad["priority"], "standard")
         self.assertIsNone(broad["reviewLane"])
 
+        source_shard_ids = [
+            "autonomous-driving-tesla-official-en",
+            "autonomous-driving-tesla-x-en",
+            "autonomous-driving-tesla-reuters-en",
+            "autonomous-driving-tesla-cnbc-en",
+            "autonomous-driving-tesla-techcrunch-en",
+            "autonomous-driving-tesla-verge-en",
+            "autonomous-driving-wayve-official-en",
+            "autonomous-driving-wayve-uber-en",
+            "autonomous-driving-wayve-reuters-en",
+            "autonomous-driving-wayve-cnbc-en",
+            "autonomous-driving-wayve-techcrunch-en",
+            "autonomous-driving-wayve-verge-en",
+        ]
         shard_ids = [
-            "autonomous-driving-tesla-direct-en",
-            "autonomous-driving-tesla-reliable-en",
-            "autonomous-driving-wayve-direct-en",
-            "autonomous-driving-wayve-reliable-en",
+            *source_shard_ids,
             "autonomous-driving-operators-en",
             "autonomous-driving-regulatory-en",
             "autonomous-driving-deployments-en",
@@ -756,6 +775,12 @@ class DiscoveryQueryTests(unittest.TestCase):
                     entry["maxResults"],
                     MODULE.GOOGLE_NEWS_SAFE_RESULT_LIMIT,
                 )
+
+        for query_id in source_shard_ids:
+            with self.subTest(source_shard=query_id):
+                query = by_id[query_id]["query"]
+                self.assertEqual(len(re.findall(r"site:", query, re.IGNORECASE)), 1)
+                self.assertNotRegex(query, r"(?i)\bOR\s+site:")
 
         shard_text = "\n".join(by_id[query_id]["query"] for query_id in shard_ids)
         for term in [

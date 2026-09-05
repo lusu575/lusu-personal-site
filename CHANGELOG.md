@@ -2,6 +2,12 @@
 
 本文件记录鲁肃个人站的功能、界面、后端、部署与项目约定变更。每次修改项目后都应同步更新这里，方便后续 AI / Codex 对话快速了解最近改动。
 
+## 2026-09-05
+
+- 当天自动运行 `run-20260904T230217Z-c1512235` 与站长授权后的首次恢复运行 `run-20260905T014052Z-0758d5d1` 分别采集 2,342 与 2,489 个候选，均在 required 查询 `autonomous-driving-tesla-reliable-en` 返回第 100 条 max-plus-one 探针后失败关闭；两次运行都没有进入 Codex 审稿、组装或投递，生产 POST 均为 0。
+- 根因不是 Cybercab 真的出现 100 条可靠媒体报道，而是 required 查询把 Reuters、CNBC、TechCrunch、The Verge 四个 `site:` 限定用 OR 拼在一起，Google News 对这种组合做了宽松匹配，混入大量仅来自这些站点但与 Cybercab 无关的内容。Tesla 与 Wayve 的直源和可靠媒体查询现全部改为“一条 required 查询只含一个 `site:` 来源”，宽父查询继续仅作 supplemental。
+- 新增回归锁定 12 个来源分片都必须保持 required／must-review、相同自动驾驶审阅通道、恰好一个 `site:` 且禁止 `OR site:`。修复前的当天窗口实探显示各新分片返回 0–42 条，均低于第 100 条截断门禁；此类 required 来源查询以后必须按发布方拆分并在上线前执行目标窗口 max-plus-one 实探。
+
 ## 2026-09-04
 
 - 当天自动运行 `run-20260903T230225Z-8e990f7a` 在发现阶段抓取并写盘 2,318 个候选后失败关闭，生产 POST 为 0。根因是 required 的 `autonomous-driving-launches-en` 宽查询遇到 Cybercab 与 Wayve／Uber 同日热点转载风暴，返回第 100 条 max-plus-one 探针并被正确判为 `GoogleNewsResultLimitReached`；编辑、组装和投递均未启动。
