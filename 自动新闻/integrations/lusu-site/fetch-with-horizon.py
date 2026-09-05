@@ -727,8 +727,16 @@ def apply_direct_source_review_provenance(
     review_by_url: dict[Any, dict[str, set[str]]] = {}
     for item in source_items or merged_items:
         metadata = item.metadata
-        source_ids: set[str] = set()
-        review_lanes: set[str] = set()
+        source_ids = set(
+            metadata_string_list(
+                metadata,
+                "must_review_source_ids",
+                "must_review_source_id",
+            )
+        )
+        review_lanes = set(
+            metadata_string_list(metadata, "review_lanes", "review_lane")
+        )
 
         source_type = getattr(item, "source_type", "")
         source_type_value = getattr(source_type, "value", source_type)
@@ -794,6 +802,21 @@ def apply_direct_source_review_provenance(
             metadata["must_review_source_ids"] = sorted(source_ids)
             metadata["review_lanes"] = sorted(review_lanes)
             metadata["must_review"] = True
+
+
+def apply_collected_item_provenance(
+    merged_items: list,
+    topic_items: list,
+    source_items: list,
+) -> None:
+    """Apply query and direct-source provenance without crossing authorities."""
+
+    # Query provenance must come only from the authoritative Google News
+    # query fetches.  A public-X object may have inherited merged metadata for
+    # the same URL; feeding it back here can falsely promote a supplemental
+    # query into mustReviewQueryIds and make the index contradict the manifest.
+    apply_query_provenance(merged_items, topic_items)
+    apply_direct_source_review_provenance(merged_items, source_items)
 
 
 def apply_complete_candidate_review_policy(merged_items: list) -> None:
@@ -1840,8 +1863,7 @@ async def run() -> dict:
         + public_x_items
     )
     merged_items = orchestrator.merge_cross_source_duplicates(combined_items)
-    apply_query_provenance(merged_items, topic_items + public_x_items)
-    apply_direct_source_review_provenance(merged_items, combined_items)
+    apply_collected_item_provenance(merged_items, topic_items, combined_items)
     apply_complete_candidate_review_policy(merged_items)
     apply_editorial_signals(merged_items)
     raw_items = items_to_dicts(merged_items)

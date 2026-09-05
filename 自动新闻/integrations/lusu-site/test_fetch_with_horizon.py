@@ -1908,6 +1908,62 @@ class MustReviewProvenanceTests(unittest.TestCase):
             ["complete-discovery-review"],
         )
 
+    def test_public_x_overlap_cannot_promote_supplemental_query_provenance(
+        self,
+    ) -> None:
+        url = "https://x.com/MistralAI/status/2095951508978209153"
+        topic_item = SimpleNamespace(
+            url=url,
+            source_type="google_news",
+            metadata={
+                "discovery_query_id": "frontier-labs-people-en",
+                "coverage_group": "global-frontier",
+                "coverage_priority": "priority",
+                "required_query": False,
+                "must_review_query": False,
+            },
+        )
+        public_x_item = SimpleNamespace(
+            url=url,
+            source_type="twitter",
+            metadata={
+                "discovery_query_id": "frontier-labs-people-en",
+                "must_review_query": True,
+                "must_review_source_ids": ["public-x-mistral"],
+                "review_lanes": ["frontier-product-operations"],
+                "must_review": True,
+            },
+        )
+        merged_item = SimpleNamespace(
+            url=url,
+            source_type="twitter",
+            metadata={
+                "must_review_source_ids": ["public-x-mistral"],
+                "review_lanes": ["frontier-product-operations"],
+                "must_review": True,
+            },
+        )
+
+        MODULE.apply_collected_item_provenance(
+            [merged_item],
+            [topic_item],
+            [topic_item, public_x_item],
+        )
+
+        self.assertEqual(
+            merged_item.metadata["discovery_query_ids"],
+            ["frontier-labs-people-en"],
+        )
+        self.assertEqual(merged_item.metadata["must_review_query_ids"], [])
+        self.assertEqual(
+            merged_item.metadata["must_review_source_ids"],
+            ["public-x-mistral"],
+        )
+        self.assertEqual(
+            merged_item.metadata["review_lanes"],
+            ["complete-discovery-review", "frontier-product-operations"],
+        )
+
     def test_complete_candidate_review_policy_marks_every_candidate(self) -> None:
         standard_item = SimpleNamespace(
             url="https://example.test/standard",

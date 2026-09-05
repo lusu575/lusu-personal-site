@@ -6,6 +6,8 @@ Daily AI News 现由定时任务中的 Codex 主审；程序只做客观预筛�
 
 Google News 的 required 查询必须按发布方继续分片：每条最多一个 `site:`，不得用 `OR site:` 拼接多个官网或媒体。每个官方或可靠来源独立 required + must-review，宽父查询只作 supplemental；配置上线前必须针对目标连续窗口执行 max-plus-one 实探。
 
+采集来源权限必须分离：Google News topic items 独占 query provenance，公开 X／RSS 独占 direct-source provenance。同一 URL 的跨源合并只合并候选内容与各自来源记录，不得把 direct-source 的 must-review 权限反向写进 supplemental query。
+
 2026-09-02 至 2026-09-04 的回归表明：GPU／生成式图形、消费级／端侧 AI、泛 AI 应用和自动驾驶的高流量宽查询只能作 supplemental，完整签收由按实体、事件阶段、来源类别或动作意图拆分的 required 分片承担；自动驾驶还要分开热点实体直源／可靠媒体、其他运营商、监管和排除热点后的通用部署。配置变更先对目标精确窗口做 max-plus-one 实探，任一分片返回第 100 条就继续缩窄，不能删范围、提高上限或把截断伪装成空结果。X profile 的当前 React relay 记录只能按同账号 status ID 白名单关联正文和毫秒时间，不能执行脚本或收录引用帖；已有 article 却解析不到记录必须失败，不能再写成成功空结果。精确标题事件的代表候选锚定主类别，无论入选还是拒稿，成员 priority decision 都保留各自 finalize 后的合法类别。事件键与阶段必须由 Codex 直接提交为最多 120 字符的规范小写内部 ID，finalize 不得截断或静默改写。
 
 公共遥测现在用 `functions/api/analytics-traffic-classifier.mjs` 在任何 D1 schema、身份、Cookie 或限流写入前排除已知搜索／AI／SEO 爬虫、安全扫描、synthetic monitor 和脚本工具；GoogleOther 必须作为无 `bot` 字样的显式回归。公开抓取继续允许，不按国家封禁，也不把单页／零点击直接判成机器人。WordPress／Secret 探测只能在 Cloudflare WAF 拦截，不能用全站 Pages middleware 把免费静态流量转进 Functions；没有 WAF 写权限时必须记录未上线。

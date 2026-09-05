@@ -6,6 +6,7 @@
 - 该查询把 Reuters、CNBC、TechCrunch、The Verge 四个 `site:` 限定用 OR 合并。Google News 对多站点 OR 组合的匹配范围比表达式字面含义更宽，结果中混入大量与 Cybercab 无关的站内内容；这使昨天完成的实体级分片仍然结构性超限。
 - Tesla／Cybercab 与 Wayve／Uber 的直源和可靠媒体入口现进一步按发布方拆成 12 条 required + must-review 来源分片，每条查询恰好一个 `site:`，多来源父查询只保留 supplemental。当天目标窗口实探的单分片最高为 The Verge/Cybercab 42 条，其余为 0–20 条，均未触发第 100 条；回归测试禁止 required 查询重新出现 `OR site:`。
 - 以后 Google News required 查询即使主题已经按实体拆分，也不能把多个发布方 `site:` 用 OR 合并。每个官方站点或可靠媒体必须独立成为可签收、可失败关闭的 required 来源分片，并在配置变更上线前对当前目标窗口执行 max-plus-one 实探；宽查询只能补充召回，不能承担完整性签收。
+- 采集阶段的 query provenance 与 direct-source provenance 是两套独立权限。跨源合并后，只允许原始 Google News topic items 生成 `queryIds`／`mustReviewQueryIds`；公开 X、RSS 等直源的 `mustReviewSourceIds` 与 review lane 必须通过 direct-source provenance 保留。公开 X 与 Google News 恰好解析到同一 URL 时，不得把 X 的 must-review 属性反向提升为 supplemental query 的 must-review 属性。
 
 ## 2026-09-04 每日 AI 新闻自动驾驶发现分片修复
 
