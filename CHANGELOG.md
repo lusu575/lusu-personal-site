@@ -8,6 +8,7 @@
 - 根因不是 Cybercab 真的出现 100 条可靠媒体报道，而是 required 查询把 Reuters、CNBC、TechCrunch、The Verge 四个 `site:` 限定用 OR 拼在一起，Google News 对这种组合做了宽松匹配，混入大量仅来自这些站点但与 Cybercab 无关的内容。Tesla 与 Wayve 的直源和可靠媒体查询现全部改为“一条 required 查询只含一个 `site:` 来源”，宽父查询继续仅作 supplemental。
 - 新增回归锁定 12 个来源分片都必须保持 required／must-review、相同自动驾驶审阅通道、恰好一个 `site:` 且禁止 `OR site:`。修复前的当天窗口实探显示各新分片返回 0–42 条，均低于第 100 条截断门禁；此类 required 来源查询以后必须按发布方拆分并在上线前执行目标窗口 max-plus-one 实探。
 - 新分片上线后的恢复运行抓取成功，但最终 provenance 校验发现公开 X 与 Google News 命中同一 status URL 时，采集器把已经合并进 X 对象的 must-review 元数据重新当成查询权限，错误地把 supplemental query 写入 `mustReviewQueryIds`。采集管线现把 query provenance 严格限定为原始 Google News topic items，把公开 X 的 `mustReviewSourceIds`／review lane 只经 direct-source provenance 传递；新增同 URL、supplemental query 与公开 X 重叠的回归，禁止两类权限再次串线。
+- 第二次新鲜恢复运行又暴露公开 X 配置本身把所关联的 query 无条件硬编码为 required／must-review：Tibo 关联的 `codex-operations-en` 在 manifest 中确为 must-review，却没有进入候选 `mustReviewQueryIds`；Mistral 关联的 supplemental query 则有被反向提升的风险。公开 X 抓取器现只声明显式 `queryId` 与 source provenance，Python 采集层再以当次权威查询目录对齐 required／must-review／review lane，并把对齐后的 query provenance 与 source provenance 分开合并。新增 required Tibo 与 supplemental Mistral 两侧回归，保证 `queryIds`、`mustReviewQueryIds`、`mustReviewSourceIds` 和 manifest 同时一致。
 
 ## 2026-09-04
 

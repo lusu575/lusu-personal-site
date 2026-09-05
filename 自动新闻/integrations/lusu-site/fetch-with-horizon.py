@@ -804,10 +804,102 @@ def apply_direct_source_review_provenance(
             metadata["must_review"] = True
 
 
+def align_linked_source_query_policy(
+    source_items: list,
+    query_entries: list[dict[str, Any]],
+) -> None:
+    """Reconcile an explicitly linked source query with the catalog authority."""
+
+    query_by_id = {str(entry["id"]): entry for entry in query_entries}
+    for item in source_items:
+        metadata = item.metadata
+        query_id = str(metadata.get("discovery_query_id") or "")
+        entry = query_by_id.get(query_id)
+        if not entry:
+            raise ValueError(
+                f"Linked direct source references unknown discovery query {query_id!r}"
+            )
+        metadata["coverage_group"] = entry["coverageGroup"]
+        metadata["coverage_priority"] = entry["priority"]
+        metadata["required_query"] = bool(entry["required"])
+        metadata["must_review_query"] = bool(entry["mustReview"])
+        metadata["query_review_lane"] = (
+            str(entry["reviewLane"] or "") if entry["mustReview"] else ""
+        )
+
+
+def apply_linked_source_query_provenance(
+    merged_items: list,
+    linked_source_items: list,
+) -> None:
+    """Apply only catalog-reconciled query links declared by direct sources."""
+
+    provenance_by_url: dict[Any, dict[str, set[str] | bool]] = {}
+    for item in linked_source_items:
+        metadata = item.metadata
+        query_id = str(metadata.get("discovery_query_id") or "")
+        if not query_id:
+            continue
+        provenance = provenance_by_url.setdefault(
+            _deduplication_url_key(str(item.url)),
+            {
+                "queryIds": set(),
+                "coverageGroups": set(),
+                "mustReviewQueryIds": set(),
+                "reviewLanes": set(),
+                "required": False,
+            },
+        )
+        provenance["queryIds"].add(query_id)
+        coverage_group = metadata.get("coverage_group")
+        if coverage_group:
+            provenance["coverageGroups"].add(str(coverage_group))
+        if metadata.get("must_review_query"):
+            provenance["mustReviewQueryIds"].add(query_id)
+            query_review_lane = metadata.get("query_review_lane")
+            if query_review_lane:
+                provenance["reviewLanes"].add(str(query_review_lane))
+        provenance["required"] = bool(
+            provenance["required"] or metadata.get("required_query")
+        )
+
+    for item in merged_items:
+        provenance = provenance_by_url.get(
+            _deduplication_url_key(str(item.url))
+        )
+        if not provenance:
+            continue
+        metadata = item.metadata
+        query_ids = set(metadata_string_list(
+            metadata, "discovery_query_ids", "discovery_query_id"
+        ))
+        coverage_groups = set(metadata_string_list(
+            metadata, "coverage_groups", "coverage_group"
+        ))
+        must_review_query_ids = set(metadata_string_list(
+            metadata, "must_review_query_ids", "must_review_query_id"
+        ))
+        review_lanes = set(metadata_string_list(
+            metadata, "review_lanes", "review_lane"
+        ))
+        query_ids.update(provenance["queryIds"])
+        coverage_groups.update(provenance["coverageGroups"])
+        must_review_query_ids.update(provenance["mustReviewQueryIds"])
+        review_lanes.update(provenance["reviewLanes"])
+        metadata["discovery_query_ids"] = sorted(query_ids)
+        metadata["coverage_groups"] = sorted(coverage_groups)
+        metadata["must_review_query_ids"] = sorted(must_review_query_ids)
+        metadata["review_lanes"] = sorted(review_lanes)
+        metadata["required_query"] = bool(
+            metadata.get("required_query") or provenance["required"]
+        )
+
+
 def apply_collected_item_provenance(
     merged_items: list,
     topic_items: list,
     source_items: list,
+    linked_source_items: list | None = None,
 ) -> None:
     """Apply query and direct-source provenance without crossing authorities."""
 
@@ -816,6 +908,10 @@ def apply_collected_item_provenance(
     # the same URL; feeding it back here can falsely promote a supplemental
     # query into mustReviewQueryIds and make the index contradict the manifest.
     apply_query_provenance(merged_items, topic_items)
+    apply_linked_source_query_provenance(
+        merged_items,
+        linked_source_items or [],
+    )
     apply_direct_source_review_provenance(merged_items, source_items)
 
 
@@ -1853,6 +1949,7 @@ async def run() -> dict:
         window_start,
         window_end,
     )
+    align_linked_source_query_policy(public_x_items, topic_queries)
 
     storage = make_storage(runtime, config_path)
     orchestrator = make_orchestrator(runtime, config, storage)
@@ -1863,7 +1960,12 @@ async def run() -> dict:
         + public_x_items
     )
     merged_items = orchestrator.merge_cross_source_duplicates(combined_items)
-    apply_collected_item_provenance(merged_items, topic_items, combined_items)
+    apply_collected_item_provenance(
+        merged_items,
+        topic_items,
+        combined_items,
+        public_x_items,
+    )
     apply_complete_candidate_review_policy(merged_items)
     apply_editorial_signals(merged_items)
     raw_items = items_to_dicts(merged_items)

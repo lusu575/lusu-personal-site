@@ -9,7 +9,7 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 
 - 自 2026-09-04 起，Daily AI News 不再使用固定 07:00→07:00 的 24 小时窗口。定时器仍于上海时间 07:00 触发，但正式采集窗口固定为 `[前一报告日已保存的采集启动时刻, 本次执行实际采集启动时刻)`；每次同日报告新执行都替换当前日期锚点并向后推进右边界，上一报告日锚点保持为左边界。抓取器把锚点写入本地运行状态，并只可从对应上海日期最早 Horizon run 迁移缺失的上一日锚点；上一日锚点缺失时 fail closed。candidate index、coverage manifest、schema-v4 稿件、校验器和人工恢复必须携带并交叉核对 v2 窗口策略、时间及当前 Horizon run id。公开 X 直达候选无论是否命中关键词信号都必须进入 Codex 队列，并保留 must-review query/source 来源。
 - Google News 的 required 查询一条只能限定一个 `site:` 发布方，禁止用 `OR site:` 合并多个官网或媒体；每个官方或可靠来源必须成为独立 required + must-review 分片，多来源父查询只作 supplemental。修改分片后必须先用目标连续窗口执行 max-plus-one 实探，任一来源返回第 100 条就继续缩窄并保持范围完整。
-- query provenance 与 direct-source provenance 不得混用：`queryIds`／`mustReviewQueryIds` 只从原始 Google News topic items 生成，公开 X／RSS 的 source IDs 与 review lane 只通过 direct-source provenance 保留；同 URL 跨源合并不能把 supplemental query 提升为 must-review。
+- query provenance 与 direct-source provenance 不得混用：`queryIds`／`mustReviewQueryIds` 只从原始 Google News topic items，或公开 X profile 显式 `queryId` 经当次权威查询目录对齐后的结果生成；公开 X／RSS 的 source IDs 与 source review lane 通过 direct-source provenance 独立保留。公开 X 抓取器不得自定关联 query 的 required／must-review 状态；Tibo 的 required query 必须保留必审归属，supplemental query 不得因同 URL 或直源权限被提升。
 
 - 搜索／AI 爬虫应继续读取公开 HTML、文章、sitemap 和静态资产，不能因美国流量高就按国家封禁；已知自动化客户端只从匿名 identify／page view／click／article view 遥测中排除，并且必须在 D1 schema、身份 Cookie、限流桶和事件写入之前短路。
 - 自动化分类统一维护在 `functions/api/analytics-traffic-classifier.mjs`。必须显式覆盖 GoogleOther 这类不含 `bot` 的真实客户端，并区分搜索爬虫、AI 爬虫、SEO 爬虫、安全扫描、synthetic monitor 与通用自动化工具。UA 分类是启发式，不得把国家、城市、零点击、单页访问或浏览器版本单独当作机器人证据；每个新增模式都要有普通浏览器反例回归。

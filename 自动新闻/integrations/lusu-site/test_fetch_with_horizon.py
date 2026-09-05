@@ -1943,11 +1943,23 @@ class MustReviewProvenanceTests(unittest.TestCase):
                 "must_review": True,
             },
         )
+        MODULE.align_linked_source_query_policy(
+            [public_x_item],
+            [{
+                "id": "frontier-labs-people-en",
+                "coverageGroup": "global-frontier",
+                "priority": "priority",
+                "required": False,
+                "mustReview": False,
+                "reviewLane": None,
+            }],
+        )
 
         MODULE.apply_collected_item_provenance(
             [merged_item],
             [topic_item],
             [topic_item, public_x_item],
+            [public_x_item],
         )
 
         self.assertEqual(
@@ -1962,6 +1974,66 @@ class MustReviewProvenanceTests(unittest.TestCase):
         self.assertEqual(
             merged_item.metadata["review_lanes"],
             ["complete-discovery-review", "frontier-product-operations"],
+        )
+
+    def test_public_x_required_query_link_uses_catalog_must_review_policy(
+        self,
+    ) -> None:
+        url = "https://x.com/thsottiaux/status/2096035437299237298"
+        public_x_item = SimpleNamespace(
+            url=url,
+            source_type="twitter",
+            metadata={
+                "discovery_query_id": "codex-operations-en",
+                "coverage_group": "developer-ai",
+                "required_query": False,
+                "must_review_query": False,
+                "review_lane": "developer-product-operations",
+                "must_review_source_ids": ["public-x-thsottiaux"],
+            },
+        )
+        merged_item = SimpleNamespace(
+            url=url,
+            source_type="twitter",
+            metadata={
+                "must_review_source_ids": ["public-x-thsottiaux"],
+                "review_lanes": ["developer-product-operations"],
+            },
+        )
+        MODULE.align_linked_source_query_policy(
+            [public_x_item],
+            [{
+                "id": "codex-operations-en",
+                "coverageGroup": "developer-ai",
+                "priority": "priority",
+                "required": True,
+                "mustReview": True,
+                "reviewLane": "developer-product-operations",
+            }],
+        )
+
+        MODULE.apply_collected_item_provenance(
+            [merged_item],
+            [],
+            [public_x_item],
+            [public_x_item],
+        )
+
+        self.assertEqual(
+            merged_item.metadata["discovery_query_ids"],
+            ["codex-operations-en"],
+        )
+        self.assertEqual(
+            merged_item.metadata["must_review_query_ids"],
+            ["codex-operations-en"],
+        )
+        self.assertEqual(
+            merged_item.metadata["must_review_source_ids"],
+            ["public-x-thsottiaux"],
+        )
+        self.assertEqual(
+            merged_item.metadata["review_lanes"],
+            ["developer-product-operations"],
         )
 
     def test_complete_candidate_review_policy_marks_every_candidate(self) -> None:

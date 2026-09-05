@@ -98,8 +98,6 @@ export function extractPublicProfilePosts(html, {
         discovery_query_id: profile.queryId,
         coverage_group: profile.coverageGroup,
         coverage_priority: "priority",
-        required_query: true,
-        must_review_query: true,
         review_lane: profile.reviewLane,
         must_review_source_id: profile.sourceId
       },
