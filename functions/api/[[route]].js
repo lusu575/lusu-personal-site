@@ -34,6 +34,8 @@ import {
 import {
   TrafficControlError,
   getTrafficControlAdminSnapshot,
+  ensureTrafficControlSettings,
+  getTrafficUsageSnapshot,
   telemetryWriteDecision,
   updateTrafficControlSettings
 } from "./traffic-control.mjs";
@@ -48,6 +50,12 @@ import {
   buildDailyAiNewsRss,
   normalizeDailyAiNewsFeedLanguage
 } from "./daily-ai-news-feed.mjs";
+
+import { readAdminWorkbench } from "./admin-workbench-service.mjs";
+import {
+  adminDateRange, adminPagination, adminPageResult, adminListFilter,
+  adminArticleMetricScope, readAdminAnalyticsOverview
+} from "./admin-query-service.mjs";
 
 export const PUBLIC_API_REPRESENTATION_VERSION = "20260902-mobile-blog-retired-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
@@ -474,6 +482,10 @@ export async function onRequest(context) {
     }
     if (parts[0] === "admin" && request.method === "GET" && parts[1] === "me") {
       return await adminMe(request, env);
+    }
+    if (parts[0] === "admin" && parts[1] === "workbench-summary" && !parts[2] && request.method === "GET") {
+      const session = await requireAdmin(request, env);
+      return json(await readAdminWorkbench(env.DB, session.user.id));
     }
     if (parts[0] === "admin" && parts[1] === "social-links") {
       if (request.method === "GET") {
@@ -2780,6 +2792,12 @@ async function getArticle(request, env, slug) {
 async function getAdminArticles(request, env) {
   await requireAdmin(request, env);
   await ensureAnalyticsSchema(env);
+  const params = new URL(request.url).searchParams;
+  const pagination = adminPagination(params, 100);
+  const paginated = params.size > 0;
+  const filter = adminListFilter(params, "articles");
+  const total = await env.DB.prepare(`select count(*) as count from articles ${filter.sql}`).bind(...filter.values).first();
+  const retentionStart = new Date(Date.now() - 180 * 86400000).toISOString();
   const rows = (await env.DB.prepare(`
     select
       articles.*,
@@ -2788,12 +2806,12 @@ async function getAdminArticles(request, env) {
       (
         select count(*)
         from article_view_events
-        where article_view_events.article_id = articles.article_id
+        where article_view_events.article_id = articles.article_id and article_view_events.created_at >= ?
       ) as article_pv,
       (
         select count(distinct visitor_id)
         from article_view_events
-        where article_view_events.article_id = articles.article_id
+        where article_view_events.article_id = articles.article_id and article_view_events.created_at >= ?
       ) as article_uv
     from articles
     left join article_translations on article_translations.article_id = articles.article_id
@@ -2807,10 +2825,12 @@ async function getAdminArticles(request, env) {
         order by case inner_translations.lang when 'zh' then 0 when 'en' then 1 when 'ja' then 2 else 3 end
         limit 1
       )
+    ${filter.sql}
     group by articles.article_id
     order by articles.updated_at desc, articles.article_id desc
-  `).all()).results || [];
-  return json({ articles: rows.map((row) => ({ ...row, tags: parseTags(row.tags) })) });
+    ${paginated ? "limit ? offset ?" : ""}
+  `).bind(retentionStart, retentionStart, ...filter.values, ...(paginated ? [pagination.pageSize, pagination.offset] : [])).all()).results || [];
+  return json({ articles: rows.map((row) => ({ ...row, tags: parseTags(row.tags) })), ...adminPageResult(paginated ? pagination : { page: 1, pageSize: Math.max(1, rows.length), offset: 0 }, total?.count), metrics: adminArticleMetricScope() });
 }
 
 async function createArticle(request, env) {
@@ -2835,7 +2855,7 @@ async function createArticle(request, env) {
     ...articleTranslationsStatements(env, articleId, article.translations, now)
   ]);
 
-  return json({ ok: true, articleId, slug: article.slug }, 201);
+  return json({ ok: true, articleId, slug: article.slug, updatedAt: now }, 201);
 }
 
 function assertGenericAdminArticleCategoryMutation(
@@ -2962,9 +2982,8 @@ async function getAdminArticle(request, env, articleId) {
       updated_at: item.updated_at
     };
   });
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-  const todayIso = today.toISOString();
+  const todayIso = adminDateRange(1).todayStart;
+  const retentionStart = new Date(Date.now() - 180 * 86400000).toISOString();
   const metrics = await env.DB.prepare(`
     select
       count(*) as article_pv,
@@ -2972,9 +2991,10 @@ async function getAdminArticle(request, env, articleId) {
       sum(case when created_at >= ? then 1 else 0 end) as article_today_pv,
       count(distinct case when created_at >= ? then visitor_id end) as article_today_uv
     from article_view_events
-    where article_id = ?
-  `).bind(todayIso, todayIso, normalizedId).first();
+    where article_id = ? and created_at >= ?
+  `).bind(todayIso, todayIso, normalizedId, retentionStart).first();
   return json({
+    metrics: adminArticleMetricScope(),
     article: {
       ...article,
       tags: parseTags(article.tags),
@@ -3776,19 +3796,27 @@ async function getVideoThumbnail(request, env, videoId) {
 
 async function getAdminVideos(request, env) {
   await requireAdmin(request, env);
+  const params = new URL(request.url).searchParams;
+  const pagination = adminPagination(params, 200);
+  const filter = adminListFilter(params, "videos");
+  const [total, sortOrder, pinnedSortOrder] = await Promise.all([
+    env.DB.prepare(`select count(*) as count from videos ${filter.sql}`).bind(...filter.values).first(),
+    nextVideoSortOrder(env), nextPinnedVideoSortOrder(env)
+  ]);
   const rows = (await env.DB.prepare(`
     select *
     from videos
+    ${filter.sql}
     order by
       pinned desc,
       case when pinned = 1 then pinned_sort_order else sort_order end desc,
       case when pinned = 1 then sort_order else 0 end desc,
       updated_at desc,
-      created_at desc
-    limit 200
-  `).all()).results || [];
+      created_at desc, video_id desc
+    limit ? offset ?
+  `).bind(...filter.values, pagination.pageSize, pagination.offset).all()).results || [];
   const relations = await videoRelations(env, rows.map((row) => row.video_id));
-  return json({ videos: rows.map((row) => adminVideoRow(row, relations.get(row.video_id) || [])) });
+  return json({ videos: rows.map((row) => adminVideoRow(row, relations.get(row.video_id) || [])), ...adminPageResult(pagination, total?.count), sortDefaults: { sortOrder, pinnedSortOrder } });
 }
 
 async function nextVideoSortOrder(env) {
@@ -3838,7 +3866,7 @@ async function createVideo(request, env) {
     ),
     ...videoCategoryRelationStatements(env, videoId, video.category_ids)
   ]);
-  return json({ ok: true, videoId }, 201);
+  return json({ ok: true, videoId, updatedAt: now }, 201);
 }
 
 async function updateVideo(request, env, videoId) {
@@ -4204,6 +4232,10 @@ async function adminMe(request, env) {
 async function getAdminAccounts(request, env) {
   await requireAdmin(request, env);
   const now = nowIso();
+  const params = new URL(request.url).searchParams;
+  const pagination = adminPagination(params, 500);
+  const filter = adminListFilter(params, "accounts");
+  const total = await env.DB.prepare(`select count(*) as count from users ${filter.sql}`).bind(...filter.values).first();
   const rows = (await env.DB.prepare(`
     select
       users.id,
@@ -4222,10 +4254,11 @@ async function getAdminAccounts(request, env) {
       (select count(*) from user_login_events where user_login_events.user_id = users.id) as login_count,
       (select count(*) from game_saves where game_saves.user_id = users.id) as save_slots
     from users
-    order by case when users.role = 'admin' then 0 else 1 end, users.updated_at desc
-    limit 500
-  `).bind(now).all()).results || [];
-  return json({ accounts: rows.map(adminAccountRow) });
+    ${filter.sql}
+    order by case when users.role = 'admin' then 0 else 1 end, users.updated_at desc, users.id desc
+    limit ? offset ?
+  `).bind(now, ...filter.values, pagination.pageSize, pagination.offset).all()).results || [];
+  return json({ accounts: rows.map(adminAccountRow), ...adminPageResult(pagination, total?.count) });
 }
 
 async function getAdminAccount(request, env, userId) {
@@ -4307,11 +4340,20 @@ async function updateAdminAccount(request, env, userId) {
   const adminSession = await requireAdmin(request, env);
   const normalizedId = normalizeRecordId(userId, "账号编号不正确。");
   const body = await readJson(request);
-  const existing = await env.DB.prepare("select id, email, role from users where id = ?")
+  const expectedUpdatedAt = adminRequiredUpdatedAt(body);
+  const existing = await env.DB.prepare(`
+    select id, email, role, created_at, updated_at,
+      case when substr(password_hash, 1, 14) = 'pbkdf2_sha256$' then 'pbkdf2'
+           when password_hash is not null and password_hash <> '' then 'legacy'
+           else '' end as password_scheme
+    from users where id = ?
+  `)
     .bind(normalizedId).first();
   if (!existing) {
     return json({ error: "账号不存在。" }, 404);
   }
+
+  if (existing.updated_at !== expectedUpdatedAt) return contentConflictResponse(existing.updated_at);
 
   const nextEmail = body.email === undefined ? normalizeEmail(existing.email) : normalizeEmail(body.email);
   validateEmail(nextEmail);
@@ -4345,16 +4387,17 @@ async function updateAdminAccount(request, env, userId) {
   }
 
   const fields = ["email = ?", "role = ?", "updated_at = ?"];
-  const binds = [nextEmail, nextRole, nowIso()];
+  const updatedAt = nextMutationUpdatedAt(existing.updated_at);
+  const binds = [nextEmail, nextRole, updatedAt];
   if (passwordChanged) {
     fields.splice(2, 0, "password_hash = ?");
     binds.splice(2, 0, await hashPassword(password));
   }
-  binds.push(existing.id, nextRole);
-  const updateResult = await env.DB.prepare(`
+  binds.push(existing.id, expectedUpdatedAt, nextRole);
+  const statements = [env.DB.prepare(`
     update users
     set ${fields.join(", ")}
-    where id = ?
+    where id = ? and updated_at = ?
       and (
         role <> 'admin'
         or ? = 'admin'
@@ -4365,26 +4408,46 @@ async function updateAdminAccount(request, env, userId) {
             and other_admin.id <> users.id
         )
       )
-  `).bind(...binds).run();
+  `).bind(...binds)];
+  if (passwordChanged && revokeSessions) {
+    // D1 batch is transactional; changes() refers to the immediately preceding CAS.
+    statements.push(existing.id === adminSession.user.id
+      ? env.DB.prepare("delete from sessions where user_id = ? and token_hash <> ? and changes() > 0")
+        .bind(existing.id, adminSession.tokenHash)
+      : env.DB.prepare("delete from sessions where user_id = ? and changes() > 0").bind(existing.id));
+  }
+  const [updateResult] = await env.DB.batch(statements);
 
-  if (typeof updateResult?.meta?.changes === "number" && updateResult.meta.changes < 1) {
-    const current = await env.DB.prepare("select id, role from users where id = ?").bind(existing.id).first();
+  if (!updateResult?.meta?.changes) {
+    const current = await env.DB.prepare("select id, role, updated_at from users where id = ?").bind(existing.id).first();
     if (!current) {
       return json({ error: "账号不存在。" }, 404);
     }
+    if (current.updated_at !== expectedUpdatedAt) return contentConflictResponse(current.updated_at);
     throw new HttpError("不能移除最后一个管理员；请先为其他账号授予管理员权限。", 409);
   }
 
-  if (passwordChanged && revokeSessions) {
-    if (existing.id === adminSession.user.id) {
-      await env.DB.prepare("delete from sessions where user_id = ? and token_hash <> ?")
-        .bind(existing.id, adminSession.tokenHash).run();
-    } else {
-      await env.DB.prepare("delete from sessions where user_id = ?").bind(existing.id).run();
-    }
+  try {
+    const detail = await getAdminAccount(request, env, existing.id);
+    if (!detail.ok) throw new Error("Account detail readback unavailable.");
+    return detail;
+  } catch {
+    // The mutation has committed. A failed optional detail read must not invite a
+    // retry of a password reset or make the editor discard its new revision.
+    const safeAccount = adminAccountRow({
+      ...existing, email: nextEmail, role: nextRole, updated_at: updatedAt,
+      password_scheme: passwordChanged ? "pbkdf2" : existing.password_scheme
+    });
+    const { last_login_at, active_sessions, login_count, save_slots, ...account } = safeAccount;
+    return json({
+      ok: true, updatedAt, account, passwordChanged,
+      sessionsRevoked: passwordChanged && revokeSessions,
+      readbackWarning: {
+        code: "ACCOUNT_DETAIL_REFRESH_FAILED",
+        message: "账号修改已保存，但详情读取失败，请稍后刷新。"
+      }
+    });
   }
-
-  return await getAdminAccount(request, env, existing.id);
 }
 
 async function getAdminTrafficControl(request, env) {
@@ -4599,169 +4662,31 @@ async function recordArticleView(request, env, article, lang) {
 
 async function getAdminAnalyticsOverview(request, env) {
   await requireAdmin(request, env);
-  const url = new URL(request.url);
-  const requestedDays = Number(url.searchParams.get("days") || 14);
-  const days = Number.isFinite(requestedDays)
-    ? Math.min(Math.max(Math.trunc(requestedDays), 1), 90)
-    : 14;
-  const now = new Date();
-  const since = new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
-  since.setUTCHours(0, 0, 0, 0);
-  const sinceIso = since.toISOString();
-  const today = new Date(now);
-  today.setUTCHours(0, 0, 0, 0);
-  const todayIso = today.toISOString();
-  const onlineSince = new Date(now.getTime() - 5 * 60 * 1000).toISOString();
-
-  const [
-    todayPageViews,
-    todayVisitors,
-    totalPageViews,
-    totalVisitors,
-    todayClicks,
-    onlineVisitors,
-    todayMessages,
-    dailyRows,
-    hourlyRows,
-    countryRows,
-    cityRows,
-    regionRows,
-    topPages,
-    topArticles,
-    topClicks,
-    recentViews,
-    recentClicks
-  ] = await Promise.all([
-    env.DB.prepare("select count(*) as count from analytics_page_views where created_at >= ?").bind(todayIso).first(),
-    env.DB.prepare("select count(distinct visitor_id) as count from analytics_page_views where created_at >= ?").bind(todayIso).first(),
-    env.DB.prepare("select count(*) as count from analytics_page_views where created_at >= ?").bind(sinceIso).first(),
-    env.DB.prepare("select count(distinct visitor_id) as count from analytics_page_views where created_at >= ?").bind(sinceIso).first(),
-    env.DB.prepare("select count(*) as count from analytics_click_events where created_at >= ?").bind(todayIso).first(),
-    env.DB.prepare("select count(*) as count from site_visitors where last_seen_at >= ?").bind(onlineSince).first(),
-    env.DB.prepare("select count(*) as count from anonymous_chat_messages where created_at >= ?").bind(todayIso).first(),
-    env.DB.prepare(`
-      select substr(created_at, 1, 10) as day, count(*) as pv, count(distinct visitor_id) as uv
-      from analytics_page_views
-      where created_at >= ?
-      group by day
-      order by day asc
-    `).bind(sinceIso).all(),
-    env.DB.prepare(`
-      select substr(created_at, 1, 13) || ':00' as hour, count(*) as pv, count(distinct visitor_id) as uv
-      from analytics_page_views
-      where created_at >= ?
-      group by hour
-      order by hour asc
-    `).bind(todayIso).all(),
-    env.DB.prepare(`
-      select country, count(*) as pv, count(distinct visitor_id) as uv,
-             max(created_at) as last_seen_at, avg(latitude) as latitude, avg(longitude) as longitude
-      from analytics_page_views
-      where created_at >= ?
-      group by country
-      order by pv desc
-      limit 80
-    `).bind(sinceIso).all(),
-    env.DB.prepare(`
-      select country, region, city, count(*) as pv, count(distinct visitor_id) as uv,
-             max(created_at) as last_seen_at, avg(latitude) as latitude, avg(longitude) as longitude
-      from analytics_page_views
-      where created_at >= ?
-        and latitude is not null
-        and longitude is not null
-        and latitude between -90 and 90
-        and longitude between -180 and 180
-        and (abs(latitude) > 0.0001 or abs(longitude) > 0.0001)
-        and (
-          coalesce(trim(country), '') <> ''
-          or coalesce(trim(region), '') <> ''
-          or coalesce(trim(city), '') <> ''
-        )
-      group by country, region, city
-      order by pv desc, uv desc
-      limit 200
-    `).bind(sinceIso).all(),
-    env.DB.prepare(`
-      select country, region, city, ip_prefix, count(*) as pv, count(distinct visitor_id) as uv,
-             max(created_at) as last_seen_at, avg(latitude) as latitude, avg(longitude) as longitude
-      from analytics_page_views
-      where created_at >= ?
-      group by country, region, city, ip_prefix
-      order by pv desc, uv desc
-      limit 200
-    `).bind(sinceIso).all(),
-    env.DB.prepare(`
-      select path, route, count(*) as pv, count(distinct visitor_id) as uv, max(created_at) as last_seen_at
-      from analytics_page_views
-      where created_at >= ?
-      group by path, route
-      order by pv desc, uv desc
-      limit 30
-    `).bind(sinceIso).all(),
-    env.DB.prepare(`
-      select
-        article_view_events.article_id,
-        article_view_events.slug,
-        articles.category,
-        coalesce(zh.title, article_view_events.slug) as title,
-        count(*) as pv,
-        count(distinct article_view_events.visitor_id) as uv,
-        max(article_view_events.created_at) as last_seen_at
-      from article_view_events
-      left join articles on articles.article_id = article_view_events.article_id
-      left join article_translations zh
-        on zh.article_id = article_view_events.article_id and zh.lang = 'zh'
-      where article_view_events.created_at >= ?
-      group by article_view_events.article_id, article_view_events.slug, articles.category, zh.title
-      order by pv desc, uv desc
-      limit 30
-    `).bind(sinceIso).all(),
-    env.DB.prepare(`
-      select target_key, target_text, tag_name, data_route, path, count(*) as clicks, count(distinct visitor_id) as uv,
-             max(created_at) as last_seen_at
-      from analytics_click_events
-      where created_at >= ?
-      group by target_key, target_text, tag_name, data_route, path
-      order by clicks desc, uv desc
-      limit 40
-    `).bind(sinceIso).all(),
-    env.DB.prepare(`
-      select created_at, visitor_id, path, route, country, region, city, ip_prefix
-      from analytics_page_views
-      order by created_at desc
-      limit 30
-    `).all(),
-    env.DB.prepare(`
-      select created_at, visitor_id, path, target_text, target_key, tag_name, data_route,
-             screen_width, screen_height, country, region, city
-      from analytics_click_events
-      order by created_at desc
-      limit 30
-    `).all()
+  const params = new URL(request.url).searchParams;
+  const [overview, settingsResult, usageResult] = await Promise.all([
+    readAdminAnalyticsOverview(env.DB, params.get("days")),
+    ensureTrafficControlSettings(env).then((value) => ({ value }), () => ({ unavailable: true })),
+    getTrafficUsageSnapshot(env, { useCache: false }).then((value) => ({ value }), () => ({ unavailable: true }))
   ]);
-
+  const settings = settingsResult.value?.settings;
+  const usage = usageResult.value;
+  const mode = usage?.protectionMode;
+  const sampling = settings && mode ? {
+    pageViews: settings.analyticsEnabled && settings.pageViewsEnabled ? settings.sampling[mode].pageViews : 0,
+    clicks: settings.analyticsEnabled && settings.clicksEnabled ? settings.sampling[mode].clicks : 0,
+    articleViews: settings.analyticsEnabled && settings.articleViewsEnabled ? settings.sampling[mode].articleViews : 0
+  } : null;
   return json({
-    generatedAt: now.toISOString(),
-    windowDays: days,
-    cards: {
-      todayPv: Number(todayPageViews?.count || 0),
-      todayUv: Number(todayVisitors?.count || 0),
-      totalPv: Number(totalPageViews?.count || 0),
-      totalUv: Number(totalVisitors?.count || 0),
-      todayClicks: Number(todayClicks?.count || 0),
-      onlineVisitors: Number(onlineVisitors?.count || 0),
-      todayMessages: Number(todayMessages?.count || 0)
-    },
-    daily: fillDailySeries((dailyRows.results || []), since, days),
-    hourly: hourlyRows.results || [],
-    countries: countryRows.results || [],
-    cities: (cityRows.results || []).map(adminAnalyticsCityRow),
-    regions: regionRows.results || [],
-    topPages: topPages.results || [],
-    topArticles: topArticles.results || [],
-    topClicks: topClicks.results || [],
-    recentViews: recentViews.results || [],
-    recentClicks: recentClicks.results || []
+    ...overview,
+    cities: overview.cities.map(adminAnalyticsCityRow),
+    collection: {
+      mode: "observed", historicalSampling: "unknown",
+      current: sampling ? { mode, sampling, generatedAt: usage.generatedAt,
+        settingsUpdatedAt: settingsResult.value.updatedAt, budgetTimeZone: usage.timezone,
+        analyticsEnabled: settings.analyticsEnabled, identifyEnabled: settings.identifyEnabled } : null,
+      status: sampling ? "available" : "unavailable",
+      note: "仅显示已采集事件；历史采样率未保存，不能还原完整流量。当前采样只说明此刻策略，不代表整个统计区间。"
+    }
   });
 }
 
@@ -4785,20 +4710,21 @@ async function getAdminChatMessages(request, env) {
   await ensureAnalyticsSchema(env);
   const currentIpHashKeyId = await chatIpHashKeyId(runtimeSecret(env, "CHAT_IP_HASH_SALT"));
   const url = new URL(request.url);
-  const limit = clampLimit(url.searchParams.get("limit"), 100);
-  const includeHidden = url.searchParams.get("includeHidden") === "1";
-  const where = includeHidden ? "" : "where anonymous_chat_messages.hidden = 0";
+  const pagination = adminPagination(url.searchParams, 100);
+  const filter = adminListFilter(url.searchParams, "messages");
+  const total = await env.DB.prepare(`select count(*) as count from anonymous_chat_messages ${filter.sql}`).bind(...filter.values).first();
   const rows = (await env.DB.prepare(`
     select
       anonymous_chat_messages.message_id,
       anonymous_chat_messages.visitor_id,
       anonymous_chat_messages.client_id,
       anonymous_chat_messages.nickname,
-      anonymous_chat_messages.content,
+      case when anonymous_chat_messages.encrypted = 1 then '' else anonymous_chat_messages.content end as content,
       anonymous_chat_messages.room_key,
       anonymous_chat_messages.encrypted,
       anonymous_chat_messages.created_at,
       anonymous_chat_messages.edited_at,
+      coalesce(anonymous_chat_messages.edited_at, anonymous_chat_messages.created_at) as updated_at,
       anonymous_chat_messages.hidden,
       anonymous_chat_messages.ip_hash,
       case
@@ -4812,45 +4738,55 @@ async function getAdminChatMessages(request, env) {
       site_visitors.last_seen_at
     from anonymous_chat_messages
     left join site_visitors on site_visitors.visitor_id = anonymous_chat_messages.visitor_id
-    ${where}
+    ${filter.sql}
     order by anonymous_chat_messages.created_at desc, anonymous_chat_messages.message_id desc
-    limit ?
-  `).bind(currentIpHashKeyId, limit).all()).results || [];
-  return json({ messages: rows });
+    limit ? offset ?
+  `).bind(currentIpHashKeyId, ...filter.values, pagination.pageSize, pagination.offset).all()).results || [];
+  return json({ messages: rows, ...adminPageResult(pagination, total?.count) });
 }
 
 async function updateAdminChatMessage(request, env, messageId) {
   await requireAdmin(request, env);
   const body = await readJson(request);
+  const expectedUpdatedAt = adminRequiredUpdatedAt(body);
   const normalizedId = normalizeRecordId(messageId, "消息编号不正确。");
-  const existing = await env.DB.prepare("select message_id, encrypted from anonymous_chat_messages where message_id = ?")
+  const existing = await env.DB.prepare("select message_id, encrypted, coalesce(edited_at, created_at) as updated_at from anonymous_chat_messages where message_id = ?")
     .bind(normalizedId).first();
   if (!existing) {
     return json({ error: "消息不存在。" }, 404);
   }
+  if (existing.updated_at !== expectedUpdatedAt) return contentConflictResponse(existing.updated_at);
+  const updatedAt = nextMutationUpdatedAt(existing.updated_at);
   const nickname = body.nickname === undefined ? undefined : normalizeChatNickname(body.nickname);
   if (Number(existing.encrypted) === 1 && body.content !== undefined) {
     return json({ error: "加密消息内容不能在后台编辑。" }, 400);
   }
   const content = body.content === undefined ? undefined : normalizeChatContent(body.content);
   const hidden = body.hidden === undefined ? undefined : (body.hidden ? 1 : 0);
-  await env.DB.prepare(`
+  const result = await env.DB.prepare(`
     update anonymous_chat_messages
     set nickname = coalesce(?, nickname),
         content = coalesce(?, content),
         hidden = coalesce(?, hidden),
         edited_at = ?
-    where message_id = ?
-  `).bind(nickname ?? null, content ?? null, hidden ?? null, nowIso(), normalizedId).run();
-  return json({ ok: true });
+    where message_id = ? and coalesce(edited_at, created_at) = ?
+  `).bind(nickname ?? null, content ?? null, hidden ?? null, updatedAt, normalizedId, expectedUpdatedAt).run();
+  if (!result.meta?.changes) {
+    const current = await env.DB.prepare("select coalesce(edited_at, created_at) as updated_at from anonymous_chat_messages where message_id = ?").bind(normalizedId).first();
+    return current ? contentConflictResponse(current.updated_at) : json({ error: "消息不存在。" }, 404);
+  }
+  return json({ ok: true, updatedAt });
 }
 
 async function deleteAdminChatMessage(request, env, messageId) {
   await requireAdmin(request, env);
+  const expectedUpdatedAt = adminRequiredUpdatedAt(await readJson(request));
   const normalizedId = normalizeRecordId(messageId, "消息编号不正确。");
-  const result = await env.DB.prepare("delete from anonymous_chat_messages where message_id = ?")
-    .bind(normalizedId).run();
+  const result = await env.DB.prepare("delete from anonymous_chat_messages where message_id = ? and coalesce(edited_at, created_at) = ?")
+    .bind(normalizedId, expectedUpdatedAt).run();
   if (!result.meta?.changes) {
+    const current = await env.DB.prepare("select coalesce(edited_at, created_at) as updated_at from anonymous_chat_messages where message_id = ?").bind(normalizedId).first();
+    if (current) return contentConflictResponse(current.updated_at);
     return json({ error: "消息不存在。" }, 404);
   }
   return json({ ok: true });
@@ -4875,6 +4811,10 @@ async function getAdminChatBans(request, env) {
   await requireAdmin(request, env);
   const currentIpHashKeyId = await chatIpHashKeyId(runtimeSecret(env, "CHAT_IP_HASH_SALT"));
   const now = nowIso();
+  const params = new URL(request.url).searchParams;
+  const pagination = adminPagination(params, 100);
+  const filter = adminListFilter(params, "bans", { currentIpHashKeyId, now });
+  const total = await env.DB.prepare(`select count(*) as count from chat_bans ${filter.sql}`).bind(...filter.values).first();
   const rows = (await env.DB.prepare(`
     select
       chat_bans.*,
@@ -4896,10 +4836,11 @@ async function getAdminChatBans(request, env) {
       end as effective
     from chat_bans
     left join users on users.id = chat_bans.created_by
-    order by chat_bans.created_at desc
-    limit 100
-  `).bind(currentIpHashKeyId, now, now, currentIpHashKeyId).all()).results || [];
-  return json({ bans: rows });
+    ${filter.sql}
+    order by chat_bans.created_at desc, chat_bans.ban_id desc
+    limit ? offset ?
+  `).bind(currentIpHashKeyId, now, now, currentIpHashKeyId, ...filter.values, pagination.pageSize, pagination.offset).all()).results || [];
+  return json({ bans: rows, ...adminPageResult(pagination, total?.count) });
 }
 
 async function createAdminChatBan(request, env) {
@@ -6445,7 +6386,11 @@ async function normalizeVideoPayload(body, env, options = {}) {
       body.pinned_sort_order,
       options.defaultPinnedSortOrder ?? options.existing?.pinned_sort_order ?? options.existing?.sort_order ?? 0
     ) : 0,
-    metadata_error: normalizeOptionalText(body.metadata_error, 500) || parsed.metadata_error || "",
+    // An explicit admin acknowledgement after a successful same-URL preview can
+    // clear an old fetch error. A changed source still reports its new fetch result.
+    metadata_error: options.existing && !sourceChanged && Object.prototype.hasOwnProperty.call(body, "metadata_error")
+      ? normalizeOptionalText(body.metadata_error, 500)
+      : normalizeOptionalText(body.metadata_error, 500) || parsed.metadata_error || "",
     category_ids: await normalizeVideoCategoryIds(env, body.category_ids || body.categories || [])
   };
 }
@@ -16170,6 +16115,15 @@ function validatePassword(password) {
   }
 }
 
+function adminRequiredUpdatedAt(body) {
+  if (!body || !Object.prototype.hasOwnProperty.call(body, "expectedUpdatedAt")) {
+    const error = new HttpError("缺少内容版本，请重新读取后重试。", 428);
+    error.code = "CONTENT_VERSION_REQUIRED";
+    throw error;
+  }
+  return expectedUpdatedAtFromBody(body);
+}
+
 function expectedUpdatedAtFromBody(body, { allowNull = false } = {}) {
   if (!body || typeof body !== "object" || Array.isArray(body)
     || !Object.prototype.hasOwnProperty.call(body, "expectedUpdatedAt")) {
@@ -16624,20 +16578,6 @@ function expandIpv6(ip) {
 
 function compactIpv6Group(group) {
   return String(group || "0").replace(/^0+([0-9a-f])$/i, "$1").replace(/^0+/, "") || "0";
-}
-
-function fillDailySeries(rows, since, days) {
-  const map = new Map(rows.map((row) => [row.day, row]));
-  return Array.from({ length: days }, (_, index) => {
-    const date = new Date(since.getTime() + index * 24 * 60 * 60 * 1000);
-    const day = date.toISOString().slice(0, 10);
-    const row = map.get(day);
-    return {
-      day,
-      pv: Number(row?.pv || 0),
-      uv: Number(row?.uv || 0)
-    };
-  });
 }
 
 async function hashPassword(password, iterations = PASSWORD_HASH_ITERATIONS) {

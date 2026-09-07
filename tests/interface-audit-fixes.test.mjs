@@ -148,7 +148,7 @@ test("mobile Talk retirement and retained public modules keep independent cache 
   const publicSiteReleaseVersion = "20260827-private-room-lifecycle-r1";
   const mobileBlogVersion = "20260902-mobile-blog-retired-r1";
   const wallpaperAssetVersion = "20260810-wallpaper-time-switch-r6";
-  const transferVersion = "20260827-private-room-lifecycle-r1";
+  const transferVersion = "20260908-admin-review-r1";
   const index = read("index.html");
   const main = read("js/main.js");
   const changelog = read("CHANGELOG.md");
@@ -165,7 +165,7 @@ test("mobile Talk retirement and retained public modules keep independent cache 
     assert.ok(index.includes(`${asset}?v=${publicSiteReleaseVersion}`), `${asset} should use ${publicSiteReleaseVersion}`);
   }
   assert.ok(index.includes(`/css/mobile-ios-shell.css?v=${mobileBlogVersion}`));
-  assert.ok(index.includes(`/js/main.js?v=${mobileBlogVersion}`));
+  assert.ok(index.includes(`/js/main.js?v=20260908-admin-review-r1`));
   assert.ok(main.includes(`wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));
   assert.ok(changelog.includes(switchRouteMotionVersion), "the wallpaper route-motion release token must remain in project history");
   assert.ok(changelog.includes(videoLinkAutofillVersion), "the video-link release token must remain in project history");
@@ -209,7 +209,7 @@ test("mobile Talk retirement and retained public modules keep independent cache 
   assert.ok(main.includes(`./features/account.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/knowledge.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/chatroom.mjs?v=${publicVersion}`));
-  const resourcesVersion = "20260827-private-room-lifecycle-r1";
+  const resourcesVersion = "20260908-admin-review-r1";
   assert.ok(main.includes(`./routes/resources.mjs?v=${resourcesVersion}`));
   assert.ok(main.includes(`./data/resources-content.mjs?v=${resourcesVersion}`));
   for (const token of [

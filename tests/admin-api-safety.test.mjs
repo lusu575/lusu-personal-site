@@ -20,6 +20,7 @@ function normalizedSql(sql) {
 
 function createAdminD1({ targetAccount, otherAdminExists = true } = {}) {
   const calls = [];
+  let lastChanges = 0;
   const account = targetAccount
     ? {
         created_at: "2026-01-01T00:00:00.000Z",
@@ -41,22 +42,32 @@ function createAdminD1({ targetAccount, otherAdminExists = true } = {}) {
         calls.push(call);
         const normalized = normalizedSql(sql);
 
-        if (/^update users set .+where id = \? and \(/i.test(normalized)) {
+        if (/^update users set .+where id = \? and updated_at = \? and \(/i.test(normalized)) {
           const nextRole = this.params.at(-1);
           const demotesLastAdmin = account?.role === "admin"
             && nextRole !== "admin"
             && !otherAdminExists;
-          if (demotesLastAdmin) {
+          const versionMatches = account?.id === this.params.at(-3)
+            && account?.updated_at === this.params.at(-2);
+          if (demotesLastAdmin || !versionMatches) {
+            lastChanges = 0;
             return { success: true, meta: { changes: 0 } };
           }
           if (account) {
             account.email = this.params[0];
             account.role = this.params[1];
-            account.updated_at = "2026-07-16T00:00:00.000Z";
+            account.updated_at = this.params.at(-4);
           }
-          return { success: true, meta: { changes: account ? 1 : 0 } };
+          lastChanges = account ? 1 : 0;
+          return { success: true, meta: { changes: lastChanges } };
+        }
+        if (/^delete from sessions where user_id = \?/.test(normalized)) {
+          const changes = /changes\(\) > 0/.test(normalized) && lastChanges < 1 ? 0 : 1;
+          lastChanges = changes;
+          return { success: true, meta: { changes } };
         }
 
+        lastChanges = 1;
         return { success: true, meta: { changes: 1 } };
       },
       async first() {
@@ -116,7 +127,11 @@ function createAdminD1({ targetAccount, otherAdminExists = true } = {}) {
         method: "batch",
         statements: statements.map((item) => ({ sql: item.sql, params: [...item.params] }))
       });
-      return [];
+      const results = [];
+      for (const item of statements) {
+        results.push(await item.run());
+      }
+      return results;
     }
   };
 }
@@ -224,7 +239,8 @@ test("password updates honor revokeSessions false, true, and the secure default"
     const body = {
       email: db.account.email,
       role: db.account.role,
-      password: "ValidPass123!"
+      password: "ValidPass123!",
+      expectedUpdatedAt: db.account.updated_at
     };
     if ("revokeSessions" in scenario) {
       body.revokeSessions = scenario.revokeSessions;
@@ -235,11 +251,15 @@ test("password updates honor revokeSessions false, true, and the secure default"
 
     const sessionDeletes = db.calls.filter((call) => (
       call.method === "run"
-      && /^delete from sessions where user_id = \?$/i.test(normalizedSql(call.sql))
+      && /^delete from sessions where user_id = \? and changes\(\) > 0$/i.test(normalizedSql(call.sql))
     ));
     assert.equal(sessionDeletes.length, scenario.expectedDeletes, scenario.label);
     if (sessionDeletes.length) {
       assert.deepEqual(sessionDeletes[0].params, [db.account.id]);
+      const mutationBatch = db.calls.find((call) => call.method === "batch"
+        && call.statements.some((item) => /^update users /i.test(normalizedSql(item.sql))));
+      assert.equal(mutationBatch.statements.length, 2, "password CAS and session revocation share one transaction");
+      assert.match(normalizedSql(mutationBatch.statements[1].sql), /and changes\(\) > 0$/);
     }
   }
 });
@@ -250,6 +270,7 @@ test("account demotion atomically rejects the last admin and allows it when anot
     otherAdminExists: false
   });
   const rejected = await api(accountRequest(lastAdminDb.account.id, {
+    expectedUpdatedAt: lastAdminDb.account.updated_at,
     email: lastAdminDb.account.email,
     role: "user"
   }), lastAdminDb);
@@ -258,7 +279,7 @@ test("account demotion atomically rejects the last admin and allows it when anot
 
   const guardedUpdate = lastAdminDb.calls.find((call) => (
     call.method === "run"
-    && /^update users set .+where id = \? and \(/i.test(normalizedSql(call.sql))
+    && /^update users set .+where id = \? and updated_at = \? and \(/i.test(normalizedSql(call.sql))
   ));
   assert.ok(guardedUpdate, "the role update must use one guarded UPDATE statement");
   assert.match(normalizedSql(guardedUpdate.sql), /or exists \( select 1 from users as other_admin/i);
@@ -270,6 +291,7 @@ test("account demotion atomically rejects the last admin and allows it when anot
     otherAdminExists: true
   });
   const allowed = await api(accountRequest(multiAdminDb.account.id, {
+    expectedUpdatedAt: multiAdminDb.account.updated_at,
     email: multiAdminDb.account.email,
     role: "user"
   }), multiAdminDb);
@@ -286,6 +308,7 @@ test("configured owner admin emails are normalized from the environment and cann
     otherAdminExists: true
   });
   const response = await api(accountRequest(ownerDb.account.id, {
+    expectedUpdatedAt: ownerDb.account.updated_at,
     email: "OWNER@example.test",
     role: "user"
   }), ownerDb, {
@@ -297,7 +320,7 @@ test("configured owner admin emails are normalized from the environment and cann
   assert.equal(ownerDb.account.role, "admin");
   assert.equal(ownerDb.calls.some((call) => (
     call.method === "run"
-    && /^update users set .+where id = \? and \(/i.test(normalizedSql(call.sql))
+    && /^update users set .+where id = \? and updated_at = \? and \(/i.test(normalizedSql(call.sql))
   )), false, "configured owner rejection must happen before the guarded role update");
 });
 
@@ -310,6 +333,7 @@ test("configured owner accounts cannot be renamed away from the protected addres
     otherAdminExists: true
   });
   const response = await api(accountRequest(ownerDb.account.id, {
+    expectedUpdatedAt: ownerDb.account.updated_at,
     email: "renamed@example.test",
     role: "admin"
   }), ownerDb, {
@@ -321,7 +345,7 @@ test("configured owner accounts cannot be renamed away from the protected addres
   assert.equal(ownerDb.account.email, "owner@example.test");
   assert.equal(ownerDb.calls.some((call) => (
     call.method === "run"
-    && /^update users set .+where id = \? and \(/i.test(normalizedSql(call.sql))
+    && /^update users set .+where id = \? and updated_at = \? and \(/i.test(normalizedSql(call.sql))
   )), false, "configured owner rename rejection must happen before the guarded update");
 });
 
@@ -334,6 +358,7 @@ test("missing owner admin configuration keeps the atomic last-admin protection a
     otherAdminExists: false
   });
   const response = await api(accountRequest(db.account.id, {
+    expectedUpdatedAt: db.account.updated_at,
     email: db.account.email,
     role: "user"
   }), db);

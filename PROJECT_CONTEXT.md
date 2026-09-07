@@ -1,5 +1,11 @@
 # PROJECT_CONTEXT.md
 
+## 2026-09-08 后台工作台与维护边界
+
+- `/admin/` 的统计、内容编辑与治理完成一轮整合；后台统计使用 `Asia/Shanghai` 自然日，D1 免费额度保护仍按 UTC 日判断。详细接口、浏览器暂存、响应式与并发约定集中维护在 `admin/docs/ADMIN_PROJECT_CONTEXT.md` 和 `admin/docs/ADMIN_SKILL.md`。
+- 后台脚本按统计、内容工作台与分页查询逐步拆分，并共用 `admin/shared-console.css`；待办与任务只读取真实既有记录，未连接的执行器、报警目的地或服务不视为已配置。后台私有更新不进入公开知识库。
+- Quick Transfer 独立管理页随本轮升级到 `1.0.13`；主站只同步强制版本／缓存引用，传输协议与公开操作行为不变。代码与文档完成不等同于 GitHub 合并、Cloudflare 成功部署或真实设备验收。
+
 ## 2026-09-05 每日 AI 新闻多来源 required 查询修复
 
 - 2026-09-05 自动运行 `run-20260904T230217Z-c1512235` 和同日首次恢复运行 `run-20260905T014052Z-0758d5d1` 都正确使用连续采集锚点并分别写盘 2,342、2,489 个候选，但 `autonomous-driving-tesla-reliable-en` 在 Google News 返回第 100 条探针后失败关闭。两次运行都停在 Horizon 发现阶段，Codex 审稿、组装、正式校验和生产 POST 均未发生。

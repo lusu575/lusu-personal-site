@@ -12,6 +12,72 @@
     normal_pool_red_ratio: "normalPoolRedRatio",
     alert_thresholds: "alertThresholds"
   });
+  const MIB = 1024 ** 2;
+  const GIB = 1024 ** 3;
+  const QUOTA_FIELDS = Object.freeze({
+    normal_max_file_bytes: { min: MIB, max: 95 * MIB },
+    normal_user_24h_bytes: { min: MIB, max: 8 * GIB },
+    normal_room_active_bytes: { min: MIB, max: 8 * GIB },
+    normal_pool_active_bytes: { min: GIB, max: 9 * GIB }
+  });
+
+  // Decimal parsing preserves exact bytes, including values read from older settings.
+  function quotaToBytes(value, unit) {
+    const source = String(value).trim();
+    if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(source) || source.length > 64) {
+      throw new Error("请输入有效的正数容量。");
+    }
+    if (unit !== "MiB" && unit !== "GiB") throw new Error("容量单位无效。");
+    const [integer = "0", fraction = ""] = source.split(".");
+    const scale = 10n ** BigInt(fraction.length);
+    const numerator = BigInt(`${integer || "0"}${fraction}`) * BigInt(unit === "GiB" ? GIB : MIB);
+    if (numerator % scale !== 0n) throw new Error("容量必须能精确换算为整数个字节，请减少小数位。");
+    const result = numerator / scale;
+    if (result > BigInt(Number.MAX_SAFE_INTEGER)) throw new Error("容量过大。");
+    return Number(result);
+  }
+
+  function bytesToQuota(value, unit) {
+    if (!Number.isSafeInteger(Number(value)) || Number(value) < 0) throw new Error("服务器容量值无效。");
+    if (unit !== "MiB" && unit !== "GiB") throw new Error("容量单位无效。");
+    const size = BigInt(value);
+    const divisor = BigInt(unit === "GiB" ? GIB : MIB);
+    let remainder = size % divisor;
+    let fraction = "";
+    while (remainder) {
+      remainder *= 10n;
+      fraction += String(remainder / divisor);
+      remainder %= divisor;
+    }
+    return `${size / divisor}${fraction ? `.${fraction}` : ""}`;
+  }
+
+  function quotaUnit(name) {
+    return document.querySelector(`[data-quota-unit="${name}"]`);
+  }
+
+  function syncQuotaLimits(name) {
+    const input = byId("settings-form").elements[name];
+    const unit = quotaUnit(name).value;
+    input.min = bytesToQuota(QUOTA_FIELDS[name].min, unit);
+    input.max = bytesToQuota(QUOTA_FIELDS[name].max, unit);
+  }
+
+  function changeQuotaUnit(select) {
+    const name = select.dataset.quotaUnit;
+    const input = byId("settings-form").elements[name];
+    const previousUnit = select.dataset.previousUnit || "MiB";
+    try {
+      input.value = bytesToQuota(quotaToBytes(input.value, previousUnit), select.value);
+      select.dataset.previousUnit = select.value;
+      input.setCustomValidity("");
+      syncQuotaLimits(name);
+    } catch (error) {
+      select.value = previousUnit;
+      notice(error.message, true);
+    }
+    syncSettingsDirty();
+  }
 
   const state = {
     overview: null,
@@ -202,18 +268,15 @@
     const cost = usage.monthly.costBreakdown;
     byId("cost-grid").replaceChildren(
       costItem("计费月", usage.monthly.billingMonth),
-      costItem("估算 GB-month", usage.monthly.estimatedStorageGbMonth),
-      costItem("Class A", usage.monthly.classAOperations),
-      costItem("Class B", usage.monthly.classBOperations),
+      costItem("累计存储（GB·月）", usage.monthly.estimatedStorageGbMonth),
+      costItem("写入类操作（Class A）", usage.monthly.classAOperations),
+      costItem("读取类操作（Class B）", usage.monthly.classBOperations),
       costItem("存储费", `$${cost.storage.toFixed(2)}`),
       costItem("操作费", `$${(cost.operationsA + cost.operationsB).toFixed(2)}`),
-      costItem("普通池", usage.normalPool.status.toUpperCase()),
+      costItem("普通用户存储池", ({ green: "正常", yellow: "接近上限", red: "已达暂停阈值" })[usage.normalPool.status] || "状态待确认"),
       costItem("总估算", `$${usage.monthly.estimatedCostUsd.toFixed(2)}`)
     );
-    const notification = state.overview.notification;
-    byId("notification-status").textContent = notification.webhookConfigured
-      ? "Webhook 已配置"
-      : "邮件/Webhook 报警尚未配置";
+    renderNotification(state.overview.notification);
     byId("normal-switch").textContent = usage.normalPool.normalUploadEnabled
       ? "暂停普通用户上传"
       : "恢复普通用户上传";
@@ -222,6 +285,17 @@
       ? "暂停全部上传"
       : "恢复全部上传";
     byId("global-switch").dataset.next = String(!usage.normalPool.globalUploadEnabled);
+  }
+
+  function renderNotification(notification = {}) {
+    const configured = notification.webhookConfigured === true;
+    byId("notification-status").textContent = configured ? "通知接收地址已配置" : "站内通知尚未配置";
+    byId("notification-status").dataset.state = configured ? "ready" : "warning";
+    byId("alert-delivery-note").textContent = configured
+      ? "地址已配置，是否成功送达仍需查看发送记录和接收端；每次测试会实际发送一条通知。"
+      : "目前只记录站内告警，不会发送邮件或 Webhook。展开上方说明完成配置后再测试。";
+    byId("test-alert").disabled = state.mutationLocked || !configured;
+    if (!configured) byId("alert-setup").open = true;
   }
 
   function applySettings(settings, options = {}) {
@@ -233,7 +307,16 @@
     const form = byId("settings-form");
     for (const [name, key] of Object.entries(SETTINGS_FIELDS)) {
       if (form.elements[name]) {
-        form.elements[name].value = settings[key];
+        if (QUOTA_FIELDS[name]) {
+          const select = quotaUnit(name);
+          select.value = Number(settings[key]) >= GIB ? "GiB" : "MiB";
+          select.dataset.previousUnit = select.value;
+          form.elements[name].value = bytesToQuota(settings[key], select.value);
+          form.elements[name].setCustomValidity("");
+          syncQuotaLimits(name);
+        } else {
+          form.elements[name].value = settings[key];
+        }
       }
     }
     state.settingsBaseline = settingsSnapshot();
@@ -244,10 +327,15 @@
 
   function settingsSnapshot() {
     const form = byId("settings-form");
-    return JSON.stringify(Object.keys(SETTINGS_FIELDS).map((name) => [
-      name,
-      String(form.elements[name]?.value ?? "").trim()
-    ]));
+    return JSON.stringify(Object.keys(SETTINGS_FIELDS).map((name) => {
+      const value = String(form.elements[name]?.value ?? "").trim();
+      if (!QUOTA_FIELDS[name]) return [name, value];
+      try {
+        return [name, quotaToBytes(value, quotaUnit(name).value)];
+      } catch {
+        return [name, value, quotaUnit(name).value];
+      }
+    }));
   }
 
   function syncSettingsDirty() {
@@ -256,7 +344,7 @@
       && settingsSnapshot() !== state.settingsBaseline
     );
     const status = byId("settings-dirty");
-    status.textContent = state.settingsDirty ? "有未保存修改" : "已保存";
+    status.textContent = !state.settingsVersion ? "设置尚未载入" : state.settingsDirty ? "有未保存修改" : "已保存";
     status.classList.toggle("is-dirty", state.settingsDirty);
     byId("settings-save").disabled = state.mutationLocked || !state.settingsDirty;
   }
@@ -276,7 +364,7 @@
       );
       body.append(tableRow([
         code(row.id),
-        row.status,
+        ({ active: "可使用", deleting: "删除中，待重试", closed: "已关闭", expired: "已过期" })[row.status] || row.status,
         row.item_count,
         bytes(row.active_bytes),
         time(row.last_activity_at),
@@ -392,7 +480,7 @@
         row.filename,
         bytes(row.declared_size_bytes),
         `${row.completed_parts}/${row.expected_parts}`,
-        row.status,
+        ({ active: "上传中", completing: "合并中", failed: "失败，待处理", aborted: "已中止", completed: "已完成" })[row.status] || row.status,
         time(row.updated_at),
         actions
       ]));
@@ -409,8 +497,8 @@
     rows.forEach((row) => body.append(tableRow([
       row.billing_month,
       `$${row.threshold_usd}`,
-      row.alert_type,
-      row.status,
+      ({ estimated_cost: "费用达到阈值", test: "手动测试" })[row.alert_type] || row.alert_type,
+      ({ pending: "等待发送", sent: "接收端已接收", unconfigured: "未配置，仅站内记录", failed: "发送失败，请检查接收服务" })[row.status] || row.status,
       time(row.sent_at || row.created_at)
     ])));
   }
@@ -583,12 +671,28 @@
   }
 
   function settingsPayload() {
-    const values = Object.fromEntries(new FormData(byId("settings-form")));
-    Object.keys(values)
-      .filter((key) => key !== "alert_thresholds")
-      .forEach((key) => {
-        values[key] = Number(values[key]);
-      });
+    const form = byId("settings-form");
+    const values = {};
+    for (const name of Object.keys(SETTINGS_FIELDS)) {
+      const input = form.elements[name];
+      if (QUOTA_FIELDS[name]) {
+        input.setCustomValidity("");
+        try {
+          values[name] = quotaToBytes(input.value, quotaUnit(name).value);
+          const limits = QUOTA_FIELDS[name];
+          if (values[name] < limits.min || values[name] > limits.max) {
+            throw new Error(`容量须在 ${bytes(limits.min)} 至 ${bytes(limits.max)} 之间。`);
+          }
+        } catch (error) {
+          input.setCustomValidity(error.message);
+          input.reportValidity();
+          throw error;
+        }
+      } else {
+        values[name] = name === "alert_thresholds" ? input.value : Number(input.value);
+      }
+    }
+    if (!form.reportValidity()) throw new Error("请检查配额中的无效输入。");
     values.expectedUpdatedAt = state.settingsVersion;
     return values;
   }
@@ -598,10 +702,17 @@
       notice("设置没有变化。");
       return;
     }
+    let payload;
+    try {
+      payload = settingsPayload();
+    } catch (error) {
+      notice(error.message, true);
+      return;
+    }
     await runMutation(
       () => api("/api/admin/transfer/settings", {
         method: "PUT",
-        json: settingsPayload()
+        json: payload
       }),
       {
         successMessage: "互传设置已保存。",
@@ -639,6 +750,9 @@
       if (typeof options.onSuccess === "function") {
         await options.onSuccess(payload);
       }
+      const successMessage = typeof options.successMessage === "function"
+        ? options.successMessage(payload)
+        : options.successMessage || "操作已完成。";
       hideOperationResult();
       let refreshFailures = [];
       if (options.refresh !== false) {
@@ -646,12 +760,12 @@
       }
       if (refreshFailures.length) {
         notice(
-          `${options.successMessage || "操作已完成。"} 但部分数据刷新失败，可单独重试。`,
+          `${successMessage} 但部分数据刷新失败，可单独重试。`,
           true,
           { retry: true }
         );
       } else {
-        notice(options.successMessage || "操作已完成。");
+        notice(successMessage, options.successIsWarning?.(payload) === true);
       }
       return payload;
     } catch (error) {
@@ -721,7 +835,29 @@
         button.removeAttribute("aria-busy");
       }
     });
+    byId("test-alert").disabled = state.mutationLocked || state.overview?.notification?.webhookConfigured !== true;
     syncSettingsDirty();
+  }
+
+  function testAlertMessage(payload) {
+    if (payload.delivered === true) return "测试通知已被接收服务接收；如需邮件转发，请在接收端继续核对送达。";
+    return payload.notification?.webhookConfigured
+      ? "测试记录已保存，但通知发送失败。请检查接收服务，再手动重试。"
+      : "测试记录已保存；通知尚未配置，本次没有对外发送。";
+  }
+
+  async function testAlert(busyTarget) {
+    const confirmed = await confirmAction({
+      title: "发送测试通知",
+      message: "这会向已配置的通知接收服务实际发送一条测试消息，并保存站内记录。",
+      details: ["测试通知不会修改费用或配额。", "接收服务返回成功不代表转发邮件已送达，仍需到接收端核对。"],
+      confirmLabel: "发送一条测试通知"
+    });
+    if (!confirmed) return;
+    await runMutation(
+      () => api("/api/admin/transfer/alert/test", { method: "POST", json: {} }),
+      { successMessage: testAlertMessage, successIsWarning: (payload) => payload.delivered !== true, busyTarget }
+    );
   }
 
   function confirmAction(options) {
@@ -934,17 +1070,20 @@
       });
     });
     byId("cleanup").addEventListener("click", (event) => cleanup(event.currentTarget));
-    byId("test-alert").addEventListener("click", (event) => runMutation(
-      () => api("/api/admin/transfer/alert/test", { method: "POST", json: {} }),
-      { successMessage: "测试报警已创建。", busyTarget: event.currentTarget }
-    ));
+    byId("test-alert").addEventListener("click", (event) => testAlert(event.currentTarget));
     byId("normal-switch").addEventListener("click", (event) => toggleUpload("normal", event.currentTarget));
     byId("global-switch").addEventListener("click", (event) => toggleUpload("global", event.currentTarget));
     byId("settings-form").addEventListener("submit", (event) => {
       event.preventDefault();
       void saveSettings(event.submitter || byId("settings-save"));
     });
-    byId("settings-form").addEventListener("input", syncSettingsDirty);
+    byId("settings-form").addEventListener("input", (event) => {
+      event.target.setCustomValidity?.("");
+      syncSettingsDirty();
+    });
+    document.querySelectorAll("[data-quota-unit]").forEach((select) => {
+      select.addEventListener("change", () => changeQuotaUnit(select));
+    });
     byId("settings-form").addEventListener("change", syncSettingsDirty);
     byId("settings-reload").addEventListener("click", discardAndReloadSettings);
     byId("settings-keep").addEventListener("click", keepSettingsDraftAgainstLatest);

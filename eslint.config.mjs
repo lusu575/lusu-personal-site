@@ -65,6 +65,10 @@ export default [
   },
   {
     files: [
+      "admin/*-workbench.{js,mjs}",
+      "functions/api/admin-*-service.mjs",
+      "tests/admin-*.test.mjs",
+      "tests/transfer/admin-transfer-usability.test.mjs",
       "functions/api/anonymous-identity.mjs",
       "functions/api/whiteboard-service.mjs",
       "games/2048/source/**/*.{js,mjs}",

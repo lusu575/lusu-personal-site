@@ -128,8 +128,12 @@ test("admin analytics returns privacy-safe city aggregates for the interactive m
   assert.match(citySql, /group by country, region, city order by pv desc, uv desc/i);
   assert.match(citySql, /limit 200$/i);
   assert.doesNotMatch(citySql, /ip_prefix|ip_hash/i);
-  assert.equal(cityCalls[0].params.length, 1, "city aggregation should use the overview time window");
-  assert.match(String(cityCalls[0].params[0]), /^\d{4}-\d{2}-\d{2}T00:00:00\.000Z$/);
+  assert.equal(cityCalls[0].params.length, 2, "city aggregation must bind both half-open window boundaries");
+  assert.match(citySql, /created_at >= \? and created_at < \?/i);
+  assert.equal(payload.timeZone, "Asia/Shanghai");
+  assert.equal(cityCalls[0].params[0], payload.range.start);
+  assert.equal(cityCalls[0].params[1], payload.generatedAt);
+  assert.match(String(cityCalls[0].params[0]), /^\d{4}-\d{2}-\d{2}T16:00:00\.000Z$/, "Shanghai midnight is 16:00 UTC on the preceding date");
 
   const sqlite = new DatabaseSync(":memory:");
   try {
@@ -150,6 +154,7 @@ test("admin analytics returns privacy-safe city aggregates for the interactive m
       ) values (?, ?, ?, ?, ?, ?, ?)
     `);
     const since = String(cityCalls[0].params[0]);
+    const until = String(cityCalls[0].params[1]);
     const inside = new Date(new Date(since).getTime() + 60 * 60 * 1000).toISOString();
     const outside = new Date(new Date(since).getTime() - 1).toISOString();
     for (const row of [
@@ -158,6 +163,9 @@ test("admin analytics returns privacy-safe city aggregates for the interactive m
       ["SG", "Singapore", "Singapore", "visitor-b", inside, 1.3521, 103.8198],
       ["JP", "Tokyo", "Tokyo", "visitor-c", inside, 35.6895, 139.6917],
       ["SG", "Singapore", "Singapore", "visitor-old", outside, 1.3521, 103.8198],
+      ["SG", "Singapore", "Singapore", "visitor-start", since, 1.3521, 103.8198],
+      ["SG", "Singapore", "Singapore", "visitor-end", until, 1.3521, 103.8198],
+      ["SG", "Singapore", "Singapore", "visitor-future", new Date(Date.parse(until) + 1).toISOString(), 1.3521, 103.8198],
       ["SG", "Singapore", "Singapore", "visitor-null", inside, null, 103.8198],
       ["SG", "Singapore", "Singapore", "visitor-bounds", inside, 91, 103.8198],
       ["SG", "Singapore", "Singapore", "visitor-zero", inside, 0, 0],
@@ -165,12 +173,12 @@ test("admin analytics returns privacy-safe city aggregates for the interactive m
     ]) {
       insert.run(...row);
     }
-    const actual = sqlite.prepare(cityCalls[0].sql).all(since);
+    const actual = sqlite.prepare(cityCalls[0].sql).all(since, until);
     assert.equal(actual.length, 2, "only valid, named, in-window cities should be aggregated");
     assert.deepEqual(
       actual.map((row) => ({ city: row.city, pv: row.pv, uv: row.uv })),
       [
-        { city: "Singapore", pv: 3, uv: 2 },
+        { city: "Singapore", pv: 4, uv: 3 },
         { city: "Tokyo", pv: 1, uv: 1 }
       ]
     );

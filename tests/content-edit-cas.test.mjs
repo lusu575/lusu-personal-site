@@ -29,7 +29,11 @@ test("admin editors carry loaded revisions through saves, refreshes, and deletes
   assert.match(adminSource, /payload\.expectedUpdatedAt = state\.videoUpdatedAt/);
   assert.match(adminSource, /payload\.expectedUpdatedAt = state\.videoCategoryUpdatedAt/);
   assert.match(adminSource, /expectedUpdatedAt:\s*state\.socialLinksUpdatedAt/);
-  assert.match(adminSource, /refresh-metadata[\s\S]{0,260}expectedUpdatedAt:\s*state\.videoUpdatedAt/);
+  const metadataPreview = adminSource.match(/async function refreshVideoMetadata\(\) \{([\s\S]*?)\nfunction renderVideoCategoryList/)?.[1] || "";
+  // Fetching suggestions is now read-only. Applying them still requires the
+  // versioned saveVideo path, so preview must not advance the CAS baseline.
+  assert.match(metadataPreview, /api\("\/api\/admin\/videos\/preview-url"/);
+  assert.doesNotMatch(metadataPreview, /state\.videoUpdatedAt\s*=|\/refresh-metadata/);
   assert.match(adminSource, /method:\s*"DELETE"[\s\S]{0,180}expectedUpdatedAt:\s*state\.articleUpdatedAt/);
   assert.match(adminSource, /CONTENT_CONFLICT[\s\S]{0,280}当前输入已保留/);
   assert.match(apiSource, /refreshVideoMetadata[\s\S]*where video_id = \? and updated_at = \?/);

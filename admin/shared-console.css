@@ -1,0 +1,21 @@
+/* Shared palette and reading rhythm for protected administration consoles. */
+:root {
+  --console-page: #f3f5f8;
+  --console-surface: #fff;
+  --console-surface-soft: #f6f8fc;
+  --console-ink: #26344a;
+  --console-ink-strong: #17263c;
+  --console-muted: #5b6a7e;
+  --console-line: #dce3ed;
+  --console-line-strong: #bcc9dc;
+  --console-accent: #3568ae;
+  --console-accent-strong: #24528e;
+  --console-accent-soft: #edf4ff;
+  --console-success: #286b4f;
+  --console-warning: #815b11;
+  --console-danger: #a03f4d;
+  --console-radius: 4px;
+  --console-shadow: 0 1px 2px rgb(29 48 76 / 5%);
+  --console-font: "HarmonyOS Sans SC", "Microsoft YaHei UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --console-touch-target: 44px;
+}
