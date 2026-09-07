@@ -905,9 +905,9 @@ const publicSiteReleaseVersion = "20260827-private-room-lifecycle-r1";
 const mobileBlogRetiredReleaseVersion = "20260902-mobile-blog-retired-r1";
 const homeContentReleaseVersion = mobileBlogRetiredReleaseVersion;
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
-const transferReleaseVersion = "20260827-private-room-lifecycle-r1";
+const transferReleaseVersion = "20260908-admin-review-r1";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
-const resourcesRouteVersion = "20260827-private-room-lifecycle-r1";
+const resourcesRouteVersion = "20260908-admin-review-r1";
 const routeStyleVersion = publicSiteReleaseVersion;
 const publicRouteVersion = (route) => route === "knowledge" || route === "chatroom"
   ? motionPolishReleaseVersion
@@ -2407,14 +2407,15 @@ for (const panel of [
   }
 }
 
-for (const asset of ["admin.css", "admin.js"]) {
+for (const asset of ["admin.css", "admin.js", "shared-console.css", "analytics-workbench.js"]) {
   if (!hasVersionedAssetReference(adminHtml, `/admin/${asset}`)) {
     fail(`admin/index.html ${asset} reference is missing a cache-busting query`);
   }
 }
 
-const adminSafetyCacheVersion = adminMotionPolishVersion;
-const adminPublicContentVersion = publicSiteReleaseVersion;
+const adminSafetyCacheVersion = "20260908-admin-review-r1";
+const adminPublicContentVersion = adminSafetyCacheVersion;
+if (!changelog.includes(adminSafetyCacheVersion)) fail("CHANGELOG.md must document the current admin cache version");
 if (!adminHtml.includes(`/admin/admin.css?v=${adminSafetyCacheVersion}`)
   || !adminHtml.includes(`/admin/admin.js?v=${adminPublicContentVersion}`)) {
   fail("admin CSS and JS must use their current cache versions");
@@ -2640,9 +2641,10 @@ if (!hasPattern(adminCss, /body\[data-input-method=["']keyboard["']\]\s+\.map-ci
 }
 
 const cityQueryMarker = "select country, region, city, count(*) as pv, count(distinct visitor_id) as uv";
-const cityQueryAt = apiJs.indexOf(cityQueryMarker);
-const cityQueryEnd = cityQueryAt < 0 ? -1 : apiJs.indexOf("limit 200", cityQueryAt);
-const cityQueryBlock = cityQueryAt < 0 || cityQueryEnd < 0 ? "" : apiJs.slice(cityQueryAt, cityQueryEnd);
+const adminQuerySource = readRequired("functions/api/admin-query-service.mjs");
+const cityQueryAt = adminQuerySource.indexOf(cityQueryMarker);
+const cityQueryEnd = cityQueryAt < 0 ? -1 : adminQuerySource.indexOf("limit 200", cityQueryAt);
+const cityQueryBlock = cityQueryAt < 0 || cityQueryEnd < 0 ? "" : adminQuerySource.slice(cityQueryAt, cityQueryEnd);
 if (!cityQueryBlock
   || !cityQueryBlock.includes("group by country, region, city")
   || cityQueryBlock.includes("ip_prefix")
@@ -2651,7 +2653,7 @@ if (!cityQueryBlock
 }
 
 for (const requiredCityContract of [
-  "cities: (cityRows.results || []).map(adminAnalyticsCityRow)",
+  "cities: overview.cities.map(adminAnalyticsCityRow)",
   "function adminAnalyticsCityRow"
 ]) {
   if (!apiJs.includes(requiredCityContract)) {
@@ -2765,7 +2767,7 @@ if (!adminHtml.includes('id="video-thumbnail-preview" role="status" aria-live="p
 }
 
 try {
-  new Function(adminJs);
+  new Function(adminJs.replace(/^import\s+[^;]+;\s*$/gm, ""));
 } catch (error) {
   fail(`admin/admin.js syntax error: ${error.message}`);
 }
@@ -3345,7 +3347,7 @@ const mobileViewportKeyboardCssVersion = routeLazyVersion;
 const publicModulesVersion = motionPolishReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = homeContentReleaseVersion;
+const currentMainVersion = "20260908-admin-review-r1";
 const currentCssVersion = publicSiteReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260812-wallpaper-game-display-r1";
@@ -5130,7 +5132,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    finalMainVersion,
+    mobileBlogRetiredReleaseVersion,
     finalUpdateId,
     finalUpdateSlug,
     "杂谈区",

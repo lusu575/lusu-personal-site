@@ -30,7 +30,7 @@ test("main admin navigation exposes transfer file governance without publishing 
   const adminHtml = read("admin/index.html");
   const transferHtml = read("admin/transfer.html");
   const transferJs = read("admin/transfer.js");
-  assert.match(adminHtml, /data-admin-href="\/admin\/transfer\.html"[^>]*>互传文件管理</);
+  assert.match(adminHtml, /data-admin-href="\/admin\/transfer\.html"[^>]*>互传[^<]+</);
   assert.match(transferHtml, /<th>发送者<\/th>[\s\S]*<th>保存时间<\/th>[\s\S]*<th>过期时间<\/th>/);
   assert.match(transferHtml, /id="items-previous"[\s\S]*id="items-page-status"[\s\S]*id="items-next"/);
   assert.match(transferJs, /永久删除[\s\S]*R2 文件和数据库记录/);
@@ -49,10 +49,11 @@ test("admin safely switches independent Daily AI News and Tool Radar delivery co
   assert.match(html, /value="tool-radar">工具雷达 · 计划每周二 22:00/);
   assert.match(html, /每日 AI 新闻投递箱/);
   assert.match(html, /自动公开默认关闭/);
-  assert.match(html, /本机定时任务 ai-7-8 已启用，每日 07:00 开始/);
+  assert.match(html, /执行器状态未接入/);
+  assert.doesNotMatch(html + source, /本机定时任务 ai-7-8 已启用|正式任务已启用/);
   assert.match(html, /时区：Asia\/Shanghai；每个栏目的开关、自动公开和凭证彼此独立/);
-  assert.match(html, /admin\.css\?v=20260809-admin-motion-polish-r2/);
-  assert.match(html, /admin\.js\?v=20260827-private-room-lifecycle-r1/);
+  assert.match(html, /admin\.css\?v=20260908-admin-review-r1/);
+  assert.match(html, /admin\.js\?v=20260908-admin-review-r1/);
   assert.doesNotMatch(html, /本轮只准备入口，不创建定时任务/);
   for (const id of [
     "automation-channel-select",

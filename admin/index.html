@@ -2,10 +2,11 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="robots" content="noindex,nofollow">
   <title>鲁肃个人站管理后台</title>
-  <link rel="stylesheet" href="/admin/admin.css?v=20260809-admin-motion-polish-r2">
+  <link rel="stylesheet" href="/admin/shared-console.css?v=20260908-admin-review-r1">
+  <link rel="stylesheet" href="/admin/admin.css?v=20260908-admin-review-r1">
 </head>
 <body>
   <div class="admin-shell">
@@ -26,7 +27,7 @@
         <div class="sidebar-brand">
           <span class="brand-mark">LS</span>
           <div>
-            <strong>站点追踪</strong>
+            <strong>管理工作台</strong>
             <small>已连接 <span id="admin-email">读取中...</span></small>
           </div>
           <button class="xp-button mobile-nav-close" type="button" id="mobile-nav-close" aria-label="关闭后台导航">关闭</button>
@@ -44,20 +45,20 @@
             <button class="nav-button" type="button" data-panel="articles" aria-controls="articles-panel">知识库文章</button>
             <button class="nav-button" type="button" data-panel="automation" aria-controls="automation-panel">自动投递</button>
             <button class="nav-button" type="button" data-panel="videos" aria-controls="videos-panel">视频管理</button>
-            <button class="nav-button" type="button" data-panel="videoCategories" aria-controls="videoCategories-panel">视频分类管理</button>
+            <button class="nav-button" type="button" data-panel="videoCategories" aria-controls="videoCategories-panel">视频分类</button>
           </div>
           <div class="nav-group" role="group" aria-labelledby="nav-group-community">
             <span class="nav-group-title" id="nav-group-community">社区治理</span>
             <button class="nav-button" type="button" data-panel="chat" aria-controls="chat-panel">聊天室管理</button>
-            <button class="nav-button" type="button" data-panel="whiteboards" aria-controls="whiteboards-panel">在线画板管理</button>
+            <button class="nav-button" type="button" data-panel="whiteboards" aria-controls="whiteboards-panel">画板管理</button>
             <button class="nav-button" type="button" data-admin-href="/admin/minimax-h3.html?from=admin">MiniMax H3</button>
-            <button class="nav-button" type="button" data-admin-href="/admin/transfer.html">互传文件管理</button>
+            <button class="nav-button" type="button" data-admin-href="/admin/transfer.html">互传文件</button>
           </div>
           <div class="nav-group" role="group" aria-labelledby="nav-group-system">
             <span class="nav-group-title" id="nav-group-system">账号与系统</span>
             <button class="nav-button" type="button" data-panel="accounts" aria-controls="accounts-panel">账号管理</button>
             <button class="nav-button" type="button" data-panel="socialLinks" aria-controls="socialLinks-panel">社交链接</button>
-            <button class="nav-button" type="button" data-panel="updates" aria-controls="updates-panel">后台更新记录</button>
+            <button class="nav-button" type="button" data-panel="updates" aria-controls="updates-panel">更新记录</button>
             <button class="nav-button" type="button" data-panel="docs" aria-controls="docs-panel">后台说明</button>
           </div>
         </nav>
@@ -70,6 +71,33 @@
 
       <section class="panel active" id="dashboard-panel" aria-hidden="false">
         <div class="insight-note" id="analytics-explainer">正在整理访问数据...</div>
+        <section class="property-section">
+          <div class="section-title-line">
+            <h2>关键指标</h2>
+            <span id="tracked-property-summary">0 个页面 · 0 个地区</span>
+          </div>
+          <div class="kpi-grid" id="kpi-grid"></div>
+        </section>
+        <div class="dashboard-trends">
+        <section class="xp-panel daily-panel">
+          <div class="panel-head">
+            <h2>每日浏览 / 访客</h2>
+            <span id="daily-range">最近 14 天</span>
+          </div>
+          <div class="bar-chart daily-bars" id="daily-chart"></div>
+        </section>
+          <section class="xp-panel realtime-panel">
+            <div class="realtime-hero">
+              <div>
+                <span>今日页面浏览</span>
+                <strong id="dashboard-live-total">0</strong>
+                <small id="dashboard-live-subtitle">实时用户 · 正在读取访问状态</small>
+              </div>
+              <span class="live-clock" id="hourly-range">按服务器时间聚合</span>
+            </div>
+            <div class="bar-chart live-bars" id="hourly-chart"></div>
+          </section>
+        </div>
         <div class="dashboard-insight-strip" id="dashboard-insight-strip" aria-label="访问洞察摘要"></div>
         <div class="dashboard-priority-grid">
           <section class="xp-panel map-block priority-map">
@@ -143,49 +171,22 @@
             <div class="insight-bars compact-bars" id="dashboard-countries" role="list" aria-label="地区概览"></div>
           </section>
         </div>
-        <div class="ga-live-board">
-          <section class="xp-panel realtime-panel">
-            <div class="realtime-hero">
+          <details class="xp-panel realtime-rank-panel dashboard-detail">
+            <summary class="panel-head">
               <div>
-                <span>今日访问总览</span>
-                <strong id="dashboard-live-total">0</strong>
-                <small id="dashboard-live-subtitle">实时用户 · 正在读取访问状态</small>
-              </div>
-              <span class="live-clock" id="hourly-range">按服务器时间聚合</span>
-            </div>
-            <div class="bar-chart live-bars" id="hourly-chart"></div>
-          </section>
-          <aside class="xp-panel realtime-rank-panel">
-            <div class="panel-head">
-              <div>
-                <h2>实时页面表现</h2>
-                <span>按今日访问量形成比例条</span>
+                <h2>期间页面排行</h2>
+                <span>所选日期范围内页面访问</span>
               </div>
               <span id="site-rankings-count">0 个页面</span>
-            </div>
-            <div class="insight-bars compact-bars site-rankings" id="site-rankings" role="list" aria-label="实时页面表现"></div>
-          </aside>
-        </div>
-        <section class="property-section">
-          <div class="section-title-line">
-            <h2>统计覆盖概览</h2>
-            <span id="tracked-property-summary">0 个页面 · 0 个地区</span>
-          </div>
-          <div class="kpi-grid" id="kpi-grid"></div>
-        </section>
+            </summary>
+            <div class="insight-bars compact-bars site-rankings" id="site-rankings" role="list" aria-label="期间页面排行"></div>
+          </details>
         <section class="xp-panel article-overview-panel">
           <div class="panel-head">
             <h2>热门文章</h2>
             <span id="top-articles-count">文章浏览 / 访客</span>
           </div>
           <div class="insight-bars article-bars" id="top-articles" role="list" aria-label="热门文章"></div>
-        </section>
-        <section class="xp-panel daily-panel">
-          <div class="panel-head">
-            <h2>每日浏览 / 访客</h2>
-            <span id="daily-range">最近 14 天</span>
-          </div>
-          <div class="bar-chart daily-bars" id="daily-chart"></div>
         </section>
       </section>
 
@@ -200,8 +201,15 @@
             <label class="list-filter">筛选文章
               <input id="article-list-filter" type="search" autocomplete="off" placeholder="标题、路径标识、分类、标签">
             </label>
+            <div class="content-filter-bar">
+              <label>分类<input id="article-category-filter" list="article-category-options" placeholder="全部分类"><datalist id="article-category-options"></datalist></label>
+              <label>状态<select id="article-status-filter"><option value="">全部状态</option><option value="published">已发布</option><option value="draft">草稿</option><option value="archived">归档</option></select></label>
+              <label>更新于<select id="article-updated-filter"><option value="">不限时间</option><option value="1">最近 24 小时</option><option value="7">最近 7 天</option><option value="30">最近 30 天</option></select></label>
+              <button class="xp-button" id="article-clear-filters" type="button">清除筛选</button>
+            </div>
             <div class="list-overview-strip" id="article-status-overview" aria-label="文章状态概览"></div>
             <div class="article-list" id="article-list"></div>
+            <nav class="content-list-pagination" aria-label="文章分页"><button class="xp-button" id="article-page-prev" type="button">上一页</button><span id="article-page-status" role="status"></span><button class="xp-button" id="article-page-next" type="button">下一页</button></nav>
           </section>
           <section class="xp-panel editor-panel detail-pane">
             <div class="panel-head">
@@ -222,8 +230,7 @@
                 <span class="form-status" id="article-status" role="status" aria-live="polite" aria-atomic="true"></span>
               </div>
               <div class="form-grid">
-                <label>文章路径标识<input name="slug" required maxlength="120" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="例如：ai-notes-2026"></label>
-                <button class="xp-button copy-field-button" type="button" id="copy-article-slug" aria-label="复制文章路径标识" title="复制文章路径标识">复制标识</button>
+                <div class="field-inline-actions"><label>文章路径标识<input name="slug" required maxlength="120" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="例如：ai-notes-2026"></label><button class="xp-button copy-field-button" type="button" id="copy-article-slug" aria-label="复制文章路径标识" title="复制文章路径标识">复制标识</button></div>
                 <label>分类<input name="category" maxlength="80" value="note"></label>
                 <label>标签<input name="tags" placeholder="AI、网站更新"></label>
                 <label>封面<input name="cover_image" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="文章图片路径，例如 assets/images/articles/..."></label>
@@ -237,6 +244,23 @@
                 <label>发布时间<input name="published_at" type="datetime-local" step="1" placeholder="留空则发布时自动写入当前时间"></label>
                 <label class="checkbox-line"><input name="is_pinned" type="checkbox"> 置顶</label>
               </div>
+
+              <div class="form-actions compact-actions"><button class="xp-button" type="button" id="copy-article-public-link">复制公开链接</button><a class="xp-button" id="open-article-public" target="_blank" rel="noopener noreferrer" hidden>前台查看</a><small class="field-hint">公开链接指向最后一次已保存的文章；编辑预览见下方。</small></div>
+              <details class="content-workbench" id="article-local-workbench">
+                <summary>本机暂存与历史版本</summary>
+                <p class="field-hint">仅保存在当前浏览器、当前账号下，不会发布，也不会跨设备同步。同一浏览器的使用者可能读取；不用于保存密钥。最多保留 12 篇、每篇 5 个手动/保存版本，单份上限 320 KiB、总计 2 MiB，旧内容会自动腾出空间。</p>
+                <p class="content-local-status" id="article-local-status" role="status">本机暂存初始化中…</p>
+                <div class="form-actions"><button class="xp-button" type="button" id="article-save-local">立即暂存</button><button class="xp-button" type="button" id="article-restore-local" disabled>恢复暂存</button><button class="xp-button" type="button" id="article-checkpoint-local">记录本机版本</button><button class="xp-button" type="button" id="article-clear-local">清理本账号本机记录</button></div>
+                <label>本机历史<select id="article-local-history"><option value="">暂无本机版本</option></select></label>
+                <pre class="content-history-diff" id="article-local-diff" aria-label="本机版本与当前编辑内容差异">选择版本后显示差异。</pre>
+                <button class="xp-button" type="button" id="article-restore-history" disabled>将所选版本恢复到编辑器</button>
+              </details>
+              <details class="content-workbench article-preview" id="article-preview">
+                <summary>三语文章预览</summary>
+                <label>预览语言<select id="article-preview-lang"><option value="zh">中文</option><option value="en">英文</option><option value="ja">日文</option></select></label>
+                <p class="field-hint">预览当前输入，不保存或发布。沿用主站安全 Markdown 语法；仅加载站内文章图片。</p>
+                <article><h2 id="article-preview-title"></h2><p id="article-preview-summary"></p><div class="article-preview-body" id="article-preview-body"></div></article>
+              </details>
 
               <div class="lang-tabs" role="tablist" aria-label="文章语言">
                 <button class="lang-tab active" type="button" role="tab" id="article-lang-tab-zh" data-article-lang="zh" aria-selected="true" aria-controls="article-lang-panel-zh">中文 <span class="lang-tab-state" data-lang-state="zh">待填写</span></button>
@@ -327,7 +351,7 @@
             <div class="panel-head">
               <div>
                 <h2>以后怎么使用</h2>
-                <span id="automation-guide-summary">本机定时任务 ai-7-8 已启用，每日 07:00 开始</span>
+                <span id="automation-guide-summary">固定计划仅作时间参考，执行器状态未接入</span>
               </div>
             </div>
             <ol id="automation-guide-list">
@@ -360,8 +384,15 @@
             <label class="list-filter">筛选视频
               <input id="video-list-filter" type="search" autocomplete="off" placeholder="标题、作者、平台、链接">
             </label>
+            <div class="content-filter-bar">
+              <label>分类<select id="video-category-filter"><option value="">全部分类</option></select></label>
+              <label>状态<select id="video-status-filter"><option value="">全部状态</option><option value="published">已发布</option><option value="draft">草稿</option><option value="hidden">隐藏</option></select></label>
+              <label>资料<select id="video-metadata-filter"><option value="">全部资料</option><option value="error">抓取异常</option><option value="missing">缺少标题/封面/作者</option><option value="ready">资料完整</option></select></label>
+              <button class="xp-button" id="video-clear-filters" type="button">清除筛选</button>
+            </div>
             <div class="list-overview-strip" id="video-status-overview" aria-label="视频状态概览"></div>
             <div class="article-list" id="video-list-admin"></div>
+            <nav class="content-list-pagination" aria-label="视频分页"><button class="xp-button" id="video-page-prev" type="button">上一页</button><span id="video-page-status" role="status"></span><button class="xp-button" id="video-page-next" type="button">下一页</button></nav>
           </section>
           <section class="xp-panel editor-panel detail-pane">
             <div class="panel-head">
@@ -370,6 +401,7 @@
               <span>链接由服务端识别并生成站内播放器</span>
             </div>
             <form id="video-form" class="editor-form">
+              <input type="hidden" name="metadata_recovered" value="">
               <div class="form-actions sticky-actions">
                 <button class="xp-button" type="submit" title="保存当前视频">保存</button>
                 <button class="xp-button primary" type="button" id="publish-video" title="保存并发布当前视频">保存并发布</button>
@@ -383,11 +415,9 @@
                 <button class="xp-button" type="button" id="refresh-video-metadata" title="请先选择已保存视频" disabled>刷新元数据</button>
                 <button class="xp-button" type="button" id="copy-video-original-url" aria-label="复制视频原始链接" title="复制视频原始链接">复制原链接</button>
               </div>
+              <p class="field-hint">识别和补齐资料只填写空字段，保留你已填写的标题、简介、封面和作者。先检查表单，再保存生效。</p>
+              <details class="video-advanced-settings"><summary>播放器技术信息</summary><div class="form-grid"><label>平台<input name="platform" readonly></label><label>平台视频编号<input name="external_id" readonly></label><div class="field-inline-actions"><label>播放器地址<input name="embed_url" readonly></label><button class="xp-button copy-field-button" type="button" id="copy-video-embed-url" aria-label="复制视频播放器地址" title="复制视频播放器地址">复制播放器</button></div></div></details>
               <div class="form-grid">
-                <label>平台<input name="platform" readonly></label>
-                <label>平台视频编号<input name="external_id" readonly></label>
-                <label>播放器地址<input name="embed_url" readonly></label>
-                <button class="xp-button copy-field-button" type="button" id="copy-video-embed-url" aria-label="复制视频播放器地址" title="复制视频播放器地址">复制播放器</button>
                 <label>作者<input name="author_name" maxlength="160"></label>
                 <label>发布时间<input name="published_at" type="datetime-local" step="1"></label>
                 <label>状态
@@ -397,10 +427,11 @@
                     <option value="hidden">隐藏</option>
                   </select>
                 </label>
-                <label>排序<input name="sort_order" type="number" value="10"></label>
+                <label>排序<input name="sort_order" type="number" value="10"><small class="field-hint">普通队列按数值从大到小，同分按发布时间（未设则创建时间）排序。</small></label>
                 <label class="checkbox-line"><input name="pinned" type="checkbox"> 置顶</label>
                 <label>置顶排序<input name="pinned_sort_order" type="number" value="10"><small class="field-hint" id="video-pinned-sort-hint">勾选置顶后设置，数值越大越靠前。</small></label>
               </div>
+              <p class="field-hint" id="video-order-preview" role="status">保存后按排序值排列。</p>
               <section class="thumbnail-field thumbnail-card" aria-labelledby="video-thumbnail-title">
                 <div>
                   <strong id="video-thumbnail-title">视频封面</strong>
@@ -643,7 +674,7 @@
               <label class="mini-check"><input id="include-hidden-chat" type="checkbox"> 显示隐藏</label>
             </div>
             <label class="list-filter">筛选已加载消息
-              <input id="chat-list-filter" type="search" autocomplete="off" placeholder="昵称、内容、来源、隐藏状态">
+              <input id="chat-list-filter" type="search" autocomplete="off" placeholder="昵称、消息 ID、明文内容或来源">
             </label>
             <div class="list-overview-strip" id="chat-status-overview" aria-label="聊天消息状态概览"></div>
             <div class="chat-list" id="chat-list"></div>
@@ -673,7 +704,7 @@
                   <div class="danger-actions-body">
                     <p>删除不可恢复；删除整个密码房会清空全部消息，同一密码再进入时会创建全新空房间。</p>
                     <label>禁言原因<input name="ban_reason" maxlength="200" placeholder="说明本次治理原因"></label>
-                    <label>禁言时长（小时，0 为长期）<input name="ban_hours" type="number" min="0" max="8760" value="24"></label>
+                    <label>禁言时长<select name="ban_hours"><option value="1">1 小时</option><option value="24" selected>24 小时</option><option value="168">7 天</option><option value="720">30 天</option><option value="0">永久，需手动解除</option></select><small>到期后自动失效；永久禁言需在记录中手动停用。</small></label>
                     <div class="form-actions">
                       <button class="xp-button warning" type="button" id="ban-chat-visitor" disabled>禁言用户标识</button>
                       <button class="xp-button warning" type="button" id="ban-chat-ip" disabled>禁言网络来源</button>
@@ -745,7 +776,7 @@
                 <span id="whiteboard-room-list-count">0 个房间</span>
               </div>
               <label class="list-filter">筛选房间
-                <input id="whiteboard-room-filter" type="search" autocomplete="off" placeholder="公共房、密码房、状态、截短标识">
+                <input id="whiteboard-room-filter" type="search" autocomplete="off" placeholder="筛选本页：房间类型、状态、截短标识">
               </label>
               <div class="whiteboard-room-list" id="whiteboard-room-list" role="list" aria-label="在线画板房间"></div>
             </section>
@@ -832,7 +863,7 @@
             </div>
             <div class="account-summary" id="account-summary"></div>
             <label class="list-filter">筛选账号
-              <input id="account-list-filter" type="search" autocomplete="off" placeholder="邮箱、角色、密码状态、活跃">
+              <input id="account-list-filter" type="search" autocomplete="off" placeholder="邮箱或账号 ID">
             </label>
             <div class="list-overview-strip" id="account-status-overview" aria-label="账号状态概览"></div>
             <div class="article-list" id="account-list"></div>
@@ -983,6 +1014,7 @@
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20260827-private-room-lifecycle-r1"></script>
+  <script src="/admin/analytics-workbench.js?v=20260908-admin-review-r1"></script>
+  <script type="module" src="/admin/admin.js?v=20260908-admin-review-r1"></script>
 </body>
 </html>

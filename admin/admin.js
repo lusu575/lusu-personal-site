@@ -1,3 +1,8 @@
+import { createDraftStore, articleSnapshot, applyArticleSnapshot, renderArticleMarkdown, articleVersionDiff, contentListQuery } from './content-workbench.mjs?v=20260908-admin-review-r1';
+import { createManagementWorkbench } from './management-workbench.mjs?v=20260908-admin-review-r1';
+
+let managementWorkbench = null;
+
 const state = {
   user: null,
   activePanel: "dashboard",
@@ -35,6 +40,7 @@ const state = {
   videoDeleting: false,
   chatMessages: [],
   selectedMessageId: "",
+  chatUpdatedAt: "",
   chatFilter: "",
   chatActionBusy: false,
   chatActionBusyMode: "",
@@ -158,7 +164,7 @@ const AUTOMATION_CHANNEL_DEFINITIONS = {
     heading: "每日 AI 新闻投递箱",
     description: "固定进入知识库“每日 AI 新闻”，可独立控制投递与自动公开",
     openArticlesLabel: "查看每日 AI 新闻文章",
-    guideSummary: "本机定时任务 ai-7-8 已启用，每日 07:00 开始",
+    guideSummary: "计划每日 07:00 开始；本机执行状态尚未接入后台",
     guideItems: [
       "每日 07:00–08:00 保持本机、Codex 与网络可用。",
       "投递是否生效，以本页的连接凭证、投递状态和“自动公开”状态为准。",
@@ -172,11 +178,11 @@ const AUTOMATION_CHANNEL_DEFINITIONS = {
     heading: "工具雷达投递箱",
     description: "固定进入知识库“工具雷达”，计划每周二 22:00 运行并独立控制投递与自动公开",
     openArticlesLabel: "查看工具雷达文章",
-    guideSummary: "正式任务已启用，每周二 22:00（Asia/Shanghai）运行",
+    guideSummary: "计划每周二 22:00（Asia/Shanghai）运行；执行状态以实际投递记录为准",
     guideItems: [
       "每周二 22:00 保持本机、Codex 与网络可用，任务会独立收集、核验并整理本期工具。",
       "投递是否生效，以本页“工具雷达”的连接凭证、投递状态和“自动公开”状态为准，不与每日 AI 新闻共用配置。",
-      "原创图先随主站部署并通过线上 SHA-256 校验；关闭“自动公开”、暂停投递或撤销凭证都会阻止自动公开。"
+      "核实来源的官方实拍或产品截图先随主站部署并通过线上 SHA-256 校验；关闭“自动公开”、暂停投递或撤销凭证都会阻止自动公开。"
     ]
   }
 };
@@ -204,6 +210,11 @@ const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-09-08",
+    title: "统计、内容工作台与移动管理优化",
+    body: "修正真实指标趋势、上海时区和采样说明，支持日期筛选、CSV 导出、暂停刷新与待办历史。文章新增三语预览、本账号本机暂存和版本差异；账号聊天加入版本冲突保护，管理列表支持筛选分页。移动导航与表单布局统一，互传配额改用 MiB/GiB，通知结果和 H3 就绪状态以实际响应为准。"
+  },
   {
     date: "2026-08-27",
     title: "密码房彻底删除与重新建房",
@@ -749,7 +760,7 @@ function editorFieldElements(panel) {
     return [];
   }
   return forms.flatMap((form) => Array.from(form.elements)).filter((field) => {
-    if (!(field instanceof HTMLElement)) {
+    if (!(field instanceof HTMLElement) || field.closest(".content-workbench")) {
       return false;
     }
     const type = String(field.type || "").toLowerCase();
@@ -839,7 +850,9 @@ function syncEditorIndicator(panel) {
     indicator.title = `${editorConfigs[panel].label}有未保存更改`;
     return;
   }
-  const savedText = tracking.lastSavedAt ? `已保存 ${tracking.lastSavedAt}` : "已保存";
+  const selected = ({ articles: state.selectedArticleId, videos: state.selectedVideoId, videoCategories: state.selectedVideoCategoryId, chat: state.selectedMessageId, accounts: state.selectedAccountId })[panel];
+  const emptyEditor = ["articles", "videos", "videoCategories", "chat", "accounts"].includes(panel) && !selected;
+  const savedText = emptyEditor ? "尚未保存" : (tracking.lastSavedAt ? `已保存 ${tracking.lastSavedAt}` : "与已加载版本一致");
   setElementText(indicator, savedText);
   indicator.title = savedText;
 }
@@ -853,6 +866,7 @@ function captureEditorBaseline(panel, options = {}) {
   tracking.baselineValues = editorRestorableSnapshot(panel);
   tracking.initialized = true;
   tracking.dirty = false;
+  if (!options.saved) tracking.lastSavedAt = "";
   if (options.saved) {
     tracking.lastSavedAt = new Intl.DateTimeFormat("zh-CN", {
       hour: "2-digit",
@@ -1965,7 +1979,7 @@ function articleStatusLabel(status) {
 function getStatusTone(text) {
   const value = (text || "").trim();
   const isBusy = Boolean(value) && /正在|读取中|保存中|发布中|删除中|刷新中|识别中|停用中|隐藏中|恢复中/.test(value);
-  const isError = Boolean(value) && (/失败|错误|不能|请先|请补齐|请填写|请等待|缺少|无效|过大|不支持|异常|拒绝|权限|HTTP\s*[45]\d\d/.test(value) || /\b(not found|forbidden|unauthorized|internal server error|error)\b/i.test(value));
+  const isError = Boolean(value) && (/失败|错误|不能|请先|请补齐|请填写|请等待|必填|尚未|未完成|需要处理|缺少|无效|过大|不支持|异常|拒绝|权限|HTTP\s*[45]\d\d/.test(value) || /\b(not found|forbidden|unauthorized|internal server error|error)\b/i.test(value));
   return {
     busy: isBusy && !isError,
     error: isError
@@ -1973,7 +1987,11 @@ function getStatusTone(text) {
 }
 
 function applyStatusTone(element) {
-  const tone = getStatusTone(element.textContent);
+  const explicitTone = element.dataset.statusTone;
+  const tone = explicitTone
+    ? { busy: explicitTone === "busy", error: explicitTone === "error" }
+    : getStatusTone(element.textContent);
+  element.classList.toggle("is-warning", explicitTone === "warning");
   element.classList.toggle("is-busy", tone.busy);
   element.classList.toggle("is-loading", tone.busy);
   element.classList.toggle("is-error", tone.error);
@@ -1992,6 +2010,7 @@ function setStatus(text, options = {}) {
   const refreshState = $("#refresh-state");
   setElementText(refreshState, text);
   refreshState.setAttribute("aria-label", text);
+  refreshState.dataset.statusTone = options.tone || "";
   applyStatusTone(refreshState);
   if (options.holdMs) {
     state.statusHoldUntil = Date.now() + options.holdMs;
@@ -2149,6 +2168,7 @@ async function loadPanelData(panel, options = {}) {
       }
 
       state.loadedPanels[key] = Date.now();
+      window.AdminAnalyticsWorkbench?.renderWorkQueue();
       if (!overviewPanels.has(panel)) {
         setStatus(completionStatus || `已读取 ${panelMeta[panel][0]}`);
       }
@@ -2167,6 +2187,7 @@ async function loadPanelData(panel, options = {}) {
 
 function applyActivePanel(panel) {
   state.activePanel = panel;
+  window.AdminAnalyticsWorkbench?.syncPanel();
   $$(".nav-button").forEach((button) => {
     const active = button.dataset.panel === panel;
     button.classList.toggle("active", active);
@@ -2268,7 +2289,7 @@ async function handleNavKeydown(event, index, buttons) {
 }
 
 function autoRefreshActivePanel() {
-  if (document.hidden || !autoRefreshPanels.has(state.activePanel)) {
+  if (document.hidden || window.AdminAnalyticsWorkbench?.isPaused() || !autoRefreshPanels.has(state.activePanel)) {
     return false;
   }
   loadPanelData(state.activePanel, { force: true });
@@ -2283,7 +2304,8 @@ async function loadMe() {
 
 async function loadOverview() {
   setStatus("正在刷新数据...");
-  const payload = await api("/api/admin/analytics/overview?days=14");
+  const payload = await api(window.AdminAnalyticsWorkbench?.overviewUrl() || "/api/admin/analytics/overview?days=14");
+  window.AdminAnalyticsWorkbench?.beforeOverview(payload);
   state.overview = payload;
   renderOverview();
   setStatus(`已刷新 ${formatTime(payload.generatedAt)}`);
@@ -2601,7 +2623,7 @@ function renderOverview() {
   if (!state.overview) {
     return;
   }
-  $("#analytics-explainer").textContent = "统计口径：浏览量是页面被打开的次数，独立访客数是去重后的访客人数。已登录账号按账号合并，同一账号多设备、多次访问也只算 1 个独立访客；匿名访问继续按隐藏访客标识统计。";
+  $("#analytics-explainer").textContent = "统计口径：PV 是已采集的页面打开次数；UV 在所选区间内按账号或匿名访客标识去重，逐日或逐时 UV 不可相加。点击与消息使用各自真实事件。";
   renderDashboardHero(state.overview.cards || {});
   renderDashboardInsightStrip();
   renderKpis(state.overview.cards);
@@ -2616,20 +2638,20 @@ function renderOverview() {
   renderSiteRankings(state.overview.topPages || []);
   renderVisitTables();
   renderClickPanels();
+  window.AdminAnalyticsWorkbench?.afterOverview(state.overview);
 }
 
 function renderDashboardHero(cards) {
-  const topPages = state.overview?.topPages || [];
-  const countries = state.overview?.countries || [];
-  const topArticles = state.overview?.topArticles || [];
-  const pageCount = topPages.length;
-  const countryCount = countries.length;
-  const articleCount = topArticles.length;
+  const coverage = state.overview?.coverage || {};
+  const pageCount = coverage.pageCount ?? cards.totalPages;
+  const countryCount = coverage.countryCount ?? cards.totalCountries;
+  const articleCount = coverage.articleCount ?? cards.totalArticles;
+  const showCount = (value) => value == null ? "未提供" : formatNumber(value);
   setElementText($("#dashboard-live-total"), formatNumber(cards.todayPv));
-  setElementText($("#dashboard-live-subtitle"), `近 5 分钟活跃 · ${formatNumber(cards.onlineVisitors)} 个访客 / ${formatNumber(pageCount)} 个页面有访问`);
-  setElementText($("#tracked-sites-count"), formatNumber(pageCount));
-  setElementText($("#tracked-properties-count"), formatNumber(countryCount));
-  setElementText($("#tracked-property-summary"), `${formatNumber(pageCount)} 个页面 · ${formatNumber(countryCount)} 个地区 · ${formatNumber(articleCount)} 篇文章`);
+  setElementText($("#dashboard-live-subtitle"), `今日已采集页面浏览 · 近 5 分钟活跃 ${showCount(cards.onlineVisitors)} 位访客`);
+  setElementText($("#tracked-sites-count"), showCount(pageCount));
+  setElementText($("#tracked-properties-count"), showCount(countryCount));
+  setElementText($("#tracked-property-summary"), `期间有访问：${showCount(pageCount)} 个页面 · ${showCount(countryCount)} 个国家／地区 · ${showCount(articleCount)} 篇文章`);
 }
 
 function renderDashboardInsightStrip() {
@@ -2679,7 +2701,6 @@ function createInsightSummaryChip(item) {
   const detail = document.createElement("small");
   const text = `${item.label}：${item.value}，${item.detail}`;
   chip.className = "dashboard-insight-chip";
-  chip.tabIndex = 0;
   chip.title = text;
   chip.setAttribute("aria-label", text);
   setElementText(label, item.label);
@@ -2690,109 +2711,64 @@ function createInsightSummaryChip(item) {
 }
 
 function renderKpis(cards = {}) {
-  const items = [
-    ["今日页面浏览", cards.todayPv, "所有页面打开次数，刷新也会计入。", 0],
-    ["今日独立访客", cards.todayUv, "登录账号按账号合并；匿名访客按隐藏访客标识计算。", 3],
-    [`最近 ${state.overview?.windowDays || 14} 天浏览`, cards.totalPv, "这段时间内站内页面被打开的总次数。", 5],
-    [`最近 ${state.overview?.windowDays || 14} 天访客`, cards.totalUv, "用于判断真实触达人数，登录用户多设备仍合并为 1 个独立访客。", 7],
-    ["今日点击动作", cards.todayClicks, "按钮、卡片、筛选和播放等可点击操作次数。", 9],
-    ["正在活跃", cards.onlineVisitors, "最近 5 分钟内有访问记录的访客或登录账号。", 11],
-    ["今日聊天消息", cards.todayMessages, "匿名聊天室今天实际发出的消息数。", 13]
-  ];
-  const topPages = state.overview?.topPages || [];
-  const countries = state.overview?.countries || [];
-  const sparkRows = state.overview?.hourly?.length ? state.overview.hourly : (state.overview?.daily || []);
-  $("#kpi-grid").replaceChildren(...items.map(([label, value, hint, offset], index) => {
+  const items = window.AdminAnalyticsWorkbench.metricModels({ ...state.overview, cards });
+  $("#kpi-grid").replaceChildren(...items.map(({ key, label, value, hint, rows, period }) => {
     const card = document.createElement("article");
     const header = document.createElement("div");
     const title = document.createElement("h3");
     const number = document.createElement("strong");
-    const lists = document.createElement("div");
+    const trendLabel = document.createElement("small");
     const quota = document.createElement("small");
     card.className = "kpi-card property-card";
-    const formattedValue = formatNumber(value);
+    card.dataset.analyticsKey = `kpi:${key}`;
+    const formattedValue = value == null ? "未提供" : formatNumber(value);
     const cardLabel = `${label}：${formattedValue}。${hint}`;
-    card.tabIndex = 0;
     card.title = cardLabel;
     card.setAttribute("aria-label", cardLabel);
     header.className = "property-card-head";
-    lists.className = "property-card-lists";
+    trendLabel.className = "kpi-trend-label";
     quota.className = "property-quota";
     setElementText(title, label);
     setElementText(number, formattedValue);
     setElementText(quota, `口径：${hint}`);
+    setElementText(trendLabel, rows.length ? `${period} · 从早到晚` : `${period} · 无历史趋势`);
     header.append(title, number);
-    lists.append(
-      createPropertyMiniList("热门页面", rotateRows(topPages, index).slice(0, 4), "path", "pv"),
-      createPropertyMiniList("国家 / 地区", rotateRows(countries, index).slice(0, 3), "country", "pv")
-    );
-    card.append(header, createSparkBars(sparkRows, offset), lists, quota);
+    card.append(header);
+    if (rows.length) card.append(createSparkBars(rows, period));
+    card.append(trendLabel, quota);
     return card;
   }));
 }
 
-function rotateRows(rows, offset) {
-  if (!rows.length) {
-    return [];
-  }
-  const normalized = offset % rows.length;
-  return [...rows.slice(normalized), ...rows.slice(0, normalized)];
-}
-
-function createSparkBars(rows, offset = 0) {
+function createSparkBars(rows, label = "趋势") {
   const spark = document.createElement("div");
   spark.className = "property-sparkline";
+  spark.setAttribute("role", "img");
+  spark.setAttribute("aria-label", `${label}：${rows.map((row) => `${row.at} ${row.value}`).join("；")}`);
   if (!rows.length) {
     spark.classList.add("is-empty");
     return spark;
   }
-  const sample = rotateRows(rows, offset).slice(0, 24);
-  const max = Math.max(1, ...sample.map((row) => Number(row.pv || 0)));
-  sample.forEach((row) => {
+  const max = Math.max(1, ...rows.map((row) => row.value));
+  rows.forEach((row) => {
     const bar = document.createElement("span");
-    const height = Math.max(2, Math.round((Number(row.pv || 0) / max) * 100));
+    const height = Math.round((row.value / max) * 100);
     bar.style.height = `${height}%`;
-    bar.title = `浏览 ${formatNumber(row.pv)} / 访客 ${formatNumber(row.uv)}`;
+    bar.title = `${row.at} · ${formatNumber(row.value)}`;
+    bar.setAttribute("aria-hidden", "true");
     spark.append(bar);
   });
   return spark;
 }
 
-function createPropertyMiniList(titleText, rows, labelKey, valueKey) {
-  const box = document.createElement("div");
-  const title = document.createElement("h4");
-  box.className = "property-mini-list";
-  setElementText(title, titleText);
-  box.append(title);
-  if (!rows.length) {
-    const empty = document.createElement("p");
-    setElementText(empty, titleText.includes("国家") ? "暂无地区数据" : "暂无页面数据");
-    box.append(empty);
-    return box;
-  }
-  rows.forEach((row) => {
-    const item = document.createElement("p");
-    const label = document.createElement("span");
-    const value = document.createElement("strong");
-    const labelText = labelKey === "country"
-      ? countryDisplayName(row.country)
-      : pageDisplayName(row.path || row.route || row.title, row.route);
-    setElementText(label, labelText);
-    setElementText(value, formatNumber(row[valueKey]));
-    item.append(label, value);
-    box.append(item);
-  });
-  return box;
-}
-
 function renderDailyChart(rows) {
   const windowDays = state.overview?.windowDays || 14;
-  $("#daily-range").textContent = `最近 ${windowDays} 天 · ${formatNumber(rows.length)} 条`;
+  $("#daily-range").textContent = `近 ${windowDays} 天（含今天） · ${state.overview?.timeZone || "UTC"} · PV 蓝 / UV 绿`;
   renderBars($("#daily-chart"), rows, "day");
 }
 
 function renderHourlyChart(rows) {
-  $("#hourly-range").textContent = `服务器时间 · ${formatNumber(rows.length)} 个小时`;
+  $("#hourly-range").textContent = `今日逐时 · ${state.overview?.timeZone || "UTC"} · PV 蓝 / UV 绿 · 最后一小时尚未结束`;
   renderBars($("#hourly-chart"), rows, "hour");
 }
 
@@ -2808,16 +2784,19 @@ function renderBars(container, rows, labelKey) {
   const chartText = `${chartLabel}：${formatNumber(rows.length)} 条数据`;
   container.title = chartText;
   container.setAttribute("aria-label", chartText);
-  const max = Math.max(1, ...rows.map((row) => Number(row.pv || 0)));
-  container.replaceChildren(...rows.map((row) => {
-    const height = Math.max(2, Math.round((Number(row.pv || 0) / max) * 100));
+  const orderedRows = [...rows].sort((a, b) => String(a[labelKey]).localeCompare(String(b[labelKey])));
+  const max = Math.max(1, ...orderedRows.flatMap((row) => [Number(row.pv || 0), Number(row.uv || 0)]));
+  container.replaceChildren(...orderedRows.map((row) => {
+    const height = Math.round((Number(row.pv || 0) / max) * 100);
     const label = labelKey === "hour" ? String(row.hour || "").slice(11, 16) : String(row.day || "").slice(5);
     const cell = document.createElement("div");
     const stack = document.createElement("div");
     const fill = document.createElement("div");
+    const uvFill = document.createElement("div");
     const labelNode = document.createElement("div");
     const pointLabel = `${label}：浏览 ${formatNumber(row.pv)} / 访客 ${formatNumber(row.uv)}`;
     cell.className = "bar-cell";
+    cell.dataset.analyticsKey = `${labelKey}:${row[labelKey]}`;
     cell.tabIndex = 0;
     cell.setAttribute("role", "img");
     cell.setAttribute("aria-label", pointLabel);
@@ -2825,9 +2804,11 @@ function renderBars(container, rows, labelKey) {
     stack.className = "bar-stack";
     fill.className = "bar-fill";
     fill.style.height = `${height}%`;
+    uvFill.className = "bar-fill bar-fill-uv";
+    uvFill.style.height = `${Math.round((Number(row.uv || 0) / max) * 100)}%`;
     labelNode.className = "bar-label";
     labelNode.textContent = label;
-    stack.append(fill);
+    stack.append(fill, uvFill);
     cell.append(stack, labelNode);
     return cell;
   }));
@@ -3632,10 +3613,9 @@ function mapPlaceLabel(row) {
 
 function renderTopPages(rows) {
   const box = $("#top-pages");
-  const pvTotal = rows.reduce((sum, row) => sum + Number(row.pv || 0), 0);
   const visibleRows = rows.slice(0, 6);
   const countText = rows.length
-    ? `展示前 ${formatNumber(visibleRows.length)} / 共 ${formatNumber(rows.length)} 个页面 · 浏览 ${formatNumber(pvTotal)}`
+    ? `展示前 ${formatNumber(visibleRows.length)} 个页面 · 所选日期范围`
     : "0 个页面";
   setElementText($("#top-pages-count"), countText);
   syncBoxLabel(box, rows.length ? `页面概览：${countText}` : "页面概览：暂无数据");
@@ -3693,10 +3673,9 @@ function createInsightBarItem({ rank, label, detail, value, secondaryValue, max,
 
 function renderTopArticles(rows) {
   const box = $("#top-articles");
-  const pvTotal = rows.reduce((sum, row) => sum + Number(row.pv || 0), 0);
   const visibleRows = rows.slice(0, 8);
   const countText = rows.length
-    ? `展示前 ${formatNumber(visibleRows.length)} / 共 ${formatNumber(rows.length)} 篇 · 浏览 ${formatNumber(pvTotal)}`
+    ? `展示前 ${formatNumber(visibleRows.length)} 篇 · 所选日期范围`
     : "0 篇文章";
   setElementText($("#top-articles-count"), countText);
   syncBoxLabel(box, rows.length ? `热门文章：${countText}` : "热门文章：暂无数据");
@@ -3720,10 +3699,9 @@ function renderVisitTables() {
   const overview = state.overview || {};
   const countryBox = $("#country-table");
   const countries = overview.countries || [];
-  const countryPvTotal = countries.reduce((sum, row) => sum + Number(row.pv || 0), 0);
   const visibleCountries = countries.slice(0, 8);
   const countryCountText = countries.length
-    ? `展示前 ${formatNumber(visibleCountries.length)} / 共 ${formatNumber(countries.length)} 个地区 · 浏览 ${formatNumber(countryPvTotal)}`
+    ? `展示前 ${formatNumber(visibleCountries.length)} 个国家／地区 · 所选日期范围`
     : "0 个地区";
   setElementText($("#country-table-count"), countryCountText);
   syncBoxLabel(countryBox, countries.length ? `国家来源：${countryCountText}` : "国家来源：暂无数据");
@@ -3752,7 +3730,7 @@ function renderVisitTables() {
     ? regions.filter((row) => regionMatchesFilter(row, regionFilterText))
     : regions;
   const regionCountText = regions.length
-    ? `${regionFilterText ? `显示 ${formatNumber(visibleRegions.length)} / ` : ""}共 ${formatNumber(regions.length)} 条 · 浏览 ${formatNumber(regionPvTotal)} · ${formatNumber(regionPrefixCount)} 条含网络前缀`
+    ? `${regionFilterText ? `筛选显示 ${formatNumber(visibleRegions.length)} / ` : ""}已返回 ${formatNumber(regions.length)} 条 · 这些来源浏览 ${formatNumber(regionPvTotal)} · ${formatNumber(regionPrefixCount)} 条含网络前缀`
     : "0 条来源";
   setElementText($("#region-table-count"), regionCountText);
   syncTableWrapLabel(regionTable, regions.length ? `地区与网络来源：${regionCountText}` : "地区与网络来源：暂无数据");
@@ -3778,6 +3756,8 @@ function renderVisitTables() {
       createMetricTableCell(row.uv),
       createTimeTableCell(row.last_seen_at)
     );
+    const copyButton = tableRow.querySelector(".table-inline-copy");
+    if (copyButton) copyButton.dataset.analyticsKey = `region-copy:${JSON.stringify([row.country, row.region, row.city, row.ip_prefix])}`;
     return tableRow;
   }));
 }
@@ -3788,7 +3768,7 @@ function renderClickPanels() {
   const topRows = overview.topClicks || [];
   const clickTotal = topRows.reduce((sum, row) => sum + Number(row.clicks || 0), 0);
   const clickCountText = topRows.length
-    ? `共 ${formatNumber(topRows.length)} 个目标 · 点击 ${formatNumber(clickTotal)}`
+    ? `已返回前 ${formatNumber(topRows.length)} 个目标 · 这些目标点击 ${formatNumber(clickTotal)}`
     : "0 个目标";
   setElementText($("#top-clicks-count"), clickCountText);
   syncBoxLabel(topClicks, topRows.length ? `点击热点：${clickCountText}` : "点击热点：暂无数据");
@@ -3818,7 +3798,7 @@ function renderClickPanels() {
     : recentClicks;
   const clickSizeCount = recentClicks.filter((row) => Number(row.screen_width || 0) > 0 && Number(row.screen_height || 0) > 0).length;
   const recentCountText = recentClicks.length
-    ? `${clickFilterText ? `显示 ${formatNumber(visibleRecentClicks.length)} / ` : ""}共 ${formatNumber(recentClicks.length)} 条 · ${formatNumber(clickSizeCount)} 条含尺寸`
+    ? `${clickFilterText ? `筛选显示 ${formatNumber(visibleRecentClicks.length)} / ` : ""}最近 ${formatNumber(recentClicks.length)} 条 · ${formatNumber(clickSizeCount)} 条含尺寸`
     : "0 条事件";
   setElementText($("#recent-clicks-count"), recentCountText);
   syncBoxLabel($("#recent-clicks"), recentClicks.length ? `最近点击：${recentCountText}` : "最近点击：暂无数据");
@@ -3830,12 +3810,14 @@ function renderClickPanels() {
   } else {
     renderRecentClickPageBars(recentClickPageBars, visibleRecentClicks);
   }
-  renderEventList("#recent-clicks", visibleRecentClicks, clickFilterText ? "没有匹配的点击事件，换个目标、页面、来源或尺寸试试。" : "暂无点击事件", (row) => (
-    createEventItemElement(clickTargetDisplayName(row), [
+  renderEventList("#recent-clicks", visibleRecentClicks, clickFilterText ? "没有匹配的点击事件，换个目标、页面、来源或尺寸试试。" : "暂无点击事件", (row) => {
+    const item = createEventItemElement(clickTargetDisplayName(row), [
       `页面：${pageDisplayName(row.path || row.route, row.route)} · 时间：${formatTime(row.created_at)} · 来源：${mapPlaceLabel(row)}`,
       `目标位置：${clickRouteDisplayName(row)} · ${formatClickScreenSize(row)}`
-    ])
-  ));
+    ]);
+    item.dataset.analyticsKey = `click-event:${row.event_id || JSON.stringify([row.created_at, row.path, row.target_key])}`;
+    return item;
+  });
 }
 
 function renderRecentClickPageBars(box, rows) {
@@ -3925,10 +3907,9 @@ function renderDashboardCountries(rows) {
   if (!box || !count) {
     return;
   }
-  const pvTotal = rows.reduce((sum, row) => sum + Number(row.pv || 0), 0);
   const visibleRows = rows.slice(0, 6);
   const countText = rows.length
-    ? `展示前 ${formatNumber(visibleRows.length)} / 共 ${formatNumber(rows.length)} 个地区 · 浏览 ${formatNumber(pvTotal)}`
+    ? `展示前 ${formatNumber(visibleRows.length)} 个国家／地区 · 所选日期范围`
     : "0 个地区";
   setElementText(count, countText);
   syncBoxLabel(box, rows.length ? `地区概览：${countText}` : "地区概览：暂无数据");
@@ -3955,14 +3936,13 @@ function renderSiteRankings(rows) {
     return;
   }
   const rankingRows = rows.slice(0, 6);
-  const pvTotal = rows.reduce((sum, row) => sum + Number(row.pv || 0), 0);
   const countText = rows.length
-    ? `展示前 ${formatNumber(rankingRows.length)} / 共 ${formatNumber(rows.length)} 个页面 · 浏览 ${formatNumber(pvTotal)}`
+    ? `展示前 ${formatNumber(rankingRows.length)} 个页面 · 所选日期范围`
     : "0 个页面";
   setElementText(count, countText);
-  syncBoxLabel(list, rankingRows.length ? `实时页面表现：${countText}` : "实时页面表现：暂无数据");
+  syncBoxLabel(list, rankingRows.length ? `期间页面排行：${countText}` : "期间页面排行：暂无数据");
   if (!rankingRows.length) {
-    list.replaceChildren(createEmptyStateElement("暂无实时页面数据"));
+    list.replaceChildren(createEmptyStateElement("所选日期范围暂无页面数据"));
     return;
   }
   const max = Math.max(1, ...rankingRows.map((row) => Number(row.pv || 0)));
@@ -4001,6 +3981,50 @@ function renderAutomationGuide(definition) {
     item.textContent = text;
     return item;
   }));
+}
+
+function renderAutomationRunSummary() {
+  let box = $("#automation-run-summary");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "automation-run-summary";
+    box.className = "automation-run-summary";
+    box.setAttribute("aria-label", "任务计划与最近送达");
+    $("#automation-publish-note")?.after(box);
+  }
+  const definition = automationDefinition();
+  const helper = window.AdminAnalyticsWorkbench;
+  const nextAt = helper.nextPlannedAt(definition.key);
+  const rows = [...state.automationDeliveries].sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+  const last = rows[0];
+  const lines = [
+    `固定计划：${definition.schedule}`,
+    `下一计划时间（推算）：${helper.formatDate(nextAt)}，Asia/Shanghai`,
+    state.automationLoading ? "最近送达结果：正在读取。" : last
+      ? `最近送达结果：${articleStatusLabel(last.status)} · ${helper.formatDate(last.createdAt)} · ${last.title || last.slug || "未命名文章"}`
+      : state.automationChannel ? "最近送达结果：没有已记录的送达。" : "最近送达结果：尚未取得通道数据。",
+    "执行器状态未接入：计划时间不代表任务已启动。采集进度、执行失败与心跳无法由送达记录推断。"
+  ];
+  box.replaceChildren(...lines.map((text) => {
+    const line = document.createElement("p");
+    line.textContent = text;
+    return line;
+  }));
+}
+
+async function openAutomationDelivery(articleId, button) {
+  if (!articleId || isArticleWriteBusy()) return;
+  button.disabled = true;
+  try {
+    if (!await switchPanel("articles", { focusTitle: true })) return;
+    await runGuardedTransition("articles", "查看投递文章会离开当前编辑内容。", async () => {
+      rememberMasterListContext("articles", articleId);
+      await selectArticle(articleId);
+      if (state.articleDetailReady) enterMobileDetail("articles", articleId);
+    });
+  } finally {
+    button.disabled = false;
+  }
 }
 
 async function loadAutomation() {
@@ -4072,20 +4096,21 @@ function renderAutomationPanel() {
   setElementText($("#automation-open-articles"), definition.openArticlesLabel);
   setElementText($("#automation-guide-summary"), definition.guideSummary);
   renderAutomationGuide(definition);
+  renderAutomationRunSummary();
   const badge = $("#automation-enabled-badge");
   badge.className = `status-badge ${loading || !channel ? "neutral" : (enabled ? "visible" : "warning")}`;
   setElementText(
     badge,
     loading ? "读取中" : (!channel ? "待读取" : (enabled ? "投递已启用" : "投递已暂停"))
   );
-  setElementText($("#automation-draft-count"), formatNumber(channel?.draftCount || 0));
+  setElementText($("#automation-draft-count"), loading || !channel ? "待读取" : formatNumber(channel.draftCount));
   setElementText(
     $("#automation-last-used"),
     channel?.lastUsedAt ? formatTime(channel.lastUsedAt) : "尚无记录"
   );
   setElementText(
     $("#automation-token-state"),
-    tokenConfigured
+    loading || !channel ? "待读取" : tokenConfigured
       ? `已配置 · 尾号 ${channel.tokenHint || "未记录"} · ${formatTime(channel.tokenCreatedAt)}`
       : "尚未生成"
   );
@@ -4095,7 +4120,7 @@ function renderAutomationPanel() {
   );
   setElementText(
     $("#automation-publish-mode"),
-    autoPublish ? "自动公开" : "草稿，需人工发布"
+    loading || !channel ? "待读取" : autoPublish ? "自动公开" : "草稿，需人工发布"
   );
   setElementText(
     $("#automation-publish-note"),
@@ -4151,15 +4176,28 @@ function renderAutomationPanel() {
     deliveries.replaceChildren(createEmptyStateElement("还没有成功投递的记录。"));
     return;
   }
-  deliveries.replaceChildren(...rows.map((item) => createEventItemElement(
-    item.title || item.slug || "未命名投递",
-    [
-      `状态：${articleStatusLabel(item.status)}`,
-      `文章标识：${item.slug || "未记录"}`,
-      item.source ? `来源：${item.source}` : "",
-      `送达：${formatTime(item.createdAt)}`
-    ].filter(Boolean)
-  )));
+  deliveries.replaceChildren(...rows.map((item) => {
+    const entry = createEventItemElement(
+      item.title || item.slug || "未命名投递",
+      [
+        `当前文章状态：${articleStatusLabel(item.status)}`,
+        `文章标识：${item.slug || "未记录"}`,
+        item.source ? `来源：${item.source}` : "",
+        `送达：${window.AdminAnalyticsWorkbench.formatDate(item.createdAt)}（Asia/Shanghai）`
+      ].filter(Boolean)
+    );
+    if (item.articleId) {
+      entry.removeAttribute("tabindex");
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "xp-button automation-delivery-action";
+      button.textContent = "查看文章";
+      button.setAttribute("aria-label", `查看文章：${item.title || item.slug || "未命名投递"}`);
+      button.addEventListener("click", () => openAutomationDelivery(item.articleId, button));
+      entry.append(button);
+    }
+    return entry;
+  }));
 }
 
 function renderAutomationFailure(message) {
@@ -4175,6 +4213,7 @@ function renderAutomationFailure(message) {
   setElementText($("#automation-delivery-count"), "读取失败");
   setElementText($("#automation-publish-mode"), "读取失败");
   setElementText($("#automation-publish-note"), "无法确认自动公开状态，请刷新后再操作。");
+  renderAutomationRunSummary();
   syncAutomationBusyState();
 }
 
@@ -4390,38 +4429,243 @@ async function openAutomationArticles() {
   }
   state.articleFilter = definition.key;
   $("#article-list-filter").value = state.articleFilter;
-  renderArticleList();
+  scheduleContentListReload("articles", true);
   window.requestAnimationFrame(() => $("#article-list-filter")?.focus());
 }
 
+const contentLists = {
+  articles: { offset: 0, generation: 0, total: 0, pagination: null, timer: null },
+  videos: { offset: 0, generation: 0, total: 0, pagination: null, timer: null }
+};
+let contentLocalStore = null;
+let articleLocalTimer = null;
+let articleSavedRecord = null;
+let videoSavedRecord = null;
+let videoMetadataRecovery = null;
+let videoMetadataRecoveryGeneration = 0;
+
+function contentListFilters(kind) {
+  const article = kind === "articles";
+  const prefix = article ? "article" : "video";
+  const days = Number($(`#${prefix}-updated-filter`)?.value || 0);
+  return {
+    q: article ? state.articleFilter : state.videoFilter,
+    category: $(`#${prefix}-category-filter`)?.value.trim() || "",
+    status: $(`#${prefix}-status-filter`)?.value || "",
+    updatedAfter: days ? new Date(Date.now() - days * 86400000).toISOString() : "",
+    metadata: article ? "" : $("#video-metadata-filter")?.value || "",
+    offset: contentLists[kind].offset
+  };
+}
+
+function scheduleContentListReload(kind, immediate = false) {
+  const entry = contentLists[kind];
+  clearTimeout(entry.timer);
+  entry.offset = 0;
+  // Invalidate the active response immediately, before the debounce elapses.
+  entry.generation += 1;
+  setElementText($(kind === "articles" ? "#article-list-count" : "#video-list-count"), "正在筛选…");
+  entry.timer = setTimeout(() => reloadContentList(kind), immediate ? 0 : 250);
+}
+
+async function reloadContentList(kind) {
+  try { await (kind === "articles" ? loadArticles() : loadVideos()); }
+  catch (error) {
+    const message = `列表读取失败，筛选条件已保留：${error.message}`;
+    (kind === "articles" ? renderArticleListNotice : renderVideoListNotice)(message);
+  }
+}
+
+function syncContentPagination(kind) {
+  const prefix = kind === "articles" ? "article" : "video";
+  const entry = contentLists[kind];
+  const pagination = entry.pagination || {};
+  setElementText($(`#${prefix}-page-status`), `第 ${pagination.page || 1} / ${Math.max(1, pagination.totalPages || 1)} 页 · 每页 50 条`);
+  if ($(`#${prefix}-page-prev`)) $(`#${prefix}-page-prev`).disabled = entry.offset <= 0;
+  if ($(`#${prefix}-page-next`)) $(`#${prefix}-page-next`).disabled = !pagination.hasMore;
+}
+
+function createContentFilterButton(kind, label, value, field = "status") {
+  const prefix = kind === "articles" ? "article" : "video";
+  const input = $(`#${prefix}-${field}-filter`);
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "list-overview-item";
+  button.textContent = label;
+  button.setAttribute("aria-pressed", input?.value === value ? "true" : "false");
+  button.addEventListener("click", () => {
+    if (input) input.value = input.value === value ? "" : value;
+    scheduleContentListReload(kind, true);
+  });
+  return button;
+}
+
+async function initializeContentWorkbench() {
+  for (const kind of ["articles", "videos"]) {
+    const prefix = kind === "articles" ? "article" : "video";
+    for (const field of ["category", "status", "updated", "metadata"]) {
+      $(`#${prefix}-${field}-filter`)?.addEventListener("change", () => scheduleContentListReload(kind, true));
+    }
+    $(`#${prefix}-clear-filters`)?.addEventListener("click", () => {
+      for (const field of ["category", "status", "updated", "metadata"]) { const input = $(`#${prefix}-${field}-filter`); if (input) input.value = ""; }
+      $(`#${prefix}-list-filter`).value = "";
+      if (kind === "articles") state.articleFilter = ""; else state.videoFilter = "";
+      scheduleContentListReload(kind, true);
+    });
+    for (const [direction, step] of [["prev", -50], ["next", 50]]) $(`#${prefix}-page-${direction}`)?.addEventListener("click", () => {
+      contentLists[kind].offset = Math.max(0, contentLists[kind].offset + step);
+      reloadContentList(kind);
+    });
+  }
+  $("#article-preview")?.addEventListener("toggle", renderCurrentArticlePreview);
+  $("#article-preview-lang")?.addEventListener("change", renderCurrentArticlePreview);
+  $("#article-form").addEventListener("input", scheduleArticleLocalSave);
+  $("#article-form").addEventListener("change", scheduleArticleLocalSave);
+  window.addEventListener("pagehide", () => { if (isEditorDirty("articles")) saveArticleLocally(); });
+  $("#video-form").addEventListener("input", syncVideoOrderPreview);
+  $("#video-form").addEventListener("change", syncVideoOrderPreview);
+  $("#video-form").elements.original_url.addEventListener("input", invalidateVideoMetadataRecovery);
+  $("#video-form").elements.original_url.addEventListener("change", invalidateVideoMetadataRecovery);
+  $("#article-save-local")?.addEventListener("click", () => saveArticleLocally());
+  $("#article-checkpoint-local")?.addEventListener("click", () => saveArticleLocally(true));
+  $("#article-restore-local")?.addEventListener("click", () => restoreArticleLocalVersion());
+  $("#article-restore-history")?.addEventListener("click", () => restoreArticleLocalVersion(true));
+  $("#article-local-history")?.addEventListener("change", syncArticleLocalDiff);
+  $("#article-clear-local")?.addEventListener("click", async () => {
+    const confirmed = await openConfirmDialog({ title: "清理本机文章记录", object: "当前账号在此浏览器的暂存和历史版本", impact: "删除这些本机副本，不影响服务器文章或当前编辑内容。", recovery: "无法撤销；后续输入会重新自动暂存。", confirmLabel: "清理本机记录" });
+    if (!confirmed) return;
+    try { clearTimeout(articleLocalTimer); contentLocalStore?.clearAll(); syncArticleWorkbench(); }
+    catch (error) { setElementText($("#article-local-status"), error.message); }
+  });
+  $("#copy-article-public-link")?.addEventListener("click", async () => {
+    if (!articleSavedRecord?.slug || articleSavedRecord.status !== "published") return;
+    try { await navigator.clipboard.writeText(articlePublicUrl()); setElementText($("#article-status"), "已复制最后一次保存的公开链接。"); }
+    catch { setElementText($("#article-status"), "浏览器未允许复制，请从“前台查看”打开后复制地址。"); }
+  });
+  try { contentLocalStore = await createDraftStore(window.localStorage, state.user?.id); syncArticleWorkbench(); }
+  catch (error) { setElementText($("#article-local-status"), error.message); }
+}
+
+function articlePublicUrl() {
+  return new URL(`/articles/${encodeURIComponent(articleSavedRecord?.slug || "")}`, location.origin).href;
+}
+
+function renderCurrentArticlePreview() {
+  if (!$("#article-preview")?.open) return;
+  const form = $("#article-form"); const lang = $("#article-preview-lang").value;
+  const title = form.elements[`title_${lang}`].value;
+  setElementText($("#article-preview-title"), title || "未填写标题");
+  setElementText($("#article-preview-summary"), form.elements[`summary_${lang}`].value);
+  const markdown = form.elements[`content_${lang}`].value;
+  const lines = markdown.split("\n");
+  const first = lines.findIndex((line) => line.trim());
+  if (first >= 0 && lines[first].trim().replace(/^#\s+/, "") === title.trim()) lines.splice(first, 1);
+  renderArticleMarkdown($("#article-preview-body"), lines.join("\n"));
+}
+
+function scheduleArticleLocalSave(event) {
+  if (event?.target?.closest?.(".content-workbench")) return;
+  clearTimeout(articleLocalTimer);
+  renderCurrentArticlePreview();
+  syncArticleSaveButtons();
+  if (!contentLocalStore || isArticleWriteBusy() || isArticleDetailPending()) return;
+  const id = state.selectedArticleId; const revision = state.articleUpdatedAt;
+  const snapshot = articleSnapshot($("#article-form"));
+  articleLocalTimer = setTimeout(() => {
+    try { contentLocalStore.save(id, snapshot, { revision }); if (state.selectedArticleId === id) syncArticleWorkbench(); }
+    catch (error) { setElementText($("#article-local-status"), error.message); }
+  }, 600);
+}
+
+function saveArticleLocally(history = false) {
+  if (!contentLocalStore || isArticleWriteBusy() || isArticleDetailPending()) return;
+  try {
+    clearTimeout(articleLocalTimer);
+    contentLocalStore.save(state.selectedArticleId, articleSnapshot($("#article-form")), { history, revision: state.articleUpdatedAt });
+    syncArticleWorkbench();
+    setElementText($("#article-local-status"), history ? "已记录本机版本，不会发布。" : "已暂存到当前浏览器，不会发布。");
+  } catch (error) { setElementText($("#article-local-status"), error.message); }
+}
+
+function syncArticleWorkbench() {
+  const publicRecord = articleSavedRecord?.article_id === state.selectedArticleId && articleSavedRecord?.status === "published";
+  const link = $("#open-article-public"); if (link) { link.hidden = !publicRecord; if (publicRecord) link.href = articlePublicUrl(); else link.removeAttribute("href"); }
+  if ($("#copy-article-public-link")) $("#copy-article-public-link").disabled = !publicRecord;
+  renderCurrentArticlePreview();
+  if (!contentLocalStore) return;
+  const locked = isArticleWriteBusy() || isArticleDetailPending();
+  for (const id of ["article-save-local", "article-checkpoint-local", "article-clear-local"]) if ($(`#${id}`)) $(`#${id}`).disabled = locked;
+  try {
+    const entry = contentLocalStore.get(state.selectedArticleId);
+    const differs = Boolean(entry?.draft && JSON.stringify(entry.draft.snapshot) !== JSON.stringify(articleSnapshot($("#article-form"))));
+    setElementText($("#article-local-workbench > summary"), `本机暂存与历史版本${differs ? " · 有可恢复暂存" : ""}`);
+    setElementText($("#article-local-status"), entry?.draft ? (differs ? `发现可恢复暂存：${formatTime(entry.draft.savedAt)}。恢复只改编辑器，仍需手动保存。` : `已自动暂存到本机：${formatTime(entry.draft.savedAt)}，尚未保存到服务器。`) : "已启用本机自动暂存，输入后 0.6 秒保存；正式保存仍须三语齐全。");
+    $("#article-restore-local").disabled = !differs || isArticleWriteBusy() || isArticleDetailPending();
+    const select = $("#article-local-history"); const previous = select.value;
+    select.replaceChildren();
+    const empty = document.createElement("option"); empty.value = ""; empty.textContent = entry?.history.length ? "选择一个本机版本" : "暂无本机版本"; select.append(empty);
+    (entry?.history || []).forEach((version, index) => { const option = document.createElement("option"); option.value = String(index); option.textContent = `${formatTime(version.savedAt)} · ${version.snapshot.title_zh || "未命名"}`; select.append(option); });
+    if (previous && entry?.history[Number(previous)]) select.value = previous;
+    syncArticleLocalDiff();
+  } catch (error) { setElementText($("#article-local-status"), error.message); }
+}
+
+function syncArticleLocalDiff() {
+  try {
+    const value = $("#article-local-history").value;
+    const version = value === "" ? null : contentLocalStore?.get(state.selectedArticleId)?.history[Number(value)];
+    $("#article-restore-history").disabled = !version || isArticleWriteBusy() || isArticleDetailPending();
+    setElementText($("#article-local-diff"), version ? articleVersionDiff(articleSnapshot($("#article-form")), version.snapshot) : "选择版本后显示差异。− 当前内容；+ 所选版本。");
+  } catch (error) { setElementText($("#article-local-status"), error.message); }
+}
+
+async function restoreArticleLocalVersion(history = false) {
+  if (!contentLocalStore || isArticleWriteBusy() || isArticleDetailPending()) return;
+  try {
+    const id = state.selectedArticleId;
+    const entry = contentLocalStore.get(id);
+    const version = history ? entry?.history[Number($("#article-local-history").value)] : entry?.draft;
+    if (!version) return;
+    const confirmed = await openConfirmDialog({ title: "恢复到文章编辑器", object: version.snapshot.title_zh || "本机文章暂存", impact: `将替换当前编辑内容，但不会发布。${version.revision !== state.articleUpdatedAt ? "服务器版本与暂存基线不同，请在恢复后对照检查并手动合并。" : ""}`, recovery: "替换前会记录当前内容的本机版本。正式保存仍使用当前服务器版本校验。", confirmLabel: "恢复到编辑器" });
+    if (!confirmed || state.selectedArticleId !== id || isArticleWriteBusy()) return;
+    clearTimeout(articleLocalTimer);
+    contentLocalStore.save(id, articleSnapshot($("#article-form")), { history: true, revision: state.articleUpdatedAt });
+    applyArticleSnapshot($("#article-form"), version.snapshot);
+    clearArticleValidation(); updateArticleLanguageStates(); refreshEditorDirtyState("articles"); syncArticleSaveButtons(); syncArticleWorkbench();
+    setElementText($("#article-local-status"), "已恢复到编辑器；尚未保存到服务器，也未发布。");
+  } catch (error) { setElementText($("#article-local-status"), error.message); }
+}
+
 async function loadArticles() {
-  const payload = await api("/api/admin/articles");
+  const entry = contentLists.articles;
+  const generation = ++entry.generation;
+  let payload;
+  try { payload = await api(`/api/admin/articles?${contentListQuery(contentListFilters("articles"))}`); }
+  catch (error) { if (generation !== entry.generation) return; throw error; }
+  if (generation !== entry.generation) return;
   state.articles = payload.articles || [];
-  if (state.selectedArticleId && !state.articles.some((article) => article.article_id === state.selectedArticleId)) {
-    resetArticleForm();
-    $("#article-status").textContent = "当前文章已不在列表中，已清空编辑表单。";
-    return;
+  entry.total = Number(payload.total ?? state.articles.length);
+  entry.pagination = payload.pagination;
+  const options = $("#article-category-options");
+  if (options) {
+    const categories = new Set([...Array.from(options.children).map((option) => option.value), ...state.articles.map((article) => article.category).filter(Boolean)]);
+    options.replaceChildren(...[...categories].sort().map((category) => { const option = document.createElement("option"); option.value = category; option.label = categoryDisplayName(category); return option; }));
   }
   renderArticleList();
+  syncContentPagination("articles");
 }
 
 function renderArticleList() {
   const list = $("#article-list");
-  const publishedCount = state.articles.filter((article) => article.status === "published").length;
-  const completeTranslationCount = state.articles.filter((article) => Number(article.translation_count || 0) >= 3).length;
   const filterText = normalizeFilterText(state.articleFilter);
-  const visibleArticles = filterText
-    ? state.articles.filter((article) => articleMatchesArticleFilter(article, filterText))
-    : state.articles;
-  const countText = state.articles.length
-    ? `${filterText ? `显示 ${formatNumber(visibleArticles.length)} / ` : ""}共 ${formatNumber(state.articles.length)} 篇 · 已发布 ${formatNumber(publishedCount)} · 三语完整 ${formatNumber(completeTranslationCount)}`
-    : "0 篇文章";
+  const visibleArticles = state.articles;
+  const countText = `匹配 ${formatNumber(contentLists.articles.total)} 篇 · 本页 ${formatNumber(visibleArticles.length)} 篇`;
   setElementText($("#article-list-count"), countText);
   renderArticleStatusOverview(visibleArticles, Boolean(filterText));
   syncBoxLabel(list, state.articles.length ? `文章列表：${countText}` : "文章列表：暂无文章");
   updateSidebarLoadedSummary();
   if (!state.articles.length) {
-    list.replaceChildren(createEmptyStateElement("暂无文章，点击右上角“新建”开始。"));
+    list.replaceChildren(createEmptyStateElement("没有匹配的文章，可清除筛选或点击“新建”。"));
     syncArticleListBusyState();
     return;
   }
@@ -4456,7 +4700,7 @@ function renderArticleList() {
       createStatusBadgeElement(categoryDisplayName(article.category) || "未分类", "neutral")
     );
     summary.className = "list-subtle";
-    setElementText(summary, `标识：${article.slug || "未记录"} · 浏览 ${formatNumber(article.article_pv)} / 访客 ${formatNumber(article.article_uv)} · 更新 ${formatTime(article.updated_at)}`);
+    setElementText(summary, `标识：${article.slug || "未记录"} · 近180天浏览 ${formatNumber(article.article_pv)} / 访客 ${formatNumber(article.article_uv)} · 更新 ${formatTime(article.updated_at)}`);
     item.append(title, meta, summary);
     return item;
   }));
@@ -4468,16 +4712,7 @@ function renderArticleStatusOverview(articles, isFiltered) {
   if (!box) {
     return;
   }
-  const rows = articles || [];
-  const items = [
-    [isFiltered ? "当前显示" : "全部文章", rows.length],
-    ["已发布", rows.filter((article) => article.status === "published").length],
-    ["草稿", rows.filter((article) => article.status === "draft").length],
-    ["归档", rows.filter((article) => article.status === "archived").length],
-    ["置顶", rows.filter((article) => Number(article.is_pinned || article.pinned || 0) > 0).length],
-    ["三语完整", rows.filter((article) => Number(article.translation_count || 0) >= 3).length]
-  ];
-  box.replaceChildren(...items.map(([label, value]) => createListOverviewItem(label, value)));
+  box.replaceChildren(...[["全部状态", ""], ["已发布", "published"], ["草稿", "draft"], ["归档", "archived"]].map(([label, value]) => createContentFilterButton("articles", label, value)));
 }
 
 function createListOverviewItem(label, value) {
@@ -4569,6 +4804,7 @@ async function selectArticle(articleId) {
   state.articleUpdatedAt = null;
   state.articleDetailReady = false;
   resetArticleEditorForSelection(articleId, "正在读取文章详情...");
+  syncArticleWorkbench();
   renderArticleList();
   syncArticleSaveButtons();
   try {
@@ -4601,6 +4837,7 @@ function resetArticleEditorForSelection(articleId, statusText) {
 
 function resetArticleForm() {
   state.selectedArticleId = "";
+  articleSavedRecord = null;
   state.articleUpdatedAt = null;
   state.articleDetailReady = false;
   setElementText($("#article-editor-title"), "新建文章");
@@ -4615,10 +4852,12 @@ function resetArticleForm() {
   syncArticleSaveButtons();
   renderArticleList();
   captureEditorBaseline("articles");
+  syncArticleWorkbench();
 }
 
 function fillArticleForm(article) {
   const form = $("#article-form");
+  articleSavedRecord = article;
   state.articleUpdatedAt = article.updated_at || null;
   setElementText($("#article-editor-title"), `编辑：${adminArticleDisplayTitle(article)}`);
   form.elements.slug.value = article.slug || "";
@@ -4635,11 +4874,12 @@ function fillArticleForm(article) {
     form.elements[`content_${lang}`].value = item.content_markdown || "";
   });
   $("#delete-article").disabled = false;
-  $("#article-status").textContent = `文章访问：总浏览 ${formatNumber(article.article_pv)} / 总访客 ${formatNumber(article.article_uv)}，今日浏览 ${formatNumber(article.article_today_pv)} / 今日访客 ${formatNumber(article.article_today_uv)}`;
+  $("#article-status").textContent = `文章访问：近180天浏览 ${formatNumber(article.article_pv)} / 访客 ${formatNumber(article.article_uv)}，今日（上海）浏览 ${formatNumber(article.article_today_pv)} / 访客 ${formatNumber(article.article_today_uv)}`;
   clearArticleValidation();
   updateArticleLanguageStates();
   syncArticleSaveButtons();
   captureEditorBaseline("articles");
+  syncArticleWorkbench();
 }
 
 function setArticleLang(lang) {
@@ -4781,7 +5021,7 @@ function articlePayload(statusOverride = "") {
   const form = $("#article-form");
   const errors = validateArticleDraft();
   if (errors.length) {
-    const error = new Error(`发布前还有 ${errors.length} 项必填内容需要处理。`);
+    const error = new Error(`保存到服务器前还有 ${errors.length} 项必填内容需要处理；未完成内容可先暂存本机。`);
     error.validationErrors = errors;
     throw error;
   }
@@ -4837,16 +5077,34 @@ async function saveArticle(statusOverride = "") {
       ? `/api/admin/articles/${encodeURIComponent(state.selectedArticleId)}`
       : "/api/admin/articles";
     const method = state.selectedArticleId ? "PUT" : "POST";
+    const localDraftId = state.selectedArticleId;
     const result = await api(path, { method, body: JSON.stringify(payload) });
+    clearTimeout(articleLocalTimer);
     state.selectedArticleId = result.articleId || state.selectedArticleId;
     state.articleUpdatedAt = result.updatedAt || state.articleUpdatedAt;
-    status.textContent = "已保存。";
-    await loadArticles();
-    if (state.selectedArticleId) {
-      await selectArticle(state.selectedArticleId);
-      status.textContent = "已保存。";
-    }
+    state.articleDetailReady = true;
+    $("#article-form").elements.status.value = payload.status;
+    articleSavedRecord = { ...payload, article_id: state.selectedArticleId, updated_at: state.articleUpdatedAt };
     captureEditorBaseline("articles", { saved: true });
+    const warnings = [];
+    // A successful write is final. Readback failure must never reset the editor,
+    // retry the write, or claim that the save itself failed.
+    try {
+      const detail = await api(`/api/admin/articles/${encodeURIComponent(state.selectedArticleId)}`);
+      if (!detail.article) throw new Error("服务器未返回文章详情");
+      fillArticleForm(detail.article);
+      captureEditorBaseline("articles", { saved: true });
+    } catch (error) { warnings.push(`详情刷新失败，编辑内容已保留：${error.message}`); }
+    try { await loadArticles(); } catch (error) { warnings.push(`列表刷新失败：${error.message}`); }
+    try {
+      if (contentLocalStore) {
+        contentLocalStore.save(state.selectedArticleId, articleSnapshot($("#article-form")), { history: true, revision: state.articleUpdatedAt });
+        contentLocalStore.clearDraft(localDraftId);
+        contentLocalStore.clearDraft(state.selectedArticleId);
+      }
+    } catch (error) { warnings.push(error.message); }
+    syncArticleWorkbench();
+    status.textContent = `${payload.status === "published" ? "已保存并公开。" : payload.status === "archived" ? "已保存为归档，前台不可见。" : "已保存草稿，前台不可见。"}${warnings.join("；")}`;
     return true;
   } catch (error) {
     status.textContent = contentWriteErrorMessage(error);
@@ -4856,6 +5114,7 @@ async function saveArticle(statusOverride = "") {
     state.articleSaving = false;
     state.articleSavingMode = "";
     syncArticleSaveButtons();
+    syncArticleWorkbench();
   }
 }
 
@@ -4865,6 +5124,8 @@ function syncArticleSaveButtons() {
   const deleteButton = $("#delete-article");
   const busy = isArticleWriteBusy();
   const existingArticleNotReady = Boolean(state.selectedArticleId && !state.articleDetailReady);
+  const statusValue = $("#article-form")?.elements.status.value || "draft";
+  const statusAction = { draft: "保存草稿", published: "保存并公开", archived: "保存为归档" }[statusValue] || "保存";
   if (saveButton) {
     const savingDraft = state.articleSaving && state.articleSavingMode !== "publish";
     const hint = existingArticleNotReady
@@ -4873,7 +5134,7 @@ function syncArticleSaveButtons() {
       ? "正在删除文章"
       : (state.articleSaving ? "正在保存文章" : "保存当前文章"));
     saveButton.disabled = busy || existingArticleNotReady;
-    saveButton.textContent = savingDraft ? "保存中..." : "保存";
+    saveButton.textContent = savingDraft ? "保存中..." : statusAction;
     saveButton.setAttribute("aria-busy", savingDraft ? "true" : "false");
     syncButtonHint(saveButton, hint);
   }
@@ -4886,6 +5147,7 @@ function syncArticleSaveButtons() {
       : (state.articleSaving ? "正在保存文章" : "保存并发布当前文章"));
     publishButton.disabled = busy || existingArticleNotReady;
     publishButton.textContent = publishing ? "发布中..." : "保存并发布";
+    publishButton.hidden = statusValue === "published";
     publishButton.setAttribute("aria-busy", publishing ? "true" : "false");
     syncButtonHint(publishButton, hint);
   }
@@ -4902,6 +5164,10 @@ function syncArticleSaveButtons() {
   }
   syncArticleFormBusyState();
   syncArticleListBusyState();
+  for (const id of ["article-save-local", "article-checkpoint-local", "article-restore-local", "article-restore-history", "article-clear-local"]) {
+    const button = $(`#${id}`); if (button && (busy || existingArticleNotReady)) button.disabled = true;
+    else if (button && !["article-restore-local", "article-restore-history"].includes(id)) button.disabled = !contentLocalStore;
+  }
 }
 
 function isArticleWriteBusy() {
@@ -5022,18 +5288,23 @@ function adminVideoDisplayTitle(video) {
 }
 
 async function loadVideos() {
-  const payload = await api("/api/admin/videos");
+  const entry = contentLists.videos;
+  const generation = ++entry.generation;
+  let payload;
+  try { payload = await api(`/api/admin/videos?${contentListQuery(contentListFilters("videos"))}`); }
+  catch (error) { if (generation !== entry.generation) return; throw error; }
+  if (generation !== entry.generation) return;
   state.videos = payload.videos || [];
-  if (state.selectedVideoId && !state.videos.some((video) => video.video_id === state.selectedVideoId)) {
-    resetVideoForm();
-    $("#video-status").textContent = "当前视频已不在列表中，已清空编辑表单。";
-    return;
-  }
+  entry.total = Number(payload.total ?? state.videos.length);
+  entry.pagination = payload.pagination;
+  entry.sortDefaults = payload.sortDefaults || null;
   renderVideoList();
-  renderVideoCategoryChecks();
-  if (!state.selectedVideoId) {
+  syncContentPagination("videos");
+  if (!isEditorDirty("videos")) renderVideoCategoryChecks();
+  if (!state.selectedVideoId && !isEditorDirty("videos")) {
     applyNewVideoSortDefault();
   }
+  syncVideoOrderPreview();
   captureEditorBaselineIfClean("videos");
 }
 
@@ -5056,22 +5327,15 @@ async function loadVideoCategories() {
 
 function renderVideoList() {
   const list = $("#video-list-admin");
-  const publishedCount = state.videos.filter((video) => video.status === "published").length;
-  const hiddenCount = state.videos.filter((video) => video.status === "hidden").length;
-  const pinnedCount = state.videos.filter((video) => video.pinned).length;
   const filterText = normalizeFilterText(state.videoFilter);
-  const visibleVideos = filterText
-    ? state.videos.filter((video) => videoMatchesVideoFilter(video, filterText))
-    : state.videos;
-  const countText = state.videos.length
-    ? `${filterText ? `显示 ${formatNumber(visibleVideos.length)} / ` : ""}共 ${formatNumber(state.videos.length)} 个 · 已发布 ${formatNumber(publishedCount)} · 隐藏 ${formatNumber(hiddenCount)} · 置顶 ${formatNumber(pinnedCount)}`
-    : "0 个视频";
+  const visibleVideos = state.videos;
+  const countText = `匹配 ${formatNumber(contentLists.videos.total)} 个 · 本页 ${formatNumber(visibleVideos.length)} 个`;
   setElementText($("#video-list-count"), countText);
   renderVideoStatusOverview(visibleVideos, Boolean(filterText));
   syncBoxLabel(list, state.videos.length ? `视频列表：${countText}` : "视频列表：暂无视频");
   updateSidebarLoadedSummary();
   if (!state.videos.length) {
-    list.replaceChildren(createEmptyStateElement("暂无视频，先粘贴一个 YouTube 或 Bilibili 链接。"));
+    list.replaceChildren(createEmptyStateElement("没有匹配的视频，可清除筛选或新建视频。"));
     syncVideoListBusyState();
     return;
   }
@@ -5127,16 +5391,7 @@ function renderVideoStatusOverview(videos, isFiltered) {
   if (!box) {
     return;
   }
-  const rows = videos || [];
-  const items = [
-    [isFiltered ? "当前显示" : "全部视频", rows.length],
-    ["已发布", rows.filter((video) => video.status === "published").length],
-    ["草稿", rows.filter((video) => video.status === "draft").length],
-    ["隐藏", rows.filter((video) => video.status === "hidden").length],
-    ["置顶", rows.filter((video) => Number(video.pinned || 0) > 0).length],
-    ["需补资料", rows.filter((video) => Boolean(video.metadata_error)).length]
-  ];
-  box.replaceChildren(...items.map(([label, value]) => createListOverviewItem(label, value)));
+  box.replaceChildren(...[["全部状态", ""], ["已发布", "published"], ["草稿", "draft"], ["隐藏", "hidden"]].map(([label, value]) => createContentFilterButton("videos", label, value)), createContentFilterButton("videos", "抓取异常", "error", "metadata"), createContentFilterButton("videos", "资料缺失", "missing", "metadata"));
 }
 
 function videoMatchesVideoFilter(video, filterText) {
@@ -5189,6 +5444,17 @@ function renderVideoCategoryChecks() {
     return;
   }
   const selected = new Set(selectedVideo()?.category_ids || []);
+  if (isEditorDirty("videos")) {
+    selected.clear();
+    box.querySelectorAll("input:checked").forEach((input) => selected.add(input.value));
+  }
+  const filter = $("#video-category-filter");
+  if (filter) {
+    const activeValue = filter.value;
+    const all = document.createElement("option"); all.value = ""; all.textContent = "全部分类";
+    filter.replaceChildren(all, ...state.videoCategories.map((category) => { const option = document.createElement("option"); option.value = category.slug; option.textContent = category.name_zh || category.slug; return option; }));
+    filter.value = activeValue;
+  }
   const enabledCount = state.videoCategories.filter((category) => category.enabled).length;
   const checkLabel = state.videoCategories.length
     ? `视频分类选项：共 ${formatNumber(state.videoCategories.length)} 个，启用 ${formatNumber(enabledCount)} 个`
@@ -5266,7 +5532,7 @@ function renderVideoCategoryChecksNotice(text, label = "视频分类提示") {
 }
 
 function selectedVideo() {
-  return state.videos.find((item) => item.video_id === state.selectedVideoId);
+  return videoSavedRecord?.video_id === state.selectedVideoId ? videoSavedRecord : state.videos.find((item) => item.video_id === state.selectedVideoId);
 }
 
 function nextSortOrder(items) {
@@ -5289,7 +5555,7 @@ function applyNewVideoSortDefault() {
   const sortField = form?.elements?.sort_order;
   const pinnedSortField = form?.elements?.pinned_sort_order;
   if (sortField) {
-    sortField.value = String(nextSortOrder(state.videos));
+    sortField.value = String(contentLists.videos.sortDefaults?.sortOrder ?? nextSortOrder(state.videos));
   }
   if (pinnedSortField) {
     pinnedSortField.value = "";
@@ -5305,6 +5571,8 @@ function applyNewVideoCategorySortDefault() {
 
 function resetVideoForm() {
   state.selectedVideoId = "";
+  videoSavedRecord = null;
+  videoMetadataRecovery = null;
   state.videoUpdatedAt = null;
   setElementText($("#video-editor-title"), "新建视频");
   $("#video-form").reset();
@@ -5319,12 +5587,17 @@ function resetVideoForm() {
   syncVideoSaveButtons();
   renderVideoThumbnailPreview();
   renderVideoList();
+  captureEditorBaseline("videos");
   renderVideoCategoryChecks();
   captureEditorBaseline("videos");
+  syncVideoOrderPreview();
 }
 
 function fillVideoForm(video) {
+  videoSavedRecord = video;
   const form = $("#video-form");
+  videoMetadataRecovery = null;
+  form.elements.metadata_recovered.value = "";
   state.videoUpdatedAt = video.updated_at || null;
   setElementText($("#video-editor-title"), `编辑：${adminVideoDisplayTitle(video)}`);
   form.elements.original_url.value = video.original_url || "";
@@ -5345,12 +5618,14 @@ function fillVideoForm(video) {
   syncVideoMetadataButtons();
   syncVideoSaveButtons();
   renderVideoList();
+  captureEditorBaseline("videos");
   renderVideoCategoryChecks();
   renderAdminVideoPreview(video.embed_url);
   $("#video-cover-file").value = "";
   $("#video-frame-file").value = "";
   renderVideoThumbnailPreview(video.thumbnail_url || "");
   captureEditorBaseline("videos");
+  syncVideoOrderPreview();
 }
 
 function renderAdminVideoPreview(embedUrl) {
@@ -5472,19 +5747,36 @@ function clearVideoThumbnail() {
   $("#video-frame-file").value = "";
 }
 
+function invalidateVideoMetadataRecovery() {
+  videoMetadataRecoveryGeneration += 1;
+  videoMetadataRecovery = null;
+  const field = $("#video-form")?.elements.metadata_recovered;
+  if (field) field.value = "";
+  refreshEditorDirtyState("videos");
+}
+
+function acknowledgeVideoMetadataRecovery(video, requestUrl, videoId, revision, generation) {
+  const form = $("#video-form");
+  if (!video || video.metadata_error || form.elements.original_url.value.trim() !== requestUrl
+      || state.selectedVideoId !== videoId || state.videoUpdatedAt !== revision
+      || videoMetadataRecoveryGeneration !== generation) return;
+  videoMetadataRecovery = { url: requestUrl, videoId, revision };
+  form.elements.metadata_recovered.value = "true";
+}
+
 function applyPreviewToVideoForm(video) {
   const form = $("#video-form");
   form.elements.platform.value = video.platform || "";
   form.elements.external_id.value = video.external_id || "";
   form.elements.embed_url.value = video.embed_url || "";
-  form.elements.title.value = video.title || form.elements.title.value;
-  form.elements.description.value = video.description || form.elements.description.value;
-  form.elements.thumbnail_url.value = video.thumbnail_url || form.elements.thumbnail_url.value;
-  form.elements.author_name.value = video.author_name || form.elements.author_name.value;
-  form.elements.published_at.value = toLocalDateTimeInputValue(video.published_at) || form.elements.published_at.value;
+  form.elements.title.value = form.elements.title.value || video.title || "";
+  form.elements.description.value = form.elements.description.value || video.description || "";
+  form.elements.thumbnail_url.value = form.elements.thumbnail_url.value || video.thumbnail_url || "";
+  form.elements.author_name.value = form.elements.author_name.value || video.author_name || "";
+  form.elements.published_at.value = form.elements.published_at.value || toLocalDateTimeInputValue(video.published_at);
   $("#video-status").textContent = video.metadata_error
     ? `已生成播放器地址；元数据受限，请手动补全：${video.metadata_error}`
-    : "识别完成";
+    : "已补齐空字段，保留已有内容；检查后保存生效。";
   renderAdminVideoPreview(video.embed_url);
   renderVideoThumbnailPreview(form.elements.thumbnail_url.value);
   refreshEditorDirtyState("videos");
@@ -5496,6 +5788,10 @@ async function previewVideoUrl() {
   }
   const form = $("#video-form");
   const requestUrl = form.elements.original_url.value.trim();
+  const videoId = state.selectedVideoId;
+  const revision = state.videoUpdatedAt;
+  invalidateVideoMetadataRecovery();
+  const recoveryGeneration = videoMetadataRecoveryGeneration;
   if (!requestUrl) {
     $("#video-status").textContent = "请先填写视频链接。";
     syncVideoMetadataButtons();
@@ -5509,10 +5805,12 @@ async function previewVideoUrl() {
       method: "POST",
       body: JSON.stringify({ url: requestUrl })
     });
-    if (form.elements.original_url.value !== requestUrl) {
+    if (form.elements.original_url.value.trim() !== requestUrl || state.selectedVideoId !== videoId
+        || videoMetadataRecoveryGeneration !== recoveryGeneration) {
       $("#video-status").textContent = "链接已变化，请重新识别。";
       return;
     }
+    acknowledgeVideoMetadataRecovery(payload.video, requestUrl, videoId, revision, recoveryGeneration);
     applyPreviewToVideoForm(payload.video || {});
   } catch (error) {
     $("#video-status").textContent = error.message;
@@ -5543,7 +5841,7 @@ function syncVideoMetadataButtons() {
   if (refreshButton) {
     const hasVideo = Boolean(state.selectedVideoId);
     refreshButton.disabled = busy || !hasVideo;
-    refreshButton.textContent = state.videoMetadataRefreshing ? "刷新中..." : "刷新元数据";
+    refreshButton.textContent = state.videoMetadataRefreshing ? "读取中..." : "补齐缺失资料";
     refreshButton.setAttribute("aria-busy", state.videoMetadataRefreshing ? "true" : "false");
     let refreshHint = "刷新当前视频的外部元数据";
     if (writeBusy || state.videoCoverProcessing) {
@@ -5589,6 +5887,12 @@ function videoPayload(statusOverride = "") {
   if (state.selectedVideoId) {
     payload.expectedUpdatedAt = state.videoUpdatedAt;
   }
+  if (form.elements.metadata_recovered.value === "true" && videoMetadataRecovery
+      && videoMetadataRecovery.url === payload.original_url
+      && videoMetadataRecovery.videoId === state.selectedVideoId
+      && videoMetadataRecovery.revision === state.videoUpdatedAt) {
+    payload.metadata_error = "";
+  }
   return payload;
 }
 
@@ -5604,7 +5908,7 @@ function handleVideoPinnedChange() {
     return;
   }
   if (field && Number(field.value || 0) === 0) {
-    field.value = String(nextPinnedSortOrder(state.videos));
+    field.value = String(contentLists.videos.sortDefaults?.pinnedSortOrder ?? nextPinnedSortOrder(state.videos));
   }
   syncVideoFormBusyState();
   refreshEditorDirtyState("videos");
@@ -5626,6 +5930,14 @@ function syncVideoPinnedSortHint() {
   }
 }
 
+function syncVideoOrderPreview() {
+  const form = $("#video-form"); if (!form) return;
+  const pinned = form.elements.pinned.checked;
+  const value = Number(form.elements[pinned ? "pinned_sort_order" : "sort_order"].value || 0);
+  setElementText($("#video-order-preview"), `保存后的排列规则：${pinned ? "置顶队列优先于普通视频；置顶排序" : "普通队列排序"} ${formatNumber(value)}，数值越大越靠前。${pinned ? `相同置顶排序再按普通排序排列；取消置顶后按普通排序 ${formatNumber(form.elements.sort_order.value)}。` : "相同排序按发布时间（未设则创建时间）从新到旧排列。"}`);
+  syncVideoSaveButtons();
+}
+
 async function saveVideo(statusOverride = "") {
   if (state.videoSaving) {
     return false;
@@ -5641,17 +5953,22 @@ async function saveVideo(statusOverride = "") {
       ? `/api/admin/videos/${encodeURIComponent(state.selectedVideoId)}`
       : "/api/admin/videos";
     const method = state.selectedVideoId ? "PUT" : "POST";
-    const result = await api(path, { method, body: JSON.stringify(videoPayload(statusOverride)) });
+    const input = videoPayload(statusOverride);
+    const result = await api(path, { method, body: JSON.stringify(input) });
     state.selectedVideoId = result.videoId || state.selectedVideoId;
     state.videoUpdatedAt = result.updatedAt || state.videoUpdatedAt;
-    status.textContent = "已保存";
-    await loadVideos();
-    const video = selectedVideo();
-    if (video) {
-      fillVideoForm(video);
-      status.textContent = video.metadata_error ? `已保存；${video.metadata_error}` : "已保存";
-    }
+    $("#video-form").elements.status.value = input.status;
+    videoMetadataRecovery = null;
+    $("#video-form").elements.metadata_recovered.value = "";
+    videoSavedRecord = { ...videoSavedRecord, ...input, video_id: state.selectedVideoId, updated_at: state.videoUpdatedAt };
     captureEditorBaseline("videos", { saved: true });
+    const savedText = input.status === "published" ? "已保存并公开。" : input.status === "hidden" ? "已保存为隐藏，前台不可见。" : "已保存草稿，前台不可见。";
+    try {
+      await loadVideos();
+      const video = state.videos.find((item) => item.video_id === state.selectedVideoId);
+      if (video) { fillVideoForm(video); captureEditorBaseline("videos", { saved: true }); }
+      status.textContent = video?.metadata_error ? `${savedText}资料提示：${video.metadata_error}` : savedText;
+    } catch (error) { status.textContent = `${savedText}列表刷新失败，编辑内容已保留：${error.message}`; }
     return true;
   } catch (error) {
     status.textContent = contentWriteErrorMessage(error);
@@ -5670,6 +5987,8 @@ function syncVideoSaveButtons() {
   const deleteButton = $("#delete-video");
   const busy = isVideoEditBusy();
   const metadataBusy = isVideoMetadataBusy();
+  const statusValue = $("#video-form")?.elements.status.value || "draft";
+  const statusAction = { draft: "保存草稿", published: "保存并公开", hidden: "保存为隐藏" }[statusValue] || "保存";
   if (saveButton) {
     const savingDraft = state.videoSaving && state.videoSavingMode !== "publish";
     const hint = state.videoDeleting
@@ -5678,7 +5997,7 @@ function syncVideoSaveButtons() {
       ? "正在保存视频"
       : (metadataBusy ? videoMetadataBusyTitle() : "保存当前视频"));
     saveButton.disabled = busy;
-    saveButton.textContent = savingDraft ? "保存中..." : "保存";
+    saveButton.textContent = savingDraft ? "保存中..." : statusAction;
     saveButton.setAttribute("aria-busy", savingDraft ? "true" : "false");
     syncButtonHint(saveButton, hint);
   }
@@ -5691,6 +6010,7 @@ function syncVideoSaveButtons() {
       : (metadataBusy ? videoMetadataBusyTitle() : "保存并发布当前视频"));
     publishButton.disabled = busy;
     publishButton.textContent = publishing ? "发布中..." : "保存并发布";
+    publishButton.hidden = statusValue === "published";
     publishButton.setAttribute("aria-busy", publishing ? "true" : "false");
     syncButtonHint(publishButton, hint);
   }
@@ -5836,7 +6156,7 @@ function syncVideoListBusyState() {
 
 function selectVideo(videoId) {
   state.selectedVideoId = videoId;
-  const video = selectedVideo();
+  const video = state.videos.find((item) => item.video_id === videoId);
   if (video) {
     fillVideoForm(video);
   }
@@ -5879,31 +6199,37 @@ async function deleteVideo() {
 }
 
 async function refreshVideoMetadata() {
-  if (state.videoPreviewing || state.videoMetadataRefreshing) {
+  if (isVideoEditBusy()) {
     return;
   }
   if (!state.selectedVideoId) {
     return previewVideoUrl();
   }
   const videoId = state.selectedVideoId;
+  const requestUrl = $("#video-form").elements.original_url.value.trim();
+  const revision = state.videoUpdatedAt;
+  invalidateVideoMetadataRecovery();
+  const recoveryGeneration = videoMetadataRecoveryGeneration;
+  if (!requestUrl) return;
   state.videoMetadataRefreshing = true;
   syncVideoSaveButtons();
-  $("#video-status").textContent = "正在刷新元数据...";
+  $("#video-status").textContent = "正在读取外部资料，仅补齐空字段...";
   try {
-    const payload = await api(`/api/admin/videos/${encodeURIComponent(videoId)}/refresh-metadata`, {
+    const payload = await api("/api/admin/videos/preview-url", {
       method: "POST",
-      body: JSON.stringify({ expectedUpdatedAt: state.videoUpdatedAt })
+      body: JSON.stringify({ url: requestUrl })
     });
-    if (state.selectedVideoId !== videoId) {
+    if (state.selectedVideoId !== videoId || $("#video-form").elements.original_url.value.trim() !== requestUrl
+        || videoMetadataRecoveryGeneration !== recoveryGeneration) {
+      $("#video-status").textContent = "链接或编辑对象已变化，请重新获取资料。";
       return;
     }
-    state.videoUpdatedAt = payload.updatedAt || state.videoUpdatedAt;
     const refreshedVideo = payload.video || {};
+    acknowledgeVideoMetadataRecovery(payload.video, requestUrl, videoId, revision, recoveryGeneration);
     applyPreviewToVideoForm(refreshedVideo);
     $("#video-status").textContent = refreshedVideo.metadata_error
-      ? `元数据刷新受限，请手动补全：${refreshedVideo.metadata_error}`
-      : "元数据已刷新。";
-    await loadVideos();
+      ? `资料抓取受限，请手动补全：${refreshedVideo.metadata_error}`
+      : "已补齐空字段并保留已有内容；保存后会清除旧的资料抓取告警，尚未保存到服务器。";
   } catch (error) {
     $("#video-status").textContent = contentWriteErrorMessage(error);
   } finally {
@@ -6247,23 +6573,60 @@ async function deleteVideoCategory() {
   }
 }
 
-async function loadChatMessages() {
-  if (state.chatMessagesLoading) {
-    return;
+async function changeChatIncludeHidden(event) {
+  const checkbox = event.currentTarget;
+  const previousChecked = state.chatAcceptedIncludeHidden ?? !checkbox.checked;
+  if (state.chatFilterChanging || isChatFilterBusy()) {
+    checkbox.checked = previousChecked;
+    return false;
   }
+  state.chatFilterChanging = true;
+  checkbox.disabled = true;
+  try {
+    if (!await confirmEditorCanLeave("chat", "调整隐藏记录筛选会重新读取消息列表。")) {
+      checkbox.checked = previousChecked;
+      return false;
+    }
+    managementWorkbench?.reset("chat");
+    const applied = await loadChatMessages();
+    if (applied === false) checkbox.checked = state.chatAcceptedIncludeHidden ?? previousChecked;
+    return applied !== false;
+  } catch (error) {
+    checkbox.checked = previousChecked;
+    showChatActionError(new Error(`读取聊天记录失败：${error.message}。已保留原筛选和列表。`));
+    return false;
+  } finally {
+    state.chatFilterChanging = false;
+    checkbox.disabled = isChatFilterBusy();
+  }
+}
+
+async function loadChatMessages() {
+  const generation = (state.chatListGeneration || 0) + 1;
+  state.chatListGeneration = generation;
+  const request = managementWorkbench?.begin("chat");
+  const editing = selectedChatMessage();
+  if (editing) state.chatEditingMessage = editing;
   state.chatMessagesLoading = true;
   syncChatActionState();
+  let failure = null;
   try {
     const includeHidden = $("#include-hidden-chat")?.checked ? "1" : "0";
-    const payload = await api(`/api/admin/chat/messages?limit=100&includeHidden=${includeHidden}`);
+    const payload = await api(request?.url || `/api/admin/chat/messages?limit=100&includeHidden=${includeHidden}`);
+    if (generation !== state.chatListGeneration || (request && !request.isCurrent())) return false;
+    request?.accept(payload);
     state.chatMessages = payload.messages || [];
-    if (state.selectedMessageId && !state.chatMessages.some((message) => message.message_id === state.selectedMessageId)) {
-      state.selectedMessageId = "";
-      resetChatForm("当前记录已不在列表中", "已清空编辑表单。");
-    }
+    state.chatAcceptedIncludeHidden = includeHidden === "1";
+    // A selected record can be outside this page; absence is not deletion.
     renderChatMessages();
+    return true;
+  } catch (error) {
+    if (generation !== state.chatListGeneration) return false;
+    failure = error;
+    throw error;
   } finally {
-    state.chatMessagesLoading = false;
+    if (generation === state.chatListGeneration) state.chatMessagesLoading = false;
+    request?.finish(failure);
     syncChatActionState();
   }
 }
@@ -6273,12 +6636,12 @@ function renderChatMessages() {
   const includeHidden = Boolean($("#include-hidden-chat")?.checked);
   const hiddenCount = state.chatMessages.filter((message) => Number(message.hidden) === 1).length;
   const filterText = normalizeFilterText(state.chatFilter);
-  const visibleMessages = filterText
+  const visibleMessages = !managementWorkbench && filterText
     ? state.chatMessages.filter((message) => chatMessageMatchesFilter(message, filterText))
     : state.chatMessages;
   const baseCountText = includeHidden && state.chatMessages.length
-    ? `含隐藏 ${formatNumber(state.chatMessages.length)} 条 · ${formatNumber(hiddenCount)} 条隐藏`
-    : `${includeHidden ? "含隐藏" : "可见"} ${formatNumber(state.chatMessages.length)} 条消息`;
+    ? `本页 ${formatNumber(state.chatMessages.length)} 条 · ${formatNumber(hiddenCount)} 条隐藏`
+    : `本页${includeHidden ? "含隐藏" : "可见"} ${formatNumber(state.chatMessages.length)} 条消息`;
   const countText = state.chatMessages.length && filterText
     ? `显示 ${formatNumber(visibleMessages.length)} / ${baseCountText}`
     : baseCountText;
@@ -6419,7 +6782,9 @@ function selectChatMessage(messageId) {
   if (!message) {
     return;
   }
+  state.chatEditingMessage = { ...message };
   state.selectedMessageId = messageId;
+  state.chatUpdatedAt = message.updated_at || message.edited_at || message.created_at || "";
   renderChatMessages();
   const form = $("#chat-form-admin");
   form.elements.nickname.value = message.nickname || "";
@@ -6446,10 +6811,14 @@ function selectChatMessage(messageId) {
 }
 
 function selectedChatMessage() {
+  if (state.chatEditingMessage?.message_id === state.selectedMessageId) return state.chatEditingMessage;
   return state.chatMessages.find((item) => item.message_id === state.selectedMessageId);
 }
 
 function resetChatForm(selectedText = "未选择", metaText = "") {
+  state.chatEditingMessage = null;
+  state.chatHiddenPageEntry = null;
+  state.chatUpdatedAt = "";
   $("#chat-form-admin").reset();
   setElementText($("#chat-selected-id"), selectedText);
   $("#chat-meta").replaceChildren(createEmptyStateElement(metaText || "选择消息后查看访客识别信息。"));
@@ -6688,7 +7057,26 @@ function setChatActionBusy(mode) {
 }
 
 function showChatActionError(error) {
-  setElementText($("#chat-selected-id"), `操作失败：${error.message}`);
+  setElementText($("#chat-selected-id"), `操作失败：${contentWriteErrorMessage(error)}`);
+}
+
+function syncSavedChatMessage(message, patch) {
+  Object.assign(message, patch);
+  const index = state.chatMessages.findIndex((row) => row.message_id === message.message_id);
+  if (index >= 0) Object.assign(state.chatMessages[index], patch);
+  const includeHidden = Boolean($("#include-hidden-chat")?.checked);
+  if (Number(message.hidden) === 1 && !includeHidden) {
+    if (index >= 0) {
+      state.chatHiddenPageEntry = { messageId: message.message_id, index, generation: state.chatListGeneration || 0 };
+      state.chatMessages.splice(index, 1);
+    }
+  } else if (Number(message.hidden) !== 1 && index < 0) {
+    const previous = state.chatHiddenPageEntry;
+    if (previous?.messageId === message.message_id && previous.generation === (state.chatListGeneration || 0)) {
+      state.chatMessages.splice(Math.min(previous.index, state.chatMessages.length), 0, { ...message });
+    }
+    if (previous?.messageId === message.message_id) state.chatHiddenPageEntry = null;
+  }
 }
 
 async function saveChatMessage(event) {
@@ -6704,19 +7092,21 @@ async function saveChatMessage(event) {
   const form = $("#chat-form-admin");
   const body = {
     nickname: form.elements.nickname.value,
-    hidden: Number(message.hidden) === 1
+    hidden: Number(message.hidden) === 1,
+    expectedUpdatedAt: state.chatUpdatedAt
   };
   if (!isEncryptedChatMessage(message)) {
     body.content = form.elements.content.value;
   }
   try {
-    await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, {
+    const saved = await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, {
       method: "PUT",
       body: JSON.stringify(body)
     });
-    await loadChatMessages();
-    selectChatMessage(message.message_id);
+    state.chatUpdatedAt = saved.updatedAt;
+    syncSavedChatMessage(message, { nickname: body.nickname, ...(body.content === undefined ? {} : { content: body.content }), hidden: Number(body.hidden), updated_at: saved.updatedAt });
     captureEditorBaseline("chat", { saved: true });
+    renderChatMessages();
     setElementText($("#chat-selected-id"), `已保存 ${message.nickname || message.message_id} · 操作人 ${state.user?.email || "当前管理员"}`);
     return true;
   } catch (error) {
@@ -6741,13 +7131,16 @@ async function toggleChatHidden() {
   }
   setChatActionBusy("toggle");
   try {
-    await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, {
+    const result = await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, {
       method: "PUT",
-      body: JSON.stringify({ hidden: Number(message.hidden) !== 1 })
+      body: JSON.stringify({ hidden: Number(message.hidden) !== 1, expectedUpdatedAt: state.chatUpdatedAt })
     });
-    await loadChatMessages();
-    selectChatMessage(message.message_id);
     const action = Number(message.hidden) === 1 ? "恢复" : "隐藏";
+    syncSavedChatMessage(message, { hidden: Number(message.hidden) === 1 ? 0 : 1, updated_at: result.updatedAt });
+    state.chatUpdatedAt = result.updatedAt;
+    renderChatMessages();
+    syncChatActionState();
+    captureEditorBaseline("chat", { saved: true });
     setElementText($("#chat-selected-id"), `${action}成功：${message.nickname || message.message_id} · 操作人 ${state.user?.email || "当前管理员"}`);
   } catch (error) {
     showChatActionError(error);
@@ -6780,7 +7173,7 @@ async function deleteChatMessage() {
   }
   setChatActionBusy("delete");
   try {
-    await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, { method: "DELETE" });
+    await api(`/api/admin/chat/messages/${encodeURIComponent(message.message_id)}`, { method: "DELETE", body: JSON.stringify({ expectedUpdatedAt: state.chatUpdatedAt }) });
     state.selectedMessageId = "";
     resetChatForm();
     await loadChatMessages();
@@ -6889,20 +7282,35 @@ async function banSelectedChat(type) {
 }
 
 async function loadBans() {
-  const payload = await api("/api/admin/chat/bans");
-  state.bans = payload.bans || [];
-  renderBans();
+  const generation = (state.banListGeneration || 0) + 1;
+  state.banListGeneration = generation;
+  const request = managementWorkbench?.begin("bans");
+  let failure = null;
+  try {
+    const payload = await api(request?.url || "/api/admin/chat/bans");
+    if (generation !== state.banListGeneration || (request && !request.isCurrent())) return false;
+    request?.accept(payload);
+    state.bans = payload.bans || [];
+    renderBans();
+    return true;
+  } catch (error) {
+    if (generation !== state.banListGeneration) return false;
+    failure = error;
+    throw error;
+  } finally {
+    request?.finish(failure);
+  }
 }
 
 function renderBans() {
   const list = $("#ban-list");
   const activeCount = state.bans.filter(isEffectiveChatBan).length;
   const filterText = normalizeFilterText(state.banFilter);
-  const visibleBans = filterText
+  const visibleBans = !managementWorkbench && filterText
     ? state.bans.filter((ban) => banMatchesFilter(ban, filterText))
     : state.bans;
   const countText = state.bans.length
-    ? `${filterText ? `显示 ${formatNumber(visibleBans.length)} / ` : ""}共 ${formatNumber(state.bans.length)} 条 · ${formatNumber(activeCount)} 条生效中`
+    ? `${filterText ? `显示 ${formatNumber(visibleBans.length)} / ` : ""}本页 ${formatNumber(state.bans.length)} 条 · ${formatNumber(activeCount)} 条生效中`
     : "0 条禁言";
   setElementText($("#ban-list-count"), countText);
   renderBanStatusOverview(visibleBans, Boolean(filterText));
@@ -7548,15 +7956,17 @@ function setWhiteboardActionBusy(mode = "") {
   syncWhiteboardActionState();
 }
 
-async function loadPublicWhiteboardStatus({ quiet = false } = {}) {
+async function loadPublicWhiteboardStatus({ quiet = false, isCurrent = () => true } = {}) {
   let failureMessage = "";
   if (!quiet) {
     setElementText($("#whiteboard-public-note"), "正在读取公共画板实时状态...");
   }
   try {
     const payload = await api("/api/admin/whiteboards/rooms/public-v1/status");
+    if (!isCurrent()) return;
     state.whiteboardPublicStatus = payload.room || null;
   } catch (error) {
+    if (!isCurrent()) return;
     state.whiteboardPublicStatus = null;
     failureMessage = `实时状态暂不可用：${error.message}`;
   }
@@ -7567,30 +7977,39 @@ async function loadPublicWhiteboardStatus({ quiet = false } = {}) {
 }
 
 async function loadWhiteboards() {
-  const [overview, roomsPayload] = await Promise.all([
-    api("/api/admin/whiteboards/overview"),
-    api("/api/admin/whiteboards/rooms?limit=100&offset=0")
-  ]);
-  state.whiteboardOverview = overview || null;
-  state.whiteboardRooms = Array.isArray(roomsPayload.rooms)
-    ? roomsPayload.rooms
-    : [];
-  state.whiteboardRoomsPagination = roomsPayload.pagination || null;
-  if (
-    state.selectedWhiteboardRoomId
-    && !state.whiteboardRooms.some((
-      room
-    ) => room.roomId === state.selectedWhiteboardRoomId)
-  ) {
-    state.selectedWhiteboardRoomId = "";
-    state.selectedWhiteboardStatus = null;
+  const generation = (state.whiteboardListGeneration || 0) + 1;
+  state.whiteboardListGeneration = generation;
+  const request = managementWorkbench?.begin("whiteboards");
+  const isCurrent = () => generation === state.whiteboardListGeneration && (!request || request.isCurrent());
+  let failure = null;
+  try {
+    const [overview, roomsPayload] = await Promise.all([
+      api("/api/admin/whiteboards/overview"),
+      api(request?.url || "/api/admin/whiteboards/rooms?limit=100&offset=0")
+    ]);
+    if (!isCurrent()) return false;
+    request?.accept(roomsPayload);
+    state.whiteboardOverview = overview || null;
+    state.whiteboardRooms = Array.isArray(roomsPayload.rooms) ? roomsPayload.rooms : [];
+    state.whiteboardRoomsPagination = roomsPayload.pagination || null;
+    if (state.selectedWhiteboardRoomId && !state.whiteboardRooms.some((room) => room.roomId === state.selectedWhiteboardRoomId)) {
+      state.selectedWhiteboardRoomId = "";
+      state.selectedWhiteboardStatus = null;
+    }
+    renderWhiteboardOverview();
+    renderWhiteboardRoomList();
+    renderPublicWhiteboard();
+    renderSelectedWhiteboard();
+    await loadPublicWhiteboardStatus({ quiet: true, isCurrent });
+    if (isCurrent()) updateSidebarLoadedSummary();
+    return true;
+  } catch (error) {
+    if (generation !== state.whiteboardListGeneration) return false;
+    failure = error;
+    throw error;
+  } finally {
+    request?.finish(failure);
   }
-  renderWhiteboardOverview();
-  renderWhiteboardRoomList();
-  renderPublicWhiteboard();
-  renderSelectedWhiteboard();
-  await loadPublicWhiteboardStatus({ quiet: true });
-  updateSidebarLoadedSummary();
 }
 
 async function selectWhiteboardRoom(
@@ -7885,19 +8304,26 @@ async function deleteSelectedWhiteboard() {
 }
 
 async function loadAccounts() {
-  const payload = await api("/api/admin/accounts");
-  state.accounts = payload.accounts || [];
-  renderAccountSummary();
-  renderAccountList();
-  if (state.selectedAccountId && !state.accounts.some((account) => account.id === state.selectedAccountId)) {
-    state.selectedAccountId = "";
-    state.accountDetail = null;
-    resetAccountForm();
-    renderAccountDetail();
-    $("#account-status").textContent = "当前账号已不在列表中，已清空编辑表单。";
-    syncAccountSaveButton();
+  const generation = (state.accountListGeneration || 0) + 1;
+  state.accountListGeneration = generation;
+  const request = managementWorkbench?.begin("accounts");
+  let failure = null;
+  try {
+    const payload = await api(request?.url || "/api/admin/accounts");
+    if (generation !== state.accountListGeneration || (request && !request.isCurrent())) return false;
+    request?.accept(payload);
+    state.accounts = payload.accounts || [];
+    // Keep independently loaded detail and its CAS revision while pages refresh.
+    renderAccountSummary();
+    renderAccountList();
+    return {};
+  } catch (error) {
+    if (generation !== state.accountListGeneration) return false;
+    failure = error;
+    throw error;
+  } finally {
+    request?.finish(failure);
   }
-  return {};
 }
 
 function renderAccountSummary() {
@@ -7906,7 +8332,7 @@ function renderAccountSummary() {
   const active = state.accounts.filter((account) => Number(account.active_sessions || 0) > 0).length;
   const summary = $("#account-summary");
   const countText = total
-    ? `共 ${formatNumber(total)} 个 · 管理员 ${formatNumber(admins)} · 活跃 ${formatNumber(active)}`
+    ? `本页 ${formatNumber(total)} 个 · 管理员 ${formatNumber(admins)} · 活跃 ${formatNumber(active)}`
     : "暂无账号数据";
   setElementText($("#account-list-count"), countText);
   syncBoxLabel(summary, total ? `账号概览：${countText}` : "账号概览：暂无账号数据");
@@ -7915,7 +8341,7 @@ function renderAccountSummary() {
     return;
   }
   const items = [
-    `共 ${formatNumber(total)} 个注册账号`,
+    `本页 ${formatNumber(total)} 个账号`,
     `${formatNumber(admins)} 个管理员`,
     `${formatNumber(active)} 个账号有活跃会话`
   ];
@@ -7929,13 +8355,13 @@ function renderAccountSummary() {
 function renderAccountList() {
   const list = $("#account-list");
   const filterText = normalizeFilterText(state.accountFilter);
-  const visibleAccounts = filterText
+  const visibleAccounts = !managementWorkbench && filterText
     ? state.accounts.filter((account) => accountMatchesFilter(account, filterText))
     : state.accounts;
   const admins = state.accounts.filter((account) => account.role === "admin").length;
   const active = state.accounts.filter((account) => Number(account.active_sessions || 0) > 0).length;
   const countText = state.accounts.length
-    ? `${filterText ? `显示 ${formatNumber(visibleAccounts.length)} / ` : ""}共 ${formatNumber(state.accounts.length)} 个 · 管理员 ${formatNumber(admins)} · 活跃 ${formatNumber(active)}`
+    ? `${filterText ? `显示 ${formatNumber(visibleAccounts.length)} / ` : ""}本页 ${formatNumber(state.accounts.length)} 个 · 管理员 ${formatNumber(admins)} · 活跃 ${formatNumber(active)}`
     : "暂无账号数据";
   setElementText($("#account-list-count"), countText);
   renderAccountStatusOverview(visibleAccounts, Boolean(filterText));
@@ -8140,7 +8566,8 @@ async function saveAccountProfile(event) {
   const form = $("#account-form");
   const payload = {
     email: form.elements.email.value.trim(),
-    role: form.elements.role.value
+    role: form.elements.role.value,
+    expectedUpdatedAt: state.accountDetail.account.updated_at
   };
   const existingAccount = state.accountDetail.account;
   if (payload.role !== existingAccount.role) {
@@ -8166,7 +8593,7 @@ async function saveAccountProfile(event) {
       method: "PUT",
       body: JSON.stringify(payload)
     });
-    state.accountDetail = detail;
+    state.accountDetail = detail.readbackWarning ? { ...state.accountDetail, ...detail } : detail;
     state.accounts = upsertById(state.accounts, detail.account, "id");
     form.elements.email.value = detail.account.email || "";
     form.elements.role.value = detail.account.role || "user";
@@ -8176,10 +8603,10 @@ async function saveAccountProfile(event) {
     renderAccountList();
     renderAccountDetail();
     markAccountSavedWhilePreservingPasswordDraft();
-    $("#account-status").textContent = `已保存账号资料。操作人：${state.user?.email || "当前管理员"}。`;
+    $("#account-status").textContent = detail.readbackWarning?.message || `已保存账号资料。操作人：${state.user?.email || "当前管理员"}。`;
     return true;
   } catch (error) {
-    $("#account-status").textContent = error.message;
+    $("#account-status").textContent = contentWriteErrorMessage(error);
     refreshEditorDirtyState("accounts");
     return false;
   } finally {
@@ -8226,9 +8653,9 @@ async function resetAccountPassword(event) {
   try {
     const detail = await api(`/api/admin/accounts/${encodeURIComponent(state.selectedAccountId)}`, {
       method: "PUT",
-      body: JSON.stringify({ password, revokeSessions })
+      body: JSON.stringify({ password, revokeSessions, expectedUpdatedAt: account.updated_at })
     });
-    state.accountDetail = detail;
+    state.accountDetail = detail.readbackWarning ? { ...state.accountDetail, ...detail } : detail;
     state.accounts = upsertById(state.accounts, detail.account, "id");
     $("#account-form").elements.password_status.value = detail.account.password_status || "已加密保存，不能查看原文";
     form.elements.password.value = "";
@@ -8245,11 +8672,11 @@ async function resetAccountPassword(event) {
     renderAccountDetail();
     setElementText(
       $("#account-status"),
-      revokeSessions ? "密码已重置，其他登录会话已撤销。" : "密码已重置，现有登录会话已保留。"
+      detail.readbackWarning?.message || (revokeSessions ? "密码已重置，其他登录会话已撤销。" : "密码已重置，现有登录会话已保留。")
     );
     return true;
   } catch (error) {
-    setElementText($("#account-status"), error.message);
+    setElementText($("#account-status"), contentWriteErrorMessage(error));
     refreshEditorDirtyState("accounts");
     return false;
   } finally {
@@ -9041,10 +9468,14 @@ function bindEvents() {
   ];
   dirtyForms.forEach(([panel, selector]) => {
     const form = $(selector);
-    const handleDirtyInput = () => {
+    const handleDirtyInput = (event) => {
+      if (event.target.closest(".content-workbench")) return;
       refreshEditorDirtyState(panel);
       if (panel === "articles") {
         updateArticleLanguageStates();
+        syncArticleSaveButtons();
+      } else if (panel === "videos") {
+        syncVideoSaveButtons();
       } else if (panel === "accounts") {
         syncAccountSaveButton();
       } else if (panel === "socialLinks") {
@@ -9077,7 +9508,7 @@ function bindEvents() {
   });
   $("#article-list-filter").addEventListener("input", (event) => {
     state.articleFilter = event.currentTarget.value;
-    renderArticleList();
+    scheduleContentListReload("articles");
   });
   $$(".lang-tab").forEach((button, index, tabs) => {
     button.addEventListener("click", () => setArticleLang(button.dataset.articleLang));
@@ -9128,7 +9559,7 @@ function bindEvents() {
   });
   $("#video-list-filter").addEventListener("input", (event) => {
     state.videoFilter = event.currentTarget.value;
-    renderVideoList();
+    scheduleContentListReload("videos");
   });
   $("#preview-video-url").addEventListener("click", previewVideoUrl);
   $("#refresh-video-metadata").addEventListener("click", refreshVideoMetadata);
@@ -9175,19 +9606,7 @@ function bindEvents() {
     copyFieldValue("#video-category-form input[name='slug']", event.currentTarget, "视频分类路径标识");
   });
   $("#delete-video-category").addEventListener("click", deleteVideoCategory);
-  $("#include-hidden-chat").addEventListener("change", async (event) => {
-    if (isChatFilterBusy()) {
-      return;
-    }
-    const allowed = await confirmEditorCanLeave("chat", "调整隐藏记录筛选会重新读取消息列表。");
-    if (!allowed) {
-      event.currentTarget.checked = !event.currentTarget.checked;
-      return;
-    }
-    loadChatMessages().catch((error) => {
-      renderChatListNotice(`读取聊天记录失败：${error.message}`, "聊天记录错误");
-    });
-  });
+  $("#include-hidden-chat").addEventListener("change", changeChatIncludeHidden);
   $("#chat-list").addEventListener("click", async (event) => {
     const item = event.target.closest("[data-message-id]");
     if (item && !isChatInteractionBusy()) {
@@ -9201,7 +9620,7 @@ function bindEvents() {
   });
   $("#chat-list-filter").addEventListener("input", (event) => {
     state.chatFilter = event.currentTarget.value;
-    renderChatMessages();
+    managementWorkbench?.schedule("chat");
   });
   $("#chat-form-admin").addEventListener("submit", saveChatMessage);
   $("#toggle-chat-hidden").addEventListener("click", toggleChatHidden);
@@ -9218,7 +9637,7 @@ function bindEvents() {
   });
   $("#ban-list-filter").addEventListener("input", (event) => {
     state.banFilter = event.currentTarget.value;
-    renderBans();
+    managementWorkbench?.schedule("bans");
   });
   $$('[data-chat-governance-tab]').forEach((button, index, tabs) => {
     button.addEventListener("click", () => setChatGovernanceTab(button.dataset.chatGovernanceTab));
@@ -9279,7 +9698,7 @@ function bindEvents() {
   });
   $("#account-list-filter").addEventListener("input", (event) => {
     state.accountFilter = event.currentTarget.value;
-    renderAccountList();
+    managementWorkbench?.schedule("accounts");
   });
   $("#account-form").addEventListener("submit", saveAccountProfile);
   $("#account-password-form").addEventListener("submit", resetAccountPassword);
@@ -9299,6 +9718,13 @@ function bindEvents() {
 
 async function init() {
   bindEvents();
+  managementWorkbench = createManagementWorkbench({
+    accounts: { label: "账号", panel: "accounts", listId: "account-list", endpoint: "/api/admin/accounts", query: () => state.accountFilter, filterKey: "role", options: [["", "全部角色"], ["admin", "管理员"], ["user", "普通用户"]], load: loadAccounts },
+    chat: { label: "消息", panel: "chat", listId: "chat-list", endpoint: "/api/admin/chat/messages", query: () => state.chatFilter, extras: () => ({ includeHidden: $("#include-hidden-chat").checked ? "1" : "0" }), filterKey: "room", options: [["", "全部房间"], ["public", "公共房间"], ["private", "密码房间"]], load: loadChatMessages },
+    bans: { label: "禁言", panel: "chat", listId: "ban-list", endpoint: "/api/admin/chat/bans", query: () => state.banFilter, filterKey: "status", options: [["", "全部状态"], ["effective", "生效中"], ["expired", "已到期"], ["inactive", "已停用"], ["stale", "旧网络指纹"]], load: loadBans },
+    whiteboards: { label: "画板房间", panel: "", listId: "whiteboard-room-list", endpoint: "/api/admin/whiteboards/rooms", offsetMode: true, load: loadWhiteboards }
+  }, { guard: confirmEditorCanLeave, reportError: (error) => setStatus(contentWriteErrorMessage(error), { force: true, tone: "error" }) });
+  window.AdminAnalyticsWorkbench?.init({ reload: () => loadPanelData(state.activePanel, { force: true }), getState: () => state, openPanel: switchPanel, openAdminPage: navigateToAdminPage, api });
   initFormStatusTones();
   renderAdminUpdates();
   updateSidebarLoadedSummary();
@@ -9324,6 +9750,8 @@ async function init() {
     applyActivePanel(getStoredActivePanel());
     replaceAdminHistoryView(state.activePanel, "list");
     await loadMe();
+    await initializeContentWorkbench();
+    window.AdminAnalyticsWorkbench?.refreshWorkSummary();
     await loadPanelData(state.activePanel, { force: true });
     state.timer = window.setInterval(autoRefreshActivePanel, 30000);
   } catch (error) {

@@ -269,17 +269,35 @@ async function writeHashedTransform({
   const extension = loader === "css" ? "css" : "js";
   const virtualOutput = `${HASHED_ASSET_DIR}/${logicalName}.000000000000.${extension}`;
   if (loader === "css") assertCssUrlsStayStable(source, sourceRelative, virtualOutput);
-  const result = await esbuildTransform(source, {
+  const options = {
     charset: "utf8",
     format,
     legalComments: "none",
-    loader,
     minify: true,
-    sourcefile: toPosix(sourceRelative),
     sourcemap: "external",
     sourcesContent: true,
     target: "es2022"
-  });
+  };
+  // Admin now imports browser modules. Bundle the dependency graph before moving
+  // the entry into /_assets; transform alone would emit unresolved require calls.
+  let result;
+  if (sourceRelative === "admin/admin.js") {
+    const bundled = await esbuildBuild({
+      ...options,
+      absWorkingDir: projectRoot,
+      entryPoints: [sourceRelative],
+      outfile: virtualOutput,
+      bundle: true,
+      platform: "browser",
+      write: false
+    });
+    result = {
+      code: bundled.outputFiles.find((file) => file.path.endsWith(".js")).text,
+      map: bundled.outputFiles.find((file) => file.path.endsWith(".js.map")).text
+    };
+  } else {
+    result = await esbuildTransform(source, { ...options, loader, sourcefile: toPosix(sourceRelative) });
+  }
   const digest = sha256(`${result.code}\0${result.map}`).slice(0, 12);
   const outputName = `${logicalName}.${digest}.${extension}`;
   const outputRelative = `${HASHED_ASSET_DIR}/${outputName}`;

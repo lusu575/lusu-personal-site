@@ -4,8 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="color-scheme" content="light">
+  <meta name="robots" content="noindex,nofollow">
   <title>临时互传管理 - LuSu Admin</title>
-  <link rel="stylesheet" href="/admin/transfer.css?v=20260718-resource-icons-layout-r1;admin=20260827-private-room-lifecycle-r1">
+  <link rel="stylesheet" href="/admin/shared-console.css?v=20260908-admin-review-r1">
+  <link rel="stylesheet" href="/admin/transfer.css?v=20260718-resource-icons-layout-r1;admin=20260908-admin-review-r1">
 </head>
 <body>
   <header class="transfer-admin-topbar">
@@ -30,33 +32,44 @@
     </section>
     <p class="sr-only" id="table-scroll-hint">表格区域可获得键盘焦点，并使用方向键横向或纵向滚动。</p>
     <section class="metrics" id="metrics" aria-label="互传概览"></section>
-    <section class="panel controls">
+    <section class="panel controls" aria-label="上传与存储操作">
       <div><h2>紧急控制</h2><p>暂停后已有内容仍可下载和删除。</p></div>
       <button type="button" id="normal-switch" data-mutation>暂停普通用户上传</button>
       <button type="button" id="global-switch" class="danger" data-mutation>暂停全部上传</button>
       <button type="button" id="cleanup" data-mutation>立即清理</button>
-      <button type="button" id="test-alert" data-mutation>测试报警</button>
     </section>
-    <section class="panel">
+    <section class="panel" id="cost-panel">
       <header><div><h2>费用与报警</h2><p>站内数据是估算；正式账单以 Cloudflare 为准。</p></div><span id="notification-status"></span></header>
       <div class="cost-grid" id="cost-grid"></div>
+      <p class="cost-explanation">写入类操作（Class A）包括上传、分片初始化与完成；读取类操作（Class B）包括下载和对象读取。存储量按本月累计 GB·月估算，容量显示使用 MiB / GiB；两者单位不同。</p>
+      <details class="admin-help" id="alert-setup">
+        <summary>配置费用通知与了解统计口径</summary>
+        <ol>
+          <li>在 Cloudflare 账户的账单 / 用量页面配置官方 1、3、5 美元预算提醒。本站无法读取官方提醒是否启用，请在 Cloudflare 核对。</li>
+          <li>需要站内通知时，在 Pages 项目的 Production 环境中配置 Secret <code>TRANSFER_ALERT_WEBHOOK_URL</code>，指向你已有的通知接收服务。</li>
+          <li>如接收服务支持邮件转发，可再配置 <code>TRANSFER_ALERT_EMAIL</code>。只填邮箱不会发送邮件；邮件由接收服务转发。</li>
+          <li>保存环境变量后重新部署，再回来刷新数据。确认接收服务就绪后，可手动发送一次测试通知，查看下方记录并在接收端核对。</li>
+        </ol>
+        <p>站内费用只覆盖本功能记录的 R2 存储与操作估算，不能代表整个 Cloudflare 账户账单。环境变量 <code>TRANSFER_ALERT_THRESHOLDS</code> 若已设置，将优先于本页报警阈值。</p>
+      </details>
+      <div class="alert-actions"><p id="alert-delivery-note" role="status">正在读取通知配置……</p><button type="button" id="test-alert" data-mutation disabled>发送测试通知</button></div>
       <div class="table-wrap" tabindex="0" role="region" aria-label="费用报警记录" aria-describedby="table-scroll-hint"><table><thead><tr><th>月份</th><th>阈值</th><th>类型</th><th>状态</th><th>时间</th></tr></thead><tbody id="alerts"></tbody></table></div>
     </section>
-    <section class="panel">
+    <section class="panel settings-panel">
       <header>
-        <div><h2>普通用户配额</h2><p>保存后由服务端立即执行；并发修改会先提示冲突。</p></div>
-        <div class="settings-actions"><span id="settings-dirty" role="status">已保存</span><button type="submit" form="settings-form" id="settings-save" data-mutation>保存设置</button></div>
+        <div><h2>普通用户配额</h2><p>管理员保留既有豁免。1 GiB = 1024 MiB；切换单位不会改变配额。</p></div>
+        <div class="settings-actions"><span id="settings-dirty" role="status">正在读取设置</span><button type="submit" form="settings-form" id="settings-save" data-mutation disabled>保存设置</button></div>
       </header>
       <form class="settings" id="settings-form">
-        <label>单文件字节<input name="normal_max_file_bytes" type="number" min="1048576" max="99614720" required></label>
-        <label>24小时字节<input name="normal_user_24h_bytes" type="number" min="1048576" required></label>
-        <label>每日文件数<input name="normal_user_daily_files" type="number" min="1" required></label>
-        <label>每分钟初始化<input name="normal_user_init_per_minute" type="number" min="1" required></label>
-        <label>房间有效字节<input name="normal_room_active_bytes" type="number" min="1048576" required></label>
-        <label>全站普通池字节<input name="normal_pool_active_bytes" type="number" min="1073741824" required></label>
-        <label>黄色阈值<input name="normal_pool_yellow_ratio" type="number" min="0.25" max="0.95" step="0.01" required></label>
-        <label>红色阈值<input name="normal_pool_red_ratio" type="number" min="0.5" max="1" step="0.01" required></label>
-        <label>报警阈值<input name="alert_thresholds" value="1,3,5" required></label>
+        <label>单个文件大小<span class="quota-input"><input name="normal_max_file_bytes" type="number" min="1" max="95" step="any" required><select data-quota-unit="normal_max_file_bytes" aria-label="单个文件大小单位"><option>MiB</option><option>GiB</option></select></span><small>范围 1–95 MiB</small></label>
+        <label>个人滚动 24 小时上传量<span class="quota-input"><input name="normal_user_24h_bytes" type="number" min="1" max="8192" step="any" required><select data-quota-unit="normal_user_24h_bytes" aria-label="个人上传量单位"><option>MiB</option><option>GiB</option></select></span><small>范围 1 MiB–8 GiB</small></label>
+        <label>每日文件数<input name="normal_user_daily_files" type="number" min="1" max="1000" required></label>
+        <label>每分钟开始上传次数<input name="normal_user_init_per_minute" type="number" min="1" max="120" required></label>
+        <label>单个房间有效存储量<span class="quota-input"><input name="normal_room_active_bytes" type="number" min="1" max="8192" step="any" required><select data-quota-unit="normal_room_active_bytes" aria-label="房间存储量单位"><option>MiB</option><option>GiB</option></select></span><small>范围 1 MiB–8 GiB</small></label>
+        <label>全站普通用户存储池<span class="quota-input"><input name="normal_pool_active_bytes" type="number" min="1" max="9" step="any" required><select data-quota-unit="normal_pool_active_bytes" aria-label="普通用户存储池单位"><option>MiB</option><option selected>GiB</option></select></span><small>范围 1–9 GiB</small></label>
+        <label>预警占用比例<input name="normal_pool_yellow_ratio" type="number" min="0.25" max="0.95" step="0.01" required><small>例如 0.7 表示 70%</small></label>
+        <label>暂停占用比例<input name="normal_pool_red_ratio" type="number" min="0.5" max="1" step="0.01" required><small>超过该比例，暂停普通上传</small></label>
+        <label>费用报警阈值（美元）<input name="alert_thresholds" value="1,3,5" required><small>英文逗号分隔，例如 1,3,5</small></label>
       </form>
       <section class="settings-conflict" id="settings-conflict" role="alert" hidden>
         <h3>设置已被其他页面更新</h3>
@@ -68,11 +81,11 @@
       </section>
     </section>
     <section class="panel">
-      <header><div><h2>房间</h2><p>后台只显示随机房间标识，不显示明文口令。</p></div><input id="room-search" type="search" placeholder="搜索房间 ID"></header>
-      <div class="table-wrap" tabindex="0" role="region" aria-label="互传房间列表" aria-describedby="table-scroll-hint"><table><thead><tr><th>房间</th><th>状态</th><th>项目</th><th>有效字节</th><th>最后活动</th><th>操作</th></tr></thead><tbody id="rooms"></tbody></table></div>
+      <header><div><h2>房间</h2><p>后台只显示随机房间标识，不显示明文口令。</p></div><input id="room-search" type="search" aria-label="搜索房间编号" placeholder="搜索房间编号"></header>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="互传房间列表" aria-describedby="table-scroll-hint"><table><thead><tr><th>房间</th><th>状态</th><th>项目</th><th>有效存储</th><th>最后活动</th><th>操作</th></tr></thead><tbody id="rooms"></tbody></table></div>
     </section>
     <section class="panel">
-      <header><div><h2>当前保存的文件与内容</h2><p>默认不预览内容；永久删除文件会移除 R2 对象和数据库记录，加密文字会移除数据库记录，均无法撤销。</p></div><input id="item-search" type="search" placeholder="文件名 / 发送账号 / 项目 ID"></header>
+      <header><div><h2>当前保存的文件与内容</h2><p>默认不预览内容；永久删除文件会移除 R2 对象和数据库记录，加密文字会移除数据库记录，均无法撤销。</p></div><input id="item-search" type="search" aria-label="搜索文件名、发送账号或项目编号" placeholder="文件名 / 发送账号 / 项目编号"></header>
       <div class="table-wrap" tabindex="0" role="region" aria-label="互传文件与内容列表" aria-describedby="table-scroll-hint"><table><thead><tr><th>文件</th><th>发送者</th><th>类型</th><th>大小</th><th>状态</th><th>保存时间</th><th>过期时间</th><th>操作</th></tr></thead><tbody id="items"></tbody></table></div>
       <nav class="table-pagination" aria-label="互传文件分页">
         <button type="button" id="items-previous">上一页</button>
@@ -96,6 +109,6 @@
       </div>
     </div>
   </dialog>
-  <script src="/admin/transfer.js?v=20260827-private-room-lifecycle-r1"></script>
+  <script src="/admin/transfer.js?v=20260908-admin-review-r1"></script>
 </body>
 </html>
