@@ -2857,7 +2857,7 @@ async function createArticle(request, env) {
   assertGenericAdminArticleCategoryMutation(null, article.category, { create: true });
   const now = nowIso();
   const articleId = crypto.randomUUID();
-  const publishedAt = article.status === "published" ? (article.published_at || now) : article.published_at;
+  const publishedAt = article.status === "published" ? (article.published_at || now) : (article.published_at || null);
 
   await env.DB.batch([
     env.DB.prepare(`

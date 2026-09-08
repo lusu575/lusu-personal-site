@@ -34,6 +34,7 @@ function createAdminD1({ targetAccount, otherAdminExists = true } = {}) {
       sql,
       params: [],
       bind(...params) {
+        assert.equal(params.includes(undefined), false, "D1 bindings cannot contain undefined");
         this.params = params;
         return this;
       },
@@ -225,6 +226,7 @@ test("site update creation cannot enter the pinned Knowledge queue", async () =>
   assert.ok(articleInsert, "article insert statement must be batched");
   assert.equal(articleInsert.params[2], "site-updates");
   assert.equal(articleInsert.params[6], 0);
+  assert.equal(articleInsert.params.at(-1), null, "a draft without publication time must bind SQL NULL");
 });
 
 test("password updates honor revokeSessions false, true, and the secure default", async () => {
