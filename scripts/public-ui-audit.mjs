@@ -1202,7 +1202,8 @@ async function auditModalIsolation(client, origin, viewport, { lang, kind, motio
         hit:Boolean(trigger&&hit&&(trigger===hit||trigger.contains(hit))),label:trigger?.getAttribute('aria-label')||'',
         rect:rect?{left:rect.left,top:rect.top,right:rect.right,bottom:rect.bottom,width:rect.width,height:rect.height}:null};
     })()`);
-    await client.send("Input.dispatchKeyEvent", { type: "rawKeyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+    // Enter needs its character/default-action phase to activate a native button.
+    await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", text: "\r", unmodifiedText: "\r", windowsVirtualKeyCode: 13 });
     await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
     await waitFor(client, `document.getElementById('welcome-modal')?.hidden===false`, "manual welcome modal open");
   } else {
@@ -3227,7 +3228,7 @@ async function readResourceVisualState(client) {
       return { left:round(value.left), top:round(value.top), right:round(value.right), bottom:round(value.bottom), width:round(value.width), height:round(value.height) };
     };
     const visible = (node) => {
-      if (!node || node.hidden) return false;
+      if (!node || node.hidden || !node.checkVisibility({ checkOpacity:true, checkVisibilityCSS:true })) return false;
       const style = getComputedStyle(node);
       const box = node.getBoundingClientRect();
       return style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity) > .01 && box.width > 0 && box.height > 0;
@@ -4604,7 +4605,7 @@ async function auditResponsiveReleaseMatrix(client, origin) {
             const round=(value)=>Math.round(Number(value||0)*100)/100;
             const rect=(element)=>{if(!element)return null;const box=element.getBoundingClientRect();return {top:round(box.top),right:round(box.right),bottom:round(box.bottom),left:round(box.left),width:round(box.width),height:round(box.height)};};
             const overlap=(a,b)=>!a||!b?0:round(Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left))*Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)));
-            const visible=(element)=>{const style=getComputedStyle(element);const box=element.getBoundingClientRect();return !element.hidden&&style.display!=='none'&&style.visibility!=='hidden'&&box.width>0&&box.height>0;};
+            const visible=(element)=>{const style=getComputedStyle(element);const box=element.getBoundingClientRect();return !element.hidden&&element.checkVisibility({checkOpacity:true,checkVisibilityCSS:true})&&style.display!=='none'&&style.visibility!=='hidden'&&box.width>0&&box.height>0;};
             const page=document.querySelector('.page.active');
             const win=page?.querySelector('.xp-window')||page;
             const dock=document.querySelector('.xp-taskbar');
