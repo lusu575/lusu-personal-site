@@ -188,6 +188,29 @@ test("setLanguage updates only shell and active-route state without lifecycle re
   assert.doesNotMatch(syncSource, /restartActiveRouteLifecycle|transitionRouteLifecycle|navigate\s*\(/);
 });
 
+test("article language switching refreshes the reader without replacing loaded list pages", () => {
+  const calls = [];
+  const pages = [{ slug: "kept-page" }];
+  const articleState = { currentSlug: "open-article", articles: pages };
+  const signal = new AbortController().signal;
+  const context = {
+    articleState,
+    knowledgeRoute: () => ({
+      renderKnowledge: () => calls.push("reader"),
+      loadArticles: (options) => calls.push(options.signal)
+    }),
+    activeRouteScope: () => ({ signal })
+  };
+  const sync = vm.runInNewContext(`(${extractFunction(mainSource, "syncActiveRouteLanguage")})`, context);
+  sync("knowledge", "en");
+  sync("knowledge", "ja");
+  assert.deepEqual(calls, ["reader", "reader"]);
+  assert.equal(articleState.articles, pages);
+  articleState.currentSlug = "";
+  sync("knowledge", "zh");
+  assert.equal(calls[2], signal, "list view still loads the selected language with its route signal");
+});
+
 test("language synchronization preserves form drafts and pending Transfer context", () => {
   const chatLanguageSource = extractFunction(chatSource, "syncLanguage");
   const transferLanguageSource = extractFunction(transferSource, "setLanguage");

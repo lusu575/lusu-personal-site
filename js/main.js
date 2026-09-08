@@ -1002,7 +1002,8 @@ function syncActiveRouteLanguage(route, language) {
   }
   if (route === "knowledge") {
     const module = knowledgeRoute();
-    if (module) void module.loadArticles({ signal: activeRouteScope("knowledge")?.signal });
+    if (module && articleState.currentSlug) module.renderKnowledge();
+    else if (module) void module.loadArticles({ signal: activeRouteScope("knowledge")?.signal });
     return;
   }
   if (route === "videos") {
