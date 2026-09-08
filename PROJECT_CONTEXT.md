@@ -1,5 +1,19 @@
 # PROJECT_CONTEXT.md
 
+## 2026-09-08 Review 优化与当前维护边界
+
+- 当前公开变更使用 `20260908-site-review-r1`；公开更新 ID 为 `seed-update-2026-09-08-site-review-optimization`，slug 为 `2026-09-08-site-review-optimization`。Quick Transfer 为 `1.0.14`，在线画板为 `1.0.10`。以下是实现事实，部署完成与真机通过必须另以当前提交的实际证据确认。
+- 欢迎窗默认不自动弹出，桌面最近更新入口／移动首页欢迎入口主动打开，`welcome=1` 仅作明确预览。此规则替代本文历史段落中“每天首次打开任意公开路由显示一次”的约定；深链、刷新和返回阅读都保留目标上下文，旧 `lusu-welcome-day` 记录不再用于决定自动打开。
+- 注册的新用户与首会话原子提交，Cookie 只在提交成功后返回；成功登录记录与成功后的限流清理不阻断已完成的认证。非关键副作用错误只记无身份信息的固定日志，身份、凭据与草稿仍不进入公开记录。
+- 互传草稿仅在当前房间内存中存在，离房、关闭和退出登录清空；隐藏标签保留用户提交的上传、重试和有界队列，只停被动轮询与不可见 UI 更新。手动暂停／继续、取消及房间 generation 继续约束旧请求；不承诺浏览器或系统后台永不挂起。工具入口加载失败有可见重试。
+- 知识库公开页面使用 `/api/articles?paginated=1`，默认 12 条、上限 48 条，游标绑定语言、分类、排除分类及搜索条件，保持非置顶更新记录与完整分类计数。普通浏览按 keyset 查询；搜索按 100 条摘要批次执行 NFKC、多词 AND 与三语标签匹配，没有固定 500 篇截止，也没有持久全文索引，整体扫描成本仍随内容量增加。旧非分页接口保留兼容上限，不再作为公开页面完整归档来源。
+- 文章链接保留原生修饰键／新标签行为。原始标签按身份去重，UI 再按当前语言标签名去重并省去与分类相同的标签；历史清理保留首个原拼写和全部独立标签，通过原 tags 条件更新，不改管理员文章编辑时间。列表加载更多、分类／搜索切换与阅读返回保留各自请求和滚动上下文。
+- 移动 Home 手势仅限真实 Dock 指示条，编辑、软键盘、弹窗、缩放时禁用；成功滑动不再同时收起 Dock。移动 CSS 删除已失效覆盖而保留最终呈现，目录文字增至 13px。动效离页取消、快速重开接续当前帧、主题状态按最新请求收尾，并尊重 reduced／off；业务提交仍由原流程执行。
+- 工具卡分开用户用途与技术详情；视频作者／日期／播放落点对齐。画板大厅复用既有 Image2 素材，采用紧凑身份栏、并列房间入口及最近使用行；帮助按输入方式可控且展开不遮挡输入，画布、Yjs、Worker、图片权限及房间保留逻辑保持不变。
+- 文章历史基线在 `functions/api/article-seeds.mjs`，本期增量在 `article-release-seed.mjs`，迁移入口为 `content-migrations.mjs`。`site_data_migrations` 保存版本／应用时间／来源；已知 `20260902-mobile-blog-retired-r1` 基线只执行增量与标签清理，未知／新库先兼容历史，当前版本命中即返回。同 DB 的并发迁移合并，失败不写完成记录；生产独立 D1 发布尚未建立，本轮仍保留首请求迁移兼容路径。
+- 过期数据清理由 `data-cleanup-service.mjs` 在健康检查的 `waitUntil` 中触发，使用 60 秒 owner 租约，每表每轮最多 5,000 条、每次最多 20 轮／8 秒，瞬时 batch 失败最多补试一次。积压或失败不前移每日成功标记；下次健康检查续跑，全部追平后才记成功，清理保留期限未改变。
+- Lint 使用 recommended 覆盖第一方脚本，第三方引擎／生成物按精确路径排除。`asset-manifest.json` 记录完整 commit 与 dirty 状态，构建环境 SHA 必须等于 Git HEAD；生产 smoke 用 `EXPECTED_COMMIT_SHA` 校验目标版本、资源引用和字节哈希，最终再次核对版本。后台本轮仅等价 Lint 修复，详情留在后台专用文档。
+
 ## 2026-09-08 后台工作台与维护边界
 
 - `/admin/` 的统计、内容编辑与治理完成一轮整合；后台统计使用 `Asia/Shanghai` 自然日，D1 免费额度保护仍按 UTC 日判断。详细接口、浏览器暂存、响应式与并发约定集中维护在 `admin/docs/ADMIN_PROJECT_CONTEXT.md` 和 `admin/docs/ADMIN_SKILL.md`。
@@ -901,7 +915,7 @@ Cloudflare Pages 项目状态：
 - 当前网站语言为 日本語 时，请求 `lang=ja` 并显示日文内容。
 - 如果当前语言版本不存在，fallback 到中文 `zh`。
 - 如果中文也不存在，fallback 到任意已有语言版本。
-- 知识库区域已改为从 `/api/articles` 读取文章列表，点击后从 `/api/articles/:slug` 读取详情。
+- 知识库区域从 `/api/articles?paginated=1` 读取游标分页摘要与全量分类计数，点击后从 `/api/articles/:slug` 读取详情；搜索覆盖标题、摘要和标签，未建立正文全文索引。
 - 文章详情公开地址使用 `/articles/<slug>`，可以通过 `https://lusu575.com/articles/<slug>` 直接分享和访问单篇文章；内部 `article_id` 只用于数据库和后台管理，不在公开链接或公开 API 中外显。旧的 `#knowledge/article/<slug>` hash 入口仅作为兼容入口保留。
 - 网站切换语言时，文章列表和当前文章详情会重新请求对应语言版本。
 - 文章发布时间在前端按用户所在时区显示到秒，不显示时区名；后端时间字段应保持 ISO/UTC 语义，避免被浏览器误读成本地时间。后台文章编辑器显示管理员本地时间，保存时统一转换为 UTC ISO；后端也会规范化 `published_at`，确保不同地区用户看到同一个绝对时间的本地化结果。
@@ -910,13 +924,14 @@ Cloudflare Pages 项目状态：
 - 每次代码合并、功能上线或可见更新，都要在 `site-updates` 分类发布一篇 zh / en / ja 三语真实文章，包含主标题、简介和正文。
 - 这条是合并验收门槛，不是可选文档项；如果无法通过后台直接发布，也必须在同一次代码变更里补齐 seed 与 fallback，确认知识库、欢迎弹窗“最近更新”和右上角最新日期都能读到这次更新。
 - 首页欢迎弹窗右侧“最近更新”自动读取 `site-updates` 分类文章；“查看更多更新”跳转到知识库并筛选该分类。
-- 通过 seed 维护 `site-updates` 时，必须同时更新 `functions/api/[[route]].js` 的 `articleSeedStatements`、`cloudflare/schema.sql` 和 `js/data/content.mjs` 的本地 fallback `content.updates`，避免线上 D1、手动 migration 和 D1 不可用兜底显示不一致。
+- 通过 seed 维护 `site-updates` 时，更新 `functions/api/article-release-seed.mjs`、`content-migrations.mjs` 的版本、`cloudflare/schema.sql`、`js/data/content.mjs` 完整 fallback 与 `js/data/home-content.mjs` 最近五条无正文投影；历史基线仅在真实历史兼容修复时改动，避免日常发布继续扩大主 API。
 - 2026-06-11 已清理三篇文章系统测试内容：`xp-site-notes`、`local-ai-workflow`、`fallback-check`；当前保留真实 `site-updates` 更新文章。
 - 文章详情前端使用 slug + 请求语言缓存和请求状态保护，避免语言切换或重渲染时重复拉取同一详情并卡在“读取中”。
 - 文章正文渲染器支持基础 Markdown、有序/无序列表、blockquote、`text` 代码块蓝色说明框、白名单路径 `assets/images/articles/` 下的文章图片，以及无账号凭证的绝对 HTTPS Markdown 链接；正文与显式图注都必须用 DOM/textContent 构建，不能直接插入未处理 HTML。外链使用 `target="_blank"` 与 `rel="noreferrer noopener"`，危险协议、相对地址和含用户名或密码的 URL 保持不可执行文字。
 
 公开接口：
 
+- `GET /api/articles?lang=zh&paginated=1&limit=12`，可附带分类、搜索与服务器返回的游标。
 - `GET /api/articles?lang=zh`
 - `GET /api/articles?lang=en`
 - `GET /api/articles?lang=ja`

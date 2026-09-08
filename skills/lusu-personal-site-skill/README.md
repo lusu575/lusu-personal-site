@@ -1,5 +1,9 @@
 # 鲁肃个人网站专用Skill
 
+2026-09-08 的 Review 维护约定已更新：欢迎窗主动打开，注册用户与首会话原子提交，非关键统计失败隔离；互传草稿隔房、隐藏标签保留已提交上传；知识库采用真正游标分页与摘要批次搜索，保留原生链接行为并去重标签。移动手势限定真实 Dock 指示条，CSS 按组件收敛，动效可中断且只由最新请求收尾。画板继续复用 Image2 素材，帮助按鼠标／键盘／触屏分别控制且不遮输入。版本为 Quick Transfer `1.0.14`、画板 `1.0.10`。
+
+发布核验必须绑定完整 Git SHA、生产 manifest、干净工作树与真实资源哈希；Lint recommended 覆盖第一方代码。历史 seed、本期增量和版本迁移分离，旧库首请求兼容仍保留；周期清理仅在积压追平后写成功标记。以上是维护契约，不代表本次生产或真机验收已经通过，细节见 `SKILL.md` 的“2026-09-08 Review 后的维护约定”。
+
 后台私有统计、暂存、并发与样式约定集中见 `admin/docs/ADMIN_SKILL.md`：访问报表按上海自然日，D1 预算仍按 UTC，当前采样／计划时间不得冒充历史完整流量或执行心跳。后台修改触发子项目版本同步时，仅更新必要公开版本／缓存；公开行为未变化时不新增后台细节到 `site-updates`。
 
 Daily AI News 现由定时任务中的 Codex 主审；程序只做客观预筛和初步聚类，任何 editorial signal、RSS 或公开 X 直达候选都必须进入 Codex 队列。正式链路不再启动 Gemma 或 llama.cpp，预筛与 Codex 结果必须合计恰好覆盖全部候选并通过受保护事件证据校验。
@@ -199,11 +203,11 @@ skills/lusu-personal-site-skill/SKILL.md
 - 每次合并代码、上线功能或做可见更新时，必须在知识库 `site-updates`（网站更新记录）分类发布一篇 zh / en / ja 三语真实文章，包含主标题、简短简介和正文。
 - `site-updates` 只按发布时间展示，永远不置顶；后台、seed、schema、fallback 和知识库排序都必须把该分类保持为 `is_pinned = 0`，旧缓存中的错误置顶值也不能显示标记。
 - Knowledge 的“全部”Tab 列表和数量都排除 `site-updates`；网站更新只允许出现在 `site-updates` 专属“更新记录”Tab，筛选与计数复用同一分类函数。
-- Knowledge 首屏 12 条和“加载更多”只是前端渲染分段；公共列表 API 与前端必须共享 `PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500` 并先取得完整摘要归档，使搜索、分类和计数覆盖未置顶旧文章。不得把 API 硬截断回 50 条，否则旧文章及其唯一分类会同时从列表消失。
+- Knowledge 通过 `/api/articles?paginated=1` 获取每页 12 条的游标分页与全量分类计数，不再把旧接口的 500 条视为完整归档；加载更多和阅读返回保留列表上下文，查询切换中止旧请求。搜索按有界摘要批次做 NFKC 多词 AND／三语标签匹配，未建立正文全文索引。
 - 这条是合并前验收门槛；如果不能通过后台发布，也要在同一次变更中补齐 seed 与 fallback，确认知识库、欢迎弹窗最近更新和右上角最新日期能读到本次更新。
-- 通过 seed 维护网站更新记录时，必须同步 `functions/api/[[route]].js`、`cloudflare/schema.sql`、`js/data/content.mjs` 的完整 fallback，以及 `js/data/home-content.mjs` 的最近五条无正文 Home 摘要投影。
+- 通过 seed 维护网站更新时，同步 `functions/api/article-release-seed.mjs`、`content-migrations.mjs` 版本、`cloudflare/schema.sql`、`js/data/content.mjs` 完整 fallback 和 `js/data/home-content.mjs` 最近五条无正文投影；历史 `article-seeds.mjs` 不再承接日常增量。
 - 首页欢迎弹窗右侧“最近更新”自动读取 `site-updates` 分类文章，“查看更多更新”跳转到该分类。
-- 首页欢迎弹窗使用 `lusu-welcome-day` 保存访问设备的本地自然日；每天首次打开任意公开路由显示一次，并在实际打开时立即记录，不能用长期内容版本号永久抑制后续日期。
+- 首页欢迎弹窗由桌面最近更新入口／移动首页欢迎入口主动打开，默认访问和深链不自动弹出，`welcome=1` 保留为明确预览；此规则替代旧每日自动欢迎约定，`lusu-welcome-day` 不再决定自动打开。
 - 文章阅读器的“返回文章列表”必须是 `.article-reader-sidebar` 的第一个子项；桌面／横屏由整个侧栏统一 sticky，按钮不能独立 sticky 后覆盖目录。目录点击只滚动 `#article-detail`，并同步目标标题、URL hash、焦点与唯一 `aria-current`。
 - 当前主站不提供公开聚合入口；不要恢复相关按钮、发现链接或公开输出接口，除非用户重新明确要求，并同步补齐三语文案、种子、构建守卫和部署说明。
 - Cloudflare 部署检查命令和期望状态保留在 `SKILL.md`。

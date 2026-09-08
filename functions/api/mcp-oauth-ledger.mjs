@@ -175,7 +175,7 @@ export async function createPendingMcpOAuthGrant({
       normalized.createdAt,
       normalized.expiresAt
     ).run();
-  } catch (error) {
+  } catch {
     throw new McpOAuthLedgerError(
       "The OAuth grant could not be created.",
       409,
@@ -684,6 +684,7 @@ function parseStoredScopes(value) {
 
 function normalizeText(value, field, maxLength, allowEmpty = false) {
   const normalized = String(value ?? "").trim();
+  // eslint-disable-next-line no-control-regex -- Reject control characters at this input boundary.
   if ((!allowEmpty && !normalized) || normalized.length > maxLength || /[\u0000-\u001f\u007f]/.test(normalized)) {
     throw new McpOAuthLedgerError(`Invalid ${field}.`, 400, "MCP_OAUTH_FIELD_INVALID", { field });
   }

@@ -90,11 +90,9 @@ export function assertProductionRunMode(run) {
 }
 
 export function productionDeliveryPayload(delivery) {
-  const {
-    mode: _mode,
-    status: _status,
-    ...payload
-  } = delivery || {};
+  const payload = { ...(delivery || {}) };
+  delete payload.mode;
+  delete payload.status;
   return payload;
 }
 

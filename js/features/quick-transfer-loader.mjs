@@ -1,4 +1,4 @@
-const TRANSFER_VERSION = "20260908-admin-review-r1";
+const TRANSFER_VERSION = "20260908-site-review-r1";
 const FRAGMENT_PATH = "/fragments/quick-transfer.html";
 const FRAGMENT_CANONICAL_PATH = "/fragments/quick-transfer";
 const ALLOWED_FRAGMENT_PATHS = Object.freeze([FRAGMENT_PATH, FRAGMENT_CANONICAL_PATH]);
@@ -29,6 +29,7 @@ const EXPECTED_IDS = Object.freeze([
   "transfer-app-title",
   "transfer-back-to-resources",
   "transfer-copy-password",
+  "transfer-draft-hint",
   "transfer-drop-overlay",
   "transfer-feed",
   "transfer-feedback",
@@ -347,7 +348,7 @@ export function createQuickTransferLoader() {
       implementation.setLanguage(language);
       await implementation.open();
       return true;
-    } catch (error) {
+    } catch {
       if (routeActive) renderStatus("error");
       else clearStatus({ restoreContent: true });
       return false;

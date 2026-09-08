@@ -38,7 +38,14 @@ test("Resources models temporary availability as retention instead of file size"
 test("Resource cards use content-sized rows and a bottom action row on mobile", () => {
   const desktopCss = read("css/style.css");
   assert.match(desktopCss, /#resource-list\s*>\s*\.resource-card\s*\{[\s\S]*height:\s*auto[\s\S]*min-height:\s*150px[\s\S]*max-height:\s*none/);
-  assert.match(mobileCss, /#resource-list\s*>\s*\.resource-card\s*\{[\s\S]*grid-template-rows:\s*auto\s+44px[\s\S]*min-height:\s*0[\s\S]*align-self:\s*stretch/);
+  const mobileCard = mobileCss.match(/html\[data-ui-shell="mobile"\]\s+#resource-list\s*>\s*\.resource-card\s*\{([^}]*)\}/)?.[1];
+  assert.ok(mobileCard, "mobile Resource geometry belongs to one component rule");
+  assert.match(mobileCard, /grid-template-rows:\s*auto\s+44px\s+auto\s*;/);
+  assert.match(mobileCard, /grid-template-areas:\s*"main"\s*"action"\s*"tags"\s*;/);
+  assert.match(mobileCard, /height:\s*auto\s*;/);
+  assert.match(mobileCard, /min-height:\s*0\s*;/);
+  assert.match(mobileCard, /max-height:\s*none\s*;/);
+  assert.match(mobileCard, /align-self:\s*stretch\s*;/);
 });
 
 test("Games exposes all supported languages and cloud-save capability before secondary provenance", () => {

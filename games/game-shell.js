@@ -1821,6 +1821,7 @@
 
   function boundedAgentMessage(value) {
     return String(value || "Unknown error")
+      // eslint-disable-next-line no-control-regex -- Reject or sanitize control characters at the public text boundary.
       .replace(/[\u0000-\u001F\u007F]/g, " ")
       .replace(/\s+/g, " ")
       .trim()

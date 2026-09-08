@@ -1,7 +1,7 @@
 import { mkdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { loadConfig } from "./config.mjs";
-import { verifyFixedController, runController } from "./controller-adapter.mjs";
+import { verifyFixedController } from "./controller-adapter.mjs";
 import { acquireSingleInstanceLock } from "./single-instance-lock.mjs";
 import { createLoopbackBridge } from "./bridge.mjs";
 import { createSiteClient } from "./site-client.mjs";

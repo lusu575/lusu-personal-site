@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useReducer,
   useRef,
   useState,
 } from "react";
@@ -35,9 +36,10 @@ import {
   WhiteboardAssetManager,
   whiteboardImageFilesAreSupported,
 } from "./assets.js";
+import { roomHelpState } from "./room-help-state.js";
 
 const RECENT_ROOM_KEY = "lusu-whiteboard-recent-room-v1";
-const WHITEBOARD_VERSION = "1.0.9";
+const WHITEBOARD_VERSION = "1.0.10";
 const NAME_COOLDOWN_MS = 30_000;
 const PASSWORD_MIN_LENGTH = 4;
 const PASSWORD_MAX_LENGTH = 128;
@@ -217,6 +219,77 @@ function IdentityPanel({
   );
 }
 
+function PasswordRoomHelp({ t }) {
+  const [openFrom, dispatch] = useReducer(roomHelpState, null);
+  const rootRef = useRef(null);
+  const pointerTypeRef = useRef("");
+
+  useEffect(() => {
+    if (!openFrom) return undefined;
+    const dismissOutside = (event) => {
+      if (!rootRef.current?.contains(event.target)) dispatch({ type: "dismiss" });
+    };
+    const dismissEscape = (event) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      dispatch({ type: "dismiss" });
+    };
+    document.addEventListener("pointerdown", dismissOutside);
+    document.addEventListener("keydown", dismissEscape);
+    return () => {
+      document.removeEventListener("pointerdown", dismissOutside);
+      document.removeEventListener("keydown", dismissEscape);
+    };
+  }, [openFrom]);
+
+  return (
+    <div
+      className="room-help"
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) dispatch({ type: "dismiss" });
+      }}
+      ref={rootRef}
+    >
+      <div className="lobby-card-heading">
+        <h2>{t("privateTitle")}</h2>
+        <button
+          aria-controls="whiteboard-password-help"
+          aria-describedby={openFrom ? "whiteboard-password-help" : undefined}
+          aria-expanded={Boolean(openFrom)}
+          aria-label={t("passwordHelpLabel")}
+          className="room-help-toggle"
+          onClick={(event) => {
+            dispatch({
+              type: "activate",
+              pointerType: pointerTypeRef.current || (event.detail ? "mouse" : ""),
+            });
+            pointerTypeRef.current = "";
+          }}
+          onFocus={(event) => dispatch({
+            type: "focus",
+            keyboard: event.currentTarget.matches(":focus-visible"),
+          })}
+          onKeyDown={() => { pointerTypeRef.current = ""; }}
+          onPointerDown={(event) => { pointerTypeRef.current = event.pointerType; }}
+          onPointerEnter={(event) => dispatch({ type: "pointer-enter", pointerType: event.pointerType })}
+          onPointerLeave={() => dispatch({ type: "pointer-leave" })}
+          type="button"
+        >
+          ?
+        </button>
+      </div>
+      <div
+        className="room-help-popover"
+        hidden={!openFrom}
+        id="whiteboard-password-help"
+        role="note"
+      >
+        {t("passwordHelp")}
+      </div>
+    </div>
+  );
+}
+
 function Lobby({
   identity,
   identityError,
@@ -233,6 +306,7 @@ function Lobby({
 }) {
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState("");
+  const passwordInputRef = useRef(null);
 
   const submitPrivate = (event) => {
     event.preventDefault();
@@ -243,6 +317,7 @@ function Lobby({
       || characterLength > PASSWORD_MAX_LENGTH
     ) {
       setFormError(t("invalidPassword"));
+      passwordInputRef.current?.focus();
       return;
     }
     setFormError("");
@@ -281,31 +356,30 @@ function Lobby({
         </div>
       </section>
 
-      <section className="lobby-grid" aria-label={t("title")}>
-        <article className="lobby-card identity-card">
-          <h2>{t("currentIdentity")}</h2>
-          {identityLoading && <p role="status">{t("loadingBoard")}</p>}
-          {identityError && (
-            <div className="inline-error" role="alert">
-              <p>{t("identityUnavailable")}</p>
-              <button className="whiteboard-button" onClick={onRetryIdentity} type="button">
-                {t("retry")}
-              </button>
-            </div>
-          )}
-          {!identityLoading && !identityError && (
-            <IdentityPanel
-              cooldown={rotateCooldown}
-              identity={identity}
-              onRotate={onRotate}
-              rotating={rotating}
-              t={t}
-            />
-          )}
-        </article>
+      <section className="lobby-identity" aria-label={t("currentIdentity")}>
+        {identityLoading && <p role="status">{t("loadingIdentity")}</p>}
+        {identityError && (
+          <div className="inline-error" role="alert">
+            <p>{t("identityUnavailable")}</p>
+            <button className="whiteboard-button" onClick={onRetryIdentity} type="button">
+              {t("retry")}
+            </button>
+          </div>
+        )}
+        {!identityLoading && !identityError && (
+          <IdentityPanel
+            cooldown={rotateCooldown}
+            identity={identity}
+            onRotate={onRotate}
+            rotating={rotating}
+            t={t}
+          />
+        )}
+      </section>
 
+      <section className="lobby-grid" aria-label={t("title")}>
         <article className="lobby-card public-card">
-          <h2>{t("publicTitle")}</h2>
+          <div className="lobby-card-heading"><h2>{t("publicTitle")}</h2></div>
           <p>{t("publicDescription")}</p>
           <button
             className="whiteboard-button is-primary"
@@ -315,21 +389,18 @@ function Lobby({
           >
             {joining ? t("joining") : t("enterPublic")}
           </button>
+          <small className="room-policy">{t("publicRetention")}</small>
         </article>
 
         <article className="lobby-card private-card">
-          <div className="lobby-card-heading">
-            <h2>{t("privateTitle")}</h2>
-            <details className="room-help">
-              <summary aria-label={t("passwordHelpLabel")} title={t("passwordHelpLabel")}>?</summary>
-              <div className="room-help-popover" role="note">{t("passwordHelp")}</div>
-            </details>
-          </div>
+          <PasswordRoomHelp t={t} />
           <p>{t("privateDescription")}</p>
           <form onSubmit={submitPrivate}>
             <label className="password-field">
               <span>{t("passwordLabel")}</span>
               <input
+                aria-describedby={formError ? "whiteboard-password-error whiteboard-password-privacy" : "whiteboard-password-privacy"}
+                aria-invalid={Boolean(formError)}
                 autoCapitalize="off"
                 autoComplete="new-password"
                 disabled={!identity || joining}
@@ -339,12 +410,13 @@ function Lobby({
                   setFormError("");
                 }}
                 placeholder={t("passwordPlaceholder")}
+                ref={passwordInputRef}
                 spellCheck="false"
                 type="password"
                 value={password}
               />
             </label>
-            {formError && <p className="field-error" role="alert">{formError}</p>}
+            {formError && <p className="field-error" id="whiteboard-password-error" role="alert">{formError}</p>}
             <button
               className="whiteboard-button is-primary"
               disabled={!identity || joining}
@@ -353,30 +425,33 @@ function Lobby({
               {joining ? t("joining") : t("enterPrivate")}
             </button>
           </form>
-          <small>{t("passwordPrivacy")}</small>
+          <small className="room-policy" id="whiteboard-password-privacy">{t("passwordPrivacy")}</small>
         </article>
+      </section>
 
-        <article className="lobby-card recent-card">
-          <h2>{t("recentRoom")}</h2>
-          {recentRoom ? (
-            <>
+      <section className="recent-card" aria-label={t("recentRoom")}>
+        <h2>{t("recentRoom")}</h2>
+        {recentRoom ? (
+          <>
+            <div className="recent-room-copy">
               <strong>{recentLabel}</strong>
               <p>{t("recentAt", { time: recentTime })}</p>
-              {recentRoom.roomType === "public" && (
-                <button
-                  className="whiteboard-button is-secondary"
-                  disabled={!identity || joining}
-                  onClick={() => onJoin("public", "")}
-                  type="button"
-                >
-                  {t("enterPublic")}
-                </button>
-              )}
-            </>
-          ) : (
-            <p>{t("noRecentRoom")}</p>
-          )}
-        </article>
+            </div>
+            <button
+              className="whiteboard-button is-secondary"
+              disabled={!identity || joining}
+              onClick={() => {
+                if (recentRoom.roomType === "public") onJoin("public", "");
+                else passwordInputRef.current?.focus();
+              }}
+              type="button"
+            >
+              {recentRoom.roomType === "public" ? t("enterPublic") : t("enterPasswordAgain")}
+            </button>
+          </>
+        ) : (
+          <p>{t("noRecentRoom")}</p>
+        )}
       </section>
 
       <p className="share-note">{t("shareHint")}</p>

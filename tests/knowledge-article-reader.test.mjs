@@ -3,8 +3,10 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import { translations } from "../js/core/i18n.mjs";
+import { articleCategoryLabels } from "../js/data/article-labels.mjs";
 import {
-  PUBLIC_ARTICLE_ARCHIVE_LIMIT,
+  PUBLIC_ARTICLE_PAGE_SIZE,
+  visibleArticleTags,
   articleDetailShowsSummary,
   articleLanguageTag,
   articleImageDimensions,
@@ -20,42 +22,19 @@ import {
   sortKnowledgeArticles
 } from "../js/routes/knowledge.mjs";
 
-test("the public knowledge archive keeps older unpinned articles and their categories beyond 50 records", async () => {
-  assert.equal(PUBLIC_ARTICLE_ARCHIVE_LIMIT, 500);
+test("the knowledge route requests bounded server pages instead of a capped archive", async () => {
+  assert.equal(PUBLIC_ARTICLE_PAGE_SIZE, 12);
+  const routeSource = await readFile(new URL("../js/routes/knowledge.mjs", import.meta.url), "utf8");
+  assert.match(routeSource, /paginated: "1"/);
+  assert.match(routeSource, /params\.set\("cursor", cursor\)/);
+  assert.doesNotMatch(routeSource, /PUBLIC_ARTICLE_ARCHIVE_LIMIT/);
+});
 
-  const olderArticle = {
-    slug: "ai-agent-workflow-guide",
-    category: "ai",
-    is_pinned: 0,
-    published_at: "2026-06-14T15:00:00.000Z"
-  };
-  const archive = [
-    ...Array.from({ length: 50 }, (_, index) => ({
-      slug: `newer-${index + 1}`,
-      category: "note",
-      is_pinned: 0,
-      published_at: `2026-07-${String(28 - Math.floor(index / 2)).padStart(2, "0")}T${String(index % 24).padStart(2, "0")}:00:00.000Z`
-    })),
-    olderArticle
-  ];
-  const categories = knowledgeCategoryValues(archive, {
-    firstCategory: "daily-ai-news",
-    lastCategory: "site-updates"
-  });
-
-  assert.ok(categories.includes("ai"));
-  assert.deepEqual(
-    knowledgeArticlesForCategory(archive, "ai").map(({ slug }) => slug),
-    ["ai-agent-workflow-guide"]
-  );
-
-  const [routeSource, apiSource] = await Promise.all([
-    readFile(new URL("../js/routes/knowledge.mjs", import.meta.url), "utf8"),
-    readFile(new URL("../functions/api/[[route]].js", import.meta.url), "utf8")
-  ]);
-  assert.match(routeSource, /\/api\/articles\?lang=\$\{encodeURIComponent\(requestedLang\)\}&limit=\$\{PUBLIC_ARTICLE_ARCHIVE_LIMIT\}/);
-  assert.match(apiSource, /export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500/);
-  assert.match(apiSource, /clampLimit\(url\.searchParams\.get\("limit"\), PUBLIC_ARTICLE_ARCHIVE_LIMIT\)/);
+test("visible tags collapse localized duplicates and omit the repeated category label", () => {
+  const labels = { "daily-ai-news": "每日 AI 新闻", "每日AI新闻": "每日AI新闻", AI: "AI", ai: "AI" };
+  assert.deepEqual(visibleArticleTags({ category: "daily-ai-news", tags: ["daily-ai-news", "每日AI新闻", "AI", "ai", "ＡＩ", "  ", "模型"] },
+    (tag) => labels[tag] || tag, "每日 AI 新闻"), ["AI", "模型"]);
+  assert.deepEqual(visibleArticleTags({ tags: null }), []);
 });
 
 test("Daily AI News reader hides the repeated summary and indexes story headlines", () => {
@@ -193,8 +172,8 @@ test("Daily AI News, Tool Radar, and Website Guides remain stable leading catego
   ]);
   assert.match(mainSource, /const toolRadarCategory = "tool-radar"/);
   assert.match(mainSource, /const siteGuidesCategory = "site-guides"/);
-  assert.match(mainSource, /"tool-radar":\s*\{[\s\S]*?zh:\s*"工具雷达"[\s\S]*?en:\s*"Tool Radar"[\s\S]*?ja:\s*"ツールレーダー"/);
-  assert.match(mainSource, /"site-guides":\s*\{[\s\S]*?zh:\s*"网站使用指南"[\s\S]*?en:\s*"Website Guides"[\s\S]*?ja:\s*"サイト利用ガイド"/);
+  assert.deepEqual(articleCategoryLabels["tool-radar"], { zh: "工具雷达", en: "Tool Radar", ja: "ツールレーダー" });
+  assert.deepEqual(articleCategoryLabels["site-guides"], { zh: "网站使用指南", en: "Website Guides", ja: "サイト利用ガイド" });
   assert.match(routeSource, /fixedCategories:\s*\[dailyAiNewsCategory,\s*toolRadarCategory,\s*siteGuidesCategory\]/);
   assert.match(routeSource, /activeFilters\.knowledge === toolRadarCategory[\s\S]*?t\("toolRadarEmpty"\)/);
   assert.match(routeSource, /activeFilters\.knowledge === siteGuidesCategory[\s\S]*?t\("siteGuidesEmpty"\)/);

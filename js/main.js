@@ -1,10 +1,11 @@
+import { articleCategoryLabels, tagLabels } from "./data/article-labels.mjs?v=20260908-site-review-r1";
 import {
   labels,
   isI18nNodeInScope,
   normalizeLanguage,
   translationFor
-} from "./core/i18n.mjs?v=20260827-private-room-lifecycle-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260902-mobile-blog-retired-r1";
+} from "./core/i18n.mjs?v=20260908-site-review-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260908-site-review-r1";
 import {
   WALLPAPER_TIME_THEMES,
   createWallpaperTimeOverride,
@@ -13,7 +14,7 @@ import {
   wallpaperTimeThemeAt
 } from "./core/wallpaper-time.mjs?v=20260809-motion-polish-r2";
 import { blogManifest } from "./data/blog-manifest.mjs?v=20260718-resource-icons-layout-r1";
-import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260718-resource-icons-layout-r1";
+import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260908-site-review-r1";
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteModuleRegistry } from "./core/route-modules.mjs?v=20260718-resource-icons-layout-r1";
 import { createJsonResourceCache } from "./core/content-cache.mjs?v=20260718-resource-icons-layout-r1";
@@ -109,7 +110,6 @@ window.__lusuContentCacheAudit = publicJsonCache.snapshot;
 
 const languageStorageKey = "lusu-site-language";
 const welcomeStorageKey = "lusu-welcome-day";
-let welcomeSeenDayInMemory = "";
 const siteUpdateCategory = "site-updates";
 const dailyAiNewsCategory = "daily-ai-news";
 const toolRadarCategory = "tool-radar";
@@ -128,145 +128,6 @@ const publicLoopNightlyCollapsedFallbackTitlesEn = new Set([
   "Video Empty State",
   "Cleaner Article Deep Links"
 ]);
-const articleCategoryLabels = {
-  "daily-ai-news": {
-    zh: "每日 AI 新闻",
-    en: "Daily AI News",
-    ja: "毎日AIニュース"
-  },
-  "tool-radar": {
-    zh: "工具雷达",
-    en: "Tool Radar",
-    ja: "ツールレーダー"
-  },
-  "site-guides": {
-    zh: "网站使用指南",
-    en: "Website Guides",
-    ja: "サイト利用ガイド"
-  },
-  "site-updates": {
-    zh: "网站更新记录",
-    en: "Site Update Log",
-    ja: "サイト更新記録"
-  },
-  site: {
-    zh: "网站",
-    en: "Site",
-    ja: "サイト"
-  },
-  ai: {
-    zh: "AI",
-    en: "AI",
-    ja: "AI"
-  },
-  note: {
-    zh: "笔记",
-    en: "Notes",
-    ja: "メモ"
-  }
-};
-
-const tagLabels = {
-  "网站更新": { zh: "网站更新", en: "Site update", ja: "サイト更新" },
-  "网站": { zh: "网站", en: "Site", ja: "サイト" },
-  "首页": { zh: "首页", en: "Home", ja: "ホーム" },
-  "日常": { zh: "日常", en: "Daily", ja: "日常" },
-  "记录": { zh: "记录", en: "Log", ja: "記録" },
-  "上线记录": { zh: "上线记录", en: "Launch log", ja: "公開記録" },
-  "维护记录": { zh: "维护记录", en: "Maintenance", ja: "保守記録" },
-  "修复记录": { zh: "修复记录", en: "Fix log", ja: "修正記録" },
-  "经验": { zh: "经验", en: "Experience", ja: "経験" },
-  "文章": { zh: "文章", en: "Article", ja: "記事" },
-  "知识库": { zh: "知识库", en: "Knowledge", ja: "知識庫" },
-  "网站使用指南": { zh: "网站使用指南", en: "Website guide", ja: "サイト利用ガイド" },
-  "密码房": { zh: "密码房", en: "Password room", ja: "パスワードルーム" },
-  "匿名聊天室": { zh: "匿名聊天室", en: "Anonymous chat", ja: "匿名チャット" },
-  "在线画板": { zh: "在线画板", en: "Online whiteboard", ja: "オンラインホワイトボード" },
-  "标签": { zh: "标签", en: "Tag", ja: "タグ" },
-  "搜索": { zh: "搜索", en: "Search", ja: "検索" },
-  "文章详情": { zh: "文章详情", en: "Article detail", ja: "記事詳細" },
-  "阅读体验": { zh: "阅读体验", en: "Reading", ja: "読書体験" },
-  "分享": { zh: "分享", en: "Sharing", ja: "共有" },
-  "链接分享": { zh: "链接分享", en: "Link sharing", ja: "リンク共有" },
-  "多语言": { zh: "多语言", en: "Languages", ja: "多言語" },
-  "路由": { zh: "路由", en: "Routing", ja: "ルート" },
-  "导航": { zh: "导航", en: "Navigation", ja: "ナビ" },
-  "任务栏": { zh: "任务栏", en: "Taskbar", ja: "タスクバー" },
-  "可访问性": { zh: "可访问性", en: "Accessibility", ja: "アクセシビリティ" },
-  "交互修复": { zh: "交互修复", en: "Interaction fix", ja: "操作修正" },
-  "视频区": { zh: "视频区", en: "Videos", ja: "動画欄" },
-  "播放器": { zh: "播放器", en: "Player", ja: "プレイヤー" },
-  "空状态": { zh: "空状态", en: "Empty state", ja: "空状態" },
-  "工具区": { zh: "工具区", en: "Tools", ja: "ツール" },
-  "资源区": { zh: "工具区", en: "Tools", ja: "ツール" },
-  "Resources": { zh: "工具区", en: "Tools", ja: "ツール" },
-  "リソース": { zh: "工具区", en: "Tools", ja: "ツール" },
-  "主站优化": { zh: "主站优化", en: "Main site", ja: "メインサイト" },
-  "夜间汇总": { zh: "夜间汇总", en: "Nightly summary", ja: "夜間まとめ" },
-  "下载": { zh: "下载", en: "Download", ja: "ダウンロード" },
-  "占位按钮": { zh: "占位按钮", en: "Placeholder button", ja: "準備中ボタン" },
-  "状态": { zh: "状态", en: "Status", ja: "状態" },
-  "源码": { zh: "源码", en: "Source", ja: "ソース" },
-  "目录": { zh: "目录", en: "Contents", ja: "目次" },
-  "进度": { zh: "进度", en: "Progress", ja: "進捗" },
-  "阅读": { zh: "阅读", en: "Reading", ja: "読書" },
-  "杂谈区": { zh: "杂谈区", en: "Talk", ja: "雑談" },
-  "安全渲染": { zh: "安全渲染", en: "Safe rendering", ja: "安全描画" },
-  "后台": { zh: "后台", en: "Admin", ja: "管理画面" },
-  "游戏区": { zh: "游戏区", en: "Games", ja: "ゲーム欄" },
-  "移动端": { zh: "移动端", en: "Mobile", ja: "モバイル" },
-  "桌面端": { zh: "桌面端", en: "Desktop", ja: "デスクトップ" },
-  "桌面图标": { zh: "桌面图标", en: "Desktop icons", ja: "デスクトップアイコン" },
-  "布局修复": { zh: "布局修复", en: "Layout fix", ja: "レイアウト修正" },
-  "响应式布局": { zh: "响应式布局", en: "Responsive layout", ja: "レスポンシブ" },
-  "窗口": { zh: "窗口", en: "Window", ja: "ウィンドウ" },
-  "图标": { zh: "图标", en: "Icons", ja: "アイコン" },
-  "动态壁纸": { zh: "动态壁纸", en: "Animated wallpaper", ja: "動く壁紙" },
-  "像素壁纸": { zh: "像素壁纸", en: "Pixel wallpaper", ja: "ピクセル壁紙" },
-  "欢迎窗": { zh: "欢迎窗", en: "Welcome modal", ja: "歓迎ウィンドウ" },
-  "直链": { zh: "直链", en: "Deep link", ja: "直リンク" },
-  "时间显示": { zh: "时间显示", en: "Time display", ja: "時刻表示" },
-  "排序": { zh: "排序", en: "Sorting", ja: "並び替え" },
-  "性能": { zh: "性能", en: "Performance", ja: "性能" },
-  "观察": { zh: "观察", en: "Observations", ja: "観察" },
-  "游戏": { zh: "游戏", en: "Games", ja: "ゲーム" },
-  "碎碎念": { zh: "碎碎念", en: "Notes", ja: "メモ" },
-  "最近更新": { zh: "最近更新", en: "Recent updates", ja: "最近の更新" },
-  "界面": { zh: "界面", en: "Interface", ja: "表示" },
-  "链接": { zh: "链接", en: "Links", ja: "リンク" },
-  "安全": { zh: "安全", en: "Security", ja: "安全" },
-  "图片": { zh: "图片", en: "Images", ja: "画像" },
-  "iframe": { zh: "iframe", en: "iframe", ja: "iframe" },
-  "聊天室": { zh: "聊天室", en: "Chat room", ja: "チャット" },
-  "三语": { zh: "三语", en: "Trilingual", ja: "三言語" },
-  "体验": { zh: "体验", en: "Experience", ja: "体験" },
-  "筛选": { zh: "筛选", en: "Filters", ja: "フィルター" },
-  "渲染": { zh: "渲染", en: "Rendering", ja: "描画" },
-  "云存档": { zh: "云存档", en: "Cloud saves", ja: "クラウド保存" },
-  "账号": { zh: "账号", en: "Account", ja: "アカウント" },
-  "无障碍": { zh: "无障碍", en: "Accessibility", ja: "アクセシビリティ" },
-  "UI": { zh: "界面", en: "UI", ja: "UI" },
-  "mobile": { zh: "移动端", en: "Mobile", ja: "モバイル" },
-  "desktop": { zh: "桌面端", en: "Desktop", ja: "デスクトップ" },
-  "attachments": { zh: "附件", en: "Attachments", ja: "添付ファイル" },
-  "accessibility": { zh: "无障碍", en: "Accessibility", ja: "アクセシビリティ" },
-  "AI": { zh: "AI", en: "AI", ja: "AI" },
-  "Agent": { zh: "Agent", en: "Agent", ja: "Agent" },
-  "Codex": { zh: "Codex", en: "Codex", ja: "Codex" },
-  "fallback": { zh: "fallback", en: "Fallback", ja: "Fallback" },
-  "测试": { zh: "测试", en: "Test", ja: "テスト" },
-  "工具": { zh: "工具", en: "Tools", ja: "ツール" },
-  "AI 能力": { zh: "AI 能力", en: "AI capabilities", ja: "AI 機能" },
-  "CLI": { zh: "CLI", en: "CLI", ja: "CLI" },
-  "MCP": { zh: "MCP", en: "MCP", ja: "MCP" },
-  "原子发布": { zh: "原子发布", en: "Atomic publishing", ja: "原子公開" },
-  "开源许可": { zh: "开源许可", en: "Open-source license", ja: "オープンソースライセンス" },
-  "2048": { zh: "2048", en: "2048", ja: "2048" },
-  "Hextris": { zh: "Hextris", en: "Hextris", ja: "Hextris" },
-  "人生重开模拟器": { zh: "人生重开模拟器", en: "Life Restart", ja: "Life Restart" },
-  "Bilibili": { zh: "Bilibili", en: "Bilibili", ja: "Bilibili" },
-  "数量": { zh: "数量", en: "Counts", ja: "件数" }
-};
 const normalizedTagLabelKeys = new Map(Object.keys(tagLabels).map((key) => [key.toLocaleLowerCase(), key]));
 
 const pageIds = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
@@ -275,7 +136,6 @@ const mobileBlogRouteRetired = () => document.documentElement.dataset.uiShell ==
 const blogRouteUnavailable = () => !blogRouteAvailable || mobileBlogRouteRetired();
 const coreRouter = createRouter({ routes: pageIds });
 const {
-  parseRouteHash,
   parseRouteLocation,
   articleRoutePath,
   routeUrl,
@@ -421,7 +281,7 @@ function safeStorageRemove(key) {
   }
 }
 
-const routeStyleVersion = "20260827-private-room-lifecycle-r1";
+const routeStyleVersion = "20260908-site-review-r1";
 const routeStyleHrefs = Object.freeze({
   knowledge: `/css/routes/knowledge.css?v=${routeStyleVersion}`,
   videos: `/css/routes/videos.css?v=${routeStyleVersion}`,
@@ -494,15 +354,15 @@ function loadStyledRoute(route, moduleLoader, instantiate) {
 
 const routeModuleRegistry = createRouteModuleRegistry({
   loaders: {
-    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260809-motion-polish-r2"),
+    knowledge: () => loadStyledRoute("knowledge", () => import("./routes/knowledge.mjs?v=20260908-site-review-r1"),
       ({ createKnowledgeRoute }) => instantiateKnowledgeRoute(createKnowledgeRoute)),
     videos: () => loadStyledRoute("videos", () => Promise.all([
-      import("./routes/videos.mjs?v=20260726-security-reliability-r1"),
+      import("./routes/videos.mjs?v=20260908-site-review-r1"),
       import("./data/videos-content.mjs?v=20260718-resource-icons-layout-r1")
     ]), ([{ createVideosRoute }, { videosContent }]) => instantiateVideosRoute(createVideosRoute, videosContent)),
     resources: () => Promise.all([
-      import("./routes/resources.mjs?v=20260908-admin-review-r1"),
-      import("./data/resources-content.mjs?v=20260908-admin-review-r1")
+      import("./routes/resources.mjs?v=20260908-site-review-r1"),
+      import("./data/resources-content.mjs?v=20260908-site-review-r1")
     ]).then(([{ createResourcesRoute }, { resourcesContent }]) => instantiateResourcesRoute(createResourcesRoute, resourcesContent)),
     games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260726-security-reliability-r1"),
       ({ createGamesRoute }) => instantiateGamesRoute(createGamesRoute)),
@@ -921,7 +781,7 @@ function safeHttpUrl(value) {
   try {
     const url = new URL(String(value || "").trim());
     return ["http:", "https:"].includes(url.protocol) ? url.href : "";
-  } catch (error) {
+  } catch {
     return "";
   }
 }
@@ -1623,18 +1483,12 @@ function renderKnowledge(...args) { return knowledgeRoute()?.renderKnowledge(...
 function restorePendingKnowledgeScroll(...args) { return knowledgeRoute()?.restorePendingKnowledgeScroll(...args); }
 function resetKnowledgeListScroll(...args) { return knowledgeRoute()?.resetKnowledgeListScroll(...args); }
 function focusArticleDetailTitle(...args) { return knowledgeRoute()?.focusArticleDetailTitle(...args); }
-function syncArticleSummaryControl(...args) { return knowledgeRoute()?.syncArticleSummaryControl(...args); }
 function toggleArticleSummary(...args) { return knowledgeRoute()?.toggleArticleSummary(...args); }
-function resetArticleToc(...args) { return knowledgeRoute()?.resetArticleToc(...args); }
 function disconnectArticleTocObserver(...args) { return knowledgeRoute()?.disconnectArticleTocObserver(...args); }
-function updateArticleTocActive(...args) { return knowledgeRoute()?.updateArticleTocActive(...args); }
 function measureArticleReadState(...args) { return knowledgeRoute()?.measureArticleReadState(...args) || null; }
 function applyArticleReadState(...args) { return knowledgeRoute()?.applyArticleReadState(...args); }
 function scrollToArticleHeading(...args) { return knowledgeRoute()?.scrollToArticleHeading(...args); }
 function scrollArticleToTop(...args) { return knowledgeRoute()?.scrollArticleToTop(...args); }
-function clearArticleCopyStatus(...args) { return knowledgeRoute()?.clearArticleCopyStatus(...args); }
-function resetArticleReadProgress(...args) { return knowledgeRoute()?.resetArticleReadProgress(...args); }
-function scheduleArticleReadProgressUpdate(...args) { return knowledgeRoute()?.scheduleArticleReadProgressUpdate(...args); }
 function copyArticleLink(...args) { return knowledgeRoute()?.copyArticleLink(...args); }
 function safeArticleImageSrc(...args) { return knowledgeRoute()?.safeArticleImageSrc(...args) || ""; }
 function showMoreArticles(...args) { return knowledgeRoute()?.showMoreArticles(...args); }
@@ -2127,7 +1981,7 @@ function recentUpdateElement(item) {
   const row = document.createElement("li");
   const link = document.createElement("a");
   link.className = "recent-update-link";
-  if (item.slug && !item.fallbackOnly) {
+  if (/^[a-z0-9][a-z0-9-]{0,119}$/.test(String(item.slug || ""))) {
     link.href = articleRouteHref(item.slug);
     link.dataset.articleSlug = item.slug;
   } else {
@@ -2141,7 +1995,7 @@ function recentUpdateElement(item) {
   const copy = document.createElement("span");
   const title = document.createElement("strong");
   const fullTitle = localText(item.title);
-  const publishedDate = formatArticleDate(item.published_at || item.created_at || item.date);
+  const publishedDate = formatArticleDate(item.published_at || item.created_at || item.date, { includeSeconds: false });
   title.textContent = fullTitle;
   const detail = document.createElement("small");
   detail.textContent = publishedDate;
@@ -2187,15 +2041,11 @@ function renderLatestUpdateDate(node = document.getElementById("top-updated")) {
 }
 
 function siteUpdateArticles() {
-  return visiblePublicArticles(articleState.articles)
+  return visiblePublicArticles(articleState.updateArticlesLanguage === currentLang ? articleState.updateArticles || [] : [])
     .filter((item) => item.category === siteUpdateCategory)
     .sort((a, b) => String(b.published_at || b.created_at || "").localeCompare(String(a.published_at || a.created_at || "")));
 }
 
-function truncateText(value, maxLength) {
-  const chars = Array.from(String(value || ""));
-  return chars.length > maxLength ? `${chars.slice(0, maxLength - 3).join("")}...` : chars.join("");
-}
 
 function renderAll() {
   renderLatestUpdateDate();
@@ -2341,7 +2191,6 @@ function localWelcomeDayStamp(date = new Date()) {
 }
 
 function markWelcomeSeen(dayStamp = localWelcomeDayStamp()) {
-  welcomeSeenDayInMemory = dayStamp;
   safeStorageSet(welcomeStorageKey, dayStamp);
   safeSessionSet(welcomeStorageKey, dayStamp);
 }
@@ -3439,19 +3288,11 @@ function updateWelcomeGreeting() {
   heading.replaceChildren(greeting, date, glad);
 }
 
-function maybeShowWelcome() {
+function maybeShowWelcome({ manual = false } = {}) {
   const welcomeMode = pageParams.get("welcome");
-  const forceWelcome = welcomeMode === "1";
-  if (welcomeMode === "0") {
-    return;
-  }
+  // Welcome is opt-in; direct links and returning readers keep their context.
+  if (!manual && welcomeMode !== "1") return;
   const today = localWelcomeDayStamp();
-  const hasSeenToday = welcomeSeenDayInMemory === today
-    || safeStorageGet(welcomeStorageKey) === today
-    || safeSessionGet(welcomeStorageKey) === today;
-  if (!forceWelcome && hasSeenToday) {
-    return;
-  }
   updateWelcomeGreeting();
   const modal = document.getElementById("welcome-modal");
   modalFocusState.welcomeTrigger = modalTriggerCandidate(document.activeElement, modal);
@@ -3510,8 +3351,7 @@ const {
   logoutAccount,
   openAccountPopover,
   closeAccountPopover,
-  toggleAccountPopover,
-  syncAccountPopoverState
+  toggleAccountPopover
 } = accountFeature;
 
 const siteConnectionStatus = createConnectionStatus({
@@ -3723,14 +3563,6 @@ desktopIconGrid?.addEventListener("focusin", (event) => {
   }
 });
 
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
 
 function isKeyboardActivation(event) {
   if (Number(event?.detail) !== 0) {
@@ -3853,7 +3685,7 @@ document.addEventListener("click", (event) => {
   }
 
   if (target.closest("[data-quick-transfer-open]")) {
-    resourcesRoute()?.quickTransfer.open();
+    void resourcesRoute()?.quickTransfer.open();
     return;
   }
 
@@ -3906,6 +3738,7 @@ document.addEventListener("click", (event) => {
 
   const articleButton = target.closest("[data-article-slug]");
   if (articleButton) {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     showArticle(articleButton.dataset.articleSlug, { trigger: articleButton });
     return;
@@ -3974,6 +3807,11 @@ document.addEventListener("click", (event) => {
 
   if (target.closest("[data-close-modal]")) {
     closeVideo({ motion: keyboardActivation ? false : undefined });
+    return;
+  }
+
+  if (target.closest("[data-open-welcome]")) {
+    maybeShowWelcome({ manual: true });
     return;
   }
 

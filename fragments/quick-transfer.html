@@ -7,7 +7,7 @@
     <div class="transfer-app-heading">
       <span class="transfer-icon transfer-icon-app" aria-hidden="true"></span>
       <div>
-        <h2 id="transfer-app-title"><span data-transfer-copy="title">临时互传</span><small class="transfer-project-version" data-project-version="1.0.13">v1.0.13</small></h2>
+        <h2 id="transfer-app-title"><span data-transfer-copy="title">临时互传</span><small class="transfer-project-version" data-project-version="1.0.14">v1.0.14</small></h2>
         <p data-transfer-copy="retention">内容在发布完成 24 小时后自动失效。</p>
       </div>
     </div>
@@ -49,9 +49,10 @@
       <div class="transfer-pending-attachments" id="transfer-pending-attachments" role="list" hidden></div>
       <div class="transfer-compose-row">
         <label class="sr-only" for="transfer-text-input" data-transfer-copy="textLabel">加密文字</label>
-        <textarea id="transfer-text-input" rows="2" maxlength="10000" data-transfer-placeholder="textPlaceholder" placeholder="发送一段加密文字……"></textarea>
+        <textarea id="transfer-text-input" rows="2" maxlength="10000" autocomplete="off" aria-describedby="transfer-draft-hint" data-transfer-placeholder="textPlaceholder" placeholder="发送一段加密文字……"></textarea>
         <button class="xp-button transfer-send-button" id="transfer-send-button" type="submit"><span class="transfer-icon transfer-icon-text" aria-hidden="true"></span><span data-transfer-copy="send">发送</span></button>
       </div>
+      <small id="transfer-draft-hint" data-transfer-copy="draftHint">未发送内容只保留在当前房间，离开后清空。</small>
       <div class="transfer-upload-zone" id="transfer-upload-zone">
         <span class="transfer-icon transfer-icon-upload" aria-hidden="true"></span>
         <div class="transfer-upload-copy"><strong data-transfer-copy="dropTitle">添加照片或文件</strong><p id="transfer-upload-help"></p></div>

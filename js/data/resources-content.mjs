@@ -52,8 +52,8 @@ export const resourcesContent = Object.freeze({
       "toolId": "whiteboard",
       "capabilityDomain": "whiteboard",
       "iconSrc": "assets/images/generated-icons/whiteboard.png?v=20260730-online-whiteboard-r1",
-      "version": "v1.0.9",
-      "updated": "2026.08.27",
+      "version": "v1.0.10",
+      "updated": "2026.09.08",
       "external": false,
       "showReadyStatus": false,
       "url": "/tools/whiteboard/",
@@ -63,9 +63,9 @@ export const resourcesContent = Object.freeze({
         "ja": "オンラインホワイトボード"
       },
       "desc": {
-        "zh": "无需登录即可进入公共画板或密码房，与其他访客实时绘画；授权后的本地 CLI／MCP Agent 也可安全读取场景、追加图形并导出作品。",
-        "en": "Join public or password rooms without signing in and draw together in real time. Authorized local CLI/MCP agents can also read scenes, append shapes, and export work safely.",
-        "ja": "ログインせずに公開ボードや合言葉の部屋で共同描画できます。認可済みのローカル CLI／MCP Agent は、場面の読取・図形追加・安全な書き出しにも対応します。"
+        "zh": "和朋友一起画图、记想法。无需登录，选择公共画板或用密码进入专属房间。",
+        "en": "Sketch and collect ideas together. Open a public board or a password room, with no sign-in required.",
+        "ja": "友だちと一緒に描いたり、アイデアをメモしたり。ログイン不要で公開ボードや合言葉の部屋に入れます。"
       },
       "actionLabel": {
         "zh": "打开",
@@ -88,7 +88,12 @@ export const resourcesContent = Object.freeze({
           "en": "Mobile + desktop",
           "ja": "スマホ・PC"
         }
-      ]
+      ],
+      "details": {
+        "zh": "无需登录即可进入公共画板或密码房，与其他访客实时绘画；授权后的本地 CLI／MCP Agent 也可安全读取场景、追加图形并导出作品。",
+        "en": "Join public or password rooms without signing in and draw together in real time. Authorized local CLI/MCP agents can also read scenes, append shapes, and export work safely.",
+        "ja": "ログインせずに公開ボードや合言葉の部屋で共同描画できます。認可済みのローカル CLI／MCP Agent は、場面の読取・図形追加・安全な書き出しにも対応します。"
+      }
     },
     {
       "category": 0,
@@ -96,13 +101,13 @@ export const resourcesContent = Object.freeze({
       "capabilityDomain": "transfer",
       "action": "quick-transfer",
       "iconSrc": "assets/images/generated-icons/quick-transfer.png?v=20260719-content-experience-fixes-r1",
-      "version": "v1.0.13",
+      "version": "v1.0.14",
       "retention": {
         "zh": "24 小时",
         "en": "24 hours",
         "ja": "24時間"
       },
-      "updated": "2026.08.27",
+      "updated": "2026.09.08",
       "external": false,
       "title": {
         "zh": "临时互传",
@@ -110,9 +115,9 @@ export const resourcesContent = Object.freeze({
         "ja": "一時転送"
       },
       "desc": {
-        "zh": "登录后可在口令房间中发送浏览器端 AES-GCM 加密文字，以及通过 HTTPS、私有 R2 和服务端鉴权保护的图片、视频与文件；内容在发布完成 24 小时后失效，过期或关闭的房间会彻底删除。",
-        "en": "After signing in, share text encrypted in the browser with AES-GCM, plus images, videos, and files protected by HTTPS, private R2 storage, and server-side authorization. Items expire after 24 hours, and expired or closed rooms are permanently deleted.",
-        "ja": "ログイン後、合言葉の部屋でブラウザー側で AES-GCM 暗号化したテキストと、HTTPS・非公開 R2・サーバー認可で保護される画像／動画／ファイルを共有できます。内容は24時間後に失効し、期限切れまたは閉鎖した部屋は完全に削除されます。"
+        "zh": "在手机和电脑之间传文字、图片和文件。登录后，用同一口令进入房间；内容发布后保留 24 小时。",
+        "en": "Send text, photos, and files between your phone and computer. Sign in and enter the same room password; published items last 24 hours.",
+        "ja": "スマホとPCの間でテキスト・写真・ファイルを送れます。ログインして同じ合言葉で入室。送信した内容は24時間で期限切れになります。"
       },
       "actionLabel": {
         "zh": "打开",
@@ -129,13 +134,13 @@ export const resourcesContent = Object.freeze({
           "zh": "24小时",
           "en": "24 hours",
           "ja": "24時間"
-        },
-        {
-          "zh": "管理员大文件",
-          "en": "Admin large files",
-          "ja": "管理者の大容量送信"
         }
-      ]
+      ],
+      "details": {
+        "zh": "登录后可在口令房间中发送浏览器端 AES-GCM 加密文字，以及通过 HTTPS、私有 R2 和服务端鉴权保护的图片、视频与文件；内容在发布完成 24 小时后失效，过期或关闭的房间会彻底删除。",
+        "en": "After signing in, share text encrypted in the browser with AES-GCM, plus images, videos, and files protected by HTTPS, private R2 storage, and server-side authorization. Items expire after 24 hours, and expired or closed rooms are permanently deleted.",
+        "ja": "ログイン後、合言葉の部屋でブラウザー側で AES-GCM 暗号化したテキストと、HTTPS・非公開 R2・サーバー認可で保護される画像／動画／ファイルを共有できます。内容は24時間後に失効し、期限切れまたは閉鎖した部屋は完全に削除されます。"
+      }
     },
     {
       "category": 0,

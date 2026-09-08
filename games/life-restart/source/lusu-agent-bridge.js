@@ -225,7 +225,7 @@
       entries.push(...buttonAction(view, "btnDrawCard", "draw-talents", "Draw talent cards", "talent"));
       return entries;
     }
-    visibleListCells(view.listTalents).forEach((cell, index) => {
+    visibleListCells(view.listTalents).forEach((cell) => {
       const talent = cell.dataSource;
       if (!talent || talent.id === undefined) return;
       const selected = cellSelected(cell);
@@ -410,6 +410,7 @@
 
   function boundedText(value, limit) {
     return String(value == null ? "" : value)
+      // eslint-disable-next-line no-control-regex -- Reject or sanitize control characters at the public text boundary.
       .replace(/[\u0000-\u001F\u007F]/g, " ")
       .replace(/\s+/g, " ")
       .trim()

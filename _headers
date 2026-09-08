@@ -30,6 +30,9 @@
 /*.json
   Cache-Control: public, max-age=300, must-revalidate
 
+/asset-manifest.json
+  Cache-Control: no-cache, max-age=0, must-revalidate
+
 /manifest.webmanifest
   Cache-Control: public, max-age=300, must-revalidate
 

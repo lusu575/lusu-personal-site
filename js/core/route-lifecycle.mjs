@@ -178,7 +178,22 @@ export function createRouteLifecycle({ routes, onEnter, onLeave, onError } = {})
 
   function routeFetch(route, input, init = {}) {
     const scope = activeScope(route);
-    const request = fetch(input, { ...init, signal: scope?.signal || init.signal });
+    const signals = [...new Set([scope?.signal, init.signal].filter(Boolean))];
+    let signal = signals[0];
+    let cleanup = () => {};
+    if (signals.length > 1) {
+      if (typeof AbortSignal.any === "function") {
+        signal = AbortSignal.any(signals);
+      } else {
+        const controller = new AbortController();
+        const abort = () => controller.abort();
+        signal = controller.signal;
+        signals.forEach((source) => source.addEventListener("abort", abort, { once: true }));
+        if (signals.some((source) => source.aborted)) controller.abort();
+        cleanup = () => signals.forEach((source) => source.removeEventListener("abort", abort));
+      }
+    }
+    const request = Promise.resolve().then(() => fetch(input, { ...init, signal })).finally(cleanup);
     return scope ? scope.trackRequest(request) : request;
   }
 

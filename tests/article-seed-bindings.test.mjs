@@ -52,7 +52,7 @@ const WALLPAPER_SWITCH_SCENE_UPDATE_ID = "seed-update-2026-08-09-wallpaper-switc
 const WALLPAPER_SWITCH_SCENE_PUBLISHED_AT = "2026-08-09T11:15:00.000Z";
 const VIDEO_LINK_AUTOFILL_UPDATE_ID = "seed-update-2026-08-11-video-link-autofill";
 const VIDEO_LINK_AUTOFILL_PUBLISHED_AT = "2026-08-11T00:20:00.000Z";
-const ARTICLE_SEED_VERSION = "20260902-mobile-blog-retired-r1";
+const ARTICLE_SEED_VERSION = "20260908-site-review-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -83,7 +83,9 @@ function createRecordingD1({ articleSeedVersion = "" } = {}) {
         return { results: [] };
       },
       async run() {
-        return { success: true, meta: { changes: 0 } };
+        const claimedLease = /^insert into site_runtime_state/i.test(normalizedSql(sql))
+          && params?.[0] === "article_seed_version:lease";
+        return { success: true, meta: { changes: claimedLease ? 1 : 0 } };
       }
     };
   }
@@ -357,19 +359,19 @@ test("every article seed D1 binding is defined", async () => {
     articleId === HIDE_MINIMAX_H3_TOOLS_UPDATE_ID
   ));
   assert.ok(hideMinimaxH3ToolsContent, "the public fallback must include the temporary H3 Tools hide release");
-  assert.equal(content.updates[0]?.article_id, MOBILE_BLOG_RETIRED_UPDATE_ID);
+  assert.equal(content.updates[0]?.article_id, "seed-update-2026-09-08-site-review-optimization");
   assert.deepEqual(
     homeContent.updates.map(({ article_id: articleId }) => articleId),
     [
+      "seed-update-2026-09-08-site-review-optimization",
       MOBILE_BLOG_RETIRED_UPDATE_ID,
       PASSWORD_ROOM_RESET_UPDATE_ID,
       CHAT_WHITEBOARD_UI_UPDATE_ID,
-      DAILY_AI_NEWS_RSS_UPDATE_ID,
-      HIDE_MINIMAX_H3_TOOLS_UPDATE_ID
+      DAILY_AI_NEWS_RSS_UPDATE_ID
     ],
     "Home must project exactly the newest five public updates in release order"
   );
-  const mobileBlogRetiredContent = content.updates[0];
+  const mobileBlogRetiredContent = content.updates.find((item) => item.article_id === MOBILE_BLOG_RETIRED_UPDATE_ID);
   assert.equal(mobileBlogRetiredContent.created_at, MOBILE_BLOG_RETIRED_PUBLISHED_AT);
   assert.equal(mobileBlogRetiredContent.updated_at, MOBILE_BLOG_RETIRED_PUBLISHED_AT);
   assert.equal(mobileBlogRetiredContent.published_at, MOBILE_BLOG_RETIRED_PUBLISHED_AT);
@@ -391,8 +393,9 @@ test("every article seed D1 binding is defined", async () => {
     assert.equal(params[6], MOBILE_BLOG_RETIRED_PUBLISHED_AT);
     assert.equal(params[7], MOBILE_BLOG_RETIRED_PUBLISHED_AT);
   }
-  const mobileBlogRetiredHome = homeContent.updates[0];
-  const { content_markdown: _mobileBlogRetiredBody, ...mobileBlogRetiredProjection } = mobileBlogRetiredContent;
+  const mobileBlogRetiredHome = homeContent.updates.find((item) => item.article_id === MOBILE_BLOG_RETIRED_UPDATE_ID);
+  const mobileBlogRetiredProjection = { ...mobileBlogRetiredContent };
+  delete mobileBlogRetiredProjection.content_markdown;
   assert.deepEqual(mobileBlogRetiredHome, mobileBlogRetiredProjection);
 
   const passwordRoomResetContent = content.updates.find(({ article_id: articleId }) => (
@@ -417,12 +420,12 @@ test("every article seed D1 binding is defined", async () => {
   const hideMinimaxH3ToolsHome = homeContent.updates.find(({ article_id: articleId }) => (
     articleId === HIDE_MINIMAX_H3_TOOLS_UPDATE_ID
   ));
-  const { content_markdown: _hideMinimaxH3ToolsBody, ...hideMinimaxH3ToolsProjection } = hideMinimaxH3ToolsContent;
-  assert.deepEqual(
-    hideMinimaxH3ToolsHome,
-    hideMinimaxH3ToolsProjection,
-    "the Home projection must match every non-body field from the temporary H3 Tools hide fallback"
-  );
+  assert.equal(hideMinimaxH3ToolsHome, undefined, "older updates leave the five-item Home projection but remain in the archive");
+  for (const item of homeContent.updates) {
+    const projection = { ...content.updates.find((entry) => entry.article_id === item.article_id) };
+    delete projection.content_markdown;
+    assert.deepEqual(item, projection, "Home preserves every non-body field of each recent update");
+  }
   assert.equal(hideMinimaxH3ToolsContent.created_at, HIDE_MINIMAX_H3_TOOLS_PUBLISHED_AT);
   assert.equal(hideMinimaxH3ToolsContent.updated_at, HIDE_MINIMAX_H3_TOOLS_PUBLISHED_AT);
   assert.equal(hideMinimaxH3ToolsContent.published_at, HIDE_MINIMAX_H3_TOOLS_PUBLISHED_AT);
@@ -558,9 +561,8 @@ test("every article seed D1 binding is defined", async () => {
     articleId === VIDEO_LINK_AUTOFILL_UPDATE_ID
   ));
   assert.ok(videoLinkAutofillContent, "the public fallback must include the link-only video publish update");
-  assert.equal(content.updates[9]?.article_id, VIDEO_LINK_AUTOFILL_UPDATE_ID);
+  assert.equal(content.updates[10]?.article_id, VIDEO_LINK_AUTOFILL_UPDATE_ID);
   const videoLinkAutofillHome = homeContent.updates.find(({ article_id: articleId }) => articleId === VIDEO_LINK_AUTOFILL_UPDATE_ID);
-  const { content_markdown: _videoLinkAutofillBody, ...videoLinkAutofillProjection } = videoLinkAutofillContent;
   assert.equal(videoLinkAutofillHome, undefined, "the video link autofill release must remain outside the newest five Home projection");
   assert.equal(videoLinkAutofillContent.slug, "2026-08-11-video-link-autofill");
   assert.equal(videoLinkAutofillContent.category, "site-updates");
@@ -604,7 +606,7 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /Base64/);
   }
 
-  assert.equal(content.updates[10]?.article_id, H3_AMBIENT_WALLPAPERS_UPDATE_ID);
+  assert.equal(content.updates[11]?.article_id, H3_AMBIENT_WALLPAPERS_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === H3_AMBIENT_WALLPAPERS_UPDATE_ID),
     false,
@@ -648,7 +650,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchSlimDawnContent, "the public fallback must include the slim-rim dawn polish");
-  assert.equal(content.updates[11]?.article_id, WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID);
+  assert.equal(content.updates[12]?.article_id, WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID),
     false,
@@ -712,7 +714,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_CERAMIC_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchCeramicContent, "the public fallback must include the ceramic rolling redesign");
-  assert.equal(content.updates[12]?.article_id, WALLPAPER_SWITCH_CERAMIC_UPDATE_ID);
+  assert.equal(content.updates[13]?.article_id, WALLPAPER_SWITCH_CERAMIC_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_CERAMIC_UPDATE_ID),
     false,
@@ -771,7 +773,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_CALM_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchCalmContent, "the public fallback must retain the calm wallpaper-switch redesign");
-  assert.equal(content.updates[13]?.article_id, WALLPAPER_SWITCH_CALM_UPDATE_ID);
+  assert.equal(content.updates[14]?.article_id, WALLPAPER_SWITCH_CALM_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_CALM_UPDATE_ID),
     false,
@@ -826,7 +828,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_SCENE_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchSceneContent, "the public fallback must include the redesigned wallpaper-switch scene");
-  assert.equal(content.updates[14]?.article_id, WALLPAPER_SWITCH_SCENE_UPDATE_ID);
+  assert.equal(content.updates[15]?.article_id, WALLPAPER_SWITCH_SCENE_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_SCENE_UPDATE_ID),
     false,

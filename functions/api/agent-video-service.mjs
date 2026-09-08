@@ -670,6 +670,7 @@ function normalizeAgentVideoPrincipal(value) {
     && clientId
     && clientId.length <= 2_048
     && !tokenRef;
+  // eslint-disable-next-line no-control-regex -- Reject control characters at this input boundary.
   if (!userId || userId.length > 128 || /[\u0000-\u001f\u007f]/.test(userId)
     || (!agentTokenPrincipal && !oauthPrincipal)
     || effectiveScopes.length > 32
@@ -977,6 +978,7 @@ function normalizeUploadBeginPayload(body) {
     code: "VIDEO_UPLOAD_FILENAME_INVALID",
     message: "Upload filename is invalid."
   });
+  // eslint-disable-next-line no-control-regex -- Reject control characters at this input boundary.
   if (filename === "." || filename === ".." || /[\\/:\u0000-\u001f\u007f]/.test(filename)) {
     throw new AgentVideoServiceError(
       "Upload filename must be a plain file name without a path.",
@@ -1256,6 +1258,7 @@ function metadataFetch(env) {
 }
 
 function metadataText(value, maxChars) {
+  // eslint-disable-next-line no-control-regex -- Replace control characters in remote display metadata.
   return Array.from(String(value || "").replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s+/g, " ").trim())
     .slice(0, maxChars)
     .join("");
@@ -1565,6 +1568,7 @@ function normalizeBoundedString(value, maxChars, options = {}) {
   if (typeof value !== "string") throw new AgentVideoServiceError(options.message, 400, options.code);
   const text = value.trim();
   if ((!options.allowEmpty && !text) || Array.from(text).length > maxChars
+    // eslint-disable-next-line no-control-regex -- Reject control characters at this input boundary.
     || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(text)) {
     throw new AgentVideoServiceError(options.message, 400, options.code);
   }

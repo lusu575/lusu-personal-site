@@ -643,6 +643,7 @@ async function updateTokenManagement(request, env) {
 function normalizeClientName(value) {
   const name = String(value || "lusu CLI").trim();
   const length = Array.from(name).length;
+  // eslint-disable-next-line no-control-regex -- Reject control characters at this input boundary.
   if (!name || length > 80 || /[\u0000-\u001f\u007f]/.test(name)) {
     throw new AgentAuthError("Client name is invalid.", 422, "AGENT_CLIENT_NAME_INVALID");
   }
@@ -1089,7 +1090,7 @@ function escapeHtml(value) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
 

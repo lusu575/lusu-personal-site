@@ -212,6 +212,28 @@ test("remote D1 runner is idempotent on a fresh schema and does not issue ALTER 
   }
 });
 
+test("remote D1 release validation rejects a missing migration record, article, or translation", async (t) => {
+  const cases = [
+    ["migration", "delete from site_data_migrations where version = '20260908-site-review-r1'", "site-review-migration-record"],
+    ["article", "delete from articles where article_id = 'seed-update-2026-09-08-site-review-optimization'", "site-review-update-article"],
+    ["translation", "delete from article_translations where article_id = 'seed-update-2026-09-08-site-review-optimization' and lang = 'ja'", "site-review-update-translations"]
+  ];
+  for (const [name, remove, expected] of cases) {
+    await t.test(name, async () => {
+      const db = new DatabaseSync(":memory:");
+      const adapter = createAdapter(db, []);
+      const executeFile = adapter.executeFile;
+      try {
+        adapter.executeFile = async (file) => {
+          await executeFile(file);
+          if (file === "cloudflare/schema-indexes.sql") db.exec(remove);
+        };
+        await assert.rejects(migrateRemoteD1(adapter), new RegExp(expected));
+      } finally { db.close(); }
+    });
+  }
+});
+
 test("remote D1 runner fails closed when the MCP OAuth persistence schema is absent", async () => {
   const db = new DatabaseSync(":memory:");
   const events = [];
@@ -469,7 +491,7 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
-  assert.match(verificationSql, /article_seed_version' and value = '20260902-mobile-blog-retired-r1'/);
+  assert.match(verificationSql, /article_seed_version' and value = '20260908-site-review-r1'/);
   const currentReleaseVerificationSql = REMOTE_MIGRATION_VERIFICATION_QUERIES.find((sql) => (
     sql.includes("wallpaper-game-display-fix-update-article")
   ));

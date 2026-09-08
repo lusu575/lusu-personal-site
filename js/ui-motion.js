@@ -7,7 +7,7 @@
 
   var document = global.document;
   var root = document.documentElement;
-  var VERSION = "1.5.0";
+  var VERSION = "1.5.1";
   var MAX_PARALLAX_PX = 0;
   var ROUTE_ORDER = ["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"];
   var TRIGGER_SELECTOR = [
@@ -75,6 +75,7 @@
     activeRunId: 0,
     activeViewTransition: null,
     surfaceTransitions: typeof global.WeakMap === "function" ? new global.WeakMap() : null,
+    transientClasses: typeof global.WeakMap === "function" ? new global.WeakMap() : null,
     skippedSurfaceMotions: typeof global.WeakSet === "function" ? new global.WeakSet() : null,
     suppressRouteUntil: 0,
     suppressThemeUntil: 0
@@ -112,7 +113,7 @@
     }
     try {
       return matcher.call(element, selector);
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }
@@ -134,7 +135,7 @@
     }
     try {
       return (scope || document).querySelector(selector);
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }
@@ -145,20 +146,11 @@
     }
     try {
       return Array.prototype.slice.call((scope || document).querySelectorAll(selector));
-    } catch (error) {
+    } catch (_error) {
       return [];
     }
   }
 
-  function isConnected(element) {
-    if (!isElement(element)) {
-      return false;
-    }
-    if (typeof element.isConnected === "boolean") {
-      return element.isConnected;
-    }
-    return Boolean(document.documentElement && document.documentElement.contains(element));
-  }
 
   function setData(element, key, value) {
     if (!isElement(element)) {
@@ -204,7 +196,7 @@
         width: Math.max(0, rect.width || rect.right - rect.left),
         height: Math.max(0, rect.height || rect.bottom - rect.top)
       };
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }
@@ -270,7 +262,7 @@
     try {
       target.addEventListener(type, handler, options || false);
       state.listeners.push({ target: target, type: type, handler: handler, options: options || false });
-    } catch (error) {
+    } catch (_error) {
       target.addEventListener(type, handler, false);
       state.listeners.push({ target: target, type: type, handler: handler, options: false });
     }
@@ -280,7 +272,7 @@
     state.listeners.forEach(function removeListener(record) {
       try {
         record.target.removeEventListener(record.type, record.handler, record.options);
-      } catch (error) {
+      } catch (_error) {
         record.target.removeEventListener(record.type, record.handler, false);
       }
     });
@@ -293,7 +285,7 @@
     }
     try {
       return global.matchMedia(query);
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }
@@ -356,7 +348,7 @@
       if (event) {
         document.dispatchEvent(event);
       }
-    } catch (error) {
+    } catch (_error) {
       // Hooks are optional; presentation failures never block business state.
     }
   }
@@ -401,6 +393,10 @@
     if (state.mode !== "full") {
       resetParallax(true);
       stopAnimations();
+      releasePressedTarget();
+      [root, document.body].forEach(function settleTheme(element) {
+        if (element && element.classList) element.classList.remove("is-ui-theme-changing");
+      });
     }
     if (previous !== state.mode) {
       dispatchHook("lusu:ui-motion-mode", { mode: state.mode });
@@ -482,33 +478,26 @@
     scheduleParallaxFrame();
   }
 
-  function handlePointerMove(event) {
-    if (!canUseParallax() || (event.pointerType && event.pointerType !== "mouse" && event.pointerType !== "pen")) {
-      return;
-    }
-    var width = Math.max(global.innerWidth || 0, 1);
-    var height = Math.max(global.innerHeight || 0, 1);
-    var normalizedX = clamp((Number(event.clientX) / width - 0.5) * 2, -1, 1);
-    var normalizedY = clamp((Number(event.clientY) / height - 0.5) * 2, -1, 1);
-    state.targetX = normalizedX * state.parallaxLimit;
-    state.targetY = normalizedY * state.parallaxLimit * 0.72;
-    scheduleParallaxFrame();
-  }
 
-  function handlePointerLeave(event) {
-    if (!event || event.relatedTarget == null) {
-      resetParallax(false);
-    }
-  }
+
 
   function transientClass(element, className, duration) {
     if (!isElement(element) || !element.classList) {
       return;
     }
+    var classes = state.transientClasses && state.transientClasses.get(element);
+    if (!classes) {
+      classes = {};
+      if (state.transientClasses) state.transientClasses.set(element, classes);
+    }
+    var token = {};
+    classes[className] = token;
     element.classList.add(className);
     scheduleTimer(function removeTransientClass() {
-      if (element.classList) {
+      // A previous theme switch must not clear a newer switch's live state.
+      if (classes[className] === token && element.classList) {
         element.classList.remove(className);
+        delete classes[className];
       }
     }, Math.max(1, duration || DURATIONS.standard));
   }
@@ -627,10 +616,18 @@
       }
       try {
         record.animation.cancel();
-      } catch (error) {
+      } catch (_error) {
         // Animation cancellation is best-effort.
       }
       return false;
+    });
+  }
+
+  function cancelAnimationsWithin(element) {
+    state.animations.slice().forEach(function cancelDepartingContent(record) {
+      if (record.element === element || (element.contains && element.contains(record.element))) {
+        cancelAnimationsFor(record.element);
+      }
     });
   }
 
@@ -638,7 +635,7 @@
     state.animations.forEach(function cancelAnimation(record) {
       try {
         record.animation.cancel();
-      } catch (error) {
+      } catch (_error) {
         // Animation cancellation is best-effort.
       }
     });
@@ -695,7 +692,7 @@
         finished.then(function removeAnimationRecord() {
           try {
             animation.cancel();
-          } catch (error) {
+          } catch (_error) {
             // Clearing a finished effect is best-effort.
           }
           state.animations = state.animations.filter(function keepOtherAnimation(item) {
@@ -706,7 +703,7 @@
         scheduleTimer(function removeLegacyAnimationRecord() {
           try {
             animation.cancel();
-          } catch (error) {
+          } catch (_error) {
             // Clearing a finished effect is best-effort.
           }
           state.animations = state.animations.filter(function keepOtherAnimation(item) {
@@ -715,7 +712,7 @@
         }, duration + 100);
       }
       return finished;
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }
@@ -735,7 +732,7 @@
       frame.opacity = isFinite(opacity) ? opacity : fallback.opacity;
       frame.transform = style.transform && style.transform !== "none" ? style.transform : fallback.transform;
       frame.transformOrigin = style.transformOrigin || fallback.transformOrigin;
-    } catch (error) {
+    } catch (_error) {
       // The fallback frame keeps presentation failures from blocking state.
     }
     return frame;
@@ -832,7 +829,7 @@
     var contentDistance = Math.abs(targetOpacity - Number(contentStart.opacity || 0));
     var backdropDistance = backdropStart ? Math.abs(targetOpacity - Number(backdropStart.opacity || 0)) : 0;
     var distance = clamp(Math.max(contentDistance, backdropDistance), 0, 1);
-    var baseDuration = opening ? DURATIONS.standard : DURATIONS.fast;
+    var baseDuration = reduced ? DURATIONS.fast : opening ? DURATIONS.standard : DURATIONS.fast;
     var duration = Math.max(DURATIONS.instant, Math.round(baseDuration * Math.max(distance, 0.25)));
     var targetFrame = opening ? openFrame : closedFrame;
     var contentAnimation = animateElement(descriptor.content, [contentStart, targetFrame], {
@@ -888,14 +885,19 @@
     }
     var reduced = !canUseFullMotion();
     var distance = clamp(Number(options.distance) || 4, 0, 8);
-    return animateElement(element, [
-      {
+    var startingFrame = {
         opacity: 0,
         transform: reduced ? "none" : "translate3d(0," + distance.toFixed(2) + "px,0)"
-      },
+      };
+    if (state.animations.some(function isCurrentState(record) { return record.element === element; })) {
+      startingFrame = readAnimatedFrame(element, startingFrame);
+      if (reduced) startingFrame.transform = "none";
+    }
+    return animateElement(element, [
+      startingFrame,
       { opacity: 1, transform: reduced ? "none" : "translate3d(0,0,0)" }
     ], {
-      duration: reduced ? 120 : 180,
+      duration: reduced ? DURATIONS.fast : DURATIONS.standard,
       easing: EASING.out,
       semantic: true
     });
@@ -961,7 +963,7 @@
     return safeQuery(".page.active .xp-window") || safeQuery(".page.active");
   }
 
-  function enterAnimation(kind, target, origin) {
+  function enterAnimation(kind, target) {
     if (!isElement(target)) {
       return null;
     }
@@ -1152,7 +1154,7 @@
     if (state.activeViewTransition && typeof state.activeViewTransition.skipTransition === "function") {
       try {
         state.activeViewTransition.skipTransition();
-      } catch (error) {
+      } catch (_error) {
         // A transition that already finished does not need further cleanup.
       }
       state.activeViewTransition = null;
@@ -1343,7 +1345,7 @@
         }
         cleanup();
         return committedResult;
-      } catch (error) {
+      } catch (_error) {
         if (!committed) {
           try {
             return animateAfterCommit(commitOnce());
@@ -1369,7 +1371,7 @@
     }
   }
 
-  function decorateRouteTransition(fromRoute, toRoute, snapshot, fromRun) {
+  function decorateRouteTransition(fromRoute, toRoute) {
     if (fromRoute === toRoute) {
       return;
     }
@@ -1577,7 +1579,7 @@
     if (state.activeViewTransition && typeof state.activeViewTransition.skipTransition === "function") {
       try {
         state.activeViewTransition.skipTransition();
-      } catch (error) {
+      } catch (_error) {
         // Teardown is best-effort.
       }
     }
@@ -1623,6 +1625,7 @@
     state.activeRoute = "";
     var page = leaving ? safeQuery("#" + leaving) : null;
     if (page) {
+      cancelAnimationsWithin(page);
       safeQueryAll(".is-ui-entering, .is-ui-leaving, .is-ui-pressed", page).forEach(function clearRouteClass(element) {
         element.classList.remove("is-ui-entering", "is-ui-leaving", "is-ui-pressed");
       });

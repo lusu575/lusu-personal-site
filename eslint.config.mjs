@@ -4,14 +4,19 @@ import tseslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 
 const sharedGlobals = Object.freeze({
+  AbortSignal: "readonly",
   AbortController: "readonly",
   ArrayBuffer: "readonly",
   Blob: "readonly",
   DOMException: "readonly",
+  EventTarget: "readonly",
   FormData: "readonly",
   Headers: "readonly",
   Request: "readonly",
   Response: "readonly",
+  ReadableStream: "readonly",
+  TransformStream: "readonly",
+  WebSocket: "readonly",
   TextDecoder: "readonly",
   TextEncoder: "readonly",
   URL: "readonly",
@@ -32,16 +37,43 @@ const sharedGlobals = Object.freeze({
 
 const browserGlobals = Object.freeze({
   ...sharedGlobals,
+  Audio: "readonly",
+  CSS: "readonly",
+  DOMParser: "readonly",
   CustomEvent: "readonly",
+  Element: "readonly",
+  Event: "readonly",
+  File: "readonly",
   FileReader: "readonly",
+  HTMLElement: "readonly",
+  HTMLButtonElement: "readonly",
+  HTMLIFrameElement: "readonly",
+  HTMLInputElement: "readonly",
+  HTMLMediaElement: "readonly",
+  HTMLTextAreaElement: "readonly",
+  HTMLSelectElement: "readonly",
+  Image: "readonly",
+  IntersectionObserver: "readonly",
+  KeyboardEvent: "readonly",
+  MutationObserver: "readonly",
+  Node: "readonly",
+  NodeFilter: "readonly",
+  PointerEvent: "readonly",
+  ResizeObserver: "readonly",
+  Worker: "readonly",
   WebSocket: "readonly",
   XMLSerializer: "readonly",
+  XMLHttpRequest: "readonly",
   cancelAnimationFrame: "readonly",
+  confirm: "readonly",
   document: "readonly",
   history: "readonly",
+  getComputedStyle: "readonly",
   localStorage: "readonly",
   location: "readonly",
   navigator: "readonly",
+  matchMedia: "readonly",
+  sessionStorage: "readonly",
   requestAnimationFrame: "readonly",
   window: "readonly"
 });
@@ -49,10 +81,21 @@ const browserGlobals = Object.freeze({
 export default [
   {
     ignores: [
-      "dist/**",
-      "node_modules/**",
+      "**/dist/**",
+      "**/node_modules/**",
       "output/**",
-      "自动新闻/**"
+      "**/.wrangler/**",
+      "**/.venv/**",
+      ".production-build-*/**",
+      // Vendored game engines and compiled bundles. LuSu bridges remain covered.
+      "games/a-dark-room/source/dev-server.js",
+      "games/a-dark-room/source/lib/**",
+      "games/a-dark-room/source/lang/**",
+      "games/a-dark-room/source/script/!(lusu-*)",
+      "games/a-dark-room/source/script/events/**",
+      "games/kittens-game/source/{config,game,core,i18n}.js",
+      "games/kittens-game/source/{lib,js,test,tools}/**",
+      "games/life-restart/source/{assets,libs}/**"
     ]
   },
   {
@@ -64,20 +107,7 @@ export default [
     }
   },
   {
-    files: [
-      "admin/*-workbench.{js,mjs}",
-      "functions/api/admin-*-service.mjs",
-      "tests/admin-*.test.mjs",
-      "tests/transfer/admin-transfer-usability.test.mjs",
-      "functions/api/anonymous-identity.mjs",
-      "functions/api/whiteboard-service.mjs",
-      "games/2048/source/**/*.{js,mjs}",
-      "js/features/anonymous-identity.mjs",
-      "js/routes/chatroom.mjs",
-      "tools/whiteboard/src/**/*.{js,jsx}",
-      "tests/anonymous-identity-api.test.mjs",
-      "tests/whiteboard-service-api.test.mjs"
-    ],
+    files: ["**/*.{js,mjs,cjs,jsx}"],
     ...eslint.configs.recommended,
     languageOptions: {
       ecmaVersion: 2024,
@@ -85,7 +115,7 @@ export default [
       parserOptions: {
         ecmaFeatures: { jsx: true }
       },
-      globals: browserGlobals
+      globals: sharedGlobals
     },
     rules: {
       ...eslint.configs.recommended.rules,
@@ -96,12 +126,40 @@ export default [
     }
   },
   {
-    files: ["tests/**/*.mjs"],
+    files: ["js/**", "admin/**", "games/**", "tools/**", "tests/**", "自动新闻/docs/assets/js/**"],
+    languageOptions: { globals: browserGlobals }
+  },
+  {
+    files: ["scripts/**", "tests/**", "agents/**", "cli/**", "mcp/**", "lib/**", "**/tests/**", "**/test/**", "**/scripts/**", "games/hextris/agent/**", "自动新闻/integrations/**", "eslint.config.mjs"],
     languageOptions: {
       globals: {
-        ...browserGlobals,
         Buffer: "readonly",
-        process: "readonly"
+        process: "readonly",
+        global: "readonly",
+        setImmediate: "readonly",
+        clearImmediate: "readonly"
+      }
+    }
+  },
+  {
+    files: ["games/a-dark-room/source/script/lusu-*.js"],
+    languageOptions: {
+      globals: Object.fromEntries(["$", "$SM", "_", "Engine", "Events", "Outside", "Path", "Scoring", "Space", "State", "World"].map((name) => [name, "readonly"]))
+    }
+  },
+  {
+    files: ["games/life-restart/source/lusu-*.js"],
+    languageOptions: { globals: { $ui: "readonly", core: "readonly", Laya: "readonly" } }
+  },
+  {
+    files: ["functions/**", "workers/**/*.js"],
+    languageOptions: {
+      globals: {
+        WebSocket: "readonly",
+        WebSocketPair: "readonly",
+        HTMLRewriter: "readonly",
+        ReadableStream: "readonly",
+        TransformStream: "readonly"
       }
     }
   },

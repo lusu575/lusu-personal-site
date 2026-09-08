@@ -381,6 +381,7 @@
     shell: "desktop",
     activeRoute: "",
     gestureStart: null,
+    gestureClickUntil: 0,
     dockCollapsed: false,
     dockIndicatorReady: false,
     focusRevealTarget: null,
@@ -842,6 +843,7 @@
       return;
     }
     const target = event.target;
+    state.gestureStart = null;
     cancelFocusoutRecheck();
     if (isTextEntryElement(target)) {
       framePipeline.noteEditingFocus(true);
@@ -1019,28 +1021,45 @@
     });
   }
 
+  function homeGestureIsAvailable() {
+    const viewport = framePipeline.snapshot().viewport;
+    return state.shell === "mobile"
+      && !document.hidden
+      && document.body?.dataset.route !== "home"
+      && !viewport.keyboardOpen
+      && viewport.viewportMode !== "zoom"
+      && !document.activeElement?.matches?.("input, textarea, select, [contenteditable]:not([contenteditable='false'])")
+      && !document.querySelector(".modal:not([hidden]), .account-popover:not([hidden]), dialog[open]");
+  }
+
   function startHomeGesture(event) {
-    if (state.shell !== "mobile" || event.pointerType === "mouse" || !event.isPrimary) {
+    state.gestureStart = null;
+    state.gestureClickUntil = 0;
+    if (!homeGestureIsAvailable() || event.pointerType !== "touch" || !event.isPrimary) {
       return;
     }
-    const viewport = framePipeline.snapshot().viewport;
-    const visibleBottom = (Number(viewport.offsetTop) || 0)
-      + (Number(viewport.visualHeight) || Number(viewport.height) || window.innerHeight);
-    if (event.clientY < visibleBottom - 44) {
+    // Only the visible, 44px Dock handle owns this gesture. The bottom edge of
+    // a composer, a file card, or an unrelated scroller is never a Home target.
+    const handle = event.target?.closest?.(".mobile-home-indicator[data-mobile-dock-toggle]");
+    if (!handle || handle.hidden || handle.closest("[inert]")) {
       return;
     }
     state.gestureStart = {
       id: event.pointerId,
+      handle,
+      route: document.body?.dataset.route,
       x: event.clientX,
       y: event.clientY,
       time: performance.now()
     };
+    handle.setPointerCapture?.(event.pointerId);
   }
 
   function finishHomeGesture(event) {
     const start = state.gestureStart;
     state.gestureStart = null;
-    if (!start || start.id !== event.pointerId || state.shell !== "mobile") {
+    if (!start || start.id !== event.pointerId || !homeGestureIsAvailable()
+      || start.route !== document.body?.dataset.route) {
       return;
     }
     const deltaY = start.y - event.clientY;
@@ -1055,7 +1074,19 @@
       || document.body?.dataset.route === "home") {
       return;
     }
+    // A touch swipe can produce a compatibility click on its captured handle.
+    // Consume only that pointer click; keyboard activation remains available.
+    state.gestureClickUntil = performance.now() + 500;
     document.querySelector(".start-button[data-route='home']")?.click();
+  }
+
+  function handleDockToggleClick(event) {
+    if (event.detail !== 0 && performance.now() < state.gestureClickUntil) {
+      state.gestureClickUntil = 0;
+      event.preventDefault();
+      return;
+    }
+    toggleDock();
   }
 
   function bindDom() {
@@ -1102,7 +1133,7 @@
     document.addEventListener("focusout", handleFocusOut, { capture: true });
     document.addEventListener("scroll", handleHorizontalDiscoveryScroll, { capture: true, passive: true });
     document.querySelector(".mobile-language-cycle")?.addEventListener("click", cycleLanguage);
-    document.querySelector("[data-mobile-dock-toggle]")?.addEventListener("click", toggleDock);
+    document.querySelector("[data-mobile-dock-toggle]")?.addEventListener("click", handleDockToggleClick);
     syncDockState();
     syncHorizontalDiscovery("init");
   }

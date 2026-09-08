@@ -1,3 +1,5 @@
+import { normalizeArticleTags } from "./article-tags.mjs";
+import { articleCategoryLabels, tagLabels } from "../../js/data/article-labels.mjs";
 export const PUBLIC_CONTENT_MAX_ARTICLES = 500;
 
 export const PUBLIC_LOOP_NIGHTLY_UPDATE_SLUG = "2026-06-18-main-visual-polish-cycle";
@@ -109,6 +111,168 @@ export async function queryPublishedArticles({ DB } = {}, {
   return result?.results || [];
 }
 
+export const PUBLIC_ARTICLE_PAGE_SIZE = 12;
+export const PUBLIC_ARTICLE_PAGE_MAX = 48;
+const SEARCH_SCAN_BATCH_SIZE = 100;
+const ARTICLE_PAGE_ORDER = `case when articles.category = 'site-updates' then 0 else articles.is_pinned end`;
+const ARTICLE_PAGE_DATE = "coalesce(articles.published_at, articles.created_at)";
+const ARTICLE_PUBLIC_JOINS = `
+  from articles
+  left join article_translations requested
+    on requested.article_id = articles.article_id and requested.lang = ?
+  left join article_translations zh
+    on zh.article_id = articles.article_id and zh.lang = 'zh'
+  left join article_translations fallback
+    on fallback.translation_id = (
+      select translation_id from article_translations
+      where article_id = articles.article_id
+      order by case lang when 'zh' then 0 when 'en' then 1 when 'ja' then 2 else 3 end
+      limit 1
+    )`;
+const ARTICLE_PUBLIC_WHERE = `articles.status = 'published' and ${PUBLIC_LOOP_NIGHTLY_UPDATE_FILTER}
+  and coalesce(requested.title, zh.title, fallback.title) is not null`;
+const ARTICLE_SUMMARY_COLUMNS = `articles.article_id, articles.slug, articles.category, articles.tags,
+  articles.cover_image, articles.status, articles.is_pinned, articles.view_count,
+  articles.created_at, articles.updated_at, articles.published_at,
+  requested.lang as requested_lang, coalesce(requested.lang, zh.lang, fallback.lang) as lang,
+  coalesce(requested.title, zh.title, fallback.title) as title,
+  coalesce(requested.summary, zh.summary, fallback.summary) as summary`;
+
+export class PublicArticleQueryError extends Error {
+  constructor(message = "Invalid article pagination query.") {
+    super(message);
+    this.name = "PublicArticleQueryError";
+    this.status = 400;
+    this.code = "INVALID_ARTICLE_QUERY";
+  }
+}
+
+function normalizeSearchText(value) {
+  return String(value || "").normalize("NFKC").toLocaleLowerCase().replace(/\s+/gu, " ").trim();
+}
+
+function articleCursorKey(row) {
+  return {
+    pin: row.category === "site-updates" ? 0 : Number(row.is_pinned || 0),
+    date: row.published_at || row.created_at,
+    slug: row.slug
+  };
+}
+
+function encodeArticleCursor(row, query) {
+  const json = JSON.stringify({ v: 1, ...articleCursorKey(row), query });
+  return btoa(String.fromCharCode(...new TextEncoder().encode(json)))
+    .replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
+}
+
+function decodeArticleCursor(value, query) {
+  if (!value) return null;
+  if (typeof value !== "string" || value.length > 4096 || !/^[A-Za-z0-9_-]+$/.test(value)) {
+    throw new PublicArticleQueryError();
+  }
+  try {
+    const bytes = Uint8Array.from(atob(value.replaceAll("-", "+").replaceAll("_", "/")), (c) => c.charCodeAt(0));
+    const cursor = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
+    if (cursor.v !== 1 || cursor.query !== query || ![0, 1].includes(cursor.pin)
+      || typeof cursor.date !== "string" || cursor.date.length > 64 || !cursor.date
+      || typeof cursor.slug !== "string" || cursor.slug.length > 256 || !cursor.slug
+      || Object.keys(cursor).some((key) => !["v", "pin", "date", "slug", "query"].includes(key))) {
+      throw new PublicArticleQueryError();
+    }
+    return cursor;
+  } catch {
+    throw new PublicArticleQueryError();
+  }
+}
+
+function articleCursorPredicate(cursor, binds) {
+  if (!cursor) return "";
+  binds.push(cursor.pin, cursor.pin, cursor.date, cursor.pin, cursor.date, cursor.slug);
+  return ` and (${ARTICLE_PAGE_ORDER} < ?
+    or (${ARTICLE_PAGE_ORDER} = ? and ${ARTICLE_PAGE_DATE} < ?)
+    or (${ARTICLE_PAGE_ORDER} = ? and ${ARTICLE_PAGE_DATE} = ? and articles.slug < ?))`;
+}
+
+async function articleSummaryBatch(database, { lang, category, excludeCategory, cursor, limit }) {
+  const binds = [lang];
+  let where = ARTICLE_PUBLIC_WHERE;
+  if (category) { where += " and articles.category = ?"; binds.push(category); }
+  if (excludeCategory) { where += " and articles.category <> ?"; binds.push(excludeCategory); }
+  where += articleCursorPredicate(cursor, binds);
+  binds.push(limit);
+  const result = await database.prepare(`select ${ARTICLE_SUMMARY_COLUMNS}
+    ${ARTICLE_PUBLIC_JOINS} where ${where}
+    order by ${ARTICLE_PAGE_ORDER} desc, ${ARTICLE_PAGE_DATE} desc, articles.slug desc limit ?`)
+    .bind(...binds).all();
+  return result?.results || [];
+}
+
+const normalizedTagLabels = new Map(Object.entries(tagLabels).map(([key, labels]) => [normalizeSearchText(key), labels]));
+function articleSearchHaystack(row, lang) {
+  const tags = parseTags(row.tags);
+  return normalizeSearchText([
+    row.title, row.summary, row.slug, row.category,
+    articleCategoryLabels[row.category]?.[lang],
+    ...tags, ...tags.map((tag) => normalizedTagLabels.get(normalizeSearchText(tag))?.[lang] || tag)
+  ].join(" "));
+}
+
+function followsCursor(row, cursor) {
+  if (!cursor) return true;
+  const key = articleCursorKey(row);
+  return key.pin < cursor.pin || (key.pin === cursor.pin && (
+    key.date < cursor.date || (key.date === cursor.date && key.slug < cursor.slug)
+  ));
+}
+
+// Normal browsing is a keyset query. Search normalizes bounded summary batches on
+// the server because SQLite/D1 has no Unicode NFKC function. Only the requested
+// page is returned; the scan also supplies an exact search total without a cutoff.
+export async function queryPublishedArticlePage({ DB } = {}, options = {}) {
+  const database = requireDatabase({ DB });
+  const lang = normalizeLanguage(options.lang);
+  const category = normalizeText(options.category);
+  const excludeCategory = normalizeText(options.excludeCategory);
+  const search = normalizeSearchText(options.search);
+  const rawLimit = options.limit == null ? PUBLIC_ARTICLE_PAGE_SIZE : Number(options.limit);
+  if (!Number.isInteger(rawLimit) || rawLimit < 1 || rawLimit > PUBLIC_ARTICLE_PAGE_MAX
+    || category.length > 120 || excludeCategory.length > 120 || search.length > 256) {
+    throw new PublicArticleQueryError();
+  }
+  const tokens = [...new Set(search.split(" ").filter(Boolean))];
+  if (tokens.length > 24) throw new PublicArticleQueryError();
+  const query = JSON.stringify([lang, category, excludeCategory, search]);
+  const cursor = decodeArticleCursor(options.cursor, query);
+  const countResult = await database.prepare(`select articles.category, count(*) as count
+    ${ARTICLE_PUBLIC_JOINS} where ${ARTICLE_PUBLIC_WHERE} group by articles.category`).bind(lang).all();
+  const categoryCounts = Object.fromEntries((countResult?.results || []).map((row) => [row.category, Number(row.count)]));
+  let total = Object.entries(categoryCounts).reduce((sum, [key, count]) =>
+    sum + ((!category || key === category) && key !== excludeCategory ? count : 0), 0);
+  let rows;
+  if (!tokens.length) {
+    rows = await articleSummaryBatch(database, { lang, category, excludeCategory, cursor, limit: rawLimit + 1 });
+  } else {
+    total = 0;
+    rows = [];
+    let scanCursor = null;
+    let batch;
+    do {
+      batch = await articleSummaryBatch(database, { lang, category, excludeCategory, cursor: scanCursor, limit: SEARCH_SCAN_BATCH_SIZE });
+      for (const row of batch) {
+        const haystack = articleSearchHaystack(row, lang);
+        if (!tokens.every((token) => haystack.includes(token))) continue;
+        total += 1;
+        if (rows.length <= rawLimit && followsCursor(row, cursor)) rows.push(row);
+      }
+      if (batch.length) scanCursor = articleCursorKey(batch.at(-1));
+    } while (batch.length === SEARCH_SCAN_BATCH_SIZE);
+  }
+  const hasMore = rows.length > rawLimit;
+  rows = rows.slice(0, rawLimit);
+  return { rows, total, categoryCounts, hasMore,
+    nextCursor: hasMore ? encodeArticleCursor(rows.at(-1), query) : "" };
+}
+
 export async function queryPublishedArticle({ DB } = {}, { lang = "zh", slug = "" } = {}) {
   const database = requireDatabase({ DB });
   const normalizedLang = normalizeLanguage(lang);
@@ -156,7 +320,7 @@ export async function queryPublishedArticle({ DB } = {}, { lang = "zh", slug = "
 function parseTags(value) {
   try {
     const tags = JSON.parse(value || "[]");
-    return Array.isArray(tags) ? tags.map((tag) => String(tag)).filter(Boolean) : [];
+    return normalizeArticleTags(tags, { maxItems: Infinity, maxLength: Infinity });
   } catch {
     return [];
   }

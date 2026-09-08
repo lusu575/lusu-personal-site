@@ -50,3 +50,12 @@ jobs:
 
       - name: Verify generated files are committed
         run: git diff --exit-code
+
+      - name: Save browser review evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: public-ui-review-${{ github.sha }}
+          path: output/public-ui-audit/
+          if-no-files-found: ignore
+          retention-days: 14

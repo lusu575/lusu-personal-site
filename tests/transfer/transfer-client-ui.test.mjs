@@ -305,7 +305,9 @@ test("Quick Transfer batches live summaries and fully clears transient resources
   assert.match(client, /function notifyLive[\s\S]*state\.liveQueue\.push[\s\S]*setTimeout/);
   assert.match(client, /function invalidateRoomContext[\s\S]*abortRefresh\(\)[\s\S]*clearTaskRenderFrame\(\)[\s\S]*clearLiveAnnouncements\(\)/);
   assert.match(client, /function clearPendingFiles[\s\S]*URL\.revokeObjectURL/);
-  assert.match(client, /function handleVisibilityChange[\s\S]*abortRequests\(\)[\s\S]*clearDelays\(\)[\s\S]*suspendUploadsForVisibility/);
+  const visibility = client.slice(client.indexOf("function handleVisibilityChange"), client.indexOf("function isFileDrag"));
+  assert.match(visibility, /stopPoll\(\)[\s\S]*abortRefresh\(\)[\s\S]*clearTaskRenderFrame\(\)/);
+  assert.doesNotMatch(visibility, /abortRequests|clearDelays|suspendUploads|abortTaskTransport/);
 });
 
 test("Quick Transfer binds and tears down route-scoped resources", () => {

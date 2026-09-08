@@ -1,7 +1,6 @@
 (function () {
   "use strict";
 
-  const MIB = 1024 * 1024;
   const ROOM_NAMESPACE = "lusu575-quick-transfer-room-v1";
   const TEXT_SALT = new TextEncoder().encode("lusu575-quick-transfer-text-v1");
   const SESSION_TASKS_KEY = "lusu-transfer-upload-tasks-v1";
@@ -12,6 +11,7 @@
       roomPassword: "房间口令", roomPlaceholder: "至少 6 位，分享给另一位登录用户", generate: "随机生成", copy: "复制",
       securityNote: "明文口令不会发送到服务器；文字会在浏览器中使用 AES-GCM 加密。文件不使用该口令加密，只通过 HTTPS 传输、私有 R2 存储和服务端鉴权保护，且不会进行病毒扫描。请勿发送账号凭证或不可信文件。", enter: "进入房间",
       roomActive: "临时房间已连接", refresh: "刷新", leave: "离开房间", textLabel: "加密文字",
+      draftHint: "未发送内容只保留在当前房间，离开后清空。",
       textPlaceholder: "发送一段加密文字……", send: "发送", dropTitle: "添加照片或文件", dropRelease: "松开以添加到待发送附件", choosePhoto: "选择照片", chooseFile: "选择文件", tasks: "上传任务",
       online: "在线", offline: "离线", loading: "正在连接临时互传……", loginNeeded: "请先登录后使用临时互传。",
       r2Missing: "R2 尚未绑定，文字房间可查看，但文件上传暂不可用。", generated: "已生成随机口令，请复制给另一位登录用户。",
@@ -34,6 +34,7 @@
       roomPassword: "Room passphrase", roomPlaceholder: "At least 6 characters; share it with another signed-in person", generate: "Generate", copy: "Copy",
       securityNote: "The plaintext passphrase is not sent to the server; text is encrypted in the browser with AES-GCM. Files are not encrypted with the passphrase—they are protected by HTTPS in transit, private R2 storage, and server-side authorization, and are not virus-scanned. Do not share credentials or untrusted files.", enter: "Enter room",
       roomActive: "Temporary room connected", refresh: "Refresh", leave: "Leave room", textLabel: "Encrypted text", textPlaceholder: "Send encrypted text…", send: "Send",
+      draftHint: "Unsent content stays in this room only and is cleared when you leave.",
       dropTitle: "Add photos or files", dropRelease: "Drop to add pending attachments", choosePhoto: "Choose photos", chooseFile: "Choose files", tasks: "Upload tasks", online: "Online", offline: "Offline", loading: "Connecting to Quick Transfer…",
       loginNeeded: "Sign in before using Quick Transfer.", r2Missing: "R2 is not bound yet. Text rooms remain visible, but file uploads are unavailable.",
       generated: "Random passphrase generated. Copy it to the other signed-in person.", copied: "Room passphrase copied.", copyFailed: "Clipboard access failed; copy it manually.",
@@ -55,6 +56,7 @@
       roomPassword: "部屋の合言葉", roomPlaceholder: "6文字以上。相手のログインユーザーと共有", generate: "ランダム生成", copy: "コピー",
       securityNote: "平文の合言葉はサーバーへ送信されず、テキストはブラウザー内で AES-GCM 暗号化されます。ファイルは合言葉では暗号化されず、HTTPS 通信・非公開 R2 ストレージ・サーバー認可で保護されますが、ウイルス検査は行われません。認証情報や信頼できないファイルを送らないでください。", enter: "部屋に入る",
       roomActive: "一時部屋に接続済み", refresh: "更新", leave: "退出", textLabel: "暗号化テキスト", textPlaceholder: "暗号化テキストを送信…", send: "送信",
+      draftHint: "未送信の内容はこの部屋だけで保持し、退出すると消去します。",
       dropTitle: "写真またはファイルを追加", dropRelease: "ここで放して送信待ちに追加", choosePhoto: "写真を選択", chooseFile: "ファイル選択", tasks: "アップロード", online: "オンライン", offline: "オフライン", loading: "一時転送に接続中…",
       loginNeeded: "先にログインしてください。", r2Missing: "R2 が未接続です。テキスト部屋は利用できますが、ファイル送信はまだ使えません。",
       generated: "ランダム合言葉を生成しました。相手にコピーしてください。", copied: "合言葉をコピーしました。", copyFailed: "クリップボードを利用できません。手動でコピーしてください。",
@@ -131,6 +133,8 @@
   }
 
   function activateRoomContext(roomKey, cryptoKey) {
+    // The composer belongs to a single room; private drafts never enter storage.
+    if (refs.textInput) refs.textInput.value = "";
     state.roomGeneration += 1;
     state.roomKey = roomKey;
     state.cryptoKey = cryptoKey;
@@ -154,6 +158,11 @@
     state.composerToken = null;
     state.composerSending = false;
     state.composerRetry = null;
+    if (refs.textInput) refs.textInput.value = "";
+    if (refs.roomPassword) {
+      refs.roomPassword.value = "";
+      refs.roomPassword.type = "password";
+    }
     state.quotaSignature = "";
     refs.sendButton?.removeAttribute("aria-busy");
     if (refs.sendButton) refs.sendButton.disabled = false;
@@ -224,39 +233,15 @@
     if (document.hidden) {
       stopPoll();
       abortRefresh();
-      abortRequests();
-      clearDelays();
-      suspendUploadsForVisibility();
+      clearTaskRenderFrame();
+      clearLiveAnnouncements();
+      // User-submitted transfers retain their requests, retry timers and queue.
+      // The browser may suspend a background tab, but hiding it is not a pause action.
       return;
     }
     if (!state.routeActive || !state.open || !state.roomKey) return;
-    resumeUploadsAfterVisibility();
+    renderTasks();
     void refreshItems(false).finally(schedulePoll);
-  }
-
-  function suspendUploadsForVisibility() {
-    state.tasks.forEach((task) => {
-      if (!["queued", "uploading", "retrying", "completing"].includes(task.status)) return;
-      task.visibilityPaused = true;
-      task.paused = true;
-      task.status = "paused";
-      state.pendingTaskIds = state.pendingTaskIds.filter((localId) => localId !== task.localId);
-      abortTaskTransport(task);
-      updateTaskRow(task);
-    });
-  }
-
-  function resumeUploadsAfterVisibility() {
-    state.tasks.forEach((task) => {
-      if (!task.visibilityPaused || !isTaskContextCurrent(task)) return;
-      if (state.activeTaskIds.has(task.localId)) {
-        task.resumeWhenIdle = true;
-        return;
-      }
-      task.visibilityPaused = false;
-      task.paused = false;
-      enqueueTask(task);
-    });
   }
 
   function isFileDrag(event) {
@@ -435,9 +420,12 @@
 
   async function loadConfig(expectedRoom = null) {
     if (expectedRoom && !isRoomReferenceCurrent(expectedRoom)) return false;
+    const entryGeneration = state.roomGeneration;
+    const isCurrent = () => state.open && state.roomGeneration === entryGeneration
+      && (!expectedRoom || isRoomReferenceCurrent(expectedRoom));
     try {
       const config = await api("/api/transfer/config");
-      if (expectedRoom && !isRoomReferenceCurrent(expectedRoom)) return false;
+      if (!isCurrent()) return false;
       state.config = config;
       refs.loginGate.hidden = true;
       refs.roomEntry.hidden = Boolean(state.roomKey);
@@ -456,7 +444,7 @@
       }
       return true;
     } catch (error) {
-      if (expectedRoom && !isRoomReferenceCurrent(expectedRoom)) return false;
+      if (!isCurrent()) return false;
       if (error.status === 401) {
         stopPoll();
         invalidateRoomContext();
@@ -522,6 +510,7 @@
     if (Array.from(password).length < 6) return setFeedback(text("shortPassword"), true);
     try {
       const derived = await deriveRoom(password);
+      if (!state.open || state.roomGeneration !== entryGeneration) return;
       await api("/api/transfer/room/join", { method: "POST", json: { roomKey: derived.roomKey } });
       if (!state.open || state.roomGeneration !== entryGeneration) return;
       activateRoomContext(derived.roomKey, derived.cryptoKey);
@@ -534,12 +523,14 @@
       syncUploadAvailability();
       updateRoomMode();
       restoreTasks();
-      await refreshItems(true, captureRoomContext());
+      const context = captureRoomContext();
+      await refreshItems(true, context);
+      if (!isRoomContextCurrent(context)) return;
       schedulePoll();
       setFeedback(text("joined"));
       requestFocusReveal("transfer:room-ready");
     } catch (error) {
-      setFeedback(error.message || text("joinFailed"), true);
+      if (state.open && state.roomGeneration === entryGeneration) setFeedback(error.message || text("joinFailed"), true);
     }
   }
 
@@ -1107,9 +1098,8 @@
         .catch((error) => failTask(task, error))
         .finally(() => {
           state.activeTaskIds.delete(localId);
-          if (task.resumeWhenIdle && !document.hidden && isTaskContextCurrent(task)) {
+          if (task.resumeWhenIdle && isTaskContextCurrent(task) && task.status !== "cancelled") {
             task.resumeWhenIdle = false;
-            task.visibilityPaused = false;
             task.paused = false;
             enqueueTask(task);
           }
@@ -1169,7 +1159,7 @@
     task.uploaded = task.size;
     task.status = "complete";
     renderTasks();
-    await loadConfig(task);
+    await loadConfig({ roomKey: task.roomKey, generation: task.roomGeneration });
   }
 
   async function runMultipart(task) {
@@ -1211,7 +1201,7 @@
     task.status = "complete";
     removeSavedTask(task.localId);
     renderTasks();
-    await refreshItems(true, task);
+    await refreshItems(true, { roomKey: task.roomKey, generation: task.roomGeneration });
   }
 
   async function uploadPartWithRetry(task, partNumber) {
@@ -1254,6 +1244,7 @@
 
   function pauseTask(task) {
     if (!isTaskContextCurrent(task)) return;
+    task.resumeWhenIdle = false;
     task.paused = true;
     task.status = "paused";
     state.pendingTaskIds = state.pendingTaskIds.filter((localId) => localId !== task.localId);
@@ -1265,10 +1256,15 @@
   function resumeTask(task) {
     if (!isTaskContextCurrent(task)) return;
     if (!task.file) return selectResumeFile(task);
+    if (state.activeTaskIds.has(task.localId)) {
+      task.resumeWhenIdle = true;
+      return;
+    }
     enqueueTask(task);
   }
 
   async function cancelTask(task) {
+    task.resumeWhenIdle = false;
     task.status = "cancelled";
     state.pendingTaskIds = state.pendingTaskIds.filter((localId) => localId !== task.localId);
     abortTaskTransport(task);
@@ -1333,7 +1329,7 @@
   }
 
   function failTask(task, error) {
-    if (error.cancelled || task.status === "cancelled" || !isTaskContextCurrent(task)) return;
+    if (error.cancelled || task.paused || task.status === "cancelled" || !isTaskContextCurrent(task)) return;
     task.status = error.status === 410 ? "failed" : "failed";
     if (error.code === "TRANSFER_R2_NOT_BOUND") {
       task.error = text("r2Missing");
@@ -1381,7 +1377,7 @@
 
   function updateTaskRow(task) {
     if (!task?.rowRefs?.row) return;
-    const { row, name, status, progress, stats, actions } = task.rowRefs;
+    const { row, name, status, actions } = task.rowRefs;
     row.className = `transfer-task is-${task.status}`;
     name.textContent = task.filename;
     status.textContent = task.error || text(task.status in COPY.zh ? task.status : "uploading");
@@ -1394,7 +1390,7 @@
   }
 
   function scheduleTaskProgressRender(task) {
-    if (!task || !isTaskContextCurrent(task)) return;
+    if (!task || document.hidden || !isTaskContextCurrent(task)) return;
     state.dirtyTaskIds.add(task.localId);
     if (state.taskRenderFrame) return;
     state.taskRenderFrame = window.requestAnimationFrame(() => {
@@ -1449,7 +1445,14 @@
       expiresAt: task.expiresAt, uploaded: task.uploaded, parts: task.parts, status: "paused", multipart: true, startedAt: task.startedAt,
       idempotencyKey: task.idempotencyKey
     }));
-    try { sessionStorage.setItem(SESSION_TASKS_KEY, JSON.stringify(saved)); } catch { /* resumability becomes unavailable */ }
+    try {
+      const previous = JSON.parse(sessionStorage.getItem(SESSION_TASKS_KEY) || "[]");
+      const currentIds = new Set(state.tasks.keys());
+      const retained = (Array.isArray(previous) ? previous : []).filter((task) => !currentIds.has(task.localId)
+        && new Date(task.expiresAt).getTime() > Date.now());
+      // Visiting another room must not erase that room's resumable file metadata.
+      sessionStorage.setItem(SESSION_TASKS_KEY, JSON.stringify([...retained, ...saved]));
+    } catch { /* resumability becomes unavailable */ }
   }
 
   function restoreTasks() {

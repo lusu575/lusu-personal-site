@@ -2532,10 +2532,8 @@ main {
   display: flex;
   min-width: 0;
   min-height: 44px;
-  max-height: 44px;
   align-items: center;
-  overflow: hidden;
-  line-height: 1.22;
+  line-height: 1.35;
 }
 
 #resource-list .resource-main > p {
@@ -2616,8 +2614,8 @@ html:not([data-ui-shell="mobile"]):lang(zh) .about-copy {
   border-radius: 0 4px 4px 0;
   color: #2d4f78;
   background: #edf5ff;
-  font-size: 12.5px;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: 500;
   line-height: 1.35;
 }
 
@@ -4712,3 +4710,33 @@ html[lang="ja"] :where(p, li, dd, dt, button, label, summary, .markdown-body, .m
     cursor: auto !important;
   }
 }
+
+/* Quiet secondary information; actions retain the existing XP control treatment. */
+.welcome-open {
+  min-height: 44px;
+  padding: 4px 8px;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+.welcome-open:hover { text-decoration: underline; }
+.welcome-open:focus-visible { outline: 2px solid var(--chrome-focus-ring); outline-offset: 2px; }
+.resource-details { min-width: 0; margin-top: 6px; }
+.resource-details > summary {
+  width: fit-content;
+  min-height: 44px;
+  align-content: center;
+  color: #36567a;
+  font-size: 13px;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.resource-details > summary:focus-visible { outline: 2px solid var(--chrome-focus-ring); outline-offset: 2px; }
+.resource-main .resource-details-copy { display: block; overflow: visible; -webkit-line-clamp: unset; margin: 8px 0; font-size: 13px; line-height: 1.65; color: #36567a; }
+.resource-start-status { margin: 8px 0 0; font-size: 13px; line-height: 1.5; }
+.resource-start-status[hidden] { display: none; }
+#resource-list .resource-description { font-size: 15px; line-height: 1.65; }
+
+.welcome-mobile-label { display: none; }

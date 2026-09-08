@@ -9,16 +9,34 @@ export function createResourcesRoute({
   localText,
   contentTitle,
   t,
-  label
+  label,
+  loadQuickTransferModule = () => import("../features/quick-transfer-loader.mjs?v=20260908-site-review-r1")
 }) {
   let quickTransferLoader = null;
   let quickTransferPending = null;
   let quickTransferRouteActive = false;
   let quickTransferLanguage = document.documentElement.lang;
+  let quickTransferOpening = null;
+  let quickTransferGeneration = 0;
+  let quickTransferEntryState = "idle";
+
+  function renderQuickTransferEntryState() {
+    document.querySelectorAll("[data-quick-transfer-open]").forEach((button) => {
+      button.disabled = quickTransferEntryState === "loading";
+      button.setAttribute("aria-busy", String(button.disabled));
+      button.textContent = quickTransferEntryState === "loading" ? t("resourceStarting")
+        : quickTransferEntryState === "failed" ? t("resourceRetry") : button.dataset.readyLabel;
+    });
+    document.querySelectorAll("[data-quick-transfer-start-status]").forEach((status) => {
+      status.hidden = quickTransferEntryState === "idle";
+      status.textContent = quickTransferEntryState === "loading" ? t("resourceStarting")
+        : quickTransferEntryState === "failed" ? t("resourceStartFailed") : "";
+    });
+  }
 
   async function ensureQuickTransferLoader() {
     if (quickTransferLoader) return quickTransferLoader;
-    quickTransferPending ||= import("../features/quick-transfer-loader.mjs?v=20260908-admin-review-r1")
+    quickTransferPending ||= Promise.resolve().then(loadQuickTransferModule)
       .then(({ createQuickTransferLoader }) => {
         quickTransferLoader = createQuickTransferLoader();
         quickTransferLoader.setLanguage(quickTransferLanguage);
@@ -33,10 +51,32 @@ export function createResourcesRoute({
   }
 
   const quickTransfer = Object.freeze({
-    async open() {
-      const loader = await ensureQuickTransferLoader();
-      if (!quickTransferRouteActive) return false;
-      return loader.open();
+    open() {
+      if (!quickTransferRouteActive) return Promise.resolve(false);
+      if (quickTransferOpening) return quickTransferOpening;
+      const generation = quickTransferGeneration;
+      quickTransferEntryState = "loading";
+      renderQuickTransferEntryState();
+      const opening = (async () => {
+        try {
+          const loader = await ensureQuickTransferLoader();
+          if (!quickTransferRouteActive || generation !== quickTransferGeneration) return false;
+          return await loader.open();
+        } catch {
+          if (quickTransferRouteActive && generation === quickTransferGeneration) {
+            quickTransferEntryState = "failed";
+          }
+          return false;
+        } finally {
+          if (quickTransferOpening === opening) {
+            quickTransferOpening = null;
+            if (quickTransferEntryState === "loading") quickTransferEntryState = "idle";
+            renderQuickTransferEntryState();
+          }
+        }
+      })();
+      quickTransferOpening = opening;
+      return opening;
     },
     close(options) {
       quickTransferLoader?.close(options);
@@ -44,6 +84,7 @@ export function createResourcesRoute({
     setLanguage(language) {
       quickTransferLanguage = language;
       quickTransferLoader?.setLanguage(language);
+      renderQuickTransferEntryState();
     },
     routeEnter() {
       quickTransferRouteActive = true;
@@ -51,6 +92,10 @@ export function createResourcesRoute({
     },
     routeLeave() {
       quickTransferRouteActive = false;
+      quickTransferGeneration += 1;
+      quickTransferOpening = null;
+      quickTransferEntryState = "idle";
+      renderQuickTransferEntryState();
       quickTransferLoader?.routeLeave();
     },
     lifecycleSnapshot() {
@@ -112,6 +157,7 @@ export function createResourcesRoute({
       button.type = "button";
       button.className = "card-action";
       button.dataset.quickTransferOpen = "true";
+      button.dataset.readyLabel = text;
       button.textContent = text;
       button.setAttribute("aria-label", `${text}: ${resourceTitle}`);
       return button;
@@ -233,7 +279,27 @@ export function createResourcesRoute({
       tags.appendChild(tagNode);
     });
     if (item.showReadyStatus === true) tags.appendChild(resourceStatusElement(resourceAvailable, resourceTitle));
-    main.append(title, desc, facts);
+    const details = document.createElement("details");
+    details.className = "resource-details";
+    const summary = document.createElement("summary");
+    summary.textContent = t("resourceDetails");
+    details.append(summary, facts);
+    if (item.details) {
+      const explanation = document.createElement("p");
+      explanation.className = "resource-details-copy";
+      explanation.textContent = localText(item.details);
+      details.appendChild(explanation);
+    }
+    main.append(title, desc, details);
+    if (item.action === "quick-transfer") {
+      const status = document.createElement("p");
+      status.className = "resource-start-status";
+      status.dataset.quickTransferStartStatus = "true";
+      status.setAttribute("role", "status");
+      status.setAttribute("aria-live", "polite");
+      status.hidden = true;
+      main.appendChild(status);
+    }
     card.append(main, resourceActionElement(item, resourceUrl), tags);
     return card;
   }
@@ -301,6 +367,7 @@ export function createResourcesRoute({
       return;
     }
     items.forEach((item) => list.appendChild(resourceCardElement(item)));
+    renderQuickTransferEntryState();
   }
 
   return Object.freeze({ safeResourceUrl, readyResourceItems, renderResources, renderResourceCategoryButtons, quickTransfer });

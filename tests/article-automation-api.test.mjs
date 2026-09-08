@@ -280,7 +280,7 @@ test("Daily AI News automation defaults to drafts and can explicitly auto-publis
     const deliveryBody = {
       idempotencyKey: "daily-ai-news-2026-07-27-test",
       slug: "daily-ai-news-2026-07-27-test",
-      tags: ["测试来源"],
+      tags: ["测试来源", "每日AI新闻", "AI", "ai"],
       source: "Codex local test",
       translations: translations()
     };
@@ -332,6 +332,24 @@ test("Daily AI News automation defaults to drafts and can explicitly auto-publis
       ).get(deliveryBody.idempotencyKey).payload_hash,
       /^[a-f0-9]{64}$/
     );
+
+    assert.deepEqual(JSON.parse(DB.sqlite.prepare("select tags from articles where article_id = ?")
+      .get(delivered.articleId).tags), ["每日AI新闻", "AI", "测试来源"]);
+    // Simulate a receipt produced before tags were deduplicated. Only the exact
+    // original payload may replay; the following changed-content case stays 409.
+    const legacyHash = await sha256Hex(JSON.stringify({
+      slug: deliveryBody.slug,
+      tags: ["每日AI新闻", "AI", ...deliveryBody.tags].sort(),
+      source: deliveryBody.source,
+      translations: deliveryBody.translations
+    }));
+    DB.sqlite.prepare("update article_delivery_events set payload_hash = ? where idempotency_key = ?")
+      .run(legacyHash, deliveryBody.idempotencyKey);
+    const legacyReplay = await invoke(onRequest, DB, request("/api/automation/daily-ai-news", {
+      method: "POST", token: generated.token, body: deliveryBody
+    }));
+    assert.equal(legacyReplay.status, 200, await legacyReplay.clone().text());
+    assert.equal((await legacyReplay.json()).duplicate, true);
 
     const conflictingReplay = await invoke(onRequest, DB, request(
       "/api/automation/daily-ai-news",

@@ -79,7 +79,7 @@
       return Object.freeze(Object.assign({}, prior.result, { deduplicated: true }));
     }
 
-    var before = sync();
+    sync();
     var beforeRevision = revision;
     var catalogEntry = actionCatalog && actionCatalog.revision === beforeRevision
       ? actionCatalog.tokenMap[normalized.action.token]
@@ -388,10 +388,11 @@
   }
 
   function safeTranslate(value) {
-    try { return boundedText(_(value), 160); } catch (error) { return value; }
+    try { return boundedText(_(value), 160); } catch (_error) { return value; }
   }
 
   function boundedText(value, limit) {
+    // eslint-disable-next-line no-control-regex -- Reject or sanitize control characters at the public text boundary.
     var text = String(value == null ? '' : value).replace(/[\u0000-\u001F\u007F]/g, ' ').replace(/\s+/g, ' ').trim();
     return text.slice(0, limit);
   }
