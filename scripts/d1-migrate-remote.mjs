@@ -83,7 +83,7 @@ export const MINIMAX_H3_REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     select 'minimax-h3-article-seed-version',
       case when count(*) = 1 then 1 else 0 end
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260902-mobile-blog-retired-r1'
+    where key = 'article_seed_version' and value = '20260908-site-review-r1'
   `
 ]);
 
@@ -108,6 +108,33 @@ export async function retryRemoteD1Read(
 }
 
 export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
+  `
+    select 'site-data-migrations-columns' as item,
+      case when count(*) = 3 then 1 else 0 end as present
+    from pragma_table_info('site_data_migrations')
+    where name in ('version', 'applied_at', 'source')
+    union all
+    select 'site-review-migration-record', count(*)
+    from site_data_migrations where version = '20260908-site-review-r1'
+      and length(trim(applied_at)) > 0 and source in ('schema', 'release')
+    union all
+    select 'site-review-update-article', count(*)
+    from articles
+    where article_id = 'seed-update-2026-09-08-site-review-optimization'
+      and slug = '2026-09-08-site-review-optimization'
+      and category = 'site-updates' and status = 'published'
+      and is_pinned = 0 and cover_image = ''
+      and published_at = '2026-09-07T23:00:00.000Z'
+    union all
+    select 'site-review-update-translations',
+      case when count(*) = 3 and count(distinct lang) = 3
+        and sum(case when lang in ('zh', 'en', 'ja')
+          and length(trim(title)) > 0 and length(trim(summary)) > 0
+          and length(trim(content_markdown)) > 0 then 1 else 0 end) = 3
+      then 1 else 0 end
+    from article_translations
+    where article_id = 'seed-update-2026-09-08-site-review-optimization'
+  `,
   `
     select 'messages-column' as item, count(*) as present
     from pragma_table_info('anonymous_chat_messages') where name = 'ip_hash_key_id'
@@ -365,7 +392,7 @@ export const REMOTE_MIGRATION_VERIFICATION_QUERIES = Object.freeze([
     union all
     select 'article-seed-release-marker', count(*)
     from site_runtime_state
-    where key = 'article_seed_version' and value = '20260902-mobile-blog-retired-r1'
+    where key = 'article_seed_version' and value = '20260908-site-review-r1'
     union all
     select 'game-video-mcp-candidate-update-article',
       case when count(*) = 1 then 1 else 0 end

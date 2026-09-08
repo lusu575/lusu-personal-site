@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import {
   access,
   copyFile,
@@ -8,7 +9,6 @@ import {
   readdir,
   rename,
   rm,
-  stat,
   writeFile
 } from "node:fs/promises";
 import path from "node:path";
@@ -20,6 +20,24 @@ const PROJECT_ROOT = path.resolve(SCRIPT_DIR, "..");
 const POLICY_PATH = path.join(PROJECT_ROOT, "config", "public-production-build.json");
 const HASHED_ASSET_DIR = "_assets";
 const MANIFEST_FILE = "asset-manifest.json";
+
+export function selectBuildRevision({ gitHead, dirty = false, env = process.env }) {
+  const commit = String(gitHead || "").trim().toLowerCase();
+  if (!/^[a-f0-9]{40}$/.test(commit)) throw new Error("Production build requires a complete Git commit SHA");
+  const declaredCommit = String(env.CF_PAGES_COMMIT_SHA || env.GITHUB_SHA || "").trim().toLowerCase();
+  if (declaredCommit && declaredCommit !== commit) {
+    throw new Error("Build environment commit does not match the checked-out Git source");
+  }
+  return { commit, dirty: Boolean(dirty) };
+}
+
+function readBuildRevision() {
+  const git = (args) => execFileSync("git", args, { cwd: PROJECT_ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+  return selectBuildRevision({
+    gitHead: git(["rev-parse", "--verify", "HEAD"]),
+    dirty: Boolean(git(["status", "--porcelain", "--untracked-files=normal"]))
+  });
+}
 const TEXT_EXTENSIONS = new Set([".css", ".html", ".js", ".json", ".map", ".mjs", ".svg", ".txt", ".webmanifest"]);
 const CRITICAL_SOURCE_TREES = [
   "css",
@@ -342,7 +360,7 @@ function replaceModuleUrlExactlyOnce(source, {
 }) {
   const queryPattern = preserveQuery ? "(\\?[^\"']*)?" : "";
   const pattern = new RegExp(
-    `new\\s+URL\\(\\s*([\"'])${escapeRegExp(relativePath)}${queryPattern}\\1\\s*,\\s*import\\.meta\\.url\\s*\\)`,
+    `new\\s+URL\\(\\s*(["'])${escapeRegExp(relativePath)}${queryPattern}\\1\\s*,\\s*import\\.meta\\.url\\s*\\)`,
     "g"
   );
   const matches = [...source.matchAll(pattern)];
@@ -745,7 +763,7 @@ async function assertNoBuildPathLeaks(outputRoot, projectRoot) {
   }
 }
 
-async function createManifest({ outputRoot, policy, policyText, provenance, metrics, entries }) {
+async function createManifest({ outputRoot, policy, policyText, provenance, metrics, entries, release }) {
   const files = [];
   for (const relative of (await walkFiles(outputRoot)).filter((value) => value !== MANIFEST_FILE)) {
     validateOutputPath(relative, policy);
@@ -765,6 +783,7 @@ async function createManifest({ outputRoot, policy, policyText, provenance, metr
     schemaVersion: 1,
     target: "cloudflare-pages-static",
     rootDeploymentCompatible: true,
+    release,
     outputDirectory: policy.outputDirectory,
     inventoryExcludes: [`/${MANIFEST_FILE}`],
     toolchain: { esbuild: esbuildVersion },
@@ -817,7 +836,7 @@ export async function verifyManifestInventory(outputRoot, manifest) {
   }
 }
 
-async function buildCandidate(outputRoot) {
+async function buildCandidate(outputRoot, release) {
   const sourceDigest = await criticalSourceDigest(PROJECT_ROOT);
   const policyText = await readFile(POLICY_PATH, "utf8");
   const policy = JSON.parse(policyText);
@@ -947,7 +966,7 @@ async function buildCandidate(outputRoot) {
     whiteboard: { html: "/tools/whiteboard/index.html", css: whiteboardTool.css, script: whiteboardTool.script },
     quickTransfer: { fragment, css: styleAssets.transfer, script: scriptAssets.transfer }
   };
-  const { manifest, text } = await createManifest({ outputRoot, policy, policyText, provenance, metrics, entries });
+  const { manifest, text } = await createManifest({ outputRoot, policy, policyText, provenance, metrics, entries, release });
   await verifyManifestInventory(outputRoot, manifest);
   return { manifest, manifestText: text };
 }
@@ -977,6 +996,7 @@ async function createCandidateDirectory() {
 }
 
 export async function buildProduction({ verifyReproducible = false } = {}) {
+  const release = readBuildRevision();
   const policy = await readJson(POLICY_PATH);
   const outputDir = path.join(PROJECT_ROOT, policy.outputDirectory);
   assertPathInside(PROJECT_ROOT, outputDir, "Production output");
@@ -984,13 +1004,13 @@ export async function buildProduction({ verifyReproducible = false } = {}) {
   try {
     const first = await createCandidateDirectory();
     candidates.push(first);
-    const firstResult = await buildCandidate(first);
+    const firstResult = await buildCandidate(first, release);
     let promoted = first;
     let result = firstResult;
     if (verifyReproducible) {
       const second = await createCandidateDirectory();
       candidates.push(second);
-      const secondResult = await buildCandidate(second);
+      const secondResult = await buildCandidate(second, release);
       if (firstResult.manifestText !== secondResult.manifestText) {
         throw new Error("Reproducibility check failed: consecutive manifests differ");
       }
@@ -998,6 +1018,9 @@ export async function buildProduction({ verifyReproducible = false } = {}) {
       candidates.splice(candidates.indexOf(first), 1);
       promoted = second;
       result = secondResult;
+    }
+    if (JSON.stringify(readBuildRevision()) !== JSON.stringify(release)) {
+      throw new Error("Git source changed during the production build; previous artifact was left untouched");
     }
     await replaceDirectoryAtomically(promoted, outputDir, { boundary: PROJECT_ROOT });
     candidates.splice(candidates.indexOf(promoted), 1);
@@ -1008,6 +1031,7 @@ export async function buildProduction({ verifyReproducible = false } = {}) {
       sourceBytes: result.manifest.compression.sourceBytes,
       minifiedBytes: result.manifest.compression.minifiedBytes,
       manifestSha256: sha256(result.manifestText),
+      release,
       reproducible: verifyReproducible
     };
   } finally {

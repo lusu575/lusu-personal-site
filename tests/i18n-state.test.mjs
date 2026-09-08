@@ -1,3 +1,4 @@
+import { tagLabels } from "../js/data/article-labels.mjs";
 import assert from "node:assert/strict";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
@@ -255,11 +256,8 @@ test("Tools display names are trilingual while the resources route stays backwar
   assert.match(indexSource, /data-route="resources"[\s\S]*?data-i18n="navResources">工具区<\/span><span class="dock-label-short" data-i18n="dockResources">工具<\/span>/);
   assert.match(mainSource, /const pageIds = \["home", "knowledge", "videos", "resources", "games", "blog", "chatroom", "about"\]/);
   for (const legacyTag of ["资源区", "Resources", "リソース"]) {
-    assert.match(
-      mainSource,
-      new RegExp(`"${legacyTag}": \\{ zh: "工具区", en: "Tools", ja: "ツール" \\}`),
-      `${legacyTag} article tags must render with the Tools display name`
-    );
+    assert.deepEqual(tagLabels[legacyTag], { zh: "工具区", en: "Tools", ja: "ツール" },
+      `${legacyTag} article tags must render with the Tools display name`);
   }
 
   const router = createRouter({

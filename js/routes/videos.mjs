@@ -280,7 +280,7 @@ export function createVideosRoute({
     desc.textContent = item.description || videoUiText("noDescription");
     const meta = document.createElement("div");
     meta.className = "video-meta";
-    [item.author_name, formatArticleDate(item.published_at)].filter(Boolean).forEach((text) => {
+    [item.author_name, formatArticleDate(item.published_at, { includeSeconds: false })].filter(Boolean).forEach((text) => {
       const span = document.createElement("span");
       span.textContent = text;
       meta.appendChild(span);
@@ -319,7 +319,7 @@ export function createVideosRoute({
       const controlledLocalThumbnail = url.origin === window.location.origin
         && /^\/api\/videos\/[^/]+\/thumbnail$/.test(url.pathname);
       return url.protocol === "https:" && (allowed.has(host) || controlledLocalThumbnail) ? url.toString() : "";
-    } catch (error) {
+    } catch {
       return "";
     }
   }
@@ -339,7 +339,7 @@ export function createVideosRoute({
         || host === "b23.tv"
         ? parsed.toString()
         : "";
-    } catch (error) {
+    } catch {
       return "";
     }
   }
@@ -355,7 +355,7 @@ export function createVideosRoute({
       const isYoutube = host === "youtube.com" && parsed.pathname.startsWith("/embed/");
       const isBilibili = host === "player.bilibili.com" && parsed.pathname === "/player.html";
       return isYoutube || isBilibili ? parsed : null;
-    } catch (error) {
+    } catch {
       return null;
     }
   }

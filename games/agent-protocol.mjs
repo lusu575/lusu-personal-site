@@ -47,7 +47,7 @@ export function cloneBoundedJson(value, options = {}) {
   let serialized;
   try {
     serialized = JSON.stringify(value);
-  } catch (error) {
+  } catch (_error) {
     throw new BrowserAgentProtocolError(`${label} could not be serialized.`, "GAME_JSON_INVALID");
   }
   const maxBytes = options.maxBytes || 64 * 1024;

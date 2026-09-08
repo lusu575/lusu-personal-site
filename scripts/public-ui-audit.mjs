@@ -983,7 +983,7 @@ async function auditResourcesAndGamesHierarchy(client, origin, viewport) {
   await emulate(client, viewport);
   await navigateFresh(client, `${origin}/?lang=zh&wallpaper=${fixedTheme}&welcome=0#resources`, `resources-games-hierarchy-${viewport.width}x${viewport.height}`);
   await stable(client, "resources");
-  await waitFor(client, `document.querySelectorAll('#resource-list > .resource-card').length===2`, "ready resource cards");
+  await waitFor(client, `document.querySelectorAll('#resource-list > .resource-card').length===${resourceDisplayLabels.zh.cards.length}`, "ready resource cards");
   const resources = await evaluate(client, `(() => {
     const box=(element)=>{const rect=element?.getBoundingClientRect();return rect?{top:rect.top,right:rect.right,bottom:rect.bottom,left:rect.left,width:rect.width,height:rect.height}:null;};
     const cards=[...document.querySelectorAll('#resource-list > .resource-card')];
@@ -1187,12 +1187,25 @@ async function auditModalIsolation(client, origin, viewport, { lang, kind, motio
   }
   const modalId = kind === "welcome" ? "welcome-modal" : "video-modal";
   const route = kind === "welcome" ? "home" : "videos";
-  const welcome = kind === "welcome" ? "1" : "0";
-  await client.send("Page.navigate", { url: `${origin}/?lang=${lang}&wallpaper=${fixedTheme}&welcome=${welcome}#${route}` });
+  await client.send("Page.navigate", { url: `${origin}/?lang=${lang}&wallpaper=${fixedTheme}#${route}` });
   await stable(client, route);
   await evaluate(client, `window.LusuUiMotion?.setMode?.(${JSON.stringify(motion)}); true`);
+  let welcomeEntry = null;
   if (kind === "welcome") {
-    await waitFor(client, `document.getElementById('welcome-modal')?.hidden===false`, "welcome modal open");
+    welcomeEntry = await evaluate(client, `(() => {
+      const triggers=[...document.querySelectorAll('[data-open-welcome]')];
+      const trigger=triggers[0]; const rect=trigger?.getBoundingClientRect();
+      const hit=rect?document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2):null;
+      window.__auditWelcomeModalTrigger=trigger;
+      trigger?.focus({preventScroll:true});
+      return {count:triggers.length,hidden:document.getElementById('welcome-modal')?.hidden,focused:document.activeElement===trigger,
+        hit:Boolean(trigger&&hit&&(trigger===hit||trigger.contains(hit))),label:trigger?.getAttribute('aria-label')||'',
+        rect:rect?{left:rect.left,top:rect.top,right:rect.right,bottom:rect.bottom,width:rect.width,height:rect.height}:null};
+    })()`);
+    // Enter needs its character/default-action phase to activate a native button.
+    await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", text: "\r", unmodifiedText: "\r", windowsVirtualKeyCode: 13 });
+    await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+    await waitFor(client, `document.getElementById('welcome-modal')?.hidden===false`, "manual welcome modal open");
   } else {
     await waitFor(client, `Boolean(document.querySelector('.card-action[data-video-id="${auditVideo.video_id}"]'))`, "controlled video trigger");
     await evaluate(client, `(() => { const trigger=document.querySelector('.card-action[data-video-id="${auditVideo.video_id}"]'); window.__auditVideoModalTrigger=trigger; trigger.focus({preventScroll:true}); trigger.click(); return true; })()`);
@@ -1236,22 +1249,36 @@ async function auditModalIsolation(client, origin, viewport, { lang, kind, motio
   await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
   const immediateClose = await evaluate(client, `(() => { const surface=document.getElementById(${JSON.stringify(modalId)}); const roots=[...document.querySelectorAll('[data-modal-background]')]; return { hidden:surface?.hidden, closing:surface?.getAttribute('data-ui-closing')||'', backgroundsInert:roots.every((item)=>item.inert) }; })()`);
   await waitFor(client, `document.getElementById(${JSON.stringify(modalId)})?.hidden===true`, `${kind} modal Escape close`);
-  const closed = await evaluate(client, `(() => { const surface=document.getElementById(${JSON.stringify(modalId)}); const roots=[...document.querySelectorAll('[data-modal-background]')]; return { hidden:surface?.hidden, closing:surface?.getAttribute('data-ui-closing')||'', backgroundsReleased:roots.every((item)=>!item.inert), focusId:document.activeElement?.id||'', focusIsTrigger:${kind === "video" ? "document.activeElement===window.__auditVideoModalTrigger" : "false"} }; })()`);
+  const closed = await evaluate(client, `(() => { const surface=document.getElementById(${JSON.stringify(modalId)}); const roots=[...document.querySelectorAll('[data-modal-background]')]; return { hidden:surface?.hidden, closing:surface?.getAttribute('data-ui-closing')||'', backgroundsReleased:roots.every((item)=>!item.inert), focusId:document.activeElement?.id||'', focusIsTrigger:${kind === "video" ? "document.activeElement===window.__auditVideoModalTrigger" : "document.activeElement===window.__auditWelcomeModalTrigger"} }; })()`);
+
+  let pointerClose = null;
+  if (motion === "full") {
+    pointerClose = await evaluate(client, `(() => {
+      const trigger=${kind === "video" ? "window.__auditVideoModalTrigger" : "window.__auditWelcomeModalTrigger"};
+      trigger?.focus({preventScroll:true}); trigger?.click();
+      const surface=document.getElementById(${JSON.stringify(modalId)});
+      const close=surface?.querySelector('button[data-close-welcome],button[data-close-modal]');
+      close?.dispatchEvent(new MouseEvent('click',{bubbles:true,detail:1}));
+      return {hidden:surface?.hidden,closing:surface?.getAttribute('data-ui-closing')||'',backgroundsInert:[...document.querySelectorAll('[data-modal-background]')].every((item)=>item.inert)};
+    })()`);
+    await waitFor(client, `document.getElementById(${JSON.stringify(modalId)})?.hidden===true`, `${kind} modal pointer close`);
+  }
 
   const failures = [];
+  if (welcomeEntry && (welcomeEntry.count !== 1 || !welcomeEntry.hidden || !welcomeEntry.focused || !welcomeEntry.hit || !welcomeEntry.label)) failures.push(`manual welcome entry is not unique and reachable: ${JSON.stringify(welcomeEntry)}`);
+  if (welcomeEntry && viewport.mobile && (!welcomeEntry.rect || welcomeEntry.rect.width < 44 || welcomeEntry.rect.height < 44 || welcomeEntry.rect.left < 0 || welcomeEntry.rect.top < 0 || welcomeEntry.rect.right > viewport.width || welcomeEntry.rect.bottom > viewport.height)) failures.push(`mobile welcome entry is invalid: ${JSON.stringify(welcomeEntry.rect)}`);
   if (open.hidden !== false || open.backgroundCount !== 2 || !open.backgroundsInert || open.dialogTabIndex !== "-1" || !open.activeInside) failures.push(`open isolation is wrong: ${JSON.stringify(open)}`);
   if (backgroundExposed) failures.push("inert background remained exposed in the accessibility tree");
   if (!shiftWrapped || !tabWrapped) failures.push(`dialog focus did not wrap in both directions: ${JSON.stringify({ shiftWrapped, tabWrapped })}`);
   if (!backgroundFocusBlocked) failures.push("programmatic focus escaped into the inert background");
   if (viewport.mobile && (!open.closeRect || open.closeRect.width < 44 || open.closeRect.height < 44 || open.closeRect.left < 0 || open.closeRect.top < 0 || open.closeRect.right > viewport.width || open.closeRect.bottom > viewport.height)) failures.push(`mobile close target is invalid: ${JSON.stringify(open.closeRect)}`);
-  if (motion === "full") {
-    if (immediateClose.hidden !== false || immediateClose.closing !== "true" || !immediateClose.backgroundsInert) failures.push(`full-motion close released isolation before commit: ${JSON.stringify(immediateClose)}`);
-  } else if (immediateClose.hidden !== true || immediateClose.closing || immediateClose.backgroundsInert) {
-    failures.push(`reduced/off close was not immediate: ${JSON.stringify(immediateClose)}`);
+  if (immediateClose.hidden !== true || immediateClose.closing || immediateClose.backgroundsInert) {
+    failures.push(`keyboard Escape close was not immediate: ${JSON.stringify(immediateClose)}`);
   }
+  if (pointerClose && (pointerClose.hidden !== false || pointerClose.closing !== "true" || !pointerClose.backgroundsInert)) failures.push(`full-motion pointer close released isolation before commit: ${JSON.stringify(pointerClose)}`);
   if (!closed.hidden || closed.closing || !closed.backgroundsReleased) failures.push(`closed isolation is wrong: ${JSON.stringify(closed)}`);
-  if (kind === "video" ? !closed.focusIsTrigger : closed.focusId !== "home-title") failures.push(`${kind} modal focus restoration is wrong: ${JSON.stringify(closed)}`);
-  return { kind: "modal", name: `${kind}-${motion}-${lang}`, shell: viewport.mobile ? "mobile" : "desktop", viewport, lang, screenshotFile, open, immediateClose, closed, shiftWrapped, tabWrapped, backgroundFocusBlocked, backgroundExposed, failures, status: failures.length ? "FAIL" : "PASS" };
+  if (!closed.focusIsTrigger) failures.push(`${kind} modal focus restoration is wrong: ${JSON.stringify(closed)}`);
+  return { kind: "modal", name: `${kind}-${motion}-${lang}`, shell: viewport.mobile ? "mobile" : "desktop", viewport, lang, screenshotFile, welcomeEntry, open, immediateClose, pointerClose, closed, shiftWrapped, tabWrapped, backgroundFocusBlocked, backgroundExposed, failures, status: failures.length ? "FAIL" : "PASS" };
 }
 
 async function auditRouteLifecycle(client, origin, viewport) {
@@ -1565,7 +1592,7 @@ async function auditMalformedHistoryState(client, origin, viewport) {
 }
 
 function caretIsTransparent(value) {
-  return value === "transparent" || /^rgba\([^\)]*,\s*0(?:\.0+)?\)$/.test(String(value).replaceAll(" ", ""));
+  return value === "transparent" || /^rgba\([^)]*,\s*0(?:\.0+)?\)$/.test(String(value).replaceAll(" ", ""));
 }
 
 async function auditTransferCaret(client, origin, viewport) {
@@ -3183,6 +3210,15 @@ async function captureViewportScreenshot(client, output, file) {
   return file;
 }
 
+async function setResourceDetailsForAudit(client, open) {
+  await evaluate(client, `(() => {
+    const details=[...document.querySelectorAll('#resource-list .resource-details')];
+    details.forEach((item)=>{if(item.open!==${Boolean(open)})item.querySelector('summary')?.click();});
+    return details.length;
+  })()`);
+  await evaluate(client, `new Promise((resolve)=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
+}
+
 async function readResourceVisualState(client) {
   return evaluate(client, `(() => {
     const round = (value) => Math.round(Number(value || 0) * 100) / 100;
@@ -3192,7 +3228,7 @@ async function readResourceVisualState(client) {
       return { left:round(value.left), top:round(value.top), right:round(value.right), bottom:round(value.bottom), width:round(value.width), height:round(value.height) };
     };
     const visible = (node) => {
-      if (!node || node.hidden) return false;
+      if (!node || node.hidden || !node.checkVisibility({ checkOpacity:true, checkVisibilityCSS:true })) return false;
       const style = getComputedStyle(node);
       const box = node.getBoundingClientRect();
       return style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity) > .01 && box.width > 0 && box.height > 0;
@@ -3218,7 +3254,7 @@ async function readResourceVisualState(client) {
         selector,
         exists:Boolean(node),
         visible:isVisible,
-        text:node?.textContent?.replace(/\s+/g, ' ').trim() || '',
+        text:node?.textContent?.replace(/\\s+/g, ' ').trim() || '',
         ariaLabel:node?.getAttribute?.('aria-label') || '',
         box,
         display:style?.display || '',
@@ -3243,7 +3279,9 @@ async function readResourceVisualState(client) {
       const title = main?.querySelector('h2');
       const icon = title?.querySelector('.resource-icon,.resource-icon-image');
       const description = main?.querySelector(':scope > p');
-      const meta = main?.querySelector('.meta-row');
+      const details = main?.querySelector('.resource-details');
+      const summary = details?.querySelector('summary');
+      const meta = main?.querySelector('.resource-facts');
       const action = card.querySelector(':scope > .card-action');
       const boxes = {
         card:cardRect,
@@ -3251,7 +3289,8 @@ async function readResourceVisualState(client) {
         title:rect(title),
         icon:rect(icon),
         description:rect(description),
-        meta:rect(meta),
+        meta:visible(meta)?rect(meta):null,
+        summary:rect(summary),
         action:rect(action)
       };
       const children = [boxes.main, boxes.action].filter(Boolean);
@@ -3260,6 +3299,11 @@ async function readResourceVisualState(client) {
         title:title?.textContent?.trim() || '',
         boxes,
         contained:children.every((child) => contains(cardRect, child)),
+        detailsOpen:details?.open===true,
+        detailsContained:!details?.open||[...details.querySelectorAll('.resource-facts,.resource-fact,.resource-details-copy')].every((child)=>contains(cardRect,rect(child))),
+        factsCount:meta?.children.length||0,
+        factsVisible:visible(meta),
+        summaryMin44:Boolean(boxes.summary&&boxes.summary.width>=43.5&&boxes.summary.height>=43.5),
         horizontalOverflow:card.scrollWidth > card.clientWidth + 1 || main?.scrollWidth > main?.clientWidth + 1,
         intersections:{
           titleDescription:overlap(boxes.title, boxes.description),
@@ -3375,7 +3419,7 @@ function checkResourceChromeRetention(viewport, initialState, currentState, labe
   return failures;
 }
 
-function checkResourceVisualState(viewport, state, { transferOpen = false, lang = 'zh' } = {}) {
+function checkResourceVisualState(viewport, state, { transferOpen = false, detailsOpen = false, lang = 'zh' } = {}) {
   const failures = [];
   const expectedLabels = resourceDisplayLabels[lang];
   if (state.viewport.width !== viewport.width || state.viewport.height !== viewport.height) failures.push(`exact viewport is ${state.viewport.width}x${state.viewport.height}, expected ${viewport.width}x${viewport.height}`);
@@ -3408,6 +3452,9 @@ function checkResourceVisualState(viewport, state, { transferOpen = false, lang 
     if (card.horizontalOverflow) failures.push(`Resource card ${card.index} has horizontal overflow`);
     if (Object.values(card.intersections).some((area) => area > 1)) failures.push(`Resource card ${card.index} children intersect: ${JSON.stringify(card.intersections)}`);
     if (!card.actionMin44) failures.push(`Resource card ${card.index} action is below 44px: ${JSON.stringify(card.boxes.action)}`);
+    if (!card.summaryMin44) failures.push(`Resource card ${card.index} details summary is below 44px: ${JSON.stringify(card.boxes.summary)}`);
+    if (card.detailsOpen !== detailsOpen || card.factsVisible !== detailsOpen || card.factsCount < 1) failures.push(`Resource card ${card.index} details do not match the requested disclosure state: ${JSON.stringify(card)}`);
+    if (!card.detailsContained) failures.push(`Resource card ${card.index} expanded details escape the card`);
   }
   if (transferOpen) {
     if (!state.transfer) failures.push('Quick Transfer did not expose the sign-in task');
@@ -3458,7 +3505,11 @@ async function auditResourcesVisualReview(client, origin, output) {
       const state = await readResourceVisualState(client);
       const screenshotFile = await captureViewportScreenshot(client, output, `resources-${lang}-${viewport.width}x${viewport.height}.png`);
       const failures = checkResourceVisualState(viewport, state, { lang });
-      results.push({ kind:'resource-visual-review', name:`resources-${lang}-${viewport.width}x${viewport.height}`, route:'resources', shell:viewport.mobile ? 'mobile' : 'desktop', viewport, lang, screenshotFile, state, failures, status:failures.length ? 'FAIL' : 'PASS' });
+      await setResourceDetailsForAudit(client, true);
+      const expandedState = await readResourceVisualState(client);
+      failures.push(...checkResourceVisualState(viewport, expandedState, { detailsOpen:true, lang }));
+      await setResourceDetailsForAudit(client, false);
+      results.push({ kind:'resource-visual-review', name:`resources-${lang}-${viewport.width}x${viewport.height}`, route:'resources', shell:viewport.mobile ? 'mobile' : 'desktop', viewport, lang, screenshotFile, state, expandedState, failures, status:failures.length ? 'FAIL' : 'PASS' });
 
       const transferOpen = await openQuickTransferFromCta(client);
       await settleScreenshotState(client);
@@ -4153,7 +4204,7 @@ async function auditControlledVideoFlow(client, origin, viewport, output) {
   await waitFor(client, `Boolean(document.querySelector('#video-frame iframe'))`, "retried video iframe");
   await evaluate(client, `document.querySelector('#video-frame iframe')?.dispatchEvent(new Event('load')); true`);
   await waitFor(client, `document.getElementById('video-frame')?.dataset.videoPlayerState==='ready'`, "retried video ready state");
-  const iframeIdentity = await evaluate(client, `(() => { window.__auditControlledIframe=document.querySelector('#video-frame iframe'); document.getElementById('video-window-maximize')?.click(); return true; })()`);
+  await evaluate(client, `(() => { window.__auditControlledIframe=document.querySelector('#video-frame iframe'); document.getElementById('video-window-maximize')?.click(); return true; })()`);
   await waitFrames(client, 3);
   const maximized = await evaluate(client, `(() => {
     const modal=document.getElementById('video-modal');
@@ -4548,52 +4599,57 @@ async function auditResponsiveReleaseMatrix(client, origin) {
       for (const route of auditRoutes) {
         await setAuditRoute(client, route);
         await stable(client, route);
-        const state = await evaluate(client, `(() => {
-          const round=(value)=>Math.round(Number(value||0)*100)/100;
-          const rect=(element)=>{if(!element)return null;const box=element.getBoundingClientRect();return {top:round(box.top),right:round(box.right),bottom:round(box.bottom),left:round(box.left),width:round(box.width),height:round(box.height)};};
-          const overlap=(a,b)=>!a||!b?0:round(Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left))*Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)));
-          const visible=(element)=>{const style=getComputedStyle(element);const box=element.getBoundingClientRect();return !element.hidden&&style.display!=='none'&&style.visibility!=='hidden'&&box.width>0&&box.height>0;};
-          const page=document.querySelector('.page.active');
-          const win=page?.querySelector('.xp-window')||page;
-          const dock=document.querySelector('.xp-taskbar');
-          const topbar=document.querySelector('.xp-topbar');
-          const interactive=[...page.querySelectorAll('button,input,textarea,select,summary,a[href],[role="button"]')].filter(visible);
-          const touchTargets=interactive.filter((element)=>element.matches('.close-button,.mobile-home-button,.card-action,.xp-button,.chat-send-button,.about-social-link,[data-account-toggle]'));
-          const undersized=touchTargets.flatMap((element)=>{const box=rect(element);return box.width<43.5||box.height<43.5?[{selector:element.id||String(element.className||element.tagName).slice(0,100),box}]:[];});
-          const cards=[...page.querySelectorAll('.resource-card,.video-card,.game-card,.blog-card')].filter(visible);
-          const cardContainment=cards.flatMap((card,index)=>[...card.querySelectorAll('h2,h3,p,.card-action,.resource-meta,.game-meta')].filter(visible).flatMap((child)=>{const outer=rect(card),inner=rect(child);return inner.left<outer.left-1||inner.right>outer.right+1||inner.top<outer.top-1||inner.bottom>outer.bottom+1?[{card:index,child:child.className||child.tagName,outer,inner}]:[];}));
-          const cardRects=cards.map(rect);
-          const cardOverlaps=[];
-          for(let i=0;i<cardRects.length;i+=1)for(let j=i+1;j<cardRects.length;j+=1){const area=overlap(cardRects[i],cardRects[j]);if(area>1)cardOverlaps.push({a:i,b:j,area});}
-          const forms=[...page.querySelectorAll('input,textarea,select')].filter(visible).map((control)=>({id:control.id,labelled:Boolean(control.labels?.length||control.getAttribute('aria-label')||control.getAttribute('aria-labelledby'))}));
-          const topChildren=[...document.querySelectorAll('.xp-topbar > .brand-button,.xp-topbar > .topbar-actions')].filter(visible).map(rect);
-          const taskbarParts=[...document.querySelectorAll('.xp-taskbar > .start-button,.xp-taskbar > .mobile-dock-scroll,.xp-taskbar > .taskbar-tabs,.xp-taskbar > .taskbar-clock')].filter(visible).map(rect);
-          const siblingOverlap=(items)=>items.flatMap((first,index)=>items.slice(index+1).flatMap((second,offset)=>{const area=overlap(first,second);return area>1?[{a:index,b:index+offset+1,area}]:[];}));
-          const scrolling=document.scrollingElement||document.documentElement;
-          const scrollables=[...page.querySelectorAll('*')].filter(visible).filter((element)=>{const style=getComputedStyle(element);return ['auto','scroll'].includes(style.overflowY)&&element.scrollHeight>element.clientHeight+1;}).map((element)=>({id:element.id||'',className:String(element.className||'').slice(0,100),clientHeight:element.clientHeight,scrollHeight:element.scrollHeight}));
-          const aboutLinks=[...document.querySelectorAll('#about .about-social-link')].filter(visible).map((link)=>({label:link.getAttribute('aria-label')||'',title:link.title||'',target:link.target,rel:link.rel,box:rect(link)}));
-          return {route:document.body.dataset.route,lang:document.documentElement.lang,viewport:{width:innerWidth,height:innerHeight},page:rect(page),window:rect(win),dock:rect(dock),topbar:rect(topbar),document:{scrollTop:scrolling.scrollTop,clientHeight:scrolling.clientHeight,scrollHeight:scrolling.scrollHeight},h1:[...page.querySelectorAll('h1')].map((item)=>item.textContent.trim()),undersized,cardContainment,cardOverlaps,unlabelled:forms.filter((item)=>!item.labelled),topbarOverlaps:siblingOverlap(topChildren),taskbarOverlaps:siblingOverlap(taskbarParts),scrollables,aboutLinks,runtimeErrors:[...(window.__auditRuntimeErrors||[])]};
-        })()`);
-        const failures = [];
-        if (state.route !== route) failures.push(`route ${state.route} !== ${route}`);
-        if (state.viewport.width !== viewport.width || state.viewport.height !== viewport.height) failures.push(`viewport ${state.viewport.width}x${state.viewport.height} !== ${viewport.width}x${viewport.height}`);
-        if (state.h1.length !== 1 || !state.h1[0]) failures.push(`active H1 contract failed: ${JSON.stringify(state.h1)}`);
-        if (!state.window || state.window.width <= 0 || state.window.height <= 0) failures.push("active window has no readable capacity");
-        if (state.window && (state.window.left < -1 || state.window.right > viewport.width + 1)) failures.push(`active window leaves viewport: ${JSON.stringify(state.window)}`);
-        if (viewport.mobile && route !== "home" && state.window?.height < Number(state.page?.height || viewport.height) * .8) failures.push(`mobile App height ${state.window?.height}px is below 80% of the available page ${state.page?.height}px`);
-        if (viewport.mobile && state.undersized.length) failures.push(`primary 44px targets failed: ${JSON.stringify(state.undersized)}`);
-        if (state.cardContainment.length) failures.push(`card children escape their cards: ${JSON.stringify(state.cardContainment)}`);
-        if (state.cardOverlaps.length) failures.push(`cards intersect: ${JSON.stringify(state.cardOverlaps)}`);
-        if (state.unlabelled.length) failures.push(`visible form controls have no label: ${JSON.stringify(state.unlabelled)}`);
-        if (state.topbarOverlaps.length || state.taskbarOverlaps.length) failures.push(`shell controls overlap: ${JSON.stringify({top:state.topbarOverlaps,bottom:state.taskbarOverlaps})}`);
-        if (state.document.scrollTop !== 0) failures.push(`document scrolled to ${state.document.scrollTop}`);
-        if (route === "about") {
-          if (!state.aboutLinks.length || state.aboutLinks.some((link) => !link.label || !link.title || link.target !== "_blank" || !/noopener/.test(link.rel))) failures.push(`About external-link labels are incomplete: ${JSON.stringify(state.aboutLinks)}`);
-          const aboutWaste = state.window.height - Math.max(...state.aboutLinks.map((link) => link.box.bottom), state.window.top);
-          if (!viewport.mobile && aboutWaste > viewport.height * .35) failures.push(`About window has ${Math.round(aboutWaste)}px unexplained trailing height`);
+        for (const disclosure of route === "resources" ? ["closed", "expanded"] : ["default"]) {
+          if (route === "resources") await setResourceDetailsForAudit(client, disclosure === "expanded");
+          const state = await evaluate(client, `(() => {
+            const round=(value)=>Math.round(Number(value||0)*100)/100;
+            const rect=(element)=>{if(!element)return null;const box=element.getBoundingClientRect();return {top:round(box.top),right:round(box.right),bottom:round(box.bottom),left:round(box.left),width:round(box.width),height:round(box.height)};};
+            const overlap=(a,b)=>!a||!b?0:round(Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left))*Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)));
+            const visible=(element)=>{const style=getComputedStyle(element);const box=element.getBoundingClientRect();return !element.hidden&&element.checkVisibility({checkOpacity:true,checkVisibilityCSS:true})&&style.display!=='none'&&style.visibility!=='hidden'&&box.width>0&&box.height>0;};
+            const page=document.querySelector('.page.active');
+            const win=page?.querySelector('.xp-window')||page;
+            const dock=document.querySelector('.xp-taskbar');
+            const topbar=document.querySelector('.xp-topbar');
+            const interactive=[...page.querySelectorAll('button,input,textarea,select,summary,a[href],[role="button"]')].filter(visible);
+            const touchTargets=interactive.filter((element)=>element.matches('.close-button,.mobile-home-button,.card-action,.xp-button,.chat-send-button,.about-social-link,[data-account-toggle],.resource-details > summary'));
+            const undersized=touchTargets.flatMap((element)=>{const box=rect(element);return box.width<43.5||box.height<43.5?[{selector:element.id||String(element.className||element.tagName).slice(0,100),box}]:[];});
+            const cards=[...page.querySelectorAll('.resource-card,.video-card,.game-card,.blog-card')].filter(visible);
+            const cardContainment=cards.flatMap((card,index)=>[...card.querySelectorAll('h2,h3,p,.card-action,.resource-meta,.resource-facts,.resource-fact,.resource-details > summary,.game-meta')].filter(visible).flatMap((child)=>{const outer=rect(card),inner=rect(child);return inner.left<outer.left-1||inner.right>outer.right+1||inner.top<outer.top-1||inner.bottom>outer.bottom+1?[{card:index,child:child.className||child.tagName,outer,inner}]:[];}));
+            const resourceDetails=[...page.querySelectorAll('.resource-details')].map((details)=>({open:details.open,factsVisible:Boolean(details.querySelector('.resource-facts')&&visible(details.querySelector('.resource-facts')))}));
+            const cardRects=cards.map(rect);
+            const cardOverlaps=[];
+            for(let i=0;i<cardRects.length;i+=1)for(let j=i+1;j<cardRects.length;j+=1){const area=overlap(cardRects[i],cardRects[j]);if(area>1)cardOverlaps.push({a:i,b:j,area});}
+            const forms=[...page.querySelectorAll('input,textarea,select')].filter(visible).map((control)=>({id:control.id,labelled:Boolean(control.labels?.length||control.getAttribute('aria-label')||control.getAttribute('aria-labelledby'))}));
+            const topChildren=[...document.querySelectorAll('.xp-topbar > .brand-button,.xp-topbar > .topbar-actions')].filter(visible).map(rect);
+            const taskbarParts=[...document.querySelectorAll('.xp-taskbar > .start-button,.xp-taskbar > .mobile-dock-scroll,.xp-taskbar > .taskbar-tabs,.xp-taskbar > .taskbar-clock')].filter(visible).map(rect);
+            const siblingOverlap=(items)=>items.flatMap((first,index)=>items.slice(index+1).flatMap((second,offset)=>{const area=overlap(first,second);return area>1?[{a:index,b:index+offset+1,area}]:[];}));
+            const scrolling=document.scrollingElement||document.documentElement;
+            const scrollables=[...page.querySelectorAll('*')].filter(visible).filter((element)=>{const style=getComputedStyle(element);return ['auto','scroll'].includes(style.overflowY)&&element.scrollHeight>element.clientHeight+1;}).map((element)=>({id:element.id||'',className:String(element.className||'').slice(0,100),clientHeight:element.clientHeight,scrollHeight:element.scrollHeight}));
+            const aboutLinks=[...document.querySelectorAll('#about .about-social-link')].filter(visible).map((link)=>({label:link.getAttribute('aria-label')||'',title:link.title||'',target:link.target,rel:link.rel,box:rect(link)}));
+            return {route:document.body.dataset.route,lang:document.documentElement.lang,viewport:{width:innerWidth,height:innerHeight},page:rect(page),window:rect(win),dock:rect(dock),topbar:rect(topbar),document:{scrollTop:scrolling.scrollTop,clientHeight:scrolling.clientHeight,scrollHeight:scrolling.scrollHeight},h1:[...page.querySelectorAll('h1')].map((item)=>item.textContent.trim()),undersized,cardContainment,cardOverlaps,resourceDetails,unlabelled:forms.filter((item)=>!item.labelled),topbarOverlaps:siblingOverlap(topChildren),taskbarOverlaps:siblingOverlap(taskbarParts),scrollables,aboutLinks,runtimeErrors:[...(window.__auditRuntimeErrors||[])]};
+          })()`);
+          const failures = [];
+          if (state.route !== route) failures.push(`route ${state.route} !== ${route}`);
+          if (state.viewport.width !== viewport.width || state.viewport.height !== viewport.height) failures.push(`viewport ${state.viewport.width}x${state.viewport.height} !== ${viewport.width}x${viewport.height}`);
+          if (state.h1.length !== 1 || !state.h1[0]) failures.push(`active H1 contract failed: ${JSON.stringify(state.h1)}`);
+          if (!state.window || state.window.width <= 0 || state.window.height <= 0) failures.push("active window has no readable capacity");
+          if (state.window && (state.window.left < -1 || state.window.right > viewport.width + 1)) failures.push(`active window leaves viewport: ${JSON.stringify(state.window)}`);
+          if (viewport.mobile && route !== "home" && state.window?.height < Number(state.page?.height || viewport.height) * .8) failures.push(`mobile App height ${state.window?.height}px is below 80% of the available page ${state.page?.height}px`);
+          if (viewport.mobile && state.undersized.length) failures.push(`primary 44px targets failed: ${JSON.stringify(state.undersized)}`);
+          if (state.cardContainment.length) failures.push(`card children escape their cards: ${JSON.stringify(state.cardContainment)}`);
+          if (state.cardOverlaps.length) failures.push(`cards intersect: ${JSON.stringify(state.cardOverlaps)}`);
+          if (route === "resources" && (state.resourceDetails.length !== resourceDisplayLabels[lang].cards.length || state.resourceDetails.some((item) => item.open !== (disclosure === "expanded") || item.factsVisible !== (disclosure === "expanded")))) failures.push(`resource facts disclosure did not match ${disclosure}: ${JSON.stringify(state.resourceDetails)}`);
+          if (state.unlabelled.length) failures.push(`visible form controls have no label: ${JSON.stringify(state.unlabelled)}`);
+          if (state.topbarOverlaps.length || state.taskbarOverlaps.length) failures.push(`shell controls overlap: ${JSON.stringify({top:state.topbarOverlaps,bottom:state.taskbarOverlaps})}`);
+          if (state.document.scrollTop !== 0) failures.push(`document scrolled to ${state.document.scrollTop}`);
+          if (route === "about") {
+            if (!state.aboutLinks.length || state.aboutLinks.some((link) => !link.label || !link.title || link.target !== "_blank" || !/noopener/.test(link.rel))) failures.push(`About external-link labels are incomplete: ${JSON.stringify(state.aboutLinks)}`);
+            const aboutWaste = state.window.height - Math.max(...state.aboutLinks.map((link) => link.box.bottom), state.window.top);
+            if (!viewport.mobile && aboutWaste > viewport.height * .35) failures.push(`About window has ${Math.round(aboutWaste)}px unexplained trailing height`);
+          }
+          if (state.runtimeErrors.length) failures.push(`runtime errors: ${state.runtimeErrors.join(" | ")}`);
+          results.push({ kind:"responsive-release-matrix", name:`${route}-${lang}-${viewport.width}x${viewport.height}${disclosure === "expanded" ? "-expanded" : ""}`, route, lang, disclosure, shell:viewport.mobile?"mobile":"desktop", viewport, state, failures, status:failures.length?"FAIL":"PASS" });
         }
-        if (state.runtimeErrors.length) failures.push(`runtime errors: ${state.runtimeErrors.join(" | ")}`);
-        results.push({ kind:"responsive-release-matrix", name:`${route}-${lang}-${viewport.width}x${viewport.height}`, route, lang, shell:viewport.mobile?"mobile":"desktop", viewport, state, failures, status:failures.length?"FAIL":"PASS" });
       }
     }
   }
@@ -4638,24 +4694,37 @@ async function auditHomeThemeAndInteractionContracts(client, origin, output) {
   await client.send("Page.navigate", { url:`${origin}/?lang=zh&wallpaper=day&welcome=0&audit-welcome-setup=1` });
   await stable(client, "home");
   await evaluate(client, `(() => { localStorage.setItem('lusu-welcome-day','2000-01-01'); sessionStorage.removeItem('lusu-welcome-day'); return true; })()`);
-  await client.send("Page.navigate", { url:`${origin}/?lang=zh&wallpaper=day&audit-welcome-daily=1` });
+  await client.send("Page.navigate", { url:`${origin}/?lang=zh&wallpaper=day&audit-welcome-default=1` });
   await stable(client, "home");
-  await waitFor(client, `document.getElementById('welcome-modal')?.hidden===false`, "first daily welcome dialog");
+  const initiallyHidden = await evaluate(client, `document.getElementById('welcome-modal')?.hidden===true`);
+  if (!initiallyHidden) failures.push("welcome opened on a default Home visit without an explicit request");
+  await evaluate(client, `(() => {const button=document.querySelector('[data-open-welcome]');button?.focus({preventScroll:true});button?.click();return true;})()`);
+  await waitFor(client, `document.getElementById('welcome-modal')?.hidden===false`, "manual welcome dialog");
   const welcome = await evaluate(client, `(() => {const rows=[...document.querySelectorAll('#recent-updates li')];const now=new Date();const localDay=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');return {count:rows.length,rows:rows.map((row)=>({title:row.querySelector('strong')?.textContent.trim()||'',date:row.querySelector('small')?.textContent.trim()||'',label:row.querySelector('a')?.getAttribute('aria-label')||''})),closeHeight:document.querySelector('[data-close-welcome]')?.getBoundingClientRect().height||0,localDay,storedDay:localStorage.getItem('lusu-welcome-day'),sessionDay:sessionStorage.getItem('lusu-welcome-day')};})()`);
   if (welcome.count !== 3 || welcome.rows.some((row) => !row.title || !/^\d{4}[./-]\d{2}[./-]\d{2}/.test(row.date) || !row.label.includes(row.title))) failures.push(`welcome must expose three complete title/date rows: ${JSON.stringify(welcome)}`);
   if (welcome.storedDay !== welcome.localDay || welcome.sessionDay !== welcome.localDay) failures.push(`welcome did not record the local day when first opened: ${JSON.stringify(welcome)}`);
   await evaluate(client, `document.querySelector('#welcome-modal [data-close-welcome]')?.click(); true`);
   await waitFor(client, `document.getElementById('welcome-modal')?.hidden===true`, "welcome close persistence");
+  const manualFocusRestored = await evaluate(client, `document.activeElement===document.querySelector('[data-open-welcome]')`);
+  if (!manualFocusRestored) failures.push("manual welcome did not return focus to its button");
+  await client.send("Page.navigate", { url:`${origin}/articles/${auditArticles[0].slug}?lang=zh&wallpaper=day&audit-welcome-direct=1` });
+  await stable(client, "article");
+  const directArticleHidden = await evaluate(client, `document.getElementById('welcome-modal')?.hidden===true`);
+  if (!directArticleHidden) failures.push("welcome interrupted a direct article link");
+  await client.send("Page.navigate", { url:`${origin}/?lang=zh&wallpaper=day&welcome=1&audit-welcome-explicit=1` });
+  await stable(client, "home");
+  const explicitPreviewOpened = await evaluate(client, `document.getElementById('welcome-modal')?.hidden===false`);
+  if (!explicitPreviewOpened) failures.push("explicit welcome=1 preview did not open the welcome dialog");
   await client.send("Page.navigate", { url:`${origin}/?lang=zh&wallpaper=day&audit-welcome-return=1` });
   await stable(client, "home");
   const persisted = await evaluate(client, `document.getElementById('welcome-modal')?.hidden===true`);
-  if (!persisted) failures.push("daily welcome appeared more than once on the same local day");
+  if (!persisted) failures.push("welcome reopened on a returning visit without an explicit request");
   const roving = await evaluate(client, `(() => {const icons=[...document.querySelectorAll('.desktop-icons .desktop-icon')].filter((item)=>!item.hidden&&item.getClientRects().length);const first=icons.find((item)=>item.tabIndex===0);first?.focus();first?.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));const right=document.activeElement?.dataset.route||'';document.activeElement?.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true}));return {zero:icons.filter((item)=>item.tabIndex===0).length,first:first?.dataset.route||'',right,down:document.activeElement?.dataset.route||''};})()`);
   if (roving.zero !== 1 || !roving.first || !roving.right || roving.right === roving.first || !roving.down || roving.down === roving.right) failures.push(`Home two-dimensional roving keyboard failed: ${JSON.stringify(roving)}`);
   const screenshot = await client.send("Page.captureScreenshot", { format:"png", fromSurface:true, captureBeyondViewport:false });
   const screenshotFile = "release-home-day-1280x720.png";
   await writeFile(resolve(output, screenshotFile), Buffer.from(screenshot.data, "base64"));
-  return { kind:"home-theme-interaction", name:"home-theme-welcome-roving", viewport:desktop, samples, contrastWarnings, contrastCertified:false, welcome, persisted, roving, screenshotFile, failures, status:failures.length?"FAIL":"PASS" };
+  return { kind:"home-theme-interaction", name:"home-theme-welcome-roving", viewport:desktop, samples, contrastWarnings, contrastCertified:false, welcome, initiallyHidden, manualFocusRestored, directArticleHidden, explicitPreviewOpened, persisted, roving, screenshotFile, failures, status:failures.length?"FAIL":"PASS" };
 }
 
 async function auditLifecycleGrowth(client, origin) {
@@ -4772,6 +4841,17 @@ async function runReleaseAudit(client, server, options, executable) {
   const performance = await auditPerformanceTraces(client, server, options.output); results.push(...performance); performance.forEach((item)=>logAuditStatus(item, `OPT-093 performance ${item.name}`));
   const matrix = await auditResponsiveReleaseMatrix(client, server.origin); results.push(...matrix); logAuditStatus({ failures:matrix.flatMap((item)=>item.failures), status:matrix.some((item)=>item.failures.length)?"FAIL":"PASS" }, `OPT-091/092 responsive matrix (${matrix.length} route combinations)`);
   const home = await auditHomeThemeAndInteractionContracts(client, server.origin, options.output); results.push(home); logAuditStatus(home, "OPT-029/030/051-055 Home/theme/shell/About contracts");
+  for (const [width, height, lang, motion] of [
+    [1280, 720, "zh", "full"],
+    [359, 500, "zh", "reduced"],
+    [390, 844, "en", "reduced"],
+    [844, 390, "ja", "reduced"]
+  ]) {
+    const viewport = viewports.find((item) => item.width === width && item.height === height);
+    const modal = await auditModalIsolation(client, server.origin, viewport, { lang, kind: "welcome", motion, output: options.output });
+    results.push(modal);
+    logAuditStatus(modal, `manual welcome isolation ${lang} ${width}x${height} ${motion}`);
+  }
   const semantics = await auditSemanticMatrix(client, server.origin, viewports.find((item)=>item.width===1280), ["zh","en","ja"]); results.push(...semantics); logAuditStatus({failures:semantics.flatMap((item)=>item.failures),status:semantics.some((item)=>item.failures.length)?"FAIL":"PASS"}, "OPT-094 semantic smoke");
   const forcedColors = await auditForcedColorsSmoke(client, server.origin); results.push(forcedColors); logAuditStatus(forcedColors,"OPT-094 forced-colors smoke");
   const wallpaperPreloadNetwork = await auditWallpaperPreloadNetwork(client, server); results.push(...wallpaperPreloadNetwork); wallpaperPreloadNetwork.forEach((item)=>logAuditStatus(item, `OPT-093 wallpaper preload ${item.name}`));
@@ -5009,10 +5089,14 @@ async function main() {
       await Promise.race([client.send("Browser.close").catch(() => {}), new Promise((ok) => setTimeout(ok, 2000))]);
       client.close();
     }
-    let cleanupError;
-    try { await stopChrome(chrome); } catch (error) { cleanupError = error; }
-    await server.close();
-    if (cleanupError) throw cleanupError;
+    const cleanupResults = await Promise.allSettled([stopChrome(chrome), server.close()]);
+    for (const result of cleanupResults) {
+      if (result.status === "rejected") {
+        // Preserve an earlier audit failure while still failing the CLI on cleanup errors.
+        console.error(`public-ui-audit cleanup: ${result.reason?.message || result.reason}`);
+        process.exitCode = 1;
+      }
+    }
   }
 }
 

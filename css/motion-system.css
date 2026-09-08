@@ -825,8 +825,12 @@ body[data-motion="off"] .wallpaper-stage {
 
 html[data-motion="reduced"] .is-ui-entering,
 html[data-motion="reduced"] .is-ui-leaving,
+html[data-motion="reduced"] .is-ui-minimizing,
+html[data-motion="reduced"] .is-ui-layout-transition,
 body[data-motion="reduced"] .is-ui-entering,
-body[data-motion="reduced"] .is-ui-leaving {
+body[data-motion="reduced"] .is-ui-leaving,
+body[data-motion="reduced"] .is-ui-minimizing,
+body[data-motion="reduced"] .is-ui-layout-transition {
   animation: none !important;
   transform: none !important;
   transition-property: opacity, color, background-color, border-color !important;

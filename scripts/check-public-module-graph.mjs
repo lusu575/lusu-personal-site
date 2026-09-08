@@ -1,3 +1,4 @@
+import ts from "typescript";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, extname, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -61,22 +62,18 @@ function resolveImport(root, importer, specifier) {
 }
 
 function maskDeclaredFunctionBodies(source) {
-  const masked = [...source];
-  const declaration = /\b(?:export\s+)?(?:async\s+)?function\s+[A-Za-z_$][\w$]*\s*\([^)]*\)\s*\{/g;
-  for (const match of source.matchAll(declaration)) {
-    const bodyStart = match.index + match[0].lastIndexOf("{");
-    let depth = 0;
-    let bodyEnd = source.length - 1;
-    for (let index = bodyStart; index < source.length; index += 1) {
-      if (source[index] === "{") depth += 1;
-      if (source[index] === "}") depth -= 1;
-      if (depth === 0) {
-        bodyEnd = index;
-        break;
-      }
+  // Parse complete declarations so destructuring, default callbacks, nested
+  // parentheses and braces inside strings cannot expose deferred factory code.
+  const syntax = ts.createSourceFile("route.mjs", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const masked = source.split("");
+  function visit(node) {
+    if (ts.isFunctionDeclaration(node) && node.body) {
+      for (let index = node.getStart(syntax); index < node.end; index += 1) masked[index] = " ";
+      return;
     }
-    for (let index = match.index; index <= bodyEnd; index += 1) masked[index] = " ";
+    ts.forEachChild(node, visit);
   }
+  visit(syntax);
   return masked.join("");
 }
 

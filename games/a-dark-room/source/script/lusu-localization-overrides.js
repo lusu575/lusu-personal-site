@@ -8,7 +8,7 @@
   if (!lang) {
     try {
       lang = localStorage.lang || "";
-    } catch (error) {
+    } catch (_error) {
       lang = "";
     }
   }

@@ -113,7 +113,7 @@ function load() {
       }
       return;
     }
-  } catch {}
+  } catch { /* Local storage can be unavailable; still start the new game. */ }
   newGame();
 }
 

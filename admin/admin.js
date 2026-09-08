@@ -632,22 +632,6 @@ const adminUpdates = [
   }
 ];
 
-const countryPositions = {
-  CN: [104, 35],
-  US: [-98, 39],
-  JP: [139, 36],
-  KR: [127, 36],
-  SG: [104, 1.3],
-  GB: [-2, 54],
-  DE: [10, 51],
-  FR: [2, 47],
-  CA: [-106, 56],
-  AU: [134, -25],
-  RU: [90, 61],
-  IN: [78, 22],
-  BR: [-51, -10]
-};
-
 const countryNames = {
   AD: "安道尔",
   AE: "阿联酋",
@@ -1802,7 +1786,7 @@ function thumbnailSourceLabel(value) {
   try {
     const url = new URL(value, window.location.origin);
     return `链接封面预览 · ${url.hostname || "未知来源"}`;
-  } catch (error) {
+  } catch {
     return "链接封面预览";
   }
 }
@@ -1901,20 +1885,6 @@ function createMetricTableCell(value) {
 
 function createTimeTableCell(value) {
   return createTableCell(formatTime(value), "table-time");
-}
-
-function createStackedTableCell(primaryText, secondaryText, className = "") {
-  const cell = document.createElement("td");
-  const secondary = document.createElement("small");
-  if (className) {
-    cell.className = className;
-  }
-  cell.title = [primaryText, secondaryText].filter(Boolean).join(" · ");
-  cell.append(document.createTextNode(primaryText), document.createElement("br"));
-  secondary.textContent = secondaryText;
-  secondary.title = secondaryText;
-  cell.append(secondary);
-  return cell;
 }
 
 function createEmptyTableRow(colspan, text) {
@@ -2041,7 +2011,7 @@ function getStoredActivePanel() {
   try {
     const panel = window.sessionStorage.getItem(ACTIVE_PANEL_STORAGE_KEY);
     return validPanels.has(panel) ? panel : "dashboard";
-  } catch (error) {
+  } catch {
     return "dashboard";
   }
 }
@@ -2049,7 +2019,7 @@ function getStoredActivePanel() {
 function rememberActivePanel(panel) {
   try {
     window.sessionStorage.setItem(ACTIVE_PANEL_STORAGE_KEY, panel);
-  } catch (error) {
+  } catch {
     // 忽略浏览器隐私模式或存储策略导致的写入失败。
   }
 }
@@ -4707,7 +4677,7 @@ function renderArticleList() {
   syncArticleListBusyState();
 }
 
-function renderArticleStatusOverview(articles, isFiltered) {
+function renderArticleStatusOverview() {
   const box = $("#article-status-overview");
   if (!box) {
     return;
@@ -4748,22 +4718,6 @@ function adminUpdateRoundNumber(item) {
 
 function normalizeFilterText(value) {
   return String(value || "").trim().toLowerCase();
-}
-
-function articleMatchesArticleFilter(article, filterText) {
-  if (!filterText) {
-    return true;
-  }
-  const searchText = [
-    adminArticleDisplayTitle(article),
-    article.slug,
-    article.category,
-    categoryDisplayName(article.category),
-    article.tags,
-    article.status,
-    articleStatusLabel(article.status)
-  ].filter(Boolean).join(" ").toLowerCase();
-  return searchText.includes(filterText);
 }
 
 function renderArticleListNotice(text, label = "文章列表提示") {
@@ -5386,28 +5340,12 @@ function renderVideoList() {
   syncVideoListBusyState();
 }
 
-function renderVideoStatusOverview(videos, isFiltered) {
+function renderVideoStatusOverview() {
   const box = $("#video-status-overview");
   if (!box) {
     return;
   }
   box.replaceChildren(...[["全部状态", ""], ["已发布", "published"], ["草稿", "draft"], ["隐藏", "hidden"]].map(([label, value]) => createContentFilterButton("videos", label, value)), createContentFilterButton("videos", "抓取异常", "error", "metadata"), createContentFilterButton("videos", "资料缺失", "missing", "metadata"));
-}
-
-function videoMatchesVideoFilter(video, filterText) {
-  if (!filterText) {
-    return true;
-  }
-  const searchText = [
-    video.title,
-    video.author_name,
-    video.platform,
-    video.original_url,
-    video.embed_url,
-    video.external_id,
-    videoStatusLabel(video.status)
-  ].filter(Boolean).join(" ").toLowerCase();
-  return searchText.includes(filterText);
 }
 
 function renderVideoListNotice(text, label = "视频列表提示") {
@@ -8097,7 +8035,7 @@ async function togglePublicWhiteboardLock() {
   if (state.whiteboardActionBusy || !room) {
     return;
   }
-  const nextLocked = !Boolean(room.isLocked);
+  const nextLocked = !room.isLocked;
   const confirmed = await openConfirmDialog({
     title: nextLocked ? "锁定公共画板" : "解除公共画板锁定",
     object: "公共画板编辑状态",

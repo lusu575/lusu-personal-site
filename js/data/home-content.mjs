@@ -2,10 +2,47 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-09-08-site-review-optimization",
+      "slug": "2026-09-08-site-review-optimization",
+      "category": "site-updates",
+      "tags": [
+        "网站更新",
+        "界面",
+        "移动端",
+        "工具",
+        "可靠性"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-09-07T23:00:00.000Z",
+      "updated_at": "2026-09-07T23:00:00.000Z",
+      "published_at": "2026-09-07T23:00:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.09.08",
+      "title": {
+        "zh": "全站体验与可靠性优化",
+        "en": "A Clearer, More Reliable Personal Site",
+        "ja": "サイト全体の使いやすさと信頼性を改善"
+      },
+      "summary": {
+        "zh": "欢迎窗改为主动查看，工具与画板入口更清晰，手机手势和动效更稳定；知识库支持完整分页搜索，临时互传修复跨房草稿与后台上传，发布增加精确版本校验。",
+        "en": "Welcome is now optional, tool and whiteboard entries are clearer, and mobile gestures are more predictable. Knowledge gains complete pagination and search; Transfer fixes room drafts and background uploads, with exact release checks.",
+        "ja": "歓迎画面を任意表示にし、ツールと画板の入口を整理しました。モバイル操作を安定させ、Knowledgeの全件ページングと検索、転送の下書き・バックグラウンド送信、公開バージョン確認を改善しています。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-09-02-mobile-blog-retired",
       "slug": "2026-09-02-mobile-blog-retired",
       "category": "site-updates",
-      "tags": ["网站更新", "移动端", "杂谈区", "导航", "界面"],
+      "tags": [
+        "网站更新",
+        "移动端",
+        "杂谈区",
+        "导航",
+        "界面"
+      ],
       "cover_image": "",
       "status": "published",
       "is_pinned": 0,
@@ -30,7 +67,13 @@ export const homeContent = Object.freeze({
       "article_id": "seed-update-2026-08-27-password-room-reset",
       "slug": "2026-08-27-password-room-reset",
       "category": "site-updates",
-      "tags": ["网站更新", "密码房", "文件互传", "在线画板", "移动端"],
+      "tags": [
+        "网站更新",
+        "密码房",
+        "文件互传",
+        "在线画板",
+        "移动端"
+      ],
       "cover_image": "",
       "status": "published",
       "is_pinned": 0,
@@ -55,7 +98,12 @@ export const homeContent = Object.freeze({
       "article_id": "seed-update-2026-08-20-chat-whiteboard-ui-fixes",
       "slug": "2026-08-20-chat-whiteboard-ui-fixes",
       "category": "site-updates",
-      "tags": ["网站更新", "匿名聊天室", "在线画板", "界面优化"],
+      "tags": [
+        "网站更新",
+        "匿名聊天室",
+        "在线画板",
+        "界面优化"
+      ],
       "cover_image": "",
       "status": "published",
       "is_pinned": 0,
@@ -80,7 +128,12 @@ export const homeContent = Object.freeze({
       "article_id": "seed-update-2026-08-19-daily-ai-news-rss",
       "slug": "2026-08-19-daily-ai-news-rss",
       "category": "site-updates",
-      "tags": ["网站更新", "每日 AI 新闻", "RSS", "Agent"],
+      "tags": [
+        "网站更新",
+        "每日 AI 新闻",
+        "RSS",
+        "Agent"
+      ],
       "cover_image": "",
       "status": "published",
       "is_pinned": 0,
@@ -100,31 +153,6 @@ export const homeContent = Object.freeze({
         "en": "A low-profile RSS entry now sits below the About introduction. The public feed contains only published Daily AI News in Chinese, English, or Japanese for RSS readers and read-only agents.",
         "ja": "「About」の紹介文の下に控えめなRSS入口を追加しました。公開feedは公開済みの毎日AIニュースだけを中・英・日の三言語で配信し、RSSリーダーと読み取り専用Agentが利用できます。"
       }
-    },
-    {
-      "article_id": "seed-update-2026-08-13-hide-minimax-h3-tools",
-      "slug": "2026-08-13-hide-minimax-h3-tools",
-      "category": "site-updates",
-      "tags": ["网站更新", "工具区", "ComfyUI", "MiniMax H3", "暂时隐藏"],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-13T02:00:00.000Z",
-      "updated_at": "2026-08-13T02:00:00.000Z",
-      "published_at": "2026-08-13T02:00:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.08.13",
-      "title": {
-        "zh": "在线 ComfyUI 工具入口暂时隐藏",
-        "en": "Online ComfyUI Tools Entry Temporarily Hidden",
-        "ja": "オンライン ComfyUI のツール入口を一時非表示"
-      },
-      "summary": {
-        "zh": "工具区暂时隐藏在线 ComfyUI · MiniMax H3 入口；管理员控制台、后端接口和本地执行配置保留，待 Tunnel、Runner 与 GPU canary 完成验收后再重新开放。",
-        "en": "The public Tools area temporarily hides the Online ComfyUI · MiniMax H3 entry; the protected admin console, backend interfaces, and local execution configuration remain available until Tunnel, Runner, and GPU canary acceptance is complete.",
-        "ja": "公開ツール区ではオンライン ComfyUI · MiniMax H3 の入口を一時的に非表示にしました。保護された管理コンソール、バックエンド API、ローカル実行設定は保持し、Tunnel、Runner、GPU canary の受入れ完了後に再公開します。"
-      }
-    },
+    }
   ]
 });

@@ -50,7 +50,7 @@ test("horizontal discovery uses the shared frame pipeline and keyboard-scrollabl
     "#article-detail-toc-list",
     ".game-main .meta-row"
   ]) {
-    assert.ok(mobileShellSource.includes(`\"${selector}\"`), `${selector} must be measured`);
+    assert.ok(mobileShellSource.includes(`"${selector}"`), `${selector} must be measured`);
   }
   assert.match(mobileShellSource, /framePipeline\.schedule\("mobile-shell:horizontal-discovery"/);
   assert.match(mobileShellSource, /node\.tabIndex\s*=\s*0/);
@@ -64,7 +64,7 @@ test("forced colors and four effective motion tiers have explicit non-blocking f
   assert.match(styleSource, /outline:\s*3px solid Highlight/);
   assert.match(styleSource, /color:\s*MarkText/);
   for (const tier of ["normal", "reduced", "off", "low-performance"]) {
-    assert.ok(uiMotionSource.includes(`\"${tier}\"`), `effective motion tier ${tier} must be represented`);
+    assert.ok(uiMotionSource.includes(`"${tier}"`), `effective motion tier ${tier} must be represented`);
   }
   assert.match(uiMotionSource, /setData\(root, "motionTier", effectiveTier\)/);
   assert.match(uiMotionSource, /root\.dataset\.performanceTier === "low"/);
@@ -80,8 +80,10 @@ test("Chat identity assets belong to the always-loaded shell and remain visible 
   assert.match(styleSource, /\.chatroom-icon\s*\{[\s\S]*icon-chatroom\.png\?v=20260726-chatroom-icon-redraw-r2/);
   assert.doesNotMatch(chatRouteSource, /\.chatroom-icon\s*\{/);
   assert.match(styleSource, /\.title-icon-chatroom\s*\{[\s\S]*icon-chatroom\.png\?v=20260726-chatroom-icon-redraw-r2/);
-  assert.match(mobileSource, /max-height:\s*720px[\s\S]*\.chatroom-avatar\s*\{[\s\S]*display:\s*block[\s\S]*width:\s*32px/);
-  assert.match(mobileSource, /orientation:\s*landscape[\s\S]*\.chatroom-avatar\s*\{[\s\S]*display:\s*block[\s\S]*width:\s*34px/);
+  // The final compact geometry is 36px / 38px. Do not lock regression checks
+  // to older 32px / 34px declarations that were already overridden at runtime.
+  assert.match(mobileSource, /max-height:\s*720px[\s\S]*\.chatroom-avatar\s*\{[\s\S]*display:\s*block[\s\S]*width:\s*36px/);
+  assert.match(mobileSource, /orientation:\s*landscape[\s\S]*\.chatroom-avatar\s*\{[\s\S]*display:\s*block[\s\S]*width:\s*38px/);
 });
 
 test("page navigation animates only live page content so fixed topbar and Dock never enter snapshots", () => {

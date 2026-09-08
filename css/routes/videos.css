@@ -58,7 +58,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.01);
+
 }
 
 .video-thumb.is-fallback {
@@ -68,13 +68,7 @@
 }
 
 .video-thumb::before {
-  content: "";
-  position: absolute;
-  z-index: 1;
-  inset: 18px;
-  border: 4px solid rgba(255, 255, 255, 0.8);
-  border-radius: 8px;
-  pointer-events: none;
+  content: none;
 }
 
 .video-thumb::after {
@@ -94,7 +88,7 @@
 
 .video-body {
   display: grid;
-  grid-template-rows: auto minmax(42px, auto) minmax(40px, auto) auto auto;
+  grid-template-rows: auto minmax(48px, auto) minmax(44px, 1fr) auto auto;
   align-content: start;
   gap: 6px;
   min-height: 0;
@@ -122,20 +116,34 @@
   overflow-wrap: anywhere;
 }
 
-.video-body .card-action {
-  max-width: min(220px, 100%);
-  white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+.video-body h2 {
+  font-size: 17px;
+  line-height: 1.4;
+}
+
+.video-body p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.video-body h2,
+.video-body p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .video-body .card-action {
   width: fit-content;
   justify-self: start;
+  align-self: end;
   max-width: 100%;
   min-width: 88px;
+  min-height: 44px;
   padding-inline: 14px;
   white-space: normal;
+  overflow-wrap: anywhere;
   text-align: center;
 }
 

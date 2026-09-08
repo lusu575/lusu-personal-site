@@ -423,7 +423,7 @@ function ruleCanTargetMobile(file, rule) {
   if (file === "css/motion-system.css") {
     return !rule.selector.includes('html[data-ui-shell="desktop"]');
   }
-  return rule.atRules.some((atRule) => /@media\b[^\{]*(?:max-width:\s*(?:980|900|760|620|460|380|360)px|max-height:\s*(?:720|540|520|460)px)/i.test(atRule));
+  return rule.atRules.some((atRule) => /@media\b[^{]*(?:max-width:\s*(?:980|900|760|620|460|380|360)px|max-height:\s*(?:720|540|520|460)px)/i.test(atRule));
 }
 
 function findMobileLayoutOwnershipConflicts(sources) {
@@ -814,7 +814,7 @@ const adminTransferHtml = readRequired("admin/transfer.html");
 const adminTransferCss = readRequired("admin/transfer.css");
 const adminWorldMapSvg = readRequired("assets/images/admin-world-map.svg");
 const adminMiddlewareJs = readRequired("functions/admin/_middleware.js");
-const apiJs = readRequired("functions/api/[[route]].js");
+const apiJs = ["[[route]].js", "article-seeds.mjs", "article-release-seed.mjs", "article-tags.mjs", "auth-session-service.mjs", "data-cleanup-service.mjs", "content-migrations.mjs"].map((file) => readRequired(`functions/api/${file}`)).join("\n");
 const transferApiJs = readRequired("functions/api/transfer-service.mjs");
 const articlePrerenderJs = readRequired("functions/articles/[slug].js");
 const schemaSql = readRequired("cloudflare/schema.sql");
@@ -851,7 +851,7 @@ const mobileShellJs = readRequired("js/mobile-shell.js");
 const publicModuleSources = Object.fromEntries(publicModuleGraph.files.map((file) => [file, readRequired(file)]));
 const mainEntryJs = publicModuleSources["js/main.js"];
 const ambientWallpaperModuleJs = publicModuleSources["js/core/wallpaper-ambient.mjs"];
-const i18nModuleJs = publicModuleSources["js/core/i18n.mjs"];
+
 const contentModuleJs = publicModuleSources["js/data/content.mjs"];
 const homeContentModuleJs = publicModuleSources["js/data/home-content.mjs"];
 const mainJs = publicModuleGraph.files.map((file) => publicModuleSources[file]).join("\n");
@@ -891,9 +891,9 @@ const redirectsConfig = readRequired("_redirects");
 
 const routeLazyVersion = "20260726-security-reliability-r1";
 const trustSafetyStatusVersion = "20260726-security-reliability-r1";
-const knowledgeReaderVersion = "20260728-knowledge-archive-r1";
-const whiteboardReleaseVersion = "20260806-agent-capabilities-quick-transfer-r1";
-const gameVideoMcpCandidateReleaseVersion = "20260809-game-video-mcp-heartbeat-r1";
+
+
+
 const motionPolishReleaseVersion = "20260809-motion-polish-r2";
 const wallpaperSwitchSceneReleaseVersion = "20260810-wallpaper-switch-slim-dawn-r1";
 const wallpaperSwitchRouteMotionReleaseVersion = "20260810-wallpaper-switch-route-motion-r1";
@@ -903,15 +903,16 @@ const h3FirstVersionVideoReleaseVersion = "20260811-h3-first-version-video-sr-48
 const wallpaperGameDisplayReleaseVersion = "20260812-wallpaper-game-display-r1";
 const publicSiteReleaseVersion = "20260827-private-room-lifecycle-r1";
 const mobileBlogRetiredReleaseVersion = "20260902-mobile-blog-retired-r1";
-const homeContentReleaseVersion = mobileBlogRetiredReleaseVersion;
+const reviewReleaseVersion = "20260908-site-review-r1";
+const homeContentReleaseVersion = reviewReleaseVersion;
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
-const transferReleaseVersion = "20260908-admin-review-r1";
+const transferReleaseVersion = reviewReleaseVersion;
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
-const resourcesRouteVersion = "20260908-admin-review-r1";
-const routeStyleVersion = publicSiteReleaseVersion;
-const publicRouteVersion = (route) => route === "knowledge" || route === "chatroom"
-  ? motionPolishReleaseVersion
-  : (route === "resources" ? resourcesRouteVersion : routeLazyVersion);
+const resourcesRouteVersion = reviewReleaseVersion;
+const routeStyleVersion = reviewReleaseVersion;
+const publicRouteVersion = (route) => ["knowledge", "videos", "resources"].includes(route)
+  ? reviewReleaseVersion
+  : (route === "chatroom" ? motionPolishReleaseVersion : routeLazyVersion);
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
 const chatroomIconVersion = "20260726-chatroom-icon-redraw-r2";
 
@@ -1302,9 +1303,11 @@ const adminTransferStyleVersions = assetQueryVersions(adminTransferHtml, "/admin
 if (adminTransferStyleVersions.length !== 1 || adminTransferStyleVersions[0] !== transferAtlasVersion) {
   fail(`admin/transfer.html stylesheet query should appear once as ${transferAtlasVersion}`);
 }
-if (!adminTransferHtml.includes(`/admin/transfer.css?v=${transferAtlasVersion};admin=${transferReleaseVersion}`)
-  || !adminTransferHtml.includes(`/admin/transfer.js?v=${transferReleaseVersion}`)) {
-  fail(`admin/transfer.html motion assets should use ${transferReleaseVersion}`);
+// The independently served Transfer admin assets did not change in this release.
+const adminTransferReleaseVersion = "20260908-admin-review-r1";
+if (!adminTransferHtml.includes(`/admin/transfer.css?v=${transferAtlasVersion};admin=${adminTransferReleaseVersion}`)
+  || !adminTransferHtml.includes(`/admin/transfer.js?v=${adminTransferReleaseVersion}`)) {
+  fail(`admin/transfer.html assets should use ${adminTransferReleaseVersion}`);
 }
 if (!adminTransferCss.includes(`quick-transfer-icons.png?v=${transferAtlasVersion}`)) {
   fail(`admin/transfer.css should use the shared Quick Transfer atlas query ${transferAtlasVersion}`);
@@ -1331,7 +1334,7 @@ for (const route of lazyPublicRoutes) {
 }
 
 for (const [modulePath, expectedVersion] of [
-  ["./core/i18n.mjs", publicSiteReleaseVersion],
+  ["./core/i18n.mjs", reviewReleaseVersion],
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-ambient.mjs", wallpaperGameDisplayReleaseVersion],
   ["./data/home-content.mjs", homeContentReleaseVersion],
@@ -3132,7 +3135,7 @@ if (!hasPattern(styleCss, new RegExp(`\\.chatroom-icon\\s*\\{[^}]*icon-chatroom\
   || hasPattern(lazyRouteCssSources.chatroom, /\.chatroom-icon\s*\{/)
   || !hasPattern(styleCss, new RegExp(`\\.title-icon-chatroom\\s*\\{[^}]*icon-chatroom\\.png\\?v=${escapeRegExp(chatroomIconVersion)}`))
   || hasPattern(mobileIosShellCss, /\.chatroom-avatar\s*\{[^}]*display:\s*none/)
-  || (mobileIosShellCss.match(/\.chatroom-avatar\s*\{[^}]*display:\s*block[^}]*width:\s*(?:32|34)px[^}]*height:\s*(?:32|34)px/g) || []).length < 2) {
+  || ![36, 38].every((size) => hasPattern(mobileIosShellCss, new RegExp(`\\.chatroom-avatar\\s*\\{[^}]*width:\\s*${size}px[^}]*height:\\s*${size}px`)))) {
   fail("the canonical Chat icon must load before route CSS, the titlebar must use it, and short mobile layouts must retain a decoded avatar");
 }
 if (existsSync(resolve(root, "assets/images/icon-chatroom-clean.png"))
@@ -3331,24 +3334,24 @@ for (const asset of [
 }
 
 const premiumUiVersion = "20260711-calm-motion-r13";
-const mobileTransferUiVersion = "20260717-mobile-transfer-send-r3";
-const themeA11yFoundationVersion = "20260718-theme-a11y-foundation-r1";
-const focusPopoverCaretVersion = "20260718-focus-popover-caret-r1";
-const knowledgeHistoryVersion = "20260718-knowledge-history-r1";
-const routeMetaModalVersion = "20260718-route-meta-modal-r1";
-const routeLifecycleVersion = "20260718-route-lifecycle-r1";
-const routeLifecycleCssVersion = "20260718-route-lifecycle-css-r1";
-const framePipelineVersion = "20260718-frame-pipeline-low-r1";
-const framePipelineCssVersion = "20260718-frame-pipeline-low-css-r1";
-const mobileScrollRecoveryVersion = "20260718-mobile-scroll-recovery-r1";
-const mobileScrollRecoveryCssVersion = "20260718-mobile-scroll-recovery-css-r1";
-const mobileViewportKeyboardVersion = "20260718-mobile-viewport-keyboard-r1";
-const mobileViewportKeyboardCssVersion = routeLazyVersion;
-const publicModulesVersion = motionPolishReleaseVersion;
+
+
+
+
+
+
+
+
+
+
+
+
+
+const publicModulesVersion = reviewReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = "20260908-admin-review-r1";
-const currentCssVersion = publicSiteReleaseVersion;
+const currentMainVersion = homeContentReleaseVersion;
+const currentCssVersion = reviewReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260812-wallpaper-game-display-r1";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
@@ -3375,12 +3378,12 @@ if (styleVersions.length !== 1 || styleVersions[0] !== currentCssVersion) {
 }
 
 const mobileShellStyleVersions = assetQueryVersions(indexHtml, "/css/mobile-ios-shell.css");
-if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== mobileBlogRetiredReleaseVersion) {
+if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== reviewReleaseVersion) {
   fail(`index.html /css/mobile-ios-shell.css query should appear once as ${mobileBlogRetiredReleaseVersion}`);
 }
 
 const motionCssVersions = assetQueryVersions(indexHtml, "/css/motion-system.css");
-if (motionCssVersions.length !== 1 || motionCssVersions[0] !== publicSiteReleaseVersion) {
+if (motionCssVersions.length !== 1 || motionCssVersions[0] !== reviewReleaseVersion) {
   fail(`index.html /css/motion-system.css query should appear once as ${publicSiteReleaseVersion}`);
 }
 
@@ -3551,7 +3554,7 @@ if (!styleCss.includes(':where(input, textarea, [contenteditable]:not([contented
   fail("css/style.css should restore the browser caret for every editable main-site control with a zero-specificity rule");
 }
 
-if (hasPattern(styleCss, /(?:^|\})\s*(?:html|body|\*)\b[^\{]*\{[^\}]*caret-color:\s*transparent/im)) {
+if (hasPattern(styleCss, /(?:^|\})\s*(?:html|body|\*)\b[^{]*\{[^}]*caret-color:\s*transparent/im)) {
   fail("css/style.css must not hide the caret through html, body, or universal-selector inheritance");
 }
 
@@ -3688,7 +3691,7 @@ for (const [file, source, token] of [
   }
 }
 if (!hasPattern(knowledgeModuleJs, /function\s+rebuildArticleSearchIndex[\s\S]*articleState\.searchIndex\s*=\s*new Map[\s\S]*function\s+handleKnowledgeSearchInput[\s\S]*setTimeout\([\s\S]*},\s*120\)/)
-  || !hasPattern(knowledgeModuleJs, /function\s+renderArticleCollection[\s\S]*items\.slice\(0,\s*visibleCount\)[\s\S]*dataset\.articleLoadMore[\s\S]*function\s+showMoreArticles[\s\S]*articleState\.visibleCount\s*=\s*previousCount\s*\+\s*12[\s\S]*\.focus\(\{\s*preventScroll:\s*true\s*\}\)/)
+  || !hasPattern(knowledgeModuleJs, /function\s+renderArticleCollection[\s\S]*items\.slice\(0,\s*visibleCount\)[\s\S]*dataset\.articleLoadMore[\s\S]*function\s+showMoreArticles[\s\S]*articleState\.visibleCount\s*=\s*Math\.min\(articleState\.articles\.length,\s*articleState\.visibleCount\s*\+\s*PUBLIC_ARTICLE_PAGE_SIZE\)[\s\S]*await loadArticles\(\{ append: true \}\)[\s\S]*\.focus\(\{\s*preventScroll:\s*true\s*\}\)/)
   || !hasPattern(knowledgeModuleJs, /articleState\.loading\s*&&\s*!articleState\.articles\.length[\s\S]*renderArticleSkeletons[\s\S]*articleState\.error\s*&&\s*!articleState\.articles\.length[\s\S]*articleRefreshFailed/)
   || hasPattern(knowledgeModuleJs, /catch\s*\(error\)[\s\S]{0,500}articleState\.articles\s*=\s*\[\]/)
   || !hasPattern(knowledgeModuleJs, /while\s*\(articleState\.detailCache\.size\s*>\s*12\)/)) {
@@ -3964,13 +3967,13 @@ for (const [marker, pattern, message] of [
   ],
   [
     "async function articleApi",
-    /return\s+requestJson\(\s*["']knowledge["'],\s*path,\s*\{[\s\S]*force:\s*options\.force\s*===\s*true[\s\S]*maxAgeMs:[\s\S]*staleWhileRevalidate:\s*options\.force\s*!==\s*true[\s\S]*onRevalidated:\s*options\.onRevalidated/,
+    /return\s+requestJson\(\s*["']knowledge["'],\s*path,\s*\{[\s\S]*force:\s*options\.force\s*===\s*true[\s\S]*maxAgeMs:[\s\S]*staleWhileRevalidate:\s*options\.staleWhileRevalidate\s*!==\s*false\s*&&\s*options\.force\s*!==\s*true[\s\S]*onRevalidated:\s*options\.onRevalidated/,
     "js/routes/knowledge.mjs articleApi should use the shared ETag/SWR cache with explicit force and revalidation controls"
   ],
   [
     "async function loadArticles",
-    /articleState\.detailCache\.clear\(\)[\s\S]*articleState\.articles\s*=\s*sortKnowledgeArticles\(visiblePublicArticles\(result\.data\?\.articles\s*\|\|\s*\[\]\)\)[\s\S]*rebuildArticleSearchIndex\(\)/,
-    "js/routes/knowledge.mjs loadArticles should clear stale details, enforce pinned/date order, and rebuild the normalized search index"
+    /listController\?\.abort\(\)[\s\S]*paginated:\s*"1"[\s\S]*limit:\s*String\(PUBLIC_ARTICLE_PAGE_SIZE\)[\s\S]*params\.set\("cursor", cursor\)[\s\S]*staleWhileRevalidate:\s*false[\s\S]*requestId\s*!==\s*articleState\.requestId[\s\S]*const incoming = visiblePublicArticles\(result\.data\?\.articles\s*\|\|\s*\[\]\)[\s\S]*articleState\.articles\s*=\s*append[\s\S]*new Map[\s\S]*item\.slug[\s\S]*articleState\.pagination\s*=[\s\S]*rebuildArticleSearchIndex\(\)/,
+    "js/routes/knowledge.mjs loadArticles should request bounded cursor pages, reject stale responses, preserve server ordering, deduplicate appended slugs, and rebuild the search index"
   ],
   [
     "const routeMetaConfig",
@@ -4181,7 +4184,7 @@ if (!hasPattern(mainJs, /const\s+routeIconRectCache\s*=\s*new\s+Map[\s\S]*functi
 
 const routeWindowFocusBlock = windowAfter(mainJs, "function routeWindowFocusTarget", 900);
 if (!hasPattern(routeWindowFocusBlock, /:scope\s*>\s*h1[\s\S]*heading\.tabIndex\s*=\s*-1[\s\S]*return\s+heading[\s\S]*:scope\s*>\s*\.xp-window[\s\S]*windowSurface\.tabIndex\s*=\s*-1[\s\S]*return\s+windowSurface/)
-  || /querySelectorAll\([^\)]*(?:button|input|textarea|select|contenteditable)/i.test(routeWindowFocusBlock)) {
+  || /querySelectorAll\([^)]*(?:button|input|textarea|select|contenteditable)/i.test(routeWindowFocusBlock)) {
   fail("js/main.js automatic route focus should target the stable H1, with only the route window as fallback");
 }
 
@@ -4355,13 +4358,13 @@ if (!hasPattern(styleCss, /\.wallpaper-time-switch\s*\{[\s\S]*grid-template-colu
   || !hasPattern(styleCss, /\.wallpaper-time-celestial\s*\{[\s\S]*top:\s*2px[\s\S]*left:\s*2px[\s\S]*width:\s*32px[\s\S]*height:\s*32px/)
   || !hasPattern(styleCss, /\.wallpaper-time-roller\s*\{[\s\S]*width:\s*36px[\s\S]*height:\s*36px[\s\S]*transform:\s*rotate\(0deg\)/)
   || !hasPattern(styleCss, /\.(?:wallpaper-time-scene-atlas|wallpaper-time-accent-atlas|wallpaper-time-marker-atlas|wallpaper-time-node-atlas|wallpaper-time-roller-atlas)[\s\S]{0,260}image-rendering:\s*auto/)
-  || !hasPattern(styleCss, /\.wallpaper-time-scene-atlas\s*\{[\s\S]*width:\s*176px[\s\S]*height:\s*176px[\s\S]*data-atlas-cell=["']day["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-44px,[\s\S]*data-atlas-cell=["']dusk["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-88px,[\s\S]*data-atlas-cell=["']night["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-132px,/)
-  || !hasPattern(styleCss, /\.wallpaper-time-marker-atlas\s*\{[\s\S]*width:\s*20px[\s\S]*height:\s*80px[\s\S]*data-atlas-cell=["']day["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-20px,[\s\S]*data-atlas-cell=["']dusk["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-40px,[\s\S]*data-atlas-cell=["']night["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-60px,/)
-  || !hasPattern(styleCss, /\.wallpaper-time-node-atlas\s*\{[\s\S]*width:\s*32px[\s\S]*height:\s*160px[\s\S]*data-atlas-cell=["']day["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-32px,[\s\S]*data-atlas-cell=["']dusk["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-64px,[\s\S]*data-atlas-cell=["']night["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-96px,/)
+  || !hasPattern(styleCss, /\.wallpaper-time-scene-atlas\s*\{[\s\S]*width:\s*176px[\s\S]*height:\s*176px[\s\S]*data-atlas-cell=["']day["'][^{]*\{\s*transform:\s*translate3d\(0,\s*-44px,[\s\S]*data-atlas-cell=["']dusk["'][^{]*\{\s*transform:\s*translate3d\(0,\s*-88px,[\s\S]*data-atlas-cell=["']night["'][^{]*\{\s*transform:\s*translate3d\(0,\s*-132px,/)
+  || !hasPattern(styleCss, /\.wallpaper-time-marker-atlas\s*\{[\s\S]*width:\s*20px[\s\S]*height:\s*80px[\s\S]*data-atlas-cell=["']day["'][^{]*\{\s*transform:\s*translate3d\(0,\s*-20px,[\s\S]*data-atlas-cell=["']dusk["'][^{]*\{\s*transform:\s*translate3d\(0,\s*-40px,[\s\S]*data-atlas-cell=["']night["'][^{]*\{\s*transform:\s*translate3d\(0,\s*-60px,/)
+  || !hasPattern(styleCss, /\.wallpaper-time-node-atlas\s*\{[\s\S]*width:\s*32px[\s\S]*height:\s*160px[\s\S]*data-atlas-cell=["']day["'][^{]*\{\s*transform:\s*translate3d\(0,\s*-32px,[\s\S]*data-atlas-cell=["']dusk["'][^{]*\{\s*transform:\s*translate3d\(0,\s*-64px,[\s\S]*data-atlas-cell=["']night["'][^{]*\{\s*transform:\s*translate3d\(0,\s*-96px,/)
   || !hasPattern(styleCss, /\.wallpaper-time-roller-atlas\s*\{[\s\S]*width:\s*36px[\s\S]*height:\s*180px[\s\S]*transform:\s*translate3d\(0,\s*-144px,\s*0\)/)
-  || !hasPattern(styleCss, /\.wallpaper-time-accent-atlas\s*\{[\s\S]*width:\s*176px[\s\S]*height:\s*234\.6667px[\s\S]*data-atlas-cell=["']day["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-58\.6667px,[\s\S]*data-atlas-cell=["']dusk["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-117\.3333px,[\s\S]*data-atlas-cell=["']night["'][^\{]*\{\s*transform:\s*translate3d\(0,\s*-176px,/)
-  || !hasPattern(styleCss, /data-visual-theme=["']morning["'][^\{]*\.wallpaper-time-thumb\s*\{\s*transform:\s*translate3d\(4px,[\s\S]*data-visual-theme=["']day["'][^\{]*\.wallpaper-time-thumb\s*\{\s*transform:\s*translate3d\(48px,[\s\S]*data-visual-theme=["']dusk["'][^\{]*\.wallpaper-time-thumb\s*\{\s*transform:\s*translate3d\(92px,[\s\S]*data-visual-theme=["']night["'][^\{]*\.wallpaper-time-thumb\s*\{\s*transform:\s*translate3d\(136px,/)
-  || !hasPattern(styleCss, /data-visual-theme=["']morning["'][^\{]*\.wallpaper-time-roller\s*\{\s*transform:\s*rotate\(0deg\)[\s\S]*data-visual-theme=["']day["'][^\{]*\.wallpaper-time-roller\s*\{\s*transform:\s*rotate\(151\.072deg\)[\s\S]*data-visual-theme=["']dusk["'][^\{]*\.wallpaper-time-roller\s*\{\s*transform:\s*rotate\(302\.144deg\)[\s\S]*data-visual-theme=["']night["'][^\{]*\.wallpaper-time-roller\s*\{\s*transform:\s*rotate\(453\.216deg\)/)
+  || !hasPattern(styleCss, /\.wallpaper-time-accent-atlas\s*\{[\s\S]*width:\s*176px[\s\S]*height:\s*234\.6667px[\s\S]*data-atlas-cell=["']day["'][^{]*\{\s*transform:\s*translate3d\(0,\s*-58\.6667px,[\s\S]*data-atlas-cell=["']dusk["'][^{]*\{\s*transform:\s*translate3d\(0,\s*-117\.3333px,[\s\S]*data-atlas-cell=["']night["'][^{]*\{\s*transform:\s*translate3d\(0,\s*-176px,/)
+  || !hasPattern(styleCss, /data-visual-theme=["']morning["'][^{]*\.wallpaper-time-thumb\s*\{\s*transform:\s*translate3d\(4px,[\s\S]*data-visual-theme=["']day["'][^{]*\.wallpaper-time-thumb\s*\{\s*transform:\s*translate3d\(48px,[\s\S]*data-visual-theme=["']dusk["'][^{]*\.wallpaper-time-thumb\s*\{\s*transform:\s*translate3d\(92px,[\s\S]*data-visual-theme=["']night["'][^{]*\.wallpaper-time-thumb\s*\{\s*transform:\s*translate3d\(136px,/)
+  || !hasPattern(styleCss, /data-visual-theme=["']morning["'][^{]*\.wallpaper-time-roller\s*\{\s*transform:\s*rotate\(0deg\)[\s\S]*data-visual-theme=["']day["'][^{]*\.wallpaper-time-roller\s*\{\s*transform:\s*rotate\(151\.072deg\)[\s\S]*data-visual-theme=["']dusk["'][^{]*\.wallpaper-time-roller\s*\{\s*transform:\s*rotate\(302\.144deg\)[\s\S]*data-visual-theme=["']night["'][^{]*\.wallpaper-time-roller\s*\{\s*transform:\s*rotate\(453\.216deg\)/)
   || !hasPattern(styleCss, /\.wallpaper-time-option\[aria-checked=["']true["']\]\s+\.wallpaper-time-marker\s*\{[\s\S]*opacity:\s*0/)
   || !hasPattern(motionSystemCss, /\.wallpaper-time-thumb\s*\{[\s\S]*transition:\s*transform\s+var\(--motion-window\)\s+var\(--motion-ease-in-out\)/)
   || !hasPattern(motionSystemCss, /\.wallpaper-time-roller\s*\{[\s\S]*transition:\s*transform\s+var\(--motion-window\)\s+var\(--motion-ease-in-out\)/)
@@ -4378,7 +4381,7 @@ if (!hasPattern(styleCss, /\.wallpaper-time-switch\s*\{[\s\S]*grid-template-colu
   || !hasPattern(motionSystemCss, /data-motion=["']reduced["'][\s\S]*\.wallpaper-time-scene[\s\S]*transition:\s*opacity\s+140ms[\s\S]*data-immediate=["']true["'][\s\S]*data-motion=["']off["'][\s\S]*data-performance-tier=["']low["'][\s\S]*transition:\s*none\s*!important/)
   || hasPattern(motionSystemCss, /@keyframes\s+(?:wallpaper-time|wallpaper-switch|wallpaper-effect)/i)
   || !hasPattern(mainEntryJs, /function\s+loadWallpaperTimeSwitchAssets[\s\S]*assetsByUrl\s*=\s*new\s+Map[\s\S]*assetsByUrl\.has\(url\)[\s\S]*Promise\.allSettled\([\s\S]*assetsByUrl\.keys\(\)[\s\S]*urlAssets\.forEach\(\(asset\)\s*=>\s*asset\.setAttribute\(["']src["'],\s*url\)\)/)
-  || !hasPattern(mainEntryJs, /function\s+ensureWallpaperTimeSwitchThemeAssets[\s\S]*data-switch-theme=\"\$\{theme\}\"\]\s+\[data-src\][\s\S]*loadWallpaperTimeSwitchAssets/)
+  || !hasPattern(mainEntryJs, /function\s+ensureWallpaperTimeSwitchThemeAssets[\s\S]*data-switch-theme="\$\{theme\}"\]\s+\[data-src\][\s\S]*loadWallpaperTimeSwitchAssets/)
   || !hasPattern(mainEntryJs, /function\s+ensureWallpaperTimeSwitchAssets[\s\S]*querySelectorAll\(["']\[data-src\]["']\)[\s\S]*visualAssetsReady\s*=\s*["']true["']/)
   || !hasPattern(mainEntryJs, /function\s+wallpaperTimeSwitchAccentAllowed[\s\S]*wallpaperTimeSwitchPerformanceTier\(\)\s*===\s*["']normal["']/)
   || !hasPattern(mainEntryJs, /asset\.dataset\.role\s*=\s*asset\.closest\(["']\.wallpaper-time-accent["']\)\s*\?\s*["']accent["']\s*:\s*["']core["']/)
@@ -4601,7 +4604,7 @@ if (!hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-pr
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-label span\s*\{[^}]*position:\s*static[^}]*font-size:\s*11px/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-label strong\s*\{[^}]*display:\s*block[^}]*grid-column:\s*3/)
   || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.article-read-progress-track\s*\{[^}]*grid-column:\s*2[^}]*height:\s*4px/)
-  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.mobile-route-copy\s*\{\s*display:\s*none/)
+  || !hasPattern(mobileIosShellCss, /body\.is-article-reading\s+\.mobile-route-copy\s*\{\s*display:\s*block/)
   || !hasPattern(indexHtml, /data-article-scroll-top[^>]*hidden/)
   || !hasPattern(indexHtml, /id=["']article-detail-title["'][^>]*tabindex=["']-1["']/)
   || !hasPattern(knowledgeModuleJs, /const\s+atArticleTop\s*=\s*!detail\s*\|\|\s*detail\.scrollTop\s*<=\s*2/)
@@ -4841,14 +4844,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-09-02-mobile-blog-retired";
-const finalUpdateSlug = "2026-09-02-mobile-blog-retired";
+const finalUpdateId = "seed-update-2026-09-08-site-review-optimization";
+const finalUpdateSlug = "2026-09-08-site-review-optimization";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Talk Removed from Mobile Home";
-const finalPublishedAt = "2026-09-02T07:20:00.000Z";
+const finalTitleEn = "A Clearer, More Reliable Personal Site";
+const finalPublishedAt = "2026-09-07T23:00:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-09-02-mobile-blog-retired",
   "seed-update-2026-08-27-password-room-reset",
   "seed-update-2026-08-20-chat-whiteboard-ui-fixes",
   "seed-update-2026-08-19-daily-ai-news-rss",
@@ -4879,33 +4883,33 @@ const finalUpdateStarted = [mainJs, apiJs, schemaSql, indexHtml, changelog].some
   finalUpdateTokens.some((token) => source.includes(token))
 );
 const changelog20260623Section = markdownSection(changelog, "## 2026-06-23");
-const changelog20260624Section = markdownSection(changelog, "## 2026-06-24");
-const changelog20260630Section = markdownSection(changelog, "## 2026-06-30");
-const changelog20260706Section = markdownSection(changelog, "## 2026-07-06");
-const changelog20260710Section = markdownSection(changelog, "## 2026-07-10");
-const changelog20260711Section = markdownSection(changelog, "## 2026-07-11");
-const changelog20260714Section = markdownSection(changelog, "## 2026-07-14");
-const changelog20260716Section = markdownSection(changelog, "## 2026-07-16");
-const changelog20260717Section = markdownSection(changelog, "## 2026-07-17");
-const changelog20260718Section = markdownSection(changelog, "## 2026-07-18");
-const changelog20260719Section = markdownSection(changelog, "## 2026-07-19");
-const changelog20260720Section = markdownSection(changelog, "## 2026-07-20");
-const changelog20260726Section = markdownSection(changelog, "## 2026-07-26");
-const changelog20260727Section = markdownSection(changelog, "## 2026-07-27");
-const changelog20260728Section = markdownSection(changelog, "## 2026-07-28");
-const changelog20260729Section = markdownSection(changelog, "## 2026-07-29");
-const changelog20260801Section = markdownSection(changelog, "## 2026-08-01");
-const changelog20260806Section = markdownSection(changelog, "## 2026-08-06");
-const changelog20260807Section = markdownSection(changelog, "## 2026-08-07");
-const changelog20260809Section = markdownSection(changelog, "## 2026-08-09");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const changelog20260810Section = markdownSection(changelog, "## 2026-08-10");
 const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
-const changelog20260812Section = markdownSection(changelog, "## 2026-08-12");
-const changelog20260813Section = markdownSection(changelog, "## 2026-08-13");
-const changelog20260819Section = markdownSection(changelog, "## 2026-08-19 每日 AI 新闻 RSS 订阅");
-const changelog20260820Section = markdownSection(changelog, "## 2026-08-20 聊天室、在线画板与 H3 返回修复");
+
+
+
+
 const changelog20260827Section = markdownSection(changelog, "## 2026-08-27");
-const changelog20260902Section = markdownSection(changelog, "## 2026-09-02");
+const changelog20260908Section = markdownSection(changelog, "## 2026-09-08");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4924,7 +4928,7 @@ if (!finalUpdateStarted) {
 }
 
 if (finalUpdateStarted) {
-  const finalReleaseDate = finalPublishedAt.slice(0, 10);
+  const finalReleaseDate = "2026-09-08"; // Release calendar uses Asia/Shanghai; stored publication time remains UTC.
   if (!apiJs.includes(`const PUBLIC_RELEASE_DATE = "${finalReleaseDate}";`)) {
     fail(`functions/api/[[route]].js PUBLIC_RELEASE_DATE should match ${finalReleaseDate}`);
   }
@@ -5118,12 +5122,12 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-09-02">2026.09.02</time>',
+    '<time id="top-updated" datetime="2026-09-08">2026.09.08</time>',
     `/css/style.css?v=${finalCssVersion}`,
-    `/css/mobile-ios-shell.css?v=${mobileBlogRetiredReleaseVersion}`,
+    `/css/mobile-ios-shell.css?v=${reviewReleaseVersion}`,
     `/css/motion-system.css?v=${finalCssVersion}`,
-    `/js/mobile-shell.js?v=${motionPolishReleaseVersion}`,
-    `/js/ui-motion.js?v=${motionPolishReleaseVersion}`,
+    `/js/mobile-shell.js?v=${reviewReleaseVersion}`,
+    `/js/ui-motion.js?v=${reviewReleaseVersion}`,
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {
@@ -5132,14 +5136,14 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    mobileBlogRetiredReleaseVersion,
+    finalMainVersion,
     finalUpdateId,
     finalUpdateSlug,
-    "杂谈区",
-    "data-mobile-home-excluded",
+    "知识库",
+    "临时互传",
     "site-updates"
   ]) {
-    if (!changelog20260902Section.includes(token)) {
+    if (!changelog20260908Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
@@ -5171,7 +5175,7 @@ if (finalUpdateStarted) {
 
   for (const token of [
     adminMotionPolishVersion,
-    ...preservedReleaseUpdateIds.filter((updateId) => !/^seed-update-2026-08-(?:11|12|13|19|20|27)-/.test(updateId)),
+    ...preservedReleaseUpdateIds.filter((updateId) => /^seed-update-2026-08-(?:0[1-9]|10)-/.test(updateId)),
     wallpaperTimeSwitchAssetVersion,
     wallpaperSwitchSceneReleaseVersion,
     wallpaperSwitchRouteMotionReleaseVersion,
@@ -5438,7 +5442,9 @@ function createMockD1() {
         return this;
       },
       async run() {
-        return { success: true };
+        const acquiredArticleSeedLease = /^\s*insert\s+into\s+site_runtime_state\b/i.test(sql)
+          && this.params[0] === "article_seed_version:lease";
+        return { success: true, meta: { changes: acquiredArticleSeedLease ? 1 : 0 } };
       },
       async first() {
         return null;

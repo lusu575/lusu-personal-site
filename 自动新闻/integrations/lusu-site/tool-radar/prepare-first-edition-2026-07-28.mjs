@@ -3,9 +3,12 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
-throw new Error(
-  "This site-drawn first-edition builder is retired. Tool Radar images must now be real official interfaces, official case studies, or official outputs gathered under VISUAL_METHOD.md."
-);
+function assertRetiredBuilder() {
+  throw new Error(
+    "This site-drawn first-edition builder is retired. Tool Radar images must now be real official interfaces, official case studies, or official outputs gathered under VISUAL_METHOD.md."
+  );
+}
+assertRetiredBuilder();
 
 // This is an auditable, one-time builder for the first authorized Tool Radar
 // edition. Weekly automation must create a fresh run from that week's research;

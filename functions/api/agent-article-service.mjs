@@ -66,6 +66,7 @@ function normalizeAgentArticlePrincipal(value) {
     && clientId
     && clientId.length <= 2_048
     && !tokenRef;
+  // eslint-disable-next-line no-control-regex -- Reject control characters at this input boundary.
   if (!userId || userId.length > 128 || /[\u0000-\u001f\u007f]/.test(userId)
     || (!agentTokenPrincipal && !oauthPrincipal)
     || effectiveScopes.length > 32

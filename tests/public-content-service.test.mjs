@@ -4,6 +4,8 @@ import test from "node:test";
 
 import {
   queryPublishedArticle,
+  queryPublishedArticlePage,
+  PublicArticleQueryError,
   queryPublishedArticles,
   toPublicArticle
 } from "../functions/api/public-content-service.mjs";
@@ -149,4 +151,88 @@ test("article detail query is read-only and its public mapper keeps the existing
   });
   assert.deepEqual(toPublicArticle({ ...row, tags: "broken" }).tags, []);
   assert.equal(await queryPublishedArticle({ DB }, { lang: "zh", slug: "missing" }), null);
+});
+
+test("keyset pages reach articles beyond 500 with exact global category counts and no content bodies", async (t) => {
+  const DB = createDatabase();
+  t.after(() => DB.close());
+  const insertArticle = DB.sqlite.prepare(`insert into articles values (?, ?, 'archive', '[]', '', 'published', 0, 0, ?, ?, ?)`);
+  const insertTranslation = DB.sqlite.prepare(`insert into article_translations values (?, ?, 'zh', ?, '', 'SECRET BODY')`);
+  for (let index = 0; index < 523; index += 1) {
+    const id = `archive-${String(index).padStart(4, "0")}`;
+    const date = "2020-01-01T00:00:00.000Z";
+    insertArticle.run(id, id, date, date, date);
+    insertTranslation.run(`t-${id}`, id, index === 0 ? "ＵＩ   Mobile 附件" : `Archive ${index}`);
+  }
+  let cursor = "";
+  const slugs = [];
+  do {
+    const page = await queryPublishedArticlePage({ DB }, { lang: "ja", category: "archive", limit: 48, cursor });
+    assert.equal(page.total, 523);
+    assert.equal(page.categoryCounts.archive, 523);
+    assert.equal(page.categoryCounts["daily-ai-news"], 1);
+    assert.equal(page.categoryCounts["site-updates"], 1);
+    assert.ok(page.rows.length <= 48);
+    assert.ok(page.rows.every((row) => row.lang === "zh" && !("content_markdown" in row)));
+    slugs.push(...page.rows.map((row) => row.slug));
+    cursor = page.nextCursor;
+    assert.equal(page.hasMore, Boolean(cursor));
+  } while (cursor);
+  assert.equal(slugs.length, 523);
+  assert.equal(new Set(slugs).size, 523);
+  assert.equal(slugs.at(-1), "archive-0000");
+  const search = await queryPublishedArticlePage({ DB }, { lang: "ja", search: "mobile ＵＩ 附件", limit: 12 });
+  assert.deepEqual(search.rows.map((row) => row.slug), ["archive-0000"]);
+  assert.equal(search.total, 1);
+  assert.equal(search.hasMore, false);
+  assert.ok(DB.queries.every(({ sql }) => !sql.includes("SECRET BODY")));
+});
+
+test("paged search preserves translated labels, multiword AND, fallback and update filtering", async (t) => {
+  const DB = createDatabase();
+  t.after(() => DB.close());
+  const first = await queryPublishedArticlePage({ DB }, { lang: "en", excludeCategory: "site-updates", limit: 1 });
+  assert.equal(first.rows[0].slug, "pinned-article");
+  assert.equal(first.total, 2);
+  assert.equal(first.categoryCounts["site-updates"], 1);
+  const next = await queryPublishedArticlePage({ DB }, { lang: "en", excludeCategory: "site-updates", limit: 1, cursor: first.nextCursor });
+  assert.equal(next.rows[0].slug, "new-article");
+  assert.equal(next.hasMore, false);
+  const match = await queryPublishedArticlePage({ DB }, { lang: "en", search: "ＮＥＷＳ beta" });
+  assert.deepEqual(match.rows.map((row) => row.slug), ["new-article"]);
+  const miss = await queryPublishedArticlePage({ DB }, { lang: "en", search: "beta impossible" });
+  assert.equal(miss.total, 0);
+  assert.deepEqual(miss.rows, []);
+  const update = await queryPublishedArticlePage({ DB }, { lang: "en", category: "site-updates" });
+  assert.deepEqual(update.rows.map((row) => row.slug), ["2026-06-18-main-visual-polish-cycle"]);
+});
+
+test("pagination rejects malformed, cross-query, and oversized cursors and binds all query input", async (t) => {
+  const DB = createDatabase();
+  t.after(() => DB.close());
+  const page = await queryPublishedArticlePage({ DB }, { limit: 1 });
+  for (const options of [
+    { cursor: "%%%" }, { cursor: "x".repeat(4097) },
+    { cursor: page.nextCursor, lang: "en" }, { cursor: page.nextCursor, category: "note" },
+    { limit: 49 }, { limit: 1.5 }, { search: "x".repeat(257) }
+  ]) {
+    await assert.rejects(queryPublishedArticlePage({ DB }, options), PublicArticleQueryError);
+  }
+  const injection = "note' OR 1=1 --";
+  const none = await queryPublishedArticlePage({ DB }, { category: injection });
+  assert.equal(none.rows.length, 0);
+  assert.ok(DB.queries.some(({ values }) => values.includes(injection)));
+  assert.ok(DB.queries.every(({ sql }) => !sql.includes(injection)));
+});
+
+test("keyset pagination does not repeat prior rows when newer articles appear", async (t) => {
+  const DB = createDatabase();
+  t.after(() => DB.close());
+  const first = await queryPublishedArticlePage({ DB }, { limit: 1 });
+  DB.sqlite.exec(`insert into articles values ('a-inserted', 'inserted', 'note', '[]', '', 'published', 1, 0,
+    '2026-09-08T00:00:00Z', '2026-09-08T00:00:00Z', '2026-09-08T00:00:00Z');
+    insert into article_translations values ('t-inserted', 'a-inserted', 'zh', 'Inserted', '', '');`);
+  const next = await queryPublishedArticlePage({ DB }, { limit: 1, cursor: first.nextCursor });
+  assert.equal(first.rows[0].slug, "pinned-article");
+  assert.equal(next.rows[0].slug, "new-article");
 });

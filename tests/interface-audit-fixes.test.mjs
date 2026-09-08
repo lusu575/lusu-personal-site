@@ -34,7 +34,8 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the mobile Talk retirement leads the five-item trilingual projection while older updates remain archived", async () => {
+test("the site review release leads the five-item trilingual projection while older updates remain archived", async () => {
+  const reviewUpdateId = "seed-update-2026-09-08-site-review-optimization";
   const mobileBlogRetiredUpdateId = "seed-update-2026-09-02-mobile-blog-retired";
   const passwordRoomResetUpdateId = "seed-update-2026-08-27-password-room-reset";
   const chatWhiteboardUiUpdateId = "seed-update-2026-08-20-chat-whiteboard-ui-fixes";
@@ -59,8 +60,6 @@ test("the mobile Talk retirement leads the five-item trilingual projection while
   const japaneseProgressUpdateId = "seed-update-2026-08-06-japanese-agent-progress";
   const agentReadBreadthUpdateId = "seed-update-2026-08-06-agent-read-breadth";
   const whiteboard2048UpdateId = "seed-update-2026-08-06-whiteboard-2048-agent";
-  const firstPhaseUpdateId = "seed-update-2026-08-06-agent-capabilities";
-  const websiteGuideUpdateId = "seed-update-2026-08-06-site-guides-password-rooms";
   const trafficUpdateId = "seed-update-2026-08-02-traffic-discovery-monitoring";
   const calmWhiteboardUpdateId = "seed-update-2026-08-01-whiteboard-calm-efficient-sync";
   const reliableWhiteboardUpdateId = "seed-update-2026-08-01-whiteboard-reliable-sketch";
@@ -72,13 +71,14 @@ test("the mobile Talk retirement leads the five-item trilingual projection while
     import("../js/data/home-content.mjs")
   ]);
 
- assert.deepEqual(content.updates.slice(0, 26).map((update) => update.article_id), [
+  assert.deepEqual(content.updates.slice(0, 27).map((update) => update.article_id), [
+    reviewUpdateId,
     mobileBlogRetiredUpdateId,
     passwordRoomResetUpdateId,
     chatWhiteboardUiUpdateId,
     "seed-update-2026-08-19-daily-ai-news-rss",
     "seed-update-2026-08-13-hide-minimax-h3-tools",
-   minimaxH3UpdateId,
+    minimaxH3UpdateId,
     updateId,
     firstVersionUpdateId,
     priorBfcacheUpdateId,
@@ -99,11 +99,13 @@ test("the mobile Talk retirement leads the five-item trilingual projection while
     japaneseProgressUpdateId,
     agentReadBreadthUpdateId,
     whiteboard2048UpdateId,
- ]);
-  assert.equal(content.updates[0].slug, "2026-09-02-mobile-blog-retired");
-  assert.equal(content.updates[0].published_at, "2026-09-02T07:20:00.000Z");
-  assert.equal(content.updates[1].article_id, passwordRoomResetUpdateId);
-  assert.equal(homeContent.updates[0].article_id, mobileBlogRetiredUpdateId);
+  ]);
+  assert.equal(content.updates[0].slug, "2026-09-08-site-review-optimization");
+  assert.equal(content.updates[0].published_at, "2026-09-07T23:00:00.000Z");
+  assert.equal(content.updates[1].slug, "2026-09-02-mobile-blog-retired");
+  assert.equal(content.updates[1].published_at, "2026-09-02T07:20:00.000Z");
+  assert.equal(content.updates[2].article_id, passwordRoomResetUpdateId);
+  assert.equal(homeContent.updates[0].article_id, reviewUpdateId);
   assert.ok(content.updates.some((update) => update.article_id === trafficUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === calmWhiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === reliableWhiteboardUpdateId));
@@ -112,11 +114,11 @@ test("the mobile Talk retirement leads the five-item trilingual projection while
   assert.ok(content.updates.some((update) => update.article_id === knowledgeUpdateId));
   assert.equal(homeContent.updates.length, 5);
   assert.deepEqual(homeContent.updates.map((update) => update.article_id), [
+    reviewUpdateId,
     mobileBlogRetiredUpdateId,
     passwordRoomResetUpdateId,
     chatWhiteboardUiUpdateId,
-    "seed-update-2026-08-19-daily-ai-news-rss",
-    "seed-update-2026-08-13-hide-minimax-h3-tools"
+    "seed-update-2026-08-19-daily-ai-news-rss"
   ]);
   assert.ok(content.updates.some((update) => update.article_id === minimaxH3UpdateId));
   assert.ok(!homeContent.updates.some((update) => update.article_id === minimaxH3UpdateId));
@@ -128,8 +130,10 @@ test("the mobile Talk retirement leads the five-item trilingual projection while
     assert.equal(homeContent.updates[0].summary[lang], content.updates[0].summary[lang]);
   }
 
-  for (const path of ["functions/api/[[route]].js", "cloudflare/schema.sql"]) {
-    const source = read(path);
+  for (const [path, source] of [
+    ["runtime article seed modules", read("functions/api/article-seeds.mjs") + read("functions/api/article-release-seed.mjs")],
+    ["cloudflare/schema.sql", read("cloudflare/schema.sql")]
+  ]) {
     for (const seededUpdateId of [minimaxH3UpdateId, updateId, firstVersionUpdateId, priorBfcacheUpdateId, videoLinkAutofillUpdateId, priorH3UpdateId, priorSlimDawnUpdateId, priorCeramicUpdateId, priorCalmUpdateId, priorSceneUpdateId, gameVideoMcpUpdateId, wallpaperTimeUpdateId, motionPolishUpdateId, remoteMcpOauthUpdateId]) {
       assert.ok(source.includes(seededUpdateId), `${path} should include ${seededUpdateId}`);
     }
@@ -139,33 +143,32 @@ test("the mobile Talk retirement leads the five-item trilingual projection while
   }
 });
 
-test("mobile Talk retirement and retained public modules keep independent cache versions", () => {
+test("site review assets and retained public modules keep independent cache versions", () => {
+  const reviewVersion = "20260908-site-review-r1";
   const publicVersion = "20260809-motion-polish-r2";
   const switchRouteMotionVersion = "20260810-wallpaper-switch-route-motion-r1";
   const videoLinkAutofillVersion = "20260811-video-link-autofill-r1";
-  const ambientAssetVersion = "20260810-h3-ambient-wallpapers-4k-r1";
   const displayFixReleaseVersion = "20260812-wallpaper-game-display-r1";
-  const publicSiteReleaseVersion = "20260827-private-room-lifecycle-r1";
-  const mobileBlogVersion = "20260902-mobile-blog-retired-r1";
   const wallpaperAssetVersion = "20260810-wallpaper-time-switch-r6";
-  const transferVersion = "20260908-admin-review-r1";
+  const transferVersion = reviewVersion;
   const index = read("index.html");
   const main = read("js/main.js");
   const changelog = read("CHANGELOG.md");
   const transferLoader = read("js/features/quick-transfer-loader.mjs");
   const resources = read("js/routes/resources.mjs");
+  const articleLabels = read("js/data/article-labels.mjs");
 
   for (const asset of [
     "/js/mobile-shell.js",
     "/js/ui-motion.js"
   ]) {
-    assert.ok(index.includes(`${asset}?v=${publicVersion}`), `${asset} should use ${publicVersion}`);
+    assert.ok(index.includes(`${asset}?v=${reviewVersion}`), `${asset} should use ${reviewVersion}`);
   }
   for (const asset of ["/css/style.css", "/css/motion-system.css"]) {
-    assert.ok(index.includes(`${asset}?v=${publicSiteReleaseVersion}`), `${asset} should use ${publicSiteReleaseVersion}`);
+    assert.ok(index.includes(`${asset}?v=${reviewVersion}`), `${asset} should use ${reviewVersion}`);
   }
-  assert.ok(index.includes(`/css/mobile-ios-shell.css?v=${mobileBlogVersion}`));
-  assert.ok(index.includes(`/js/main.js?v=20260908-admin-review-r1`));
+  assert.ok(index.includes(`/css/mobile-ios-shell.css?v=${reviewVersion}`));
+  assert.ok(index.includes(`/js/main.js?v=${reviewVersion}`));
   assert.ok(main.includes(`wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));
   assert.ok(changelog.includes(switchRouteMotionVersion), "the wallpaper route-motion release token must remain in project history");
   assert.ok(changelog.includes(videoLinkAutofillVersion), "the video-link release token must remain in project history");
@@ -201,15 +204,15 @@ test("mobile Talk retirement and retained public modules keep independent cache 
   }
   assert.match(index, /class="wallpaper-time-roller-atlas" data-atlas-cell="roller" data-src="\/assets\/images\/wallpaper-switch\/node-atlas\.png\?v=20260810-wallpaper-time-switch-r6" width="192" height="960"/);
   assert.doesNotMatch(index, /wallpaper-switch\/(?:time-track|time-selector|fx-(?:morning|day|dusk|night)|node-inactive|atmosphere-(?:morning|day|dusk|night)-(?:ambient|far|mid|accent|atlas))\.png/);
-  assert.ok(main.includes(`const routeStyleVersion = "${publicSiteReleaseVersion}"`));
-  assert.ok(main.includes(`./core/i18n.mjs?v=${publicSiteReleaseVersion}`));
+  assert.ok(main.includes(`const routeStyleVersion = "${reviewVersion}"`));
+  assert.ok(main.includes(`./core/i18n.mjs?v=${reviewVersion}`));
   assert.ok(main.includes(`./core/wallpaper-time.mjs?v=${publicVersion}`));
-  assert.ok(main.includes(`./data/home-content.mjs?v=${mobileBlogVersion}`));
+  assert.ok(main.includes(`./data/home-content.mjs?v=${reviewVersion}`));
   assert.ok(main.includes(`./core/wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));
   assert.ok(main.includes(`./features/account.mjs?v=${publicVersion}`));
-  assert.ok(main.includes(`./routes/knowledge.mjs?v=${publicVersion}`));
+  assert.ok(main.includes(`./routes/knowledge.mjs?v=${reviewVersion}`));
   assert.ok(main.includes(`./routes/chatroom.mjs?v=${publicVersion}`));
-  const resourcesVersion = "20260908-admin-review-r1";
+  const resourcesVersion = reviewVersion;
   assert.ok(main.includes(`./routes/resources.mjs?v=${resourcesVersion}`));
   assert.ok(main.includes(`./data/resources-content.mjs?v=${resourcesVersion}`));
   for (const token of [
@@ -219,8 +222,9 @@ test("mobile Talk retirement and retained public modules keep independent cache 
     '"开源许可": { zh: "开源许可", en: "Open-source license", ja: "オープンソースライセンス" }',
     '"人生重开模拟器": { zh: "人生重开模拟器", en: "Life Restart", ja: "Life Restart" }'
   ]) {
-    assert.ok(main.includes(token), `js/main.js should localize the Agent release tag: ${token}`);
+    assert.ok(articleLabels.includes(token), `js/data/article-labels.mjs should localize the Agent release tag: ${token}`);
   }
+  assert.ok(main.includes(`./data/article-labels.mjs?v=${reviewVersion}`));
   assert.ok(transferLoader.includes(`const TRANSFER_VERSION = "${transferVersion}"`));
   assert.ok(resources.includes(`../features/quick-transfer-loader.mjs?v=${transferVersion}`));
   assert.doesNotMatch([index, main, transferLoader, resources].join("\n"), /20260726-tools-rename-r1/);

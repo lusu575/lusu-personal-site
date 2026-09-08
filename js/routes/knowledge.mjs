@@ -16,7 +16,7 @@ const articleImageDimensionMap = Object.freeze({
   "assets/images/articles/site-guides/password-room-whiteboard-mobile.png": Object.freeze({ width: 390, height: 844 })
 });
 
-export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
+export const PUBLIC_ARTICLE_PAGE_SIZE = 12;
 
 export function normalizeArticleHeadingAnchor(text) {
   const normalized = String(text || "")
@@ -71,6 +71,17 @@ export function normalizeKnowledgeSearchText(value) {
 export function knowledgeSearchTokens(value) {
   const normalized = normalizeKnowledgeSearchText(value);
   return normalized ? normalized.split(" ") : [];
+}
+
+export function visibleArticleTags(item, labelFor = (tag) => String(tag), categoryLabel = "") {
+  const keyFor = (value) => normalizeKnowledgeSearchText(value).replace(/\s+/gu, "");
+  const seen = new Set([keyFor(item?.category), keyFor(categoryLabel)].filter(Boolean));
+  return (Array.isArray(item?.tags) ? item.tags : []).reduce((tags, tag) => {
+    const label = String(labelFor(tag) || "").trim();
+    const key = keyFor(label);
+    if (key && !seen.has(key)) { seen.add(key); tags.push(label); }
+    return tags;
+  }, []);
 }
 
 export function articleLanguageTag(value) {
@@ -198,6 +209,12 @@ export function createKnowledgeRoute({
   sitePath,
   schedulePublicHistoryStateSync
 }) {
+  const listPages = new Map();
+  let listController = null;
+  articleState.categoryCounts ||= {};
+  articleState.listLoadedAt ||= 0;
+  articleState.listQueryKey ||= "";
+
   function applyArticleLanguage(node, lang) {
     if (!node) return;
     const languageTag = articleLanguageTag(lang);
@@ -269,7 +286,10 @@ export function createKnowledgeRoute({
     const detail = document.getElementById("article-detail");
     const layout = document.querySelector("#knowledge .folder-layout");
     const searchBar = document.getElementById("knowledge-searchbar");
-    const categories = knowledgeCategoryValues(articleState.articles, {
+    const categories = knowledgeCategoryValues([
+      ...articleState.articles,
+      ...Object.keys(articleState.categoryCounts).map((category) => ({ category }))
+    ], {
       fixedCategories: [dailyAiNewsCategory, toolRadarCategory, siteGuidesCategory],
       firstCategory: dailyAiNewsCategory,
       lastCategory: siteUpdateCategory,
@@ -294,6 +314,11 @@ export function createKnowledgeRoute({
         loadArticleDetail(articleState.currentSlug);
       }
       restorePendingKnowledgeScroll();
+      return;
+    }
+
+    if (articleState.listQueryKey !== knowledgeQuery().key && !articleState.searchDebounceTimer) {
+      void loadArticles();
       return;
     }
 
@@ -326,8 +351,11 @@ export function createKnowledgeRoute({
       activeFilters.knowledge,
       siteUpdateCategory
     );
-    const items = categoryItems.filter(articleMatchesSearch);
-    renderKnowledgeSearchControls(items.length, categoryItems.length);
+    const items = articleState.pagination ? categoryItems : categoryItems.filter(articleMatchesSearch);
+    const categoryTotal = activeFilters.knowledge === "all"
+      ? Object.entries(articleState.categoryCounts).reduce((sum, [key, count]) => sum + (key === siteUpdateCategory ? 0 : count), 0)
+      : articleState.categoryCounts[activeFilters.knowledge] || 0;
+    renderKnowledgeSearchControls(articleState.pagination?.total ?? items.length, categoryTotal || categoryItems.length);
     if (!items.length) {
       const hasSearchTerm = Boolean(String(articleState.searchTerm || "").trim());
       if (
@@ -351,7 +379,7 @@ export function createKnowledgeRoute({
         renderListMessage(list, t("siteGuidesEmpty"));
         return;
       }
-      if (!articleState.articles.length) {
+      if (!articleState.articles.length && !hasSearchTerm) {
         renderListMessage(list, t("articleEmpty"));
         return;
       }
@@ -414,18 +442,19 @@ export function createKnowledgeRoute({
     const visibleCount = Math.max(12, Number(articleState.visibleCount || 12));
     const visibleItems = items.slice(0, visibleCount);
     const cards = visibleItems.map((item, index) => articleCardElement(item, index));
-    if (visibleItems.length < items.length) {
+    if (articleState.pagination?.hasMore || visibleItems.length < items.length) {
       const controls = document.createElement("div");
       controls.className = "knowledge-list-more";
       const status = document.createElement("p");
       status.textContent = t("articleShowingCount")
         .replace("{count}", String(visibleItems.length))
-        .replace("{total}", String(items.length));
+        .replace("{total}", String(articleState.pagination?.total ?? items.length));
       const button = document.createElement("button");
       button.type = "button";
       button.className = "xp-button";
       button.dataset.articleLoadMore = "";
-      button.textContent = t("articleLoadMore");
+      button.textContent = t(articleState.loading ? "articleLoading" : "articleLoadMore");
+      button.disabled = articleState.loading;
       controls.append(status, button);
       cards.push(controls);
     }
@@ -486,10 +515,10 @@ export function createKnowledgeRoute({
     const category = document.createElement("span");
     category.textContent = `${t("articleCategory")}: ${articleCategoryName(item.category || "note")}`;
     meta.appendChild(category);
-    (item.tags || []).forEach((tag) => {
+    visibleArticleTags(item, articleTagName, articleCategoryName(item.category)).forEach((tag) => {
       const tagNode = document.createElement("span");
       tagNode.className = "tag";
-      tagNode.textContent = articleTagName(tag);
+      tagNode.textContent = tag;
       meta.appendChild(tagNode);
     });
     const publishedValue = item.published_at || item.created_at;
@@ -580,19 +609,20 @@ export function createKnowledgeRoute({
 
   function renderKnowledgeCategoryButtons(categories) {
     const target = document.getElementById("knowledge-categories");
-    const counts = new Map(categories.map((category) => [String(category), 0]));
-    articleState.articles.forEach((item) => {
-      const key = String(item.category || "");
-      if (counts.has(key)) {
-        counts.set(key, counts.get(key) + 1);
-      }
-    });
+    const focusedFilter = target.contains(document.activeElement) ? document.activeElement?.dataset?.filter : null;
+    const counts = new Map(categories.map((category) => [String(category), articleState.categoryCounts[category] || 0]));
+    if (!articleState.pagination) {
+      articleState.articles.forEach((item) => {
+        const key = String(item.category || "");
+        if (counts.has(key)) counts.set(key, counts.get(key) + 1);
+      });
+    }
 
     const buttons = ["all", ...categories].map((category) => {
       const value = String(category);
       const active = activeFilters.knowledge === value;
       const countValue = value === "all"
-        ? knowledgeArticlesForCategory(articleState.articles, value, siteUpdateCategory).length
+        ? [...counts].reduce((sum, [key, count]) => sum + (key === siteUpdateCategory ? 0 : count), 0)
         : counts.get(value) || 0;
       const button = document.createElement("button");
       button.type = "button";
@@ -615,6 +645,7 @@ export function createKnowledgeRoute({
       return button;
     });
     target.replaceChildren(...buttons);
+    if (focusedFilter) buttons.find((button) => button.dataset.filter === focusedFilter)?.focus({ preventScroll: true });
     window.requestAnimationFrame(() => syncKnowledgeCategoryRail({ revealActive: true }));
   }
 
@@ -638,39 +669,98 @@ export function createKnowledgeRoute({
     rail.classList.toggle("has-overflow-after", rail.scrollLeft < maxScroll - 2);
   }
 
+  function knowledgeQuery() {
+    const category = activeFilters.knowledge === "all" ? "" : activeFilters.knowledge;
+    const search = normalizeKnowledgeSearchText(articleState.searchTerm);
+    const lang = getCurrentLang();
+    return { lang, category, search, key: JSON.stringify([lang, category, search]) };
+  }
+
+  function rememberKnowledgePage() {
+    if (!articleState.listQueryKey || articleState.error) return;
+    listPages.set(articleState.listQueryKey, {
+      articles: articleState.articles,
+      pagination: articleState.pagination,
+      categoryCounts: articleState.categoryCounts,
+      visibleCount: articleState.visibleCount,
+      loadedAt: articleState.listLoadedAt
+    });
+    while (listPages.size > 8) listPages.delete(listPages.keys().next().value);
+  }
+
   async function loadArticles(options = {}) {
+    const query = knowledgeQuery();
+    // Detail navigation must retain every loaded list page for a later Back.
+    if (articleState.currentSlug && !options.force) return;
+    const append = options.append === true && articleState.listQueryKey === query.key;
+    if (append && (!articleState.pagination?.hasMore || articleState.loading)) return;
+    if (!append && !options.force && articleState.listQueryKey === query.key
+      && (articleState.loading || (!articleState.error && Date.now() - articleState.listLoadedAt < 30000))) return;
+    listController?.abort();
+    listController = new AbortController();
+    const controller = listController;
+    const abortFromScope = () => controller.abort();
+    options.signal?.addEventListener("abort", abortFromScope, { once: true });
+    if (options.signal?.aborted) controller.abort();
     const requestId = articleState.requestId + 1;
-    const requestedLang = getCurrentLang();
+    articleState.requestId = requestId;
+    const requestedLang = query.lang;
+    const cursor = append ? articleState.pagination.nextCursor : "";
+    if (!append && articleState.listQueryKey !== query.key) {
+      rememberKnowledgePage();
+      const cached = listPages.get(query.key);
+      articleState.articles = cached?.articles || [];
+      articleState.pagination = cached?.pagination || null;
+      articleState.visibleCount = cached?.visibleCount || PUBLIC_ARTICLE_PAGE_SIZE;
+      articleState.listLoadedAt = cached?.loadedAt || 0;
+      if (cached) articleState.categoryCounts = cached.categoryCounts;
+      articleState.listQueryKey = query.key;
+      if (cached && !options.force && Date.now() - cached.loadedAt < 30000) {
+        articleState.loading = false;
+        articleState.error = "";
+        renderKnowledge();
+        options.signal?.removeEventListener("abort", abortFromScope);
+        return;
+      }
+    }
+    articleState.listQueryKey = query.key;
     articleState.requestId = requestId;
     articleState.loading = true;
     articleState.error = "";
     renderKnowledge();
-    const applyResult = (result, { background = false } = {}) => {
-      if (requestId !== articleState.requestId || getCurrentLang() !== requestedLang) return;
-      articleState.detailCache.clear();
-      articleState.articles = sortKnowledgeArticles(visiblePublicArticles(result.data?.articles || []));
+    const params = new URLSearchParams({ paginated: "1", lang: requestedLang, limit: String(PUBLIC_ARTICLE_PAGE_SIZE) });
+    if (query.category) params.set("category", query.category);
+    else params.set("excludeCategory", siteUpdateCategory);
+    if (query.search) params.set("search", query.search);
+    if (cursor) params.set("cursor", cursor);
+    try {
+      const result = await articleApi(`/api/articles?${params}`, {
+        signal: controller.signal,
+        force: options.force === true,
+        staleWhileRevalidate: false
+      });
+      if (requestId !== articleState.requestId || knowledgeQuery().key !== query.key) return;
+      const incoming = visiblePublicArticles(result.data?.articles || []);
+      // Keep the server's deterministic pin/date/slug ordering across page boundaries.
+      articleState.articles = append
+        ? [...new Map([...articleState.articles, ...incoming].map((item) => [item.slug, item])).values()]
+        : incoming;
+      articleState.pagination = result.data?.pagination || { total: incoming.length, hasMore: false, nextCursor: "" };
+      articleState.categoryCounts = result.data?.categoryCounts || {};
+      articleState.visibleCount = articleState.articles.length;
+      articleState.listLoadedAt = Date.now();
       articleState.error = result.error ? (result.error.message || "failed") : "";
       rebuildArticleSearchIndex();
-      articleState.visibleCount = Math.max(12, Math.min(articleState.visibleCount || 12, articleState.articles.length || 12));
-      renderUpdates();
-      if (background && document.body.dataset.route === "knowledge") renderKnowledge();
-    };
-    try {
-      const result = await articleApi(`/api/articles?lang=${encodeURIComponent(requestedLang)}&limit=${PUBLIC_ARTICLE_ARCHIVE_LIMIT}`, {
-        signal: options.signal,
-        force: options.force === true,
-        onRevalidated: (revalidated) => applyResult(revalidated, { background: true })
-      });
-      applyResult(result);
+      rememberKnowledgePage();
+      if (query.category === siteUpdateCategory && !query.search && !append) {
+        articleState.updateArticles = incoming.slice(0, 5);
+        articleState.updateArticlesLanguage = query.lang;
+      }
     } catch (error) {
-      if (requestId !== articleState.requestId) {
-        return;
-      }
-      if (isAbortError(error)) {
-        return;
-      }
+      if (requestId !== articleState.requestId || knowledgeQuery().key !== query.key || isAbortError(error)) return;
       articleState.error = error.message || "failed";
     } finally {
+      options.signal?.removeEventListener("abort", abortFromScope);
       if (requestId === articleState.requestId) {
         articleState.loading = false;
         renderKnowledge();
@@ -836,7 +926,7 @@ export function createKnowledgeRoute({
     [
       { text: `${t("articleCategory")}: ${articleCategoryName(article.category || "note")}`, className: "article-meta-item article-meta-category" },
       { text: `${t("articlePublished")}: ${formatArticleDate(article.published_at || article.created_at)}`, className: "article-meta-item article-meta-published" },
-      ...(article.tags || []).map((tag) => ({ text: `#${articleTagName(tag)}`, className: "tag" })),
+      ...visibleArticleTags(article, articleTagName, articleCategoryName(article.category)).map((tag) => ({ text: `#${tag}`, className: "tag" })),
       article.lang !== getCurrentLang() ? { text: t("articleFallback"), className: "tag" } : null
     ].filter(Boolean).forEach(({ text, className }) => {
       const item = document.createElement("span");
@@ -1436,7 +1526,7 @@ export function createKnowledgeRoute({
       signal: options.signal,
       force: options.force === true,
       maxAgeMs: path.includes("/api/articles/") ? 60000 : 30000,
-      staleWhileRevalidate: options.force !== true,
+      staleWhileRevalidate: options.staleWhileRevalidate !== false && options.force !== true,
       onRevalidated: options.onRevalidated
     });
   }
@@ -1667,10 +1757,14 @@ export function createKnowledgeRoute({
     }, 120);
   }
 
-  function showMoreArticles() {
-    const previousCount = Math.max(12, Number(articleState.visibleCount || 12));
-    articleState.visibleCount = previousCount + 12;
-    renderKnowledge();
+  async function showMoreArticles() {
+    const previousCount = Math.min(articleState.articles.length, articleState.visibleCount);
+    if (articleState.visibleCount < articleState.articles.length) {
+      articleState.visibleCount = Math.min(articleState.articles.length, articleState.visibleCount + PUBLIC_ARTICLE_PAGE_SIZE);
+      renderKnowledge();
+    } else {
+      await loadArticles({ append: true });
+    }
     window.requestAnimationFrame(() => {
       document.querySelector(`[data-article-list-position="${previousCount}"]`)?.focus({ preventScroll: true });
     });

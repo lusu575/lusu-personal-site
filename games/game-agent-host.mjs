@@ -309,6 +309,7 @@ function createOpaqueActionId() {
 
 function boundedText(value, maxLength) {
   const text = String(value || "").normalize("NFKC").trim();
+  // eslint-disable-next-line no-control-regex -- Reject or sanitize control characters at the public text boundary.
   if (text.length > maxLength || /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/u.test(text)) {
     throw new BrowserGameAgentError("A provider label is invalid.", "GAME_ACTIONS_INVALID");
   }

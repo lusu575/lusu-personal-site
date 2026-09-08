@@ -1,19 +1,39 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { runInNewContext } from "node:vm";
 
 const root = new URL("../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
 
-test("welcome opens once per local day and records the day as soon as it opens", async () => {
+test("welcome is opt-in and keeps deep links uninterrupted while preserving focus isolation", async () => {
   const source = await read("js/main.js");
-  assert.match(source, /const welcomeStorageKey = "lusu-welcome-day"/);
-  assert.match(source, /function localWelcomeDayStamp\(date = new Date\(\)\)/);
-  assert.match(source, /safeSessionGet\(welcomeStorageKey\) === today/);
-  assert.match(source, /modal\.hidden = false;\s*markWelcomeSeen\(today\)/);
-  assert.doesNotMatch(source, /welcomeContentVersion|lusu-welcome-version/);
-  assert.doesNotMatch(source, /route\.route !== "home"/);
-  assert.match(source, /const forceWelcome = welcomeMode === "1"/);
+  const functionSource = source.match(/function maybeShowWelcome\([\s\S]*?\n}/)?.[0];
+  assert.ok(functionSource);
+  for (const search of ["", "?lang=en", "?welcome=0", "?welcome=1"]) {
+    for (const manual of [false, true]) {
+      const calls = [];
+      const modal = { hidden: true, querySelector: () => ({ focus: () => calls.push("focus") }) };
+      const context = {
+        pageParams: new URLSearchParams(search),
+        localWelcomeDayStamp: () => "2026-09-08",
+        updateWelcomeGreeting: () => calls.push("greeting"),
+        document: { activeElement: {}, getElementById: () => modal },
+        modalFocusState: {},
+        modalTriggerCandidate: (element) => element,
+        cancelSurfaceClose: () => calls.push("cancel-close"),
+        markWelcomeSeen: () => calls.push("seen"),
+        syncModalIsolation: () => calls.push("isolate")
+      };
+      const open = runInNewContext(`${functionSource}; maybeShowWelcome`, context);
+      open({ manual });
+      const shouldOpen = manual || search === "?welcome=1";
+      assert.equal(modal.hidden, !shouldOpen, `${search} manual=${manual}`);
+      assert.deepEqual(calls, shouldOpen ? ["greeting", "cancel-close", "seen", "isolate", "focus"] : []);
+    }
+  }
+  assert.match(source, /data-open-welcome/);
+  assert.match(await read("index.html"), /data-open-welcome[^>]*aria-label=/);
 });
 
 test("welcome updates remain compact and preserve complete titles", async () => {

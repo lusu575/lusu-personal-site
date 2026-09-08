@@ -161,6 +161,7 @@ function safeToolError(error) {
     };
   }
   const message = typeof error?.message === "string"
+    // eslint-disable-next-line no-control-regex -- Reject or sanitize control characters at the public text boundary.
     ? error.message.replace(/[\u0000-\u001f\u007f]/gu, " ").trim().slice(0, 300)
     : "";
   return {

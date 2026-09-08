@@ -9,7 +9,6 @@ const GIB = 1024 * MIB;
 const TIB = 1024 * GIB;
 const TRANSFER_PREFIX = "transfer/";
 const ROOM_KEY_PATTERN = /^transfer_[A-Za-z0-9_-]{43}$/;
-const ACTIVE_UPLOAD_STATUSES = ["uploading", "ready", "delete_failed"];
 const MULTIPART_ACTIVE_STATUSES = ["active", "completing"];
 const MAX_JSON_BYTES = 64 * 1024;
 const MAX_FILENAME_CHARS = 180;
@@ -527,7 +526,7 @@ async function uploadSimpleObject(context, session) {
     if (!(error instanceof TransferHttpError && error.code === "TRANSFER_SIZE_MISMATCH")) {
       try {
         await env.TRANSFER_BUCKET.delete(objectKey);
-      } catch (cleanupError) {
+      } catch {
         throw new TransferHttpError(
           "上传失败后的 R2 对象暂时无法清理，清理任务将继续重试。",
           503,
@@ -881,7 +880,7 @@ async function completeMultipartUpload(context, session, body) {
     }
     try {
       await env.TRANSFER_BUCKET.delete(row.object_key);
-    } catch (error) {
+    } catch {
       throw new TransferHttpError(
         "上传记录已被删除，但刚完成的 R2 对象暂时无法清理，清理任务将继续重试。",
         503,
@@ -2222,6 +2221,7 @@ function normalizeEncryptedText(value, maxChars) {
 function normalizeFilename(value) {
   const cleaned = String(value || "")
     .normalize("NFKC")
+    // eslint-disable-next-line no-control-regex -- Strip control characters from the display filename.
     .replace(/[\u0000-\u001f\u007f]/g, "")
     .replace(/[\\/]+/g, "_")
     .trim();

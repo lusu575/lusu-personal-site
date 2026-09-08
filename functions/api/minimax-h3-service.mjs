@@ -773,6 +773,7 @@ async function completeJob(request, env, principal, jobId) {
   if (unexpected.length) throw new H3ProtocolError(`Unsupported completion fields: ${unexpected.join(", ")}.`, 422, "H3_EXTRA_FIELDS");
   const job = await loadLeasedJob(env, principal, jobId, body.runnerId, body);
   if (job.state !== "retrieving") throw new H3ProtocolError("H3 job is not retrieving an output.", 409, "H3_STATE_INVALID");
+  // eslint-disable-next-line no-control-regex -- Reject control characters at this input boundary.
   const resultName = typeof body.resultName === "string" && body.resultName.length <= H3_MAX_RESULT_NAME_LENGTH && !/[\\/\u0000-\u001f]/u.test(body.resultName)
     ? body.resultName
     : "";

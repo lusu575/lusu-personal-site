@@ -48,6 +48,7 @@ const videoIdSchema = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,179}$/);
 const publicToolIdSchema = z.string().regex(/^[a-z0-9][a-z0-9-]{0,63}$/);
 const catalogGameIdSchema = z.string().regex(/^[a-z0-9][a-z0-9-]{0,63}$/);
 const japaneseStageIdSchema = z.string().regex(/^L[1-5]-(?:00[1-9]|0[1-4][0-9]|050)$/);
+// eslint-disable-next-line no-control-regex -- Reject or sanitize control characters at the public text boundary.
 const japaneseQuerySchema = z.string().max(200).trim().min(1).regex(/^[^\u0000-\u001F\u007F]+$/u);
 const japaneseQuestionIdSchema = z.enum(["q1", "q2", "q3", "q4", "q5"]);
 const japaneseOptionIdSchema = z.enum(["a", "b", "c", "d", "e", "f"]);
