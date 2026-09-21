@@ -8,7 +8,7 @@
 - 互传未发送内容只留在当前房间，离开清空；切换浏览器标签不会主动暂停已提交上传，浏览器／系统挂起仍以实际平台行为为准。画板大厅采用紧凑身份栏与一致入口，帮助说明支持鼠标、键盘和触屏且不遮输入。
 - 移动 Home 手势限定真实 Dock 指示条，输入／键盘／弹窗时禁用；组件样式与可中断动效收敛，工具用途、文章辅助文字和视频卡操作层级统一。
 - 注册账号与首会话原子提交；历史 seed、本期增量和数据迁移分离，过期清理仅追平后记录成功。发布记录与当前维护边界见 `CHANGELOG.md`、`PROJECT_CONTEXT.md`。
-- 生产构建清单携带完整 Git SHA 与 dirty 状态；合并后用 `EXPECTED_COMMIT_SHA=<完整提交SHA> node scripts/production-smoke.mjs` 等待并验证本次版本与资源哈希。当前发布 token 为 `20260908-site-review-r1`；代码与文档不替代实际部署或真机验证。
+- 生产构建清单携带完整 Git SHA 与 dirty 状态；合并后用 `EXPECTED_COMMIT_SHA=<完整提交SHA> node scripts/production-smoke.mjs` 等待并验证本次版本与资源哈希。当前发布 token 为 `20260922-cloud-save-10min-r1`；代码与文档不替代实际部署或真机验证。
 
 ## 多人实时在线画板
 
