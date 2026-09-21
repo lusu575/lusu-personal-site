@@ -904,7 +904,7 @@ const wallpaperGameDisplayReleaseVersion = "20260812-wallpaper-game-display-r1";
 const publicSiteReleaseVersion = "20260827-private-room-lifecycle-r1";
 const mobileBlogRetiredReleaseVersion = "20260902-mobile-blog-retired-r1";
 const reviewReleaseVersion = "20260908-site-review-r1";
-const homeContentReleaseVersion = reviewReleaseVersion;
+const homeContentReleaseVersion = "20260922-cloud-save-10min-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = reviewReleaseVersion;
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
@@ -3353,7 +3353,7 @@ const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = homeContentReleaseVersion;
 const currentCssVersion = reviewReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
-const currentGameShellVersion = "20260812-wallpaper-game-display-r1";
+const currentGameShellVersion = homeContentReleaseVersion;
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
 const currentLifeRestartMobileTouchVersion = "20260726-life-mobile-touch-r1";
 
@@ -4844,14 +4844,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-09-08-site-review-optimization";
-const finalUpdateSlug = "2026-09-08-site-review-optimization";
+const finalUpdateId = "seed-update-2026-09-22-cloud-save-10min";
+const finalUpdateSlug = "2026-09-22-cloud-save-10min";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "A Clearer, More Reliable Personal Site";
-const finalPublishedAt = "2026-09-07T23:00:00.000Z";
+const finalTitleEn = "Game Cloud Saves Now Sync Every 10 Minutes";
+const finalPublishedAt = "2026-09-21T16:24:26.443Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-09-08-site-review-optimization",
   "seed-update-2026-09-02-mobile-blog-retired",
   "seed-update-2026-08-27-password-room-reset",
   "seed-update-2026-08-20-chat-whiteboard-ui-fixes",
@@ -4909,7 +4910,7 @@ const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 
 
 const changelog20260827Section = markdownSection(changelog, "## 2026-08-27");
-const changelog20260908Section = markdownSection(changelog, "## 2026-09-08");
+const changelog20260922Section = markdownSection(changelog, "## 2026-09-22");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4928,7 +4929,7 @@ if (!finalUpdateStarted) {
 }
 
 if (finalUpdateStarted) {
-  const finalReleaseDate = "2026-09-08"; // Release calendar uses Asia/Shanghai; stored publication time remains UTC.
+  const finalReleaseDate = "2026-09-22"; // Release calendar uses Asia/Shanghai; stored publication time remains UTC.
   if (!apiJs.includes(`const PUBLIC_RELEASE_DATE = "${finalReleaseDate}";`)) {
     fail(`functions/api/[[route]].js PUBLIC_RELEASE_DATE should match ${finalReleaseDate}`);
   }
@@ -5122,7 +5123,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-09-08">2026.09.08</time>',
+    '<time id="top-updated" datetime="2026-09-22">2026.09.22</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${reviewReleaseVersion}`,
     `/css/motion-system.css?v=${finalCssVersion}`,
@@ -5139,11 +5140,11 @@ if (finalUpdateStarted) {
     finalMainVersion,
     finalUpdateId,
     finalUpdateSlug,
-    "知识库",
-    "临时互传",
+    "10 分钟",
+    "立即同步",
     "site-updates"
   ]) {
-    if (!changelog20260908Section.includes(token)) {
+    if (!changelog20260922Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }

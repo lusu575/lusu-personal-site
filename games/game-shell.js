@@ -273,6 +273,7 @@
   let browserAgentModulePromise = null;
   let browserAgentFrameTabIndex = null;
   const cloudRequestTimeoutMs = 7000;
+  const cloudAutoSyncIntervalMs = 10 * 60 * 1000;
   const browserAgentMaxMessageBytes = 96 * 1024;
   const browserAgentPingIntervalMs = 8 * 1000;
   const browserAgentPingStates = new Set(["connecting", "awaiting-pair", "active", "paused"]);
@@ -1180,7 +1181,7 @@
     if (!authUser || !cloudVersionReady || cloudConflict) {
       return;
     }
-    syncTimer = window.setInterval(() => syncToCloud(game, false), 30000);
+    syncTimer = window.setInterval(() => syncToCloud(game, false), cloudAutoSyncIntervalMs);
   }
 
   function stopAutoSync() {

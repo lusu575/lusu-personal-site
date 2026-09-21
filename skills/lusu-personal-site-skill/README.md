@@ -105,6 +105,7 @@ skills/lusu-personal-site-skill/SKILL.md
 - Knowledge 使用 NFKC 多词 AND 搜索，并在搜索／筛选时复位真实滚动和 History；Videos／工具区（内部 `resources` route）重建分类按钮后恢复同一焦点，空视频分类优先提供“显示全部”。首屏只接受 zh／en／ja 并尽早设置文档语言，文章 fallback 标注实际内容语言。
 - 手机工具区卡片完整显示说明并分离事实、标签和 44px CTA；Games 卡直接显示全部语言支持，简介最多三行，许可／来源使用至少 44px 的原生展开控件，后台刷新失败时明确保留的是缓存目录。
 - 五游戏共享壳固定为一个 `100dvh` 网格，外层不滚动，iframe 使用剩余空间；359×500、390×844、844×390 必须测量外层滚动、iframe 可达性以及返回／存档控件 44px 热区。
+- 登录游戏的自动云存档每 10 分钟尝试一次；“立即同步”仍必须立即尝试上传，切出页面的补同步和冲突锁定规则保持不变。
 - 上游游戏嵌入后不能保留固定桌面宽度、第三方统计、原站账号、localhost 开发桥接或未使用主题的外部字体请求；窄屏必须满足 `scrollWidth <= clientWidth`。A Dark Room 声音提示维护三语，且横竖屏切换后重算滑轨与资源面板；Kittens Game 关闭 Google Analytics、KGNet 与 `localhost:7780`，只按需加载当前主题并同步 iframe 文档语言，窄屏顶部工具栏自然换为两行且 Steam／Version 不裁切，全部可见关键控件保持至少 44px，但本站 localStorage、JSON 备份和账号云存档必须继续可用。
 - Life Restart 只在粗指针运行时采用移动几何：主操作和所有可见 `btn*` hitArea 至少 44px，竖屏将工具与主流程分离，短横屏把工具放到底部横排；细指针桌面几何保持上游原样。升级上游后必须分别复测粗指针竖屏、粗指针短横屏和细指针桌面，不得用全局缩放掩盖命中区不足。
 - Quick Transfer 洋红键源图不能直接作为生产 atlas；使用项目构建脚本生成 168×168 RGBA 透明图集，并用 alpha、整体透明率和 16 个 sprite 单元角点/像素比例守卫整张图集。同一 Sharp / libvips 运行时双次构建要求字节一致，跨 Windows / Linux 则解码 RGBA 做严格像素差比较，不比较平台相关的 PNG 压缩流。工具区（`resources`）打开再关闭 Transfer 必须恢复原分类栏与列表 hidden 状态，不能显示空工具条。

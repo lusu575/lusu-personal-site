@@ -2,6 +2,31 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-09-22-cloud-save-10min",
+      "slug": "2026-09-22-cloud-save-10min",
+      "category": "site-updates",
+      "tags": ["网站更新", "游戏区", "云存档", "可靠性"],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-09-21T16:24:26.443Z",
+      "updated_at": "2026-09-21T16:24:26.443Z",
+      "published_at": "2026-09-21T16:24:26.443Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.09.22",
+      "title": {
+        "zh": "游戏云存档调整为每10分钟同步",
+        "en": "Game Cloud Saves Now Sync Every 10 Minutes",
+        "ja": "ゲームのクラウド保存を10分間隔に変更"
+      },
+      "summary": {
+        "zh": "登录后的游戏自动云同步由30秒调整为10分钟，减少长时间挂机产生的 Cloudflare 请求和 D1 写入；手动“立即同步”和切出页面时的补同步保持不变。",
+        "en": "Signed-in games now auto-sync to the cloud every 10 minutes instead of every 30 seconds, reducing Cloudflare requests and D1 writes during long sessions. Manual Sync Now and the page-hide sync remain immediate.",
+        "ja": "ログイン中のゲームの自動クラウド同期を30秒から10分間隔へ変更し、長時間プレイ時のCloudflareリクエストとD1書き込みを削減しました。手動同期とページを離れる際の補助同期は従来どおり即時です。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-09-08-site-review-optimization",
       "slug": "2026-09-08-site-review-optimization",
       "category": "site-updates",
@@ -122,36 +147,6 @@ export const homeContent = Object.freeze({
         "zh": "聊天室移除消息区和输入区的异常留白，把发送按钮收进输入框并改为清晰的方角 XP 操作；聊天室密码房说明改为悬浮显示，在线画板保留三语说明和 Image2 像素大厅。",
         "en": "Chat removes oversized gaps and places a clearer square-corner XP send key inside the input. Its password-room guide now appears on hover, while Whiteboard keeps trilingual help and its Image2 pixel lobby.",
         "ja": "チャットの余分な空白をなくし、入力欄内の送信操作を見やすい角型XPボタンにしました。チャットのパスワード説明はホバー表示となり、画板は三言語説明とImage2のピクセル入口を維持します。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-19-daily-ai-news-rss",
-      "slug": "2026-08-19-daily-ai-news-rss",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "每日 AI 新闻",
-        "RSS",
-        "Agent"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-19T09:00:00.000Z",
-      "updated_at": "2026-08-19T09:00:00.000Z",
-      "published_at": "2026-08-19T09:00:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.08.19",
-      "title": {
-        "zh": "每日 AI 新闻 RSS 订阅入口",
-        "en": "Daily AI News RSS Feed",
-        "ja": "毎日AIニュースのRSS配信"
-      },
-      "summary": {
-        "zh": "“关于我”介绍文字下方新增一个低调的 RSS 订阅入口；公开 feed 仅输出已发布的每日 AI 新闻，提供中英日三种语言，供 RSS 阅读器和只读 Agent 每日抓取。",
-        "en": "A low-profile RSS entry now sits below the About introduction. The public feed contains only published Daily AI News in Chinese, English, or Japanese for RSS readers and read-only agents.",
-        "ja": "「About」の紹介文の下に控えめなRSS入口を追加しました。公開feedは公開済みの毎日AIニュースだけを中・英・日の三言語で配信し、RSSリーダーと読み取り専用Agentが利用できます。"
       }
     }
   ]

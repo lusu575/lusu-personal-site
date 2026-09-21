@@ -63,10 +63,10 @@ import {
   adminArticleMetricScope, readAdminAnalyticsOverview
 } from "./admin-query-service.mjs";
 
-export const PUBLIC_API_REPRESENTATION_VERSION = "20260908-site-review-r1";
+export const PUBLIC_API_REPRESENTATION_VERSION = "20260922-cloud-save-10min-r1";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
-const PUBLIC_RELEASE_DATE = "2026-09-08";
+const PUBLIC_RELEASE_DATE = "2026-09-22";
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;

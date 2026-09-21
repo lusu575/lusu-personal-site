@@ -15015,9 +15015,87 @@ insert into article_translations (translation_id, article_id, lang, title, summa
   '2026-09-07T23:00:00.000Z'
 ) on conflict(translation_id) do nothing;
 
+-- 2026-09-22: reduce automatic game cloud-save writes while keeping manual sync immediate.
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values (
+  'seed-update-2026-09-22-cloud-save-10min',
+  '2026-09-22-cloud-save-10min',
+  'site-updates',
+  '["网站更新","游戏区","云存档","可靠性"]',
+  '',
+  'published',
+  0,
+  0,
+  '2026-09-21T16:24:26.443Z',
+  '2026-09-21T16:24:26.443Z',
+  '2026-09-21T16:24:26.443Z'
+) on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values (
+  'seed-update-2026-09-22-cloud-save-10min-zh',
+  'seed-update-2026-09-22-cloud-save-10min',
+  'zh',
+  '游戏云存档调整为每10分钟同步',
+  '登录后的游戏自动云同步由30秒调整为10分钟，减少长时间挂机产生的 Cloudflare 请求和 D1 写入；手动“立即同步”和切出页面时的补同步保持不变。',
+  '# 游戏云存档调整为每10分钟同步
+
+游戏本地存档仍由浏览器和游戏本体持续保存，只有上传到账号云端的自动同步频率发生变化。
+
+## 本次调整
+
+- 登录后的自动云同步由每30秒一次改为每10分钟一次。
+- 点击“立即同步”仍会立刻尝试上传，不需要等待下一轮计时。
+- 页面切到后台时仍会刷新游戏本地存档并尝试补同步。
+- 云端版本冲突检测、JSON导入导出和本地存档均保持不变。
+
+这项调整主要减少长时间挂机产生的 Pages Functions 请求与 D1 写入，同时继续保留手动同步和离开页面时的保护。',
+  '2026-09-21T16:24:26.443Z',
+  '2026-09-21T16:24:26.443Z'
+) on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values (
+  'seed-update-2026-09-22-cloud-save-10min-en',
+  'seed-update-2026-09-22-cloud-save-10min',
+  'en',
+  'Game Cloud Saves Now Sync Every 10 Minutes',
+  'Signed-in games now auto-sync to the cloud every 10 minutes instead of every 30 seconds, reducing Cloudflare requests and D1 writes during long sessions. Manual Sync Now and the page-hide sync remain immediate.',
+  '# Game Cloud Saves Now Sync Every 10 Minutes
+
+Games continue to save locally through the browser and their own save logic. Only the automatic upload cadence for account cloud saves has changed.
+
+## What changed
+
+- Signed-in automatic cloud sync now runs every 10 minutes instead of every 30 seconds.
+- Selecting Sync Now still attempts an upload immediately without waiting for the timer.
+- Moving the page to the background still flushes the local game save and attempts an extra sync.
+- Cloud-version conflict handling, JSON import/export, and local saves are unchanged.
+
+This reduces Pages Functions requests and D1 writes during long-running sessions while retaining manual and page-exit protection.',
+  '2026-09-21T16:24:26.443Z',
+  '2026-09-21T16:24:26.443Z'
+) on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values (
+  'seed-update-2026-09-22-cloud-save-10min-ja',
+  'seed-update-2026-09-22-cloud-save-10min',
+  'ja',
+  'ゲームのクラウド保存を10分間隔に変更',
+  'ログイン中のゲームの自動クラウド同期を30秒から10分間隔へ変更し、長時間プレイ時のCloudflareリクエストとD1書き込みを削減しました。手動同期とページを離れる際の補助同期は従来どおり即時です。',
+  '# ゲームのクラウド保存を10分間隔に変更
+
+ゲーム本体とブラウザーによるローカル保存はこれまでどおり継続します。変更したのは、アカウントのクラウド保存へ自動アップロードする間隔だけです。
+
+## 変更内容
+
+- ログイン中の自動クラウド同期を30秒ごとから10分ごとへ変更しました。
+- 「今すぐ同期」はタイマーを待たず、引き続き即座にアップロードを試みます。
+- ページがバックグラウンドへ移る際も、ローカル保存を更新して補助同期を試みます。
+- クラウド版の競合処理、JSONの入出力、ローカル保存は変更していません。
+
+長時間プレイ時のPages FunctionsリクエストとD1書き込みを減らしながら、手動同期とページ離脱時の保護を維持します。',
+  '2026-09-21T16:24:26.443Z',
+  '2026-09-21T16:24:26.443Z'
+) on conflict(translation_id) do nothing;
+
 -- Advance the version only after all content statements succeed.
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260908-site-review-r1', '2026-09-07T23:00:00.000Z')
+values ('article_seed_version', '20260922-cloud-save-10min-r1', '2026-09-21T16:24:26.443Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at

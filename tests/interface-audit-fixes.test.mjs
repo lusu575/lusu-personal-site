@@ -34,7 +34,8 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the site review release leads the five-item trilingual projection while older updates remain archived", async () => {
+test("the cloud-save interval release leads the five-item trilingual projection while older updates remain archived", async () => {
+  const cloudSaveUpdateId = "seed-update-2026-09-22-cloud-save-10min";
   const reviewUpdateId = "seed-update-2026-09-08-site-review-optimization";
   const mobileBlogRetiredUpdateId = "seed-update-2026-09-02-mobile-blog-retired";
   const passwordRoomResetUpdateId = "seed-update-2026-08-27-password-room-reset";
@@ -71,7 +72,8 @@ test("the site review release leads the five-item trilingual projection while ol
     import("../js/data/home-content.mjs")
   ]);
 
-  assert.deepEqual(content.updates.slice(0, 27).map((update) => update.article_id), [
+  assert.deepEqual(content.updates.slice(0, 28).map((update) => update.article_id), [
+    cloudSaveUpdateId,
     reviewUpdateId,
     mobileBlogRetiredUpdateId,
     passwordRoomResetUpdateId,
@@ -100,12 +102,14 @@ test("the site review release leads the five-item trilingual projection while ol
     agentReadBreadthUpdateId,
     whiteboard2048UpdateId,
   ]);
-  assert.equal(content.updates[0].slug, "2026-09-08-site-review-optimization");
-  assert.equal(content.updates[0].published_at, "2026-09-07T23:00:00.000Z");
-  assert.equal(content.updates[1].slug, "2026-09-02-mobile-blog-retired");
-  assert.equal(content.updates[1].published_at, "2026-09-02T07:20:00.000Z");
-  assert.equal(content.updates[2].article_id, passwordRoomResetUpdateId);
-  assert.equal(homeContent.updates[0].article_id, reviewUpdateId);
+  assert.equal(content.updates[0].slug, "2026-09-22-cloud-save-10min");
+  assert.equal(content.updates[0].published_at, "2026-09-21T16:24:26.443Z");
+  assert.equal(content.updates[1].slug, "2026-09-08-site-review-optimization");
+  assert.equal(content.updates[1].published_at, "2026-09-07T23:00:00.000Z");
+  assert.equal(content.updates[2].slug, "2026-09-02-mobile-blog-retired");
+  assert.equal(content.updates[2].published_at, "2026-09-02T07:20:00.000Z");
+  assert.equal(content.updates[3].article_id, passwordRoomResetUpdateId);
+  assert.equal(homeContent.updates[0].article_id, cloudSaveUpdateId);
   assert.ok(content.updates.some((update) => update.article_id === trafficUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === calmWhiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === reliableWhiteboardUpdateId));
@@ -114,11 +118,11 @@ test("the site review release leads the five-item trilingual projection while ol
   assert.ok(content.updates.some((update) => update.article_id === knowledgeUpdateId));
   assert.equal(homeContent.updates.length, 5);
   assert.deepEqual(homeContent.updates.map((update) => update.article_id), [
+    cloudSaveUpdateId,
     reviewUpdateId,
     mobileBlogRetiredUpdateId,
     passwordRoomResetUpdateId,
-    chatWhiteboardUiUpdateId,
-    "seed-update-2026-08-19-daily-ai-news-rss"
+    chatWhiteboardUiUpdateId
   ]);
   assert.ok(content.updates.some((update) => update.article_id === minimaxH3UpdateId));
   assert.ok(!homeContent.updates.some((update) => update.article_id === minimaxH3UpdateId));
@@ -144,6 +148,7 @@ test("the site review release leads the five-item trilingual projection while ol
 });
 
 test("site review assets and retained public modules keep independent cache versions", () => {
+  const cloudSaveReleaseVersion = "20260922-cloud-save-10min-r1";
   const reviewVersion = "20260908-site-review-r1";
   const publicVersion = "20260809-motion-polish-r2";
   const switchRouteMotionVersion = "20260810-wallpaper-switch-route-motion-r1";
@@ -168,7 +173,7 @@ test("site review assets and retained public modules keep independent cache vers
     assert.ok(index.includes(`${asset}?v=${reviewVersion}`), `${asset} should use ${reviewVersion}`);
   }
   assert.ok(index.includes(`/css/mobile-ios-shell.css?v=${reviewVersion}`));
-  assert.ok(index.includes(`/js/main.js?v=${reviewVersion}`));
+  assert.ok(index.includes(`/js/main.js?v=${cloudSaveReleaseVersion}`));
   assert.ok(main.includes(`wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));
   assert.ok(changelog.includes(switchRouteMotionVersion), "the wallpaper route-motion release token must remain in project history");
   assert.ok(changelog.includes(videoLinkAutofillVersion), "the video-link release token must remain in project history");
@@ -207,7 +212,7 @@ test("site review assets and retained public modules keep independent cache vers
   assert.ok(main.includes(`const routeStyleVersion = "${reviewVersion}"`));
   assert.ok(main.includes(`./core/i18n.mjs?v=${reviewVersion}`));
   assert.ok(main.includes(`./core/wallpaper-time.mjs?v=${publicVersion}`));
-  assert.ok(main.includes(`./data/home-content.mjs?v=${reviewVersion}`));
+  assert.ok(main.includes(`./data/home-content.mjs?v=${cloudSaveReleaseVersion}`));
   assert.ok(main.includes(`./core/wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));
   assert.ok(main.includes(`./features/account.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./routes/knowledge.mjs?v=${reviewVersion}`));

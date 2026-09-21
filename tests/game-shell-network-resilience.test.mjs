@@ -56,3 +56,15 @@ test("the game iframe enters local mode before optional account and cloud recove
   assert.equal(gameShell.split("retryCloud:").length - 1, 3, "cloud retry copy should exist in all three languages");
   assert.match(gameShell, /addCloudRetryButton\(actions\)/);
 });
+
+test("automatic cloud saves use a ten-minute cadence while the manual button syncs immediately", () => {
+  assert.match(gameShell, /const cloudAutoSyncIntervalMs = 10 \* 60 \* 1000;/);
+  assert.match(
+    gameShell,
+    /window\.setInterval\(\(\) => syncToCloud\(game, false\), cloudAutoSyncIntervalMs\)/
+  );
+  assert.match(
+    gameShell,
+    /syncButton\.addEventListener\("click", \(\) => \{\s*void syncToCloud\(currentGame, true\);\s*\}\)/
+  );
+});

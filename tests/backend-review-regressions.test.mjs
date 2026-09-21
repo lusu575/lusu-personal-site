@@ -152,13 +152,13 @@ test("incremental content migration preserves edited history and records a durab
   DB.sqlite.exec("delete from site_data_migrations");
   const historicalId = "seed-update-2026-09-02-mobile-blog-retired";
   DB.sqlite.prepare("update article_translations set title = 'Administrator revised this title' where article_id = ? and lang = 'zh'").run(historicalId);
-  DB.sqlite.exec("update article_translations set title = 'Administrator revised this release' where article_id = 'seed-update-2026-09-08-site-review-optimization' and lang = 'zh'");
+  DB.sqlite.exec("update article_translations set title = 'Administrator revised this release' where article_id = 'seed-update-2026-09-22-cloud-save-10min' and lang = 'zh'");
   DB.sqlite.prepare("update articles set tags = ?, updated_at = '2026-09-07T09:00:00.000Z' where article_id = ?")
     .run(JSON.stringify(["AI", "ai", "Keep this tag"]), historicalId);
   const migrated = await call("articles?lang=zh");
   assert.equal(migrated.status, 200, await migrated.clone().text());
   assert.equal(DB.sqlite.prepare("select title from article_translations where article_id = ? and lang = 'zh'").get(historicalId).title, "Administrator revised this title");
-  assert.equal(DB.sqlite.prepare("select title from article_translations where article_id = 'seed-update-2026-09-08-site-review-optimization' and lang = 'zh'").get().title, "Administrator revised this release");
+  assert.equal(DB.sqlite.prepare("select title from article_translations where article_id = 'seed-update-2026-09-22-cloud-save-10min' and lang = 'zh'").get().title, "Administrator revised this release");
   assert.deepEqual(JSON.parse(DB.sqlite.prepare("select tags from articles where article_id = ?").get(historicalId).tags), ["AI", "Keep this tag"]);
   assert.equal(DB.sqlite.prepare("select updated_at from articles where article_id = ?").get(historicalId).updated_at, "2026-09-07T09:00:00.000Z");
   assert.equal(DB.sqlite.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value, ARTICLE_SEED_VERSION);
@@ -173,11 +173,11 @@ test("a failed content migration retains the previous version and can retry", as
   const { DB, call } = await authFixture(t);
   DB.sqlite.exec(await readFile(new URL("../cloudflare/schema.sql", import.meta.url), "utf8"));
   DB.sqlite.prepare("update site_runtime_state set value = ? where key = 'article_seed_version'").run(HISTORICAL_ARTICLE_BASELINE);
-  DB.sqlite.exec("delete from site_data_migrations; delete from articles where article_id = 'seed-update-2026-09-08-site-review-optimization'; create trigger reject_release before insert on article_translations when new.article_id = 'seed-update-2026-09-08-site-review-optimization' and new.lang = 'ja' begin select raise(abort, 'release temporarily unavailable'); end");
+  DB.sqlite.exec("delete from site_data_migrations; delete from articles where article_id = 'seed-update-2026-09-22-cloud-save-10min'; create trigger reject_release before insert on article_translations when new.article_id = 'seed-update-2026-09-22-cloud-save-10min' and new.lang = 'ja' begin select raise(abort, 'release temporarily unavailable'); end");
   const failed = await call("articles?lang=zh");
   assert.equal(failed.status, 500);
-  assert.equal(DB.sqlite.prepare("select count(*) as n from articles where article_id = 'seed-update-2026-09-08-site-review-optimization'").get().n, 0);
-  assert.equal(DB.sqlite.prepare("select count(*) as n from article_translations where article_id = 'seed-update-2026-09-08-site-review-optimization'").get().n, 0);
+  assert.equal(DB.sqlite.prepare("select count(*) as n from articles where article_id = 'seed-update-2026-09-22-cloud-save-10min'").get().n, 0);
+  assert.equal(DB.sqlite.prepare("select count(*) as n from article_translations where article_id = 'seed-update-2026-09-22-cloud-save-10min'").get().n, 0);
   assert.equal(DB.sqlite.prepare("select count(*) as n from site_data_migrations").get().n, 0);
   assert.equal(DB.sqlite.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value, HISTORICAL_ARTICLE_BASELINE);
   DB.sqlite.exec("drop trigger reject_release");
@@ -204,7 +204,7 @@ function deferred() {
 test("an older worker rejects future and unfamiliar same-day release markers without content writes", async (t) => {
   const { DB, call } = await seededMigrationFixture(t);
   DB.sqlite.exec("update article_translations set title = 'Future editor title' where lang = 'zh'");
-  for (const marker of ["20260909-test", "20260908-site-review-r2", "20260908-another-release-r1"]) {
+  for (const marker of ["20260923-test", "20260922-cloud-save-10min-r2", "20260922-another-release-r1"]) {
     DB.sqlite.prepare("update site_runtime_state set value = ? where key = 'article_seed_version'").run(marker);
     const response = await call("articles?lang=zh");
     assert.equal(response.status, 503);
@@ -232,11 +232,11 @@ test("separate database wrappers recheck the marker after another isolate comple
   const secondDB = { prepare: DB.prepare.bind(DB), batch: DB.batch.bind(DB) };
   const second = await onRequest({ request: new Request("https://example.test/api/articles?lang=en"), env: { ...env, DB: secondDB } });
   assert.equal(second.status, 200, await second.clone().text());
-  DB.sqlite.exec("update article_translations set title = 'Edited after the newer isolate completed' where article_id = 'seed-update-2026-09-08-site-review-optimization' and lang = 'zh'");
+  DB.sqlite.exec("update article_translations set title = 'Edited after the newer isolate completed' where article_id = 'seed-update-2026-09-22-cloud-save-10min' and lang = 'zh'");
   release.resolve();
   const firstResult = await first;
   assert.equal(firstResult.status, 200, await firstResult.clone().text());
-  assert.equal(DB.sqlite.prepare("select title from article_translations where article_id = 'seed-update-2026-09-08-site-review-optimization' and lang='zh'").get().title, "Edited after the newer isolate completed");
+  assert.equal(DB.sqlite.prepare("select title from article_translations where article_id = 'seed-update-2026-09-22-cloud-save-10min' and lang='zh'").get().title, "Edited after the newer isolate completed");
   assert.equal(DB.sqlite.prepare("select count(*) as n from site_runtime_state where key='article_seed_version:lease'").get().n, 0);
 });
 
@@ -244,7 +244,7 @@ test("migration ownership and version fences independently abort stale content w
   for (const fault of ["lease", "marker", "both", "expired"]) {
     await t.test(fault, async (t) => {
       const { DB, call } = await seededMigrationFixture(t);
-      DB.sqlite.exec("delete from articles where article_id = 'seed-update-2026-09-08-site-review-optimization'");
+      DB.sqlite.exec("delete from articles where article_id = 'seed-update-2026-09-22-cloud-save-10min'");
       let intercepted = false;
       DB.beforeBatch = async (statements) => {
         if (intercepted || !statements[0].sql.includes("case when exists")) return;
@@ -253,7 +253,7 @@ test("migration ownership and version fences independently abort stale content w
           DB.sqlite.exec("update site_runtime_state set value='successor', updated_at='2099-01-01T00:00:00.000Z' where key='article_seed_version:lease'");
         }
         if (fault === "marker" || fault === "both") {
-          DB.sqlite.exec("update site_runtime_state set value='20260909-successor-r1' where key='article_seed_version'");
+          DB.sqlite.exec("update site_runtime_state set value='20260923-successor-r1' where key='article_seed_version'");
         }
         if (fault === "expired") {
           DB.sqlite.exec("update site_runtime_state set updated_at='2000-01-01T00:00:00.000Z' where key='article_seed_version:lease'");
@@ -261,9 +261,9 @@ test("migration ownership and version fences independently abort stale content w
       };
       const response = await call("articles?lang=zh");
       assert.equal(response.status, 500);
-      assert.equal(DB.sqlite.prepare("select count(*) as n from articles where article_id='seed-update-2026-09-08-site-review-optimization'").get().n, 0);
+      assert.equal(DB.sqlite.prepare("select count(*) as n from articles where article_id='seed-update-2026-09-22-cloud-save-10min'").get().n, 0);
       assert.equal(DB.sqlite.prepare("select value from site_runtime_state where key='article_seed_version'").get().value,
-        fault === "marker" || fault === "both" ? "20260909-successor-r1" : "20260902-mobile-blog-retired-r1");
+        fault === "marker" || fault === "both" ? "20260923-successor-r1" : "20260902-mobile-blog-retired-r1");
       const lease = DB.sqlite.prepare("select value from site_runtime_state where key='article_seed_version:lease'").get();
       assert.equal(lease?.value, fault === "lease" || fault === "both" ? "successor" : undefined);
     });

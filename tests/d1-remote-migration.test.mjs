@@ -214,9 +214,9 @@ test("remote D1 runner is idempotent on a fresh schema and does not issue ALTER 
 
 test("remote D1 release validation rejects a missing migration record, article, or translation", async (t) => {
   const cases = [
-    ["migration", "delete from site_data_migrations where version = '20260908-site-review-r1'", "site-review-migration-record"],
-    ["article", "delete from articles where article_id = 'seed-update-2026-09-08-site-review-optimization'", "site-review-update-article"],
-    ["translation", "delete from article_translations where article_id = 'seed-update-2026-09-08-site-review-optimization' and lang = 'ja'", "site-review-update-translations"]
+    ["migration", "delete from site_data_migrations where version = '20260922-cloud-save-10min-r1'", "cloud-save-migration-record"],
+    ["article", "delete from articles where article_id = 'seed-update-2026-09-22-cloud-save-10min'", "cloud-save-update-article"],
+    ["translation", "delete from article_translations where article_id = 'seed-update-2026-09-22-cloud-save-10min' and lang = 'ja'", "cloud-save-update-translations"]
   ];
   for (const [name, remove, expected] of cases) {
     await t.test(name, async () => {
@@ -491,23 +491,22 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
-  assert.match(verificationSql, /article_seed_version' and value = '20260908-site-review-r1'/);
+  assert.match(verificationSql, /article_seed_version' and value = '20260922-cloud-save-10min-r1'/);
   const currentReleaseVerificationSql = REMOTE_MIGRATION_VERIFICATION_QUERIES.find((sql) => (
-    sql.includes("wallpaper-game-display-fix-update-article")
+    sql.includes("cloud-save-update-article")
   ));
-  assert.ok(currentReleaseVerificationSql, "missing current wallpaper and game display release verification group");
-  assert.match(currentReleaseVerificationSql, /wallpaper-game-display-fix-update-article/);
-  assert.match(currentReleaseVerificationSql, /article_id = 'seed-update-2026-08-12-wallpaper-game-display-fix'/);
-  assert.match(currentReleaseVerificationSql, /slug = '2026-08-12-wallpaper-game-display-fix'/);
+  assert.ok(currentReleaseVerificationSql, "missing current cloud-save release verification group");
+  assert.match(currentReleaseVerificationSql, /cloud-save-update-article/);
+  assert.match(currentReleaseVerificationSql, /article_id = 'seed-update-2026-09-22-cloud-save-10min'/);
+  assert.match(currentReleaseVerificationSql, /slug = '2026-09-22-cloud-save-10min'/);
   assert.match(currentReleaseVerificationSql, /category = 'site-updates'/);
   assert.match(currentReleaseVerificationSql, /status = 'published'/);
   assert.match(currentReleaseVerificationSql, /is_pinned = 0/);
   assert.match(currentReleaseVerificationSql, /cover_image = ''/);
-  assert.match(currentReleaseVerificationSql, /published_at = '2026-08-12T07:30:00.000Z'/);
-  assert.match(currentReleaseVerificationSql, /wallpaper-game-display-fix-update-translations/);
-  assert.match(currentReleaseVerificationSql, /lang = 'zh' and title = '视频壁纸叠层、返回闪烁与游戏显示修复'/);
-  assert.match(currentReleaseVerificationSql, /lang = 'en' and title = 'Wallpaper Layering, Return Flash, and Game Display Fixes'/);
-  assert.match(currentReleaseVerificationSql, /lang = 'ja' and title = '動画壁紙の重なり・復帰時のちらつき・ゲーム表示を修正'/);
+  assert.match(currentReleaseVerificationSql, /published_at = '2026-09-21T16:24:26.443Z'/);
+  assert.match(currentReleaseVerificationSql, /cloud-save-update-translations/);
+  assert.match(currentReleaseVerificationSql, /lang in \('zh', 'en', 'ja'\)/);
+  assert.match(currentReleaseVerificationSql, /length\(trim\(title\)\) > 0/);
   assert.match(currentReleaseVerificationSql, /length\(trim\(summary\)\) > 0/);
   assert.match(currentReleaseVerificationSql, /length\(trim\(content_markdown\)\) > 0/);
   assert.match(verificationSql, /h3-first-version-video-sr-48fps-update-article/);

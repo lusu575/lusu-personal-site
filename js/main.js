@@ -5,7 +5,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260908-site-review-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260908-site-review-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260922-cloud-save-10min-r1";
 import {
   WALLPAPER_TIME_THEMES,
   createWallpaperTimeOverride,
