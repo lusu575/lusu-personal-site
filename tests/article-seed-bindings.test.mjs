@@ -36,7 +36,6 @@ const H3_FIRST_VERSION_PUBLISHED_AT = "2026-08-11T10:40:00.000Z";
 const MINIMAX_H3_CONSOLE_UPDATE_ID = "seed-update-2026-08-12-minimax-h3-console";
 const MINIMAX_H3_CONSOLE_PUBLISHED_AT = "2026-08-12T08:00:00.000Z";
 const HIDE_MINIMAX_H3_TOOLS_UPDATE_ID = "seed-update-2026-08-13-hide-minimax-h3-tools";
-const DAILY_AI_NEWS_RSS_UPDATE_ID = "seed-update-2026-08-19-daily-ai-news-rss";
 const CHAT_WHITEBOARD_UI_UPDATE_ID = "seed-update-2026-08-20-chat-whiteboard-ui-fixes";
 const PASSWORD_ROOM_RESET_UPDATE_ID = "seed-update-2026-08-27-password-room-reset";
 const MOBILE_BLOG_RETIRED_UPDATE_ID = "seed-update-2026-09-02-mobile-blog-retired";
