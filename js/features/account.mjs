@@ -711,6 +711,7 @@ export function createAccountFeature({
       const failure = accountRequestFailure(error, mode, editingField);
       setFieldError(failure.field, failure.key);
       setAccountStatus(failure.key, { error: true });
+      setAccountSubmitting("");
       openAccountPopover({ focus: "error", motion });
       const { input } = fieldRefs(failure.field);
       input.focus({ preventScroll: true });

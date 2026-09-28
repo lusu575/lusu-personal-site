@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
+import { ARTICLE_SEED_VERSION } from "../functions/api/content-migrations.mjs";
 import { normalizeArticleTags, normalizeHistoricalArticleTags } from "../functions/api/article-tags.mjs";
 import { runPeriodicDataCleanup, DATA_CLEANUP_STATE_KEY, DATA_CLEANUP_LEASE_KEY } from "../functions/api/data-cleanup-service.mjs";
 
@@ -204,7 +205,7 @@ function deferred() {
 test("an older worker rejects future and unfamiliar same-day release markers without content writes", async (t) => {
   const { DB, call } = await seededMigrationFixture(t);
   DB.sqlite.exec("update article_translations set title = 'Future editor title' where lang = 'zh'");
-  for (const marker of ["20260923-test", "20260922-cloud-save-10min-r2", "20260922-another-release-r1"]) {
+  for (const marker of ["20990101-test", `${ARTICLE_SEED_VERSION}-unknown`, `${ARTICLE_SEED_VERSION.slice(0, 8)}-another-release-r1`]) {
     DB.sqlite.prepare("update site_runtime_state set value = ? where key = 'article_seed_version'").run(marker);
     const response = await call("articles?lang=zh");
     assert.equal(response.status, 503);

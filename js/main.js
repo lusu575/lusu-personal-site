@@ -5,7 +5,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260908-site-review-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260922-cloud-save-10min-r1";
+import { homeContent } from "./data/home-content.mjs?v=20260928-mobile-layout-r2";
 import {
   WALLPAPER_TIME_THEMES,
   createWallpaperTimeOverride,
@@ -22,7 +22,7 @@ import {
   createWallpaperAmbientController,
   releaseWallpaperAmbientVideo
 } from "./core/wallpaper-ambient.mjs?v=20260812-wallpaper-game-display-r1";
-import { createAccountFeature } from "./features/account.mjs?v=20260809-motion-polish-r2";
+import { createAccountFeature } from "./features/account.mjs?v=20260928-mobile-layout-r2";
 import { createConnectionStatus } from "./features/connection-status.mjs?v=20260726-security-reliability-r1";
 
 const pageParams = new URLSearchParams(window.location.search);

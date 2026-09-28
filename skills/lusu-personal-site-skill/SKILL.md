@@ -521,3 +521,8 @@ $env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wran
 - 主站所有视频卡片必须保持统一尺寸；视频封面要铺满封面区域，封面失败时保留同尺寸像素风默认占位图；移动端视频区必须单列适配且不得横向溢出。
 - 视频埋点复用 `js/telemetry.js`，可记录分类筛选、视频点击、播放按钮点击、播放器打开和播放失败；不得记录后台输入框内容。
 - 修改 `js/main.js`、`css/style.css`、`admin/admin.js`、`admin/admin.css` 或视频视觉资源后，必须更新 `index.html` / `admin/index.html` 的 query 版本号。
+
+
+## 2026-09-28 手机布局维护
+
+移动 Chat 的布局集中在 mobile-ios-shell.css 的 September 2026 区段，使用 identity／nickname／private／log／compose／feedback 命名区域；避免旧固定行号覆盖。视频使用完整 16:9 封面，上下式内容。账号错误恢复焦点前先解除 submitting 的 disabled 状态。

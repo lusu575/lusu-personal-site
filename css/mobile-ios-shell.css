@@ -2884,30 +2884,6 @@ html[data-ui-shell="mobile"] .notepad-menu {
   display: none;
 }
 
-html[data-ui-shell="mobile"] .chatroom-window {
-  display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
-}
-
-html[data-ui-shell="mobile"] .chatroom-header {
-  grid-row: 1;
-  margin: 5px 5px 0;
-  border: 1px solid var(--mobile-frame-edge);
-  border-radius: 10px;
-  background: rgba(246, 241, 232, 0.94);
-  box-shadow: inset 0 0 0 1px var(--mobile-frame-highlight), 0 2px 0 var(--mobile-frame-mid);
-}
-
-html[data-ui-shell="mobile"] .chatroom-avatar {
-  border-radius: 13px;
-}
-
-html[data-ui-shell="mobile"] .chatroom-status {
-  justify-content: flex-start;
-  max-width: none;
-  font-size: 11px;
-}
-
 html[data-ui-shell="mobile"] .chat-private-room-panel {
   position: relative;
   grid-row: 2;
@@ -2953,20 +2929,6 @@ html[data-ui-shell="mobile"] .chatroom-log {
   box-shadow: inset 0 0 0 1px var(--mobile-frame-highlight);
 }
 
-html[data-ui-shell="mobile"] .chatroom-compose {
-  position: relative;
-  grid-row: 4;
-  align-items: center;
-  margin: 0 5px;
-  border-right: 1px solid var(--mobile-frame-edge);
-  border-left: 1px solid var(--mobile-frame-edge);
-}
-
-html[data-ui-shell="mobile"] .chatroom-compose textarea {
-  height: 52px;
-  resize: none;
-}
-
 html[data-ui-shell="mobile"] .chatroom-compose textarea::-webkit-scrollbar {
   width: 4px;
 }
@@ -2984,18 +2946,8 @@ html[data-ui-shell="mobile"] .chatroom-window.is-private-room .chatroom-compose 
   background: rgba(158, 182, 222, 0.5);
 }
 
-html[data-ui-shell="mobile"] .chatroom-counter {
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.86);
-}
-
 html[data-ui-shell="mobile"] .chatroom-window.is-private-room .chatroom-counter {
   background: rgba(9, 17, 31, 0.86);
-}
-
-html[data-ui-shell="mobile"] .chat-send-button {
-  gap: 7px;
-  font-size: 15px;
 }
 
 html[data-ui-shell="mobile"] .send-bubble-icon,
@@ -3006,17 +2958,6 @@ html[data-ui-shell="mobile"] .chatroom-window.is-private-room .send-bubble-icon 
   background-position: 100% 100%;
   background-repeat: no-repeat;
   background-size: 200% 200%;
-}
-
-html[data-ui-shell="mobile"] .chatroom-footer {
-  grid-row: 5;
-  margin: 0 5px 5px;
-  padding: 7px 10px 9px;
-  border: 1px solid var(--mobile-frame-edge);
-  border-top: 0;
-  border-radius: 0 0 10px 10px;
-  font-size: 12px;
-  line-height: 1.25;
 }
 
 html[data-ui-shell="mobile"] #chat-feedback {
@@ -3614,21 +3555,10 @@ html[data-ui-shell="mobile"] .online-dot {
     margin-top: 4px;
   }
 
-  html[data-ui-shell="mobile"] .chatroom-header {
-    display: grid;
-  }
-
   html[data-ui-shell="mobile"] .chatroom-nickname-row > span:first-child,
   html[data-ui-shell="mobile"] #chat-sync-status,
   html[data-ui-shell="mobile"] .chatroom-status .online-dot {
     display: none;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-avatar {
-    display: block;
-    grid-column: 1;
-    grid-row: 1;
-    align-self: center;
   }
 
   html[data-ui-shell="mobile"] .chatroom-nickname-row,
@@ -3642,10 +3572,6 @@ html[data-ui-shell="mobile"] .online-dot {
 
   html[data-ui-shell="mobile"] .chatroom-nickname-row {
     grid-column: 2;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-status {
-    grid-column: 3;
   }
 
   html[data-ui-shell="mobile"] .chat-nickname-form {
@@ -3694,20 +3620,6 @@ html[data-ui-shell="mobile"] .online-dot {
     grid-column: auto;
     min-width: 0;
     min-height: 44px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-compose textarea {
-    grid-row: 1;
-    grid-column: 1;
-    min-height: 44px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-counter {
-    pointer-events: none;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-footer {
-    font-size: 12px;
   }
 
   html[data-ui-shell="mobile"] .chatroom-autoscroll {
@@ -4146,19 +4058,10 @@ html[data-ui-shell="mobile"] .online-dot {
     min-height: 44px;
   }
 
-  html[data-ui-shell="mobile"] .chatroom-header {
-    display: grid;
-  }
-
   html[data-ui-shell="mobile"] .chatroom-nickname-row > span:first-child,
   html[data-ui-shell="mobile"] #chat-sync-status,
   html[data-ui-shell="mobile"] .chatroom-status .online-dot {
     display: none;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-avatar {
-    display: block;
-    align-self: center;
   }
 
   html[data-ui-shell="mobile"] .chatroom-nickname-row,
@@ -4206,36 +4109,6 @@ html[data-ui-shell="mobile"] .online-dot {
   html[data-ui-shell="mobile"] .chat-private-room-panel input,
   html[data-ui-shell="mobile"] .chat-private-room-panel .xp-button {
     min-height: 44px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-compose {
-    position: relative;
-    gap: 4px 8px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-compose textarea {
-    grid-row: 1;
-    grid-column: 1;
-    min-height: 44px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-counter {
-    position: static;
-    grid-row: 1;
-    grid-column: 2;
-    font-size: 11px;
-    pointer-events: none;
-  }
-
-  html[data-ui-shell="mobile"] .chat-send-button {
-    grid-row: 1;
-    grid-column: 3;
-    min-width: 96px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-footer {
-    display: flex;
-    font-size: 12px;
   }
 
   html[data-ui-shell="mobile"] #chat-feedback {
@@ -4745,21 +4618,6 @@ html[data-ui-shell="mobile"] #resource-list .meta-row > .tag {
 
 /* Chat's identity and room controls form two predictable rows. The composer's
    count is a secondary status row beside the input instead of a loose column. */
-html[data-ui-shell="mobile"] .chatroom-header {
-  grid-template-columns: 44px minmax(0, 1fr);
-  grid-template-rows: minmax(44px, auto) minmax(44px, auto);
-  align-items: center;
-  gap: 5px 8px;
-  padding: 6px 8px;
-}
-
-html[data-ui-shell="mobile"] .chatroom-avatar {
-  grid-column: 1;
-  grid-row: 1;
-  align-self: center;
-  width: 40px;
-  height: 40px;
-}
 
 html[data-ui-shell="mobile"] .chatroom-nickname-row {
   grid-column: 2;
@@ -4787,20 +4645,6 @@ html[data-ui-shell="mobile"] .chat-nickname-button {
   font-size: max(12px, 0.75rem);
 }
 
-html[data-ui-shell="mobile"] .chatroom-status {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-row: 2;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 4px;
-  width: 100%;
-  min-height: 44px;
-  padding: 3px 3px 3px 10px;
-  border-radius: 10px;
-  background: rgba(215, 229, 250, 0.72);
-}
-
 html[data-ui-shell="mobile"] .chatroom-window.is-private-room .chatroom-status {
   background: rgba(32, 43, 69, 0.88);
 }
@@ -4823,34 +4667,6 @@ html[data-ui-shell="mobile"] .chat-room-toggle {
   min-height: 44px;
   padding-inline: 8px;
   font-size: max(12px, 0.75rem);
-}
-
-html[data-ui-shell="mobile"] .chatroom-compose {
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: minmax(44px, auto) 17px;
-  gap: 2px 8px;
-}
-
-html[data-ui-shell="mobile"] .chatroom-compose textarea {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-html[data-ui-shell="mobile"] .chatroom-counter {
-  grid-column: 1;
-  grid-row: 2;
-  align-self: center;
-  justify-self: end;
-  min-width: 0;
-  padding: 0 2px;
-  font-size: var(--mobile-readable-caption);
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  pointer-events: none;
-}
-
-html[data-ui-shell="mobile"] .chat-send-button {
-  align-self: stretch;
 }
 
 /* Dock labels and compact chrome stay readable without reducing any 44px
@@ -4964,22 +4780,6 @@ html[data-ui-shell="mobile"] body[data-motion="off"] :is(
 /* Short portrait Chat still uses the same two-row header, with a compact log
    and a count/status line that never steals the send button's touch target. */
 @media (max-width: 760px) and (max-height: 720px) and (orientation: portrait) {
-  html[data-ui-shell="mobile"] .chatroom-header {
-    grid-template-columns: 38px minmax(0, 1fr);
-    grid-template-rows: 44px 44px;
-    box-sizing: border-box;
-    height: 90px;
-    min-height: 90px;
-    max-height: 90px;
-    gap: 0 6px;
-    margin: 2px 5px 0;
-    padding: 0 6px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-avatar {
-    width: 36px;
-    height: 36px;
-  }
 
   html[data-ui-shell="mobile"] .chat-private-room-panel {
     box-sizing: border-box;
@@ -5048,54 +4848,8 @@ html[data-ui-shell="mobile"] body[data-motion="off"] :is(
     margin: 2px 5px;
   }
 
-  html[data-ui-shell="mobile"] .chatroom-compose {
-    position: relative;
-    grid-template-columns: minmax(0, 1fr) minmax(76px, auto);
-    grid-template-rows: 44px;
-    gap: 0 8px;
-    padding: 3px 6px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-compose textarea {
-    width: 100%;
-    height: 44px;
-    max-height: 44px;
-    padding-right: 54px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-counter {
-    position: absolute;
-    right: 98px;
-    bottom: 7px;
-    z-index: 1;
-    grid-column: auto;
-    grid-row: auto;
-    padding: 2px 3px;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.86);
-    font-size: var(--mobile-readable-caption);
-  }
-
   html[data-ui-shell="mobile"] .chatroom-window.is-private-room .chatroom-counter {
     background: rgba(9, 17, 31, 0.86);
-  }
-
-  html[data-ui-shell="mobile"] .chat-send-button {
-    grid-column: 2;
-    grid-row: 1;
-    min-width: 82px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-footer {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    box-sizing: border-box;
-    height: 45px;
-    min-height: 45px;
-    max-height: 45px;
-    gap: 6px;
-    padding: 0 6px;
   }
 
   html[data-ui-shell="mobile"] #chat-feedback {
@@ -5108,30 +4862,6 @@ html[data-ui-shell="mobile"] body[data-motion="off"] :is(
 /* 844x390 and similar short landscape viewports use a grouped identity rail:
    avatar/name/edit first, room segment second, feedback controls at the foot. */
 @media (orientation: landscape) and (max-height: 520px) {
-  html[data-ui-shell="mobile"] .chatroom-window {
-    grid-template-columns: minmax(204px, 29vw) minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr) 64px;
-    gap: 0 6px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-header {
-    grid-column: 1;
-    grid-row: 1 / 3;
-    grid-template-columns: 40px minmax(0, 1fr);
-    grid-template-rows: 48px 48px;
-    align-content: start;
-    gap: 5px 7px;
-    min-height: 0;
-    margin: 4px 0 4px 4px;
-    padding: 5px 6px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-avatar {
-    grid-column: 1;
-    grid-row: 1;
-    width: 38px;
-    height: 38px;
-  }
 
   html[data-ui-shell="mobile"] .chatroom-nickname-row {
     grid-column: 2;
@@ -5148,13 +4878,6 @@ html[data-ui-shell="mobile"] body[data-motion="off"] :is(
     padding-inline: 5px;
   }
 
-  html[data-ui-shell="mobile"] .chatroom-status {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-content: stretch;
-    min-height: 44px;
-  }
-
   html[data-ui-shell="mobile"] .chat-room-toggle {
     min-width: 76px;
     padding-inline: 6px;
@@ -5169,30 +4892,6 @@ html[data-ui-shell="mobile"] body[data-motion="off"] :is(
     grid-column: 2;
     grid-row: 2;
     margin: 4px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-compose {
-    grid-column: 2;
-    grid-row: 3;
-    grid-template-columns: minmax(0, 1fr) minmax(82px, auto);
-    grid-template-rows: 44px 14px;
-    padding: 3px 6px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-compose textarea {
-    width: 100%;
-    height: 44px;
-    max-height: 44px;
-  }
-
-  html[data-ui-shell="mobile"] .chatroom-footer {
-    grid-column: 1;
-    grid-row: 3;
-    align-content: center;
-    align-items: center;
-    gap: 2px 6px;
-    min-height: 64px;
-    padding: 3px 6px;
   }
 
   html[data-ui-shell="mobile"] #chat-feedback {
@@ -5238,43 +4937,10 @@ html[data-ui-shell="mobile"] body[data-motion="off"] :is(
 
 /* 2026-08-20 chat control polish: preserve one composer input surface at
    every mobile geometry and use the same compact XP send key as desktop. */
-html[data-ui-shell="mobile"] .chatroom-compose {
-  display: block;
-  padding: 7px 10px 4px;
-}
 
 html[data-ui-shell="mobile"] .chatroom-input-shell {
   position: relative;
   min-width: 0;
-}
-
-html[data-ui-shell="mobile"] .chatroom-compose textarea {
-  width: 100%;
-  min-height: 66px;
-  max-height: 108px;
-  padding: 9px 136px 27px 10px;
-}
-
-html[data-ui-shell="mobile"] .chatroom-counter {
-  position: absolute;
-  right: 68px;
-  bottom: 10px;
-  z-index: 2;
-}
-
-html[data-ui-shell="mobile"] .chat-send-button {
-  position: absolute;
-  right: 7px;
-  bottom: 7px;
-  z-index: 3;
-  grid-column: auto;
-  grid-row: auto;
-  width: 52px;
-  min-width: 52px;
-  height: 44px;
-  min-height: 44px;
-  padding: 5px;
-  border-radius: 4px;
 }
 
 html[data-ui-shell="mobile"] .send-bubble-icon,
@@ -5688,4 +5354,458 @@ html[data-ui-shell="mobile"] #games .game-card .card-action {
     width: 96px;
     min-width: 96px;
   }
+}
+
+/* Mobile layout, September 2026. Content sizing is intrinsic; only the
+   conversation track absorbs remaining height. Keep this geometry together. */
+html[data-ui-shell="mobile"] {
+  --mobile-readable-caption: 12px;
+  --mobile-panel-radius: 12px;
+}
+
+html[data-ui-shell="mobile"] body[data-route="home"] .desktop-icons {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: 102px;
+  gap: 12px 4px;
+  overflow-y: auto;
+  align-content: start;
+}
+
+html[data-ui-shell="mobile"] .desktop-icon {
+  width: min(104px, 100%);
+  height: 102px;
+  min-height: 102px;
+  gap: 8px;
+  padding: 8px 3px;
+  border-radius: 10px;
+}
+
+html[data-ui-shell="mobile"] .desktop-icon .icon-title {
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+html[data-ui-shell="mobile"] .xp-taskbar {
+  border-radius: 18px;
+  background: rgba(226, 240, 255, .8);
+}
+
+html[data-ui-shell="mobile"] :is(.start-button, .taskbar-tabs button) {
+  color: #16376f;
+  text-shadow: none;
+}
+
+html[data-ui-shell="mobile"] .page:not(.page-home) > .xp-window {
+  border-radius: var(--mobile-panel-radius) var(--mobile-panel-radius) 0 0;
+}
+
+html[data-ui-shell="mobile"] body:not([data-route="home"]) .mobile-route-copy > span {
+  display: none;
+}
+
+html[data-ui-shell="mobile"] .mobile-home-button {
+  border-radius: 10px;
+}
+
+html[data-ui-shell="mobile"] :is(.knowledge-searchbar, .folder-layout, .filter-row) {
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+html[data-ui-shell="mobile"] :is(.article-card, .video-card, .resource-card, .game-card) {
+  border-radius: 8px;
+  box-shadow: 0 2px 0 rgba(49, 85, 142, .12);
+}
+
+html[data-ui-shell="mobile"] :is(.article-card, .video-card, .resource-card, .game-card) :is(h2, h3) {
+  font-size: 16px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+html[data-ui-shell="mobile"] :is(.article-card, .video-card, .resource-card, .game-card) p {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+html[data-ui-shell="mobile"] #resource-list .resource-facts {
+  gap: 6px;
+}
+
+html[data-ui-shell="mobile"] #games .game-card .card-action {
+  max-width: none;
+}
+
+html[data-ui-shell="mobile"] #resource-list .resource-fact {
+  padding: 5px 7px;
+  line-height: 1.5;
+}
+
+html[data-ui-shell="mobile"] :is(#knowledge .content-list, #videos .card-grid, #resources .download-list, #games .game-list) {
+  scroll-padding-block: 12px;
+  padding-inline: 10px;
+}
+
+html[data-ui-shell="mobile"] .xp-button {
+  border-radius: 7px;
+}
+
+/* Named areas prevent hidden forms and deferred route CSS from shifting rows. */
+html[data-ui-shell="mobile"] #chatroom .chatroom-window {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto auto;
+  grid-template-areas: "identity" "nickname" "private" "log" "compose" "feedback";
+  gap: 0;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chatroom-header {
+  grid-area: identity;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  grid-template-rows: minmax(44px, auto) minmax(44px, auto);
+  align-content: start;
+  align-items: center;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  gap: 0 8px;
+  margin: 0;
+  padding: 2px 8px;
+  border: 0;
+  border-bottom: 1px solid #b7c9df;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chatroom-avatar {
+  grid-area: 1 / 1;
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chatroom-nickname-row {
+  grid-area: 1 / 2;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chatroom-nickname-row strong {
+  max-width: none;
+  font-size: 14px;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chatroom-status {
+  grid-area: 2 / 1 / 3 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px auto;
+  grid-template-rows: auto;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  min-height: 44px;
+  gap: 8px;
+  padding: 0;
+  background: transparent;
+}
+
+html[data-ui-shell="mobile"] #chatroom #chat-room-label {
+  grid-area: 1 / 1;
+  justify-self: start;
+  max-width: 100%;
+  font-size: 12px;
+}
+
+html[data-ui-shell="mobile"] #chatroom :is(.chat-nickname-button, .chat-room-toggle) {
+  width: auto;
+  min-width: 88px;
+  min-height: 44px;
+  height: auto;
+  margin: 0;
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chat-room-help { grid-area: 1 / 2; }
+html[data-ui-shell="mobile"] #chatroom .chat-room-toggle { grid-area: 1 / 3; }
+html[data-ui-shell="mobile"] #chatroom .chat-nickname-form { grid-area: nickname; }
+html[data-ui-shell="mobile"] #chatroom .chat-private-room-panel { grid-area: private; }
+
+html[data-ui-shell="mobile"] #chatroom .chatroom-log {
+  grid-area: log;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 12px 10px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chat-message {
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chat-message.is-own {
+  grid-template-columns: minmax(0, 1fr) 30px;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chat-message-avatar {
+  width: 30px;
+  height: 30px;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chat-message-meta {
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chat-bubble {
+  max-width: 100%;
+  padding: 8px 10px;
+  border-width: 1px;
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chatroom-compose {
+  grid-area: compose;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 68px;
+  grid-template-rows: 44px 14px;
+  grid-template-areas: "message send" "counter send";
+  align-items: stretch;
+  gap: 2px 8px;
+  margin: 0;
+  padding: 6px 8px 0;
+  border: 0;
+  border-top: 1px solid #b7c9df;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chatroom-compose textarea {
+  grid-area: message;
+  width: 100%;
+  min-height: 44px;
+  height: 44px;
+  max-height: 44px;
+  padding: 9px 10px;
+  border-radius: 7px;
+  font-size: 16px;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chatroom-input-shell { display: contents; }
+
+html[data-ui-shell="mobile"] #chatroom .chat-send-button .sr-only {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+  white-space: normal;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chatroom-counter {
+  grid-area: counter;
+  position: static;
+  justify-self: end;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chat-send-button {
+  position: static;
+  grid-area: send;
+  align-self: start;
+  width: 68px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 4px;
+  font-size: 14px;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chat-send-button .send-bubble-icon { display: none; }
+
+html[data-ui-shell="mobile"] #chatroom .chatroom-footer {
+  grid-area: feedback;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  height: auto;
+  min-height: 44px;
+  max-height: none;
+  gap: 0 8px;
+  margin: 0;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+html[data-ui-shell="mobile"] #chatroom #chat-feedback {
+  flex: 1 1 120px;
+  white-space: normal;
+  -webkit-line-clamp: unset;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chatroom-autoscroll input {
+  width: 20px;
+  height: 20px;
+  min-height: 0;
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  html[data-ui-shell="mobile"] #chatroom .chatroom-window {
+    grid-template-columns: minmax(220px, 30%) minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    grid-template-areas: "identity nickname" "identity private" "identity log" "feedback compose";
+  }
+
+  html[data-ui-shell="mobile"] #chatroom .chatroom-header {
+    border-bottom: 0;
+    border-right: 1px solid #b7c9df;
+    padding: 8px;
+  }
+
+  html[data-ui-shell="mobile"] #chatroom .chatroom-footer {
+    align-content: end;
+    padding-bottom: 4px;
+  }
+
+  html[data-ui-shell="mobile"] body[data-route="home"] .desktop-icons {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@media (max-height: 720px) {
+  html[data-ui-shell="mobile"] #chatroom .chatroom-compose {
+    grid-template-columns: minmax(0, 1fr) 40px 68px;
+    grid-template-rows: 44px;
+    grid-template-areas: "message counter send";
+    align-items: center;
+    padding-block: 4px;
+  }
+
+}
+
+/* A video remains a picture-first card, including on short phones. */
+html[data-ui-shell="mobile"] #videos .video-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: start;
+  align-self: start;
+  height: auto;
+  min-height: 0;
+  gap: 0;
+  padding: 0;
+}
+
+html[data-ui-shell="mobile"] #videos button.video-thumb {
+  width: 100%;
+  height: auto;
+  min-height: 44px;
+  aspect-ratio: 16 / 9;
+  margin: 0;
+  align-self: start;
+  border: 0;
+  border-bottom: 1px solid #b7c9df;
+  border-radius: 0;
+}
+
+html[data-ui-shell="mobile"] #videos button.video-thumb::before {
+  content: none;
+}
+
+html[data-ui-shell="mobile"] #videos .video-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto;
+  align-content: start;
+  align-items: center;
+  min-width: 0;
+  gap: 6px 10px;
+  padding: 10px 12px;
+}
+
+html[data-ui-shell="mobile"] #videos .video-body > .platform {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+html[data-ui-shell="mobile"] #videos .video-body > h2 {
+  grid-area: 1 / 1 / 2 / -1;
+  display: block;
+  max-height: none;
+  margin: 0;
+  overflow: visible;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+html[data-ui-shell="mobile"] #videos .video-body > p {
+  grid-area: 2 / 1 / 3 / -1;
+  margin: 0;
+  min-height: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-line-clamp: 2;
+}
+
+html[data-ui-shell="mobile"] #videos .video-meta {
+  grid-area: 3 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+html[data-ui-shell="mobile"] #videos .video-body .card-action {
+  grid-area: 3 / 2;
+  justify-self: end;
+  width: auto;
+  min-width: 72px;
+  min-height: 44px;
+  margin: 0;
+  padding: 6px 12px;
+}
+
+@media (orientation: portrait) and (max-height: 560px) {
+  html[data-ui-shell="mobile"] #videos .video-body {
+    grid-template-rows: auto auto;
+    gap: 4px 10px;
+    padding: 8px 10px;
+  }
+
+  html[data-ui-shell="mobile"] #videos .video-body > p { display: none; }
+  html[data-ui-shell="mobile"] #videos .video-meta { grid-row: 2; }
+  html[data-ui-shell="mobile"] #videos .video-body .card-action { grid-row: 2; }
 }

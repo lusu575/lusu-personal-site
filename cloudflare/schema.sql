@@ -15095,7 +15095,7 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 
 -- Advance the version only after all content statements succeed.
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260922-cloud-save-10min-r1', '2026-09-21T16:24:26.443Z')
+values ('article_seed_version', '20260928-mobile-layout-r2', '2026-09-21T16:24:26.443Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at
@@ -15103,3 +15103,37 @@ where site_runtime_state.value <> excluded.value;
 INSERT INTO site_data_migrations (version, applied_at, source)
 SELECT value, updated_at, 'schema' FROM site_runtime_state WHERE key = 'article_seed_version'
 ON CONFLICT(version) DO NOTHING;
+
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-09-28-mobile-layout', '2026-09-28-mobile-layout', 'site-updates', '["网站更新","移动端","聊天室","界面"]', '', 'published', 0, 0, '2026-09-28T02:00:00.000Z', '2026-09-28T02:00:00.000Z', '2026-09-28T02:00:00.000Z') on conflict(article_id) do update set slug = excluded.slug, category = excluded.category, tags = excluded.tags, status = excluded.status, updated_at = excluded.updated_at, published_at = excluded.published_at;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values
+('seed-update-2026-09-28-mobile-layout-zh', 'seed-update-2026-09-28-mobile-layout', 'zh', '手机界面重新排版', '首页入口、栏目卡片和底部导航统一调整；聊天室重新划分身份、房间、消息与输入区，改善短屏和横屏下的阅读与操作。', '# 手机界面重新排版
+
+首页入口、栏目卡片和底部导航统一调整；聊天室重新划分身份、房间、消息与输入区，改善短屏和横屏下的阅读与操作。
+
+- 首页竖屏采用三列入口，横屏采用一排入口，保留像素图标和时段壁纸。
+- 栏目窗口和卡片使用更简洁的边框、统一的字号和自然换行。
+- 视频卡保留完整的 16:9 大封面，下方排列标题和简介，作者日期与播放按钮并排。
+- 聊天室采用固定语义分区，消息列表独立滚动；短屏计数与发送按钮并排，横屏使用左侧房间栏。
+- 底部 Dock 提高文字对比，继续支持横滑与收起。
+- 保留中文、英文和日文界面。', '2026-09-28T02:00:00.000Z', '2026-09-28T02:00:00.000Z'),
+('seed-update-2026-09-28-mobile-layout-en', 'seed-update-2026-09-28-mobile-layout', 'en', 'A Reworked Mobile Layout', 'Home shortcuts, content cards, and navigation now share a clearer layout. Chat separates identity, room controls, messages, and composition for easier use on short and landscape screens.', '# A Reworked Mobile Layout
+
+Home shortcuts, content cards, and navigation now share a clearer layout. Chat separates identity, room controls, messages, and composition for easier use on short and landscape screens.
+
+- Home uses three columns in portrait and one row in landscape, with pixel icons and time-based wallpapers.
+- Windows and cards use simpler borders, consistent type sizes, and natural wrapping.
+- Video cards retain a full-width 16:9 cover, followed by the title and description, with author and date beside the play button.
+- Chat has explicit layout areas and a separately scrolling conversation. Compact screens place the counter beside Send; landscape uses a room sidebar.
+- Dock labels have higher contrast, with scrolling and collapse controls retained.
+- Chinese, English, and Japanese remain available.', '2026-09-28T02:00:00.000Z', '2026-09-28T02:00:00.000Z'),
+('seed-update-2026-09-28-mobile-layout-ja', 'seed-update-2026-09-28-mobile-layout', 'ja', 'モバイル画面のレイアウトを刷新', 'ホームの入口、各ページのカード、下部ナビゲーションを整理。チャットの名前・部屋・メッセージ・入力欄を分け、小さな画面や横向きでも使いやすくしました。', '# モバイル画面のレイアウトを刷新
+
+ホームの入口、各ページのカード、下部ナビゲーションを整理。チャットの名前・部屋・メッセージ・入力欄を分け、小さな画面や横向きでも使いやすくしました。
+
+- ホームは縦向きで3列、横向きで1行に配置。ピクセルアイコンと時間帯の壁紙を維持しました。
+- ウィンドウとカードの枠線、文字サイズ、折り返しを統一しました。
+- 動画カードは横幅いっぱいの16:9カバーを表示し、下にタイトルと説明、作者・日時と再生ボタンを配置します。
+- チャットを明確な領域に分け、メッセージだけをスクロールできます。小画面では文字数と送信ボタンを横に配置し、横向きでは部屋操作を左側に表示します。
+- Dockの文字のコントラストを改善し、横スクロールと折りたたみを維持しました。
+- 中国語・英語・日本語に対応しています。', '2026-09-28T02:00:00.000Z', '2026-09-28T02:00:00.000Z')
+on conflict(article_id, lang) do update set title = excluded.title, summary = excluded.summary, content_markdown = excluded.content_markdown, updated_at = excluded.updated_at;

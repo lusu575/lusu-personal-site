@@ -1,11 +1,46 @@
-// Home-only update summaries; intentionally excludes article bodies and non-Home route data.
+// Home-only update summaries; excludes article bodies.
 export const homeContent = Object.freeze({
   "updates": [
+    {
+      "article_id": "seed-update-2026-09-28-mobile-layout",
+      "slug": "2026-09-28-mobile-layout",
+      "category": "site-updates",
+      "tags": [
+        "网站更新",
+        "移动端",
+        "聊天室",
+        "界面"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-09-28T02:00:00.000Z",
+      "updated_at": "2026-09-28T02:00:00.000Z",
+      "published_at": "2026-09-28T02:00:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.09.28",
+      "title": {
+        "zh": "手机界面重新排版",
+        "en": "A Reworked Mobile Layout",
+        "ja": "モバイル画面のレイアウトを刷新"
+      },
+      "summary": {
+        "zh": "首页入口、栏目卡片和底部导航统一调整；聊天室重新划分身份、房间、消息与输入区，改善短屏和横屏下的阅读与操作。",
+        "en": "Home shortcuts, content cards, and navigation now share a clearer layout. Chat separates identity, room controls, messages, and composition for easier use on short and landscape screens.",
+        "ja": "ホームの入口、各ページのカード、下部ナビゲーションを整理。チャットの名前・部屋・メッセージ・入力欄を分け、小さな画面や横向きでも使いやすくしました。"
+      }
+    },
     {
       "article_id": "seed-update-2026-09-22-cloud-save-10min",
       "slug": "2026-09-22-cloud-save-10min",
       "category": "site-updates",
-      "tags": ["网站更新", "游戏区", "云存档", "可靠性"],
+      "tags": [
+        "网站更新",
+        "游戏区",
+        "云存档",
+        "可靠性"
+      ],
       "cover_image": "",
       "status": "published",
       "is_pinned": 0,
@@ -117,36 +152,6 @@ export const homeContent = Object.freeze({
         "zh": "互传、聊天室和在线画板的密码房在过期或管理删除后彻底清除存储，同一密码再进入会得到新空房；手机上取消或拒绝上传选择后也可立即重试。",
         "en": "Expired or admin-deleted password rooms in Transfer, Chat, and Whiteboard now release their stored data so the same password starts a clean room. Mobile upload pickers can also be reopened after cancellation, a denied permission, or a wrong choice.",
         "ja": "転送・チャット・オンライン画板の合言葉ルームは、期限切れまたは管理削除後に保存データを完全に解放し、同じ合言葉で新しい空ルームを開始します。モバイルの選択をキャンセル・拒否・間違えた後もすぐ再実行できます。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-20-chat-whiteboard-ui-fixes",
-      "slug": "2026-08-20-chat-whiteboard-ui-fixes",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "匿名聊天室",
-        "在线画板",
-        "界面优化"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-20T08:00:00.000Z",
-      "updated_at": "2026-08-20T08:00:00.000Z",
-      "published_at": "2026-08-20T08:00:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.08.20",
-      "title": {
-        "zh": "聊天室与在线画板界面修复",
-        "en": "Chat and Whiteboard Interface Fixes",
-        "ja": "チャットとオンライン画板のUI修正"
-      },
-      "summary": {
-        "zh": "聊天室移除消息区和输入区的异常留白，把发送按钮收进输入框并改为清晰的方角 XP 操作；聊天室密码房说明改为悬浮显示，在线画板保留三语说明和 Image2 像素大厅。",
-        "en": "Chat removes oversized gaps and places a clearer square-corner XP send key inside the input. Its password-room guide now appears on hover, while Whiteboard keeps trilingual help and its Image2 pixel lobby.",
-        "ja": "チャットの余分な空白をなくし、入力欄内の送信操作を見やすい角型XPボタンにしました。チャットのパスワード説明はホバー表示となり、画板は三言語説明とImage2のピクセル入口を維持します。"
       }
     }
   ]

@@ -232,6 +232,7 @@ test("A Dark Room keeps slider geometry and stores ownership across 390→844→
       "--no-default-browser-check",
       "--no-first-run",
       "--force-device-scale-factor=1",
+      "--edge-skip-compat-layer-relaunch",
       "about:blank"
     ], { stdio: ["ignore", "ignore", "pipe"], windowsHide: true });
     await getJson(`http://127.0.0.1:${port}/json/version`);
@@ -320,7 +321,13 @@ test("A Dark Room keeps slider geometry and stores ownership across 390→844→
     assert.equal(portraitAgain.storesInlineTop, "");
     assert.equal(portraitAgain.documentClientWidth, portraitAgain.documentScrollWidth);
   } finally {
-    client?.close();
+    if (client) {
+      await Promise.race([
+        client.send("Browser.close").catch(() => {}),
+        new Promise((resolvePromise) => setTimeout(resolvePromise, 2000))
+      ]);
+      client.close();
+    }
     if (chrome?.exitCode === null) {
       const exited = new Promise((resolvePromise) => chrome.once("exit", resolvePromise));
       chrome.kill();
@@ -332,7 +339,7 @@ test("A Dark Room keeps slider geometry and stores ownership across 390→844→
     await server.close();
     const tempPrefix = `${resolve(tmpdir())}${sep}`.toLowerCase();
     if (resolve(profile).toLowerCase().startsWith(tempPrefix)) {
-      await rm(profile, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+      await rm(profile, { recursive: true, force: true, maxRetries: 6, retryDelay: 500 });
     }
   }
 });

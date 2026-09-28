@@ -256,3 +256,8 @@ skills/lusu-personal-site-skill/SKILL.md
 - 默认视频分类 seed 只在全新 `video_categories` 表首次创建时初始化；已有表通过 `site_runtime_state.video_categories_default_seeded` 视为已处理，不要覆盖或补回后台维护过的 `slug`、`name_zh`、`name_en`、`name_ja`、`sort_order`、`enabled` 和已删除分类。
 - 主站所有视频卡片必须保持统一尺寸，封面铺满区域；缺少封面或加载失败时使用同尺寸像素风占位图。
 - 修改视频区前台、后台或样式后，同步更新缓存 query、`CHANGELOG.md`、`PROJECT_CONTEXT.md`、本 Skill 与网站更新记录。
+
+
+## 2026-09-28 手机布局维护
+
+移动 Chat 的布局集中在 mobile-ios-shell.css 的 September 2026 区段，使用 identity／nickname／private／log／compose／feedback 命名区域；避免旧固定行号覆盖。视频使用完整 16:9 封面，上下式内容。账号错误恢复焦点前先解除 submitting 的 disabled 状态。

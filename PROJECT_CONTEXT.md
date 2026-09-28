@@ -1,5 +1,12 @@
 # PROJECT_CONTEXT.md
 
+## 2026-09-28 公开手机界面重排
+
+- 手机 Home 竖屏使用三列固定行高入口，短横屏使用六列；各 App 共用简化的窗口／卡片边界与字号，视频采用完整 16:9 大封面，标题／简介位于下方，作者日期与播放操作并排。底部仍为单一可横滑、可收起的六入口 Dock。
+- 移动 Chat 的几何统一在 `css/mobile-ios-shell.css` 的 September 2026 区段维护；命名区域依次为 identity／nickname／private／log／compose／feedback，只有 log 弹性占用余高。不要再追加旧式数字行号和固定 header 高度补丁；横屏用同一组命名区域切换成左右栏。
+- 发布副本使用 `npm.cmd run audit:public-ui:release`，覆盖七页三语尺寸矩阵、弹窗、触控容量、性能和生命周期。原工作区的 mobile-remake-only 扩展检查记录保留在本地 output，未覆盖主线已有审计实现。CDP 检查不代表真机软键盘验证。
+- 账号错误焦点恢复必须在 `setAccountSubmitting("")` 解除输入框 disabled 后执行，否则同步 focus 无效。相关回归已包含在移动重制浏览器检查中。
+
 ## 2026-09-22 游戏云存档频率与当前维护边界
 
 - 当前公开变更使用 `20260922-cloud-save-10min-r1`；公开更新 ID 为 `seed-update-2026-09-22-cloud-save-10min`，slug 为 `2026-09-22-cloud-save-10min`。游戏自动云同步间隔为 10 分钟，手动“立即同步”仍即时执行。Quick Transfer 为 `1.0.14`，在线画板为 `1.0.10`。以下是实现事实，部署完成与真机通过必须另以当前提交的实际证据确认。

@@ -904,7 +904,7 @@ const wallpaperGameDisplayReleaseVersion = "20260812-wallpaper-game-display-r1";
 const publicSiteReleaseVersion = "20260827-private-room-lifecycle-r1";
 const mobileBlogRetiredReleaseVersion = "20260902-mobile-blog-retired-r1";
 const reviewReleaseVersion = "20260908-site-review-r1";
-const homeContentReleaseVersion = "20260922-cloud-save-10min-r1";
+const homeContentReleaseVersion = "20260928-mobile-layout-r2";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = reviewReleaseVersion;
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
@@ -1338,7 +1338,7 @@ for (const [modulePath, expectedVersion] of [
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-ambient.mjs", wallpaperGameDisplayReleaseVersion],
   ["./data/home-content.mjs", homeContentReleaseVersion],
-  ["./features/account.mjs", motionPolishReleaseVersion],
+  ["./features/account.mjs", homeContentReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", resourcesRouteVersion]
 ]) {
@@ -3135,7 +3135,7 @@ if (!hasPattern(styleCss, new RegExp(`\\.chatroom-icon\\s*\\{[^}]*icon-chatroom\
   || hasPattern(lazyRouteCssSources.chatroom, /\.chatroom-icon\s*\{/)
   || !hasPattern(styleCss, new RegExp(`\\.title-icon-chatroom\\s*\\{[^}]*icon-chatroom\\.png\\?v=${escapeRegExp(chatroomIconVersion)}`))
   || hasPattern(mobileIosShellCss, /\.chatroom-avatar\s*\{[^}]*display:\s*none/)
-  || ![36, 38].every((size) => hasPattern(mobileIosShellCss, new RegExp(`\\.chatroom-avatar\\s*\\{[^}]*width:\\s*${size}px[^}]*height:\\s*${size}px`)))) {
+  || !hasPattern(mobileIosShellCss, /#chatroom\s+\.chatroom-avatar\s*\{[^}]*width:\s*34px[^}]*height:\s*34px/)) {
   fail("the canonical Chat icon must load before route CSS, the titlebar must use it, and short mobile layouts must retain a decoded avatar");
 }
 if (existsSync(resolve(root, "assets/images/icon-chatroom-clean.png"))
@@ -3353,7 +3353,7 @@ const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = homeContentReleaseVersion;
 const currentCssVersion = reviewReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
-const currentGameShellVersion = homeContentReleaseVersion;
+const currentGameShellVersion = "20260922-cloud-save-10min-r1";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
 const currentLifeRestartMobileTouchVersion = "20260726-life-mobile-touch-r1";
 
@@ -3378,7 +3378,7 @@ if (styleVersions.length !== 1 || styleVersions[0] !== currentCssVersion) {
 }
 
 const mobileShellStyleVersions = assetQueryVersions(indexHtml, "/css/mobile-ios-shell.css");
-if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== reviewReleaseVersion) {
+if (mobileShellStyleVersions.length !== 1 || mobileShellStyleVersions[0] !== homeContentReleaseVersion) {
   fail(`index.html /css/mobile-ios-shell.css query should appear once as ${mobileBlogRetiredReleaseVersion}`);
 }
 
@@ -4463,18 +4463,15 @@ if (!hasPattern(styleCss, /\.minimize-button::before,\s*\.maximize-button::befor
   fail("public window and chat glyphs should use the image2 bitmap atlas instead of CSS-drawn geometry");
 }
 
-if (!hasPattern(mobileIosShellCss, /@media\s*\(orientation:\s*landscape\)\s*and\s*\(max-height:\s*520px\)[\s\S]*\.chatroom-window\s*\{[\s\S]*grid-template-columns:\s*minmax\(204px,\s*29vw\)\s+minmax\(0,\s*1fr\)[\s\S]*grid-template-rows:\s*auto\s+minmax\(0,\s*1fr\)\s+64px[\s\S]*\.chatroom-header\s*\{[\s\S]*grid-row:\s*1\s*\/\s*3[\s\S]*\.chat-private-room-panel\s*\{[\s\S]*grid-column:\s*2[\s\S]*grid-row:\s*1[\s\S]*\.chatroom-log\s*\{[\s\S]*grid-column:\s*2[\s\S]*grid-row:\s*2[\s\S]*\.chatroom-compose\s*\{[\s\S]*grid-column:\s*2[\s\S]*grid-row:\s*3[\s\S]*\.chatroom-footer\s*\{[\s\S]*grid-column:\s*1[\s\S]*grid-row:\s*3/)) {
-  fail("css/mobile-ios-shell.css should use the available landscape width so chat and private-room controls remain simultaneously reachable");
+// Chat has one named-area layout; browser audits verify actual capacity and intersections.
+for (const area of ['identity', 'nickname', 'private', 'log', 'compose', 'feedback']) {
+  if (!mobileIosShellCss.includes('grid-area: ' + area + ';')) fail('Mobile Chat is missing area ' + area);
 }
-
-if (!hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*380px\)[\s\S]*\.chat-private-room-panel[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+auto[\s\S]*\.chat-private-room-panel small\s*\{\s*display:\s*none/)
-  || !hasPattern(mobileIosShellCss, /@media\s*\(max-width:\s*760px\)\s*and\s*\(max-height:\s*720px\)\s*and\s*\(orientation:\s*portrait\)[\s\S]*\.chatroom-header\s*\{[\s\S]*height:\s*90px[\s\S]*\.chat-private-room-panel\s*\{[\s\S]*height:\s*46px[\s\S]*\.chatroom-log\s*\{[\s\S]*margin:\s*2px\s+5px[\s\S]*\.chatroom-compose\s*\{[\s\S]*grid-template-rows:\s*44px[\s\S]*\.chatroom-counter\s*\{[\s\S]*position:\s*absolute[\s\S]*\.chatroom-footer\s*\{[\s\S]*height:\s*45px/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-window\s*\{\s*display:\s*grid;\s*grid-template-rows:\s*auto\s+auto\s+minmax\(0,\s*1fr\)\s+auto\s+auto/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-input-shell\s*\{[\s\S]*position:\s*relative/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-counter\s*\{[\s\S]*position:\s*absolute;[\s\S]*right:\s*68px/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chat-send-button\s*\{[\s\S]*position:\s*absolute;[\s\S]*min-width:\s*52px[\s\S]*border-radius:\s*4px/)
-  || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.chatroom-autoscroll\s*\{[\s\S]*min-height:\s*44px/)) {
-  fail("css/mobile-ios-shell.css should keep password and chat controls reachable on narrow and soft-keyboard portrait viewports");
+if (!mobileIosShellCss.includes('"identity nickname" "identity private" "identity log" "feedback compose"')
+  || !mobileIosShellCss.includes('"message counter send"')
+  || !hasPattern(mobileIosShellCss, /#chatroom\s+\.chat-send-button\s*\{[^}]*min-height:\s*44px/)
+  || !hasPattern(mobileIosShellCss, /#chatroom\s+\.chatroom-counter\s*\{[^}]*position:\s*static/)) {
+  fail('Mobile Chat must retain named landscape areas, an in-flow count, and 44px sending controls');
 }
 
 if (!hasPattern(lazyRouteCssSources.chatroom, /\.chatroom-window\s*>\s*\.chatroom-log\s*\{\s*grid-row:\s*4[\s\S]*\.chatroom-window\s*>\s*\.chatroom-compose\s*\{\s*grid-row:\s*5[\s\S]*\.chatroom-window\s*>\s*\.chatroom-footer\s*\{\s*grid-row:\s*6/)) {
@@ -4844,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-09-22-cloud-save-10min";
-const finalUpdateSlug = "2026-09-22-cloud-save-10min";
+const finalUpdateId = "seed-update-2026-09-28-mobile-layout";
+const finalUpdateSlug = "2026-09-28-mobile-layout";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Game Cloud Saves Now Sync Every 10 Minutes";
-const finalPublishedAt = "2026-09-21T16:24:26.443Z";
+const finalTitleEn = "A Reworked Mobile Layout";
+const finalPublishedAt = "2026-09-28T02:00:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-09-22-cloud-save-10min",
   "seed-update-2026-09-08-site-review-optimization",
   "seed-update-2026-09-02-mobile-blog-retired",
   "seed-update-2026-08-27-password-room-reset",
@@ -4910,7 +4908,7 @@ const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 
 
 const changelog20260827Section = markdownSection(changelog, "## 2026-08-27");
-const changelog20260922Section = markdownSection(changelog, "## 2026-09-22");
+const changelog20260928Section = markdownSection(changelog, "## 2026-09-28");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4929,7 +4927,7 @@ if (!finalUpdateStarted) {
 }
 
 if (finalUpdateStarted) {
-  const finalReleaseDate = "2026-09-22"; // Release calendar uses Asia/Shanghai; stored publication time remains UTC.
+  const finalReleaseDate = "2026-09-28"; // Release calendar uses Asia/Shanghai; stored publication time remains UTC.
   if (!apiJs.includes(`const PUBLIC_RELEASE_DATE = "${finalReleaseDate}";`)) {
     fail(`functions/api/[[route]].js PUBLIC_RELEASE_DATE should match ${finalReleaseDate}`);
   }
@@ -5123,9 +5121,9 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-09-22">2026.09.22</time>',
+    '<time id="top-updated" datetime="2026-09-28">2026.09.28</time>',
     `/css/style.css?v=${finalCssVersion}`,
-    `/css/mobile-ios-shell.css?v=${reviewReleaseVersion}`,
+    `/css/mobile-ios-shell.css?v=${homeContentReleaseVersion}`,
     `/css/motion-system.css?v=${finalCssVersion}`,
     `/js/mobile-shell.js?v=${reviewReleaseVersion}`,
     `/js/ui-motion.js?v=${reviewReleaseVersion}`,
@@ -5140,11 +5138,11 @@ if (finalUpdateStarted) {
     finalMainVersion,
     finalUpdateId,
     finalUpdateSlug,
-    "10 分钟",
-    "立即同步",
+    "手机",
+    "视频",
     "site-updates"
   ]) {
-    if (!changelog20260922Section.includes(token)) {
+    if (!changelog20260928Section.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }

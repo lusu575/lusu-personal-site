@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
+import { ARTICLE_SEED_VERSION } from "../functions/api/content-migrations.mjs";
 import {
   REMOTE_MIGRATION_VERIFICATION_QUERIES,
   compatibilityColumnMigrations,
@@ -214,7 +215,7 @@ test("remote D1 runner is idempotent on a fresh schema and does not issue ALTER 
 
 test("remote D1 release validation rejects a missing migration record, article, or translation", async (t) => {
   const cases = [
-    ["migration", "delete from site_data_migrations where version = '20260922-cloud-save-10min-r1'", "cloud-save-migration-record"],
+    ["migration", `delete from site_data_migrations where version = '${ARTICLE_SEED_VERSION}'`, "current-release-migration-record"],
     ["article", "delete from articles where article_id = 'seed-update-2026-09-22-cloud-save-10min'", "cloud-save-update-article"],
     ["translation", "delete from article_translations where article_id = 'seed-update-2026-09-22-cloud-save-10min' and lang = 'ja'", "cloud-save-update-translations"]
   ];
@@ -491,7 +492,7 @@ test("remote D1 verification groups stay within the production compound SELECT l
   assert.match(verificationSql, /agent_audit_created_idx/);
   assert.match(verificationSql, /traffic_control_settings_v1/);
   assert.match(verificationSql, /article_seed_version/);
-  assert.match(verificationSql, /article_seed_version' and value = '20260922-cloud-save-10min-r1'/);
+  assert.ok(verificationSql.includes(`article_seed_version' and value = '${ARTICLE_SEED_VERSION}'`));
   const currentReleaseVerificationSql = REMOTE_MIGRATION_VERIFICATION_QUERIES.find((sql) => (
     sql.includes("cloud-save-update-article")
   ));
