@@ -61,10 +61,10 @@ test("exhausted or corrupt budget denies downloads without any new database writ
 });
 
 test("concurrent last global share permits exactly one request across features", async () => {
-  const env = await fixture(); env.DB.sqlite.exec("update cost_guard_budgets set day_limit=1 where id like 'dynamic:%'");
+  const env = await fixture(); env.DB.sqlite.exec("update cost_guard_budgets set day_limit=1 where id = 'dynamic'");
   const results = await Promise.allSettled(Array.from({ length: 30 }, (_, i) => admitCost(env, { feature: i % 2 ? "whiteboard" : "admin" })));
   assert.equal(results.filter((result) => result.status === "fulfilled").length, 1);
-  assert.equal(env.DB.sqlite.prepare("select month_used from cost_guard_budgets where id like 'dynamic:%'").get().month_used, 1);
+  assert.equal(env.DB.sqlite.prepare("select month_used from cost_guard_budgets where id = 'dynamic'").get().month_used, 1);
 });
 
 test("D1 unavailable before or during work fails closed, including later R2 and error writes", async () => {
@@ -110,12 +110,63 @@ test("downloads and durable storage exhaust a finite operation envelope and then
   await denied(Promise.resolve().then(() => storage.get("meta"))); assert.equal(nativeCalls, 0);
 });
 
-test("UTC daily reset retains monthly usage; missing month never auto-grants; cleanup is independent", async () => {
-  const env = await fixture(); env.DB.sqlite.exec("update cost_guard_budgets set day='2000-01-01',day_used=day_limit,month_used=12");
+test("UTC daily reset retains monthly usage; missing policies never auto-grant; cleanup is independent", async (t) => {
+  t.mock.timers.enable({ apis: ["Date"], now: new Date("2026-06-15T12:00:00Z") });
+  const env = await fixture(); env.DB.sqlite.exec("update cost_guard_budgets set day='2026-06-14',day_used=10,month_used=12");
   await admitCost(env);
-  assert.deepEqual({ ...env.DB.sqlite.prepare("select day_used,month_used from cost_guard_budgets where id like 'dynamic:%'").get() }, { day_used: 1, month_used: 13 });
-  env.DB.sqlite.exec("delete from cost_guard_budgets where id like 'dynamic:%'"); await denied(admitCost(env));
+  assert.deepEqual({ ...env.DB.sqlite.prepare("select day_used,month_used from cost_guard_budgets where id = 'dynamic'").get() }, { day_used: 1, month_used: 13 });
+  env.DB.sqlite.exec("delete from cost_guard_budgets where id = 'dynamic'"); await denied(admitCost(env));
   await admitCost({ ...env, COST_GUARD_MODE: "paused" }, { lane: "cleanup" });
+});
+
+test("reviewed monthly rollover admits one final share without renewing the lease or resetting storage", async (t) => {
+  t.mock.timers.enable({ apis: ["Date"], now: new Date("2026-06-30T12:00:00Z") });
+  const env = await fixture();
+  env.DB.sqlite.exec("update cost_guard_budgets set day_used=1,month_used=1,day_limit=1,month_limit=1 where id='dynamic'; update cost_guard_storage set reserved_bytes=123");
+  const deadline = env.DB.sqlite.prepare("select valid_until from cost_guard_budgets where id='dynamic'").get().valid_until;
+  t.mock.timers.tick(86400000);
+  const results = await Promise.allSettled(Array.from({ length: 30 }, () => admitCost(env)));
+  assert.equal(results.filter((result) => result.status === "fulfilled").length, 1);
+  const row = env.DB.sqlite.prepare("select * from cost_guard_budgets where id='dynamic'").get();
+  assert.equal(row.day, "2026-07-01"); assert.equal(row.day_used, 1); assert.equal(row.month_used, 1);
+  assert.equal(row.valid_until, deadline);
+  assert.equal(env.DB.sqlite.prepare("select reserved_bytes from cost_guard_storage").get().reserved_bytes, 123);
+  env.DB.sqlite.exec("delete from cost_guard_budgets where id='dynamic'");
+  t.mock.timers.tick(61000);
+  await denied(admitCost(env));
+  assert.equal(env.DB.sqlite.prepare("select count(*) as n from cost_guard_budgets where id='dynamic'").get().n, 0);
+});
+
+test("longer reviewed operation remains usable across days, but expiry and anomalous dates never self-renew", async (t) => {
+  t.mock.timers.enable({ apis: ["Date"], now: new Date("2026-06-15T12:00:00Z") });
+  const env = await fixture(); await admitCost(env);
+  t.mock.timers.tick(2 * 86400000); await admitCost(env);
+  const changes = env.DB.changes;
+  t.mock.timers.tick(28 * 86400000); await denied(admitCost(env));
+  assert.equal(env.DB.changes, changes);
+  const fresh = await fixture();
+  fresh.DB.sqlite.exec("update cost_guard_budgets set day='2026-02-30'");
+  const before = fresh.DB.changes; await denied(admitCost(fresh)); assert.equal(fresh.DB.changes, before);
+  const invalidLease = { ...fresh, COST_GUARD_UNTIL: new Date(Date.now() + 31 * 86400000).toISOString() };
+  await denied(admitCost(invalidLease));
+});
+
+test("hourly transfer cron admissions cannot consume multi-room whiteboard or game cleanup budgets", async () => {
+  const env = await fixture();
+  for (let hour = 0; hour < 24; hour++) {
+    await admitCost(env, { lane: "cleanup" });
+    for (let room = 0; room < 4; room++) {
+      for (let alarm = 0; alarm < 12; alarm++) await admitCost(env, { lane: "whiteboard-cleanup" });
+    }
+  }
+  await denied(admitCost(env, { lane: "cleanup" }));
+  await admitCost(env, { lane: "whiteboard-cleanup" });
+  await admitCost(env, { lane: "relay-cleanup" });
+  await admitCost(env);
+  const rows = env.DB.sqlite.prepare("select id,day_used from cost_guard_budgets").all();
+  assert.equal(rows.find((row) => row.id === "cleanup").day_used, 24);
+  assert.equal(rows.find((row) => row.id === "whiteboard-cleanup").day_used, 1153);
+  assert.equal(rows.find((row) => row.id === "dynamic").day_used, 1);
 });
 
 test("rate limit denial does not write any bucket and concurrent final slot is atomic", async () => {
@@ -154,7 +205,7 @@ test("strict production API preserves authentication and admits against a migrat
   assert.equal(response.status, 200, await response.clone().text());
   const admin = await onRequest({ env, request: new Request("https://lusu575.com/api/admin/me") });
   assert.equal(admin.status, 401, await admin.clone().text());
-  assert.equal(env.DB.sqlite.prepare("select month_used from cost_guard_budgets where id like 'dynamic:%'").get().month_used, 2);
+  assert.equal(env.DB.sqlite.prepare("select month_used from cost_guard_budgets where id = 'dynamic'").get().month_used, 2);
 });
 
 test("paused cron does not open bindings or write a failed-run record", async () => {

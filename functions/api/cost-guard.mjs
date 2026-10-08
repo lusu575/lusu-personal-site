@@ -1,18 +1,22 @@
 // One shared admission ledger for every deployed entry point. No new service,
-// positive admission cache, automatic account inference, or administrator bypass.
+// unbounded admission cache, automatic account inference, or administrator bypass.
 export const COST_GUARD_VERSION = "20261008-v1";
 export const COST_LIMITS = Object.freeze({
   dynamic: Object.freeze({ daily: 500, monthly: 5000 }),
+  realtime: Object.freeze({ daily: 2880, monthly: 10000 }),
   cleanup: Object.freeze({ daily: 24, monthly: 744 }),
+  "whiteboard-cleanup": Object.freeze({ daily: 2880, monthly: 30000 }),
+  "relay-cleanup": Object.freeze({ daily: 240, monthly: 5000 }),
   envelope: Object.freeze({ d1: 256, r2a: 16, r2b: 32, deletes: 64, durable: 8, storage: 256, kv: 32 }),
   storageBytes: 8 * 1024 ** 3,
   maxUploadBytes: 95 * 1024 ** 2,
-  leaseMs: 24 * 60 * 60 * 1000,
+  leaseMs: 30 * 24 * 60 * 60 * 1000,
   operationMs: 60000
 });
 
 const scopes = new WeakMap();
 const denied = new WeakMap();
+const cleanupLanes = new Set(["cleanup", "whiteboard-cleanup", "relay-cleanup"]);
 
 export class CostGuardError extends Error {
   constructor(code = "COST_GUARD_UNAVAILABLE") {
@@ -49,7 +53,7 @@ function configurationAllows(env, lane, now = Date.now()) {
   // Domain Free is NOT Workers Free. Paid/unknown accounts stay paused. R2 is
   // still pay-as-you-go: require the separately reviewed shared storage ledger.
   if (env?.COST_GUARD_WORKERS_PLAN !== "free") return false;
-  if (lane === "cleanup") return env?.COST_GUARD_CLEANUP === "enabled";
+  if (cleanupLanes.has(lane)) return env?.COST_GUARD_CLEANUP === "enabled";
   return env?.COST_GUARD_MODE === "strict";
 }
 
@@ -58,13 +62,40 @@ export function assertCostConfiguration(env, lane = "dynamic", feature = "api") 
     throw new CostGuardError("COST_GUARD_REVIEW_EXPIRED");
   }
   if (!configurationAllows(env, lane)) throw new CostGuardError("COST_GUARD_PAUSED");
-  if (lane === "dynamic") {
+  if (!cleanupLanes.has(lane)) {
     const features = String(env.COST_GUARD_FEATURES || "").split(",").map((value) => value.trim());
     if (!features.includes(feature)) throw new CostGuardError("COST_GUARD_FEATURE_PAUSED");
   }
 }
 
 export function hasCostScope(env) { return scopes.has(env); }
+
+// A room prepays one finite operation envelope, reused for at most 1,024
+// messages and 60 seconds. No per-frame D1 accounting or global API credits.
+export async function admitRealtimeEvent(env, previous, feature) {
+  assertCostConfiguration(env, "realtime", feature);
+  const scope = previous && scopes.get(previous);
+  if (scope?.lane === "realtime" && !scope.blocked && scope.expires > Date.now()
+    && scope.eventsLeft > 0 && scope.remaining.storage >= 32 && scope.remaining.d1 >= 16) {
+    scope.eventsLeft -= 1;
+    return previous;
+  }
+  const guarded = await admitCost(env, { lane: "realtime", feature });
+  scopes.get(guarded).eventsLeft = 1023;
+  return guarded;
+}
+
+// One control-plane alarm write after a denied alarm, never a D1 error write.
+// Only an unexpired, reviewed Free configuration may schedule this recovery.
+// A DO has one pending alarm: daily retry on exhausted credit, hourly otherwise.
+export async function rearmCleanupAlarm(env, storage, lane, error) {
+  try { assertCostConfiguration(env, lane); } catch { return false; }
+  const now = Date.now();
+  const next = error?.code === "COST_GUARD_BUDGET_EXHAUSTED"
+    ? Math.floor(now / 86400000) * 86400000 + 86400000 + 60000
+    : now + 3600000;
+  try { await storage.setAlarm(next); return true; } catch { return false; }
+}
 
 export async function admitCost(env, { lane = "dynamic", feature = "api", uploadBytes = 0 } = {}) {
   assertCostConfiguration(env, lane, feature);
@@ -81,12 +112,16 @@ export async function admitCost(env, { lane = "dynamic", feature = "api", upload
   const key = `${lane}:${month}`;
   const cached = denied.get(db)?.get(key);
   if (cached && cached > now) throw new CostGuardError("COST_GUARD_BUDGET_EXHAUSTED");
+  if (cached) denied.get(db).delete(key);
   try {
-    const row = await db.prepare("select * from cost_guard_budgets where id = ?").bind(key).first();
+    // One persistent policy row per lane. Missing rows never grant access;
+    // calendar rollover changes counters only under the same verified lease.
+    const row = await db.prepare("select * from cost_guard_budgets where id = ?").bind(lane).first();
     const caps = COST_LIMITS[lane];
     if (!validBudget(row, now, caps)) throw new CostGuardError();
     const dailyUsed = row.day === day ? row.day_used : 0;
-    if (dailyUsed >= row.day_limit || row.month_used >= row.month_limit) {
+    const monthlyUsed = row.day.slice(0, 7) === month ? row.month_used : 0;
+    if (dailyUsed >= row.day_limit || monthlyUsed >= row.month_limit) {
       throw new CostGuardError("COST_GUARD_BUDGET_EXHAUSTED");
     }
     // SELECT avoids writes for known denials. This conditional update arbitrates
@@ -94,12 +129,15 @@ export async function admitCost(env, { lane = "dynamic", feature = "api", upload
     const result = await db.prepare(`
       update cost_guard_budgets set
         day_used = case when day = ? then day_used + 1 else 1 end,
-        day = ?, month_used = month_used + 1
+        month_used = case when substr(day, 1, 7) = ? then month_used + 1 else 1 end,
+        day = ?
       where id = ? and revision = ? and enabled = 1 and valid_until > ?
-        and month_used < month_limit
+        and (substr(day, 1, 7) < ? or month_used < month_limit)
         and (day <> ? or day_used < day_limit)
         and day_limit = ? and month_limit = ?
-    `).bind(day, day, key, row.revision, now, day, row.day_limit, row.month_limit).run();
+        and day <= ? and day_used >= 0 and day_used <= day_limit
+        and month_used >= day_used and month_used <= month_limit
+    `).bind(day, month, day, lane, row.revision, now, month, day, row.day_limit, row.month_limit, day).run();
     if (result?.meta?.changes !== 1) throw new CostGuardError("COST_GUARD_BUDGET_EXHAUSTED");
     const scope = {
       raw: env, db, lane, uploadBytes,
@@ -126,7 +164,11 @@ function validBudget(row, now, caps) {
     && Number.isSafeInteger(row.month_limit) && row.month_limit > 0 && row.month_limit <= caps.monthly
     && Number.isSafeInteger(row.day_used) && row.day_used >= 0 && row.day_used <= row.day_limit
     && Number.isSafeInteger(row.month_used) && row.month_used >= 0 && row.month_used <= row.month_limit
-    && /^\d{4}-\d{2}-\d{2}$/.test(row.day);
+    && row.month_used >= row.day_used
+    && /^\d{4}-\d{2}-\d{2}$/.test(row.day)
+    && Number.isFinite(Date.parse(`${row.day}T00:00:00Z`))
+    && new Date(`${row.day}T00:00:00Z`).toISOString().slice(0, 10) === row.day
+    && row.day <= new Date(now).toISOString().slice(0, 10);
 }
 
 function consume(scope, kind, count = 1) {

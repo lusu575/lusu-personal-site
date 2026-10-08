@@ -1,4 +1,4 @@
-import { admitCost, CostGuardError, costGuardResponse, guardDurableStorage } from "../../../functions/api/cost-guard.mjs";
+import { admitCost, admitRealtimeEvent, CostGuardError, costGuardResponse, guardDurableStorage, rearmCleanupAlarm } from "../../../functions/api/cost-guard.mjs";
 import { DurableObject } from "cloudflare:workers";
 
 import { sha256Hex } from "./security";
@@ -313,7 +313,7 @@ export class GameRelaySession extends DurableObject<Env> {
 
   async webSocketMessage(socket: WebSocket, message: string | ArrayBuffer): Promise<void> {
     try {
-      await this.enqueueMutation(() => this.handleBrowserMessage(socket, message));
+      await this.enqueueMutation(() => this.handleBrowserMessage(socket, message), "realtime", true);
     } catch (error) {
       if (!(error instanceof CostGuardError)) throw error;
       try { socket.close(1013, "dynamic_features_paused"); } catch { /* Already closed. */ }
@@ -327,7 +327,7 @@ export class GameRelaySession extends DurableObject<Env> {
     _wasClean: boolean
   ): Promise<void> {
     try {
-      await this.enqueueMutation(() => this.handleBrowserDeparture(socket));
+      await this.enqueueMutation(() => this.handleBrowserDeparture(socket), "realtime", true);
     } catch (error) {
       if (!(error instanceof CostGuardError)) throw error;
     }
@@ -351,15 +351,20 @@ export class GameRelaySession extends DurableObject<Env> {
       const current = await this.applyDeadlines(state, Date.now());
       if (!current) return;
       await this.persistState(current);
-    }, "cleanup").catch((error: unknown) => {
-      // No retry alarm or database error metric when the cleanup lane is closed.
+    }, "relay-cleanup").catch(async (error: unknown) => {
       if (!(error instanceof CostGuardError)) throw error;
+      await rearmCleanupAlarm(this.env, this.ctx.storage, "relay-cleanup", error);
     });
   }
 
-  private enqueueMutation<T>(action: () => Promise<T>, lane: "dynamic" | "cleanup" = "dynamic"): Promise<T> {
+  private realtimeEnv?: Env;
+
+  private enqueueMutation<T>(action: () => Promise<T>, lane: "realtime" | "relay-cleanup" = "realtime", batch = false): Promise<T> {
     const admitted = async () => {
-      this.resourceEnv = await admitCost(this.env, { feature: "owner-mcp", lane });
+      this.resourceEnv = batch
+        ? await admitRealtimeEvent(this.env, this.realtimeEnv, "owner-mcp")
+        : await admitCost(this.env, { feature: "owner-mcp", lane });
+      if (batch) this.realtimeEnv = this.resourceEnv;
       await this.initialize();
       return action();
     };

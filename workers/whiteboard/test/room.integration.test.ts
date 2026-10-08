@@ -443,6 +443,81 @@ describe("WhiteboardRoom Durable Object", () => {
     await closeAndWait(second.socket, second.stub);
   });
 
+  it("handles 501 sustained awareness events without consuming the login/save budget", async () => {
+    const connection = await connect(`wb_${"n".repeat(43)}`, "private", 1, "持续协作", 81);
+    await runInDurableObject(connection.stub, async (instance, state) => {
+      let now = Date.now();
+      const clock = vi.spyOn(Date, "now").mockImplementation(() => now);
+      try {
+        const socket = state.getWebSockets()[0];
+        for (let index = 0; index < 501; index++) {
+          now += 100;
+          await (instance as { webSocketMessage(socket: WebSocket, message: string): Promise<void> })
+            .webSocketMessage(socket, JSON.stringify({ type: "awareness", focused: true, drawing: false }));
+        }
+        expect(socket.readyState).toBe(WebSocket.OPEN);
+      } finally { clock.mockRestore(); }
+    });
+    const api = await testEnv.DB!.prepare("select month_used from cost_guard_budgets where id='dynamic'").first<{month_used: number}>();
+    const realtime = await testEnv.DB!.prepare("select month_used from cost_guard_budgets where id='realtime'").first<{month_used: number}>();
+    expect(api?.month_used).toBe(0);
+    expect(realtime?.month_used).toBeLessThanOrEqual(2);
+    await closeAndWait(connection.socket, connection.stub);
+  });
+
+  it.each([65, 100])("resumes deletion of an expired room with %i images until every object is gone", async (count) => {
+    const roomId = `wb_${(count === 65 ? "u" : "v").repeat(43)}`;
+    const connection = await connect(roomId, "private", 1, "分批清理", count);
+    await closeAndWait(connection.socket, connection.stub);
+    const prefix = `whiteboard/v1/${roomId}/`;
+    for (let index = 0; index < count; index++) {
+      await testEnv.WHITEBOARD_BUCKET!.put(`${prefix}image-${String(index).padStart(3, "0")}`, new Uint8Array([1]));
+    }
+    await runInDurableObject(connection.stub, async (_instance, state) => {
+      const meta = (await state.storage.get<RoomMeta>(ROOM_META_KEY))!;
+      const now = Date.now();
+      await state.storage.put(ROOM_META_KEY, { ...meta, emptySince: now - ROOM_RETENTION_MS - 1, deleteAt: now - 1, onlineCount: 0, resourceUsage: { bytes: count, images: count } });
+      await state.storage.setAlarm(now + 1000);
+    });
+    await evictDurableObject(connection.stub);
+    const batches = Math.ceil(count / 32);
+    for (let batch = 1; batch <= batches; batch++) {
+      expect(await runDurableObjectAlarm(connection.stub)).toBe(true);
+      const remaining = await testEnv.WHITEBOARD_BUCKET!.list({ prefix });
+      expect(remaining.objects.length).toBe(Math.max(0, count - batch * 32));
+      if (batch < batches) {
+        expect(await readMeta(connection.stub)).toBeDefined();
+        expect(await runInDurableObject(connection.stub, async (_instance, state) => state.storage.getAlarm())).not.toBeNull();
+      }
+    }
+    expect(await readMeta(connection.stub)).toBeUndefined();
+    expect(await runDurableObjectAlarm(connection.stub)).toBe(false);
+  });
+
+  it("rearms an exhausted cleanup alarm and resumes on the next UTC day without a user visit", async () => {
+    const roomId = `wb_${"w".repeat(43)}`;
+    const connection = await connect(roomId, "private", 1, "恢复清理", 82);
+    await closeAndWait(connection.socket, connection.stub);
+    await runInDurableObject(connection.stub, async (_instance, state) => {
+      const meta = (await state.storage.get<RoomMeta>(ROOM_META_KEY))!;
+      const now = Date.now();
+      await state.storage.put(ROOM_META_KEY, { ...meta, emptySince: now - ROOM_RETENTION_MS - 1, deleteAt: now - 1, onlineCount: 0 });
+      await state.storage.setAlarm(now + 1000);
+    });
+    await testEnv.DB!.prepare("update cost_guard_budgets set day_limit=1,day_used=1,month_used=1 where id='whiteboard-cleanup'").run();
+    await evictDurableObject(connection.stub);
+    expect(await runDurableObjectAlarm(connection.stub)).toBe(true);
+    expect(await readMeta(connection.stub)).toBeDefined();
+    const retryAt = await runInDurableObject(connection.stub, async (_instance, state) => state.storage.getAlarm());
+    expect(retryAt).toBeGreaterThan(Date.now());
+    await runInDurableObject(connection.stub, async (instance) => {
+      const clock = vi.spyOn(Date, "now").mockReturnValue(retryAt! + 1);
+      try { await (instance as { alarm(): Promise<void> }).alarm(); }
+      finally { clock.mockRestore(); }
+    });
+    expect(await readMeta(connection.stub)).toBeUndefined();
+  });
+
   it("deletes a due private room once and makes repeated alarms harmless", async () => {
     const roomId = `wb_${"d".repeat(43)}`;
     const connection = await connect(roomId, "private", 1, "雨町画家", 1);
@@ -516,7 +591,7 @@ describe("WhiteboardRoom Durable Object", () => {
     expect(await runDurableObjectAlarm(connection.stub)).toBe(false);
   });
 
-  it("keeps due room state without error writes or automatic retries when D1 is unavailable", async () => {
+  it("keeps due room state without D1 error writes and schedules bounded recovery when D1 is unavailable", async () => {
     const roomId = `wb_${"6".repeat(43)}`;
     const connection = await connect(roomId, "private", 1, "重试信使", 61);
     await closeAndWait(connection.socket, connection.stub);
@@ -553,9 +628,7 @@ describe("WhiteboardRoom Durable Object", () => {
     ).toBe(0);
 
     await ensureWhiteboardIndexSchema();
-    await runInDurableObject(connection.stub, async (_instance, state) => {
-      await state.storage.setAlarm(Date.now() + 1000);
-    });
+    expect(await runInDurableObject(connection.stub, async (_instance, state) => state.storage.getAlarm())).toBeGreaterThan(Date.now());
     expect(await runDurableObjectAlarm(connection.stub)).toBe(true);
     expect(await readMeta(connection.stub)).toBeUndefined();
   });
