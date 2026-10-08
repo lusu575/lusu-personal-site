@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 
-import { onRequest } from "../functions/api/[[route]].js";
+import { dispatchApiRequest as onRequest } from "../functions/api/[[route]].js";
 
 class D1Statement {
   constructor(database, sql, values = []) {

@@ -1,5 +1,18 @@
+import { admitCost, CostGuardError, costGuardResponse } from "../api/cost-guard.mjs";
 const SESSION_COOKIE = "lusu_session";
 export async function onRequest(context) {
+  try {
+    const env = await admitCost(context.env, { feature: "admin" });
+    return await dispatchAdminRequest({ ...context, env });
+  } catch (error) {
+    if (error instanceof CostGuardError) {
+      const response = costGuardResponse(error);
+      return new Response(response.body, { status: response.status, headers: adminSecurityHeaders(response.headers) });
+    }
+    throw error;
+  }
+}
+export async function dispatchAdminRequest(context) {
   const { request, env } = context;
   if (!env.DB) {
     return new Response("D1 database binding DB is not configured.", {
@@ -13,7 +26,8 @@ export async function onRequest(context) {
   let session = null;
   try {
     session = await getSession(request, env);
-  } catch {
+  } catch (error) {
+    if (error instanceof CostGuardError) throw error;
     return new Response("Admin session check failed.", {
       status: 500,
       headers: adminSecurityHeaders({

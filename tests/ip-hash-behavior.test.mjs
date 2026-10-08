@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHmac } from "node:crypto";
 import test from "node:test";
 
-import { onRequest } from "../functions/api/[[route]].js";
+import { dispatchApiRequest as onRequest } from "../functions/api/[[route]].js";
 
 const CHAT_SECRET = "test-chat-ip-hash-secret-0000000000000001";
 const ROTATED_CHAT_SECRET = "test-chat-ip-hash-secret-rotated-00000000001";

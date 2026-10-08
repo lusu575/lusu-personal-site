@@ -51,7 +51,7 @@ const WALLPAPER_SWITCH_SCENE_UPDATE_ID = "seed-update-2026-08-09-wallpaper-switc
 const WALLPAPER_SWITCH_SCENE_PUBLISHED_AT = "2026-08-09T11:15:00.000Z";
 const VIDEO_LINK_AUTOFILL_UPDATE_ID = "seed-update-2026-08-11-video-link-autofill";
 const VIDEO_LINK_AUTOFILL_PUBLISHED_AT = "2026-08-11T00:20:00.000Z";
-const ARTICLE_SEED_VERSION = "20260928-mobile-layout-r2";
+const ARTICLE_SEED_VERSION = "20261008-cost-guard-r1";
 const VALID_CHAT_SECRET = "article-seed-chat-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "article-seed-analytics-secret-000000001";
 
@@ -110,7 +110,7 @@ function normalizedSql(sql) {
 test("every article seed D1 binding is defined", async () => {
   const moduleUrl = new URL("../functions/api/[[route]].js", import.meta.url);
   moduleUrl.searchParams.set("article-seed-bindings", String(Date.now()));
-  const { onRequest } = await import(moduleUrl.href);
+  const { dispatchApiRequest: onRequest } = await import(moduleUrl.href);
   const DB = createRecordingD1();
 
   const response = await onRequest({
@@ -358,16 +358,16 @@ test("every article seed D1 binding is defined", async () => {
     articleId === HIDE_MINIMAX_H3_TOOLS_UPDATE_ID
   ));
   assert.ok(hideMinimaxH3ToolsContent, "the public fallback must include the temporary H3 Tools hide release");
-  assert.equal(content.updates[0]?.article_id, "seed-update-2026-09-28-mobile-layout");
+  assert.equal(content.updates[0]?.article_id, "seed-update-2026-10-08-dynamic-protection");
   assert.ok(content.updates.some((item) => item.article_id === CHAT_WHITEBOARD_UI_UPDATE_ID));
   assert.deepEqual(
     homeContent.updates.map(({ article_id: articleId }) => articleId),
     [
+      "seed-update-2026-10-08-dynamic-protection",
       "seed-update-2026-09-28-mobile-layout",
       "seed-update-2026-09-22-cloud-save-10min",
       "seed-update-2026-09-08-site-review-optimization",
-      MOBILE_BLOG_RETIRED_UPDATE_ID,
-      PASSWORD_ROOM_RESET_UPDATE_ID
+      MOBILE_BLOG_RETIRED_UPDATE_ID
     ],
     "Home must project exactly the newest five public updates in release order"
   );
@@ -561,7 +561,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === VIDEO_LINK_AUTOFILL_UPDATE_ID
   ));
   assert.ok(videoLinkAutofillContent, "the public fallback must include the link-only video publish update");
-  assert.equal(content.updates[12]?.article_id, VIDEO_LINK_AUTOFILL_UPDATE_ID);
+  assert.equal(content.updates[13]?.article_id, VIDEO_LINK_AUTOFILL_UPDATE_ID);
   const videoLinkAutofillHome = homeContent.updates.find(({ article_id: articleId }) => articleId === VIDEO_LINK_AUTOFILL_UPDATE_ID);
   assert.equal(videoLinkAutofillHome, undefined, "the video link autofill release must remain outside the newest five Home projection");
   assert.equal(videoLinkAutofillContent.slug, "2026-08-11-video-link-autofill");
@@ -606,7 +606,7 @@ test("every article seed D1 binding is defined", async () => {
     assert.match(params[5], /Base64/);
   }
 
-  assert.equal(content.updates[13]?.article_id, H3_AMBIENT_WALLPAPERS_UPDATE_ID);
+  assert.equal(content.updates[14]?.article_id, H3_AMBIENT_WALLPAPERS_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === H3_AMBIENT_WALLPAPERS_UPDATE_ID),
     false,
@@ -650,7 +650,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchSlimDawnContent, "the public fallback must include the slim-rim dawn polish");
-  assert.equal(content.updates[14]?.article_id, WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID);
+  assert.equal(content.updates[15]?.article_id, WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_SLIM_DAWN_UPDATE_ID),
     false,
@@ -714,7 +714,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_CERAMIC_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchCeramicContent, "the public fallback must include the ceramic rolling redesign");
-  assert.equal(content.updates[15]?.article_id, WALLPAPER_SWITCH_CERAMIC_UPDATE_ID);
+  assert.equal(content.updates[16]?.article_id, WALLPAPER_SWITCH_CERAMIC_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_CERAMIC_UPDATE_ID),
     false,
@@ -773,7 +773,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_CALM_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchCalmContent, "the public fallback must retain the calm wallpaper-switch redesign");
-  assert.equal(content.updates[16]?.article_id, WALLPAPER_SWITCH_CALM_UPDATE_ID);
+  assert.equal(content.updates[17]?.article_id, WALLPAPER_SWITCH_CALM_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_CALM_UPDATE_ID),
     false,
@@ -828,7 +828,7 @@ test("every article seed D1 binding is defined", async () => {
     articleId === WALLPAPER_SWITCH_SCENE_UPDATE_ID
   ));
   assert.ok(wallpaperSwitchSceneContent, "the public fallback must include the redesigned wallpaper-switch scene");
-  assert.equal(content.updates[17]?.article_id, WALLPAPER_SWITCH_SCENE_UPDATE_ID);
+  assert.equal(content.updates[18]?.article_id, WALLPAPER_SWITCH_SCENE_UPDATE_ID);
   assert.equal(
     homeContent.updates.some(({ article_id: articleId }) => articleId === WALLPAPER_SWITCH_SCENE_UPDATE_ID),
     false,
@@ -1029,7 +1029,7 @@ test("every article seed D1 binding is defined", async () => {
 test("current persistent article seed marker skips every article upsert", async () => {
   const moduleUrl = new URL("../functions/api/[[route]].js", import.meta.url);
   moduleUrl.searchParams.set("article-seed-marker", `${Date.now()}-${Math.random()}`);
-  const { onRequest } = await import(moduleUrl.href);
+  const { dispatchApiRequest: onRequest } = await import(moduleUrl.href);
   const DB = createRecordingD1({ articleSeedVersion: ARTICLE_SEED_VERSION });
 
   const response = await onRequest({

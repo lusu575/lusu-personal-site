@@ -1,5 +1,7 @@
+import { consumeBoundedRateLimits } from "./bounded-rate-limit.mjs";
 import { ContentMigrationError, runArticleDataMigrations } from "./content-migrations.mjs";
 import { runPeriodicDataCleanup } from "./data-cleanup-service.mjs";
+import { admitCost, assertCostConfiguration, CostGuardError, costGuardResponse, costGuardStatus, hasCostScope } from "./cost-guard.mjs";
 import { persistAuthenticationSession, scheduleAuthenticationSideEffects } from "./auth-session-service.mjs";
 import { normalizeArticleTags } from "./article-tags.mjs";
 import { handleTransferApi } from "./transfer-service.mjs";
@@ -66,7 +68,7 @@ import {
 export const PUBLIC_API_REPRESENTATION_VERSION = "20260928-mobile-layout-r2";
 export const PUBLIC_ARTICLE_ARCHIVE_LIMIT = 500;
 const PUBLIC_SITE_ORIGIN = "https://lusu575.com";
-const PUBLIC_RELEASE_DATE = "2026-09-28";
+const PUBLIC_RELEASE_DATE = "2026-10-08";
 const SESSION_COOKIE = "lusu_session";
 const SESSION_DAYS = 30;
 const MAX_SAVE_BYTES = 1024 * 1024;
@@ -241,6 +243,32 @@ let videoSchemaReady = false;
 let japaneseSubtextSchemaReady = false;
 
 export async function onRequest(context) {
+  const url = new URL(context.request.url);
+  if (context.request.method === "GET" && url.pathname === "/api/health") {
+    return json({ ok: true, db: null, protection: costGuardStatus(context.env) });
+  }
+  // Optional telemetry never reserves global credits or creates identities.
+  if (context.request.method === "POST" && /^\/api\/analytics\/(identify|page-view|click)$/.test(url.pathname)) {
+    return json({ ok: true, recorded: false });
+  }
+  try {
+    if (url.pathname.startsWith("/api/admin/")) assertCostConfiguration(context.env, "dynamic", "admin");
+    const feature = /\/whiteboard(?:\/|s\/|$)/.test(url.pathname) ? "whiteboard"
+      : /\/transfer(?:\/|$)/.test(url.pathname) ? "transfer"
+      : /^\/api\/(?:articles(?:\/|$)|sitemap\.xml$)/.test(url.pathname) ? "articles" : "api";
+    const env = await admitCost(context.env, {
+      feature, uploadBytes: Number(context.request.headers.get("Content-Length") || 0)
+    });
+    return await dispatchApiRequest({ ...context, env });
+  } catch (error) {
+    if (error instanceof CostGuardError) return costGuardResponse(error);
+    throw error;
+  }
+}
+
+// Business router kept separate so its authentication/CAS contracts can be
+// tested independently of the production admission boundary.
+export async function dispatchApiRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   const path = url.pathname.replace(/^\/api\/?/, "");
@@ -336,7 +364,7 @@ export async function onRequest(context) {
     }
 
     if (request.method === "GET" && parts[0] === "health") {
-      if (typeof context.waitUntil === "function") {
+      if (!hasCostScope(env) && typeof context.waitUntil === "function") {
         context.waitUntil(runPeriodicDataCleanup(env).catch(() => {
           console.error("Periodic API data cleanup will retry on the next health check.");
         }));
@@ -626,6 +654,7 @@ export async function onRequest(context) {
 
     return json({ error: "Not found." }, 404);
   } catch (error) {
+    if (error instanceof CostGuardError) return costGuardResponse(error);
     const expectedError = error instanceof HttpError
       || error instanceof JapaneseSubtextAgentEvaluationError
       || error instanceof AnonymousIdentityError
@@ -4633,7 +4662,7 @@ async function recordClickEvent(request, env) {
 }
 
 async function recordArticleView(request, env, article, lang) {
-  if (shouldSkipAnalyticsRequest(request)) {
+  if (hasCostScope(env) || shouldSkipAnalyticsRequest(request)) {
     return { cookieIdentity: null, recorded: false };
   }
   await ensureAnalyticsSchema(env);
@@ -5731,65 +5760,12 @@ async function rateLimitBucketKey(scope, identity) {
 }
 
 async function consumeFirstExceededRateLimit(env, entries) {
-  for (const [bucketKey, policy] of entries) {
-    const result = await consumeRateLimit(env, bucketKey, policy);
-    if (!result.allowed) {
-      return result;
-    }
-  }
-  return null;
+  const result = await consumeBoundedRateLimits(env, entries);
+  return result.allowed ? null : result;
 }
 
 async function consumeRateLimit(env, bucketKey, policy) {
-  const now = Date.now();
-  const windowMs = Math.max(1000, Number(policy.windowMs) || 60000);
-  const limit = Math.max(1, Number(policy.limit) || 1);
-  const backoffMs = Math.max(1000, Number(policy.backoffMs) || windowMs);
-  const maxBackoffMs = Math.max(backoffMs, Number(policy.maxBackoffMs) || backoffMs);
-  const resetBefore = now - windowMs;
-  const row = await env.DB.prepare(`
-    insert into api_rate_limits (
-      bucket_key, window_started_at, request_count, blocked_until, updated_at
-    ) values (?, ?, 1, 0, ?)
-    on conflict(bucket_key) do update set
-      window_started_at = case
-        when api_rate_limits.window_started_at <= ? then excluded.window_started_at
-        else api_rate_limits.window_started_at
-      end,
-      request_count = case
-        when api_rate_limits.window_started_at <= ? then 1
-        else api_rate_limits.request_count + 1
-      end,
-      blocked_until = case
-        when api_rate_limits.window_started_at <= ? then 0
-        when api_rate_limits.blocked_until > ? then api_rate_limits.blocked_until
-        when api_rate_limits.request_count + 1 > ? then
-          ? + min(?, ? * (1 << min(api_rate_limits.request_count + 1 - ?, 4)))
-        else 0
-      end,
-      updated_at = excluded.updated_at
-    returning request_count, blocked_until
-  `).bind(
-    bucketKey,
-    now,
-    new Date(now).toISOString(),
-    resetBefore,
-    resetBefore,
-    resetBefore,
-    now,
-    limit,
-    now,
-    maxBackoffMs,
-    backoffMs,
-    limit
-  ).first();
-  const blockedUntil = Number(row?.blocked_until || 0);
-  return {
-    allowed: blockedUntil <= now,
-    retryAfterSeconds: blockedUntil > now
-      ? Math.max(1, Math.ceil((blockedUntil - now) / 1000))
-      : 0
-  };
+  return consumeBoundedRateLimits(env, [[bucketKey, policy]]);
 }
 
 async function clearRateLimitBuckets(env, bucketKeys) {

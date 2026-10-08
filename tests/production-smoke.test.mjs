@@ -19,8 +19,10 @@ const sitemap = `<?xml version="1.0"?><urlset xmlns:xhtml="http://www.w3.org/199
 test("production smoke validators lock the canonical SEO and health contract", () => {
   assert.equal(normalizeSiteOrigin(`${origin}/nested`), origin);
   assert.throws(() => normalizeSiteOrigin("http://lusu575.com"), /HTTPS/);
-  validateHealth({ ok: true, db: true });
-  assert.throws(() => validateHealth({ ok: true, db: false }), /D1/);
+  assert.throws(() => validateHealth({ ok: true, db: true }), /missing cost protection/);
+  validateHealth({ ok: true, db: null, protection: { version: "20261008-v1", mode: "paused", staticAvailable: true } });
+  assert.throws(() => validateHealth({ ok: true, db: null, protection: { version: "old", mode: "paused", staticAvailable: true } }), /contract/);
+  assert.throws(() => validateHealth({ ok: true, db: false }), /missing cost protection/);
   validateSitemap(sitemap, origin);
   assert.equal(extractArticleSlugFromSitemap(sitemap), "monitoring-update");
   assert.throws(() => validateSitemap(sitemap.replaceAll(origin, "https://www.lusu575.com"), origin), /canonical origin/);

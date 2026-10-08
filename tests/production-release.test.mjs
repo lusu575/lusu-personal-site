@@ -37,7 +37,8 @@ function createFixtureFetch(overrides = {}) {
     paths.push(pathname);
     if (overrides[pathname]) return overrides[pathname]();
     if (pathname === "/asset-manifest.json") return jsonResponse(manifest);
-    if (pathname === "/api/health") return jsonResponse({ ok: true, db: true });
+    if (pathname === "/api/health") return jsonResponse({ ok: true, db: null, protection: { version: "20261008-v1", mode: "paused", staticAvailable: true } });
+    if (pathname === "/api/anonymous/identity") return new Response(JSON.stringify({ code: "COST_GUARD_PAUSED", staticAvailable: true }), { status: 503 });
     if (pathname === "/") return new Response(homeHtml, { headers: { "content-type": "text/html" } });
     if (pathname === "/sitemap.xml") return new Response(sitemap, { headers: { "content-type": "application/xml" } });
     if (pathname === "/articles/release-check") return new Response(article);
@@ -92,7 +93,8 @@ test("production verification checks the exact release, served HTML references a
   assert.ok(result.checks.includes("asset-digest"));
   assert.equal(paths[0], "/asset-manifest.json");
   assert.equal(paths.at(-1), "/asset-manifest.json");
-  assert.equal(paths.length, 7);
+  assert.equal(paths.length, 6);
+  assert.ok(result.checks.includes("cost-guard-paused"));
 });
 
 test("a healthy old homepage, corrupt immutable asset or changed rollout cannot pass", async () => {

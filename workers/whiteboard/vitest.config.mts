@@ -1,3 +1,4 @@
+import { costGuardTestConfig } from "../../tests/helpers/cost-guard-fixture.mjs";
 import { cloudflareTest } from "@cloudflare/vitest-pool-workers";
 import { defineConfig } from "vitest/config";
 
@@ -9,6 +10,7 @@ const workerPool = {
   },
   miniflare: {
     bindings: {
+      ...costGuardTestConfig(),
       WHITEBOARD_INTERNAL_SECRET:
         "test-only-whiteboard-internal-secret-000000000000"
     }
@@ -18,6 +20,7 @@ const workerPool = {
 export default defineConfig({
   plugins: [cloudflareTest(workerPool)],
   test: {
+    setupFiles: ["workers/whiteboard/test/cost-guard-setup.ts"],
     include: [`${workerRoot}test/**/*.test.ts`]
   }
 });

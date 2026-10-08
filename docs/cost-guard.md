@@ -1,0 +1,83 @@
+# Cloudflare 费用保护与恢复
+
+本次发布配置为 **动态暂停、自动清理关闭**。它降低应用触发的资源消耗，不能保证零账单。静态文件和本地游戏继续提供；数据库文章、搜索、账号、云存档、协作、互传、管理页和 MCP 暂停时返回 503。保护状态由不访问数据库的 `/api/health` 返回，`db: null` 表示没有探测 D1，不能当作数据库健康证据。暂停不删除既有账号、存档或公共白板，也不把未确认的保存标为成功。
+
+## 保护边界
+
+所有 Pages 动态入口与四个 Worker 通过 `functions/api/cost-guard.mjs` 共享已有 D1 的 `cost_guard_budgets`。每个请求或 DO 事件先读一条预算，再用带条件的原子 UPDATE 争取一个操作额度；没有成功取得额度就不能调用业务绑定。并发最后额度只能被一个请求取得。额度是提前预留，后续业务拒绝也不退回，避免取消、重试和并发造成重复使用。
+
+已知预算耗尽、缺表、D1 不可用、异常计数、过期复核均关闭。耗尽前的竞争失败不会更新行；已知拒绝只读，隔离实例内最多缓存拒绝 60 秒，没有肯定准入缓存。冷实例仍可能进行一次 D1 读取，因此启用条件明确要求 **人工核实 Workers Free**。本方案拒绝在 Paid 或未知套餐上开启，不能把一个仍需按量计费的 D1 读操作伪装为免费熔断器。
+
+限流器的分钟、小时及身份桶以一次 SQL 快照全部准入或全部不变；重复拒绝不增长次数、更新时间或延长封禁。全局预留仍至多产生一天 500 次业务准入写入，清理另算。某次已准入请求随后因认证、参数或业务限流被拒绝，会消耗已经预留的额度；它不会无限写拒绝日志。预算或操作封套失败后，同一请求的数据库错误记录和补偿写入也被阻断。
+
+每个 DO 在串行事件内部准入后才加载持久状态，构造函数不读写存储。WebSocket 消息、关闭事件、告警与直接绑定调用均覆盖；协议心跳继续使用原有无唤醒自动响应。保护拒绝后关闭活动请求连接或结束告警，不安排重试风暴。游戏中继每次命令最多轮询 6 次，未完成返回原有 pending 状态。既有身份验证、OAuth scope、CAS、幂等凭证和事务没有放宽。
+
+## 固定上限
+
+| 范围 | 最大值 |
+| --- | --- |
+| 全站动态准入 | UTC 每日 500、每月 5,000 |
+| 独立清理准入 | UTC 每日 24、每月 744；所有 cron 与 DO alarm 共用 |
+| 每次准入时效 | 60 秒，且不超过配置与数据库复核期限 |
+| 配置与预算人工复核期限 | 最多未来 24 小时 |
+| 每次 D1 操作 | 256 条语句，另加准入本身的 1 读 / 1 条件写 |
+| 每次 R2 操作 | 16 次 Class A、32 次 Class B、64 个删除或中止 |
+| 每次其他绑定操作 | 8 次 DO fetch、256 次 DO storage 调用、32 次 KV 调用 |
+| 全桶保守存储预留 | 最大 8 GiB，管理员、互传与白板共用 |
+| 单次新增上传或分片 | 最大 95 MiB，必须能确定实际长度 |
+| 互传清理 | 每组最多 10 条；房间每批最多 8 个会话与 8 个条目 |
+| 白板 R2 清理分页 | 每页 16 个对象，仍受本次删除封套限制 |
+| 公开摘要搜索 | 超过 1,000 个候选直接拒绝，不返回伪装成完整结果的截断页 |
+
+应用准入总量乘以封套是保守操作上限：每月最多 91,904 次 R2 A、183,808 次 R2 B（含所有清理额度）。**D1 语句数不是计费 rows，DO 调用数也不是计费行数**；单次读取、索引和原生存储内部仍有放大，所以必须核实 Free 硬配额及其他工作负载，不能仅凭这些数字开启 Paid 账户。严格模式关闭可选访问遥测；旧遥测“hard”模式也不再保留文章采样。缓存的遥测估算不参与硬准入。
+
+## 存储与数据保留
+
+`cost_guard_storage` 只有一条共享记录。每次 R2 put / uploadPart 都先原子预留字节；流必须有可验证长度。未知长度、未知存储基线、异常计量、8 GiB 无空间即拒绝，管理员也一样。重试、覆盖和未完成分片重复计入，换月不清零。完成多段上传不再次返还或重新授予额度。
+
+过期、上传失败、abort 或 delete 均不自动退还物理额度。互传物理占用统计包含仍有对象键的过期、失败记录；只有确认 R2 删除或确认不存在，才允许删除相应 D1 记录。清理失败的房间保留 deleting 状态，后续有预算的批次继续；不会因有限分页而删除未处理条目。白板公共房从不使用私人房 TTL 删除。
+
+这种策略会高估实际占用并提前停用上传，换来对孤立对象、失败删除、分片及并发的保守处理。需要回收空间时，先在 **全部部署和外部写入源** 暂停上传，等待进行中的请求超过 60 秒，人工盘点整个桶的现存对象与未完成 multipart，包括 `whiteboard/` 与 `transfer/`、其他前缀。无完整盘点不得降低 reserved_bytes；不得通过删台账恢复服务。清理暂停期间已有 R2、DO、D1、KV 数据仍占用存储，可能继续收费。
+
+## 配置及启用步骤
+
+所有五份 Wrangler 配置默认相同：`COST_GUARD_MODE=paused`、`COST_GUARD_CLEANUP=disabled`、其他复核字段为空或 unverified。缺少任一字段也关闭。不要设置运行期自动开关、自动续期或每月自动重置预算。
+
+1. 只读核实账户的 Workers 套餐、D1/DO/KV 限额、所有共享绑定与部署版本、R2 Standard 存储类别、全部桶用量、未完成分片，以及其他项目是否共享免费额度。域名 Free 不能证明 Workers Free。
+2. 核实 `lusu-temp-transfer` 没有公开 `r2.dev`、自定义公开域名、旧 Worker 或外部凭据绕过。核实已有生命周期是否覆盖未完成分片；不要给白板公共数据新增整桶过期规则。仅看代码不能确认生命周期。
+3. 确认每个 Worker 都已部署本版保护，保留 WhiteboardRoom 与 GameRelaySession 的现有 namespace/migration。Pages 按 main 自动部署；Worker 按既有 Wrangler 流程部署。不得新建绑定、凭据、付费服务或升级套餐来绕过本规则。
+4. 经核对后执行一次独立、增量的 `cloudflare/schema-cost-guard.sql`，它只建两张空表，不授予预算、不删除业务数据。不要把整份历史 `schema.sql` 当生产迁移重放。
+5. 在暂停状态用已核实的物理字节基线初始化 `cost_guard_storage`。`verified=1` 只能代表本次完整盘点，`revision='20261008-v1'`，`limit_bytes<=8589934592`，`reserved_bytes` 不小于实际总量。超过上限保持暂停，仅启用经过核实的清理。
+6. 为当前 UTC 月显式创建 `dynamic:YYYY-MM` 和/或 `cleanup:YYYY-MM` 记录，revision 同上，enabled=1，valid_until 为未来不超过 24 小时的 Unix 毫秒，day 为当天 `YYYY-MM-DD`，首次计数为 0，上限不得高于表中值。已有月记录续期只更新期限和 enabled，**不得重置 month_used/day_used**。日额度由同一条件 UPDATE 按 UTC 日期推进；缺少下个月记录会关闭。
+7. 五个部署设置同一复核版本与期限：`COST_GUARD_REVIEW=20261008-v1`、`COST_GUARD_WORKERS_PLAN=free`、`COST_GUARD_UNTIL=<ISO UTC>`。仅对需要恢复的入口设置 `COST_GUARD_MODE=strict` 和逗号分隔 `COST_GUARD_FEATURES`（api、admin、articles、transfer、whiteboard、public-mcp、owner-mcp）。管理员功能也需自己的 feature。清理可单独设置 `COST_GUARD_CLEANUP=enabled`，即使动态功能仍 paused。每次复核必须包含实际账户情况，不能把 free 当作便利开关。
+8. 健康接口只确认配置；以一次无副作用、已授权的读取验证实际准入。发布 smoke 默认明确要求 paused；今后有意启用 strict 时，应在同一受审查的发布中更新期望模式和检查，不要让任意 503 或旧提交自动通过。
+
+预算停止后的 DO 告警不自动重排。恢复后由用户请求或授权管理操作重新安排告警；必要时针对已知私有房执行有界清理。不要批量扫描全部 namespace 来重建调度。互传定时表达式保持 `17 * * * *`，关闭时零绑定调用，不写清理失败日志。关闭 Cloudflare 持久 observability，避免为拒绝记录产生额外用量。
+
+### 24 小时复核的用户影响
+
+本次默认暂停发布没有到期后突然停用的问题。若后续经复核临时恢复动态服务，必须把截止时间作为维护窗口告知用户：`/api/health` 提供 `reviewExpiresAt`，到期请求返回 `COST_GUARD_REVIEW_EXPIRED`；正在进行的操作最长持有 60 秒准入，WebSocket 下一次消息也重新检查。登录、云存档、互传、白板和 MCP 会暂停，静态页面及本地游戏继续；未确认的云保存不能当作成功，已有数据不删除。清理复核同时到期也暂停，保留数据可能继续占用付费存储。
+
+续期需要再次核实套餐、共享资源、物理占用和实际用量，然后只更新现有预算行的 `valid_until`、复核配置和必要的 enabled；日/月计数及存储预留原样保留。不能增加定时任务替代人工复核。长期连续开放需要另外评审账户级硬限额或停用机制，再调整本策略，不能悄悄自动续期。
+
+### 协调发布顺序与授权阻塞
+
+先记录 Pages 和四个 Worker 的实际版本、绑定与变量。确认确实已存在的服务后，顺序发布 transfer-cleanup（paused/disabled）、site-mcp、site-admin-mcp、whiteboard，最后合并 main 触发 Pages 的既有 Git 发布。缺少的 Worker 不自动创建；保留所有 DO namespace/migration。独立 Worker 暂停与旧 Pages 兼容，旧 Pages 调用会收到明确 503，不改变鉴权或保存格式；其他旧入口在这段短暂窗口仍有原风险，必须完成所有部署后才可宣称保护生效。任一步受阻即记录已发布/未发布版本并保持暂停，不靠先合并 Pages 掩盖部分发布。默认暂停不依赖迁移或预置额度；只在恢复动态功能之前执行上面的增量迁移和人工基线初始化。
+
+本机 GitHub 身份可推送，但仓库未配置 GitHub Actions 部署 secrets；Wrangler 当前 OAuth 已过期，不能通过已有可用身份发布 Worker。以下是用户本人恢复官方 OAuth 登录的最小起始权限示例（从仓库运行 `npx wrangler login --scopes account:read user:read workers_scripts:write workers_routes:write zone:read`）。现有 Wrangler 4.118.0 会额外请求 `offline_access`，即持久刷新权限；应由用户检查授权页面、完成 MFA/CAPTCHA，并确认同意后操作，助手未执行此命令。不得把 token 或登录配置内容发到对话。此权限仅供现有 Worker 发布及账户/路由读取；Pages、D1、R2 账户检查可先由用户后台完成。如实际发布还缺权限，停止并报告具体缺项，不自行扩大 scope。无需 Pages 写权限来触发已有 Git 发布，也不创建新 API token。
+
+## 验证与回滚
+
+执行 `npm run verify:public-site-release`、本地 D1 增量迁移验证、子项目治理检查。费用测试在 `tests/cost-guard.test.mjs`，既有 API 测试继续覆盖保护层以下的鉴权与存档事务，Worker 集成测试用显式测试预算覆盖真实入口。
+
+生产上线要核对完整 Git SHA、干净构建 manifest、首页资源字节哈希、`/api/health` 的保护版本，以及各 Worker 的 deployment/version ID、实际绑定和六个保护变量。仅看到 Git push 或 Pages HTTP 200 不算完成。
+
+紧急恢复静态服务时，先保证所有入口保持 paused、cleanup disabled。保留两张预算表及现有数据。功能回滚应在受保护分支上回退业务改动，或回滚先前 Worker version 后立即应用对应停用措施；直接恢复不含总闸的旧部署会重新暴露费用风险。不要删除 R2 对象、重建 DO namespace、清空额度或回退用户数据来完成回滚。
+
+## 本次实际核对状态及剩余风险
+
+本机 Wrangler `whoami` 返回现有登录已过期且刷新失败。**尚未核实**实际套餐、Pages/四个 Worker 的版本与绑定、桶公开入口、生命周期、cron 实际配置、账户用量和其他消费来源。本文件中的 binding 名称与 cron 来自仓库配置，不代表后台已验证。没有读取密钥内容、创建或扩大持久凭据，也没有更改套餐或账户权限。
+
+即使应用入口全部暂停，Paid Workers 的请求本身、旧部署、直接 R2 入口、其他项目、已存数据、账单延迟与既有消费仍可能产生费用。真正的账户硬停用、Free 配额适用性和所有绕过入口必须在 Cloudflare 后台核实。账单提醒不是硬上限，官方账单和用量数据有延迟。
+
+官方依据：[D1 定价与 Free 超额行为](https://developers.cloudflare.com/d1/platform/pricing/)、[R2 定价与操作类别](https://developers.cloudflare.com/r2/pricing/)、[Workers 限额](https://developers.cloudflare.com/workers/platform/limits/)、[R2 生命周期](https://developers.cloudflare.com/r2/buckets/object-lifecycles/)。R2 含免费额度仍属按量收费；免费用量按账户合并，不能把单个桶或此代码内的额度当作账户账单承诺。

@@ -1280,6 +1280,7 @@ test("asset uploads enforce persistent per-IP request and byte budgets before re
     assert.equal(uploaded.status, 201, await uploaded.clone().text());
   }
 
+  const limitsBeforeDenial = harness.DB.sqlite.prepare("select * from api_rate_limits order by bucket_key").all();
   const blocked = await callApi(harness, "whiteboard/assets", {
     method: "POST",
     body: fiveMiB,
@@ -1292,6 +1293,7 @@ test("asset uploads enforce persistent per-IP request and byte budgets before re
   });
   assert.equal(blocked.status, 429);
   assert.equal((await blocked.json()).code, "WHITEBOARD_UPLOAD_RATE_LIMITED");
+  assert.deepEqual(harness.DB.sqlite.prepare("select * from api_rate_limits order by bucket_key").all(), limitsBeforeDenial);
   assert.ok(Number(blocked.headers.get("Retry-After")) >= 1);
 
   const room = harness.WHITEBOARD_ROOMS.rooms.get("public-v1");
@@ -1314,7 +1316,7 @@ test("asset uploads enforce persistent per-IP request and byte budgets before re
     harness.DB.sqlite.prepare(`
       select max(request_count) as count
       from api_rate_limits
-    `).get().count > 50 * 1024 * 1024
+    `).get().count === 50 * 1024 * 1024
   );
 });
 

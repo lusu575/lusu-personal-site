@@ -570,3 +570,7 @@
   - 新增 `functions/admin/_middleware.js`，后台静态资源复用主站 `lusu_session` 并校验 `users.role = admin`。
   - 所有 `/api/admin/*` 接口继续使用服务端 admin 权限校验。
   - 聊天室后台支持消息编辑、隐藏/恢复、删除，并按隐藏 visitor id 或 IP hash 禁言。
+
+## 2026-10-08 共享费用保护
+
+动态入口默认暂停；Pages、Whiteboard DO、Transfer Cleanup、公开 MCP、Owner MCP 共用现有 D1 的先准入预算。严格模式只允许经人工核实的 Workers Free，24 小时复核期限，未知计量或资源异常时关闭。管理员没有费用豁免；同一 R2 桶的保守物理台账包括白板、互传、分片、失败与孤立对象，不因逻辑过期返还额度。清理另有有限预算，静态页面与本地游戏继续提供。详见 [费用保护运维说明](../../docs/cost-guard.md)，不得宣称代码阈值或账单提醒保证零账单。

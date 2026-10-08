@@ -37,7 +37,7 @@ async function request(onRequest, db, path, { method = "GET", body, authenticate
 
 // One real SQLite environment keeps the route's existing isolate-scoped schema guards valid.
 test("admin query and mutation behavior against SQLite", async (t) => {
-  const { onRequest } = await import(`../functions/api/[[route]].js?query-behavior=${Date.now()}`);
+  const { dispatchApiRequest: onRequest } = await import(`../functions/api/[[route]].js?query-behavior=${Date.now()}`);
   const db = new D1();
   try {
     assert.equal((await request(onRequest, db, "health")).status, 200);

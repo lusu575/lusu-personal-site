@@ -218,3 +218,7 @@ description: 维护鲁肃个人站 `/admin/` 管理后台时使用。只适用�
 - 登录履历只记录成功登录/注册后的安全摘要：时间、掩码 IP 前缀、IP hash、地区和设备摘要。
 - 登录用户的埋点 UV 使用不可逆账号统计 ID 合并；匿名访客继续使用 HttpOnly `lusu_visitor` cookie。
 - 不要把真实账号邮箱、密码、哈希、session、登录记录或 D1 数据写进 GitHub 仓库、文档 seed、公开 `site-updates` 或前端 fallback。
+
+## 2026-10-08 共享费用保护
+
+动态入口默认暂停；Pages、Whiteboard DO、Transfer Cleanup、公开 MCP、Owner MCP 共用现有 D1 的先准入预算。严格模式只允许经人工核实的 Workers Free，24 小时复核期限，未知计量或资源异常时关闭。管理员没有费用豁免；同一 R2 桶的保守物理台账包括白板、互传、分片、失败与孤立对象，不因逻辑过期返还额度。清理另有有限预算，静态页面与本地游戏继续提供。详见 [费用保护运维说明](../../docs/cost-guard.md)，不得宣称代码阈值或账单提醒保证零账单。

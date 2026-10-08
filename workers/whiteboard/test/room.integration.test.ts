@@ -516,7 +516,7 @@ describe("WhiteboardRoom Durable Object", () => {
     expect(await runDurableObjectAlarm(connection.stub)).toBe(false);
   });
 
-  it("keeps due room state and retries when D1 cleanup temporarily fails", async () => {
+  it("keeps due room state without error writes or automatic retries when D1 is unavailable", async () => {
     const roomId = `wb_${"6".repeat(43)}`;
     const connection = await connect(roomId, "private", 1, "重试信使", 61);
     await closeAndWait(connection.socket, connection.stub);
@@ -539,9 +539,9 @@ describe("WhiteboardRoom Durable Object", () => {
 
     expect(await runDurableObjectAlarm(connection.stub)).toBe(true);
     const retained = await readMeta(connection.stub);
-    expect(retained?.cleanupRetryCount).toBe(1);
+    expect(retained?.cleanupRetryCount).toBe(0);
     expect(retained?.roomId).toBe(roomId);
-    expect(retained?.lastError).toBe("room_cleanup_failed");
+    expect(retained?.lastError).not.toBe("room_cleanup_failed");
     expect(
       Number(
         (
@@ -550,9 +550,12 @@ describe("WhiteboardRoom Durable Object", () => {
           ).first<{ metric_value: number }>()
         )?.metric_value || 0
       )
-    ).toBe(1);
+    ).toBe(0);
 
     await ensureWhiteboardIndexSchema();
+    await runInDurableObject(connection.stub, async (_instance, state) => {
+      await state.storage.setAlarm(Date.now() + 1000);
+    });
     expect(await runDurableObjectAlarm(connection.stub)).toBe(true);
     expect(await readMeta(connection.stub)).toBeUndefined();
   });

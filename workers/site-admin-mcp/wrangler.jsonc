@@ -9,13 +9,34 @@
   ],
   "workers_dev": false,
   "routes": [
-    { "pattern": "lusu575.com/mcp*", "zone_name": "lusu575.com" },
-    { "pattern": "lusu575.com/oauth/authorize*", "zone_name": "lusu575.com" },
-    { "pattern": "lusu575.com/oauth/token*", "zone_name": "lusu575.com" },
-    { "pattern": "lusu575.com/oauth/register*", "zone_name": "lusu575.com" },
-    { "pattern": "lusu575.com/.well-known/oauth-authorization-server*", "zone_name": "lusu575.com" },
-    { "pattern": "lusu575.com/.well-known/oauth-protected-resource*", "zone_name": "lusu575.com" },
-    { "pattern": "lusu575.com/.well-known/oauth-protected-resource/mcp*", "zone_name": "lusu575.com" }
+    {
+      "pattern": "lusu575.com/mcp*",
+      "zone_name": "lusu575.com"
+    },
+    {
+      "pattern": "lusu575.com/oauth/authorize*",
+      "zone_name": "lusu575.com"
+    },
+    {
+      "pattern": "lusu575.com/oauth/token*",
+      "zone_name": "lusu575.com"
+    },
+    {
+      "pattern": "lusu575.com/oauth/register*",
+      "zone_name": "lusu575.com"
+    },
+    {
+      "pattern": "lusu575.com/.well-known/oauth-authorization-server*",
+      "zone_name": "lusu575.com"
+    },
+    {
+      "pattern": "lusu575.com/.well-known/oauth-protected-resource*",
+      "zone_name": "lusu575.com"
+    },
+    {
+      "pattern": "lusu575.com/.well-known/oauth-protected-resource/mcp*",
+      "zone_name": "lusu575.com"
+    }
   ],
   "d1_databases": [
     {
@@ -41,13 +62,25 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_sqlite_classes": ["GameRelaySession"]
+      "new_sqlite_classes": [
+        "GameRelaySession"
+      ]
     }
   ],
   "secrets": {
-    "required": ["ANALYTICS_IP_HASH_SALT"]
+    "required": [
+      "ANALYTICS_IP_HASH_SALT"
+    ]
   },
   "observability": {
     "enabled": false
+  },
+  "vars": {
+    "COST_GUARD_MODE": "paused",
+    "COST_GUARD_CLEANUP": "disabled",
+    "COST_GUARD_FEATURES": "",
+    "COST_GUARD_WORKERS_PLAN": "unverified",
+    "COST_GUARD_REVIEW": "",
+    "COST_GUARD_UNTIL": ""
   }
 }

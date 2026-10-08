@@ -1,3 +1,4 @@
+import { admitCost, CostGuardError } from "../api/cost-guard.mjs";
 const SITE_ORIGIN = "https://lusu575.com";
 const DEFAULT_SHARE_IMAGE = `${SITE_ORIGIN}/assets/images/homepage-pixel-coast.png?v=20260612-hd-wallpapers`;
 const ARTICLE_LANGUAGES = new Set(["zh", "en", "ja"]);
@@ -22,8 +23,16 @@ export async function onRequest(context) {
   let article = null;
   let queryFailed = false;
   try {
-    article = await findPublishedArticle(context.env?.DB, route.slug, route.lang);
+    const env = await admitCost(context.env, { feature: "articles" });
+    article = await findPublishedArticle(env.DB, route.slug, route.lang);
   } catch (error) {
+    if (error instanceof CostGuardError) {
+      const headers = new Headers(shell.headers);
+      headers.set("Cache-Control", "no-store");
+      headers.set("Retry-After", "3600");
+      headers.set("X-Cost-Guard", error.code);
+      return new Response(method === "HEAD" ? null : shell.body, { status: 503, headers });
+    }
     queryFailed = true;
     console.error(JSON.stringify({
       message: "article prerender query failed",

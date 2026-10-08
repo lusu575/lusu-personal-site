@@ -385,3 +385,7 @@ npm.cmd run build
 - 密码只能重置，不能明文展示，不能把 `password_hash` 返回给浏览器，也不能把真实账号资料写入 GitHub 仓库。
 - 登录履历由 D1 表 `user_login_events` 提供，只记录成功登录/注册后的时间、掩码 IP 前缀、IP hash、Cloudflare 地区字段和设备摘要，不保存完整明文 IP。
 - 统计埋点对已登录用户使用不可逆账号统计 ID 合并 UV，同一账号跨设备访问只算 1 个 UV；匿名访客继续按 HttpOnly `lusu_visitor` cookie 统计。
+
+## 2026-10-08 共享费用保护
+
+动态入口默认暂停；Pages、Whiteboard DO、Transfer Cleanup、公开 MCP、Owner MCP 共用现有 D1 的先准入预算。严格模式只允许经人工核实的 Workers Free，24 小时复核期限，未知计量或资源异常时关闭。管理员没有费用豁免；同一 R2 桶的保守物理台账包括白板、互传、分片、失败与孤立对象，不因逻辑过期返还额度。清理另有有限预算，静态页面与本地游戏继续提供。详见 [费用保护运维说明](../../docs/cost-guard.md)，不得宣称代码阈值或账单提醒保证零账单。

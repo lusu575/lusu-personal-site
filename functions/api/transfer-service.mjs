@@ -1,3 +1,4 @@
+import { CostGuardError, hasCostScope } from "./cost-guard.mjs";
 import {
   authenticateAgentBearer,
   isAgentBearerRequest
@@ -96,6 +97,7 @@ export async function handleTransferApi(context, parts) {
       ? await handleAdminTransferApi(context, parts.slice(2))
       : await handleUserTransferApi(context, parts.slice(1));
   } catch (error) {
+    if (error instanceof CostGuardError) throw error;
     const status = error instanceof TransferHttpError ? error.status : 500;
     const code = error instanceof TransferHttpError ? error.code : "TRANSFER_INTERNAL_ERROR";
     if (status >= 500) {
@@ -302,7 +304,7 @@ async function joinTransferRoom(env, roomKey, userId) {
   const existing = await env.DB.prepare("select * from transfer_rooms where room_key = ?").bind(roomKey).first();
   if (existing && existing.status !== "open") {
     const purged = await purgeTransferRoom(env, existing.id);
-    if (!purged.ok) {
+    if (!purged.ok || !purged.deleted) {
       throw new TransferHttpError(
         "旧房间仍在清理中，请稍后重试。",
         503,
@@ -422,6 +424,7 @@ async function createTransferText(env, session, body) {
       throw new TransferHttpError("这个互传房间已经关闭。", 423, "TRANSFER_ROOM_CLOSED");
     }
   } catch (error) {
+    if (error instanceof CostGuardError) throw error;
     const replay = await findIdempotentItem(env, session.user.id, idempotencyKey);
     if (!replay) throw error;
     assertIdempotentItem(replay, room.id, "text");
@@ -470,6 +473,7 @@ async function uploadSimpleObject(context, session) {
       itemId, objectKey, filename, mimeType, declaredSize, now, expiresAt, idempotencyKey
     }, settings);
   } catch (error) {
+    if (error instanceof CostGuardError) throw error;
     const replay = await findIdempotentItem(env, session.user.id, idempotencyKey);
     if (!replay) throw error;
     assertIdempotentItem(replay, room.id, itemTypeFromMime(mimeType));
@@ -513,6 +517,7 @@ async function uploadSimpleObject(context, session) {
     await touchRoom(env, room.id, completeAt);
     scheduleAlerts(context);
   } catch (error) {
+    if (error instanceof CostGuardError) throw error;
     try {
       await env.DB.prepare("update transfer_items set upload_status = 'failed', last_error = ? where id = ?")
         .bind(safeErrorCode(error), itemId).run();
@@ -677,6 +682,7 @@ async function initializeMultipartUpload(context, session, body) {
       throw new TransferHttpError("这个互传房间已经关闭。", 423, "TRANSFER_ROOM_CLOSED");
     }
   } catch (error) {
+    if (error instanceof CostGuardError) throw error;
     try {
       await multipart.abort();
     } catch {
@@ -714,10 +720,12 @@ async function findIdempotentMultipart(env, userId, key) {
 
 async function discardFailedIdempotentItem(env, item) {
   if (item.r2_upload_id && item.r2_object_key) {
-    try { await env.TRANSFER_BUCKET?.resumeMultipartUpload(item.r2_object_key, item.r2_upload_id).abort(); } catch { /* lifecycle remains the fallback */ }
+    try { await env.TRANSFER_BUCKET.resumeMultipartUpload(item.r2_object_key, item.r2_upload_id).abort(); } catch (error) {
+      if (!isMissingR2Resource(error)) throw error;
+    }
   }
   if (item.r2_object_key) {
-    try { await env.TRANSFER_BUCKET?.delete(item.r2_object_key); } catch { /* cleanup remains the fallback */ }
+    await env.TRANSFER_BUCKET.delete(item.r2_object_key);
   }
   await env.DB.prepare("delete from transfer_items where id = ? and upload_status <> 'ready'").bind(item.id).run();
 }
@@ -917,11 +925,15 @@ async function abortMultipartUpload(env, session, sessionIdValue, roomKeyValue, 
     try {
       await multipart.abort();
     } catch (error) {
+      if (error instanceof CostGuardError) throw error;
       if (!String(error?.message || "").toLowerCase().includes("not found")) {
         throw new TransferHttpError("R2 暂时无法中止这个上传任务。", 503, "TRANSFER_ABORT_FAILED");
       }
     }
   }
+  // Completion may have succeeded physically before its metadata write failed.
+  // Confirm deletion as well as abort before cascading away the item/session.
+  await env.TRANSFER_BUCKET.delete(row.object_key);
   await env.DB.batch([
     env.DB.prepare("delete from transfer_upload_parts where upload_session_id = ?").bind(sessionId),
     env.DB.prepare("update transfer_upload_sessions set status = 'aborted', updated_at = ?, aborted_at = ? where id = ?")
@@ -1001,10 +1013,27 @@ async function adminDeleteTransferItem(env, session, itemIdValue) {
 }
 
 async function deleteItemRecordAndObject(env, actorUserId, item, action) {
-  if (item.r2_object_key) {
+  // Keep cascading session rows until all physical uploads have been stopped.
+  const uploads = await env.DB.prepare(
+    "select * from transfer_upload_sessions where item_id = ? order by id limit 9"
+  ).bind(item.id).all();
+  if ((uploads.results || []).length > 8) {
+    throw new TransferHttpError("请使用分批房间清理完成此项目的删除。", 503, "TRANSFER_DELETE_RETRYING");
+  }
+  for (const upload of uploads.results || []) {
+    if (!upload.r2_upload_id || upload.status === "completed" || upload.status === "aborted") continue;
     try {
-      await env.TRANSFER_BUCKET.delete(item.r2_object_key);
-    } catch {
+      await env.TRANSFER_BUCKET.resumeMultipartUpload(upload.object_key, upload.r2_upload_id).abort();
+    } catch (error) {
+      if (!isMissingR2Resource(error)) throw error;
+    }
+  }
+  const objectKeys = new Set([item.r2_object_key, ...(uploads.results || []).map((upload) => upload.object_key)].filter(Boolean));
+  for (const objectKey of objectKeys) {
+    try {
+      await env.TRANSFER_BUCKET.delete(objectKey);
+    } catch (error) {
+      if (error instanceof CostGuardError) throw error;
       await env.DB.prepare(`
         update transfer_items set upload_status = 'delete_failed', cleanup_attempts = cleanup_attempts + 1,
           last_error = 'r2_delete_failed' where id = ?
@@ -1013,11 +1042,18 @@ async function deleteItemRecordAndObject(env, actorUserId, item, action) {
     }
   }
   await audit(env, actorUserId, action, item.room_id, item.id, Number(item.size_bytes || 0), item.mime_type || "");
-  await env.DB.batch([
-    env.DB.prepare("delete from transfer_items where id = ?").bind(item.id),
+  const selected = (uploads.results || []).map((upload) => upload.id);
+  const excluded = selected.length ? `and s.id not in (${selected.map(() => "?").join(",")})` : "";
+  const removed = await env.DB.batch([
+    env.DB.prepare(`delete from transfer_items where id = ?
+      and not exists (select 1 from transfer_upload_sessions s where s.item_id = transfer_items.id ${excluded})`)
+      .bind(item.id, ...selected),
     env.DB.prepare("update transfer_rooms set sync_generation = sync_generation + 1, last_activity_at = ? where id = ?")
       .bind(nowIso(), item.room_id)
   ]);
+  if (statementChanges(removed[0]) !== 1) {
+    throw new TransferHttpError("上传状态已变化，请安全重试删除。", 503, "TRANSFER_DELETE_RETRYING");
+  }
 }
 
 async function assertUploadAllowed(env, session, room, sizeBytes, settings, options = {}) {
@@ -1037,7 +1073,7 @@ async function assertUploadAllowed(env, session, room, sizeBytes, settings, opti
     if (sizeBytes > settings.adminMaxObjectBytes) {
       throw new TransferHttpError("文件大小超过 R2 平台边界。", 413, "TRANSFER_ADMIN_FILE_LIMIT");
     }
-    return;
+    if (!hasCostScope(env)) return;
   }
   if (!settings.normalUploadEnabled) {
     throw new TransferHttpError("普通账号上传目前已暂停，已有内容仍可下载。", 503, "TRANSFER_NORMAL_UPLOADS_PAUSED");
@@ -1220,15 +1256,14 @@ async function updateSettingsEntriesCas(env, entries, userId, expectedUpdatedAtV
 
 async function usageSummary(env, providedSettings) {
   const settings = providedSettings || await loadTransferSettings(env);
-  const now = nowIso();
   const month = monthKey();
   const [active, counts, operations, daily] = await Promise.all([
     env.DB.prepare(`
       select
         coalesce(sum(case when uploader_role_snapshot <> 'admin' then size_bytes else 0 end), 0) as normal_bytes,
         coalesce(sum(case when uploader_role_snapshot = 'admin' then size_bytes else 0 end), 0) as admin_bytes
-      from transfer_items where upload_status in ('uploading','ready','delete_failed') and expires_at > ?
-    `).bind(now).first(),
+      from transfer_items where r2_object_key <> ''
+    `).first(),
     env.DB.prepare(`
       select count(*) as active_items,
         sum(case when upload_status = 'uploading' then 1 else 0 end) as uploading_items,
@@ -1420,7 +1455,7 @@ async function adminClearRoom(env, session, roomIdValue) {
   if (!room) {
     throw new TransferHttpError("房间不存在。", 404, "TRANSFER_ROOM_NOT_FOUND");
   }
-  const items = await env.DB.prepare("select * from transfer_items where room_id = ?").bind(roomId).all();
+  const items = await env.DB.prepare("select * from transfer_items where room_id = ? order by id limit 8").bind(roomId).all();
   let deleted = 0;
   const failures = [];
   for (const item of items.results || []) {
@@ -1428,14 +1463,17 @@ async function adminClearRoom(env, session, roomIdValue) {
       await deleteItemRecordAndObject(env, session.user.id, item, "admin_room_item_deleted");
       deleted += 1;
     } catch (error) {
+      if (error instanceof CostGuardError) throw error;
       failures.push(operationFailure("item", item.id, item.display_filename || "加密文字", error));
     }
   }
-  await audit(env, session.user.id, failures.length ? "room_clear_partial" : "room_cleared", roomId, "", 0, "");
+  const remaining = await env.DB.prepare("select id from transfer_items where room_id = ? limit 1").bind(roomId).first();
+  const complete = failures.length === 0 && !remaining;
+  await audit(env, session.user.id, complete ? "room_cleared" : "room_clear_partial", roomId, "", 0, "");
   return {
-    ok: failures.length === 0,
-    status: failures.length ? "partial" : "success",
-    error: failures.length ? "房间只清空了一部分；失败项目已保留，可安全重试。" : undefined,
+    ok: complete,
+    status: failures.length ? "partial" : remaining ? "pending" : "success",
+    error: complete ? undefined : "本批清理已结束；剩余项目已保留，请继续分批清理。",
     roomId,
     deleted,
     failed: failures.length,
@@ -1457,13 +1495,14 @@ async function adminCloseRoom(env, session, roomIdValue) {
     await audit(
       env,
       session.user.id,
-      result.ok ? "room_deleted" : "room_delete_partial",
+      result.deleted ? "room_deleted" : "room_delete_partial",
       roomId,
       "",
       result.deletedBytes,
       ""
     );
   } catch (error) {
+    if (error instanceof CostGuardError) throw error;
     console.error(JSON.stringify({
       message: "transfer room deletion audit failed",
       code: safeErrorCode(error),
@@ -1472,8 +1511,9 @@ async function adminCloseRoom(env, session, roomIdValue) {
   }
   return {
     ...result,
-    error: result.ok ? undefined : "房间删除尚未完成；残留对象已锁定，清理任务会继续重试。",
-    retry: result.ok ? undefined : { roomId, action: "close" }
+    ok: result.ok && result.deleted,
+    error: result.deleted ? undefined : "房间删除尚未完成；残留对象已锁定，清理任务会继续重试。",
+    retry: result.deleted ? undefined : { roomId, action: "close" }
   };
 }
 
@@ -1497,11 +1537,17 @@ async function purgeTransferRoom(env, roomId, options = {}) {
     };
   }
 
-  const [sessionRows, itemRows] = await Promise.all([
-    env.DB.prepare("select * from transfer_upload_sessions where room_id = ?").bind(roomId).all(),
-    env.DB.prepare("select * from transfer_items where room_id = ?").bind(roomId).all()
-  ]);
+  const sessionRows = await env.DB.prepare(
+    "select * from transfer_upload_sessions where room_id = ? order by id limit 8"
+  ).bind(roomId).all();
   const sessions = sessionRows.results || [];
+  const selectedSessions = sessions.map((upload) => upload.id);
+  const excluded = selectedSessions.length ? `and s.id not in (${selectedSessions.map(() => "?").join(",")})` : "";
+  const itemRows = await env.DB.prepare(`
+    select * from transfer_items i where room_id = ?
+      and not exists (select 1 from transfer_upload_sessions s where s.item_id = i.id ${excluded})
+    order by id limit 8
+  `).bind(roomId, ...selectedSessions).all();
   const items = itemRows.results || [];
   const failures = [];
   let abortedUploads = 0;
@@ -1512,6 +1558,7 @@ async function purgeTransferRoom(env, roomId, options = {}) {
       await env.TRANSFER_BUCKET.resumeMultipartUpload(upload.object_key, upload.r2_upload_id).abort();
       abortedUploads += 1;
     } catch (error) {
+      if (error instanceof CostGuardError) throw error;
       if (!isMissingR2Resource(error)) {
         failures.push(operationFailure("upload", upload.id, upload.filename || upload.object_key, error));
       }
@@ -1526,6 +1573,7 @@ async function purgeTransferRoom(env, roomId, options = {}) {
     try {
       await env.TRANSFER_BUCKET.delete(objectKey);
     } catch (error) {
+      if (error instanceof CostGuardError) throw error;
       failures.push(operationFailure("object", objectKey, objectKey, error));
     }
   }
@@ -1544,17 +1592,30 @@ async function purgeTransferRoom(env, roomId, options = {}) {
     };
   }
 
+  let roomDeleted = false;
+  let deletedItems = [];
   try {
-    await env.DB.batch([
-      env.DB.prepare(`
-        delete from transfer_upload_parts
-        where upload_session_id in (select id from transfer_upload_sessions where room_id = ?)
-      `).bind(roomId),
-      env.DB.prepare("delete from transfer_upload_sessions where room_id = ?").bind(roomId),
-      env.DB.prepare("delete from transfer_items where room_id = ?").bind(roomId),
-      env.DB.prepare("delete from transfer_rooms where id = ? and status = 'deleting'").bind(roomId)
-    ]);
+    // Delete metadata only for this fully confirmed physical batch. A large
+    // room stays in deleting state for the next bounded cleanup admission.
+    const statements = [
+      ...sessions.flatMap((upload) => [
+        env.DB.prepare("delete from transfer_upload_parts where upload_session_id = ?").bind(upload.id),
+        env.DB.prepare("delete from transfer_upload_sessions where id = ?").bind(upload.id)
+      ]),
+      ...items.map((item) => env.DB.prepare(
+        "delete from transfer_items where id = ? and not exists (select 1 from transfer_upload_sessions where item_id = ?)"
+      ).bind(item.id, item.id)),
+      env.DB.prepare(
+        "delete from transfer_rooms where id = ? and status = 'deleting' "
+        + "and not exists (select 1 from transfer_items where room_id = ?) "
+        + "and not exists (select 1 from transfer_upload_sessions where room_id = ?)"
+      ).bind(roomId, roomId, roomId)
+    ];
+    const results = await env.DB.batch(statements);
+    deletedItems = items.filter((_, index) => statementChanges(results[sessions.length * 2 + index]) === 1);
+    roomDeleted = statementChanges(results.at(-1)) === 1;
   } catch (error) {
+    if (error instanceof CostGuardError) throw error;
     const databaseFailure = operationFailure("room", roomId, roomId, error);
     return {
       ok: false,
@@ -1571,11 +1632,11 @@ async function purgeTransferRoom(env, roomId, options = {}) {
 
   return {
     ok: true,
-    status: "deleted",
+    status: roomDeleted ? "deleted" : "pending",
     roomId,
-    deleted: true,
-    deletedItems: items.length,
-    deletedBytes: items.reduce((total, item) => total + Number(item.size_bytes || 0), 0),
+    deleted: roomDeleted,
+    deletedItems: deletedItems.length,
+    deletedBytes: deletedItems.reduce((total, item) => total + Number(item.size_bytes || 0), 0),
     abortedUploads,
     failed: 0,
     failures: []
@@ -1585,7 +1646,7 @@ async function purgeTransferRoom(env, roomId, options = {}) {
 export async function runTransferCleanup(env, options = {}) {
   assertBindings(env, { requireBucket: true });
   await ensureTransferSchema(env);
-  const limit = clampInteger(options.limit, 1, 500, 100);
+  const limit = clampInteger(options.limit, 1, 10, 10);
   const runId = crypto.randomUUID();
   const startedAt = nowIso();
   let deletedItems = 0;
@@ -1630,15 +1691,11 @@ export async function runTransferCleanup(env, options = {}) {
       if (row.r2_upload_id) {
         try {
           await env.TRANSFER_BUCKET.resumeMultipartUpload(row.object_key, row.r2_upload_id).abort();
-        } catch {
-          // Missing uploads are already effectively aborted.
+        } catch (error) {
+          if (!isMissingR2Resource(error)) throw error;
         }
       }
-      try {
-        await env.TRANSFER_BUCKET.delete(row.object_key);
-      } catch {
-        // An incomplete upload may not have a completed object to delete.
-      }
+      await env.TRANSFER_BUCKET.delete(row.object_key);
       await env.DB.batch([
         env.DB.prepare("delete from transfer_upload_parts where upload_session_id = ?").bind(row.id),
         env.DB.prepare("update transfer_upload_sessions set status = 'aborted', aborted_at = ?, updated_at = ? where id = ?")
@@ -1647,6 +1704,7 @@ export async function runTransferCleanup(env, options = {}) {
       ]);
       abortedUploads += 1;
     } catch (error) {
+      if (error instanceof CostGuardError) throw error;
       failed += 1;
       failures.push(operationFailure("upload", row.id, row.filename || row.object_key || "分片上传", error));
     }
@@ -1655,6 +1713,8 @@ export async function runTransferCleanup(env, options = {}) {
   const items = await env.DB.prepare(`
     select * from transfer_items
     where (expires_at <= ? or upload_status = 'delete_failed')
+      and not exists (select 1 from transfer_upload_sessions s
+        where s.item_id = transfer_items.id and s.status in ('active','completing','failed'))
     order by expires_at asc limit ?
   `).bind(startedAt, limit).all();
   for (const item of items.results || []) {
@@ -1671,6 +1731,7 @@ export async function runTransferCleanup(env, options = {}) {
       deletedItems += 1;
       deletedBytes += Number(item.size_bytes || 0);
     } catch (error) {
+      if (error instanceof CostGuardError) throw error;
       failed += 1;
       failures.push(operationFailure("item", item.id, item.display_filename || item.r2_object_key || "互传项目", error));
       await env.DB.prepare(`
@@ -1681,7 +1742,7 @@ export async function runTransferCleanup(env, options = {}) {
   }
 
   if (options.reconcile) {
-    const listed = await env.TRANSFER_BUCKET.list({ prefix: TRANSFER_PREFIX, limit: 1000 });
+    const listed = await env.TRANSFER_BUCKET.list({ prefix: TRANSFER_PREFIX, limit: 10 });
     await recordR2Operations(env, { classA: 1 });
     const orphanCutoff = Date.now() - 48 * 60 * 60 * 1000;
     for (const object of listed.objects || []) {
@@ -1697,6 +1758,7 @@ export async function runTransferCleanup(env, options = {}) {
           await env.TRANSFER_BUCKET.delete(object.key);
           orphanObjects += 1;
         } catch (error) {
+          if (error instanceof CostGuardError) throw error;
           failed += 1;
           failures.push(operationFailure("object", object.key, object.key, error));
         }
@@ -1804,8 +1866,8 @@ async function refreshDailyStoragePeaks(env) {
     select
       coalesce(sum(case when uploader_role_snapshot <> 'admin' then size_bytes else 0 end), 0) as normal_bytes,
       coalesce(sum(size_bytes), 0) as total_bytes
-    from transfer_items where upload_status in ('uploading','ready','delete_failed') and expires_at > ?
-  `).bind(nowIso()).first();
+    from transfer_items where r2_object_key <> ''
+  `).first();
   const now = nowIso();
   await env.DB.prepare(`
     insert into transfer_storage_daily (usage_date, normal_peak_active_bytes, total_peak_active_bytes, updated_at)
@@ -1846,6 +1908,7 @@ async function touchRoom(env, roomId, at = nowIso()) {
 }
 
 function scheduleAlerts(context) {
+  if (hasCostScope(context.env)) return;
   const promise = maybeCreateCostAlerts(context.env).catch((error) => {
     console.error(JSON.stringify({ message: "transfer alert evaluation failed", error: safeErrorCode(error) }));
   });
@@ -1911,6 +1974,7 @@ async function deliverAlert(env, alertId, threshold, estimatedCost, test) {
       .bind(nowIso(), alertId).run();
     return true;
   } catch (error) {
+    if (error instanceof CostGuardError) throw error;
     await env.DB.prepare("update transfer_alerts set status = 'failed', details = ? where id = ?")
       .bind(JSON.stringify({ error: safeErrorCode(error) }), alertId).run();
     return false;
@@ -2074,6 +2138,7 @@ async function requireTransferSession(request, env, requiredScope = "transfer:re
         }
       };
     } catch (error) {
+      if (error instanceof CostGuardError) throw error;
       throw new TransferHttpError(
         error instanceof Error ? error.message : "Agent access token is invalid.",
         Number(error?.status || 401),

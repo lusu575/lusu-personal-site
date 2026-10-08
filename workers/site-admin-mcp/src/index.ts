@@ -1,3 +1,4 @@
+import { admitCost, CostGuardError, costGuardResponse } from "../../../functions/api/cost-guard.mjs";
 import {
   getOAuthApi,
   OAuthProvider,
@@ -90,6 +91,7 @@ const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     try {
       assertTrustedRequestBoundary(request);
+      env = await admitCost(env, { feature: "owner-mcp" });
       const pathname = new URL(request.url).pathname;
       if (pathname === GAME_RELAY_PATH) {
         return await handleBrowserGameRelayRequest(request, env);
@@ -113,6 +115,7 @@ const worker = {
       if (revocationResponse) return revocationResponse;
       return await provider.fetch(providerRequest, env, ctx);
     } catch (error) {
+      if (error instanceof CostGuardError) return costGuardResponse(error);
       const status = error instanceof WorkerHttpError ? error.status : 500;
       const code = error instanceof WorkerHttpError ? error.code : "INTERNAL_ERROR";
       console.error(JSON.stringify({

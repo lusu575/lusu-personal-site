@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { onRequest } from "../functions/api/[[route]].js";
+import { dispatchApiRequest as onRequest } from "../functions/api/[[route]].js";
 
 const VALID_CHAT_SECRET = "test-chat-ip-hash-secret-0000000000000001";
 const VALID_ANALYTICS_SECRET = "test-analytics-ip-hash-secret-00000001";

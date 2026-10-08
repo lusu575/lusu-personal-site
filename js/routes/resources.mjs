@@ -10,7 +10,7 @@ export function createResourcesRoute({
   contentTitle,
   t,
   label,
-  loadQuickTransferModule = () => import("../features/quick-transfer-loader.mjs?v=20260908-site-review-r1")
+  loadQuickTransferModule = () => import("../features/quick-transfer-loader.mjs?v=20261008-cost-guard-r1")
 }) {
   let quickTransferLoader = null;
   let quickTransferPending = null;

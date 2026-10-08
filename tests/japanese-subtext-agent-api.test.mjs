@@ -9,7 +9,7 @@ import test from "node:test";
 import { authenticateAgentBearer } from "../functions/api/agent-auth.mjs";
 import {
   japaneseSubtextActivityDate,
-  onRequest
+  dispatchApiRequest as onRequest
 } from "../functions/api/[[route]].js";
 
 class D1Statement {

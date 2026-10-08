@@ -34,7 +34,7 @@ test("public modal fixes preserve readable depth and compact failed-video geomet
   );
 });
 
-test("the mobile layout release leads the five-item trilingual projection while older updates remain archived", async () => {
+test("the resource protection release leads the five-item trilingual projection while older updates remain archived", async () => {
   const cloudSaveUpdateId = "seed-update-2026-09-22-cloud-save-10min";
   const reviewUpdateId = "seed-update-2026-09-08-site-review-optimization";
   const mobileBlogRetiredUpdateId = "seed-update-2026-09-02-mobile-blog-retired";
@@ -72,7 +72,8 @@ test("the mobile layout release leads the five-item trilingual projection while 
     import("../js/data/home-content.mjs")
   ]);
 
-  assert.deepEqual(content.updates.slice(0, 29).map((update) => update.article_id), [
+  assert.deepEqual(content.updates.slice(0, 30).map((update) => update.article_id), [
+    "seed-update-2026-10-08-dynamic-protection",
     "seed-update-2026-09-28-mobile-layout",
     cloudSaveUpdateId,
     reviewUpdateId,
@@ -103,14 +104,14 @@ test("the mobile layout release leads the five-item trilingual projection while 
     agentReadBreadthUpdateId,
     whiteboard2048UpdateId,
   ]);
-  assert.equal(content.updates[0].slug, "2026-09-28-mobile-layout");
-  assert.equal(content.updates[0].published_at, "2026-09-28T02:00:00.000Z");
-  assert.equal(content.updates[2].slug, "2026-09-08-site-review-optimization");
-  assert.equal(content.updates[2].published_at, "2026-09-07T23:00:00.000Z");
-  assert.equal(content.updates[3].slug, "2026-09-02-mobile-blog-retired");
-  assert.equal(content.updates[3].published_at, "2026-09-02T07:20:00.000Z");
-  assert.equal(content.updates[4].article_id, passwordRoomResetUpdateId);
-  assert.equal(homeContent.updates[0].article_id, "seed-update-2026-09-28-mobile-layout");
+  assert.equal(content.updates[0].slug, "2026-10-08-dynamic-protection");
+  assert.equal(content.updates[0].published_at, "2026-10-08T15:00:00.000Z");
+  assert.equal(content.updates[3].slug, "2026-09-08-site-review-optimization");
+  assert.equal(content.updates[3].published_at, "2026-09-07T23:00:00.000Z");
+  assert.equal(content.updates[4].slug, "2026-09-02-mobile-blog-retired");
+  assert.equal(content.updates[4].published_at, "2026-09-02T07:20:00.000Z");
+  assert.equal(content.updates[5].article_id, passwordRoomResetUpdateId);
+  assert.equal(homeContent.updates[0].article_id, "seed-update-2026-10-08-dynamic-protection");
   assert.ok(content.updates.some((update) => update.article_id === trafficUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === calmWhiteboardUpdateId));
   assert.ok(content.updates.some((update) => update.article_id === reliableWhiteboardUpdateId));
@@ -119,11 +120,11 @@ test("the mobile layout release leads the five-item trilingual projection while 
   assert.ok(content.updates.some((update) => update.article_id === knowledgeUpdateId));
   assert.equal(homeContent.updates.length, 5);
   assert.deepEqual(homeContent.updates.map((update) => update.article_id), [
+    "seed-update-2026-10-08-dynamic-protection",
     "seed-update-2026-09-28-mobile-layout",
     cloudSaveUpdateId,
     reviewUpdateId,
-    mobileBlogRetiredUpdateId,
-    passwordRoomResetUpdateId
+    mobileBlogRetiredUpdateId
   ]);
   assert.ok(content.updates.some((update) => update.article_id === minimaxH3UpdateId));
   assert.ok(!homeContent.updates.some((update) => update.article_id === minimaxH3UpdateId));
@@ -156,7 +157,7 @@ test("site review assets and retained public modules keep independent cache vers
   const videoLinkAutofillVersion = "20260811-video-link-autofill-r1";
   const displayFixReleaseVersion = "20260812-wallpaper-game-display-r1";
   const wallpaperAssetVersion = "20260810-wallpaper-time-switch-r6";
-  const transferVersion = reviewVersion;
+  const transferVersion = "20261008-cost-guard-r1";
   const index = read("index.html");
   const main = read("js/main.js");
   const changelog = read("CHANGELOG.md");
@@ -174,7 +175,7 @@ test("site review assets and retained public modules keep independent cache vers
     assert.ok(index.includes(`${asset}?v=${reviewVersion}`), `${asset} should use ${reviewVersion}`);
   }
   assert.ok(index.includes(`/css/mobile-ios-shell.css?v=${cloudSaveReleaseVersion}`));
-  assert.ok(index.includes(`/js/main.js?v=${cloudSaveReleaseVersion}`));
+  assert.ok(index.includes("/js/main.js?v=20261008-cost-guard-r1"));
   assert.ok(main.includes(`wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));
   assert.ok(changelog.includes(switchRouteMotionVersion), "the wallpaper route-motion release token must remain in project history");
   assert.ok(changelog.includes(videoLinkAutofillVersion), "the video-link release token must remain in project history");
@@ -213,12 +214,12 @@ test("site review assets and retained public modules keep independent cache vers
   assert.ok(main.includes(`const routeStyleVersion = "${reviewVersion}"`));
   assert.ok(main.includes(`./core/i18n.mjs?v=${reviewVersion}`));
   assert.ok(main.includes(`./core/wallpaper-time.mjs?v=${publicVersion}`));
-  assert.ok(main.includes(`./data/home-content.mjs?v=${cloudSaveReleaseVersion}`));
+  assert.ok(main.includes("./data/home-content.mjs?v=20261008-cost-guard-r1"));
   assert.ok(main.includes(`./core/wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));
   assert.ok(main.includes(`./features/account.mjs?v=${cloudSaveReleaseVersion}`));
   assert.ok(main.includes(`./routes/knowledge.mjs?v=${reviewVersion}`));
   assert.ok(main.includes(`./routes/chatroom.mjs?v=${publicVersion}`));
-  const resourcesVersion = reviewVersion;
+  const resourcesVersion = "20261008-cost-guard-r1";
   assert.ok(main.includes(`./routes/resources.mjs?v=${resourcesVersion}`));
   assert.ok(main.includes(`./data/resources-content.mjs?v=${resourcesVersion}`));
   for (const token of [

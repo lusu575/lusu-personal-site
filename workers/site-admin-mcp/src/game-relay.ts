@@ -1,3 +1,4 @@
+import { admitCost, CostGuardError, costGuardResponse, guardDurableStorage } from "../../../functions/api/cost-guard.mjs";
 import { DurableObject } from "cloudflare:workers";
 
 import { sha256Hex } from "./security";
@@ -242,26 +243,33 @@ export async function relayControllerRequest(
 }
 
 export class GameRelaySession extends DurableObject<Env> {
-  private readonly ready: Promise<void>;
+  private initialized = false;
+  private resourceEnv: Env;
+  private readonly storage: DurableObjectStorage;
   private mutationChain: Promise<unknown> = Promise.resolve();
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
+    this.resourceEnv = env;
+    this.storage = guardDurableStorage(ctx.storage, () => this.resourceEnv);
     ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair(
       GAME_RELAY_HEARTBEAT_REQUEST,
       GAME_RELAY_HEARTBEAT_RESPONSE
     ));
-    this.ready = ctx.blockConcurrencyWhile(async () => {
-      const state = await ctx.storage.get<RelayState>(STATE_KEY);
+  }
+
+  private async initialize(): Promise<void> {
+    if (this.initialized) return;
+
+      const state = await this.storage.get<RelayState>(STATE_KEY);
       if (state && !validStoredState(state)) {
-        await ctx.storage.deleteAll();
-        await ctx.storage.deleteAlarm();
+        await this.storage.deleteAll();
+        await this.storage.deleteAlarm();
       }
-    });
+    this.initialized = true;
   }
 
   async fetch(request: Request): Promise<Response> {
-    await this.ready;
     return this.enqueueMutation(async () => {
       if (request.headers.get(INTERNAL_HEADER) !== "1") {
         return relayJson({ error: "Not authorized.", code: "GAME_RELAY_NOT_AUTHORIZED" }, 401);
@@ -297,12 +305,19 @@ export class GameRelaySession extends DurableObject<Env> {
         default:
           return relayJson({ error: "Not found.", code: "NOT_FOUND" }, 404);
       }
+    }).catch((error: unknown) => {
+      if (error instanceof CostGuardError) return costGuardResponse(error);
+      throw error;
     });
   }
 
   async webSocketMessage(socket: WebSocket, message: string | ArrayBuffer): Promise<void> {
-    await this.ready;
-    await this.enqueueMutation(() => this.handleBrowserMessage(socket, message));
+    try {
+      await this.enqueueMutation(() => this.handleBrowserMessage(socket, message));
+    } catch (error) {
+      if (!(error instanceof CostGuardError)) throw error;
+      try { socket.close(1013, "dynamic_features_paused"); } catch { /* Already closed. */ }
+    }
   }
 
   async webSocketClose(
@@ -311,8 +326,11 @@ export class GameRelaySession extends DurableObject<Env> {
     _reason: string,
     _wasClean: boolean
   ): Promise<void> {
-    await this.ready;
-    await this.enqueueMutation(() => this.handleBrowserDeparture(socket));
+    try {
+      await this.enqueueMutation(() => this.handleBrowserDeparture(socket));
+    } catch (error) {
+      if (!(error instanceof CostGuardError)) throw error;
+    }
   }
 
   async webSocketError(socket: WebSocket, _error: unknown): Promise<void> {
@@ -324,21 +342,28 @@ export class GameRelaySession extends DurableObject<Env> {
   }
 
   async alarm(): Promise<void> {
-    await this.ready;
     await this.enqueueMutation(async () => {
       const state = await this.loadState();
       if (!state) {
-        await this.ctx.storage.deleteAlarm();
+        await this.storage.deleteAlarm();
         return;
       }
       const current = await this.applyDeadlines(state, Date.now());
       if (!current) return;
       await this.persistState(current);
+    }, "cleanup").catch((error: unknown) => {
+      // No retry alarm or database error metric when the cleanup lane is closed.
+      if (!(error instanceof CostGuardError)) throw error;
     });
   }
 
-  private enqueueMutation<T>(action: () => Promise<T>): Promise<T> {
-    const next = this.mutationChain.then(action, action);
+  private enqueueMutation<T>(action: () => Promise<T>, lane: "dynamic" | "cleanup" = "dynamic"): Promise<T> {
+    const admitted = async () => {
+      this.resourceEnv = await admitCost(this.env, { feature: "owner-mcp", lane });
+      await this.initialize();
+      return action();
+    };
+    const next = this.mutationChain.then(admitted, admitted);
     this.mutationChain = next.then(() => undefined, () => undefined);
     return next;
   }
@@ -975,13 +1000,13 @@ export class GameRelaySession extends DurableObject<Env> {
   }
 
   private async loadState(): Promise<RelayState | null> {
-    const state = await this.ctx.storage.get<RelayState>(STATE_KEY);
+    const state = await this.storage.get<RelayState>(STATE_KEY);
     return state && validStoredState(state) ? state : null;
   }
 
   private async persistState(state: RelayState): Promise<void> {
     pruneReceipts(state);
-    await this.ctx.storage.put(STATE_KEY, state);
+    await this.storage.put(STATE_KEY, state);
     await this.scheduleAlarm(state);
   }
 
@@ -996,13 +1021,13 @@ export class GameRelaySession extends DurableObject<Env> {
     }
     if (state.pending) deadlines.push(state.pending.expiresAt);
     if (state.completion) deadlines.push(state.completion.expiresAt);
-    await this.ctx.storage.setAlarm(Math.max(Date.now() + 1_000, Math.min(...deadlines)));
+    await this.storage.setAlarm(Math.max(Date.now() + 1_000, Math.min(...deadlines)));
   }
 
   private async closeAndDelete(code: number, reason: string): Promise<void> {
     for (const socket of this.ctx.getWebSockets()) closeSocket(socket, code, reason);
-    await this.ctx.storage.deleteAll();
-    await this.ctx.storage.deleteAlarm();
+    await this.storage.deleteAll();
+    await this.storage.deleteAlarm();
   }
 }
 

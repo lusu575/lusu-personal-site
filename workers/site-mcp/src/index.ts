@@ -1,3 +1,4 @@
+import { admitCost, CostGuardError, costGuardResponse, costGuardStatus } from "../../../functions/api/cost-guard.mjs";
 import {
   McpServer,
   ResourceNotFoundError,
@@ -778,6 +779,7 @@ const worker = {
         version: SERVER_VERSION,
         mode: "public-read-only",
         protocol: "streamable-http",
+        protection: costGuardStatus(env),
         db_bound: Boolean(env?.DB)
       });
     }
@@ -791,12 +793,14 @@ const worker = {
     }
 
     try {
+      env = await admitCost(env, { feature: "public-mcp" });
       const handler = createMcpHandler(
         () => createSiteMcpServer(env),
         { route: "/mcp" }
       );
       return await handler(request, env, ctx);
     } catch (error) {
+      if (error instanceof CostGuardError) return costGuardResponse(error);
       logFailure("mcp-request", error);
       return jsonResponse({ ok: false, error: "MCP request failed." }, 500);
     }
