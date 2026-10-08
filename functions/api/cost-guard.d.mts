@@ -1,10 +1,10 @@
 export const COST_GUARD_VERSION: string;
 export const COST_LIMITS: Readonly<{
-  dynamic: { daily: number; monthly: number };
-  realtime: { daily: number; monthly: number };
-  cleanup: { daily: number; monthly: number };
-  "whiteboard-cleanup": { daily: number; monthly: number };
-  "relay-cleanup": { daily: number; monthly: number };
+  dynamic: { daily: number; monthly: number; r2a: number };
+  realtime: { daily: number; monthly: number; r2a: number };
+  cleanup: { daily: number; monthly: number; r2a: number };
+  "whiteboard-cleanup": { daily: number; monthly: number; r2a: number };
+  "relay-cleanup": { daily: number; monthly: number; r2a: number };
   envelope: { d1: number; r2a: number; r2b: number; deletes: number; durable: number; storage: number; kv: number };
   storageBytes: number; maxUploadBytes: number; leaseMs: number; operationMs: number;
 }>;

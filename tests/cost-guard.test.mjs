@@ -169,6 +169,50 @@ test("hourly transfer cron admissions cannot consume multi-room whiteboard or ga
   assert.equal(rows.find((row) => row.id === "dynamic").day_used, 1);
 });
 
+test("cleanup R2 allowances fail closed before excess list or unexpected relay operations", async () => {
+  const env = await fixture();
+  const board = await admitCost(env, { lane: "whiteboard-cleanup" });
+  for (let index = 0; index < 4; index++) await board.WHITEBOARD_BUCKET.list();
+  const changes = env.DB.changes;
+  await denied(Promise.resolve().then(() => board.WHITEBOARD_BUCKET.list()));
+  await denied(board.DB.prepare("update cost_guard_budgets set enabled=0").run());
+  assert.equal(env.DB.changes, changes);
+  assert.equal(env.calls.length, 4);
+  const relay = await admitCost(env, { lane: "relay-cleanup" });
+  await denied(Promise.resolve().then(() => relay.TRANSFER_BUCKET.createMultipartUpload("unexpected")));
+  assert.equal(env.calls.length, 4);
+});
+
+test("calendar resets cannot multiply R2 allowances across a billing window, including February", () => {
+  const lanes = ["dynamic", "realtime", "cleanup", "whiteboard-cleanup", "relay-cleanup"];
+  let largestWindow = 0;
+  let largestReadWindow = 0;
+  // Include 33 UTC dates: a 31-day billing interval plus a prepaid envelope
+  // admitted up to 60 seconds before its start. Leap and ordinary February can
+  // also make this interval touch three different calendar months.
+  for (let start = Date.UTC(2023, 0, 1); start < Date.UTC(2027, 0, 1); start += 86400000) {
+    const months = new Map();
+    for (let day = 0; day < 33; day++) {
+      const month = new Date(start + day * 86400000).toISOString().slice(0, 7);
+      months.set(month, (months.get(month) || 0) + 1);
+    }
+    const upperBound = lanes.reduce((sum, lane) => {
+      const { daily, monthly, r2a } = COST_LIMITS[lane];
+      return sum + [...months.values()].reduce((used, days) => used + Math.min(monthly, days * daily) * r2a, 0);
+    }, 0);
+    largestWindow = Math.max(largestWindow, upperBound);
+    const readUpperBound = lanes.reduce((sum, lane) => {
+      const { daily, monthly } = COST_LIMITS[lane];
+      return sum + [...months.values()].reduce((used, days) => used + Math.min(monthly, days * daily) * COST_LIMITS.envelope.r2b, 0);
+    }, 0);
+    largestReadWindow = Math.max(largestReadWindow, readUpperBound);
+  }
+  // Reserve at least 200k A operations for non-app use and accounting margin.
+  // Live account headroom still requires review before enabling any policy.
+  assert.ok(largestWindow <= 800000, `cross-calendar-month allowance grew to ${largestWindow}`);
+  assert.ok(largestReadWindow <= 8000000, `cross-calendar-month read allowance grew to ${largestReadWindow}`);
+});
+
 test("rate limit denial does not write any bucket and concurrent final slot is atomic", async () => {
   const DB = new Database(); DB.sqlite.exec("create table api_rate_limits (bucket_key text primary key,window_started_at integer,request_count integer,blocked_until integer,updated_at text)");
   const entries = [["ip", { limit: 1, windowMs: 60000 }], ["account", { limit: 2, windowMs: 60000 }]];

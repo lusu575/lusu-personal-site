@@ -2,11 +2,13 @@
 // unbounded admission cache, automatic account inference, or administrator bypass.
 export const COST_GUARD_VERSION = "20261008-v1";
 export const COST_LIMITS = Object.freeze({
-  dynamic: Object.freeze({ daily: 500, monthly: 5000 }),
-  realtime: Object.freeze({ daily: 2880, monthly: 10000 }),
-  cleanup: Object.freeze({ daily: 24, monthly: 744 }),
-  "whiteboard-cleanup": Object.freeze({ daily: 2880, monthly: 30000 }),
-  "relay-cleanup": Object.freeze({ daily: 240, monthly: 5000 }),
+  dynamic: Object.freeze({ daily: 500, monthly: 5000, r2a: 16 }),
+  realtime: Object.freeze({ daily: 2880, monthly: 10000, r2a: 16 }),
+  cleanup: Object.freeze({ daily: 24, monthly: 744, r2a: 16 }),
+  // Cleanup needs list/delete, not a full upload envelope. Separate R2 caps
+  // bound bursts even when UTC calendar months straddle an account bill cycle.
+  "whiteboard-cleanup": Object.freeze({ daily: 2880, monthly: 30000, r2a: 4 }),
+  "relay-cleanup": Object.freeze({ daily: 240, monthly: 5000, r2a: 0 }),
   envelope: Object.freeze({ d1: 256, r2a: 16, r2b: 32, deletes: 64, durable: 8, storage: 256, kv: 32 }),
   storageBytes: 8 * 1024 ** 3,
   maxUploadBytes: 95 * 1024 ** 2,
@@ -142,7 +144,7 @@ export async function admitCost(env, { lane = "dynamic", feature = "api", upload
     const scope = {
       raw: env, db, lane, uploadBytes,
       expires: Math.min(now + COST_LIMITS.operationMs, row.valid_until, Date.parse(env.COST_GUARD_UNTIL)),
-      remaining: { ...COST_LIMITS.envelope }
+      remaining: { ...COST_LIMITS.envelope, r2a: caps.r2a }
     };
     return guardedEnv(env, scope);
   } catch (error) {

@@ -18,7 +18,9 @@ Pages 与四个 Worker 使用现有 D1 cost_guard_budgets。每个池只有一�
 
 白板高频 awareness 不逐条占用 HTTP API 额度。每个 DO 预付一次实时封套，最多复用 1,024 条消息、60 秒；剩余 D1/存储操作接近用尽时重新申请，操作配额不会随消息重置。任何二进制更新仍须持久化成功后 ACK。DO 构造函数不访问存储，所有原生存储操作均使用当前已准入封套；原有无唤醒 ping/pong 保留。实时预算用尽仅影响该类服务，不挤占登录/存档额度。应用 API 的白板 join/上传等 HTTP 请求仍受 dynamic 保护。
 
-每份准入最多：256 条 D1 语句、16 次 R2 A、32 次 R2 B、64 次 R2 删除/中止、8 次 DO fetch、256 次 DO storage 调用、32 次 KV 调用。所有池的月上限相加，对应最多 811,904 次 R2 A 和 1,623,808 次 R2 B；这些是保守操作上限，不是精确账单。D1 语句、DO 存储调用不等于计费行数，索引及扫描仍可能放大。因此严格启用只支持已核实 Workers Free/D1 硬配额条件；Paid 或未知不能靠声明成 free 绕过。
+每份准入最多：256 条 D1 语句、16 次 R2 A、32 次 R2 B、64 次 R2 删除/中止、8 次 DO fetch、256 次 DO storage 调用、32 次 KV 调用。白板清理每份最多 4 次 R2 A，游戏清理为 0；清理不需要普通上传的完整额度。所有池每个 UTC 月合计最多 371,904 次 R2 A、1,623,808 次 R2 B。测试还枚举普通年和闰年中任意连续 33 个 UTC 日，覆盖最长 31 天账期、此前 60 秒预付封套可能触及的日期及二月跨三个日历月：应用自身 R2 A 上界为 732,672 次，不能把日历月重置直接视为账单免费额度重置。
+
+这些是保守操作上限，不是精确账单或账户余额；共享消费者和既有用量仍需核实并进一步减少授予额度，R2 非 Standard 类别不享有上述免费额度条件。D1 语句、DO 存储调用不等于计费行数，索引及扫描仍可能放大。因此严格启用只支持已核实 Workers Free/D1 硬配额条件；Paid 或未知不能靠声明成 free 绕过。
 
 拒绝的普通限流请求不更新任何分钟/小时/请求/字节桶；多桶准入在同一 SQL 原子完成。可选访问遥测在进入预算与身份处理前停止，旧 hard 模式不保留文章采样。公开文章搜索超过 1,000 候选拒绝，不做无界扫描或伪装完整的截断结果。
 
@@ -41,7 +43,7 @@ Pages 与四个 Worker 使用现有 D1 cost_guard_budgets。每个池只有一�
 ## 最低账户核对与启用
 
 1. 只读核实 Workers 套餐与 D1 真正的 Free 硬配额、DO/KV 限额及其他项目的日/月用量。域名 Free 不是 Workers Free；D1 Free 超额会停查询，R2 是含免费额度的按量服务。
-2. 核对 Pages、whiteboard、transfer-cleanup、site-mcp、site-admin-mcp 是否存在、实际版本及全部绑定。核实整个 R2 账户的存储和操作余量、对象及未完成分片，关闭或控制所有 r2.dev/自定义公开入口/旧 Worker/外部写入绕过。不得自动创建尚不存在的 Worker。
+2. 核对 Pages、whiteboard、transfer-cleanup、site-mcp、site-admin-mcp 是否存在、实际版本及全部绑定。核实整个 R2 账户的实际账期、存储类别、存储和操作余量、对象及未完成分片，关闭或控制所有 r2.dev/自定义公开入口/旧 Worker/外部写入绕过。不得自动创建尚不存在的 Worker。
 3. 核对真实 cron、对象存储类别和生命周期；不能把默认生命周期当作已验证，也不能给公共白板新增整桶 TTL。保留现有 WhiteboardRoom/GameRelaySession namespace 和 migration。
 4. 准备一次有界维护窗口，在受保护的各部署启用前执行增量 cloudflare/schema-cost-guard.sql。它仅建两张空表，不授权、不删除业务数据。不要重放整份历史 schema.sql。
 5. 首次人工创建上表中需要启用的永久策略行：id 为池名，revision=20261008-v1，enabled=1，valid_until 为未来不超过 30 天的 Unix 毫秒，day 为当前 UTC 日期，初始计数 0，限额不高于表中值，并按实际共享余量进一步降低。已有记录只续期，不清零。初始化 verified=1 的共享存储行前必须有完整物理基线；limit_bytes<=8589934592，reserved_bytes 不小于真实总量。旧候选曾使用 lane:YYYY-MM 的记录，不能迁移成零额度；在暂停状态人工核对其已用量并保留。
@@ -53,7 +55,7 @@ Pages 与四个 Worker 使用现有 D1 cost_guard_budgets。每个池只有一�
 
 ## 当前验证与授权状态
 
-PR #41 为 draft。持续协作、独立清理额度、大房间分批清理与日/月推进修复已重新通过完整本地发布门禁：1,016 项单元/集成测试、223 项公开 UI 检查及 A Dark Room 浏览器审计，包含可复现构建、lint 与类型检查；CI 必须以 PR 最新提交的结果为准。线上静态 manifest 只读确认仍为 main@9854301ea93fee3abdeb14dad3fec55fa2b27da0，尚未生产发布保护。
+PR #41 为 draft。持续协作、独立清理额度、大房间分批清理、日/月推进及跨账期边界修复已通过完整本地发布门禁：1,018 项单元/集成测试、223 项公开 UI 检查及 A Dark Room 浏览器审计，包含可复现构建、lint 与类型检查；CI 必须以 PR 最新提交的结果为准。线上静态 manifest 只读确认仍为 main@9854301ea93fee3abdeb14dad3fec55fa2b27da0，尚未生产发布保护。
 
 用户已明确允许打开最小 Wrangler OAuth：account:read、user:read、workers_scripts:write、workers_routes:write、zone:read，以及 Wrangler 隐式 offline_access。两次官方浏览器流程均未在时限内收到回调，尚未确认登录成功。用户随后明确要求登录晚点处理，因此当前不重试登录、不合并或部署，先完成可独立验证的代码和草稿 PR。最终确认、MFA/CAPTCHA 由用户完成，不把授权码、回调链接或 token 发到对话。回调 localhost:8976 必须到达原电脑；不能直接换电脑完成后期待这里收到回调。此范围不自动包含 D1/R2 额外管理权限，缺什么只报告具体项，不自行增加。
 
