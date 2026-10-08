@@ -4,6 +4,8 @@
 
 ## 2026-10-08 共享费用保护
 
+候选 PR 阶段，尚未上线。日常启用与复核周期待决策，不能把暂停默认值当作永久运行策略；部署等待账户核对与用户处理已有 Wrangler OAuth 登录失效。
+
 公开 site-updates：`seed-update-2026-10-08-dynamic-protection` / `2026-10-08-dynamic-protection`，三语种子、首页前五项和 schema 同步；主站及互传缓存 query 为 `20261008-cost-guard-r1`。
 
 动态入口默认暂停；Pages、Whiteboard DO、Transfer Cleanup、公开 MCP、Owner MCP 共用现有 D1 的先准入预算。严格模式只允许经人工核实的 Workers Free，24 小时复核期限，未知计量或资源异常时关闭。管理员没有费用豁免；同一 R2 桶的保守物理台账包括白板、互传、分片、失败与孤立对象，不因逻辑过期返还额度。清理另有有限预算，静态页面与本地游戏继续提供。详见 [费用保护运维说明](docs/cost-guard.md)，不得宣称代码阈值或账单提醒保证零账单。
