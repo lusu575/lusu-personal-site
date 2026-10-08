@@ -12,6 +12,7 @@ export function markRoomJoined(
   now: number,
   onlineCount: number
 ): RoomMeta {
+  if (meta.cleanup) return meta;
   return {
     ...meta,
     lastActiveAt: now,
@@ -23,6 +24,7 @@ export function markRoomJoined(
 }
 
 export function markRoomEmpty(meta: RoomMeta, now: number): RoomMeta {
+  if (meta.cleanup) return meta;
   if (meta.roomType === "public") {
     return {
       ...meta,
@@ -48,6 +50,7 @@ export function shouldDeleteRoom(
   actualConnectionCount: number,
   now: number
 ): boolean {
+  if (meta.cleanup) return meta.roomType === "private" && meta.cleanup.kind === "delete";
   return (
     meta.roomType === "private" &&
     actualConnectionCount === 0 &&
@@ -68,6 +71,7 @@ export function nextAlarmAt(
   actualConnectionCount: number,
   now: number
 ): number | null {
+  if (meta.cleanup) return now + 60_000;
   if (actualConnectionCount > 0) {
     return now + CONNECTION_SWEEP_INTERVAL_MS;
   }

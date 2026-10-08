@@ -15168,7 +15168,7 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - 在线画板 1.0.11 与临时互传 1.0.15 在额度不足时暂停上传、下载和协作；管理员遵守相同的资源保护。
 - 动态功能暂停不删除已有账号、云存档或画板。未确认的云保存不能视为已成功；请保留本地进度，恢复后再同步。
 - 静态页面、工具资源和支持本地运行的游戏继续提供。需要数据库的文章、搜索和账号功能可能暂不可用。
-- 过期文件只有确认物理删除后才移除对应记录，清理每次处理有限数量，失败可在维护核对后继续。
+- 过期文件只有确认物理删除后才移除对应记录，清理每次处理有限数量。画板开始清理后暂不允许重新入房或编辑；删除完成后，同一密码可进入全新空画板。
 - 此保护用于降低意外按量消耗风险，不构成零账单承诺。', '2026-10-08T15:00:00.000Z', '2026-10-08T15:00:00.000Z') on conflict(translation_id) do nothing;
 insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-10-08-dynamic-protection-en', 'seed-update-2026-10-08-dynamic-protection', 'en', 'Resource Protection for Dynamic Features', 'Cloud saves, collaboration, and file transfer pause when resource protection is active. Home, static content, and local games remain available. Restored features also stop when budgets or metering cannot be trusted.', '# Resource Protection for Dynamic Features
 
@@ -15177,7 +15177,7 @@ Cloud saves, collaboration, and file transfer pause when resource protection is 
 - Whiteboard 1.0.11 and Quick Transfer 1.0.15 pause uploads, downloads, and collaboration when capacity runs out. Administrators follow the same resource protection.
 - Pausing dynamic features does not delete accounts, cloud saves, or boards. An unconfirmed cloud save is not a successful save; keep local progress and synchronize after service resumes.
 - Static pages, tool assets, and games that support local play remain available. Database articles, search, and account features may be unavailable.
-- Expired file records remain until physical deletion is confirmed. Cleanup processes a bounded number of records and can continue after an operator reviews a failure.
+- Expired file records remain until physical deletion is confirmed. Cleanup runs in bounded batches. Boards undergoing cleanup cannot be rejoined or edited; after deletion finishes, the same password opens a new empty board.
 - This protection reduces unexpected usage risk; it is not a promise of zero charges.', '2026-10-08T15:00:00.000Z', '2026-10-08T15:00:00.000Z') on conflict(translation_id) do nothing;
 insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-10-08-dynamic-protection-ja', 'seed-update-2026-10-08-dynamic-protection', 'ja', '動的機能のリソース保護', 'リソース保護の停止中はクラウド保存、共同作業、一時転送を利用できません。ホーム、静的コンテンツ、ローカルゲームは引き続き使えます。再開後も予算や計測に問題があると処理を停止します。', '# 動的機能のリソース保護
 
@@ -15186,5 +15186,5 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - 画板 1.0.11 と一時転送 1.0.15 は、上限に達するとアップロード、ダウンロード、共同編集を停止します。管理者にも同じ保護が適用されます。
 - 動的機能の停止だけで、アカウント、クラウドセーブ、画板を削除することはありません。確認されていない保存は成功扱いにせず、ローカルの進行状況を保持して再開後に同期してください。
 - 静的ページ、ツールのファイル、ローカル実行に対応したゲームは引き続き使えます。データベースを使う記事、検索、アカウント機能は一時的に利用できない場合があります。
-- 期限切れファイルは物理削除の確認後に記録を削除します。清掃は有限件数ずつ行い、失敗後は運用確認を経て続行できます。
+- 期限切れファイルは物理削除の確認後に記録を削除します。清掃は有限件数ずつ進めます。清掃中の画板には再入室や編集ができません。削除完了後、同じパスワードで新しい空の画板に入れます。
 - この保護は想定外の従量利用を減らすものであり、請求がゼロになる保証ではありません。', '2026-10-08T15:00:00.000Z', '2026-10-08T15:00:00.000Z') on conflict(translation_id) do nothing;

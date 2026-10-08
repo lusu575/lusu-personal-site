@@ -405,6 +405,12 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       this.meta = (await this.storage.get<RoomMeta>(ROOM_META_KEY)) || null;
       await this.documentStore.load();
       if (this.meta) {
+        if (this.meta.cleanup) {
+          this.broadcastText({ type: "lock-state", locked: true });
+          if ((await this.storage.getAlarm()) === null) await this.scheduleAlarm();
+          this.initialized = true;
+          return;
+        }
         const now = Date.now();
         const count = uniqueParticipants(this.ctx.getWebSockets()).length;
         let metadataChanged = false;
@@ -468,6 +474,9 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       request.headers.get(ADMIN_AUTHORIZED_HEADER) === "1" &&
       ((request.method === "GET" && url.pathname === "/status") ||
         (request.method === "POST" && url.pathname === "/admin"));
+    if (this.meta?.cleanup && !isTrustedAdminRequest) {
+      return this.cleanupPendingResponse();
+    }
     if (
       !this.meta &&
       isTrustedAdminRequest &&
@@ -580,6 +589,10 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
         return;
       }
       const now = Date.now();
+      if (this.meta.cleanup?.kind === "clear") {
+        await this.clearRoomContents(now);
+        return;
+      }
       if (shouldDeleteRoom(this.meta, this.ctx.getWebSockets().filter(socketIsOpen).length, now)) {
         await this.cleanupPrivateRoom(now);
         return;
@@ -993,6 +1006,10 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       this.closeSocket(socket, CLOSE_POLICY_VIOLATION, "invalid_session");
       return;
     }
+    if (this.meta.cleanup) {
+      this.sendText(socket, { type: "error", code: "room_cleanup_in_progress", retryAfterMs: 60_000 });
+      return;
+    }
     const byteLength =
       typeof message === "string" ? utf8ByteLength(message) : message.byteLength;
     if (byteLength > MAX_MESSAGE_BYTES) {
@@ -1188,6 +1205,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   private async handleSocketDeparture(socket: WebSocket): Promise<void> {
     const departed = readAttachment(socket);
     if (!departed || !this.meta) return;
+    if (this.meta.cleanup) return;
     const remaining = this.ctx
       .getWebSockets()
       .filter((candidate) => candidate !== socket && socketIsOpen(candidate));
@@ -2319,45 +2337,12 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       const bans = await this.getActiveBans();
       return safeJsonResponse({ ok: true, room: this.adminStatus(bans.length) });
     }
+    if (this.meta.cleanup && action.action !== (this.meta.cleanup.kind === "delete" ? "delete-room" : "clear")) {
+      return this.cleanupPendingResponse();
+    }
     if (action.action === "clear") {
-      try {
-        if (!(await this.deleteRoomAssets(this.meta.roomId))) {
-          return safeJsonResponse({ ok: false, error: "asset_cleanup_pending", retryable: true }, 503);
-        }
-        await this.deleteD1Assets(this.meta.roomId);
-      } catch {
-        await this.recordOperationalError("asset_cleanup_failed");
-        return safeJsonResponse(
-          { ok: false, error: "asset_cleanup_failed" },
-          503
-        );
-      }
-      const assetMetadata = await this.storage.list({
-        prefix: IMAGE_META_PREFIX
-      });
-      if (assetMetadata.size > 0) {
-        await this.storage.delete([...assetMetadata.keys()]);
-      }
-      const agentAssetReceipts = await this.storage.list({
-        prefix: AGENT_ASSET_RECEIPT_PREFIX
-      });
-      if (agentAssetReceipts.size > 0) {
-        await this.storage.delete([...agentAssetReceipts.keys()]);
-      }
-      await this.storage.delete(ASSET_SWEEP_NEXT_KEY);
-      this.meta = await this.documentStore.clear(this.meta);
-      this.meta = {
-        ...this.meta,
-        lastActiveAt: Date.now(),
-        resourceUsage: { bytes: 0, images: 0 }
-      };
-      await this.persistMeta();
-      this.broadcastText({
-        type: "document-cleared",
-        documentVersion: this.meta.documentVersion
-      });
-      this.broadcastBinary(WS_YJS_UPDATE, this.documentStore.encodeState());
-      return safeJsonResponse({ ok: true });
+      return await this.clearRoomContents(Date.now())
+        ? safeJsonResponse({ ok: true }) : this.cleanupPendingResponse();
     }
     if (action.action === "set-lock" && typeof action.locked === "boolean") {
       this.meta = {
@@ -2454,7 +2439,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
           409
         );
       }
-      if (this.ctx.getWebSockets().some(socketIsOpen)) {
+      if (!this.meta.cleanup && this.ctx.getWebSockets().some(socketIsOpen)) {
         return safeJsonResponse({ ok: false, error: "room_not_empty" }, 409);
       }
       const deleted = await this.cleanupPrivateRoom(Date.now(), true);
@@ -2472,6 +2457,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       lastActiveAt: this.meta.lastActiveAt,
       emptySince: this.meta.emptySince,
       deleteAt: this.meta.deleteAt,
+      cleanup: this.meta.cleanup || null,
       onlineCount: uniqueParticipants(this.ctx.getWebSockets()).length,
       connectionCount: this.ctx.getWebSockets().filter(socketIsOpen).length,
       documentVersion: this.meta.documentVersion,
@@ -2737,6 +2723,11 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
 
   private async scheduleAlarm(): Promise<void> {
     const now = Date.now();
+    if (this.meta?.cleanup) {
+      const pending = await this.storage.getAlarm();
+      if (pending === null || pending <= now) await this.storage.setAlarm(now + 60_000);
+      return;
+    }
     const lifecycleAlarm = this.meta
       ? nextAlarmAt(
           this.meta,
@@ -2787,13 +2778,15 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     if (
       !this.meta ||
       this.meta.roomType !== "private" ||
-      this.ctx.getWebSockets().some(socketIsOpen) ||
-      (!force && !shouldDeleteRoom(this.meta, 0, now))
+      (this.meta.cleanup && this.meta.cleanup.kind !== "delete") ||
+      (!this.meta.cleanup && (this.ctx.getWebSockets().some(socketIsOpen) ||
+        (!force && !shouldDeleteRoom(this.meta, 0, now))))
     ) {
       await this.scheduleAlarm();
       return false;
     }
     const roomId = this.meta.roomId;
+    await this.beginRoomCleanup("delete", now);
     try {
       if (!(await this.deleteRoomAssets(roomId))) {
         await this.storage.setAlarm(now + 60000);
@@ -2813,10 +2806,66 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       return false;
     }
     await this.incrementMetric("cleaned_room_count");
-    await this.storage.deleteAlarm();
     await this.storage.deleteAll();
+    this.documentStore.resetAfterDeletion();
     this.meta = null;
+    await this.storage.deleteAlarm();
     return true;
+  }
+
+  private cleanupPendingResponse(): Response {
+    const response = safeJsonResponse({
+      ok: false, error: "room_cleanup_in_progress",
+      code: "WHITEBOARD_ROOM_CLEANUP_IN_PROGRESS", retryable: true
+    }, 503);
+    response.headers.set("retry-after", "60");
+    return response;
+  }
+
+  private async beginRoomCleanup(kind: "delete" | "clear", now: number): Promise<void> {
+    if (!this.meta || this.meta.cleanup) return;
+    const next: RoomMeta = { ...this.meta, cleanup: { kind, startedAt: now } };
+    // The mutation queue serializes this commit with joins and writes. Both the
+    // intent and recovery alarm must be durable before touching any R2 object.
+    await this.storage.transaction(async (transaction) => {
+      await transaction.put(ROOM_META_KEY, next);
+      await transaction.setAlarm(now + 60_000);
+    });
+    this.meta = next;
+    this.broadcastText({ type: "lock-state", locked: true });
+  }
+
+  private async clearRoomContents(now: number): Promise<boolean> {
+    if (!this.meta || (this.meta.cleanup && this.meta.cleanup.kind !== "clear")) return false;
+    await this.beginRoomCleanup("clear", now);
+    try {
+      if (!(await this.deleteRoomAssets(this.meta.roomId))) {
+        await this.storage.setAlarm(now + 60_000);
+        return false;
+      }
+      await this.deleteD1Assets(this.meta.roomId);
+      for (const prefix of [IMAGE_META_PREFIX, AGENT_ASSET_RECEIPT_PREFIX]) {
+        const entries = await this.storage.list({ prefix });
+        if (entries.size > 0) await this.storage.delete([...entries.keys()]);
+      }
+      await this.storage.delete(ASSET_SWEEP_NEXT_KEY);
+      const base: RoomMeta = { ...this.meta, cleanup: undefined, resourceUsage: { bytes: 0, images: 0 }, cleanupRetryCount: 0 };
+      const count = uniqueParticipants(this.ctx.getWebSockets()).length;
+      const next = count > 0 ? markRoomJoined(base, now, count) : markRoomEmpty(base, now);
+      // Clearing the document and releasing the intent share one transaction.
+      this.meta = await this.documentStore.clear(next);
+      this.broadcastText({ type: "document-cleared", documentVersion: this.meta.documentVersion });
+      this.broadcastBinary(WS_YJS_UPDATE, this.documentStore.encodeState());
+      this.broadcastText({ type: "lock-state", locked: this.meta.isLocked });
+      await this.persistD1MetadataIfDue(this.meta, now, true);
+      await this.scheduleAlarm();
+      return true;
+    } catch (error) {
+      if (error instanceof CostGuardError) throw error;
+      await this.recordOperationalError("asset_cleanup_failed");
+      await this.storage.setAlarm(nextCleanupRetryAt(this.meta, now));
+      return false;
+    }
   }
 
   private async deleteRoomAssets(roomId: string): Promise<boolean> {

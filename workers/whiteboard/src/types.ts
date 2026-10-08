@@ -23,6 +23,9 @@ export interface RoomMeta {
   updateCount: number;
   updateBytes: number;
   cleanupRetryCount: number;
+  // Durable intent, committed before the first physical delete. Only successful
+  // cleanup may remove it; joining or renewing a room must never cancel it.
+  cleanup?: { kind: "delete" | "clear"; startedAt: number };
   lastError?: string;
   lastErrorAt?: number;
 }

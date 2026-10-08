@@ -63,6 +63,15 @@ describe("private room lifecycle", () => {
     expect(nextAlarmAt(empty, 0, 20_000)).toBeNull();
   });
 
+  it("cannot renew or cancel a durable cleanup intent through membership changes", () => {
+    const deleting: RoomMeta = { ...markRoomEmpty(meta("private"), 20_000), cleanup: { kind: "delete", startedAt: 30_000 } };
+    expect(markRoomJoined(deleting, 40_000, 1)).toBe(deleting);
+    expect(markRoomEmpty(deleting, 50_000)).toBe(deleting);
+    expect(shouldDeleteRoom(deleting, 1, 40_000)).toBe(true);
+    expect(nextAlarmAt(deleting, 1, 40_000)).toBe(100_000);
+    expect(shouldDeleteRoom({ ...deleting, cleanup: { kind: "clear", startedAt: 30_000 } }, 0, Number.MAX_SAFE_INTEGER)).toBe(false);
+  });
+
   it("uses one low-frequency stale-connection sweep only while a room has sockets", () => {
     expect(nextAlarmAt(meta("public"), 1, 20_000)).toBe(
       20_000 + CONNECTION_SWEEP_INTERVAL_MS

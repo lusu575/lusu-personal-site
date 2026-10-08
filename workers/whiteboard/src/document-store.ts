@@ -471,6 +471,12 @@ export class YjsDocumentStore {
     return state;
   }
 
+  resetAfterDeletion(): void {
+    this.document.destroy();
+    this.document = new Y.Doc();
+    this.encodedStateBytes = Y.encodeStateAsUpdate(this.document).byteLength;
+  }
+
   encodeDifference(stateVector: Uint8Array): Uint8Array {
     return Y.encodeStateAsUpdate(this.document, stateVector);
   }
