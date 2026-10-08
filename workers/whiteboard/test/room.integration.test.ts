@@ -141,6 +141,47 @@ async function readMeta(stub: DurableObjectStub): Promise<RoomMeta | undefined> 
   );
 }
 
+async function seedPrivateCleanup(roomId: string, count = 65): Promise<DurableObjectStub> {
+  const connection = await connect(roomId, "private");
+  connection.socket.send(yjsElementUpdate("must-not-resurrect"));
+  await waitForMessage(connection, "update-accepted");
+  await closeAndWait(connection.socket, connection.stub);
+  for (let index = 0; index < count; index++) {
+    await testEnv.WHITEBOARD_BUCKET!.put(`whiteboard/v1/${roomId}/image-${String(index).padStart(3, "0")}`, new Uint8Array([1]));
+  }
+  await runInDurableObject(connection.stub, async (_instance, state) => {
+    const meta = (await state.storage.get<RoomMeta>(ROOM_META_KEY))!;
+    const now = Date.now();
+    await state.storage.put(ROOM_META_KEY, { ...meta, emptySince: now - ROOM_RETENTION_MS - 1, deleteAt: now - 1, onlineCount: 0, resourceUsage: { bytes: count, images: count } });
+    await state.storage.setAlarm(now + 1000);
+  });
+  await evictDurableObject(connection.stub);
+  return connection.stub;
+}
+
+async function expectCleanupRefusal(stub: DurableObjectStub, roomId: string): Promise<void> {
+  const response = await stub.fetch(new Request("https://whiteboard.internal/realtime", {
+    headers: roomHeaders(roomId, "private", 2, "重进", 502)
+  }));
+  expect(response.status).toBe(503);
+  expect(response.headers.get("retry-after")).toBe("60");
+  expect((await response.json() as { code: string }).code).toBe("WHITEBOARD_ROOM_CLEANUP_IN_PROGRESS");
+  expect(response.webSocket).toBeNull();
+}
+
+async function expectFreshDocument(roomId: string): Promise<void> {
+  const fresh = await connect(roomId, "private", 2, "新画板", 503);
+  const encoded = await runInDurableObject(fresh.stub, async (instance) =>
+    (instance as unknown as { documentStore: YjsDocumentStore }).documentStore.encodeState()
+  );
+  const document = new Y.Doc();
+  Y.applyUpdate(document, encoded);
+  expect(document.getMap("elements").size).toBe(0);
+  expect((await readMeta(fresh.stub))?.documentVersion).toBe(0);
+  document.destroy();
+  await closeAndWait(fresh.socket, fresh.stub);
+}
+
 async function waitFor(
   predicate: () => Promise<boolean>,
   timeoutMs = 2_000
@@ -443,6 +484,148 @@ describe("WhiteboardRoom Durable Object", () => {
     await closeAndWait(second.socket, second.stub);
   });
 
+  it("handles 501 sustained awareness events without consuming the login/save budget", async () => {
+    const connection = await connect(`wb_${"n".repeat(43)}`, "private", 1, "持续协作", 81);
+    await runInDurableObject(connection.stub, async (instance, state) => {
+      let now = Date.now();
+      const clock = vi.spyOn(Date, "now").mockImplementation(() => now);
+      try {
+        const socket = state.getWebSockets()[0];
+        for (let index = 0; index < 501; index++) {
+          now += 100;
+          await (instance as { webSocketMessage(socket: WebSocket, message: string): Promise<void> })
+            .webSocketMessage(socket, JSON.stringify({ type: "awareness", focused: true, drawing: false }));
+        }
+        expect(socket.readyState).toBe(WebSocket.OPEN);
+      } finally { clock.mockRestore(); }
+    });
+    const api = await testEnv.DB!.prepare("select month_used from cost_guard_budgets where id='dynamic'").first<{month_used: number}>();
+    const realtime = await testEnv.DB!.prepare("select month_used from cost_guard_budgets where id='realtime'").first<{month_used: number}>();
+    expect(api?.month_used).toBe(0);
+    expect(realtime?.month_used).toBeLessThanOrEqual(2);
+    await closeAndWait(connection.socket, connection.stub);
+  });
+
+  it.each([65, 100])("resumes deletion of an expired room with %i images until every object is gone", async (count) => {
+    const roomId = `wb_${(count === 65 ? "u" : "v").repeat(43)}`;
+    const stub = await seedPrivateCleanup(roomId, count);
+    const prefix = `whiteboard/v1/${roomId}/`;
+    const batches = Math.ceil(count / 32);
+    for (let batch = 1; batch <= batches; batch++) {
+      expect(await runDurableObjectAlarm(stub)).toBe(true);
+      const remaining = await testEnv.WHITEBOARD_BUCKET!.list({ prefix });
+      expect(remaining.objects.length).toBe(Math.max(0, count - batch * 32));
+      if (batch < batches) {
+        const before = await readMeta(stub);
+        expect(before?.cleanup?.kind).toBe("delete");
+        await expectCleanupRefusal(stub, roomId);
+        expect(await readMeta(stub)).toEqual(before);
+        expect(await runInDurableObject(stub, async (_instance, state) => state.storage.getAlarm())).not.toBeNull();
+      }
+    }
+    expect(await readMeta(stub)).toBeUndefined();
+    expect(await runDurableObjectAlarm(stub)).toBe(false);
+    await expectFreshDocument(roomId);
+  });
+
+  it("serializes a concurrent join behind durable deletion intent and the first R2 batch", async () => {
+    const roomId = `wb_${"Q".repeat(43)}`;
+    const stub = await seedPrivateCleanup(roomId);
+    await runInDurableObject(stub, async (instance, state) => {
+      const room = instance as unknown as { env: WhiteboardEnv; alarm(): Promise<void>; fetch(request: Request): Promise<Response> };
+      const bucket = room.env.WHITEBOARD_BUCKET!;
+      const originalDelete = bucket.delete.bind(bucket);
+      let signalStarted!: () => void;
+      let release!: () => void;
+      const started = new Promise<void>((resolve) => { signalStarted = resolve; });
+      const released = new Promise<void>((resolve) => { release = resolve; });
+      let first = true;
+      const deletion = vi.spyOn(bucket, "delete").mockImplementation(async (keys) => {
+        if (first) {
+          first = false;
+          expect((await state.storage.get<RoomMeta>(ROOM_META_KEY))?.cleanup?.kind).toBe("delete");
+          expect(await state.storage.getAlarm()).not.toBeNull();
+          signalStarted();
+          await released;
+        }
+        return originalDelete(keys);
+      });
+      try {
+        const cleanup = room.alarm();
+        await started;
+        const joining = room.fetch(new Request("https://whiteboard.internal/realtime", { headers: roomHeaders(roomId, "private", 2, "并发重进", 504) }));
+        release();
+        const [response] = await Promise.all([joining, cleanup]);
+        expect(response.status).toBe(503);
+        expect(response.webSocket).toBeNull();
+      } finally { release(); deletion.mockRestore(); }
+    });
+    expect((await testEnv.WHITEBOARD_BUCKET!.list({ prefix: `whiteboard/v1/${roomId}/` })).objects.length).toBe(33);
+    expect((await readMeta(stub))?.cleanup?.kind).toBe("delete");
+  });
+
+  it("retains cleanup intent across eviction and budget failure, then resumes without resurrecting the document", async () => {
+    const roomId = `wb_${"R".repeat(43)}`;
+    const stub = await seedPrivateCleanup(roomId);
+    await runDurableObjectAlarm(stub);
+    const intent = (await readMeta(stub))?.cleanup;
+    await testEnv.DB!.prepare("update cost_guard_budgets set enabled=0 where id='whiteboard-cleanup'").run();
+    await evictDurableObject(stub);
+    await runDurableObjectAlarm(stub);
+    await expectCleanupRefusal(stub, roomId);
+    expect((await readMeta(stub))?.cleanup).toEqual(intent);
+    expect((await testEnv.WHITEBOARD_BUCKET!.list({ prefix: `whiteboard/v1/${roomId}/` })).objects.length).toBe(33);
+    await testEnv.DB!.prepare("update cost_guard_budgets set enabled=1 where id='whiteboard-cleanup'").run();
+    await evictDurableObject(stub);
+    await runInDurableObject(stub, async (instance, state) => {
+      const retryAt = (await state.storage.getAlarm())!;
+      const clock = vi.spyOn(Date, "now").mockReturnValue(retryAt + 1);
+      try {
+        await (instance as { alarm(): Promise<void> }).alarm();
+        expect((await state.storage.get<RoomMeta>(ROOM_META_KEY))?.cleanup).toEqual(intent);
+        await (instance as { alarm(): Promise<void> }).alarm();
+      } finally { clock.mockRestore(); }
+    });
+    expect(await readMeta(stub)).toBeUndefined();
+    await expectFreshDocument(roomId);
+  });
+
+  it("does not delete any R2 object if durable cleanup intent cannot commit", async () => {
+    const roomId = `wb_${"S".repeat(43)}`;
+    const stub = await seedPrivateCleanup(roomId);
+    await runInDurableObject(stub, async (instance, state) => {
+      const transaction = vi.spyOn(state.storage, "transaction").mockRejectedValue(new Error("intent_commit_failed"));
+      try { await expect((instance as { alarm(): Promise<void> }).alarm()).rejects.toThrow("intent_commit_failed"); }
+      finally { transaction.mockRestore(); }
+      expect((await state.storage.get<RoomMeta>(ROOM_META_KEY))?.cleanup).toBeUndefined();
+    });
+    expect((await testEnv.WHITEBOARD_BUCKET!.list({ prefix: `whiteboard/v1/${roomId}/` })).objects.length).toBe(65);
+  });
+
+  it("rearms an exhausted cleanup alarm and resumes on the next UTC day without a user visit", async () => {
+    const roomId = `wb_${"w".repeat(43)}`;
+    const connection = await connect(roomId, "private", 1, "恢复清理", 82);
+    await closeAndWait(connection.socket, connection.stub);
+    await runInDurableObject(connection.stub, async (_instance, state) => {
+      const meta = (await state.storage.get<RoomMeta>(ROOM_META_KEY))!;
+      const now = Date.now();
+      await state.storage.put(ROOM_META_KEY, { ...meta, emptySince: now - ROOM_RETENTION_MS - 1, deleteAt: now - 1, onlineCount: 0 });
+      await state.storage.setAlarm(now + 1000);
+    });
+    await testEnv.DB!.prepare("update cost_guard_budgets set day_limit=1,day_used=1,month_used=1 where id='whiteboard-cleanup'").run();
+    await evictDurableObject(connection.stub);
+    expect(await runDurableObjectAlarm(connection.stub)).toBe(true);
+    expect(await readMeta(connection.stub)).toBeDefined();
+    const retryAt = await runInDurableObject(connection.stub, async (_instance, state) => state.storage.getAlarm());
+    expect(retryAt).toBeGreaterThan(Date.now());
+    await runInDurableObject(connection.stub, async (instance) => {
+      const clock = vi.spyOn(Date, "now").mockReturnValue(retryAt! + 1);
+      try { await (instance as { alarm(): Promise<void> }).alarm(); }
+      finally { clock.mockRestore(); }
+    });
+    expect(await readMeta(connection.stub)).toBeUndefined();
+  });
+
   it("deletes a due private room once and makes repeated alarms harmless", async () => {
     const roomId = `wb_${"d".repeat(43)}`;
     const connection = await connect(roomId, "private", 1, "雨町画家", 1);
@@ -516,7 +699,7 @@ describe("WhiteboardRoom Durable Object", () => {
     expect(await runDurableObjectAlarm(connection.stub)).toBe(false);
   });
 
-  it("keeps due room state and retries when D1 cleanup temporarily fails", async () => {
+  it("keeps due room state without D1 error writes and schedules bounded recovery when D1 is unavailable", async () => {
     const roomId = `wb_${"6".repeat(43)}`;
     const connection = await connect(roomId, "private", 1, "重试信使", 61);
     await closeAndWait(connection.socket, connection.stub);
@@ -539,9 +722,9 @@ describe("WhiteboardRoom Durable Object", () => {
 
     expect(await runDurableObjectAlarm(connection.stub)).toBe(true);
     const retained = await readMeta(connection.stub);
-    expect(retained?.cleanupRetryCount).toBe(1);
+    expect(retained?.cleanupRetryCount).toBe(0);
     expect(retained?.roomId).toBe(roomId);
-    expect(retained?.lastError).toBe("room_cleanup_failed");
+    expect(retained?.lastError).not.toBe("room_cleanup_failed");
     expect(
       Number(
         (
@@ -550,9 +733,10 @@ describe("WhiteboardRoom Durable Object", () => {
           ).first<{ metric_value: number }>()
         )?.metric_value || 0
       )
-    ).toBe(1);
+    ).toBe(0);
 
     await ensureWhiteboardIndexSchema();
+    expect(await runInDurableObject(connection.stub, async (_instance, state) => state.storage.getAlarm())).toBeGreaterThan(Date.now());
     expect(await runDurableObjectAlarm(connection.stub)).toBe(true);
     expect(await readMeta(connection.stub)).toBeUndefined();
   });
@@ -1119,6 +1303,50 @@ describe("WhiteboardRoom Durable Object", () => {
       })
     );
     expect(getResponse.status).toBe(404);
+    await closeAndWait(connection.socket, connection.stub);
+  });
+
+  it("keeps a multi-batch administrative clear closed to joins and writes until the empty document commits", async () => {
+    const connection = await connect(PUBLIC_ROOM_ID, "public", 1, "清空期间", 505);
+    connection.socket.send(yjsElementUpdate("before-clear"));
+    await waitForMessage(connection, "update-accepted");
+    for (let index = 0; index < 65; index++) {
+      await testEnv.WHITEBOARD_BUCKET!.put(`whiteboard/v1/${PUBLIC_ROOM_ID}/image-${String(index).padStart(3, "0")}`, new Uint8Array([1]));
+    }
+    const headers = internalHeaders(PUBLIC_ROOM_ID, "public");
+    headers.set(ADMIN_AUTHORIZED_HEADER, "1");
+    const response = await connection.stub.fetch(new Request("https://whiteboard.internal/admin", {
+      method: "POST", headers, body: JSON.stringify({ action: "clear" })
+    }));
+    expect(response.status).toBe(503);
+    const before = await readMeta(connection.stub);
+    expect(before?.cleanup?.kind).toBe("clear");
+    expect((await waitForMessage(connection, "lock-state")).locked).toBe(true);
+    connection.socket.send(yjsElementUpdate("must-not-enter-during-clear"));
+    expect((await waitForMessage(connection, "error")).code).toBe("room_cleanup_in_progress");
+    expect((await readMeta(connection.stub))?.documentVersion).toBe(before?.documentVersion);
+    for (const path of ["/realtime", "/agent-scene", "/assets/image", "/identity", "/agent-assets"]) {
+      const blocked = await connection.stub.fetch(new Request(`https://whiteboard.internal${path}`, {
+        headers: roomHeaders(PUBLIC_ROOM_ID, "public", 2, "重进", 506),
+        method: path === "/identity" || path === "/agent-assets" ? "POST" : "GET"
+      }));
+      expect(blocked.status).toBe(503);
+      expect((await blocked.json() as { code: string }).code).toBe("WHITEBOARD_ROOM_CLEANUP_IN_PROGRESS");
+    }
+    await runDurableObjectAlarm(connection.stub);
+    await runDurableObjectAlarm(connection.stub);
+    await waitForMessage(connection, "document-cleared");
+    await waitFor(async () => connection.messages.filter((message) => message.type === "lock-state").at(-1)?.locked === false);
+    expect((await readMeta(connection.stub))?.cleanup).toBeUndefined();
+    expect((await readMeta(connection.stub))?.documentVersion).toBe(2);
+    expect((await testEnv.WHITEBOARD_BUCKET!.list({ prefix: `whiteboard/v1/${PUBLIC_ROOM_ID}/` })).objects).toHaveLength(0);
+    const encoded = await runInDurableObject(connection.stub, async (instance) =>
+      (instance as unknown as { documentStore: YjsDocumentStore }).documentStore.encodeState()
+    );
+    const document = new Y.Doc();
+    Y.applyUpdate(document, encoded);
+    expect(document.getMap("elements").size).toBe(0);
+    document.destroy();
     await closeAndWait(connection.socket, connection.stub);
   });
 

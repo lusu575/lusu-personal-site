@@ -236,3 +236,16 @@ test("keyset pagination does not repeat prior rows when newer articles appear", 
   assert.equal(first.rows[0].slug, "pinned-article");
   assert.equal(next.rows[0].slug, "new-article");
 });
+
+test("both public search surfaces stop before joined archive scans exceed 1000 candidates", async (t) => {
+  const DB = createDatabase();
+  t.after(() => DB.close());
+  const insert = DB.sqlite.prepare("insert into articles values (?, ?, 'archive', '[]', '', 'published', 0, 0, '2020-01-01', '2020-01-01', '2020-01-01')");
+  for (let i = 0; i < 1001; i++) insert.run(`large-${i}`, `large-${i}`);
+  DB.queries.length = 0;
+  for (const query of [queryPublishedArticles, queryPublishedArticlePage]) {
+    await assert.rejects(query({ DB }, { search: "missing" }), { code: "COST_GUARD_SEARCH_TOO_LARGE" });
+  }
+  assert.equal(DB.queries.length, 2);
+  assert.ok(DB.queries.every(({ sql, values }) => !sql.includes("join") && values[0] === 1001));
+});

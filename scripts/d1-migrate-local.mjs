@@ -142,6 +142,7 @@ export async function migrateLocalD1() {
   await runWrangler(["d1", "execute", database, "--local", "--file=cloudflare/schema.sql"]);
 
   await runWrangler(["d1", "execute", database, "--local", "--file=cloudflare/schema-indexes.sql"]);
+  await runWrangler(["d1", "execute", database, "--local", "--file=cloudflare/schema-cost-guard.sql"]);
 
   const verification = [
     ...await queryRows(`

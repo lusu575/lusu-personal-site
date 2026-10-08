@@ -5,7 +5,7 @@ import {
   normalizeLanguage,
   translationFor
 } from "./core/i18n.mjs?v=20260908-site-review-r1";
-import { homeContent } from "./data/home-content.mjs?v=20260928-mobile-layout-r2";
+import { homeContent } from "./data/home-content.mjs?v=20261008-cost-guard-r1";
 import {
   WALLPAPER_TIME_THEMES,
   createWallpaperTimeOverride,
@@ -361,8 +361,8 @@ const routeModuleRegistry = createRouteModuleRegistry({
       import("./data/videos-content.mjs?v=20260718-resource-icons-layout-r1")
     ]), ([{ createVideosRoute }, { videosContent }]) => instantiateVideosRoute(createVideosRoute, videosContent)),
     resources: () => Promise.all([
-      import("./routes/resources.mjs?v=20260908-site-review-r1"),
-      import("./data/resources-content.mjs?v=20260908-site-review-r1")
+      import("./routes/resources.mjs?v=20261008-cost-guard-r1"),
+      import("./data/resources-content.mjs?v=20261008-cost-guard-r1")
     ]).then(([{ createResourcesRoute }, { resourcesContent }]) => instantiateResourcesRoute(createResourcesRoute, resourcesContent)),
     games: () => loadStyledRoute("games", () => import("./routes/games.mjs?v=20260726-security-reliability-r1"),
       ({ createGamesRoute }) => instantiateGamesRoute(createGamesRoute)),

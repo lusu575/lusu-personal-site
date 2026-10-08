@@ -906,11 +906,11 @@ const mobileBlogRetiredReleaseVersion = "20260902-mobile-blog-retired-r1";
 const reviewReleaseVersion = "20260908-site-review-r1";
 const homeContentReleaseVersion = "20260928-mobile-layout-r2";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
-const transferReleaseVersion = reviewReleaseVersion;
+const transferReleaseVersion = "20261008-cost-guard-r1";
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
-const resourcesRouteVersion = reviewReleaseVersion;
+const resourcesRouteVersion = "20261008-cost-guard-r1";
 const routeStyleVersion = reviewReleaseVersion;
-const publicRouteVersion = (route) => ["knowledge", "videos", "resources"].includes(route)
+const publicRouteVersion = (route) => route === "resources" ? resourcesRouteVersion : ["knowledge", "videos"].includes(route)
   ? reviewReleaseVersion
   : (route === "chatroom" ? motionPolishReleaseVersion : routeLazyVersion);
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
@@ -1337,7 +1337,7 @@ for (const [modulePath, expectedVersion] of [
   ["./core/i18n.mjs", reviewReleaseVersion],
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-ambient.mjs", wallpaperGameDisplayReleaseVersion],
-  ["./data/home-content.mjs", homeContentReleaseVersion],
+  ["./data/home-content.mjs", "20261008-cost-guard-r1"],
   ["./features/account.mjs", homeContentReleaseVersion],
   ["./features/connection-status.mjs", trustSafetyStatusVersion],
   ["./data/resources-content.mjs", resourcesRouteVersion]
@@ -3350,7 +3350,7 @@ const premiumUiVersion = "20260711-calm-motion-r13";
 const publicModulesVersion = reviewReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = homeContentReleaseVersion;
+const currentMainVersion = "20261008-cost-guard-r1";
 const currentCssVersion = reviewReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260922-cloud-save-10min-r1";
@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-09-28-mobile-layout";
-const finalUpdateSlug = "2026-09-28-mobile-layout";
+const finalUpdateId = "seed-update-2026-10-08-dynamic-protection";
+const finalUpdateSlug = "2026-10-08-dynamic-protection";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "A Reworked Mobile Layout";
-const finalPublishedAt = "2026-09-28T02:00:00.000Z";
+const finalTitleEn = "Resource Protection for Dynamic Features";
+const finalPublishedAt = "2026-10-08T15:00:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-09-28-mobile-layout",
   "seed-update-2026-09-22-cloud-save-10min",
   "seed-update-2026-09-08-site-review-optimization",
   "seed-update-2026-09-02-mobile-blog-retired",
@@ -4908,7 +4909,7 @@ const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 
 
 const changelog20260827Section = markdownSection(changelog, "## 2026-08-27");
-const changelog20260928Section = markdownSection(changelog, "## 2026-09-28");
+const costGuardChangelog = markdownSection(changelog, "## 2026-10-08 共享费用保护");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -4927,7 +4928,7 @@ if (!finalUpdateStarted) {
 }
 
 if (finalUpdateStarted) {
-  const finalReleaseDate = "2026-09-28"; // Release calendar uses Asia/Shanghai; stored publication time remains UTC.
+  const finalReleaseDate = "2026-10-08"; // Release calendar uses Asia/Shanghai; stored publication time remains UTC.
   if (!apiJs.includes(`const PUBLIC_RELEASE_DATE = "${finalReleaseDate}";`)) {
     fail(`functions/api/[[route]].js PUBLIC_RELEASE_DATE should match ${finalReleaseDate}`);
   }
@@ -5138,11 +5139,11 @@ if (finalUpdateStarted) {
     finalMainVersion,
     finalUpdateId,
     finalUpdateSlug,
-    "手机",
-    "视频",
+    "动态",
+    "静态",
     "site-updates"
   ]) {
-    if (!changelog20260928Section.includes(token)) {
+    if (!costGuardChangelog.includes(token)) {
       fail(`CHANGELOG.md final public update sync missing ${token}`);
     }
   }
@@ -5446,7 +5447,7 @@ function createMockD1() {
         return { success: true, meta: { changes: acquiredArticleSeedLease ? 1 : 0 } };
       },
       async first() {
-        return null;
+        return sql.includes("with requested") ? { allowed: 1 } : null;
       },
       async all() {
         return { results: [] };
@@ -5484,10 +5485,10 @@ function createRecordingD1() {
         return this;
       },
       async run() {
-        return { success: true };
+        return { success: true, meta: { changes: sql.includes("with requested") ? (this.params.length - 3) / 4 : 1 } };
       },
       async first() {
-        return null;
+        return sql.includes("with requested") ? { allowed: 1 } : null;
       },
       async all() {
         return { results: [] };
@@ -5526,13 +5527,13 @@ function createChatCursorRecoveryD1({ cursorId, cursorCreatedAt, rows }) {
         return this;
       },
       async run() {
-        return { success: true };
+        return { success: true, meta: { changes: sql.includes("with requested") ? (this.params.length - 3) / 4 : 1 } };
       },
       async first() {
         if (/select\s+created_at\s+from\s+anonymous_chat_messages\s+where\s+message_id\s*=\s*\?\s+and\s+room_key\s*=\s*\?/i.test(sql)) {
-          return null;
+          return sql.includes("with requested") ? { allowed: 1 } : null;
         }
-        return null;
+        return sql.includes("with requested") ? { allowed: 1 } : null;
       },
       async all() {
         if (/from\s+anonymous_chat_messages/i.test(sql) && /created_at\s*>\s*\?/i.test(sql)) {
@@ -5790,7 +5791,7 @@ await runTelemetryFrontendRedactionSmoke();
 
 try {
   const adminMiddlewarePath = resolve(root, "functions/admin/_middleware.js");
-  const { onRequest: onAdminRequest } = await import(pathToFileURL(adminMiddlewarePath).href);
+  const { dispatchAdminRequest: onAdminRequest } = await import(pathToFileURL(adminMiddlewarePath).href);
   const adminMissingDbResponse = await onAdminRequest({
     request: new Request("https://example.test/admin/index.html", {
       headers: { Accept: "text/html,application/xhtml+xml" }
@@ -5964,7 +5965,7 @@ try {
   assertAdminSecurityHeaders(nonAdminAssetResponse, "functions/admin/_middleware.js non-admin asset response");
 
   const apiPath = resolve(root, "functions/api/[[route]].js");
-  const { onRequest } = await import(pathToFileURL(apiPath).href);
+  const { dispatchApiRequest: onRequest } = await import(pathToFileURL(apiPath).href);
   for (const path of ["/api/articles?lang=zh", "/api/videos?lang=zh", "/api/social-links", "/api/sitemap.xml"]) {
     const response = await onRequest({
       request: new Request(`https://example.test${path}`),
@@ -6133,12 +6134,10 @@ try {
     env: apiEnv(createMockD1()),
     waitUntil() {}
   });
-  if (!sitemapResponse || sitemapResponse.status >= 500) {
-    const body = sitemapResponse ? await sitemapResponse.text() : "";
-    fail(`functions/sitemap.xml.js returned ${sitemapResponse?.status || "no response"}: ${body}`);
-  } else if (!String(sitemapResponse.headers.get("Content-Type") || "").includes("application/xml")) {
-    fail("functions/sitemap.xml.js did not return XML content type");
+  if (sitemapResponse.status !== 503 || (await sitemapResponse.json()).code !== "COST_GUARD_PAUSED") {
+    fail("functions/sitemap.xml.js must pause before touching unreviewed bindings");
   }
+
 } catch (error) {
   fail(`runtime check failed: ${error.message}`);
 }

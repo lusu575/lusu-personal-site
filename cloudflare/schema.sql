@@ -15095,7 +15095,7 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 
 -- Advance the version only after all content statements succeed.
 insert into site_runtime_state (key, value, updated_at)
-values ('article_seed_version', '20260928-mobile-layout-r2', '2026-09-21T16:24:26.443Z')
+values ('article_seed_version', '20261008-cost-guard-r1', '2026-09-21T16:24:26.443Z')
 on conflict(key) do update set
   value = excluded.value,
   updated_at = excluded.updated_at
@@ -15137,3 +15137,54 @@ Home shortcuts, content cards, and navigation now share a clearer layout. Chat s
 - Dockの文字のコントラストを改善し、横スクロールと折りたたみを維持しました。
 - 中国語・英語・日本語に対応しています。', '2026-09-28T02:00:00.000Z', '2026-09-28T02:00:00.000Z')
 on conflict(article_id, lang) do update set title = excluded.title, summary = excluded.summary, content_markdown = excluded.content_markdown, updated_at = excluded.updated_at;
+
+-- Conservative cost protection; no production allowance is granted by this schema.
+-- Run as an additive migration while all dynamic writers are paused.
+-- Empty budgets and an unverified bucket intentionally grant NO access.
+create table if not exists cost_guard_budgets (
+  id text primary key,
+  revision text not null,
+  enabled integer not null default 0 check (enabled in (0, 1)),
+  valid_until integer not null,
+  day text not null,
+  day_used integer not null default 0 check (day_used >= 0),
+  month_used integer not null default 0 check (month_used >= 0),
+  day_limit integer not null check (day_limit > 0),
+  month_limit integer not null check (month_limit > 0)
+);
+create table if not exists cost_guard_storage (
+  id integer primary key check (id = 1),
+  revision text not null,
+  verified integer not null default 0 check (verified in (0, 1)),
+  reserved_bytes integer not null check (reserved_bytes >= 0),
+  limit_bytes integer not null check (limit_bytes > 0 and limit_bytes <= 8589934592)
+);
+
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-10-08-dynamic-protection', '2026-10-08-dynamic-protection', 'site-updates', '["网站更新","可靠性","工具"]', '', 'published', 0, 0, '2026-10-08T15:00:00.000Z', '2026-10-08T15:00:00.000Z', '2026-10-08T15:00:00.000Z') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-10-08-dynamic-protection-zh', 'seed-update-2026-10-08-dynamic-protection', 'zh', '动态功能增加资源保护', '需要联网保存、协作和互传的功能在保护暂停时暂不可用，首页、静态内容与本地游戏仍可使用。恢复后也会在预算或计量异常时停止操作。', '# 动态功能增加资源保护
+
+需要联网保存、协作和互传的功能在保护暂停时暂不可用，首页、静态内容与本地游戏仍可使用。恢复后也会在预算或计量异常时停止操作。
+
+- 在线画板 1.0.11 与临时互传 1.0.15 在额度不足时暂停上传、下载和协作；管理员遵守相同的资源保护。
+- 动态功能暂停不删除已有账号、云存档或画板。未确认的云保存不能视为已成功；请保留本地进度，恢复后再同步。
+- 静态页面、工具资源和支持本地运行的游戏继续提供。需要数据库的文章、搜索和账号功能可能暂不可用。
+- 过期文件只有确认物理删除后才移除对应记录，清理每次处理有限数量。画板开始清理后暂不允许重新入房或编辑；删除完成后，同一密码可进入全新空画板。
+- 此保护用于降低意外按量消耗风险，不构成零账单承诺。', '2026-10-08T15:00:00.000Z', '2026-10-08T15:00:00.000Z') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-10-08-dynamic-protection-en', 'seed-update-2026-10-08-dynamic-protection', 'en', 'Resource Protection for Dynamic Features', 'Cloud saves, collaboration, and file transfer pause when resource protection is active. Home, static content, and local games remain available. Restored features also stop when budgets or metering cannot be trusted.', '# Resource Protection for Dynamic Features
+
+Cloud saves, collaboration, and file transfer pause when resource protection is active. Home, static content, and local games remain available. Restored features also stop when budgets or metering cannot be trusted.
+
+- Whiteboard 1.0.11 and Quick Transfer 1.0.15 pause uploads, downloads, and collaboration when capacity runs out. Administrators follow the same resource protection.
+- Pausing dynamic features does not delete accounts, cloud saves, or boards. An unconfirmed cloud save is not a successful save; keep local progress and synchronize after service resumes.
+- Static pages, tool assets, and games that support local play remain available. Database articles, search, and account features may be unavailable.
+- Expired file records remain until physical deletion is confirmed. Cleanup runs in bounded batches. Boards undergoing cleanup cannot be rejoined or edited; after deletion finishes, the same password opens a new empty board.
+- This protection reduces unexpected usage risk; it is not a promise of zero charges.', '2026-10-08T15:00:00.000Z', '2026-10-08T15:00:00.000Z') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-10-08-dynamic-protection-ja', 'seed-update-2026-10-08-dynamic-protection', 'ja', '動的機能のリソース保護', 'リソース保護の停止中はクラウド保存、共同作業、一時転送を利用できません。ホーム、静的コンテンツ、ローカルゲームは引き続き使えます。再開後も予算や計測に問題があると処理を停止します。', '# 動的機能のリソース保護
+
+リソース保護の停止中はクラウド保存、共同作業、一時転送を利用できません。ホーム、静的コンテンツ、ローカルゲームは引き続き使えます。再開後も予算や計測に問題があると処理を停止します。
+
+- 画板 1.0.11 と一時転送 1.0.15 は、上限に達するとアップロード、ダウンロード、共同編集を停止します。管理者にも同じ保護が適用されます。
+- 動的機能の停止だけで、アカウント、クラウドセーブ、画板を削除することはありません。確認されていない保存は成功扱いにせず、ローカルの進行状況を保持して再開後に同期してください。
+- 静的ページ、ツールのファイル、ローカル実行に対応したゲームは引き続き使えます。データベースを使う記事、検索、アカウント機能は一時的に利用できない場合があります。
+- 期限切れファイルは物理削除の確認後に記録を削除します。清掃は有限件数ずつ進めます。清掃中の画板には再入室や編集ができません。削除完了後、同じパスワードで新しい空の画板に入れます。
+- この保護は想定外の従量利用を減らすものであり、請求がゼロになる保証ではありません。', '2026-10-08T15:00:00.000Z', '2026-10-08T15:00:00.000Z') on conflict(translation_id) do nothing;

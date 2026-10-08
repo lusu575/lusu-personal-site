@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 
-import { onRequest } from "../functions/api/[[route]].js";
+import { dispatchApiRequest as onRequest } from "../functions/api/[[route]].js";
 
 const SESSION_TOKEN = "game-save-cas-session";
 const USER_ID = "game-save-cas-user";

@@ -1,3 +1,4 @@
+import { hasCostScope } from "./cost-guard.mjs";
 const TRAFFIC_CONTROL_STATE_KEY = "traffic_control_settings_v1";
 const TRAFFIC_CONTROL_SCHEMA_VERSION = 1;
 const TRAFFIC_CONTROL_CACHE_MS = 30 * 1000;
@@ -34,7 +35,7 @@ export const DEFAULT_TRAFFIC_CONTROL_SETTINGS = Object.freeze({
   sampling: Object.freeze({
     normal: Object.freeze({ pageViews: 100, clicks: 100, articleViews: 100 }),
     warning: Object.freeze({ pageViews: 25, clicks: 10, articleViews: 50 }),
-    hard: Object.freeze({ pageViews: 0, clicks: 0, articleViews: 10 })
+    hard: Object.freeze({ pageViews: 0, clicks: 0, articleViews: 0 })
   })
 });
 
@@ -181,6 +182,8 @@ export async function telemetryWriteDecision(env, {
   identity = "",
   fingerprint = ""
 } = {}) {
+  // Strict cost protection disables optional telemetry before any query.
+  if (hasCostScope(env)) return { record: false, mode: "cost-guard", samplePercent: 0 };
   const { settings } = await ensureTrafficControlSettings(env);
   const enabledKey = {
     identify: "identifyEnabled",
@@ -196,6 +199,7 @@ export async function telemetryWriteDecision(env, {
     ? await getTrafficUsageSnapshot(env)
     : null;
   const mode = usage?.protectionMode || "normal";
+  if (mode === "hard") return { record: false, mode, samplePercent: 0 };
   const sampleKey = kind === "identify" ? "pageViews" : kind;
   const samplePercent = settings.sampling[mode]?.[sampleKey]
     ?? settings.sampling.normal[sampleKey]

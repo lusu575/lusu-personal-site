@@ -37,5 +37,13 @@
         "bindings": []
       }
     }
+  },
+  "vars": {
+    "COST_GUARD_MODE": "paused",
+    "COST_GUARD_CLEANUP": "disabled",
+    "COST_GUARD_FEATURES": "",
+    "COST_GUARD_WORKERS_PLAN": "unverified",
+    "COST_GUARD_REVIEW": "",
+    "COST_GUARD_UNTIL": ""
   }
 }

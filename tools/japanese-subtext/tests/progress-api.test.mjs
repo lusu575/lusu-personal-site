@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { onRequest } from "../../../functions/api/[[route]].js";
+import { dispatchApiRequest as onRequest } from "../../../functions/api/[[route]].js";
 import { defaultProgress, mergeProgress, sanitizeProgress } from "../lib/storage.mjs";
 
 const TEST_RUNTIME_SECRETS = Object.freeze({

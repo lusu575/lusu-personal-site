@@ -1,3 +1,4 @@
+import { COST_GUARD_VERSION } from "../functions/api/cost-guard.mjs";
 import { pathToFileURL } from "node:url";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
@@ -92,7 +93,15 @@ export function normalizeSiteOrigin(value = DEFAULT_SITE_ORIGIN) {
 }
 
 export function validateHealth(payload) {
-  invariant(payload && payload.ok === true && payload.db === true, "health endpoint did not confirm API and D1 availability");
+  invariant(payload?.protection, "health endpoint is missing cost protection");
+  invariant(payload?.ok === true, "health endpoint did not confirm liveness");
+  if (payload.protection) {
+    invariant(payload.db === null && payload.protection.version === COST_GUARD_VERSION
+      && payload.protection.staticAvailable === true, "unexpected cost protection health contract");
+    invariant(payload.protection.mode === "paused", "this release expects dynamic protection to be paused");
+  } else {
+    invariant(payload.db === true, "health endpoint did not confirm API and D1 availability");
+  }
 }
 
 export function validateSitemap(xml, origin = DEFAULT_SITE_ORIGIN) {
@@ -177,7 +186,9 @@ export async function runProductionSmoke({
     fetchImpl,
     headers: { Accept: "application/json" }
   });
-  validateHealth(await healthResponse.json());
+  const health = await healthResponse.json();
+  validateHealth(health);
+  const protectedStaticMode = health.protection?.mode === "paused";
 
   const homeResponse = await fetchWithTimeout(`${canonicalOrigin}/?lang=zh`, {
     timeoutMs,
@@ -191,6 +202,18 @@ export async function runProductionSmoke({
     invariant(homeHtml.includes(`="${assetPath}"`), "home HTML does not reference the expected release assets");
   }
 
+  let articleSlug = "";
+  if (protectedStaticMode) {
+    // One harmless denial check. Never exercise writes, uploads, or a load test.
+    const paused = await fetchImpl(
+      new URL("/api/anonymous/identity", canonicalOrigin),
+      { signal: AbortSignal.timeout(timeoutMs), headers: { Accept: "application/json" } }
+    );
+    invariant(paused.status === 503, "dynamic API did not fail closed");
+    const payload = await paused.json();
+    invariant(payload.code === "COST_GUARD_PAUSED" && payload.staticAvailable === true,
+      "dynamic API returned an unexpected failure instead of cost protection");
+  } else {
   const sitemapResponse = await fetchWithTimeout(`${canonicalOrigin}/sitemap.xml`, {
     timeoutMs,
     fetchImpl,
@@ -200,7 +223,7 @@ export async function runProductionSmoke({
   const sitemapXml = await sitemapResponse.text();
   validateSitemap(sitemapXml, canonicalOrigin);
 
-  const articleSlug = extractArticleSlugFromSitemap(sitemapXml);
+  articleSlug = extractArticleSlugFromSitemap(sitemapXml);
   const articleResponse = await fetchWithTimeout(`${canonicalOrigin}/articles/${articleSlug}?lang=zh`, {
     timeoutMs,
     fetchImpl,
@@ -208,6 +231,8 @@ export async function runProductionSmoke({
   });
   const articleHtml = await articleResponse.text();
   validateArticleHtml(articleHtml, articleSlug, canonicalOrigin);
+
+  }
 
   const assetPath = extractHashedAssetPath(homeHtml);
   const assetResponse = await fetchWithTimeout(`${canonicalOrigin}${assetPath}`, { timeoutMs, fetchImpl });
@@ -242,7 +267,7 @@ export async function runProductionSmoke({
     articleSlug,
     assetPath,
     commit,
-    checks: ["expected-release", "health", "home", "sitemap", "article", "immutable-asset", "asset-digest"],
+    checks: ["expected-release", "health", "home", ...(protectedStaticMode ? ["cost-guard-paused"] : ["sitemap", "article"]), "immutable-asset", "asset-digest"],
     wwwRedirect: requireWwwRedirect ? "verified" : "not-required"
   };
 }

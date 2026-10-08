@@ -3,9 +3,13 @@
   "name": "lusu-transfer-cleanup",
   "main": "index.mjs",
   "compatibility_date": "2026-07-16",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "triggers": {
-    "crons": ["17 * * * *"]
+    "crons": [
+      "17 * * * *"
+    ]
   },
   "d1_databases": [
     {
@@ -22,6 +26,14 @@
     }
   ],
   "observability": {
-    "enabled": true
+    "enabled": false
+  },
+  "vars": {
+    "COST_GUARD_MODE": "paused",
+    "COST_GUARD_CLEANUP": "disabled",
+    "COST_GUARD_FEATURES": "",
+    "COST_GUARD_WORKERS_PLAN": "unverified",
+    "COST_GUARD_REVIEW": "",
+    "COST_GUARD_UNTIL": ""
   }
 }

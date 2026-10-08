@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { onRequest } from "../functions/admin/_middleware.js";
+import { dispatchAdminRequest as onRequest } from "../functions/admin/_middleware.js";
 
 function adminDb(row = null) {
   return {

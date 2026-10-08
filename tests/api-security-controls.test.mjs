@@ -180,7 +180,7 @@ async function sha256HexValue(value) {
 }
 
 test("main API mutation gate rejects cross-origin and non-JSON requests before business writes", async () => {
-  const { onRequest } = await freshApi("mutation-gate");
+  const { dispatchApiRequest: onRequest } = await freshApi("mutation-gate");
   const DB = new D1Database();
   try {
     const crossOrigin = await invoke(onRequest, DB, apiRequest("auth/login", {
@@ -213,7 +213,7 @@ test("main API mutation gate rejects cross-origin and non-JSON requests before b
 });
 
 test("main API mutation gate permits only safe raster uploads for the whiteboard", async () => {
-  const { onRequest } = await freshApi("whiteboard-raster-gate");
+  const { dispatchApiRequest: onRequest } = await freshApi("whiteboard-raster-gate");
   const DB = new D1Database();
   try {
     const identityResponse = await invoke(
@@ -317,7 +317,7 @@ test("main API mutation gate permits only safe raster uploads for the whiteboard
 });
 
 test("main API mutation gate permits only exact Agent Yjs scene updates", async () => {
-  const { onRequest } = await freshApi("whiteboard-agent-scene-gate");
+  const { dispatchApiRequest: onRequest } = await freshApi("whiteboard-agent-scene-gate");
   const DB = new D1Database();
   try {
     const crossOriginRequest = new Request(`${ORIGIN}/api/whiteboard/agent/scene`, {
@@ -401,7 +401,7 @@ test("main API mutation gate permits only exact Agent Yjs scene updates", async 
 });
 
 test("auth requests are bounded, rate limited, enumeration-safe, and upgrade legacy PBKDF2 hashes", async () => {
-  const { onRequest } = await freshApi("auth");
+  const { dispatchApiRequest: onRequest } = await freshApi("auth");
   const DB = new D1Database();
   const password = "ValidPass123!";
   try {
@@ -492,7 +492,7 @@ test("auth requests are bounded, rate limited, enumeration-safe, and upgrade leg
 });
 
 test("analytics writes are source checked and duplicate page views are collapsed", async () => {
-  const { onRequest } = await freshApi("analytics");
+  const { dispatchApiRequest: onRequest } = await freshApi("analytics");
   const DB = new D1Database();
   try {
     const first = await invoke(onRequest, DB, apiRequest("analytics/page-view", {
@@ -535,7 +535,7 @@ test("analytics writes are source checked and duplicate page views are collapsed
 });
 
 test("known crawlers bypass analytics before schema, identity, and rate-limit writes", async () => {
-  const { onRequest } = await freshApi("analytics-crawler-bypass");
+  const { dispatchApiRequest: onRequest } = await freshApi("analytics-crawler-bypass");
   const DB = new D1Database();
   try {
     const response = await invoke(onRequest, DB, apiRequest("analytics/page-view", {
@@ -560,7 +560,7 @@ test("known crawlers bypass analytics before schema, identity, and rate-limit wr
 });
 
 test("admin traffic controls expose honest write pressure, use CAS, and can shed telemetry writes", async () => {
-  const { onRequest } = await freshApi("traffic-control");
+  const { dispatchApiRequest: onRequest } = await freshApi("traffic-control");
   const DB = new D1Database();
   const sessionToken = "traffic-control-admin-session-token";
   try {
@@ -597,7 +597,7 @@ test("admin traffic controls expose honest write pressure, use CAS, and can shed
     assert.deepEqual(snapshot.settings.sampling.hard, {
       pageViews: 0,
       clicks: 0,
-      articleViews: 10
+      articleViews: 0
     });
     assert.equal(snapshot.usage.scope, "site-telemetry-estimate");
     assert.match(snapshot.usage.note, /估算/);
@@ -701,7 +701,7 @@ test("traffic defaults migrate only an untouched legacy policy", async () => {
 });
 
 test("periodic cleanup applies the 180-day boundary to every raw analytics table", async () => {
-  const { onRequest } = await freshApi("analytics-retention");
+  const { dispatchApiRequest: onRequest } = await freshApi("analytics-retention");
   const DB = new D1Database();
   try {
     const initialized = await invoke(onRequest, DB, apiRequest("analytics/page-view", {
@@ -739,7 +739,7 @@ test("periodic cleanup applies the 180-day boundary to every raw analytics table
 });
 
 test("sitemap output stays on the canonical origin with stable multilingual alternates", async () => {
-  const { onRequest } = await freshApi("canonical-sitemap");
+  const { dispatchApiRequest: onRequest } = await freshApi("canonical-sitemap");
   const DB = new D1Database();
   try {
     const response = await invoke(onRequest, DB, apiRequest("sitemap.xml"));
@@ -759,7 +759,7 @@ test("sitemap output stays on the canonical origin with stable multilingual alte
 });
 
 test("unknown unauthenticated admin routes do not initialize feature schemas or seed content", async () => {
-  const { onRequest } = await freshApi("admin-order");
+  const { dispatchApiRequest: onRequest } = await freshApi("admin-order");
   const DB = new D1Database();
   try {
     const response = await invoke(onRequest, DB, apiRequest("admin/not-a-real-feature"));
@@ -776,7 +776,7 @@ test("unknown unauthenticated admin routes do not initialize feature schemas or 
 });
 
 test("unexpected server failures are logged but never reflected to clients", async () => {
-  const { onRequest } = await freshApi("error-redaction");
+  const { dispatchApiRequest: onRequest } = await freshApi("error-redaction");
   const internalMessage = "sensitive database topology detail";
   const logs = [];
   const originalConsoleError = console.error;

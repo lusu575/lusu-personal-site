@@ -131,7 +131,7 @@ function translations(label = "first") {
 test("Daily AI News automation defaults to drafts and can explicitly auto-publish idempotently", async () => {
   const moduleUrl = new URL("../functions/api/[[route]].js", import.meta.url);
   moduleUrl.searchParams.set("daily-ai-news", `${Date.now()}-${Math.random()}`);
-  const { onRequest } = await import(moduleUrl.href);
+  const { dispatchApiRequest: onRequest } = await import(moduleUrl.href);
   const DB = new D1Database();
 
   try {
@@ -538,7 +538,7 @@ test("Daily AI News automation defaults to drafts and can explicitly auto-publis
 test("Tool Radar automation isolates credentials, enforces a permanent tool catalog, and can auto-publish", async () => {
   const moduleUrl = new URL("../functions/api/[[route]].js", import.meta.url);
   moduleUrl.searchParams.set("tool-radar", `${Date.now()}-${Math.random()}`);
-  const { onRequest } = await import(moduleUrl.href);
+  const { dispatchApiRequest: onRequest } = await import(moduleUrl.href);
   const DB = new D1Database();
 
   try {
@@ -1108,7 +1108,7 @@ test("Tool Radar automation isolates credentials, enforces a permanent tool cata
 test("Daily AI News runtime schema adds auto_publish before seeding a legacy channel table", async () => {
   const moduleUrl = new URL("../functions/api/[[route]].js", import.meta.url);
   moduleUrl.searchParams.set("daily-ai-news-legacy", `${Date.now()}-${Math.random()}`);
-  const { onRequest } = await import(moduleUrl.href);
+  const { dispatchApiRequest: onRequest } = await import(moduleUrl.href);
   const DB = new D1Database();
 
   try {

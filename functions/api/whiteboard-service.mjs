@@ -1,3 +1,5 @@
+import { consumeBoundedRateLimits } from "./bounded-rate-limit.mjs";
+import { CostGuardError, costGuardResponse } from "./cost-guard.mjs";
 import {
   ensureAnonymousIdentity,
   publicAnonymousIdentity,
@@ -332,7 +334,6 @@ async function proxyWhiteboardAgentAsset(context, principal, value) {
   const operationId = normalizeAgentOperationId(
     request.headers.get("X-Whiteboard-Operation-Id")
   );
-  await consumeUploadAttempt(env, ip.ipHash);
   const bytes = await readBoundedBytes(request, MAX_ASSET_BYTES);
   if (bytes.byteLength === 0) {
     throw new WhiteboardHttpError(
@@ -341,7 +342,7 @@ async function proxyWhiteboardAgentAsset(context, principal, value) {
       "WHITEBOARD_ASSET_INVALID"
     );
   }
-  await consumeUploadByteBudget(env, ip.ipHash, bytes.byteLength);
+  await consumeUploadBudget(env, ip.ipHash, bytes.byteLength);
   headers.set(INTERNAL_HEADERS.agentOperationId, operationId);
   headers.set("Content-Type", contentType);
   headers.set("Content-Length", String(bytes.byteLength));
@@ -541,7 +542,6 @@ async function proxyWhiteboardAssetUpload(context, identity) {
   const claims = await verifiedAccessClaims(request, env, identity);
   const contentType = normalizeAssetContentType(request.headers.get("Content-Type"));
   const ip = await whiteboardIpContext(request, env);
-  await consumeUploadAttempt(env, ip.ipHash);
   const bytes = await readBoundedBytes(request, MAX_ASSET_BYTES);
   if (bytes.byteLength === 0) {
     throw new WhiteboardHttpError(
@@ -550,7 +550,7 @@ async function proxyWhiteboardAssetUpload(context, identity) {
       "WHITEBOARD_ASSET_INVALID"
     );
   }
-  await consumeUploadByteBudget(env, ip.ipHash, bytes.byteLength);
+  await consumeUploadBudget(env, ip.ipHash, bytes.byteLength);
 
   const headers = internalRoomHeaders({
     env,
@@ -1344,17 +1344,17 @@ async function consumeJoinAttempt(env, ipHash, roomType) {
       maxBackoffMs: 60 * 60_000
     }
   ];
-  for (const policy of policies) {
-    const bucketKey = await rateLimitBucketKey(policy.scope, ipHash);
-    const result = await consumeRateLimit(env, bucketKey, policy);
-    if (!result.allowed) {
-      throw new WhiteboardHttpError(
-        "进入画板的尝试过于频繁，请稍后再试。",
-        429,
-        "WHITEBOARD_JOIN_RATE_LIMITED",
-        result.retryAfterSeconds
-      );
-    }
+  const entries = await Promise.all(policies.map(async (policy) => [
+    await rateLimitBucketKey(policy.scope, ipHash), policy
+  ]));
+  const result = await consumeBoundedRateLimits(env, entries);
+  if (!result.allowed) {
+    throw new WhiteboardHttpError(
+      "进入画板的尝试过于频繁，请稍后再试。",
+      429,
+      "WHITEBOARD_JOIN_RATE_LIMITED",
+      result.retryAfterSeconds
+    );
   }
 }
 
@@ -1379,72 +1379,24 @@ async function consumeReconnectAttempt(env, ipHash) {
   }
 }
 
-async function consumeUploadAttempt(env, ipHash) {
+async function consumeUploadBudget(env, ipHash, byteLength) {
+  // Request and byte buckets are admitted atomically, including minute/hour
+  // windows. A rejected byte budget must not keep incrementing attempt rows.
   const policies = [
-    {
-      scope: "whiteboard:upload:ip:minute",
-      limit: 20,
-      windowMs: 60_000,
-      backoffMs: 60_000,
-      maxBackoffMs: 15 * 60_000
-    },
-    {
-      scope: "whiteboard:upload:ip:hour",
-      limit: 200,
-      windowMs: 60 * 60_000,
-      backoffMs: 5 * 60_000,
-      maxBackoffMs: 60 * 60_000
-    }
+    { scope: "whiteboard:upload:ip:minute", limit: 20, windowMs: 60_000, weight: 1 },
+    { scope: "whiteboard:upload:ip:hour", limit: 200, windowMs: 3_600_000, weight: 1 },
+    { scope: "whiteboard:upload-bytes:ip:minute", limit: 50 * 1024 * 1024, windowMs: 60_000, weight: byteLength },
+    { scope: "whiteboard:upload-bytes:ip:hour", limit: 250 * 1024 * 1024, windowMs: 3_600_000, weight: byteLength }
   ];
-  for (const policy of policies) {
-    const result = await consumeRateLimit(
-      env,
-      await rateLimitBucketKey(policy.scope, ipHash),
-      policy
+  const entries = await Promise.all(policies.map(async (policy) => [
+    await rateLimitBucketKey(policy.scope, ipHash), policy, policy.weight
+  ]));
+  const result = await consumeBoundedRateLimits(env, entries);
+  if (!result.allowed) {
+    throw new WhiteboardHttpError(
+      "图片上传频率或容量过高，请稍后再试。", 429,
+      "WHITEBOARD_UPLOAD_RATE_LIMITED", result.retryAfterSeconds
     );
-    if (!result.allowed) {
-      throw new WhiteboardHttpError(
-        "图片上传过于频繁，请稍后再试。",
-        429,
-        "WHITEBOARD_UPLOAD_RATE_LIMITED",
-        result.retryAfterSeconds
-      );
-    }
-  }
-}
-
-async function consumeUploadByteBudget(env, ipHash, byteLength) {
-  const policies = [
-    {
-      scope: "whiteboard:upload-bytes:ip:minute",
-      limit: 50 * 1024 * 1024,
-      windowMs: 60_000,
-      backoffMs: 60_000,
-      maxBackoffMs: 15 * 60_000
-    },
-    {
-      scope: "whiteboard:upload-bytes:ip:hour",
-      limit: 250 * 1024 * 1024,
-      windowMs: 60 * 60_000,
-      backoffMs: 5 * 60_000,
-      maxBackoffMs: 60 * 60_000
-    }
-  ];
-  for (const policy of policies) {
-    const result = await consumeRateLimit(
-      env,
-      await rateLimitBucketKey(policy.scope, ipHash),
-      policy,
-      byteLength
-    );
-    if (!result.allowed) {
-      throw new WhiteboardHttpError(
-        "图片上传容量过高，请稍后再试。",
-        429,
-        "WHITEBOARD_UPLOAD_RATE_LIMITED",
-        result.retryAfterSeconds
-      );
-    }
   }
 }
 
@@ -1516,57 +1468,7 @@ async function rateLimitBucketKey(scope, identity) {
 }
 
 async function consumeRateLimit(env, bucketKey, policy, weight = 1) {
-  const now = Date.now();
-  const windowMs = Math.max(1000, Number(policy.windowMs) || 60_000);
-  const limit = Math.max(1, Number(policy.limit) || 1);
-  const increment = Math.max(1, Math.floor(Number(weight) || 1));
-  const backoffMs = Math.max(1000, Number(policy.backoffMs) || windowMs);
-  const maxBackoffMs = Math.max(backoffMs, Number(policy.maxBackoffMs) || backoffMs);
-  const resetBefore = now - windowMs;
-  const row = await env.DB.prepare(`
-    insert into api_rate_limits (
-      bucket_key, window_started_at, request_count, blocked_until, updated_at
-    ) values (?, ?, ?, 0, ?)
-    on conflict(bucket_key) do update set
-      window_started_at = case
-        when api_rate_limits.window_started_at <= ? then excluded.window_started_at
-        else api_rate_limits.window_started_at
-      end,
-      request_count = case
-        when api_rate_limits.window_started_at <= ? then excluded.request_count
-        else api_rate_limits.request_count + excluded.request_count
-      end,
-      blocked_until = case
-        when api_rate_limits.window_started_at <= ? then 0
-        when api_rate_limits.blocked_until > ? then api_rate_limits.blocked_until
-        when api_rate_limits.request_count + excluded.request_count > ? then
-          ? + min(?, ? * (1 << min(api_rate_limits.request_count + excluded.request_count - ?, 4)))
-        else 0
-      end,
-      updated_at = excluded.updated_at
-    returning request_count, blocked_until
-  `).bind(
-    bucketKey,
-    now,
-    increment,
-    new Date(now).toISOString(),
-    resetBefore,
-    resetBefore,
-    resetBefore,
-    now,
-    limit,
-    now,
-    maxBackoffMs,
-    backoffMs,
-    limit
-  ).first();
-  const blockedUntil = Number(row?.blocked_until || 0);
-  return {
-    allowed: blockedUntil <= now,
-    retryAfterSeconds: blockedUntil > now
-      ? Math.max(1, Math.ceil((blockedUntil - now) / 1000))
-      : 0
-  };
+  return consumeBoundedRateLimits(env, [[bucketKey, policy, weight]]);
 }
 
 async function ensureRoomMetadata(env, roomId, roomType) {
@@ -2350,6 +2252,7 @@ function whiteboardJson(payload, status = 200) {
 }
 
 function whiteboardErrorResponse(error) {
+  if (error instanceof CostGuardError) return costGuardResponse(error);
   const ownError = error instanceof WhiteboardHttpError;
   const identityError = error?.name === "AnonymousIdentityError";
   const status = ownError

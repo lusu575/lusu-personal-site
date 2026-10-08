@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-import { onRequest } from "../functions/api/[[route]].js";
+import { dispatchApiRequest as onRequest } from "../functions/api/[[route]].js";
 
 const source = await readFile(new URL("../functions/api/[[route]].js", import.meta.url), "utf8");
 const RUNTIME_SECRETS = Object.freeze({
@@ -24,7 +24,7 @@ function createRegistrationD1() {
         },
         async first() {
           calls.push({ method: "first", sql, params: [...this.params] });
-          return null;
+          return /select .* as allowed/s.test(sql) ? { allowed: 1 } : null;
         },
         async all() {
           calls.push({ method: "all", sql, params: [...this.params] });
@@ -35,7 +35,7 @@ function createRegistrationD1() {
         },
         async run() {
           calls.push({ method: "run", sql, params: [...this.params] });
-          return { success: true, meta: { changes: 1 } };
+          return { success: true, meta: { changes: sql.includes("with requested") ? (this.params.length - 3) / 4 : 1 } };
         }
       };
       return statement;

@@ -5,6 +5,8 @@ description: 维护鲁肃个人站 lusu575/lusu-personal-site 时使用。适用
 
 # 鲁肃个人网站专用Skill
 
+费用保护下的白板分批删除必须在首次物理删除前原子提交持久清理意图与恢复 Alarm；仅尚未开始的 TTL 可以由重入取消。清理中的加入、Agent/浏览器读写、身份续期不能复活文档，DO 重启和预算故障后必须继续原清理。管理员清空也要在空文档与意图解除同事务提交后恢复访问；整房删除还须重置内存 Yjs 文档。回归必须覆盖跨批重进、并发重进、恢复续清理与清理完成后的同实例空画板。测试必须区分总数、通过和跳过；本地 dry-run、CI、预览和生产核验分别报告。
+
 ## 2026-09-08 Review 后的维护约定
 
 - 保持欢迎窗主动打开：桌面最近更新入口和移动首页欢迎入口复用现有弹窗，默认访问及深链不自动打开，`welcome=1` 仅作明确预览。此约定替代旧的每天首次访问自动欢迎规则，不再用 `lusu-welcome-day` 判断是否自动弹窗。
@@ -526,3 +528,7 @@ $env:XDG_CONFIG_HOME=(Join-Path (Get-Location) '.wrangler-config'); npx.cmd wran
 ## 2026-09-28 手机布局维护
 
 移动 Chat 的布局集中在 mobile-ios-shell.css 的 September 2026 区段，使用 identity／nickname／private／log／compose／feedback 命名区域；避免旧固定行号覆盖。视频使用完整 16:9 封面，上下式内容。账号错误恢复焦点前先解除 submitting 的 disabled 状态。
+
+## 2026-10-08 共享费用保护
+
+动态入口默认暂停；Pages、Whiteboard DO、Transfer Cleanup、公开 MCP、Owner MCP 共用现有 D1 的先准入预算。严格模式只允许经人工核实的 Workers Free，最长 30 天复核期限，日/月额度在同一有效策略下原子推进，未知计量或资源异常时关闭。管理员没有费用豁免；同一 R2 桶的保守物理台账包括白板、互传、分片、失败与孤立对象，不因逻辑过期返还额度。清理另有有限预算，静态页面与本地游戏继续提供。详见 [费用保护运维说明](../../docs/cost-guard.md)，不得宣称代码阈值或账单提醒保证零账单。

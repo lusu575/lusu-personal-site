@@ -1078,7 +1078,7 @@ test("admin cleanup returns a retryable non-2xx payload when an R2 object cannot
   const response = await call("admin/transfer/cleanup", {
     method: "POST",
     token: adminToken,
-    ...jsonBody({ reconcile: false, limit: 100 })
+    ...jsonBody({ reconcile: false, limit: 10 })
   });
   bucket.failDeleteKeys.delete(objectKey);
   assert.equal(response.status, 502);
@@ -1087,7 +1087,11 @@ test("admin cleanup returns a retryable non-2xx payload when an R2 object cannot
   assert.equal(payload.ok, false);
   assert.equal(payload.failed, 1);
   assert.deepEqual(payload.failures.map((failure) => failure.id), [itemId]);
-  assert.deepEqual(payload.retry, { reconcile: false, limit: 100 });
+  assert.deepEqual(payload.retry, { reconcile: false, limit: 10 });
+  assert.equal(db.sqlite.prepare("select upload_status from transfer_items where id = ?").get(itemId).upload_status, "delete_failed");
+  const usageResponse = await call("admin/transfer/usage", { token: adminToken });
+  const usage = await usageResponse.json();
+  assert.ok(usage.active.normalBytes >= 1, "expired physical object must remain in storage accounting");
 
   const retry = await call("admin/transfer/cleanup", {
     method: "POST",
@@ -1097,6 +1101,60 @@ test("admin cleanup returns a retryable non-2xx payload when an R2 object cannot
   assert.equal(retry.status, 200);
   assert.equal((await retry.json()).status, "success");
   assert.equal(await bucket.head(objectKey), null);
+});
+
+test("failed multipart abort retains session, part and item metadata after expiration", async () => {
+  const roomId = "failed-abort-room";
+  const itemId = "failed-abort-item";
+  const sessionId = "failed-abort-session";
+  const objectKey = "transfer/2000-01-01/failed-abort";
+  const expired = "2000-01-01T00:00:00.000Z";
+  db.sqlite.prepare("insert into transfer_rooms (id,room_key,created_by,status,created_at,last_activity_at) values (?,?,'user-1','open',?,?)")
+    .run(roomId, `transfer_${"Z".repeat(43)}`, expired, expired);
+  db.sqlite.prepare("insert into transfer_items (id,room_id,uploader_user_id,item_type,r2_object_key,size_bytes,upload_mode,upload_status,created_at,expires_at) values (?,?,'user-1','file',?,7,'multipart','uploading',?,?)")
+    .run(itemId, roomId, objectKey, expired, expired);
+  db.sqlite.prepare("insert into transfer_upload_sessions (id,item_id,room_id,user_id,object_key,r2_upload_id,filename,mime_type,declared_size_bytes,part_size_bytes,expected_parts,status,created_at,updated_at,expires_at) values (?,?,?,'user-1',?,'r2-fail','file','text/plain',7,7,1,'active',?,?,?)")
+    .run(sessionId, itemId, roomId, objectKey, expired, expired, expired);
+  db.sqlite.prepare("insert into transfer_upload_parts values (?,1,'part',7,?)").run(sessionId, expired);
+  const original = bucket.resumeMultipartUpload;
+  bucket.resumeMultipartUpload = () => ({ async abort() { throw new Error("R2 temporarily unavailable"); } });
+  try {
+    const result = await runTransferCleanup(env, { limit: 10 });
+    assert.ok(result.failed >= 1);
+    assert.equal(db.sqlite.prepare("select status from transfer_upload_sessions where id=?").get(sessionId).status, "active");
+    assert.equal(db.sqlite.prepare("select count(*) as count from transfer_upload_parts where upload_session_id=?").get(sessionId).count, 1);
+    assert.ok(db.sqlite.prepare("select id from transfer_items where id=?").get(itemId));
+  } finally { bucket.resumeMultipartUpload = original; }
+});
+
+test("bounded room deletion never cascades away unprocessed multipart sessions", async () => {
+  const roomId = "bounded-multipart-room";
+  const itemId = "bounded-multipart-item";
+  const objectKey = "transfer/2099-01-01/bounded-multipart";
+  const future = "2099-01-01T00:00:00.000Z";
+  db.sqlite.prepare("insert into transfer_rooms (id,room_key,created_by,status,created_at,last_activity_at) values (?,?,'admin-1','open',?,?)")
+    .run(roomId, `transfer_${"V".repeat(43)}`, future, future);
+  db.sqlite.prepare("insert into transfer_items (id,room_id,uploader_user_id,item_type,r2_object_key,size_bytes,upload_mode,upload_status,created_at,expires_at) values (?,?,'admin-1','file',?,9,'multipart','uploading',?,?)")
+    .run(itemId, roomId, objectKey, future, future);
+  const uploads = [];
+  for (let index = 0; index < 9; index++) {
+    const sessionObjectKey = `${objectKey}-${index}`;
+    const upload = await bucket.createMultipartUpload(sessionObjectKey);
+    uploads.push(bucket.uploads.get(upload.uploadId));
+    db.sqlite.prepare("insert into transfer_upload_sessions (id,item_id,room_id,user_id,object_key,r2_upload_id,filename,mime_type,declared_size_bytes,part_size_bytes,expected_parts,status,created_at,updated_at,expires_at) values (?,?,?,'admin-1',?,?,'file','text/plain',1,1,1,'active',?,?,?)")
+      .run(`bounded-session-${index}`, itemId, roomId, sessionObjectKey, upload.uploadId, future, future, future);
+  }
+  const first = await call(`admin/transfer/room/${roomId}/close`, { method: "POST", token: adminToken, ...jsonBody({}) });
+  assert.equal(first.status, 502);
+  assert.equal((await first.json()).status, "pending");
+  assert.equal(uploads.filter((upload) => upload.aborted).length, 8);
+  assert.equal(db.sqlite.prepare("select count(*) as n from transfer_upload_sessions where room_id=?").get(roomId).n, 1);
+  assert.ok(db.sqlite.prepare("select id from transfer_items where id=?").get(itemId));
+  const second = await call(`admin/transfer/room/${roomId}/close`, { method: "POST", token: adminToken, ...jsonBody({}) });
+  assert.equal(second.status, 200, await second.clone().text());
+  assert.equal((await second.json()).deleted, true);
+  assert.ok(uploads.every((upload) => upload.aborted));
+  assert.equal(db.sqlite.prepare("select id from transfer_rooms where id=?").get(roomId), undefined);
 });
 
 async function sha256Hex(value) {

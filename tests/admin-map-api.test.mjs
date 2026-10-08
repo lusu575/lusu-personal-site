@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 
-import { onRequest } from "../functions/api/[[route]].js";
+import { dispatchApiRequest as onRequest } from "../functions/api/[[route]].js";
 
 const RUNTIME_SECRETS = Object.freeze({
   CHAT_IP_HASH_SALT: "test-chat-ip-hash-secret-0000000000000001",

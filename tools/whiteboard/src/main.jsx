@@ -39,7 +39,7 @@ import {
 import { roomHelpState } from "./room-help-state.js";
 
 const RECENT_ROOM_KEY = "lusu-whiteboard-recent-room-v1";
-const WHITEBOARD_VERSION = "1.0.10";
+const WHITEBOARD_VERSION = "1.0.11";
 const NAME_COOLDOWN_MS = 30_000;
 const PASSWORD_MIN_LENGTH = 4;
 const PASSWORD_MAX_LENGTH = 128;

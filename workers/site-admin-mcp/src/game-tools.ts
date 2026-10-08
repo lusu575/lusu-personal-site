@@ -269,7 +269,7 @@ async function waitForCommand(
     throw new GameRelayError("The relay returned an invalid command status.", 502, "GAME_RELAY_RESPONSE_INVALID");
   }
   const controller = await controllerId(principal);
-  for (let attempt = 0; attempt < 20; attempt += 1) {
+  for (let attempt = 0; attempt < 6; attempt += 1) {
     await delay(60);
     const result = await relayControllerRequest(env, {
       sessionId,

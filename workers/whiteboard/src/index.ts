@@ -1,3 +1,4 @@
+import { admitCost, admitRealtimeEvent, CostGuardError, costGuardResponse, guardDurableStorage, rearmCleanupAlarm } from "../../../functions/api/cost-guard.mjs";
 import { DurableObject } from "cloudflare:workers";
 import {
   ADMIN_AUTHORIZED_HEADER,
@@ -379,23 +380,39 @@ function readAttachment(socket: WebSocket): ConnectionAttachment | null {
 
 export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   private readonly documentStore: YjsDocumentStore;
-  private readonly ready: Promise<void>;
+  private initialized = false;
+  private resourceEnv: WhiteboardEnv;
+  private readonly storage: DurableObjectStorage;
   private meta: RoomMeta | null = null;
   private mutationChain: Promise<unknown> = Promise.resolve();
   private lastD1MetadataSyncAt = 0;
 
   constructor(ctx: DurableObjectState, env: WhiteboardEnv) {
     super(ctx, env);
+    this.resourceEnv = env;
+    this.storage = guardDurableStorage(ctx.storage, () => this.resourceEnv);
     ctx.setWebSocketAutoResponse(
       new WebSocketRequestResponsePair("ping", "pong")
     );
-    this.documentStore = new YjsDocumentStore(ctx.storage);
-    this.ready = ctx.blockConcurrencyWhile(async () => {
-      this.meta = (await ctx.storage.get<RoomMeta>(ROOM_META_KEY)) || null;
+    this.documentStore = new YjsDocumentStore(this.storage);
+  }
+
+  private realtimeEnv?: WhiteboardEnv;
+
+  private async initialize(): Promise<void> {
+    if (this.initialized) return;
+
+      this.meta = (await this.storage.get<RoomMeta>(ROOM_META_KEY)) || null;
       await this.documentStore.load();
       if (this.meta) {
+        if (this.meta.cleanup) {
+          this.broadcastText({ type: "lock-state", locked: true });
+          if ((await this.storage.getAlarm()) === null) await this.scheduleAlarm();
+          this.initialized = true;
+          return;
+        }
         const now = Date.now();
-        const count = uniqueParticipants(ctx.getWebSockets()).length;
+        const count = uniqueParticipants(this.ctx.getWebSockets()).length;
         let metadataChanged = false;
         if (
           count > 0 &&
@@ -415,15 +432,23 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
           await this.persistMeta();
           metadataChanged = true;
         }
-        if (metadataChanged || (await ctx.storage.getAlarm()) === null) {
+        if (metadataChanged || (await this.storage.getAlarm()) === null) {
           await this.scheduleAlarm();
         }
       }
-    });
+    this.initialized = true;
   }
 
   async fetch(request: Request): Promise<Response> {
-    await this.ready;
+    try {
+      return await this.enqueueMutation(() => this.dispatchFetch(request));
+    } catch (error) {
+      if (error instanceof CostGuardError) return costGuardResponse(error);
+      throw error;
+    }
+  }
+
+  private async dispatchFetch(request: Request): Promise<Response> {
     if (!(await isTrustedInternalRequest(request, this.env))) {
       return safeJsonResponse({ ok: false, error: "not_authorized" }, 401);
     }
@@ -449,6 +474,9 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       request.headers.get(ADMIN_AUTHORIZED_HEADER) === "1" &&
       ((request.method === "GET" && url.pathname === "/status") ||
         (request.method === "POST" && url.pathname === "/admin"));
+    if (this.meta?.cleanup && !isTrustedAdminRequest) {
+      return this.cleanupPendingResponse();
+    }
     if (
       !this.meta &&
       isTrustedAdminRequest &&
@@ -467,7 +495,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
           403
         );
       }
-      return this.enqueueMutation(() =>
+      return Promise.resolve().then(() =>
         request.method === "GET"
           ? this.handleAgentSceneRead(request)
           : this.handleAgentSceneWrite(request, roomId, roomType)
@@ -483,7 +511,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
           403
         );
       }
-      return this.enqueueMutation(() =>
+      return Promise.resolve().then(() =>
         request.method === "POST"
           ? this.handleAgentImageUpload(request, roomId, roomType)
           : this.handleAgentImageGet(
@@ -493,29 +521,29 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       );
     }
     if (request.method === "GET" && url.pathname === "/realtime") {
-      return this.enqueueMutation(() =>
+      return Promise.resolve().then(() =>
         this.handleWebSocketUpgrade(request, roomId, roomType)
       );
     }
     if (request.method === "POST" && url.pathname === "/assets") {
-      return this.enqueueMutation(() => this.handleImageUpload(request));
+      return Promise.resolve().then(() => this.handleImageUpload(request));
     }
     if (
       request.method === "GET" &&
       url.pathname.startsWith("/assets/")
     ) {
-      return this.enqueueMutation(() =>
+      return Promise.resolve().then(() =>
         this.handleImageGet(request, url.pathname.slice("/assets/".length))
       );
     }
     if (request.method === "POST" && url.pathname === "/identity") {
-      return this.enqueueMutation(() => this.handleIdentityRefresh(request));
+      return Promise.resolve().then(() => this.handleIdentityRefresh(request));
     }
     if (request.method === "GET" && url.pathname === "/status") {
       return this.handleStatus(request);
     }
     if (request.method === "POST" && url.pathname === "/admin") {
-      return this.enqueueMutation(() => this.handleAdmin(request));
+      return Promise.resolve().then(() => this.handleAdmin(request));
     }
     return safeJsonResponse({ ok: false, error: "not_found" }, 404);
   }
@@ -524,8 +552,12 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     socket: WebSocket,
     message: string | ArrayBuffer
   ): Promise<void> {
-    await this.ready;
-    await this.enqueueMutation(() => this.handleSocketMessage(socket, message));
+    try {
+      await this.enqueueMutation(() => this.handleSocketMessage(socket, message), "realtime", true);
+    } catch (error) {
+      if (!(error instanceof CostGuardError)) throw error;
+      try { socket.close(1013, "dynamic_features_paused"); } catch { /* Already closed. */ }
+    }
   }
 
   async webSocketClose(
@@ -534,8 +566,11 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     _reason: string,
     _wasClean: boolean
   ): Promise<void> {
-    await this.ready;
-    await this.enqueueMutation(() => this.handleSocketDeparture(socket));
+    try {
+      await this.enqueueMutation(() => this.handleSocketDeparture(socket), "realtime", true);
+    } catch (error) {
+      if (!(error instanceof CostGuardError)) throw error;
+    }
   }
 
   async webSocketError(socket: WebSocket, _error: unknown): Promise<void> {
@@ -547,7 +582,6 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   }
 
   async alarm(): Promise<void> {
-    await this.ready;
     await this.enqueueMutation(async () => {
       if (!this.meta) {
         await this.pruneAgentAssetReceipts(Date.now());
@@ -555,6 +589,14 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
         return;
       }
       const now = Date.now();
+      if (this.meta.cleanup?.kind === "clear") {
+        await this.clearRoomContents(now);
+        return;
+      }
+      if (shouldDeleteRoom(this.meta, this.ctx.getWebSockets().filter(socketIsOpen).length, now)) {
+        await this.cleanupPrivateRoom(now);
+        return;
+      }
       await this.pruneAgentReceipts(now);
       await this.pruneAgentAssetReceipts(now);
       await this.pruneRateStates(now);
@@ -603,11 +645,22 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
         return;
       }
       await this.scheduleAlarm();
+    }, "whiteboard-cleanup").catch(async (error: unknown) => {
+      if (!(error instanceof CostGuardError)) throw error;
+      await rearmCleanupAlarm(this.env, this.ctx.storage, "whiteboard-cleanup", error);
     });
   }
 
-  private enqueueMutation<T>(action: () => Promise<T>): Promise<T> {
-    const next = this.mutationChain.then(action, action);
+  private enqueueMutation<T>(action: () => Promise<T>, lane: "realtime" | "whiteboard-cleanup" = "realtime", batch = false): Promise<T> {
+    const admitted = async () => {
+      this.resourceEnv = batch
+        ? await admitRealtimeEvent(this.env, this.realtimeEnv, "whiteboard")
+        : await admitCost(this.env, { feature: "whiteboard", lane });
+      if (batch) this.realtimeEnv = this.resourceEnv;
+      await this.initialize();
+      return action();
+    };
+    const next = this.mutationChain.then(admitted, admitted);
     this.mutationChain = next.then(
       () => undefined,
       () => undefined
@@ -698,7 +751,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     const receiptKey = `${AGENT_RECEIPT_PREFIX}${await sha256Hex(
       new TextEncoder().encode(`${subject}\u0000${operationId}`)
     )}`;
-    const receipts = await this.ctx.storage.list<AgentUpdateReceipt>({
+    const receipts = await this.storage.list<AgentUpdateReceipt>({
       prefix: AGENT_RECEIPT_PREFIX
     });
     const existing = receipts.get(receiptKey);
@@ -953,6 +1006,10 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       this.closeSocket(socket, CLOSE_POLICY_VIOLATION, "invalid_session");
       return;
     }
+    if (this.meta.cleanup) {
+      this.sendText(socket, { type: "error", code: "room_cleanup_in_progress", retryAfterMs: 60_000 });
+      return;
+    }
     const byteLength =
       typeof message === "string" ? utf8ByteLength(message) : message.byteLength;
     if (byteLength > MAX_MESSAGE_BYTES) {
@@ -1148,6 +1205,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   private async handleSocketDeparture(socket: WebSocket): Promise<void> {
     const departed = readAttachment(socket);
     if (!departed || !this.meta) return;
+    if (this.meta.cleanup) return;
     const remaining = this.ctx
       .getWebSockets()
       .filter((candidate) => candidate !== socket && socketIsOpen(candidate));
@@ -1392,7 +1450,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   }
 
   private async agentAllowedAssets(roomId: string): Promise<Map<string, ImageMeta>> {
-    const entries = await this.ctx.storage.list<ImageMeta>({
+    const entries = await this.storage.list<ImageMeta>({
       prefix: IMAGE_META_PREFIX
     });
     const allowed = new Map<string, ImageMeta>();
@@ -1407,7 +1465,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     roomId: string,
     excludeReceiptKey = ""
   ): Promise<{ bytes: number; images: number }> {
-    const receipts = await this.ctx.storage.list<AgentAssetReceipt>({
+    const receipts = await this.storage.list<AgentAssetReceipt>({
       prefix: AGENT_ASSET_RECEIPT_PREFIX
     });
     const now = Date.now();
@@ -1440,7 +1498,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
         403
       );
     }
-    if (!this.env.WHITEBOARD_BUCKET) {
+    if (!this.resourceEnv.WHITEBOARD_BUCKET) {
       return safeJsonResponse({ ok: false, error: "storage_unavailable" }, 503);
     }
     const subject = request.headers.get(AGENT_SUBJECT_HEADER) || "";
@@ -1487,7 +1545,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
         `lusu:whiteboard:agent-asset-receipt:v1\u0000${subject}\u0000${operationId}`
       )
     )}`;
-    const exactReceipt = await this.ctx.storage.get<unknown>(receiptKey);
+    const exactReceipt = await this.storage.get<unknown>(receiptKey);
     if (exactReceipt !== undefined && !isAgentAssetReceipt(exactReceipt)) {
       return safeJsonResponse(
         { ok: false, error: "operation_conflict", code: "WHITEBOARD_OPERATION_CONFLICT" },
@@ -1507,7 +1565,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
         );
       }
       if (existing.status === "committed") {
-        const storedImage = await this.ctx.storage.get<ImageMeta>(
+        const storedImage = await this.storage.get<ImageMeta>(
           `${IMAGE_META_PREFIX}${existing.asset.assetId}`
         );
         if (
@@ -1541,7 +1599,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       );
     }
     await this.pruneAgentAssetReceipts(now, MAX_AGENT_ASSET_RECEIPTS - 1);
-    if (await this.ctx.storage.get(receiptKey) !== undefined) {
+    if (await this.storage.get(receiptKey) !== undefined) {
       await this.scheduleAlarm();
       return safeJsonResponse(
         {
@@ -1597,7 +1655,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       createdAt: now,
       expiresAt: now + UNREFERENCED_ASSET_GRACE_MS
     };
-    await this.ctx.storage.put(receiptKey, pendingReceipt);
+    await this.storage.put(receiptKey, pendingReceipt);
     await this.scheduleAlarm();
     return this.completeAgentImageUpload(
       pendingReceipt,
@@ -1643,7 +1701,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     }
     const imageKey = `whiteboard/v1/${roomId}/${pendingReceipt.asset.assetId}`;
     try {
-      await this.env.WHITEBOARD_BUCKET!.put(imageKey, bytes, {
+      await this.resourceEnv.WHITEBOARD_BUCKET!.put(imageKey, bytes, {
         httpMetadata: { contentType: pendingReceipt.asset.contentType },
         customMetadata: {
           room: roomId,
@@ -1705,9 +1763,9 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       status: "committed",
       expiresAt: commitNow + AGENT_RECEIPT_TTL_MS
     };
-    const currentSweep = await this.ctx.storage.get<number>(ASSET_SWEEP_NEXT_KEY);
+    const currentSweep = await this.storage.get<number>(ASSET_SWEEP_NEXT_KEY);
     const nextSweep = commitNow + UNREFERENCED_ASSET_GRACE_MS;
-    await this.ctx.storage.transaction(async (transaction) => {
+    await this.storage.transaction(async (transaction) => {
       await transaction.put(ROOM_META_KEY, nextMeta);
       await transaction.put(
         `${IMAGE_META_PREFIX}${imageMeta.assetId}`,
@@ -1768,7 +1826,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     if (this.meta.isLocked) {
       return safeJsonResponse({ ok: false, error: "readonly" }, 423);
     }
-    if (!this.env.WHITEBOARD_BUCKET) {
+    if (!this.resourceEnv.WHITEBOARD_BUCKET) {
       return safeJsonResponse({ ok: false, error: "storage_unavailable" }, 503);
     }
     const anonymousId = request.headers.get(ANONYMOUS_ID_HEADER);
@@ -1821,10 +1879,10 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       createdAt: Date.now(),
       createdBy: anonymousId
     };
-    await this.ctx.storage.put(`${IMAGE_META_PREFIX}${assetId}`, imageMeta);
+    await this.storage.put(`${IMAGE_META_PREFIX}${assetId}`, imageMeta);
     await this.scheduleInitialAssetSweep(imageMeta.createdAt);
     try {
-      await this.env.WHITEBOARD_BUCKET.put(key, bytes, {
+      await this.resourceEnv.WHITEBOARD_BUCKET.put(key, bytes, {
         httpMetadata: { contentType: image.contentType },
         customMetadata: {
           room: this.meta.roomId,
@@ -1833,7 +1891,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
         }
       });
     } catch (error) {
-      await this.ctx.storage.delete(`${IMAGE_META_PREFIX}${assetId}`);
+      await this.storage.delete(`${IMAGE_META_PREFIX}${assetId}`);
       await this.recordOperationalError("asset_upload_failed");
       throw error;
     }
@@ -1867,7 +1925,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     request: Request,
     assetId: string
   ): Promise<Response> {
-    if (!this.meta || !ASSET_ID_PATTERN.test(assetId) || !this.env.WHITEBOARD_BUCKET) {
+    if (!this.meta || !ASSET_ID_PATTERN.test(assetId) || !this.resourceEnv.WHITEBOARD_BUCKET) {
       return safeJsonResponse({ ok: false, error: "asset_not_found" }, 404);
     }
     const anonymousId = request.headers.get(ANONYMOUS_ID_HEADER);
@@ -1882,7 +1940,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     ) {
       return safeJsonResponse({ ok: false, error: "access_denied" }, 403);
     }
-    const imageMeta = await this.ctx.storage.get<ImageMeta>(
+    const imageMeta = await this.storage.get<ImageMeta>(
       `${IMAGE_META_PREFIX}${assetId}`
     );
     if (!imageMeta || imageMeta.roomId !== this.meta.roomId) {
@@ -1897,14 +1955,14 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   ): Promise<Response> {
     if (
       !this.meta
-      || !this.env.WHITEBOARD_BUCKET
+      || !this.resourceEnv.WHITEBOARD_BUCKET
       || !ASSET_ID_PATTERN.test(assetId)
       || !isCanonicalImageMeta(imageMeta, this.meta.roomId)
       || imageMeta.assetId !== assetId
     ) {
       return safeJsonResponse({ ok: false, error: "asset_not_found" }, 404);
     }
-    const object = await this.env.WHITEBOARD_BUCKET.get(imageMeta.key);
+    const object = await this.resourceEnv.WHITEBOARD_BUCKET.get(imageMeta.key);
     if (!object) {
       return safeJsonResponse({ ok: false, error: "asset_not_found" }, 404);
     }
@@ -1953,7 +2011,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     limit: number
   ): Promise<boolean> {
     const now = Date.now();
-    const current = await this.ctx.storage.get<UploadRateState>(key);
+    const current = await this.storage.get<UploadRateState>(key);
     const next =
       !current || now - current.windowStartedAt >= windowMs
         ? {
@@ -1967,7 +2025,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
             count: current.count + 1,
             expiresAt: now + RATE_STATE_RETENTION_MS
           };
-    await this.ctx.storage.put(key, next);
+    await this.storage.put(key, next);
     await this.scheduleRateSweep(next.expiresAt);
     return next.count <= limit;
   }
@@ -1986,7 +2044,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   ): Promise<boolean> {
     const key = `${SYNC_RATE_PREFIX}${ipHash}`;
     const now = Date.now();
-    const current = await this.ctx.storage.get<UploadRateState>(key);
+    const current = await this.storage.get<UploadRateState>(key);
     if (!current || now - current.windowStartedAt >= SYNC_RATE_WINDOW_MS) {
       return false;
     }
@@ -1995,27 +2053,27 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       bytes: Math.max(0, Number(current.bytes || 0)) + responseBytes,
       expiresAt: now + RATE_STATE_RETENTION_MS
     };
-    await this.ctx.storage.put(key, next);
+    await this.storage.put(key, next);
     await this.scheduleRateSweep(next.expiresAt);
     return next.bytes <= MAX_SYNC_RESPONSE_BYTES_PER_WINDOW;
   }
 
   private async scheduleRateSweep(candidate: number): Promise<void> {
-    const current = await this.ctx.storage.get<number>(RATE_SWEEP_NEXT_KEY);
+    const current = await this.storage.get<number>(RATE_SWEEP_NEXT_KEY);
     if (typeof current !== "number" || candidate < current) {
-      await this.ctx.storage.put(RATE_SWEEP_NEXT_KEY, candidate);
+      await this.storage.put(RATE_SWEEP_NEXT_KEY, candidate);
     }
     await this.scheduleAlarm();
   }
 
   private async pruneRateStates(now: number): Promise<void> {
-    const scheduledAt = await this.ctx.storage.get<number>(RATE_SWEEP_NEXT_KEY);
+    const scheduledAt = await this.storage.get<number>(RATE_SWEEP_NEXT_KEY);
     if (typeof scheduledAt !== "number" || scheduledAt > now) return;
     const entries = [
-      ...(await this.ctx.storage.list<UploadRateState>({
+      ...(await this.storage.list<UploadRateState>({
         prefix: UPLOAD_RATE_PREFIX
       })).entries(),
-      ...(await this.ctx.storage.list<UploadRateState>({
+      ...(await this.storage.list<UploadRateState>({
         prefix: SYNC_RATE_PREFIX
       })).entries()
     ];
@@ -2035,42 +2093,42 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       }
     }
     if (expired.length > 0) {
-      await this.ctx.storage.delete(expired);
+      await this.storage.delete(expired);
     }
     if (nextSweep === null) {
-      await this.ctx.storage.delete(RATE_SWEEP_NEXT_KEY);
+      await this.storage.delete(RATE_SWEEP_NEXT_KEY);
     } else {
-      await this.ctx.storage.put(RATE_SWEEP_NEXT_KEY, nextSweep);
+      await this.storage.put(RATE_SWEEP_NEXT_KEY, nextSweep);
     }
   }
 
   private async scheduleInitialAssetSweep(createdAt: number): Promise<void> {
     const candidate = createdAt + UNREFERENCED_ASSET_GRACE_MS;
-    const current = await this.ctx.storage.get<number>(ASSET_SWEEP_NEXT_KEY);
+    const current = await this.storage.get<number>(ASSET_SWEEP_NEXT_KEY);
     if (typeof current !== "number" || candidate < current) {
-      await this.ctx.storage.put(ASSET_SWEEP_NEXT_KEY, candidate);
+      await this.storage.put(ASSET_SWEEP_NEXT_KEY, candidate);
     }
   }
 
   private async scheduleAssetReferenceRecheck(now: number): Promise<void> {
     if (!this.meta || this.meta.resourceUsage.images === 0) return;
     const candidate = now + ASSET_REFERENCE_RECHECK_MS;
-    const current = await this.ctx.storage.get<number>(ASSET_SWEEP_NEXT_KEY);
+    const current = await this.storage.get<number>(ASSET_SWEEP_NEXT_KEY);
     if (typeof current !== "number" || candidate < current) {
-      await this.ctx.storage.put(ASSET_SWEEP_NEXT_KEY, candidate);
+      await this.storage.put(ASSET_SWEEP_NEXT_KEY, candidate);
     }
   }
 
   private async maybeSweepUnreferencedAssets(now: number): Promise<void> {
     if (!this.meta || this.meta.resourceUsage.images === 0) {
-      await this.ctx.storage.delete(ASSET_SWEEP_NEXT_KEY);
+      await this.storage.delete(ASSET_SWEEP_NEXT_KEY);
       return;
     }
-    const scheduledAt = await this.ctx.storage.get<number>(ASSET_SWEEP_NEXT_KEY);
+    const scheduledAt = await this.storage.get<number>(ASSET_SWEEP_NEXT_KEY);
     if (typeof scheduledAt === "number" && scheduledAt > now) return;
 
     const references = this.documentStore.referencedAssetIds();
-    const entries = await this.ctx.storage.list<ImageMeta>({
+    const entries = await this.storage.list<ImageMeta>({
       prefix: IMAGE_META_PREFIX
     });
     let nextSweepAt: number | null = null;
@@ -2083,7 +2141,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
         asset.roomId !== this.meta.roomId ||
         !ASSET_ID_PATTERN.test(asset.assetId)
       ) {
-        await this.ctx.storage.delete(storageKey);
+        await this.storage.delete(storageKey);
         continue;
       }
       if (references.has(asset.assetId)) continue;
@@ -2093,14 +2151,14 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
           nextSweepAt === null ? eligibleAt : Math.min(nextSweepAt, eligibleAt);
         continue;
       }
-      if (!this.env.WHITEBOARD_BUCKET) {
+      if (!this.resourceEnv.WHITEBOARD_BUCKET) {
         nextSweepAt = now + ASSET_REFERENCE_RECHECK_MS;
         continue;
       }
       try {
-        await this.env.WHITEBOARD_BUCKET.delete(asset.key);
+        await this.resourceEnv.WHITEBOARD_BUCKET.delete(asset.key);
         await this.deleteD1Asset(asset.assetId);
-        await this.ctx.storage.delete(storageKey);
+        await this.storage.delete(storageKey);
         removedBytes += asset.byteLength;
         removedImages += 1;
       } catch {
@@ -2119,9 +2177,9 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       await this.persistMeta();
     }
     if (nextSweepAt === null) {
-      await this.ctx.storage.delete(ASSET_SWEEP_NEXT_KEY);
+      await this.storage.delete(ASSET_SWEEP_NEXT_KEY);
     } else {
-      await this.ctx.storage.put(ASSET_SWEEP_NEXT_KEY, nextSweepAt);
+      await this.storage.put(ASSET_SWEEP_NEXT_KEY, nextSweepAt);
     }
     if (sweepFailed) {
       await this.recordOperationalError("asset_cleanup_failed");
@@ -2133,17 +2191,17 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     now: number
   ): Promise<boolean> {
     const key = `${TICKET_JTI_PREFIX}${ticketJti}`;
-    const existing = await this.ctx.storage.get<number>(key);
+    const existing = await this.storage.get<number>(key);
     if (typeof existing === "number" && existing > now) {
       return false;
     }
-    await this.ctx.storage.put(key, now + CONSUMED_TICKET_TTL_MS);
+    await this.storage.put(key, now + CONSUMED_TICKET_TTL_MS);
     await this.pruneConsumedTicketJtis(now);
     return true;
   }
 
   private async pruneConsumedTicketJtis(now: number): Promise<number | null> {
-    const entries = await this.ctx.storage.list<number>({
+    const entries = await this.storage.list<number>({
       prefix: TICKET_JTI_PREFIX
     });
     const expired: string[] = [];
@@ -2156,13 +2214,13 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       }
     }
     if (expired.length > 0) {
-      await this.ctx.storage.delete(expired);
+      await this.storage.delete(expired);
     }
     return earliestExpiry;
   }
 
   private async pruneAgentReceipts(now: number): Promise<number | null> {
-    const receipts = await this.ctx.storage.list<AgentUpdateReceipt>({
+    const receipts = await this.storage.list<AgentUpdateReceipt>({
       prefix: AGENT_RECEIPT_PREFIX
     });
     const retained = [...receipts.entries()]
@@ -2183,7 +2241,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     );
     const deleteKeys = [...receipts.keys()].filter((key) => !retainedKeys.has(key));
     if (deleteKeys.length > 0) {
-      await this.ctx.storage.delete(deleteKeys);
+      await this.storage.delete(deleteKeys);
     }
     const expiries = retained
       .slice(0, MAX_AGENT_RECEIPTS)
@@ -2195,7 +2253,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     now: number,
     maximum = MAX_AGENT_ASSET_RECEIPTS
   ): Promise<number | null> {
-    const receipts = await this.ctx.storage.list<AgentAssetReceipt>({
+    const receipts = await this.storage.list<AgentAssetReceipt>({
       prefix: AGENT_ASSET_RECEIPT_PREFIX
     });
     const valid = [...receipts.entries()]
@@ -2215,15 +2273,15 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       if (retainedKeys.has(key)) continue;
       if (isAgentAssetReceipt(value) && value.status === "pending") {
         try {
-          if (!this.env.WHITEBOARD_BUCKET) {
+          if (!this.resourceEnv.WHITEBOARD_BUCKET) {
             throw new Error("asset_storage_unavailable");
           }
-          await this.env.WHITEBOARD_BUCKET.delete(
+          await this.resourceEnv.WHITEBOARD_BUCKET.delete(
             `whiteboard/v1/${value.roomId}/${value.asset.assetId}`
           );
         } catch {
           const retryAt = now + ASSET_REFERENCE_RECHECK_MS;
-          await this.ctx.storage.put(key, {
+          await this.storage.put(key, {
             ...value,
             expiresAt: retryAt
           } satisfies AgentAssetReceipt);
@@ -2240,7 +2298,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       deleteKeys.push(key);
     }
     if (deleteKeys.length > 0) {
-      await this.ctx.storage.delete(deleteKeys);
+      await this.storage.delete(deleteKeys);
     }
     const retainedExpiries = valid
       .filter(([key, value]) => retainedKeys.has(key) && value.expiresAt > now)
@@ -2279,43 +2337,12 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       const bans = await this.getActiveBans();
       return safeJsonResponse({ ok: true, room: this.adminStatus(bans.length) });
     }
+    if (this.meta.cleanup && action.action !== (this.meta.cleanup.kind === "delete" ? "delete-room" : "clear")) {
+      return this.cleanupPendingResponse();
+    }
     if (action.action === "clear") {
-      try {
-        await this.deleteRoomAssets(this.meta.roomId);
-        await this.deleteD1Assets(this.meta.roomId);
-      } catch {
-        await this.recordOperationalError("asset_cleanup_failed");
-        return safeJsonResponse(
-          { ok: false, error: "asset_cleanup_failed" },
-          503
-        );
-      }
-      const assetMetadata = await this.ctx.storage.list({
-        prefix: IMAGE_META_PREFIX
-      });
-      if (assetMetadata.size > 0) {
-        await this.ctx.storage.delete([...assetMetadata.keys()]);
-      }
-      const agentAssetReceipts = await this.ctx.storage.list({
-        prefix: AGENT_ASSET_RECEIPT_PREFIX
-      });
-      if (agentAssetReceipts.size > 0) {
-        await this.ctx.storage.delete([...agentAssetReceipts.keys()]);
-      }
-      await this.ctx.storage.delete(ASSET_SWEEP_NEXT_KEY);
-      this.meta = await this.documentStore.clear(this.meta);
-      this.meta = {
-        ...this.meta,
-        lastActiveAt: Date.now(),
-        resourceUsage: { bytes: 0, images: 0 }
-      };
-      await this.persistMeta();
-      this.broadcastText({
-        type: "document-cleared",
-        documentVersion: this.meta.documentVersion
-      });
-      this.broadcastBinary(WS_YJS_UPDATE, this.documentStore.encodeState());
-      return safeJsonResponse({ ok: true });
+      return await this.clearRoomContents(Date.now())
+        ? safeJsonResponse({ ok: true }) : this.cleanupPendingResponse();
     }
     if (action.action === "set-lock" && typeof action.locked === "boolean") {
       this.meta = {
@@ -2376,7 +2403,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
         createdAt: Date.now(),
         expiresAt: Date.now() + action.durationSeconds * 1_000
       });
-      await this.ctx.storage.put(ROOM_BANS_KEY, bans);
+      await this.storage.put(ROOM_BANS_KEY, bans);
       let kicked = 0;
       for (const socket of this.ctx.getWebSockets()) {
         const attachment = readAttachment(socket);
@@ -2402,7 +2429,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       const bans = (await this.getActiveBans()).filter(
         (entry) => !(entry.kind === action.kind && entry.key === action.key)
       );
-      await this.ctx.storage.put(ROOM_BANS_KEY, bans);
+      await this.storage.put(ROOM_BANS_KEY, bans);
       return safeJsonResponse({ ok: true });
     }
     if (action.action === "delete-room") {
@@ -2412,7 +2439,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
           409
         );
       }
-      if (this.ctx.getWebSockets().some(socketIsOpen)) {
+      if (!this.meta.cleanup && this.ctx.getWebSockets().some(socketIsOpen)) {
         return safeJsonResponse({ ok: false, error: "room_not_empty" }, 409);
       }
       const deleted = await this.cleanupPrivateRoom(Date.now(), true);
@@ -2430,6 +2457,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       lastActiveAt: this.meta.lastActiveAt,
       emptySince: this.meta.emptySince,
       deleteAt: this.meta.deleteAt,
+      cleanup: this.meta.cleanup || null,
       onlineCount: uniqueParticipants(this.ctx.getWebSockets()).length,
       connectionCount: this.ctx.getWebSockets().filter(socketIsOpen).length,
       documentVersion: this.meta.documentVersion,
@@ -2466,7 +2494,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
 
   private async getActiveBans(): Promise<BanEntry[]> {
     const now = Date.now();
-    const existing = (await this.ctx.storage.get<BanEntry[]>(ROOM_BANS_KEY)) || [];
+    const existing = (await this.storage.get<BanEntry[]>(ROOM_BANS_KEY)) || [];
     const active = existing.filter(
       (entry) =>
         entry &&
@@ -2476,7 +2504,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
         entry.expiresAt > now
     );
     if (active.length !== existing.length) {
-      await this.ctx.storage.put(ROOM_BANS_KEY, active);
+      await this.storage.put(ROOM_BANS_KEY, active);
     }
     return active;
   }
@@ -2495,7 +2523,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
 
   private async persistMeta(): Promise<void> {
     if (!this.meta) return;
-    await this.ctx.storage.put(ROOM_META_KEY, this.meta);
+    await this.storage.put(ROOM_META_KEY, this.meta);
     await this.persistD1MetadataIfDue(this.meta, Date.now(), true);
   }
 
@@ -2515,7 +2543,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   }
 
   private async persistD1Metadata(meta: RoomMeta): Promise<void> {
-    if (!this.env.DB) return;
+    if (!this.resourceEnv.DB) return;
     const status =
       meta.roomType === "private" &&
       meta.onlineCount === 0 &&
@@ -2524,7 +2552,7 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
         : "active";
     const lastError = String(meta.lastError || "").slice(0, 80);
     try {
-      await this.env.DB.prepare(
+      await this.resourceEnv.DB.prepare(
         `INSERT INTO whiteboard_rooms (
           room_id, room_type, created_at, last_active_at, empty_since, delete_at,
           online_count, document_version, snapshot_version, is_locked,
@@ -2598,10 +2626,10 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   private async incrementMetric(
     key: "error_count" | "cleaned_room_count"
   ): Promise<void> {
-    if (!this.env.DB) return;
+    if (!this.resourceEnv.DB) return;
     const now = new Date().toISOString();
     try {
-      await this.env.DB.prepare(
+      await this.resourceEnv.DB.prepare(
         `INSERT INTO whiteboard_metrics (metric_key, metric_value, updated_at)
          VALUES (?, 1, ?)
          ON CONFLICT(metric_key) DO UPDATE SET
@@ -2616,8 +2644,8 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   }
 
   private async deleteD1Metadata(roomId: string): Promise<void> {
-    if (!this.env.DB) return;
-    await this.env.DB.prepare(
+    if (!this.resourceEnv.DB) return;
+    await this.resourceEnv.DB.prepare(
       "DELETE FROM whiteboard_rooms WHERE room_id = ?"
     )
       .bind(roomId)
@@ -2628,10 +2656,10 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     asset: ImageMeta,
     checksum: string
   ): Promise<void> {
-    if (!this.env.DB) return;
+    if (!this.resourceEnv.DB) return;
     try {
       const createdAt = new Date(asset.createdAt).toISOString();
-      await this.env.DB.prepare(
+      await this.resourceEnv.DB.prepare(
         `INSERT INTO whiteboard_assets (
           asset_id, room_id, object_key, content_type, byte_size, width, height,
           sha256, ref_count, status, created_at, updated_at
@@ -2667,8 +2695,8 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   }
 
   private async deleteD1Assets(roomId: string): Promise<void> {
-    if (!this.env.DB) return;
-    await this.env.DB.prepare(
+    if (!this.resourceEnv.DB) return;
+    await this.resourceEnv.DB.prepare(
       "DELETE FROM whiteboard_assets WHERE room_id = ?"
     )
       .bind(roomId)
@@ -2676,8 +2704,8 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   }
 
   private async deleteD1Bans(roomId: string): Promise<void> {
-    if (!this.env.DB) return;
-    await this.env.DB.prepare(
+    if (!this.resourceEnv.DB) return;
+    await this.resourceEnv.DB.prepare(
       "DELETE FROM whiteboard_bans WHERE room_id = ?"
     )
       .bind(roomId)
@@ -2685,8 +2713,8 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
   }
 
   private async deleteD1Asset(assetId: string): Promise<void> {
-    if (!this.env.DB) return;
-    await this.env.DB.prepare(
+    if (!this.resourceEnv.DB) return;
+    await this.resourceEnv.DB.prepare(
       "DELETE FROM whiteboard_assets WHERE asset_id = ?"
     )
       .bind(assetId)
@@ -2695,6 +2723,11 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
 
   private async scheduleAlarm(): Promise<void> {
     const now = Date.now();
+    if (this.meta?.cleanup) {
+      const pending = await this.storage.getAlarm();
+      if (pending === null || pending <= now) await this.storage.setAlarm(now + 60_000);
+      return;
+    }
     const lifecycleAlarm = this.meta
       ? nextAlarmAt(
           this.meta,
@@ -2706,13 +2739,13 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     const agentReceiptCleanupAlarm = await this.pruneAgentReceipts(now);
     const agentAssetReceiptCleanupAlarm = await this.pruneAgentAssetReceipts(now);
     const storedAssetSweepAlarm =
-      await this.ctx.storage.get<number>(ASSET_SWEEP_NEXT_KEY);
+      await this.storage.get<number>(ASSET_SWEEP_NEXT_KEY);
     const assetSweepAlarm =
       typeof storedAssetSweepAlarm === "number"
         ? Math.max(now + 1_000, storedAssetSweepAlarm)
         : null;
     const storedRateSweepAlarm =
-      await this.ctx.storage.get<number>(RATE_SWEEP_NEXT_KEY);
+      await this.storage.get<number>(RATE_SWEEP_NEXT_KEY);
     const rateSweepAlarm =
       typeof storedRateSweepAlarm === "number"
         ? Math.max(now + 1_000, storedRateSweepAlarm)
@@ -2726,15 +2759,15 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
       rateSweepAlarm
     ].filter((value): value is number => value !== null);
     const next = candidates.length > 0 ? Math.min(...candidates) : null;
-    const existing = await this.ctx.storage.getAlarm();
+    const existing = await this.storage.getAlarm();
     if (next === null) {
-      if (existing !== null) await this.ctx.storage.deleteAlarm();
+      if (existing !== null) await this.storage.deleteAlarm();
     } else if (
       existing === null ||
       existing <= now ||
       next < existing - 1_000
     ) {
-      await this.ctx.storage.setAlarm(next);
+      await this.storage.setAlarm(next);
     }
   }
 
@@ -2745,55 +2778,122 @@ export class WhiteboardRoom extends DurableObject<WhiteboardEnv> {
     if (
       !this.meta ||
       this.meta.roomType !== "private" ||
-      this.ctx.getWebSockets().some(socketIsOpen) ||
-      (!force && !shouldDeleteRoom(this.meta, 0, now))
+      (this.meta.cleanup && this.meta.cleanup.kind !== "delete") ||
+      (!this.meta.cleanup && (this.ctx.getWebSockets().some(socketIsOpen) ||
+        (!force && !shouldDeleteRoom(this.meta, 0, now))))
     ) {
       await this.scheduleAlarm();
       return false;
     }
     const roomId = this.meta.roomId;
+    await this.beginRoomCleanup("delete", now);
     try {
-      await this.deleteRoomAssets(roomId);
+      if (!(await this.deleteRoomAssets(roomId))) {
+        await this.storage.setAlarm(now + 60000);
+        return false;
+      }
       await this.deleteD1Assets(roomId);
       await this.deleteD1Bans(roomId);
       await this.deleteD1Metadata(roomId);
-    } catch {
+    } catch (error) {
+      if (error instanceof CostGuardError) throw error;
       this.meta = {
         ...this.meta,
         cleanupRetryCount: this.meta.cleanupRetryCount + 1
       };
       await this.recordOperationalError("room_cleanup_failed");
-      await this.ctx.storage.setAlarm(nextCleanupRetryAt(this.meta, now));
+      await this.storage.setAlarm(nextCleanupRetryAt(this.meta, now));
       return false;
     }
     await this.incrementMetric("cleaned_room_count");
-    await this.ctx.storage.deleteAlarm();
-    await this.ctx.storage.deleteAll();
+    await this.storage.deleteAll();
+    this.documentStore.resetAfterDeletion();
     this.meta = null;
+    await this.storage.deleteAlarm();
     return true;
   }
 
-  private async deleteRoomAssets(roomId: string): Promise<void> {
-    if (!this.env.WHITEBOARD_BUCKET) {
+  private cleanupPendingResponse(): Response {
+    const response = safeJsonResponse({
+      ok: false, error: "room_cleanup_in_progress",
+      code: "WHITEBOARD_ROOM_CLEANUP_IN_PROGRESS", retryable: true
+    }, 503);
+    response.headers.set("retry-after", "60");
+    return response;
+  }
+
+  private async beginRoomCleanup(kind: "delete" | "clear", now: number): Promise<void> {
+    if (!this.meta || this.meta.cleanup) return;
+    const next: RoomMeta = { ...this.meta, cleanup: { kind, startedAt: now } };
+    // The mutation queue serializes this commit with joins and writes. Both the
+    // intent and recovery alarm must be durable before touching any R2 object.
+    await this.storage.transaction(async (transaction) => {
+      await transaction.put(ROOM_META_KEY, next);
+      await transaction.setAlarm(now + 60_000);
+    });
+    this.meta = next;
+    this.broadcastText({ type: "lock-state", locked: true });
+  }
+
+  private async clearRoomContents(now: number): Promise<boolean> {
+    if (!this.meta || (this.meta.cleanup && this.meta.cleanup.kind !== "clear")) return false;
+    await this.beginRoomCleanup("clear", now);
+    try {
+      if (!(await this.deleteRoomAssets(this.meta.roomId))) {
+        await this.storage.setAlarm(now + 60_000);
+        return false;
+      }
+      await this.deleteD1Assets(this.meta.roomId);
+      for (const prefix of [IMAGE_META_PREFIX, AGENT_ASSET_RECEIPT_PREFIX]) {
+        const entries = await this.storage.list({ prefix });
+        if (entries.size > 0) await this.storage.delete([...entries.keys()]);
+      }
+      await this.storage.delete(ASSET_SWEEP_NEXT_KEY);
+      const base: RoomMeta = { ...this.meta, cleanup: undefined, resourceUsage: { bytes: 0, images: 0 }, cleanupRetryCount: 0 };
+      const count = uniqueParticipants(this.ctx.getWebSockets()).length;
+      const next = count > 0 ? markRoomJoined(base, now, count) : markRoomEmpty(base, now);
+      // Clearing the document and releasing the intent share one transaction.
+      this.meta = await this.documentStore.clear(next);
+      this.broadcastText({ type: "document-cleared", documentVersion: this.meta.documentVersion });
+      this.broadcastBinary(WS_YJS_UPDATE, this.documentStore.encodeState());
+      this.broadcastText({ type: "lock-state", locked: this.meta.isLocked });
+      await this.persistD1MetadataIfDue(this.meta, now, true);
+      await this.scheduleAlarm();
+      return true;
+    } catch (error) {
+      if (error instanceof CostGuardError) throw error;
+      await this.recordOperationalError("asset_cleanup_failed");
+      await this.storage.setAlarm(nextCleanupRetryAt(this.meta, now));
+      return false;
+    }
+  }
+
+  private async deleteRoomAssets(roomId: string): Promise<boolean> {
+    if (!this.resourceEnv.WHITEBOARD_BUCKET) {
       if ((this.meta?.resourceUsage.images || 0) > 0) {
         throw new Error("asset_storage_unavailable");
       }
-      return;
+      return true;
     }
     let cursor: string | undefined;
-    do {
-      const listed = await this.env.WHITEBOARD_BUCKET.list({
+    // At most 32 objects per alarm, leaving headroom for other bounded work.
+    // Each continuation starts from the remaining prefix; no cursor can skip
+    // objects after deletion and no metadata is removed until the prefix is empty.
+    for (let page = 0; page < 2; page += 1) {
+      const listed = await this.resourceEnv.WHITEBOARD_BUCKET.list({
         prefix: `whiteboard/v1/${roomId}/`,
         cursor,
-        limit: 1_000
+        limit: 16
       });
       if (listed.objects.length > 0) {
-        await this.env.WHITEBOARD_BUCKET.delete(
+        await this.resourceEnv.WHITEBOARD_BUCKET.delete(
           listed.objects.map((object) => object.key)
         );
       }
       cursor = listed.truncated ? listed.cursor : undefined;
-    } while (cursor);
+      if (!cursor) return true;
+    }
+    return false;
   }
 }
 
@@ -2806,6 +2906,12 @@ export default {
     if (!isValidRoomId(roomId)) {
       return safeJsonResponse({ ok: false, error: "room_unavailable" }, 404);
     }
-    return env.WHITEBOARD_ROOMS.getByName(roomId).fetch(request);
+    try {
+      const guarded = await admitCost(env, { feature: "whiteboard" });
+      return await guarded.WHITEBOARD_ROOMS.getByName(roomId).fetch(request);
+    } catch (error) {
+      if (error instanceof CostGuardError) return costGuardResponse(error);
+      throw error;
+    }
   }
 };

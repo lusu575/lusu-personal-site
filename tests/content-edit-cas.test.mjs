@@ -133,7 +133,7 @@ function assertConflict(payload, currentVersion) {
 }
 
 test("admin content editors enforce atomic expectedUpdatedAt preconditions", async (t) => {
-  const { onRequest } = await import(
+  const { dispatchApiRequest: onRequest } = await import(
     `../functions/api/[[route]].js?content-edit-cas=${Date.now()}-${Math.random()}`
   );
   const db = new D1Database();

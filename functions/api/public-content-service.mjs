@@ -1,3 +1,4 @@
+import { CostGuardError } from "./cost-guard.mjs";
 import { normalizeArticleTags } from "./article-tags.mjs";
 import { articleCategoryLabels, tagLabels } from "../../js/data/article-labels.mjs";
 export const PUBLIC_CONTENT_MAX_ARTICLES = 500;
@@ -61,6 +62,7 @@ export async function queryPublishedArticles({ DB } = {}, {
   }
 
   if (normalizedSearch) {
+    await assertBoundedSearchArchive(database);
     where.push(`instr(lower(
       coalesce(requested.title, zh.title, fallback.title, '') || char(10) ||
       coalesce(requested.summary, zh.summary, fallback.summary, '') || char(10) ||
@@ -227,7 +229,18 @@ function followsCursor(row, cursor) {
 
 // Normal browsing is a keyset query. Search normalizes bounded summary batches on
 // the server because SQLite/D1 has no Unicode NFKC function. Only the requested
-// page is returned; the scan also supplies an exact search total without a cutoff.
+// page is returned. Refuse oversized searches instead of silently truncating
+// results or scanning an unbounded archive. Counts remain exact for accepted searches.
+export const MAX_PUBLIC_SEARCH_ROWS = 1000;
+async function assertBoundedSearchArchive(database) {
+  // Stop the preflight itself after max+one published rows; no joined scan.
+  const row = await database.prepare(`select count(*) as count from (
+    select 1 from articles where status = 'published' limit ?
+  )`).bind(MAX_PUBLIC_SEARCH_ROWS + 1).first();
+  if (!Number.isSafeInteger(row?.count) || row.count > MAX_PUBLIC_SEARCH_ROWS) {
+    throw new CostGuardError("COST_GUARD_SEARCH_TOO_LARGE");
+  }
+}
 export async function queryPublishedArticlePage({ DB } = {}, options = {}) {
   const database = requireDatabase({ DB });
   const lang = normalizeLanguage(options.lang);
@@ -241,6 +254,7 @@ export async function queryPublishedArticlePage({ DB } = {}, options = {}) {
   }
   const tokens = [...new Set(search.split(" ").filter(Boolean))];
   if (tokens.length > 24) throw new PublicArticleQueryError();
+  if (tokens.length) await assertBoundedSearchArchive(database);
   const query = JSON.stringify([lang, category, excludeCategory, search]);
   const cursor = decodeArticleCursor(options.cursor, query);
   const countResult = await database.prepare(`select articles.category, count(*) as count
@@ -252,12 +266,16 @@ export async function queryPublishedArticlePage({ DB } = {}, options = {}) {
   if (!tokens.length) {
     rows = await articleSummaryBatch(database, { lang, category, excludeCategory, cursor, limit: rawLimit + 1 });
   } else {
+    if (total > MAX_PUBLIC_SEARCH_ROWS) throw new CostGuardError("COST_GUARD_SEARCH_TOO_LARGE");
     total = 0;
     rows = [];
+    let scanned = 0;
     let scanCursor = null;
     let batch;
     do {
       batch = await articleSummaryBatch(database, { lang, category, excludeCategory, cursor: scanCursor, limit: SEARCH_SCAN_BATCH_SIZE });
+      scanned += batch.length;
+      if (scanned > MAX_PUBLIC_SEARCH_ROWS) throw new CostGuardError("COST_GUARD_SEARCH_TOO_LARGE");
       for (const row of batch) {
         const haystack = articleSearchHaystack(row, lang);
         if (!tokens.every((token) => haystack.includes(token))) continue;

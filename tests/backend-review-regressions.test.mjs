@@ -39,7 +39,7 @@ class D1 {
 async function authFixture(t) {
   const DB = new D1();
   t.after(() => DB.sqlite.close());
-  const { onRequest } = await import(`../functions/api/[[route]].js?auth-regression=${crypto.randomUUID()}`);
+  const { dispatchApiRequest: onRequest } = await import(`../functions/api/[[route]].js?auth-regression=${crypto.randomUUID()}`);
   const env = { DB, CHAT_IP_HASH_SALT: "fixture-chat-private-salt-for-test-000000", ANALYTICS_IP_HASH_SALT: "fixture-analytics-private-test-salt-0000" };
   const call = async (path, body) => {
     const request = new Request(`https://example.test/api/${path}`, body ? {

@@ -88,7 +88,7 @@ WebSocket ticket 的 `jti` 在 DO storage 中以 5 分钟过期时间原子消�
 - `{"action":"unban","kind":"anonymousId|ipHash","key":"..."}`
 - `{"action":"delete-room"}`，仅允许无连接的密码房；公共房只能清空。
 
-管理员删除请求在 DO 成功删除画布、R2 图片和权威状态后，由 Pages 同步删除 D1 的 room、asset 和 ban fleet index；不保留可占用密码的 `deleting` 墓碑。本次未修改 Worker 协议或 DO 源码。
+管理员删除请求在 DO 成功删除画布、R2 图片和权威状态后，由 Pages 同步删除 D1 的 room、asset 和 ban fleet index；完成后不保留永久墓碑。清理进行中存在持久 `RoomMeta.cleanup` 意图，状态查询返回该字段；除状态及相同清理动作重试外，HTTP 返回 `503 WHITEBOARD_ROOM_CLEANUP_IN_PROGRESS` 与 `Retry-After: 60`，已有 WebSocket 的业务消息也拒绝且不持久化。
 
 ## WebSocket 协议
 
@@ -144,11 +144,11 @@ WebSocket ticket 的 `jti` 在 DO storage 中以 5 分钟过期时间原子消�
    DO 恢复时若 storage 仍声称有人在线、但 `getWebSockets()` 没有恢复连接，也会从恢复时刻重新进入这套空房流程；不能由残留 `onlineCount` 阻止清理。DO 内首次创建的密码房在 WebSocket 真正接纳前同样先处于 24 小时待清理状态。
 2. 24 小时内任意连接加入会原子清空两个字段，并把 Alarm 改为心跳扫描。
 3. 房间再次为空会从新的离开时间重新计算。
-4. Alarm 执行时重新读取真实 WebSocket 数、`emptySince` 和 `deleteAt`；任何条件不满足都不删除。
-5. 到期后先分批删除 `whiteboard/v1/<roomId>/` R2 对象；失败时指数退避重试，不先删权威元数据。
-6. R2 清理成功后移除 D1 asset、ban、room 索引，再 `deleteAll()`。重复 Alarm 无状态可删，保持幂等。
+4. 首批删除前核对真实连接和 TTL，并在同一事务写入 `RoomMeta.cleanup={kind:"delete",startedAt}` 与恢复 Alarm。入房与删除共用串行队列；加入先完成则取消尚未开始的 TTL，清理意图先提交则加入、读写和续期都不能解除它。
+5. 每批最多删除 32 个 R2 对象；后续批次、重启恢复和预算恢复按持久意图继续，不重新套用可被续期取消的普通 TTL。元数据在全部物理删除完成前保留。
+6. R2 清理成功后移除 D1 asset、ban、room 索引，再 `deleteAll()`、重置内存 Yjs 文档、移除 Alarm；保持同一密码重建为空画板，也避免在删除权威状态前移除最后恢复 Alarm。
 
-管理员清空会先清除该房间 R2 图片和 asset 索引，再重置 Yjs 文档与资源用量；锁定状态会广播并拒绝新的 Yjs update 和图片上传。
+管理员清空先同事务保存 `kind:"clear"` 意图与恢复 Alarm，分批删除 R2 和 asset 索引；清空期间禁止新加入、读写和续期，已有连接等待完成广播。最后在同一文档事务中写入空 Yjs、清零用量并解除意图。故障或预算不足保留意图，Alarm 继续，不要求重复手工提交。锁定状态与原鉴权边界保持不变。
 
 ## 验证
 

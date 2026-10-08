@@ -3,7 +3,9 @@
   "name": "lusu-site-mcp",
   "main": "src/index.ts",
   "compatibility_date": "2026-08-06",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "d1_databases": [
     {
       "binding": "DB",
@@ -12,6 +14,14 @@
     }
   ],
   "observability": {
-    "enabled": true
+    "enabled": false
+  },
+  "vars": {
+    "COST_GUARD_MODE": "paused",
+    "COST_GUARD_CLEANUP": "disabled",
+    "COST_GUARD_FEATURES": "",
+    "COST_GUARD_WORKERS_PLAN": "unverified",
+    "COST_GUARD_REVIEW": "",
+    "COST_GUARD_UNTIL": ""
   }
 }
