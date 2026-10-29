@@ -247,7 +247,7 @@ export async function publishAgentArticleService({ env, principal: principalValu
   const articleId = crypto.randomUUID();
   const receiptId = crypto.randomUUID();
   const now = new Date().toISOString();
-  const publishedAt = payload.publishedAt || now;
+  const publishedAt = payload.status === "draft" ? "" : payload.publishedAt || now;
   const effectivePinned = payload.category === "site-updates" ? false : payload.isPinned;
   const responsePayload = {
     ok: true,
@@ -255,7 +255,7 @@ export async function publishAgentArticleService({ env, principal: principalValu
     articleId,
     slug: payload.slug,
     category: payload.category,
-    status: "published",
+    status: payload.status,
     updatedAt: now,
     publishedAt
   };
@@ -266,13 +266,14 @@ export async function publishAgentArticleService({ env, principal: principalValu
         insert into articles (
           article_id, slug, category, tags, cover_image, status, is_pinned,
           view_count, created_at, updated_at, published_at
-        ) values (?, ?, ?, ?, ?, 'published', ?, 0, ?, ?, ?)
+        ) values (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)
       `).bind(
         articleId,
         payload.slug,
         payload.category,
         JSON.stringify(payload.tags),
         payload.coverImage,
+        payload.status,
         effectivePinned ? 1 : 0,
         now,
         now,
@@ -282,7 +283,7 @@ export async function publishAgentArticleService({ env, principal: principalValu
       agentArticleAuditStatement(env, principal, {
         action: "agent-article-published",
         articleId,
-        result: "published",
+        result: payload.status,
         createdAt: now
       }),
       agentArticleReceiptInsertStatement(env, {
@@ -359,6 +360,9 @@ export async function updateAgentArticleService({
     }
   }
 
+  if (payload.status === "published" && !payload.publishedAt && !existing.published_at) {
+    payload.publishedAt = new Date().toISOString();
+  }
   const receiptId = crypto.randomUUID();
   const updatedAt = nextMutationTimestamp(existing.updated_at);
   const responsePayload = {
@@ -585,6 +589,7 @@ function normalizePublishPayload(body) {
     "coverImage",
     "isPinned",
     "publishedAt",
+    "status",
     "translations"
   ]);
   const requestedPinned = body.isPinned === undefined ? false : normalizeBoolean(
@@ -608,6 +613,7 @@ function normalizePublishPayload(body) {
     publishedAt: body.publishedAt === undefined
       ? null
       : normalizeTimestamp(body.publishedAt, false),
+    status: normalizeArticleStatus(body.status ?? "published"),
     translations: normalizeTranslations(body.translations, true)
   };
 }
@@ -622,12 +628,14 @@ function normalizeUpdatePayload(body) {
     "coverImage",
     "isPinned",
     "publishedAt",
+    "status",
     "translations"
   ]);
   const payload = {
     operationId: normalizeOperationId(body.operationId),
     expectedUpdatedAt: normalizeTimestamp(body.expectedUpdatedAt, false)
   };
+  if (body.status !== undefined) payload.status = normalizeArticleStatus(body.status);
   if (body.slug !== undefined) payload.slug = normalizeSlug(body.slug);
   if (body.category !== undefined) payload.category = normalizeCategory(body.category);
   if (body.tags !== undefined) payload.tags = normalizeTags(body.tags);
@@ -659,6 +667,11 @@ function normalizeUpdatePayload(body) {
     );
   }
   return payload;
+}
+
+function normalizeArticleStatus(value) {
+  if (!ARTICLE_STATUSES.has(value)) throw new AgentArticleServiceError("Invalid article status.", 400, "ARTICLE_STATUS_INVALID");
+  return value;
 }
 
 function normalizeDeletePayload(body) {
@@ -911,7 +924,8 @@ function conditionalArticleTranslationStatements(env, articleId, translations, u
 function agentArticleUpdateStatement(env, articleId, payload, updatedAt, receiptId) {
   return env.DB.prepare(`
     update articles
-    set slug = case when ? = 1 then ? else slug end,
+    set status = case when ? = 1 then ? else status end,
+        slug = case when ? = 1 then ? else slug end,
         category = case when ? = 1 then ? else category end,
         tags = case when ? = 1 then ? else tags end,
         cover_image = case when ? = 1 then ? else cover_image end,
@@ -924,6 +938,8 @@ function agentArticleUpdateStatement(env, articleId, payload, updatedAt, receipt
         select 1 from agent_article_receipts where receipt_id = ?
       )
   `).bind(
+    hasOwn(payload, "status") ? 1 : 0,
+    payload.status ?? null,
     hasOwn(payload, "slug") ? 1 : 0,
     payload.slug ?? null,
     hasOwn(payload, "category") ? 1 : 0,
@@ -1074,7 +1090,7 @@ function invalidReceiptError() {
 
 async function readArticleMutationState(env, articleId) {
   return env.DB.prepare(`
-    select article_id, slug, category, updated_at
+    select article_id, slug, category, status, published_at, updated_at
     from articles
     where article_id = ?
     limit 1
@@ -1163,6 +1179,7 @@ function parseStoredTags(value) {
 
 function publishPayloadForHash(payload) {
   return {
+    ...(payload.status === "published" ? {} : { status: payload.status }),
     slug: payload.slug,
     category: payload.category,
     tags: payload.tags,

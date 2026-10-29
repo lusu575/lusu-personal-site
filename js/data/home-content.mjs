@@ -1,6 +1,34 @@
-// Home-only update summaries; excludes article bodies.
+// Home-only update summaries; no article bodies.
 export const homeContent = Object.freeze({
   "updates": [
+    {
+      "article_id": "seed-update-2026-10-29-tool-maintenance",
+      "slug": "2026-10-29-tool-maintenance",
+      "category": "site-updates",
+      "tags": [
+        "网站更新",
+        "工具"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-10-29T15:00:00.000Z",
+      "updated_at": "2026-10-29T15:00:00.000Z",
+      "published_at": "2026-10-29T15:00:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.10.29",
+      "title": {
+        "zh": "工具维护与完整画板导出准备",
+        "en": "Tool Maintenance and Full Whiteboard Export Preparation",
+        "ja": "ツール保守とホワイトボード全体画像の準備"
+      },
+      "summary": {
+        "zh": "本地候选在现有画板和互传基础上完善完整图片导出与管理适配，保留现有大厅、帮助、上传和草稿保护；尚未部署。",
+        "en": "The local candidate adds full whiteboard image export and administration integration while retaining the existing lobby, help, uploads and draft protection. It has not been deployed.",
+        "ja": "ローカル候補版で全体画像の書き出しと管理連携を整備しました。既存のロビー、ヘルプ、アップロード、下書き保護を維持しています。まだ公開していません。"
+      }
+    },
     {
       "article_id": "seed-update-2026-09-28-mobile-layout",
       "slug": "2026-09-28-mobile-layout",
@@ -121,37 +149,6 @@ export const homeContent = Object.freeze({
         "zh": "手机端首页已移除“杂谈区”入口，避免未开放栏目继续占用 App 网格；桌面端导航、既有路由与内容数据保持不变。",
         "en": "The Talk entry has been removed from mobile Home so an unpublished section no longer occupies the App grid. Desktop navigation, route behavior, and content data remain unchanged.",
         "ja": "モバイルのホーム画面から「雑談」の入口を外し、未公開の項目が App グリッドを占有しないようにしました。デスクトップのナビゲーション、ルート動作、コンテンツデータは変更していません。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-08-27-password-room-reset",
-      "slug": "2026-08-27-password-room-reset",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "密码房",
-        "文件互传",
-        "在线画板",
-        "移动端"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-08-27T04:00:00.000Z",
-      "updated_at": "2026-08-27T04:00:00.000Z",
-      "published_at": "2026-08-27T04:00:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.08.27",
-      "title": {
-        "zh": "密码房可彻底删除并重新开始",
-        "en": "Password Rooms Can Be Deleted and Restarted Cleanly",
-        "ja": "合言葉の部屋を完全削除して新しく開始可能に"
-      },
-      "summary": {
-        "zh": "互传、聊天室和在线画板的密码房在过期或管理删除后彻底清除存储，同一密码再进入会得到新空房；手机上取消或拒绝上传选择后也可立即重试。",
-        "en": "Expired or admin-deleted password rooms in Transfer, Chat, and Whiteboard now release their stored data so the same password starts a clean room. Mobile upload pickers can also be reopened after cancellation, a denied permission, or a wrong choice.",
-        "ja": "転送・チャット・オンライン画板の合言葉ルームは、期限切れまたは管理削除後に保存データを完全に解放し、同じ合言葉で新しい空ルームを開始します。モバイルの選択をキャンセル・拒否・間違えた後もすぐ再実行できます。"
       }
     }
   ]

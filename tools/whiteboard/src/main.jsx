@@ -7,6 +7,7 @@ import React, {
   useState,
 } from "react";
 import { createRoot } from "react-dom/client";
+import { fullWhiteboardSnapshot } from "./private-snapshot.mjs";
 import {
   Excalidraw,
   exportToBlob,
@@ -39,7 +40,7 @@ import {
 import { roomHelpState } from "./room-help-state.js";
 
 const RECENT_ROOM_KEY = "lusu-whiteboard-recent-room-v1";
-const WHITEBOARD_VERSION = "1.0.10";
+const WHITEBOARD_VERSION = "1.0.11";
 const NAME_COOLDOWN_MS = 30_000;
 const PASSWORD_MIN_LENGTH = 4;
 const PASSWORD_MAX_LENGTH = 128;
@@ -583,6 +584,14 @@ function WhiteboardRoom({
       scene.destroy();
     };
   }, [initialSession, scene, t]);
+
+  useEffect(() => {
+    // Opt-in browser companion surface; it grants no room access or admin rights.
+    if (new URLSearchParams(window.location.search).get("private-mcp") !== "1") return undefined;
+    const snapshot = () => fullWhiteboardSnapshot(apiRef.current, exportToBlob);
+    window.lusuPrivateWhiteboardSnapshot = snapshot;
+    return () => { if (window.lusuPrivateWhiteboardSnapshot === snapshot) delete window.lusuPrivateWhiteboardSnapshot; };
+  }, []);
 
   const bindApi = useCallback((api) => {
     apiRef.current = api;

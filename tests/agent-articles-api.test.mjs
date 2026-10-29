@@ -747,7 +747,7 @@ test("article mutation JSON is strict and enforces field, translation, text, and
   const cases = [];
 
   const unknown = publishPayload("strict-unknown-0001", "strict-unknown");
-  unknown.status = "draft";
+  unknown.unrecognized = "draft";
   cases.push([unknown, "ARTICLE_PAYLOAD_INVALID"]);
 
   const missingLanguage = publishPayload("strict-language-0001", "strict-language");
@@ -947,4 +947,32 @@ test("OAuth article principals accept the complete grant reference alphabet with
     }),
     (error) => error?.status === 401 && error?.code === "AGENT_PRINCIPAL_INVALID"
   );
+});
+
+test("draft submission, publication and archive preserve CAS and operation identity", async () => {
+  const fixture = createFixture();
+  const body = { ...publishPayload("draft-submit-0001", "private-draft"), status: "draft" };
+  const created = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/articles/publish", { method: "POST", body });
+  assert.equal(created.response.status, 201);
+  assert.equal(created.payload.status, "draft");
+  const articleId = created.payload.articleId;
+  const collision = await callApi(fixture.env, fixture.tokens.adminWrite, "agent/articles/publish", { method: "POST", body: { ...body, status: "published" } });
+  assert.equal(collision.response.status, 409);
+  const published = await callApi(fixture.env, fixture.tokens.adminWrite, `agent/articles/${articleId}`, {
+    method: "PUT", body: { operationId: "draft-publish-0001", expectedUpdatedAt: created.payload.updatedAt, status: "published" }
+  });
+  assert.equal(published.response.status, 200);
+  let row = fixture.env.DB.sqlite.prepare("select status, published_at from articles where article_id = ?").get(articleId);
+  assert.equal(row.status, "published");
+  assert.ok(row.published_at);
+  const archived = await callApi(fixture.env, fixture.tokens.adminWrite, `agent/articles/${articleId}`, {
+    method: "PUT", body: { operationId: "draft-archive-0001", expectedUpdatedAt: published.payload.updatedAt, status: "archived" }
+  });
+  assert.equal(archived.response.status, 200);
+  row = fixture.env.DB.sqlite.prepare("select status from articles where article_id = ?").get(articleId);
+  assert.equal(row.status, "archived");
+  const stale = await callApi(fixture.env, fixture.tokens.adminWrite, `agent/articles/${articleId}`, {
+    method: "PUT", body: { operationId: "draft-stale-00001", expectedUpdatedAt: published.payload.updatedAt, status: "published" }
+  });
+  assert.equal(stale.response.status, 409);
 });

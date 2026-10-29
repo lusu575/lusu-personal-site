@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "quick-transfer",
   "name": "LuSu Quick Transfer",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "versionStep": "0.0.1",
   "governanceRoot": "docs/transfer",
   "documents": [

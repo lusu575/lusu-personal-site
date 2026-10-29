@@ -1,5 +1,9 @@
 # 鲁肃个人站管理后台专用 PROJECT_CONTEXT
 
+## 私人 MCP 主线候选
+
+后台适配位于 functions/api/[[route]].js 的固定私有调度器，通过模块内部 WeakMap 传递已验证会话，HTTP 请求无法伪造。入口精确限制 MCP_OWNER_USER_ID，并复用现有角色、输入、CAS 校验。尚未部署；完整范围见 ../../docs/agent-capabilities/PRIVATE_MCP_MAIN_CANDIDATE.md。
+
 ## 2026-09-08 后台脚本静态校验
 
 - 完整 ESLint 规则继续覆盖 `admin/`，后台主脚本清理已无引用的旧地图坐标与表格辅助函数、未使用 catch 参数及冗余布尔转换；地图、表格、治理、API 和权限行为没有变化。

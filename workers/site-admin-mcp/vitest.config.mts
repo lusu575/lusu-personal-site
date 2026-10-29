@@ -15,6 +15,7 @@ export default defineConfig({
         // supports compatibility dates through 2026-07-29.
         compatibilityDate: "2026-07-29",
         bindings: {
+          MCP_OWNER_USER_ID: "owner-1",
           ANALYTICS_IP_HASH_SALT: "site-admin-mcp-test-only-hmac-key"
         }
       }

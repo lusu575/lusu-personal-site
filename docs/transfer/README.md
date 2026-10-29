@@ -1,6 +1,6 @@
 # 临时互传维护与部署
 
-**当前子项目版本：1.0.14**
+**当前子项目版本：1.0.15**
 
 本目录是临时互传的治理根：`VERSION` / `project.json` 保存独立版本，`CHANGELOG.md` 保存子项目更新，`AGENTS.md` 约束分布在主站、Pages Functions、后台和清理 Worker 中的实现，`AGENT.md` 仅作兼容入口。任何互传更改都必须把该版本精确增加 `0.0.1`，并同步本目录全部受影响文档和根项目记录。
 
@@ -186,3 +186,5 @@ D1 表：
 - [R2 lifecycle rules](https://developers.cloudflare.com/r2/buckets/object-lifecycles/)
 - [Pages bindings](https://developers.cloudflare.com/pages/functions/bindings/)
 - [Cron Triggers](https://developers.cloudflare.com/workers/configuration/cron-triggers/)
+
+私人 MCP 主线兼容候选：复用既有后台服务与授权，仅本人稳定 ID 可用；尚未部署。

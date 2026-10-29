@@ -1,5 +1,10 @@
 # 鲁肃个人站管理后台专用 CHANGELOG
 
+## 2026-10-29
+
+- 主线后台服务通过固定私人 MCP allowlist 复用，53 项旧候选管理操作去除与主线 video_delete/video_refresh_metadata 重名的 2 项，保留主线视频 CAS/幂等行为。本人稳定 ID、活动 grant 和 admin scope 必须同时满足。
+- 账号信息不返回密码/hash/token；会话撤销不连带撤销 OAuth/Agent grant。没有执行生产写操作。
+
 > 管理后台专用说明：本文档只记录 `/admin/` 管理后台的私有维护记录，不等同于主站根目录 `CHANGELOG.md`。后台私有更新不写入主站知识库 `site-updates`，也不展示到首页最近更新。
 
 ## 2026-09-08

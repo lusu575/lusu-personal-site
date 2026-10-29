@@ -1,3 +1,4 @@
+import { assertPrivateOwner } from "./owner-identity";
 import {
   AuthorizationError,
   type AuthRequest,
@@ -531,6 +532,7 @@ export async function requireOwnerSession(request: Request, env: Env): Promise<B
   if (!row) {
     throw new WorkerHttpError("Sign in before authorizing this client.", 401, "OAUTH_LOGIN_REQUIRED");
   }
+  assertPrivateOwner(env, String(row.id || ""));
   if (String(row.role || "").toLowerCase() !== "admin") {
     throw new WorkerHttpError("Only the site owner can authorize this MCP.", 403, "OAUTH_ADMIN_REQUIRED");
   }

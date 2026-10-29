@@ -1,3 +1,5 @@
+import { handlePrivateTransferAdmin } from "./transfer-service.mjs";
+import { assertActiveMcpOAuthGrant } from "./mcp-oauth-ledger.mjs";
 import { ContentMigrationError, runArticleDataMigrations } from "./content-migrations.mjs";
 import { runPeriodicDataCleanup } from "./data-cleanup-service.mjs";
 import { persistAuthenticationSession, scheduleAuthenticationSideEffects } from "./auth-session-service.mjs";
@@ -2450,12 +2452,12 @@ async function getRecentChatMessages(env, limit, roomKey = PUBLIC_CHAT_ROOM_KEY)
   `).bind(roomKey, limit).all()).results || [];
 }
 
-async function postChatMessage(request, env) {
+async function postChatMessage(request, env, suppliedIdentity = null) {
   await ensureChatSchema(env);
   await ensureAnalyticsSchema(env);
   const body = await readJson(request, MAX_CHAT_JSON_BYTES, "聊天请求内容过大。");
   const clientId = normalizeVisitorId(body.visitorId);
-  const identity = await ensureAnonymousIdentity(request, env);
+  const identity = suppliedIdentity || await ensureAnonymousIdentity(request, env);
   const nickname = normalizeChatNickname(identity.displayName);
   const roomKey = normalizeChatRoomKey(body.room);
   const clientRequestId = normalizeChatRequestId(body.clientRequestId);
@@ -5899,6 +5901,8 @@ async function requireSession(request, env) {
 }
 
 async function requireAdmin(request, env) {
+  const privateSession = privateMcpRequests.get(request);
+  if (privateSession) return privateSession;
   const session = await requireSession(request, env);
   if (session.user.role !== "admin") {
     throw new HttpError("只有管理员可以访问后台。", 403);
@@ -8111,4 +8115,119 @@ class HttpError extends Error {
     this.code = code;
     this.details = details;
   }
+}
+
+const privateMcpRequests = new WeakMap();
+const privateAdminOperations = Object.freeze({
+  whiteboards_overview: ["GET", (request, env, id) => handleWhiteboardApi({ request, env }, ["admin", "whiteboards", ...["overview"]], { isAdmin: true, adminUser: privateMcpRequests.get(request).user })],
+  whiteboards_list: ["GET", (request, env, id) => handleWhiteboardApi({ request, env }, ["admin", "whiteboards", ...["rooms"]], { isAdmin: true, adminUser: privateMcpRequests.get(request).user })],
+  whiteboard_status: ["GET", (request, env, id) => handleWhiteboardApi({ request, env }, ["admin", "whiteboards", ...["rooms", id, "status"]], { isAdmin: true, adminUser: privateMcpRequests.get(request).user })],
+  whiteboard_public_clear: ["POST", (request, env, id) => handleWhiteboardApi({ request, env }, ["admin", "whiteboards", ...["public", "clear"]], { isAdmin: true, adminUser: privateMcpRequests.get(request).user })],
+  whiteboard_public_lock: ["PUT", (request, env, id) => handleWhiteboardApi({ request, env }, ["admin", "whiteboards", ...["public", "lock"]], { isAdmin: true, adminUser: privateMcpRequests.get(request).user })],
+  whiteboard_room_delete: ["DELETE", (request, env, id) => handleWhiteboardApi({ request, env }, ["admin", "whiteboards", ...["rooms", id]], { isAdmin: true, adminUser: privateMcpRequests.get(request).user })],
+  whiteboard_kick: ["POST", (request, env, id) => handleWhiteboardApi({ request, env }, ["admin", "whiteboards", ...["rooms", id, "kick"]], { isAdmin: true, adminUser: privateMcpRequests.get(request).user })],
+  whiteboard_ban: ["POST", (request, env, id) => handleWhiteboardApi({ request, env }, ["admin", "whiteboards", ...["rooms", id, "ban"]], { isAdmin: true, adminUser: privateMcpRequests.get(request).user })],
+  transfer_overview: ["GET", (request, env, id) => handlePrivateTransferAdmin({ request, env }, ["overview"], privateMcpRequests.get(request).principal)],
+  transfer_rooms: ["GET", (request, env, id) => handlePrivateTransferAdmin({ request, env }, ["rooms"], privateMcpRequests.get(request).principal)],
+  transfer_items: ["GET", (request, env, id) => handlePrivateTransferAdmin({ request, env }, ["items"], privateMcpRequests.get(request).principal)],
+  transfer_uploads: ["GET", (request, env, id) => handlePrivateTransferAdmin({ request, env }, ["uploads"], privateMcpRequests.get(request).principal)],
+  transfer_settings_get: ["GET", (request, env, id) => handlePrivateTransferAdmin({ request, env }, ["settings"], privateMcpRequests.get(request).principal)],
+  transfer_settings_update: ["PUT", (request, env, id) => handlePrivateTransferAdmin({ request, env }, ["settings"], privateMcpRequests.get(request).principal)],
+  transfer_item_delete: ["DELETE", (request, env, id) => handlePrivateTransferAdmin({ request, env }, ["item", id], privateMcpRequests.get(request).principal)],
+  transfer_room_clear: ["POST", (request, env, id) => handlePrivateTransferAdmin({ request, env }, ["room", id, "clear"], privateMcpRequests.get(request).principal)],
+  transfer_room_delete: ["POST", (request, env, id) => handlePrivateTransferAdmin({ request, env }, ["room", id, "close"], privateMcpRequests.get(request).principal)],
+  transfer_cleanup: ["POST", (request, env, id) => handlePrivateTransferAdmin({ request, env }, ["cleanup"], privateMcpRequests.get(request).principal)],
+  transfer_normal_upload_switch: ["POST", (request, env, id) => handlePrivateTransferAdmin({ request, env }, ["normal-upload-switch"], privateMcpRequests.get(request).principal)],
+  transfer_global_upload_switch: ["POST", (request, env, id) => handlePrivateTransferAdmin({ request, env }, ["global-upload-switch"], privateMcpRequests.get(request).principal)],
+  transfer_upload_abort: ["POST", (request, env, id) => handlePrivateTransferAdmin({ request, env }, ["upload", "abort"], privateMcpRequests.get(request).principal)],
+  h3_runners: ["GET", (request, env, id) => handleMinimaxH3Api({ request, env, parts: ["admin", "minimax-h3", ...["runners"]], adminSession: privateMcpRequests.get(request) })],
+  h3_jobs: ["GET", (request, env, id) => handleMinimaxH3Api({ request, env, parts: ["admin", "minimax-h3", ...["jobs"]], adminSession: privateMcpRequests.get(request) })],
+  h3_job_get: ["GET", (request, env, id) => handleMinimaxH3Api({ request, env, parts: ["admin", "minimax-h3", ...["jobs", id]], adminSession: privateMcpRequests.get(request) })],
+  h3_job_create: ["POST", (request, env, id) => handleMinimaxH3Api({ request, env, parts: ["admin", "minimax-h3", ...["jobs"]], adminSession: privateMcpRequests.get(request) })],
+  h3_job_cancel: ["POST", (request, env, id) => handleMinimaxH3Api({ request, env, parts: ["admin", "minimax-h3", ...["jobs", id, "cancel"]], adminSession: privateMcpRequests.get(request) })],
+  chat_read: ["GET", getChatMessages],
+  chat_send: ["POST", postPrivateOwnerChat],
+  accounts_list: ["GET", getAdminAccounts],
+  account_get: ["GET", getAdminAccount],
+  account_update: ["PUT", updateAdminAccount],
+  account_sessions_revoke: ["POST", revokePrivateAccountSessions],
+  analytics_get: ["GET", getAdminAnalyticsOverview],
+  traffic_get: ["GET", getAdminTrafficControl],
+  traffic_update: ["PUT", updateAdminTrafficControl],
+  social_links_get: ["GET", getAdminSocialLinks],
+  social_links_update: ["PUT", updateAdminSocialLinks],
+  videos_manage_list: ["GET", getAdminVideos],
+  video_delete: ["DELETE", deleteVideo],
+  video_refresh_metadata: ["POST", refreshVideoMetadata],
+  video_categories_list: ["GET", getAdminVideoCategories],
+  video_category_create: ["POST", createVideoCategory],
+  video_category_update: ["PUT", updateVideoCategory],
+  video_category_delete: ["DELETE", deleteVideoCategory],
+  chat_manage_list: ["GET", getAdminChatMessages],
+  chat_message_update: ["PUT", updateAdminChatMessage],
+  chat_message_delete: ["DELETE", deleteAdminChatMessage],
+  chat_room_delete: ["DELETE", deleteAdminPrivateChatRoom],
+  chat_bans_list: ["GET", getAdminChatBans],
+  chat_ban_create: ["POST", createAdminChatBan],
+  chat_ban_delete: ["DELETE", disableAdminChatBan],
+  automation_get: ["GET", getAdminArticleAutomation],
+  automation_update: ["PUT", updateAdminArticleAutomation]
+});
+
+/** Invoke existing administration business handlers after independently verifying private OAuth. */
+export async function invokePrivateAdminOperation({ env, principal, operation, input = {} }) {
+  const definition = privateAdminOperations[operation];
+  if (!definition) throw new HttpError("Unknown private administration operation.", 400);
+  const [method, handler] = definition;
+  if (!env.MCP_OWNER_USER_ID || principal?.userId !== env.MCP_OWNER_USER_ID) {
+    throw new HttpError("Private MCP owner is required.", 403);
+  }
+  await assertActiveMcpOAuthGrant({ env, principal,
+    requiredScopes: [method === "GET" ? "admin:read" : "admin:write"], requireAdmin: true });
+  const user = await env.DB.prepare("select id, email, role from users where id = ?")
+    .bind(principal.userId).first();
+  const url = new URL("https://lusu575.com/api/admin/private-mcp");
+  for (const [key, value] of Object.entries(input.query || {})) url.searchParams.set(key, String(value));
+  const request = new Request(url, { method, headers: { "Content-Type": "application/json" },
+    ...(method === "GET" ? {} : { body: JSON.stringify(input.body || {}) }) });
+  privateMcpRequests.set(request, { user, tokenHash: "", principal });
+  try {
+    const target = operation.startsWith("automation_")
+      ? articleDeliveryChannelConfig(input.id) : input.id;
+    if (operation.startsWith("automation_") && !target) throw new HttpError("Unknown automation channel.", 400);
+    const response = await handler(request, env, target);
+    const payload = await response.json();
+    if (!response.ok) throw new HttpError(String(payload.error || "Administration operation failed."), response.status);
+    return payload;
+  } finally {
+    privateMcpRequests.delete(request);
+  }
+}
+
+
+async function revokePrivateAccountSessions(request, env, userId) {
+  await requireAdmin(request, env);
+  const id = normalizeRecordId(userId, "Invalid account ID.");
+  const body = await readJson(request);
+  if (body.confirm !== true || Object.keys(body).some(key => key !== "confirm")) {
+    throw new HttpError("Explicit account session revocation confirmation required.", 400);
+  }
+  const account = await env.DB.prepare("select id from users where id = ?").bind(id).first();
+  if (!account) throw new HttpError("Account not found.", 404);
+  const result = await env.DB.prepare("delete from sessions where user_id = ?").bind(id).run();
+  return json({ ok: true, accountId: id, revokedBrowserSessions: Number(result.meta?.changes || 0),
+    agentTokensRevoked: false, oauthGrantsRevoked: false });
+}
+
+
+async function postPrivateOwnerChat(request, env) {
+  const session = await requireAdmin(request, env);
+  const identity = { anonymousId: await stableAccountVisitorId(session.user.id),
+    displayName: "站长AI", shouldSetCookie: false };
+  const body = await request.clone().json();
+  if (body.room !== undefined || body.encryptedContent !== undefined || !body.clientRequestId) {
+    throw new HttpError("Private MCP chat currently requires an idempotency ID and targets the public lobby.", 400);
+  }
+  return postChatMessage(new Request(request.url, { method: "POST", headers: request.headers,
+    body: JSON.stringify({ ...body, visitorId: "private-mcp-ai" }) }), env, identity);
 }

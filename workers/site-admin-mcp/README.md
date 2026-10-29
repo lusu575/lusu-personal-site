@@ -1,5 +1,9 @@
 # LuSu site owner remote MCP
 
+## Main-compatible private candidate 0.5.0
+
+This local candidate preserves GAME_RELAY, games:play, browser connections and OAuth revocation. It adds an exact owner ID gate and admin:read/admin:write; video operations retain mainline content scopes and CAS. No production bindings, grants or credentials were changed. See ../../docs/agent-capabilities/PRIVATE_MCP_MAIN_CANDIDATE.md.
+
 This independent Cloudflare Worker exposes public reads plus owner-only article, external-video, and browser-game tools over stateless Streamable HTTP at `https://lusu575.com/mcp`.
 
 ## Production state

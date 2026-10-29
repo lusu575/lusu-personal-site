@@ -1,5 +1,9 @@
 # PROJECT_CONTEXT.md
 
+## 2026-10-29：主线兼容私人 MCP 候选
+
+基于 9854301ea93fee3abdeb14dad3fec55fa2b27da0，Worker 候选 0.5.0，注册 79 工具。保留 GAME_RELAY、games:play、WebSocket 连接及撤销模块，新增精确 MCP_OWNER_USER_ID、admin:read/admin:write、后台适配、文章生命周期与真实猫国/画板队列。没有新增 videos:write，视频沿用主线 content scope。未部署、未配置生产绑定或凭据。候选验证与配置差异见 docs/agent-capabilities/PRIVATE_MCP_MAIN_CANDIDATE.md。
+
 ## 2026-09-28 公开手机界面重排
 
 - 手机 Home 竖屏使用三列固定行高入口，短横屏使用六列；各 App 共用简化的窗口／卡片边界与字号，视频采用完整 16:9 大封面，标题／简介位于下方，作者日期与播放操作并排。底部仍为单一可横滑、可收起的六入口 Dock。

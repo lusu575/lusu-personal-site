@@ -1,3 +1,4 @@
+import { assertActiveMcpOAuthGrant } from "./mcp-oauth-ledger.mjs";
 import {
   authenticateAgentBearer,
   isAgentBearerRequest
@@ -171,9 +172,9 @@ async function handleUserTransferApi(context, parts) {
   throw new TransferHttpError("未找到临时互传接口。", 404, "TRANSFER_NOT_FOUND");
 }
 
-async function handleAdminTransferApi(context, parts) {
+async function handleAdminTransferApi(context, parts, verifiedSession = null) {
   const { request, env } = context;
-  const session = await requireTransferAdmin(request, env);
+  const session = verifiedSession || await requireTransferAdmin(request, env);
   const url = new URL(request.url);
 
   if (request.method === "GET" && parts[0] === "overview") {
@@ -2579,3 +2580,15 @@ export const transferInternals = Object.freeze({
   normalizeMimeType,
   parseSingleRange
 });
+
+/** Internal private-owner adapter; browser and Agent HTTP authorization are unchanged. */
+export async function handlePrivateTransferAdmin(context, parts, principal) {
+  const { env, request } = context;
+  if (!env.MCP_OWNER_USER_ID || principal?.userId !== env.MCP_OWNER_USER_ID) {
+    throw new TransferHttpError("Private owner required.", 403, "MCP_OWNER_REQUIRED");
+  }
+  await assertActiveMcpOAuthGrant({ env, principal, requireAdmin: true,
+    requiredScopes: [request.method === "GET" ? "admin:read" : "admin:write"] });
+  const user = await env.DB.prepare("select id, email, role from users where id = ?").bind(principal.userId).first();
+  return handleAdminTransferApi(context, parts, { user, tokenHash: "" });
+}

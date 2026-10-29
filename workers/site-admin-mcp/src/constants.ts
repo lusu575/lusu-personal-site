@@ -1,7 +1,7 @@
 import { MCP_OWNER_RESOURCE } from "../../../functions/api/mcp-oauth-ledger.mjs";
 
 export const SERVER_NAME = "lusu-site-mcp";
-export const SERVER_VERSION = "0.4.0";
+export const SERVER_VERSION = "0.5.0";
 export const CANONICAL_ISSUER = "https://lusu575.com";
 export const MCP_RESOURCE = MCP_OWNER_RESOURCE;
 export const MCP_PATH = "/mcp";
@@ -14,7 +14,9 @@ export const OWNER_SCOPES = Object.freeze([
   "content:read",
   "content:write",
   "content:delete",
-  "games:play"
+  "games:play",
+  "admin:read",
+  "admin:write"
 ] as const);
 
 export type OwnerScope = (typeof OWNER_SCOPES)[number];
@@ -24,6 +26,8 @@ export const SCOPE_DESCRIPTIONS: Readonly<Record<OwnerScope, Readonly<{
   en: string;
   ja: string;
 }>>> = Object.freeze({
+  "admin:read": Object.freeze({zh:"读取本人后台数据",en:"Read private administration data",ja:"管理データを読む"}),
+  "admin:write": Object.freeze({zh:"管理本人后台与浏览器任务",en:"Manage private administration and browser tasks",ja:"管理設定とブラウザー操作"}),
   "content:read": Object.freeze({
     zh: "读取网站已发布文章与公开内容",
     en: "Read published site articles and public content",

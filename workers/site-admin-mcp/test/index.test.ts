@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { env, SELF } from "cloudflare:test";
 
-import { oauthDefaultHandler } from "../src/auth-handler";
+import { oauthDefaultHandler, requireOwnerSession } from "../src/auth-handler";
 import { validateClientRegistration } from "../src/client-registration";
 import {
   CANONICAL_ISSUER,
@@ -13,6 +13,7 @@ import { handleOAuthRevocationWithLedgerSync } from "../src/oauth-revocation";
 import { hmacSha256Hex, sha256Hex } from "../src/security";
 
 const testEnv = env as unknown as {
+  MCP_OWNER_USER_ID: "owner-1",
   DB: D1Database;
   OAUTH_KV: KVNamespace;
 };
@@ -69,6 +70,7 @@ function registrationEnv(
   salt = "test-only-dcr-hmac-salt-at-least-32-bytes"
 ): Env {
   return {
+    MCP_OWNER_USER_ID: "owner-1",
     DB: testEnv.DB,
     OAUTH_KV: kv,
     ANALYTICS_IP_HASH_SALT: salt
@@ -821,6 +823,7 @@ describe("owner consent page", () => {
   it("renders zh/en/ja consent copy and a warning for loopback callbacks", async () => {
     const redirectUri = "http://127.0.0.1:43110/callback";
     const consentEnv = {
+      MCP_OWNER_USER_ID: "owner-1",
       DB: testEnv.DB,
       OAUTH_KV: testEnv.OAUTH_KV,
       ANALYTICS_IP_HASH_SALT: "test-only-consent-salt",
@@ -882,6 +885,7 @@ describe("owner consent page", () => {
   it("adds only the exact registered HTTPS callback origin to consent form-action", async () => {
     const redirectUri = "https://client.example:8443/oauth/callback?tenant=owner";
     const consentEnv = {
+      MCP_OWNER_USER_ID: "owner-1",
       DB: testEnv.DB,
       OAUTH_KV: testEnv.OAUTH_KV,
       ANALYTICS_IP_HASH_SALT: "test-only-consent-salt-at-least-32-bytes",
@@ -936,6 +940,7 @@ describe("owner consent page", () => {
     ];
     for (const redirectUri of unsafeRedirects) {
       const consentEnv = {
+        MCP_OWNER_USER_ID: "owner-1",
         DB: testEnv.DB,
         OAUTH_KV: testEnv.OAUTH_KV,
         ANALYTICS_IP_HASH_SALT: "test-only-consent-salt-at-least-32-bytes",
@@ -981,6 +986,7 @@ describe("owner consent page", () => {
 
     const requestedRedirect = "https://client.example/callback";
     const unregisteredEnv = {
+      MCP_OWNER_USER_ID: "owner-1",
       DB: testEnv.DB,
       OAUTH_KV: testEnv.OAUTH_KV,
       ANALYTICS_IP_HASH_SALT: "test-only-consent-salt-at-least-32-bytes",
@@ -1044,6 +1050,7 @@ describe("owner consent page", () => {
     completionRedirect.searchParams.set("state", "duplicate-consent-state");
     completionRedirect.searchParams.set("iss", CANONICAL_ISSUER);
     const consentEnv = {
+      MCP_OWNER_USER_ID: "owner-1",
       DB: signaledDb,
       OAUTH_KV: testEnv.OAUTH_KV,
       ANALYTICS_IP_HASH_SALT: "test-only-consent-salt-at-least-32-bytes",
@@ -1150,6 +1157,7 @@ describe("owner consent page", () => {
     const redirectUri = "http://127.0.0.1:43110/callback";
     let completionCount = 0;
     const consentEnv = {
+      MCP_OWNER_USER_ID: "owner-1",
       DB: testEnv.DB,
       OAUTH_KV: testEnv.OAUTH_KV,
       ANALYTICS_IP_HASH_SALT: "test-only-consent-salt-at-least-32-bytes",
@@ -1897,7 +1905,63 @@ describe("complete owner OAuth MCP flow", () => {
       "video_publish",
       "video_update",
       "video_refresh_metadata",
-      "video_delete"
+      "video_delete",
+      "chat_read",
+      "whiteboards_overview",
+      "whiteboards_list",
+      "whiteboard_status",
+      "transfer_overview",
+      "transfer_rooms",
+      "transfer_items",
+      "transfer_uploads",
+      "transfer_settings_get",
+      "h3_runners",
+      "h3_jobs",
+      "h3_job_get",
+      "accounts_list",
+      "account_get",
+      "analytics_get",
+      "traffic_get",
+      "social_links_get",
+      "videos_manage_list",
+      "video_categories_list",
+      "chat_manage_list",
+      "chat_bans_list",
+      "automation_get",
+      "chat_send",
+      "account_sessions_revoke",
+      "whiteboard_public_clear",
+      "whiteboard_public_lock",
+      "whiteboard_room_delete",
+      "whiteboard_kick",
+      "whiteboard_ban",
+      "transfer_settings_update",
+      "transfer_item_delete",
+      "transfer_room_clear",
+      "transfer_room_delete",
+      "transfer_cleanup",
+      "transfer_normal_upload_switch",
+      "transfer_global_upload_switch",
+      "transfer_upload_abort",
+      "h3_job_create",
+      "h3_job_cancel",
+      "account_update",
+      "traffic_update",
+      "social_links_update",
+      "video_category_create",
+      "video_category_update",
+      "video_category_delete",
+      "chat_message_update",
+      "chat_message_delete",
+      "chat_room_delete",
+      "chat_ban_create",
+      "chat_ban_delete",
+      "automation_update",
+      "whiteboard_snapshot",
+      "kittens_command",
+      "browser_command_claim",
+      "browser_command_complete",
+      "browser_command_result"
     ]);
     const toolsByName = new Map(tools.map((tool) => [tool.name, tool]));
     expect(toolsByName.get("content_list")?._meta?.securitySchemes).toEqual([
@@ -2149,14 +2213,8 @@ describe("complete owner OAuth MCP flow", () => {
       name: "article_manage_list",
       arguments: { limit: 10 }
     });
-    expect(denied.response.status, JSON.stringify(denied.body)).toBe(200);
-    expect(denied.body.result?.isError).toBe(true);
-    expect(structuredToolResult(denied.body)).toMatchObject({
-      code: "MCP_OAUTH_ADMIN_REQUIRED"
-    });
-    const challenge = denied.body.result?._meta?.["mcp/www_authenticate"]?.[0];
-    expect(challenge).toContain('error="invalid_token"');
-    expect(challenge).not.toContain("scope=");
+    expect(denied.response.status).toBe(401);
+    expect(denied.response.headers.get("www-authenticate")).toContain('error="invalid_token"');
 
     const grant = await testEnv.DB.prepare(`
       select status, revoked_reason from mcp_oauth_grants limit 1
@@ -2483,6 +2541,7 @@ describe("complete owner OAuth MCP flow", () => {
       }
     } as unknown as D1Database;
     const syncEnv = {
+      MCP_OWNER_USER_ID: "owner-1",
       DB: flakyDb,
       OAUTH_KV: testEnv.OAUTH_KV
     } as unknown as Env;
@@ -2537,4 +2596,10 @@ describe("complete owner OAuth MCP flow", () => {
     `).bind(ledger.grant_ref).first<{ count: number }>();
     expect(Number(audit?.count || 0)).toBe(1);
   });
+});
+
+it("private owner gate rejects missing configuration and another admin identity", async () => {
+ const request = new Request("https://lusu575.com/oauth/authorize", {headers:{Cookie:`lusu_session=${SESSION_TOKEN}`}});
+ await expect(requireOwnerSession(request,{...env,MCP_OWNER_USER_ID:undefined} as unknown as Env)).rejects.toMatchObject({status:503});
+ await expect(requireOwnerSession(request,{...env,MCP_OWNER_USER_ID:"different-owner"} as unknown as Env)).rejects.toMatchObject({status:403});
 });

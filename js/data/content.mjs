@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-10-29-tool-maintenance",
+  "slug": "2026-10-29-tool-maintenance",
+  "category": "site-updates",
+  "tags": [
+    "网站更新",
+    "工具"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-10-29T15:00:00.000Z",
+  "updated_at": "2026-10-29T15:00:00.000Z",
+  "published_at": "2026-10-29T15:00:00.000Z",
+  "fallbackOnly": true,
+  "icon": "system",
+  "date": "2026.10.29",
+  "title": {
+    "zh": "工具维护与完整画板导出准备",
+    "en": "Tool Maintenance and Full Whiteboard Export Preparation",
+    "ja": "ツール保守とホワイトボード全体画像の準備"
+  },
+  "summary": {
+    "zh": "本地候选在现有画板和互传基础上完善完整图片导出与管理适配，保留现有大厅、帮助、上传和草稿保护；尚未部署。",
+    "en": "The local candidate adds full whiteboard image export and administration integration while retaining the existing lobby, help, uploads and draft protection. It has not been deployed.",
+    "ja": "ローカル候補版で全体画像の書き出しと管理連携を整備しました。既存のロビー、ヘルプ、アップロード、下書き保護を維持しています。まだ公開していません。"
+  },
+  "content_markdown": {
+    "zh": "# 工具维护与完整画板导出准备\n\n本地候选在现有画板和互传基础上完善完整图片导出与管理适配，保留现有大厅、帮助、上传和草稿保护；尚未部署。\n\n画板导出覆盖当前场景全部未删除元素和已加载的图片，包括屏幕视口外的内容。素材尚未加载时明确失败，不把只有文字或元数据的结果当作完整图片。\n\n继续保留主线已经验证的紧凑大厅、键盘与触屏帮助、三语界面以及密码房生命周期。互传继续保留切换标签页时的上传、离房草稿清理、失败重试和安全删除语义。本条是本地候选维护记录，线上功能与版本以正式部署为准；没有在测试中发布文章、发送真实消息或覆盖个人游戏存档。",
+    "en": "# Tool Maintenance and Full Whiteboard Export Preparation\n\nThe local candidate adds full whiteboard image export and administration integration while retaining the existing lobby, help, uploads and draft protection. It has not been deployed.\n\nWhiteboard export includes all undeleted scene elements and loaded image assets, including content beyond the viewport. Missing image assets produce an explicit failure. The existing lobby, keyboard and touch help, room lifecycle, background uploads and draft cleanup remain intact. This is a local candidate maintenance record, not a production release announcement.",
+    "ja": "# ツール保守とホワイトボード全体画像の準備\n\nローカル候補版で全体画像の書き出しと管理連携を整備しました。既存のロビー、ヘルプ、アップロード、下書き保護を維持しています。まだ公開していません。\n\n書き出しには、画面の表示範囲外も含め、削除されていない全要素と読み込み済み画像が含まれます。画像素材が不足している場合は明確に失敗を返します。既存のロビー、キーボードやタッチでのヘルプ、部屋の有効期限、バックグラウンドでのアップロードと下書き消去を維持します。これはローカル候補の保守記録であり、本番公開の告知ではありません。実際のサイトの状態は正式なデプロイに従います。"
+  }
+},
+{
   "article_id": "seed-update-2026-09-28-mobile-layout",
   "slug": "2026-09-28-mobile-layout",
   "category": "site-updates",

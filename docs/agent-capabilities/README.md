@@ -1,5 +1,9 @@
 # AI 能力层：架构与运行手册
 
+## 2026-10-29 主线兼容候选
+
+统一 /mcp 候选 0.5.0 注册 79 工具，保留主线游戏连接/撤销/视频实现并增加本人专用管理和猫国/画板桥接。尚未部署，详见 PRIVATE_MCP_MAIN_CANDIDATE.md；下文生产历史记录不代表此候选已经启用。
+
 本目录记录个人站“同一份业务能力，同时服务网站 API、CLI 与 MCP”的当前边界。前七阶段已经搭好统一能力清单、本地 CLI、本地 stdio MCP、设备码授权、Quick Transfer、受限的在线画板 Agent 通道（含真实图片闭环）、2048 与人生重开模拟器的集成式游戏适配器、独立 GPL 进程边界内的 Hextris 游戏适配器、知识库文章的管理员原子发布／CAS 更新／确认删除、视频／工具／游戏／日语题库的公开只读目录，以及日语账号进度读取与受控答题。生产 OAuth remote MCP 位于 `https://lusu575.com/mcp`，当前精确 Worker version 为 `849d8328-87db-4ac8-819a-ce725fc06349`，内部版本 `0.3.1`，承接 100% 流量；metadata、未鉴权 401 与非 allowlist pathname 404 基础线上点检已通过，但当前 bundle 尚未完成外链视频或四款浏览器游戏的 bundle-specific 生命周期。历史视频验收只绑定 `377d494b-8f90-40ad-998f-863d209e1978`，已上线的 Pages 心跳也曾在 Chrome 后台约 5 分钟强节流验收中断线。视频条目的 `availableTransports` 尚未包含 `remote-mcp`，游戏条目的 `availableTransports` 仍为空；公开 `site_capabilities` 继续只列已晋级的四项文章读取能力。这不是“全站所有功能已经接入”或“浏览器游戏已经可从生产 MCP 接管”的声明。
 
 仓库 0.4.0 候选只扩展既有 `video_publish` 的输入便利性：工具总数仍为 23，scope 仍为 `content:write`，发布结果仍直接是 `status=published`。AI 可以只提交唯一 `operationId` 和 YouTube／Bilibili／b23.tv 链接，其余展示元数据由服务端有界补全；这不是新增工具或当前生产已经升级的声明。

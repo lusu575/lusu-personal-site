@@ -904,13 +904,13 @@ const wallpaperGameDisplayReleaseVersion = "20260812-wallpaper-game-display-r1";
 const publicSiteReleaseVersion = "20260827-private-room-lifecycle-r1";
 const mobileBlogRetiredReleaseVersion = "20260902-mobile-blog-retired-r1";
 const reviewReleaseVersion = "20260908-site-review-r1";
-const homeContentReleaseVersion = "20260928-mobile-layout-r2";
+const homeContentReleaseVersion = "20261029-private-mcp-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
-const transferReleaseVersion = reviewReleaseVersion;
+const transferReleaseVersion = homeContentReleaseVersion;
 const adminMotionPolishVersion = "20260809-admin-motion-polish-r2";
-const resourcesRouteVersion = reviewReleaseVersion;
+const resourcesRouteVersion = homeContentReleaseVersion;
 const routeStyleVersion = reviewReleaseVersion;
-const publicRouteVersion = (route) => ["knowledge", "videos", "resources"].includes(route)
+const publicRouteVersion = (route) => route === "resources" ? homeContentReleaseVersion : ["knowledge", "videos", "resources"].includes(route)
   ? reviewReleaseVersion
   : (route === "chatroom" ? motionPolishReleaseVersion : routeLazyVersion);
 const transferAtlasVersion = "20260718-resource-icons-layout-r1";
@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-09-28-mobile-layout";
-const finalUpdateSlug = "2026-09-28-mobile-layout";
+const finalUpdateId = "seed-update-2026-10-29-tool-maintenance";
+const finalUpdateSlug = "2026-10-29-tool-maintenance";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "A Reworked Mobile Layout";
-const finalPublishedAt = "2026-09-28T02:00:00.000Z";
+const finalTitleEn = "Tool Maintenance and Full Whiteboard Export Preparation";
+const finalPublishedAt = "2026-10-29T15:00:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-09-28-mobile-layout",
   "seed-update-2026-09-22-cloud-save-10min",
   "seed-update-2026-09-08-site-review-optimization",
   "seed-update-2026-09-02-mobile-blog-retired",
@@ -4908,7 +4909,7 @@ const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 
 
 const changelog20260827Section = markdownSection(changelog, "## 2026-08-27");
-const changelog20260928Section = markdownSection(changelog, "## 2026-09-28");
+const changelog20260928Section = markdownSection(changelog, "## 2026-10-29");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
@@ -5121,7 +5122,7 @@ if (finalUpdateStarted) {
   }
 
   for (const token of [
-    '<time id="top-updated" datetime="2026-09-28">2026.09.28</time>',
+    '<time id="top-updated" datetime="2026-10-29">2026.10.29</time>',
     `/css/style.css?v=${finalCssVersion}`,
     `/css/mobile-ios-shell.css?v=${homeContentReleaseVersion}`,
     `/css/motion-system.css?v=${finalCssVersion}`,

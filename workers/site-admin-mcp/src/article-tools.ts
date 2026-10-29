@@ -1,3 +1,6 @@
+import { assertPrivateOwner } from "./owner-identity";
+import { registerPrivateAdminTools } from "./admin-tools";
+import { registerBrowserTools } from "./browser-tools";
 import { McpServer, type AuthInfo, type McpRequestContext } from "@modelcontextprotocol/server";
 import { createMcpHandler } from "agents/mcp/server";
 import { z } from "zod";
@@ -83,6 +86,7 @@ const PartialTranslationsSchema = z.object({
 });
 
 const PublishInputSchema = z.object({
+  status: z.enum(["draft", "published"]).optional(),
   operationId: OperationIdSchema,
   slug: SlugSchema,
   category: CategorySchema.optional(),
@@ -94,6 +98,7 @@ const PublishInputSchema = z.object({
 }).strict();
 
 const UpdateInputSchema = z.object({
+  status: z.enum(["draft", "published", "archived"]).optional(),
   articleId: ArticleIdSchema,
   operationId: OperationIdSchema,
   expectedUpdatedAt: TimestampSchema,
@@ -105,6 +110,7 @@ const UpdateInputSchema = z.object({
   publishedAt: TimestampSchema.nullable().optional(),
   translations: PartialTranslationsSchema.optional()
 }).strict().refine((value) => [
+  "status",
   "slug",
   "category",
   "tags",
@@ -153,18 +159,25 @@ export const oauthApiHandler = {
         }
       }
     );
+    let verified: OAuthArticlePrincipal | undefined;
     try {
       const authInfo = await explicitOAuthAuthInfo(request, env);
       const principal = verifiedPrincipal(authInfo);
+      verified = principal;
+      assertPrivateOwner(env, principal.userId);
       await assertActiveMcpOAuthGrant({
         env,
         principal,
         requiredScopes: principal.effectiveScopes,
-        requireAdmin: false,
+        requireAdmin: true,
         touch: false
       });
       return handler.fetch(request, { authInfo });
     } catch (error) {
+      if (verified && isAdminRevocationError(error)) {
+        await revokeGrantSafely(env, verified, "mcp-entry");
+        return invalidOAuthTokenResponse();
+      }
       if (error instanceof McpOAuthLedgerError
         && (error.status === 401 || error.code === "MCP_OAUTH_SCOPE_REQUIRED")) {
         return invalidOAuthTokenResponse();
@@ -254,6 +267,7 @@ export async function createOwnerMcpServer(
   requestContext: McpRequestContext
 ): Promise<McpServer> {
   const principal = verifiedPrincipal(requestContext.authInfo);
+  assertPrivateOwner(env, principal.userId);
 
   const server = new McpServer({
     name: SERVER_NAME,
@@ -281,6 +295,9 @@ export async function createOwnerMcpServer(
     principal,
     requestContext.requestInfo || new Request(MCP_RESOURCE)
   );
+  const execute = (execution: ArticleToolExecution) => executeArticleTool(env, principal, requestContext.requestInfo || new Request(MCP_RESOURCE), execution);
+  registerPrivateAdminTools(server, env, principal, execute);
+  registerBrowserTools(server, env, principal, execute);
   return server;
 }
 
@@ -565,6 +582,14 @@ function normalizeServiceResult(value: unknown): ArticleServiceResult {
 }
 
 function successfulToolResult(output: Record<string, unknown>) {
+  const result = isPlainRecord(output.result) ? output.result : null;
+  const picture = result && isPlainRecord(result.image) ? result.image : null;
+  if (output.state === "done" && result?.source === "live-whiteboard" && picture?.mimeType === "image/png"
+    && typeof picture.data === "string" && picture.data.length <= 2_800_000 && /^[A-Za-z0-9+/]+={0,2}$/.test(picture.data)) {
+    const metadata = { ...output, result: { ...result, image: { mimeType: "image/png" } } };
+    return { content: [{ type: "text" as const, text: JSON.stringify(metadata) },
+      { type: "image" as const, mimeType: "image/png", data: picture.data }], structuredContent: metadata };
+  }
   return {
     content: [{ type: "text" as const, text: JSON.stringify(output) }],
     structuredContent: output
