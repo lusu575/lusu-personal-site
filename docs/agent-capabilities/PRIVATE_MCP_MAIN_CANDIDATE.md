@@ -60,3 +60,9 @@ Pages 后续只能通过审查合并 main 后 Git 集成发布；MCP Worker 单�
     node cli/private-browser-companion.mjs --cdp-url http://127.0.0.1:PORT --target-id ID --browser-id private-browser-0001
 
 --once 处理一次，Ctrl+C 停止。AI 使用同一 browserId 提交 kittens_command/whiteboard_snapshot，再查询 browser_command_result。queued 不代表执行；execution-unknown 不得自动重放。建造/研究一次一项；采集/分工 count 为 1–10。任务 60 秒有效，最多 32 个在途；新提交清理过期一天以上的旧结果，没有独立清理定时器。PNG 最大 2 MiB、5000 元素，缺少图片素材失败。
+
+## 2026-10-29 发布授权后补充检查
+
+用户已批准本候选推送、Pages/MCP 发布、本人身份限制、admin scopes、现有 R2/DO 绑定及最小队列表迁移。未授权新登录、生产 OAuth grant 创建或秘密配置。正式 Cloudflare whoami 返回既有 auth token 过期且无法刷新，尚未启动登录。
+
+完整主测试 854/854、公开 MCP 6/6、管理 MCP 38/38、ESLint、主站浏览器 223 项及小黑屋回归通过。新增 schema 末尾 release marker 与历史种子断言同步，未执行远程全库 schema。npm 包装器的子命令 PATH 故障，使用 package.json 对应脚本直接执行各门禁。

@@ -5,7 +5,6 @@ import { existsSync } from "node:fs";
 import { resolve, join, sep, extname } from "node:path";
 import { tmpdir } from "node:os";
 import { spawn } from "node:child_process";
-import { kittensPageOperation } from "../../lib/capabilities/kittens-browser.mjs";
 const timeoutMs = 15000;
 class CDP {
   constructor(url) { this.url = url; this.id = 1; this.pending = new Map(); this.listeners = new Map(); }

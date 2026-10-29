@@ -15165,3 +15165,8 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 ローカル候補版で全体画像の書き出しと管理連携を整備しました。既存のロビー、ヘルプ、アップロード、下書き保護を維持しています。まだ公開していません。
 
 書き出しには、画面の表示範囲外も含め、削除されていない全要素と読み込み済み画像が含まれます。画像素材が不足している場合は明確に失敗を返します。既存のロビー、キーボードやタッチでのヘルプ、部屋の有効期限、バックグラウンドでのアップロードと下書き消去を維持します。これはローカル候補の保守記録であり、本番公開の告知ではありません。実際のサイトの状態は正式なデプロイに従います。', '2026-10-29T15:00:00.000Z', '2026-10-29T15:00:00.000Z') on conflict(translation_id) do nothing;
+
+-- Commit this release marker only after all new release seeds succeeded.
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261029-private-mcp-r1', '2026-10-29T15:00:00.000Z')
+on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
+insert into site_data_migrations (version, applied_at, source) values ('20261029-private-mcp-r1', '2026-10-29T15:00:00.000Z', 'schema') on conflict(version) do nothing;
