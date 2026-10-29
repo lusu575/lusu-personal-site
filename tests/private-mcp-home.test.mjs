@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { openIsolatedKittens } from "./helpers/kittens-browser.mjs";
 
 test("local Home reflects the candidate update and Tools retains governed versions", async t => {
- const { evaluate } = await openIsolatedKittens(t,{root:".",initScript:"localStorage.setItem('lusu-site-language', 'zh')",ready:"document.querySelector('#recent-updates')?.children.length > 0"});
+ const { evaluate } = await openIsolatedKittens(t,{root:".",path:"?lang=zh",initScript:"localStorage.setItem('lusu-site-language', 'zh')",ready:"!!document.querySelector('#recent-updates [data-article-slug=\"2026-10-29-tool-maintenance\"]')"});
  assert.equal(await evaluate("document.querySelector('#top-updated').getAttribute('datetime')"),"2026-10-29");
  assert.ok(await evaluate("document.querySelector('#recent-updates').textContent.includes('画板')"));
  await evaluate("location.hash='resources'");
