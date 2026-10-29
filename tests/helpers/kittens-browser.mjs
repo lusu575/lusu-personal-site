@@ -70,12 +70,15 @@ export async function openIsolatedKittens(t, options = {}) {
   assert.ok(port, "Browser debugging endpoint did not start");
   const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
   cdp = new CDP(targets.find(x => x.type === "page").webSocketDebuggerUrl); await cdp.connect();
+  if (options.initScript) await cdp.send("Page.addScriptToEvaluateOnNewDocument", { source: options.initScript });
   await cdp.send("Page.navigate", { url: `http://127.0.0.1:${server.address().port}/${options.path || ""}` });
   const evaluate = async expression => {
     const r = await cdp.send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true });
     if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text);
     return r.result.value;
   };
-  for(let i=0;i<150;i++) { if(await evaluate(options.ready || "!!globalThis.gamePage?.bld?.buildingsData")) break; await new Promise(r=>setTimeout(r,100)); }
+  let ready = false;
+  for(let i=0;i<150;i++) { if(await evaluate(options.ready || "!!globalThis.gamePage?.bld?.buildingsData")) { ready = true; break; } await new Promise(r=>setTimeout(r,100)); }
+  assert.ok(ready, "Browser fixture did not reach its required ready state");
   return { evaluate, send: (method, params) => cdp.send(method, params) };
 }

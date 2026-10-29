@@ -1,8 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { buildProduction } from "../scripts/build-production.mjs";
+let productionBuild;
 import { openIsolatedKittens } from "./helpers/kittens-browser.mjs";
 
 for (const lang of ["zh", "en", "ja"]) test(`integrated whiteboard lobby ${lang} keeps help and narrow layouts usable`, async t => {
+ await (productionBuild ??= buildProduction());
  const {evaluate,send}=await openIsolatedKittens(t,{root:"dist",path:`tools/whiteboard/index.html?lang=${lang}`,ready:"!!document.querySelector('.room-help-toggle')"});
  for(const [width,height] of [[359,500],[375,667],[390,844],[844,390]]) {
   await send("Emulation.setDeviceMetricsOverride",{width,height,deviceScaleFactor:1,mobile:false});
