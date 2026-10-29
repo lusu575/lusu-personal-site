@@ -1,3 +1,5 @@
+import { exports as workerExports } from "cloudflare:workers";
+import { onRequest as pagesPrivateRequest } from "../../../functions/api/private-mcp.js";
 import { beforeEach, describe, expect, it } from "vitest";
 import { env, SELF } from "cloudflare:test";
 
@@ -2603,3 +2605,28 @@ it("private owner gate rejects missing configuration and another admin identity"
  await expect(requireOwnerSession(request,{...env,MCP_OWNER_USER_ID:undefined} as unknown as Env)).rejects.toMatchObject({status:503});
  await expect(requireOwnerSession(request,{...env,MCP_OWNER_USER_ID:"different-owner"} as unknown as Env)).rejects.toMatchObject({status:403});
 });
+
+ it("Pages adapter validates real OAuth, owner, scopes and revocation without service secrets", async () => {
+  const token=await authorizeTestClient(["admin:read"]);
+  const verifier=(workerExports as any).PrivateMcpVerifier;
+  const backend={...env,MCP_OWNER_USER_ID:"",MCP_OWNER_USER_ID_SHA256:Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode("owner-1")))).map(b=>b.toString(16).padStart(2,"0")).join(""),PRIVATE_MCP_AUTH:verifier};
+  const call=(authorization: string,body: any, origin="https://lusu575.com")=>pagesPrivateRequest({env:backend,request:new Request(origin+"/api/private-mcp",{method:"POST",headers:{Authorization:authorization,"Content-Type":"application/json"},body:JSON.stringify(body)})});
+  expect((await call("",{operation:"whiteboards_overview",input:{}})).status).toBe(401);
+  expect((await call("Bearer invalid",{operation:"whiteboards_overview",input:{}})).status).toBe(401);
+  expect((await call("Bearer "+token,{operation:"whiteboards_overview",input:{}})).status).toBe(200);
+  expect((await call("Bearer "+token,{operation:"whiteboards_overview",input:{},principal:{userId:"owner-1"}})).status).toBe(400);
+  expect((await call("Bearer "+token,{operation:"whiteboard_public_clear",input:{confirm:true}})).status).toBe(403);
+  expect((await call("Bearer "+token,{operation:"whiteboards_overview",input:{}},"https://other.example")).status).toBe(403);
+  const writer=await authorizeTestClient(["admin:read","admin:write"]);
+  Object.assign(backend,{CHAT_IP_HASH_SALT:"isolated-chat-hash-test-only-000000001"});
+  const sent=await call("Bearer "+writer,{operation:"chat_send",input:{confirm:true,body:{content:"isolated Pages adapter message",clientRequestId:"pages-adapter-isolated-0001"}}});
+  expect(sent.status).toBe(200);
+  const read=await call("Bearer "+writer,{operation:"chat_read",input:{}});
+  expect(read.status).toBe(200);
+  expect(await read.text()).toContain("isolated Pages adapter message");
+  backend.MCP_OWNER_USER_ID="other-owner";
+  expect((await call("Bearer "+token,{operation:"whiteboards_overview",input:{}})).status).toBe(401);
+  backend.MCP_OWNER_USER_ID="owner-1";
+  await testEnv.DB.prepare("UPDATE mcp_oauth_grants SET status = 'revoked'").run();
+  expect((await call("Bearer "+token,{operation:"whiteboards_overview",input:{}})).status).toBe(401);
+ });

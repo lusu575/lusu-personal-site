@@ -25,7 +25,7 @@ const ACCOUNT_SCHEMAS = {
 } as const;
 
 export function registerPrivateAdminTools(server: McpServer, env: Env, principal: any,
-  execute: (execution: any) => Promise<any>) {
+  execute: (execution: any) => Promise<any>, accessToken?: string) {
   for (const operation of [...READ, ...WRITE]) {
     if (!(operation in ACCOUNT_SCHEMAS) && !adminContracts[operation]) throw new Error(`Missing admin contract: ${operation}`);
     const readOnly = READ.includes(operation);
@@ -38,7 +38,16 @@ export function registerPrivateAdminTools(server: McpServer, env: Env, principal
       _meta: { securitySchemes: [{ type: "oauth2", scopes: [requiredScope] }] }
     }, async (input: { id?: string; query?: Record<string, string | number | boolean>; body?: Record<string, unknown>; confirm?: true }) => execute({ requiredScope, capabilityId: `admin.${operation}`,
       toolName: operation, action: `mcp-${operation}`, targetType: "admin", targetId: input.id,
-      invoke: async () => ({ status: 200, payload: await invokePrivateAdminOperation({ env, principal, operation, input }) })
+      invoke: async () => ({ status: 200, payload: env.PRIVATE_ADMIN_BACKEND === "pages"
+        ? await invokePagesAdmin(operation, input, accessToken)
+        : await invokePrivateAdminOperation({ env, principal, operation, input }) })
     }));
   }
+}
+
+async function invokePagesAdmin(operation: string, input: unknown, token?: string) {
+ if (!token) throw new Error("Authenticated request token required");
+ const response = await fetch("https://lusu575.com/api/private-mcp", { method:"POST", redirect:"error", headers:{"Authorization": "Bearer " + token, "Content-Type":"application/json"}, body:JSON.stringify({operation,input}) });
+ if (!response.ok) throw new Error("Private backend rejected operation");
+ return await response.json();
 }

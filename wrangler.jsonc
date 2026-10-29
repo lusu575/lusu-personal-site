@@ -35,7 +35,18 @@
       "r2_buckets": [],
       "durable_objects": {
         "bindings": []
-      }
+      },
+      "services": []
     }
+  },
+  "services": [
+    {
+      "binding": "PRIVATE_MCP_AUTH",
+      "service": "lusu-site-admin-mcp",
+      "entrypoint": "PrivateMcpVerifier"
+    }
+  ],
+  "vars": {
+    "MCP_OWNER_USER_ID_SHA256": "52b0674acb998cf0a17b18e45c590d1a4caa56dc96ef6bfcf67ffc3d30603417"
   }
 }

@@ -1,5 +1,9 @@
 # PROJECT_CONTEXT.md
 
+## 2026-10-29 私人 MCP 后端适配候选（未启用）
+
+新增固定 `/api/private-mcp` Pages 入口，依赖 `PRIVATE_MCP_AUTH` 命名服务绑定调用原 MCP Worker 的 `PrivateMcpVerifier`。验证器复用原 OAuth 解包、resource/到期校验、owner 与 ledger；Pages 在固定操作分发表执行前再次核查 owner、管理员、scope、撤销状态。Worker 仅在 `PRIVATE_ADMIN_BACKEND=pages` 时走此路径。生产配置尚未启用，不复制或轮换聊天/画板秘密。配置边界与验证见 docs/agent-capabilities/PRIVATE_MCP_BACKEND_ADAPTER.md。
+
 ## 2026-10-29：主线兼容私人 MCP 候选
 
 基于 9854301ea93fee3abdeb14dad3fec55fa2b27da0，Worker 候选 0.5.0，注册 79 工具。保留 GAME_RELAY、games:play、WebSocket 连接及撤销模块，新增精确 MCP_OWNER_USER_ID、admin:read/admin:write、后台适配、文章生命周期与真实猫国/画板队列。没有新增 videos:write，视频沿用主线 content scope。未部署、未配置生产绑定或凭据。候选验证与配置差异见 docs/agent-capabilities/PRIVATE_MCP_MAIN_CANDIDATE.md。

@@ -187,7 +187,7 @@ export const oauthApiHandler = {
   }
 } satisfies ExportedHandler<Env>;
 
-async function explicitOAuthAuthInfo(request: Request, env: Env): Promise<AuthInfo> {
+export async function explicitOAuthAuthInfo(request: Request, env: Env): Promise<AuthInfo> {
   const authorization = String(request.headers.get("Authorization") || "");
   if (!authorization.startsWith("Bearer ")) {
     throw new McpOAuthLedgerError(
@@ -296,7 +296,7 @@ export async function createOwnerMcpServer(
     requestContext.requestInfo || new Request(MCP_RESOURCE)
   );
   const execute = (execution: ArticleToolExecution) => executeArticleTool(env, principal, requestContext.requestInfo || new Request(MCP_RESOURCE), execution);
-  registerPrivateAdminTools(server, env, principal, execute);
+  registerPrivateAdminTools(server, env, principal, execute, requestContext.authInfo?.token);
   registerBrowserTools(server, env, principal, execute);
   return server;
 }
@@ -546,7 +546,7 @@ function logToolAuditFailure(toolName: string, error: unknown): void {
   }));
 }
 
-function verifiedPrincipal(authInfo: AuthInfo | undefined): OAuthArticlePrincipal {
+export function verifiedPrincipal(authInfo: AuthInfo | undefined): OAuthArticlePrincipal {
   const extraProps = isPlainRecord(authInfo?.extra?.props) ? authInfo.extra.props : null;
   const props = extraProps;
   if (!authInfo || !props

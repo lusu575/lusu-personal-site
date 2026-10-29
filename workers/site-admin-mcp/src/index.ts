@@ -158,3 +158,5 @@ async function prepareClientRegistrationRequest(
 
 export default worker;
 export { GameRelaySession } from "./game-relay";
+
+export { PrivateMcpVerifier } from "./private-verifier";
