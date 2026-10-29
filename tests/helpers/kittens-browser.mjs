@@ -39,7 +39,7 @@ class CDP {
 
 
 export async function openIsolatedKittens(t, options = {}) {
-  const chrome = ["C:/Program Files/Google/Chrome/Application/chrome.exe", "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"].find(existsSync);
+  const chrome = ["C:/Program Files/Google/Chrome/Application/chrome.exe", "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "/usr/bin/google-chrome", "/usr/bin/google-chrome-stable", "/usr/bin/chromium", "/usr/bin/chromium-browser"].find(existsSync);
   assert.ok(chrome, "A real Chrome/Edge executable is required");
   const root = resolve(options.root || "games/kittens-game/source");
   const server = createServer(async (req, res) => {
