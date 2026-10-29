@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## 2026-10-29 Private MCP production adapter
+
+Approved production rollout: Pages commit c1c3c10f5f65d6a1d3eb138ac92c96f78c414da3; MCP Worker 355575bb-0d9c-4bde-9578-1a73ccd09275 at 100% traffic. PRIVATE_ADMIN_BACKEND=pages forwards the 51 backend operations to /api/private-mcp. Pages PRIVATE_MCP_AUTH calls PrivateMcpVerifier and pins the confirmed owner ID hash; preview has no binding. Existing secrets stay in Pages; no rotation, copying or new grant. Production health/metadata return 200, anonymous and invalid-token requests return 401. Local OAuth/RPC/Pages regression: 39 tests passed. Authenticated production tool calls have not been exercised without a new owner grant. Rollback must disable route/mode together while retaining owner restriction. Details: docs/agent-capabilities/PRIVATE_MCP_BACKEND_ADAPTER.md.
+
+
 ## 2026-10-29
 
 - 本地候选：后台操作可经固定 Pages 入口执行，使用绑定专属 OAuth 验证 RPC 与双端本人/ledger 校验，不导出或轮换服务秘密；生产绑定尚未启用。

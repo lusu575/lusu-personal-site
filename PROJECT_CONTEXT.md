@@ -1,5 +1,10 @@
 # PROJECT_CONTEXT.md
 
+## 2026-10-29 Private MCP production adapter
+
+Approved production rollout: Pages commit c1c3c10f5f65d6a1d3eb138ac92c96f78c414da3; MCP Worker 355575bb-0d9c-4bde-9578-1a73ccd09275 at 100% traffic. PRIVATE_ADMIN_BACKEND=pages forwards the 51 backend operations to /api/private-mcp. Pages PRIVATE_MCP_AUTH calls PrivateMcpVerifier and pins the confirmed owner ID hash; preview has no binding. Existing secrets stay in Pages; no rotation, copying or new grant. Production health/metadata return 200, anonymous and invalid-token requests return 401. Local OAuth/RPC/Pages regression: 39 tests passed. Authenticated production tool calls have not been exercised without a new owner grant. Rollback must disable route/mode together while retaining owner restriction. Details: docs/agent-capabilities/PRIVATE_MCP_BACKEND_ADAPTER.md.
+
+
 ## 2026-10-29 私人 MCP 后端适配候选（未启用）
 
 新增固定 `/api/private-mcp` Pages 入口，依赖 `PRIVATE_MCP_AUTH` 命名服务绑定调用原 MCP Worker 的 `PrivateMcpVerifier`。验证器复用原 OAuth 解包、resource/到期校验、owner 与 ledger；Pages 在固定操作分发表执行前再次核查 owner、管理员、scope、撤销状态。Worker 仅在 `PRIVATE_ADMIN_BACKEND=pages` 时走此路径。生产配置尚未启用，不复制或轮换聊天/画板秘密。配置边界与验证见 docs/agent-capabilities/PRIVATE_MCP_BACKEND_ADAPTER.md。
