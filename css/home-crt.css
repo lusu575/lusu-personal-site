@@ -198,7 +198,9 @@ body[data-route="home"] .site-shell::after {
 #home .desktop-icon[data-route] {
   position: relative;
   inset: auto;
-  transform: translate(var(--pond-x), var(--pond-y));
+  /* Placement is independent of the legacy keyboard/reduced transform reset. */
+  translate: var(--pond-x) var(--pond-y);
+  transform: none;
   display: grid;
   grid-template-columns: 1fr;
   place-items: center;
@@ -329,7 +331,7 @@ body[data-route="home"] .site-shell::after {
 
   #home .desktop-icon[data-route] {
     width: min(7rem, calc(100% - 2.5rem));
-    transform: translate(clamp(-1.25rem, var(--pond-x), 1.25rem), clamp(-1rem, var(--pond-y), 1rem));
+    translate: clamp(-1.25rem, var(--pond-x), 1.25rem) clamp(-1rem, var(--pond-y), 1rem);
   }
 }
 
@@ -493,9 +495,9 @@ body[data-route="home"] .site-shell::after {
 }
 
 @keyframes pond-icon-in {
-  from { opacity: 0; translate: 0 6px; scale: .89; }
-  70%  { opacity: 1; translate: 0 -1px; scale: 1.035; }
-  to   { opacity: 1; translate: 0 0; scale: 1; }
+  from { opacity: 0; transform: translateY(6px); scale: .89; }
+  70%  { opacity: 1; transform: translateY(-1px); scale: 1.035; }
+  to   { opacity: 1; transform: none; scale: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

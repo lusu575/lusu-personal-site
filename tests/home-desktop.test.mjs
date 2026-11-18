@@ -50,6 +50,12 @@ test('the six real pond buttons open from and close to their own rectangles', as
   assert.deepEqual(images, [], 'cold pond has no picture or movie requests');
   const geometry = await evaluate(`[...document.querySelectorAll('#home .desktop-icon')].map(b=>b.getBoundingClientRect().y)`);
   assert.equal(new Set(geometry).size, 6);
+  await evaluate(`document.querySelector('#pond-season-slider').focus()`);
+  for (const type of ['keyDown', 'keyUp']) {
+    await send('Input.dispatchKeyEvent', {type, key:'ArrowRight', code:'ArrowRight', windowsVirtualKeyCode:39});
+  }
+  assert.deepEqual(await evaluate(`[...document.querySelectorAll('#home .desktop-icon')].map(b=>b.getBoundingClientRect().y)`), geometry,
+    'a keyboard season change must not snap the scattered buttons back to the grid');
   for (const route of routes) {
     const icon = `#home .desktop-icon[data-route="${route}"]`;
     const expected = await evaluate(`(()=>{const r=document.querySelector('${icon}').getBoundingClientRect();pairs.length=0;return [r.x,r.y,r.width,r.height];})()`);
