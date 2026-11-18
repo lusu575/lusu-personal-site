@@ -1,9 +1,13 @@
-import { fallenLeaf, fish, frost, lilyPad, lotusBloom, mixColor, reeds, seasons } from "./point-sets.mjs";
+import { fallenLeaf, fish, frost, lilyPad, mixColor, petal, reeds, seasons, summerPads } from "./point-sets.mjs";
 
 import { createFrameRaster, packedColour } from './frame-raster.mjs';
 
 const TAU = Math.PI * 2;
-const pads = [[.32,.612,.98], [.778,.373,.85]];
+const koiScale = [2.14, 2.04, 1.73];
+// Surface waves have their own phases and never take an input-wave slot.
+const pools = [
+  [.452, .565, .37, .44], [.665, .393, .72, .37], [.27, .782, .12, .33]
+];
 
 // [environment points, fish, dots/fish, ghosts, dots/reed, dots/flora slot,
 //  shared wave slots, dots/wave, DPR ceiling, backing pixel ceiling]
@@ -22,15 +26,20 @@ for (let i=0; i<bendSin.length; i++) {
   bendSin[i]=amp*Math.sin(x*2.8); bendCos[i]=amp*Math.cos(x*2.8);
 }
 const koiInk = quality.map(q => Array.from({length:q[1]}, (_,id) => {
-  const batches = [[],[],[],[]];
+  const batches = [[],[],[],[],[],[]];
   for (let i=0;i<q[2];i++) {
     const x=fish[i*2], y=fish[i*2+1];
-    const red = Math.sin(8*x - 4*y + id) + .67*Math.cos(13*y + x*4);
-    batches[x < -.76 || i%11 === 0 ? 0 : red < -.14 ? 1 : red > .66 ? 2 : 3].push(i);
+    const saddle = Math.sin(9.2*x + 5*y + id*.95) + .49*Math.cos(12*y - 2*x);
+    const spot = ((x + .11 - id*.17)/.17)**2 + ((y - .11)/.095)**2;
+    const tail = i % 5 === 0;
+    const material = tail && x < -1.06 ? 0 : tail || i % 11 === 1 ? 1
+      : spot < .93 ? 2 : saddle > .47 ? 3 : saddle > .18 ? 4 : 5;
+    batches[material].push(i);
   }
   return batches.map(batch=>Uint16Array.from(batch));
 }));
-const koiMaterials = [2,5,4,6];
+const koiMaterials = [2, 5, 6, 4, 7, 5];
+const koiOpacity = [.40, .73, .61, 1, .96, 1];
 
 const seeds = new Float32Array(128 * 3);
 for (let i = 0; i < 128; i++) {
@@ -47,15 +56,50 @@ const circles = quality.map(q => {
   }
   return xy;
 });
+const surfaceCircles = quality.map((_, tier) => {
+  const n = [224, 152, 104, 64][tier];
+  return Array.from({length:n}, (_,i) => {
+    const a = TAU * (i + .21 * Math.sin(i * 9.15)) / n;
+    const light = Math.round(2 + 1.9 * Math.sin(3*a + .55));
+    const shape = 1 + .028*Math.sin(5*a + .6);
+    return [Math.cos(a)*shape, Math.sin(a)*shape, light];
+  });
+});
 
-// Four micro-points per environmental fragment. Summer scatters them as
-// glints; the other seasons cluster them into petals, leaf flecks or sleet.
-const flecks = [
-  [-2, 1, -0.5, 0, 1, -1, 1.8, 0.2],
-  [-8, 2, 1, -5, 9, 0, 3, 6],
-  [-2.6, 1, -0.8, -0.8, 0, 0.9, 2, -1.5],
-  [-4, 0, -1.8, 0.6, 0.4, 1.3, 4, -3]
+const leafGroups = [
+  [.21,.29,.028,-.84], [.14,.62,.035,.38], [.34,.75,.029,-1.37],
+  [.70,.57,.028,.68], [.83,.42,.024,-.62], [.58,.81,.040,-.38],
+  [.91,.65,.019,1.13], [.77,.90,.026,.56], [.051,.81,.025,1.22],
+  [.37,.29,.018,-.45], [.48,.93,.021,.48], [.935,.29,.016,-1.25]
 ];
+const surfacePlants = [
+  Array.from({length:38}, (_,i) => [
+    .04 + .92*((.19+i*.618034)%1), .20+.77*((.23+i*.414214)%1),
+    .006+.012*((.31+i*.7777)%1)**2, i*2.4, .60+.39*((i*.127)%1)
+  ]),
+  summerPads,
+  [...leafGroups.map(([x,y,r,a],i) => [x,y,r*1.16,a,.87+.12*Math.cos(i)]),
+    ...Array.from({length:30}, (_,i) => {
+      const [x,y,r,a]=leafGroups[i%leafGroups.length];
+      const phase=i*2.39996;
+      return [x+.04*Math.cos(phase),y+.08*Math.sin(phase),r*(.20+.22*((i*.618)%1)),a-phase,.41+.39*((i*.29)%1)];
+    })],
+  Array.from({length:28}, (_,i) => [
+    .03+.94*((.31+i*.618034)%1), .14+.82*((.49+i*.414214)%1),
+    .002+.005*((i*.727)%1)**2, i*.42, .38+.38*((i*.313)%1)
+  ])
+];
+const plantShapes = [petal,lilyPad,fallenLeaf,frost];
+const plantColors = [
+  [0xe6a2b2,0xffcfc9],[0x65994d,0xc6d887],[0xb55924,0xf39945],[0x89aec8,0xd9eaf3]
+];
+function brightPlantPoint(season, i) {
+  return (season===1 && i%13<3) || (season===2 && i%9===0);
+}
+const plantShades = plantShapes.map((points,s) => Uint8Array.from({length:points.length/2}, (_,i) => {
+  const light = (Math.sin(points[2*i]*7-points[2*i+1]*8)+1)*.5;
+  return brightPlantPoint(s,i) ? 2 : light>(i*.618034)%1 ? 1 : 0;
+}));
 
 export function createPond(canvas, bed = null) {
   const native = canvas.getContext("2d", { alpha: false });
@@ -76,12 +120,10 @@ export function createPond(canvas, bed = null) {
   let dots = 0;
   let calm = false;
   let winter = 0;
-  let canopy = 0;
-  let flora = 1;
+
   const ink = [];
-  const fragment = new Float32Array(8);
-  const flotsam = new Float32Array(lilyPad.length);
-  const weights = [0.50, 1, 0.32, 0];
+  const plantInk = plantColors.map(([shade,light]) =>
+    [.05,.42,.78].map(f => colour(shade,light,f)));
   const waves = [];
 
   function setSeason(value) {
@@ -93,18 +135,14 @@ export function createPond(canvas, bed = null) {
     const b = Math.ceil(p);
     const f = p % 1;
     winter = Math.max(0, p - 2);
-    canopy = Math.min(1, Math.abs(p - 1));
-    flora = weights[a] + (weights[b] - weights[a]) * f;
-    for (let i = 0; i < 4; i++) ink[i] = colour(seasons[a].colors[i], seasons[b].colors[i], f);
-    const leaf = Math.min(1, Math.max(0, p - 1));
-    for (let i = 0; i < flotsam.length; i++) {
-      const xy = lilyPad[i] + leaf * (fallenLeaf[i] - lilyPad[i]);
-      flotsam[i] = xy + winter * (frost[i] - xy);
-    }
-    ink[4] = colour(0xe88e52, 0xa4baca, winter);
-    ink[5] = colour(0xffedbf, 0xc9d9e0, winter);
-    ink[6] = colour(0xca6341, 0x7b9aac, winter);
-    for (let i = 0; i < 8; i++) fragment[i] = flecks[a][i] + (flecks[b][i] - flecks[a][i]) * f;
+
+    const aInk=seasons[a].colors, bInk=seasons[b].colors;
+    for (let i = 1; i < 4; i++) ink[i] = colour(aInk[i], bInk[i], f);
+    ink[4] = colour(0xff8d3c, 0xc4a285, winter);
+    ink[5] = colour(0xfff3d4, 0xb8cfda, winter);
+    ink[6] = colour(0x4b3a30, 0x556d80, winter);
+    ink[7] = colour(0xffbb65, 0x92a8b9, winter);
+    ink[8] = colour(0xe0fdd2, 0xd2e4f2, winter);
   }
 
   function resize(width, height, level, reduced) {
@@ -161,50 +199,88 @@ export function createPond(canvas, bed = null) {
     const dx = -w * 0.18 * Math.sin(a);
     const dy = h * 0.289 * Math.cos(b);
     const length = Math.hypot(dx, dy) || 1;
-    const scale = unit * (2.34 - 0.40 * id);
+    const scale = unit * koiScale[id];
     const ux = dx * scale / length;
     const uy = dy * scale / length;
     const phase = t * 3.4 + id;
-    ctx.globalAlpha = ghost ? .27 / ghost : id > 1 ? .17 : .96 - winter*.24;
+    const alpha = ghost ? .22 / ghost : id > 1 ? .19 : .82 - winter*.19;
     const sin = Math.sin(phase), cos = Math.cos(phase);
-    for (let b=0; b<4; b++) {
+    if (!ghost) {
+      ctx.fillStyle = ink[2];
+      ctx.globalAlpha = alpha * .25;
+      for (let i=0; i<quality[tier][2]; i+=5) {
+        const fx=fish[i*2], fy=fish[i*2+1]+bendSin[i]*cos+bendCos[i]*sin;
+        dot(x+fx*ux-fy*uy-1.4, y+fx*uy+fy*ux-1.4, 4.3);
+      }
+    }
+    for (let b=0; b<koiMaterials.length; b++) {
       const indices=koiInk[tier][id][b];
+      ctx.globalAlpha = alpha * koiOpacity[b];
       ctx.fillStyle = ink[ghost ? 2 : koiMaterials[b]];
       for (let k=0; k<indices.length; k += ghost ? 4 : 1) {
         const i=indices[k], fx=fish[i*2];
         if (ghost && fx > -.45) continue;
         const fy=fish[i*2+1] + bendSin[i]*cos + bendCos[i]*sin;
-        dot(x + (fx - ghost*.12) * ux - fy * uy, y + fx * uy + fy * ux + Math.sin(fx*6+t)*.85, ghost ? 1.45 : 1.95);
+        const drift = b === 0 ? Math.sin(i + t*.8)*2.2 : 0;
+        dot(x + (fx - ghost*.12) * ux - fy * uy + drift,
+          y + fx * uy + fy * ux + Math.sin(fx*6+t)*.85 - drift*.5, ghost || b === 0 ? 1.4 : b === 1 ? 2 : 2.55);
       }
     }
   }
 
-  function plant(points, n, x, y, scale) {
-    for (let i = 0; i < n; i++) {
-      dot(x + points[2 * i] * scale, y + points[2 * i + 1] * scale, 1.55);
+  function drawSurface(n) {
+    const circle = surfaceCircles[tier];
+    const activity = waves.some(wave => wave.kind !== 'wake' && wave.alpha > .1) ? .62 : 1;
+    const depth = 1 - .42 * winter;
+    ctx.fillStyle = ink[8];
+    for (const [px, py, phase, tilt] of pools) {
+      const reach = Math.min(w*.19, h*.32);
+      for (let ring = 0; ring < 3; ring++) {
+        const age = (phase + (calm ? 0 : clock/6.7) + ring*.135) % 1;
+        const radius = 30 + reach*age;
+        const fade = Math.min(1, age*9) * (1-age)**.69 * depth * activity;
+        for (const [dx, dy, light] of circle) {
+          ctx.globalAlpha = fade*(.29+light*.16);
+          dot(px*w + dx*radius, py*h + dy*radius*tilt, light >= 3 ? 2.4 : 1.4);
+        }
+      }
+    }
+    for (let g = 0; g < n; g++) {
+      const j = 3*g, phase = seeds[j+2];
+      const shaft = g%4===0;
+      const x = w*(shaft ? .35+.29*seeds[j] : seeds[j]), y = h*seeds[j+1];
+      const pulse = .5 + .5*Math.sin(phase + (calm ? 0 : clock*(.5+(g%5)*.15)));
+      ctx.globalAlpha = .22 + pulse*.50;
+      dot(x, y + displacement(x,y), pulse > .83 ? 2.25 : 1.35);
+      if (g % 8 === 0) {
+        ctx.globalAlpha *= .44;
+        dot(x - 3, y + .5, 1.2);
+        dot(x + 3, y + .5, 1.2);
+      }
     }
   }
 
-  // Two low shoreline boughs: stippled petal clusters in spring, amber
-  // leaves in autumn and exposed icy twigs in winter. No sprite textures.
-  function drawBank(n) {
-    if (canopy === 0) return;
-    for (let side = 0; side < 2; side++) {
-      const dir = side ? -1 : 1, bx = side ? w * 1.01 : -unit, by = side ? h : 0;
-      for (let i = 0; i < n * 3; i++) {
-        const s = (i * .618034) % 1;
-        const b = Math.floor(s * 7), twig = (i % 4) / 3;
-        const x = bx + dir * unit * (s * 7 + twig * .64);
-        const y = by + dir * unit * (.3 + 1.2 * Math.sin(s * 2.8) + s * .6 + twig * Math.cos(b * 2) * 1.2);
-        ctx.fillStyle = ink[1];
-        ctx.globalAlpha = canopy * (.42 + .25 * s);
-        dot(x, y, 1.3);
-        const j = (i % 64) * 2;
-        const reach = unit * (.19 + s * .12);
-        ctx.fillStyle = ink[3];
-        ctx.globalAlpha = canopy * (.38 + .44 * ((i * .4142) % 1));
-        const shape = season < 1 ? lotusBloom : flotsam;
-        dot(x + shape[j] * reach, y + shape[j+1] * reach, 1.7);
+  function floaters(s, opacity, q) {
+    const points = plantShapes[s], inks = plantInk[s], shades = plantShades[s];
+    const short = Math.min(w,h);
+    for (const [px,py,r,rotation,lamp] of surfacePlants[s]) {
+      const phase = px*45+py*28;
+      const sway = Math.sin(clock*.27+phase);
+      const x = px*w+2.8*sway, y = py*h+1.9*Math.cos(clock*.31+phase);
+      const offset = displacement(x,y);
+      const angle = rotation+.055*sway;
+      const cos = Math.cos(angle), sin = Math.sin(angle);
+      const scale = r*short;
+      const n = s === 1 ? Math.min(points.length/2, Math.round(q[2]*r*14))
+        : Math.min(q[5]*(r>.017?5:1),Math.max(6,Math.round(scale*scale*.53)));
+      const size = s === 1 ? 2.25 + tier*.26 : Math.min(2.4,1 + scale*.06);
+      ctx.globalAlpha = opacity*lamp;
+      for (let k=0; k<n; k++) {
+        const dx = points[2*k], dy = points[2*k+1]*(s===1 ? 1/.61 : 1);
+        const light = shades[k];
+        ctx.fillStyle = inks[light];
+        dot(x + scale*(dx*cos-dy*sin),y + offset + scale*(dx*sin+dy*cos)*(s===1 ? .61 : 1),
+          light===2 ? size*.85 : size);
       }
     }
   }
@@ -230,21 +306,6 @@ export function createPond(canvas, bed = null) {
     const q = quality[tier];
     if (raster) raster.begin(target, progress);
     else native.clearRect(0, 0, w, h);
-    ctx.fillStyle = ink[0];
-    ctx.globalAlpha = 0.57;
-    for (let g = 0; g < q[0] / 4; g++) {
-      const j = 3 * g;
-      const phase = seeds[j + 2];
-      const x = w * seeds[j] + 7 * Math.sin(clock * 0.21 + phase);
-      const y = h * seeds[j + 1] + 4 * Math.cos(clock * 0.17 + phase);
-      const offset = displacement(x, y);
-      const shear = 0.4 * Math.sin(clock * 0.25 + phase);
-      for (let k = 0; k < 8; k += 2) {
-        dot(x + fragment[k] + shear * fragment[k + 1],
-          y + offset + fragment[k + 1] * (g % 2 ? -1 : 1), k === 6 ? 1 : 1.45);
-      }
-    }
-
     if (winter < 1) {
       ctx.fillStyle = ink[1];
       ctx.globalAlpha = 0.68 * (1 - winter);
@@ -262,31 +323,12 @@ export function createPond(canvas, bed = null) {
     ctx.fillStyle = ink[2];
     const count = 1 + Math.round((q[1] - 1) * (1 - winter) ** 2);
     const ghosts = Math.round(q[3] * (1 - winter));
-    for (let k = 0; k < count; k++) {
+    if (count > 2) drawFish(2, fishTime, 0);
+    for (let k = 0; k < Math.min(2, count); k++) {
       for (let g = ghosts; g >= 0; g--) drawFish(k, fishTime - g * 0.17, g);
     }
 
-    if (flora > 0) {
-      const drift = 2.5 * Math.sin(clock * 0.28);
-      const x = w * 0.67 + drift;
-      const y = h * 0.39 + 1.8 * Math.cos(clock * 0.23);
-      ctx.globalAlpha = flora * 0.83;
-      ctx.fillStyle = ink[1];
-      plant(lilyPad, q[5], w * 0.29 - drift, h * 0.57, unit * 0.64);
-      plant(lilyPad, q[5], x, y, unit * 1.15);
-      ctx.fillStyle = ink[3];
-      plant(lotusBloom, q[5], x - unit * 0.30, y - unit * 0.33, unit * 0.42);
-    }
-
-    ctx.fillStyle = ink[1];
-    for (const [px, py, size] of pads) {
-      const sway = Math.sin(clock * .26 + px * 9);
-      const x = w * px + 2 * sway, y = h * py;
-      ctx.globalAlpha = .68 + .14 * sway;
-      plant(flotsam, q[5] * 9, x, y + displacement(x, y), unit * size);
-    }
-
-    drawBank(q[5]);
+    drawSurface(q[0]);
     ctx.fillStyle = ink[3];
     const circle = circles[tier];
     for (let k = waves.length - 1; k >= 0; k--) {
@@ -305,6 +347,10 @@ export function createPond(canvas, bed = null) {
         }
       }
     }
+
+    const a = Math.floor(season), f = season-a;
+    floaters(a, 1-f, q);
+    if (f > 0) floaters(a+1, f, q);
     if (!calm && tier < 2) {
       ctx.fillStyle = raster ? 0xffebe3c3 : "#c3e3eb";
       ctx.globalAlpha = 0.035;

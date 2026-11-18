@@ -1,5 +1,10 @@
 # PROJECT_CONTEXT.md
 
+## 2026-11-18 首页四季池塘本地预览
+
+- `redesign-homepage` 的第二轮视觉返工改用分季水面缓存和独立岸景。每帧一次上传，先合成水底与下潜的鱼，再叠点环、微光和近处浮叶。六入口、四档滑块和所有季相由代码绘制，参考图仅用于对照。
+- 预览版本为 `20261118-home-pond-r3`。此分支使用时间日期状态线，预览记录写入根 CHANGELOG，公开发布记录仍以正式站点为准。
+
 ## 2026-10-29 Private MCP production adapter
 
 Approved production rollout: Pages commit c1c3c10f5f65d6a1d3eb138ac92c96f78c414da3; MCP Worker 355575bb-0d9c-4bde-9578-1a73ccd09275 at 100% traffic. PRIVATE_ADMIN_BACKEND=pages forwards the 51 backend operations to /api/private-mcp. Pages PRIVATE_MCP_AUTH calls PrivateMcpVerifier and pins the confirmed owner ID hash; preview has no binding. Existing secrets stay in Pages; no rotation, copying or new grant. Production health/metadata return 200, anonymous and invalid-token requests return 401. Local OAuth/RPC/Pages regression: 39 tests passed. Authenticated production tool calls have not been exercised without a new owner grant. Rollback must disable route/mode together while retaining owner restriction. Details: docs/agent-capabilities/PRIVATE_MCP_BACKEND_ADAPTER.md.

@@ -76,9 +76,7 @@ export function startDesktop(canvas) {
     if (reduced) paintSeason(n);
     else {
       const box = canvas.getBoundingClientRect();
-      const track = slider.getBoundingClientRect();
-      const x = track.left + 16 + n * (track.width - 32) / 3;
-      const y = track.top + track.height / 2;
+      const { x, y } = control.point(n);
       pond.ripple((x - box.left) / box.width, (y - box.top) / box.height, "sweep");
       for (const icon of icons) {
         const r = icon.getBoundingClientRect();

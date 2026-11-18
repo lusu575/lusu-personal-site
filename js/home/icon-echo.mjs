@@ -5,10 +5,14 @@ export function releaseIcon(button, keyboard) {
   if (!glyph?.animate || window.LusuUiMotion?.getMode() !== 'full') return;
   const rect = glyph.getBoundingClientRect();
   const path = glyph.querySelector('path');
-  if (!path || !rect.width) return;
+  const dotted = glyph.querySelector('use');
+  if (!path || !dotted || !rect.width) return;
   const echo = glyph.cloneNode(false);
   echo.setAttribute('class', 'pond-launch-echo');
   const ink = path.cloneNode(false);
+  const stroke = getComputedStyle(dotted);
+  ink.style.strokeWidth = stroke.strokeWidth;
+  ink.style.strokeDasharray = stroke.strokeDasharray;
   ink.removeAttribute('id');
   echo.append(ink);
   Object.assign(echo.style, {

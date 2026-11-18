@@ -166,7 +166,7 @@ test("site review assets and retained public modules keep independent cache vers
   const articleLabels = read("js/data/article-labels.mjs");
 
   const pondVersion = "20261118-home-pond-r1";
-  const rendererVersion = "20261118-home-pond-r2";
+  const rendererVersion = "20261118-home-pond-r3";
   assert.ok(index.includes(`/js/ui-motion.js?v=${pondVersion}`));
   assert.ok(index.includes(`/css/home-crt.css?v=${rendererVersion}`));
   assert.ok(main.includes(`./home/desktop.mjs?v=${rendererVersion}`));

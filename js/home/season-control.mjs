@@ -1,7 +1,6 @@
 import { seasons } from "./point-sets.mjs";
 
 const KEY = "v3:pond:season";
-const PAD = 16; // CSS px; matches the track inset
 const names = ["Spring", "Summer", "Autumn", "Winter"];
 const clamp = x => Math.max(0, Math.min(3, x));
 let memory = 1;
@@ -52,8 +51,16 @@ export function createSeasonControl(home, onCommit) {
   let width = el.clientWidth;
   let height = el.clientHeight;
   let scale = 0;
+  let inset = 0;
+  let markRadius = 0;
   let resize = true;
   let still = null;
+
+  function track() {
+    const rect = el.getBoundingClientRect();
+    const pad = parseFloat(getComputedStyle(el).getPropertyValue("--pond-track-inset"));
+    return { left: rect.left + pad, width: rect.width - 2*pad, y: rect.top + rect.height/2 };
+  }
 
   function aria() {
     const n = pointer === null ? value : Math.round(destination);
@@ -83,8 +90,7 @@ export function createSeasonControl(home, onCommit) {
   }
 
   function preview(event) {
-    const next = clamp(3 * (event.clientX - box.left - PAD) /
-      Math.max(1, box.width - 2 * PAD));
+    const next = clamp(3 * (event.clientX - box.left) / Math.max(1, box.width));
     const delta = next - destination;
     if (delta) {
       direction = Math.sign(delta);
@@ -110,7 +116,7 @@ export function createSeasonControl(home, onCommit) {
     if (e.button !== 0 || !e.isPrimary || pointer !== null) return;
     e.preventDefault();
     el.focus({ preventScroll: true });
-    box = el.getBoundingClientRect();
+    box = track();
     el.setPointerCapture(e.pointerId);
     pointer = e.pointerId;
     direction = 0;
@@ -170,6 +176,9 @@ export function createSeasonControl(home, onCommit) {
     still = null;
     if (resize || scale !== dpr) {
       scale = dpr;
+      const style = getComputedStyle(el);
+      inset = parseFloat(style.getPropertyValue("--pond-track-inset"));
+      markRadius = parseFloat(style.getPropertyValue("--pond-mark-radius"));
       canvas.width = Math.max(1, Math.round(width * dpr));
       canvas.height = Math.max(1, Math.round(height * dpr));
       ctx.setTransform(canvas.width / width, 0, 0, canvas.height / height, 0, 0);
@@ -196,33 +205,35 @@ export function createSeasonControl(home, onCommit) {
     }
     time += dt;
     ctx.clearRect(0, 0, width, height);
-    const step = (width - 2 * PAD) / 3;
+    const step = (width - 2 * inset) / 3;
     const cy = height / 2;
+    const stopSize = 4.75;
+    const pointSize = 1.9;
     let count = 0;
     ctx.fillStyle = "#c8e0e7";
     for (let i = 0; i < 4; i++) {
       trail[i] = quiet ? 0 : Math.max(0, trail[i] - 2.4 * dt);
       if (Math.abs(i - x) < 0.15) continue;
-      ctx.globalAlpha = 0.32 + 0.54 * trail[i];
-      ctx.fillRect(PAD + step * i - 1.5, cy - 1.5, 3, 3);
+      ctx.globalAlpha = 0.59 + 0.27 * trail[i];
+      ctx.fillRect(inset + step * i - stopSize/2, cy - stopSize/2, stopSize, stopSize);
       count++;
     }
     const p = clamp(x);
     const a = seasons[Math.floor(p)].mark;
     const b = seasons[Math.ceil(p)].mark;
     const f = p % 1;
-    const cx = PAD + step * x;
-    ctx.fillStyle = ['#ebc8d5', '#ead4d9', '#e4b47e', '#cfdeeb'][Math.round(p)];
-    ctx.globalAlpha = 0.94;
-    const size = quiet ? 11 : 11 * (1 + held * .1) * (1 - dust * .72);
+    const cx = inset + step * x;
+    ctx.fillStyle = ['#ffd2e3', '#ffe2e9', '#ffc788', '#e1efff'][Math.round(p)];
+    ctx.globalAlpha = .98;
+    const size = quiet ? markRadius : markRadius * (1 + held * .1) * (1 - dust * .72);
     for (let i = 0; i < n; i++) {
       const j = i * 2;
       const z = i * 2.39996;
       const r = quiet ? 0 : dust * (2 + i % 6);
       const mx = a[j] + f * (b[j] - a[j]);
       const my = a[j + 1] + f * (b[j + 1] - a[j + 1]);
-      ctx.fillRect(cx + size * mx - direction * dust * (i % 8) + r * Math.cos(z + time * 2) - 0.7,
-        cy + size * my + r * Math.sin(z + time * 2) - 0.7, 1.45, 1.45);
+      ctx.fillRect(cx + size * mx - direction * dust * (i % 8) + r * Math.cos(z + time * 2) - pointSize/2,
+        cy + size * my + r * Math.sin(z + time * 2) - pointSize/2, pointSize, pointSize);
     }
     ctx.globalAlpha = 1;
     if (settled) still = { n, value, count: count + n };
@@ -231,6 +242,10 @@ export function createSeasonControl(home, onCommit) {
 
   return {
     get value() { return value; },
+    point(n) {
+      const { left, width, y } = track();
+      return { x: left + n*width/3, y };
+    },
     draw,
     cancel() { end(false); },
     destroy() {

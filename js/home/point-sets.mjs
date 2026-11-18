@@ -27,11 +27,16 @@ function grain(i) {
 }
 export const fish = sample(1536, (t, i) => {
   const u = grain(i+361), v = grain(i+2049);
-  if (i % 6 === 0) return [-.74 - .67*t, (i%4 ? 1 : -1)*(.03 + t*(.08+.29*u))];
-  if (i % 9 === 1) return [.32 - .44*t + .13*u, (i%2 ? 1 : -1)*(.13 + .30*t*u)];
-  const x = -.84 + 1.78*t;
-  const girth = (.08 + .226*Math.sin(t*1.90)) * Math.sin(Math.PI*t)**.52;
-  return [x, (v*2 - 1) * girth * (.66 + .35*u)];
+  if (i % 5 === 0) {
+    const reach = t * t;
+    const lobe = i % 2 ? 1 : -1;
+    return [-.67 - reach*(.83 - .13*u), lobe * (.022 + reach*(.08 + .18*u)) + (v-.5)*reach*.19];
+  }
+  if (i % 11 === 1) {
+    return [.47 - .68*t, (i%2 ? 1 : -1)*(.15 + .25*Math.sin(Math.PI*t)*u)];
+  }
+  const girth = (.085 + .265*Math.sin(t*2.12)) * Math.sin(Math.PI*t)**.48;
+  return [-.86 + 1.84*t, (v*2 - 1) * girth * (.79 + .23*u)];
 });
 
 export const reeds = sample(80, (t, i) => {
@@ -40,19 +45,28 @@ export const reeds = sample(80, (t, i) => {
 });
 
 // Oblique disc: missing sector, two cut edges and a few radial veins.
-export const lilyPad = sample(768, (t, i) => {
-  let a = 0.4 + (TAU - 0.8) * t;
-  let r = 1 - 0.04 * Math.cos(5 * a);
-  if (i % 5 === 1) {
-    a = i % 2 ? 0.4 : -0.4;
+export const lilyPad = sample(3584, (t, i) => {
+  let a = .28 + (TAU - .56)*t;
+  let r = Math.sqrt(grain(i+2711));
+  if (i % 13 === 0) r = .98;
+  if (i % 13 === 1) {
+    a = i % 2 ? .28 : -.28;
     r = t;
-  } else if (i % 4 === 2) {
-    a = 0.65 + (i % 7) * 0.81;
-    r = 0.15 + 0.72 * t;
   }
-  if (i % 8 !== 0) r *= Math.sqrt(((i + .5) * .41421356) % 1);
-  return [r * Math.cos(a), 0.59 * r * Math.sin(a)];
+  if (i % 13 === 2) {
+    a = .32 + (i % 14) * (TAU-.64)/13 + .06*Math.sin(t*3);
+    r = t;
+  }
+  r *= 1 + .025*Math.cos(7*a) + .018*Math.sin(11*a);
+  return [r*Math.cos(a), .61*r*Math.sin(a)];
 });
+
+// Foreground summer leaves. The cached water bed uses these same anchors
+// for their deeper, offset shadows. Radius is relative to the short side.
+export const summerPads = [
+  [.202,.854,.155,-.26,.97], [.685,.701,.147,.24,.99], [.847,.575,.112,-.20,.89],
+  [.143,.385,.088,.19,.86], [.243,.392,.065,-.15,.83]
+];
 
 // Pond blossom: tilted, top-down double corolla with a seed head.
 export const lotusBloom = sample(192, (t, i) => {
@@ -63,16 +77,17 @@ export const lotusBloom = sample(192, (t, i) => {
   return [r * Math.cos(a), 0.74 * r * Math.sin(a) - 0.14 * r];
 });
 
-// Fallen leaves and ice crystals on the water are separate point fields
-// (never reuse the slider's identification marks in the scenery).
-export const fallenLeaf = sample(768, (t, i) => {
-  const a = TAU * t;
-  const r = (.28 + .63 * (1 - Math.abs(Math.sin(3.5 * a)))) * Math.sqrt(((i + 1) * .4142) % 1);
-  return [r * Math.sin(a), .76 * r * Math.cos(a)];
+// Surface petals and ice crystals use separate point fields from the slider.
+export const petal = sample(192, (t, i) => {
+  const a = TAU*t, r = i%4 === 0 ? 1 : Math.sqrt(grain(i+735));
+  const notch = .25*Math.max(0, -Math.sin(a))**16;
+  return [.64*r*Math.cos(a)*(1-.27*Math.sin(a)), r*(Math.sin(a)+notch)];
 });
 export const frost = sample(768, (t, i) => {
-  const twig = i % 3;
-  return [t * 1.4 - .7, -.32 * t + (twig ? (i % 2 ? 1 : -1) * (t % .25) : 0)];
+  const a = (i % 6)*TAU/6;
+  const twig = (i >> 2)%3, r = twig ? .46 + .32*t : t;
+  const v = twig ? (twig === 1 ? 1 : -1)*.30*t : 0;
+  return [Math.cos(a)*r - Math.sin(a)*v, Math.sin(a)*r + Math.cos(a)*v];
 });
 
 const maple = [
@@ -90,6 +105,13 @@ function outline(t, vertices) {
   const b = vertices[(k + 1) % vertices.length];
   return [a[0] + (b[0] - a[0]) * (p - k), a[1] + (b[1] - a[1]) * (p - k)];
 }
+
+export const fallenLeaf = sample(768, (t, i) => {
+  if (i % 9 === 0) return [0, .36 + .76*t];
+  const [x,y] = outline(t, maple);
+  const r = i % 5 === 0 ? 1 : i % 7 === 0 ? grain(i+120) : Math.sqrt(grain(i+896));
+  return [x*r, .36+(y-.36)*r];
+});
 
 // Only the slider samples .mark. All four arrays use the same index domain.
 export const seasons = [

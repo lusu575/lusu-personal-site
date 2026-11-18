@@ -25,10 +25,15 @@ test('every tier reduces particle work, caps backing pixels and retains tap feed
     assert.equal(points, summer + Number(tier < 2), 'one refresh line outside particle count');
     assert.ok(summer < previous && summer > 100);
     previous = summer;
+    const idle = createPond({getContext: () => ctx});
+    idle.resize(1800, 1100, tier, false);
     pond.ripple(.3,.4);
-    assert.ok(pond.draw(.12) > summer);
-    for (let i=0; i<80; i++) pond.draw(.016);
-    assert.equal(pond.draw(0), summer, 'tap decays without a permanent wave slot');
+    assert.ok(pond.draw(.12) > idle.draw(.12), 'tap adds rings on top of the same ambient phase');
+    for (let i=0; i<80; i++) {
+      pond.draw(.016);
+      idle.draw(.016);
+    }
+    assert.equal(pond.draw(0), idle.draw(0), 'interactive rings decay back to the ambient surface');
     pond.setSeason(3);
     assert.ok(pond.draw(0) < summer, 'winter retains a single submerged fish');
   }
