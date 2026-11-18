@@ -1,7 +1,7 @@
-import { Koi } from "./fish.mjs";
+import { KOI_ROUTES, Koi, seededRandom } from "./fish.mjs?v=20261118-pond-r2-perf";
 import {
-  CRT, WATER, fullscreenVertex, fishVertex, fishFragment, waterFragment, desktopFragment, crtFragment
-} from "./shaders.mjs";
+  CRT, WATER, fullscreenVertex, pointVertex, pointFragment, bedFragment, waterFragment, desktopFragment, crtFragment
+} from "./shaders.mjs?v=20261118-pond-r2-perf";
 
 const browser = globalThis;
 const canvas = browser.document.querySelector("canvas");
@@ -92,28 +92,243 @@ function createClock(gl) {
   return { texture, width, height };
 }
 
-function createRenderer(gl) {
-  const fish = createProgram(gl, fishVertex, fishFragment, ["uSize", "uDpr"]);
-  const water = createProgram(gl, fullscreenVertex, waterFragment, [
-    "uSize", "uFish", "uTime", "uClickCount", "uWakeCount", "uClicks[0]", "uWakes[0]"
-  ]);
-  const desktop = createProgram(gl, fullscreenVertex, desktopFragment, ["uSize", "uWater", "uClock", "uClockSize", "uGrid"]);
-  const crt = createProgram(gl, fullscreenVertex, crtFragment, ["uSize", "uDesktop", "uCRT"]);
-  const fishTarget = createTarget(gl);
-  const waterTarget = createTarget(gl);
-  const sceneTarget = createTarget(gl);
-  const clock = createClock(gl);
+// Top-left scene coordinates. A leaf keeps its own texture seed across layout changes.
+const LEAVES = [
+  { material: "main", placement: [
+    [0.156, 0.526, 0.047, -0.21, 0.65, 0.44, 1207],
+    [0.377, 0.636, 0.063, 0.19, 3.27, 0.48, 1901],
+    [0.655, 0.338, 0.050, -0.15, 5.88, 0.45, 1217],
+    [0.779, 0.492, 0.046, 0.11, 2.89, 0.42, 1831]
+  ] },
+  { material: "companion", placement: [
+    [0.180, 0.560, 0.027, 0.24, 4.26, 0.40, 2081],
+    [0.240, 0.642, 0.034, 0.05, 1.61, 0.44, 2083],
+    [0.286, 0.338, 0.031, -0.10, 0.38, 0.38, 2087],
+    [0.248, 0.336, 0.022, 0.14, 2.97, 0.45, 2089],
+    [0.309, 0.565, 0.012, -0.15, 5.01, 0.38, 2099],
+    [0.620, 0.303, 0.021, 0.05, 1.04, 0.42, 2111],
+    [0.681, 0.290, 0.023, -0.18, 2.46, 0.40, 2113],
+    [0.735, 0.355, 0.029, 0.21, 3.99, 0.43, 2129],
+    [0.790, 0.438, 0.018, -0.09, 2.19, 0.40, 2131],
+    [0.748, 0.467, 0.021, 0.25, 5.73, 0.44, 2137],
+    [0.330, 0.272, 0.016, -0.24, 1.68, 0.38, 2141],
+    [0.445, 0.695, 0.020, 0.18, 4.09, 0.46, 2143],
+    [0.471, 0.665, 0.015, 0.12, 2.84, 0.41, 2153],
+    [0.670, 0.806, 0.012, -0.14, 0.12, 0.42, 2161]
+  ] },
+  { material: "dark", placement: [
+    [0.100, 0.070, 0.037, 0.24, 5.17, 0.40, 2203],
+    [0.974, 0.195, 0.045, -0.17, 2.70, 0.43, 2207],
+    [0.960, 0.240, 0.052, 0.16, 3.83, 0.48, 2213],
+    [0.982, 0.597, 0.040, 0.26, 2.13, 0.42, 2221],
+    [0.032, 0.783, 0.061, -0.20, 4.58, 0.43, 2237],
+    [0.115, 0.908, 0.068, 0.26, 0.12, 0.43, 2239],
+    [0.151, 0.929, 0.049, 0.08, 2.16, 0.46, 2243],
+    [0.885, 0.918, 0.031, -0.24, 5.76, 0.38, 2251],
+    [0.625, 0.914, 0.028, 0.14, 0.89, 0.42, 2267]
+  ] }
+];
 
-  const points = gl.createBuffer();
-  const fishVAO = gl.createVertexArray();
-  gl.bindVertexArray(fishVAO);
-  gl.bindBuffer(gl.ARRAY_BUFFER, points);
-  gl.bufferData(gl.ARRAY_BUFFER, koi.vertices.byteLength, gl.DYNAMIC_DRAW);
+const LEAF_MATERIALS = {
+  main: { step: 4.2, size: [1.8, 3.1], alpha: [0.46, 0.72], veins: 10,
+    surface: [0.48, 0.81, 0.25], rib: [0.69, 0.89, 0.31], lip: [0.82, 0.94, 0.32] },
+  companion: { step: 4.7, size: [1.5, 2.6], alpha: [0.32, 0.58], veins: 5,
+    surface: [0.34, 0.70, 0.24], rib: [0.52, 0.76, 0.27], lip: [0.62, 0.79, 0.29] },
+  dark: { step: 6.1, size: [1.5, 2.6], alpha: [0.22, 0.42], veins: 4,
+    surface: [0.07, 0.17, 0.12], rib: [0.12, 0.23, 0.14], lip: [0.14, 0.24, 0.15] }
+};
+
+const FLOWERS = [
+  { x: 0.285, y: 0.580, width: 0.056, lean: -0.12, opening: 1, petals: 8, seed: 2273 },
+  { x: 0.712, y: 0.335, width: 0.048, lean: 0.15, opening: 0.91, petals: 7, seed: 2281 },
+  { x: 0.251, y: 0.393, width: 0.015, lean: 0.17, petals: 0, seed: 2287 }
+];
+
+function lotusPoints(width, height) {
+  const afloat = [];
+  const submerged = [];
+  const scale = Math.min(width, 1.65 * height);
+  const size = Math.sqrt(scale / 1536);
+  const turn = 2 * Math.PI;
+
+  for (const { material, placement } of LEAVES) {
+    const { step: spacing, size: [small, large], alpha: [faint, solid], veins, surface, rib, lip } =
+      LEAF_MATERIALS[material];
+    const dark = material === "dark";
+    const directionalShade = material === "main" ? 0.22 : 0.13;
+    const [rimAlpha, rimVariation] = dark ? [0.36, 0.06] : [0.68, 0.20];
+    for (const [x, y, radius, roll, notch, flatten, seed] of placement) {
+      const random = seededRandom(seed);
+      const span = radius * scale;
+      const cos = Math.cos(roll);
+      const sin = Math.sin(roll);
+      const step = spacing / (radius * 1536);
+      const baseX = x * width;
+      const baseY = (1 - y) * height;
+      const lightX = y < 0.5 ? 0.408 : 0.610;
+      const lightY = y < 0.5 ? 0.305 : 0.650;
+      const lightAngle = Math.atan2((y - lightY) * height, (lightX - x) * width) - roll;
+      const notchDepth = 0.55 + 0.17 * random();
+      const towardLight = (angle) => Math.cos(angle - lightAngle);
+      const rimAt = (angle) => {
+        const cut = Math.max(0, Math.cos(angle - notch)) ** 34;
+        return 0.97 + 0.018 * Math.cos(5 * angle + notch) + 0.023 * Math.sin(9 * angle) - notchDepth * cut;
+      };
+      const leafPoint = (angle, radial, diameter, color, opacity, shade = 1) => {
+        const u = radial * Math.cos(angle);
+        const v = radial * Math.sin(angle) * flatten;
+        afloat.push(baseX + span * (u * cos - v * sin), baseY + span * (u * sin + v * cos),
+          diameter * size, color[0] * shade, color[1] * shade, color[2] * shade, opacity);
+      };
+      for (let row = -1; row <= 1; row += step / flatten) {
+        for (let column = -1; column <= 1; column += step) {
+          const u = column + (random() - 0.5) * step * 0.94;
+          const v = row + (random() - 0.5) * step / flatten;
+          const angle = Math.atan2(v, u);
+          const radial = Math.hypot(u, v);
+          const rim = rimAt(angle);
+          if (radial > rim + 0.035 || (radial > rim - 0.035 && random() > 0.60)) continue;
+          const shade = 0.76 + 0.22 * random() + directionalShade * radial * towardLight(angle);
+          leafPoint(angle, radial, small + (large - small) * Math.sqrt(random()), surface,
+            faint + (solid - faint) * random(), shade);
+        }
+      }
+      for (let angle = 0; angle < turn; angle += step * (dark ? 2.6 : 1.0)) {
+        const radial = rimAt(angle) + (random() - 0.5) * 0.055;
+        const bright = towardLight(angle) > 0.50;
+        const index = afloat.length;
+        if (bright || random() < (dark ? 0.17 : 0.45)) {
+          leafPoint(angle, radial, small + (large - small) * random(), bright ? lip : surface,
+            bright ? rimAlpha + rimVariation * random() : faint + 0.11 * random());
+          submerged.push(afloat[index] + 3, afloat[index + 1] - 5, (2.8 + 1.4 * random()) * size,
+            0.024, 0.060, 0.046, 0.10 + 0.08 * random());
+        }
+      }
+      for (let ray = 0; ray < veins; ray += 1) {
+        const heading = (ray + 0.25 * random()) * turn / veins;
+        const limit = rimAt(heading) - step;
+        for (let radial = step * 1.25; radial < limit; radial += step * 1.21) {
+          if (random() < 0.20) continue;
+          const angle = heading - 0.12 * radial + (random() - 0.5) * 0.12;
+          leafPoint(angle, radial, small + (large - small) * 0.72 * random(), rib,
+            faint + (solid - faint) * random(), 1 - 0.20 * radial);
+        }
+      }
+    }
+  }
+
+  for (const { x, y, width: fraction, lean, opening, petals, seed } of FLOWERS) {
+    const random = seededRandom(seed);
+    const span = fraction * scale;
+    const originX = x * width;
+    const originY = (1 - y) * height;
+    const baseY = originY - span * (petals ? 0.13 : 0.38);
+    const stemX = (t) => originX + span * (-lean * t - 0.11 * Math.sin(3.0 * t));
+    // A calyx rises with the flower. Separate, fading stem fragments sit below the water.
+    for (let i = 0; i < 22; i += 1) {
+      const t = (i + random()) / 22;
+      const offset = (random() - 0.5) * span * 0.18 * (1 - 0.72 * t);
+      afloat.push(stemX(t) + offset, baseY - span * 0.18 * t, (1.4 + random()) * size,
+        0.40, 0.63, 0.26, 0.62 - 0.22 * t);
+    }
+    for (let segment = 0; segment < 3; segment += 1) {
+      for (let i = 0; i < 8; i += 1) {
+        const t = (segment + 0.64 * (i + random()) / 8) / 3;
+        submerged.push(stemX(t) + 3 + (random() - 0.5) * 2, baseY - 5 - span * 0.89 * t,
+          (1.55 + 1.05 * random()) * size, 0.32, 0.45, 0.19, 0.37 - 0.26 * t);
+      }
+    }
+    if (petals) {
+      // Back petals fan upward. The lower row overlaps their roots around the stamens.
+      const petalTips = [
+        [-0.49, 0.24], [-0.31, 0.39], [-0.15, 0.54], [0.02, 0.60], [0.23, 0.52],
+        [0.49, 0.30], [-0.25, 0.19], [0.24, 0.20]
+      ];
+      for (let petal = 0; petal < petals; petal += 1) {
+        const [tipX, tipY] = petalTips[petal];
+        const dx = tipX * opening + lean * tipY;
+        const dy = tipY * opening;
+        const length = Math.hypot(dx, dy);
+        const lengthSteps = Math.ceil(length * fraction * 1536 / 1.75);
+        const halfWidth = 0.034 + 0.014 * random();
+        for (let row = 0; row < lengthSteps; row += 1) {
+          for (let column = -2; column <= 2; column += 1) {
+            const t = (row + random()) / lengthSteps;
+            const spread = (column + (random() - 0.5) * 0.67) * 0.5 * halfWidth *
+              Math.sin(Math.PI * t) ** 0.72;
+            const bend = 0.045 * Math.sin(Math.PI * t) * Math.sign(tipX);
+            afloat.push(originX + span * (dx * t + bend - dy * spread / length),
+              baseY + span * (dy * t + dx * spread / length), (1.8 + 1.10 * random()) * size,
+              0.93 + 0.07 * t, 0.48 + 0.38 * t, 0.56 + 0.26 * t, 0.60 + 0.25 * random());
+          }
+        }
+      }
+      for (let i = 0; i < 22; i += 1) {
+        const angle = turn * random();
+        const radial = Math.sqrt(random());
+        afloat.push(originX + span * 0.105 * radial * Math.cos(angle),
+          baseY + span * (0.14 + 0.065 * radial * Math.sin(angle)), (1.5 + random()) * size,
+          0.95, 0.75, 0.32, 0.70 + 0.23 * random());
+      }
+    } else {
+      for (let row = 0; row < 20; row += 1) {
+        for (let column = -8; column <= 8; column += 1) {
+          const t = (row + random()) / 20;
+          const across = (column + random() - 0.5) / 8;
+          const breadth = Math.sin(Math.PI * t) ** 0.83 * (1.20 - 0.53 * t);
+          if (Math.abs(across) > breadth) continue;
+          const seam = Math.cos((across / Math.max(breadth, 0.01) + t * 0.49) * 13);
+          const light = 0.75 + 0.16 * random() + 0.16 * Math.max(0, seam);
+          const petal = Math.min(1, t * 5);
+          afloat.push(originX + span * (across + lean * t) * 0.5,
+            originY + span * (1.125 * t - 0.515), (1.55 + 1.35 * random()) * size,
+            (0.52 + 0.42 * petal) * light, (0.68 - 0.08 * petal) * light,
+            (0.23 + 0.45 * petal) * light, 0.62 + 0.33 * random());
+        }
+      }
+    }
+  }
+  return { afloat: new Float32Array(afloat), submerged: new Float32Array(submerged) };
+}
+
+function createPointBuffer(gl) {
+  const buffer = gl.createBuffer();
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.enableVertexAttribArray(0);
   gl.enableVertexAttribArray(1);
   gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 7 * 4, 0);
   gl.vertexAttribPointer(1, 4, gl.FLOAT, false, 7 * 4, 3 * 4);
   gl.bindVertexArray(null);
+  return { buffer, vao };
+}
+
+function createRenderer(gl) {
+  const points = createProgram(gl, pointVertex, pointFragment, ["uSize", "uDpr"]);
+  const bed = createProgram(gl, fullscreenVertex, bedFragment, ["uSize"]);
+  const water = createProgram(gl, fullscreenVertex, waterFragment, [
+    "uSize", "uFish", "uFishBounds[0]", "uLotus", "uBed", "uTime", "uClickCount", "uWakeCount", "uClicks[0]", "uWakes[0]", "uClickShape[0]", "uWakeShape[0]"
+  ]);
+  const desktop = createProgram(gl, fullscreenVertex, desktopFragment, ["uSize", "uWater", "uClock", "uClockSize", "uGrid"]);
+  const crt = createProgram(gl, fullscreenVertex, crtFragment, ["uSize", "uDesktop", "uCRT"]);
+  const fishTarget = createTarget(gl);
+  const lotusTarget = createTarget(gl);
+  const bedTarget = createTarget(gl);
+  const waterTarget = createTarget(gl);
+  const sceneTarget = createTarget(gl);
+  const clock = createClock(gl);
+
+  const fishPoints = createPointBuffer(gl);
+  const lotusBuffer = createPointBuffer(gl);
+  const fishVertices = new Float32Array(fish.reduce((total, koi) => total + koi.vertices.length, 0));
+  gl.bindBuffer(gl.ARRAY_BUFFER, fishPoints.buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, fishVertices.byteLength, gl.DYNAMIC_DRAW);
+  const clickData = new Float32Array(WATER.clickCapacity * 4);
+  const clickShape = new Float32Array(clickData.length);
+  const wakeData = new Float32Array(fish.length * WATER.wakeCapacity * 4);
+  const wakeShape = new Float32Array(wakeData.length);
+  const fishBounds = new Float32Array(fish.length * 4);
 
   const maxTexture = gl.getParameter(gl.MAX_TEXTURE_SIZE);
   const [maxWidth, maxHeight] = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
@@ -136,48 +351,113 @@ function createRenderer(gl) {
     gl.uniform1i(location, unit);
   }
 
+  function drawPoints(target, vao, count, clear = true) {
+    const uniforms = begin(points, target);
+    if (clear) {
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+    }
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.bindVertexArray(vao);
+    gl.uniform1f(uniforms.uDpr, density);
+    gl.drawArrays(gl.POINTS, 0, count);
+    gl.disable(gl.BLEND);
+    gl.bindVertexArray(null);
+  }
+
   function fit() {
     const nextWidth = Math.max(1, canvas.clientWidth);
     const nextHeight = Math.max(1, canvas.clientHeight);
     const nextDensity = Math.min(browser.devicePixelRatio || 1, 2, limit / Math.max(nextWidth, nextHeight));
     if (nextWidth === width && nextHeight === height && nextDensity === density) return;
-    if (nextWidth !== koi.width || nextHeight !== koi.height) koi.resize(nextWidth, nextHeight);
+    if (nextWidth !== width || nextHeight !== height) {
+      for (const koi of fish) koi.resize(nextWidth, nextHeight);
+    }
     width = nextWidth;
     height = nextHeight;
     density = nextDensity;
     canvas.width = Math.max(1, Math.round(width * density));
     canvas.height = Math.max(1, Math.round(height * density));
     fishTarget.resize(canvas.width, canvas.height);
+    lotusTarget.resize(canvas.width, canvas.height);
+    bedTarget.resize(canvas.width, canvas.height);
     waterTarget.resize(
       Math.max(1, Math.round(canvas.width * WATER.scale)),
       Math.max(1, Math.round(canvas.height * WATER.scale))
     );
     sceneTarget.resize(canvas.width, canvas.height);
+
+    begin(bed, bedTarget);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    const { afloat, submerged } = lotusPoints(width, height);
+    gl.bindBuffer(gl.ARRAY_BUFFER, lotusBuffer.buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, submerged, gl.STATIC_DRAW);
+    // The bed alpha channel carries the broad light sampled by the water pass.
+    gl.colorMask(true, true, true, false);
+    drawPoints(bedTarget, lotusBuffer.vao, submerged.length / 7, false);
+    gl.colorMask(true, true, true, true);
+    gl.bufferData(gl.ARRAY_BUFFER, afloat, gl.STATIC_DRAW);
+    drawPoints(lotusTarget, lotusBuffer.vao, afloat.length / 7);
   }
 
   function draw() {
-    const fishUniforms = begin(fish, fishTarget);
-    gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    gl.bindVertexArray(fishVAO);
-    gl.bindBuffer(gl.ARRAY_BUFFER, points);
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, koi.drawData(time));
-    gl.uniform1f(fishUniforms.uDpr, density);
-    gl.drawArrays(gl.POINTS, 0, koi.particles.length);
-    gl.disable(gl.BLEND);
-    gl.bindVertexArray(null);
+    let offset = 0;
+    const cssPerTexel = Math.max(width / fishTarget.width, height / fishTarget.height);
+    for (let i = 0; i < fish.length; i += 1) {
+      const vertices = fish[i].drawData(time);
+      fishVertices.set(vertices, offset);
+      offset += vertices.length;
+      // Include the point sprite, all spread taps, and their bilinear footprints.
+      let x0 = width;
+      let y0 = height;
+      let x1 = 0;
+      let y1 = 0;
+      const margin = WATER.fishSpread + 1.5 * cssPerTexel;
+      for (let j = 0; j < vertices.length; j += 7) {
+        const x = vertices[j];
+        const y = vertices[j + 1];
+        const radius = 0.5 * Math.max(1, vertices[j + 2] * density) * cssPerTexel + margin;
+        x0 = Math.min(x0, x - radius);
+        y0 = Math.min(y0, y - radius);
+        x1 = Math.max(x1, x + radius);
+        y1 = Math.max(y1, y + radius);
+      }
+      // Texture clamp-to-edge extends an occupied outermost texel.
+      const edge = WATER.fishRefraction + cssPerTexel;
+      const bound = i * 4;
+      fishBounds[bound] = x0 <= 0 ? -edge : x0;
+      fishBounds[bound + 1] = y0 <= 0 ? -edge : y0;
+      fishBounds[bound + 2] = x1 >= width ? width + edge : x1;
+      fishBounds[bound + 3] = y1 >= height ? height + edge : y1;
+    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, fishPoints.buffer);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, fishVertices);
+    drawPoints(fishTarget, fishPoints.vao, fishVertices.length / 7);
 
     const waterUniforms = begin(water, waterTarget);
     sample(0, waterUniforms.uFish, fishTarget.texture);
+    gl.uniform4fv(waterUniforms["uFishBounds[0]"], fishBounds, 0, fishBounds.length);
+    sample(1, waterUniforms.uLotus, lotusTarget.texture);
+    sample(2, waterUniforms.uBed, bedTarget.texture);
     gl.uniform1f(waterUniforms.uTime, time);
-    for (const [packets, count, data] of [
-      [clicks, waterUniforms.uClickCount, waterUniforms["uClicks[0]"]],
-      [wakes, waterUniforms.uWakeCount, waterUniforms["uWakes[0]"]]
-    ]) {
-      gl.uniform1i(count, packets.events.length);
-      if (packets.events.length) gl.uniform4fv(data, packets.pack(width, height), 0, packets.events.length * 4);
+    const waveTime = Math.fround(time);
+    const clickCount = clicks.events.length;
+    gl.uniform1i(waterUniforms.uClickCount, clickCount);
+    if (clickCount) {
+      clicks.pack(width, height, waveTime, clickData, clickShape, 0);
+      gl.uniform4fv(waterUniforms["uClicks[0]"], clickData, 0, clickCount * 4);
+      gl.uniform4fv(waterUniforms["uClickShape[0]"], clickShape, 0, clickCount * 4);
+    }
+    let wakeCount = 0;
+    for (const wake of wakes) {
+      wake.pack(width, height, waveTime, wakeData, wakeShape, wakeCount);
+      wakeCount += wake.events.length;
+    }
+    gl.uniform1i(waterUniforms.uWakeCount, wakeCount);
+    if (wakeCount) {
+      gl.uniform4fv(waterUniforms["uWakes[0]"], wakeData, 0, wakeCount * 4);
+      gl.uniform4fv(waterUniforms["uWakeShape[0]"], wakeShape, 0, wakeCount * 4);
     }
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
@@ -200,10 +480,11 @@ function createRenderer(gl) {
 class WavePackets {
   events = [];
 
-  constructor(capacity, lifetime) {
+  constructor(capacity, lifetime, speed, delay = 0) {
     this.capacity = capacity;
     this.lifetime = lifetime;
-    this.packed = new Float32Array(capacity * 4);
+    this.speed = speed;
+    this.delay = delay;
   }
 
   add(x, y, start, strength) {
@@ -215,22 +496,38 @@ class WavePackets {
     while (this.events.length && time - this.events[0].start >= this.lifetime) this.events.shift();
   }
 
-  pack(width, height) {
+  pack(width, height, time, data, shape, offset) {
     const short = Math.min(width, height);
-    let index = 0;
+    const { delay, speed, lifetime } = this;
+    let index = offset * 4;
     for (const event of this.events) {
-      this.packed[index++] = event.x * width / short;
-      this.packed[index++] = event.y * height / short;
-      this.packed[index++] = event.start;
-      this.packed[index++] = event.strength;
+      // Use the same float32 clock and event start that the shader used.
+      const age = Math.fround(time - Math.fround(event.start));
+      const sinking = age < delay;
+      const travel = Math.max(0, age - delay);
+      const front = travel * speed;
+      const sigma = sinking ? 0.016 : 0.018 + 0.024 * travel;
+      const t = Math.min(1, travel / 0.095);
+      const fade = t * t * (3 - 2 * t) * Math.max(0, 1 - age / lifetime) ** 1.55;
+      const strength = event.strength * (sinking ? -0.00145 * Math.sin(Math.PI * age / delay) : 0.0021 * fade);
+      // Outside seven standard deviations the Gaussian contributes less than 3e-11 of its peak.
+      const reach = 7 * sigma;
+      data[index] = event.x * width / short;
+      data[index + 1] = event.y * height / short;
+      data[index + 2] = front;
+      data[index + 3] = strength;
+      shape[index] = 1 / (sigma * sigma);
+      shape[index + 1] = Number(sinking);
+      shape[index + 2] = Math.max(0, front - reach) ** 2;
+      shape[index + 3] = (front + reach) ** 2;
+      index += 4;
     }
-    return this.packed;
   }
 }
 
-const koi = new Koi();
-const clicks = new WavePackets(WATER.clickCapacity, WATER.clickLifetime);
-const wakes = new WavePackets(WATER.wakeCapacity, WATER.wakeLifetime);
+const fish = KOI_ROUTES.map((route) => new Koi(route));
+const clicks = new WavePackets(WATER.clickCapacity, WATER.clickLifetime, WATER.clickSpeed, WATER.clickSink);
+const wakes = fish.map(() => new WavePackets(WATER.wakeCapacity, WATER.wakeLifetime, WATER.wakeSpeed));
 let frozen = params.get("freeze") === "1";
 let crtEnabled = params.get("crt") !== "0";
 let gridEnabled = params.get("grid") === "1";
@@ -240,14 +537,14 @@ let requested = 0;
 let renderer;
 let gl;
 
-function incomingYaw() {
+function incomingYaw(koi) {
   const short = Math.min(koi.width, koi.height);
   let yaw = 0;
   for (const click of clicks.events) {
     const age = time - click.start;
     if (age <= WATER.clickSink) continue;
     const x = koi.headX - click.x * koi.width;
-    const y = koi.headY - click.y * koi.height;
+    const y = koi.headY + koi.renderOffsetY - click.y * koi.height;
     const distance = Math.hypot(x, y);
     const front = (age - WATER.clickSink) * WATER.clickSpeed;
     const frontDistance = distance / short - front;
@@ -261,10 +558,13 @@ function incomingYaw() {
 function advance(dt) {
   time += dt;
   clicks.expire(time);
-  wakes.expire(time);
-  if (koi.advance(dt, incomingYaw())) {
-    const [x, y] = koi.peduncle;
-    wakes.add(x / koi.width, y / koi.height, time, koi.beating ? 0.36 : 0.14);
+  for (const [index, koi] of fish.entries()) {
+    const wake = wakes[index];
+    wake.expire(time);
+    if (koi.advance(dt, incomingYaw(koi))) {
+      const [x, y] = koi.peduncle;
+      wake.add(x / koi.width, y / koi.height, time, koi.beating ? 0.36 : 0.14);
+    }
   }
 }
 
