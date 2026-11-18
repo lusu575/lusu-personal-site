@@ -1,16 +1,34 @@
-import { bend, fallenLeaf, fish, frost, lilyPad, lotusBloom, mixColor, reeds, seasons } from "./point-sets.mjs";
+import { fallenLeaf, fish, frost, lilyPad, lotusBloom, mixColor, reeds, seasons } from "./point-sets.mjs";
 
 const TAU = Math.PI * 2;
-const pads = [[.13,.43,.95], [.19,.40,.62], [.31,.64,.88], [.78,.69,1.32], [.84,.66,.66], [.09,.88,.7], [.92,.22,.46]];
+const pads = [[.32,.612,.98], [.778,.373,.85]];
 
 // [environment points, fish, dots/fish, ghosts, dots/reed, dots/flora slot,
 //  shared wave slots, dots/wave, DPR ceiling, backing pixel ceiling]
 export const quality = [
-  [128, 3, 384, 2, 80, 64, 4, 64, 2, 3200000],
-  [80, 3, 216, 1, 56, 48, 3, 48, 1.5, 2000000],
-  [48, 2, 128, 1, 36, 32, 2, 32, 1, 1200000],
-  [24, 2, 72, 0, 24, 20, 1, 24, 0.85, 680000]
+  [128, 3, 1536, 2, 80, 64, 4, 64, 1.5, 1600000],
+  [80, 3, 960, 1, 56, 48, 3, 48, 1.25, 1360000],
+  [48, 2, 576, 1, 36, 32, 2, 32, 1, 1200000],
+  [24, 2, 288, 0, 24, 20, 1, 24, 0.85, 680000]
 ];
+
+// Immutable material buckets keep each colour one Canvas state change,
+// rather than one state change per mote. Bend terms are local to the spine.
+const bendSin = new Float32Array(fish.length / 2), bendCos = bendSin.slice();
+for (let i=0; i<bendSin.length; i++) {
+  const x=fish[i*2], amp=.34*(.5*(1-x))**2;
+  bendSin[i]=amp*Math.sin(x*2.8); bendCos[i]=amp*Math.cos(x*2.8);
+}
+const koiInk = quality.map(q => Array.from({length:q[1]}, (_,id) => {
+  const batches = [[],[],[],[]];
+  for (let i=0;i<q[2];i++) {
+    const x=fish[i*2], y=fish[i*2+1];
+    const red = Math.sin(8*x - 4*y + id) + .67*Math.cos(13*y + x*4);
+    batches[x < -.76 || i%11 === 0 ? 0 : red < -.14 ? 1 : red > .66 ? 2 : 3].push(i);
+  }
+  return batches.map(batch=>Uint16Array.from(batch));
+}));
+const koiMaterials = [2,5,4,6];
 
 const seeds = new Float32Array(128 * 3);
 for (let i = 0; i < 128; i++) {
@@ -38,7 +56,7 @@ const flecks = [
 ];
 
 export function createPond(canvas) {
-  const ctx = canvas.getContext("2d", { alpha: true });
+  const ctx = canvas.getContext("2d", { alpha: false });
   if (!ctx) return null;
   let tier = 0;
   let w = 1;
@@ -77,7 +95,9 @@ export function createPond(canvas) {
       const xy = lilyPad[i] + leaf * (fallenLeaf[i] - lilyPad[i]);
       flotsam[i] = xy + winter * (frost[i] - xy);
     }
-    ink[4] = mixColor(0xe6ad71, 0x8fa7b6, winter);
+    ink[4] = mixColor(0xe88e52, 0xa4baca, winter);
+    ink[5] = mixColor(0xffedbf, 0xc9d9e0, winter);
+    ink[6] = mixColor(0xca6341, 0x7b9aac, winter);
     for (let i = 0; i < 8; i++) fragment[i] = flecks[a][i] + (flecks[b][i] - flecks[a][i]) * f;
   }
 
@@ -94,7 +114,7 @@ export function createPond(canvas) {
     if (canvas.width !== bw) canvas.width = bw;
     if (canvas.height !== bh) canvas.height = bh;
     ctx.setTransform(bw / w, 0, 0, bh / h, 0, 0);
-    unit = Math.min(50, Math.max(16, Math.min(w, h) * 0.05));
+    unit = Math.min(65, Math.max(16, Math.min(w, h) * 0.055));
   }
 
   function dot(x, y, size) {
@@ -125,26 +145,30 @@ export function createPond(canvas) {
     return offset;
   }
 
-  function drawFish(id, t, ghost, n) {
-    const a = id * 2.4 + t * (0.085 + id * 0.009);
+  function drawFish(id, t, ghost) {
+    const a = 1.05 + id * 2.14 + t * (0.076 + id * 0.009);
     const b = a * 1.7 + id;
-    const x = w * (0.51 + 0.22 * Math.cos(a));
-    const baseY = h * (0.50 + 0.26 * Math.sin(b));
+    const x = w * (0.51 + 0.18 * Math.cos(a));
+    const baseY = h * (0.50 + 0.17 * Math.sin(b));
     const y = baseY + displacement(x, baseY);
-    const dx = -w * 0.22 * Math.sin(a);
-    const dy = h * 0.442 * Math.cos(b);
+    const dx = -w * 0.18 * Math.sin(a);
+    const dy = h * 0.289 * Math.cos(b);
     const length = Math.hypot(dx, dy) || 1;
-    const scale = unit * (1.56 - 0.12 * id);
+    const scale = unit * (2.34 - 0.40 * id);
     const ux = dx * scale / length;
     const uy = dy * scale / length;
     const phase = t * 3.4 + id;
-    ctx.globalAlpha = ghost ? 0.16 / ghost : id > 1 ? .33 : 1;
-    ctx.fillStyle = ink[2];
-    for (let i = 0; i < n; i += ghost ? 4 : 1) {
-      const fx = fish[i * 2];
-      const fy = fish[i * 2 + 1] + bend(fx, phase);
-      if (!ghost) ctx.fillStyle = fx > -.45 && Math.sin(fx * 11 + fy * 7 + id) > .08 ? ink[4] : ink[2];
-      dot(x + fx * ux - fy * uy, y + fx * uy + fy * ux + Math.sin(fx * 6 + t) * .9, ghost ? 1.4 : 2.1);
+    ctx.globalAlpha = ghost ? .27 / ghost : id > 1 ? .17 : .96 - winter*.24;
+    const sin = Math.sin(phase), cos = Math.cos(phase);
+    for (let b=0; b<4; b++) {
+      const indices=koiInk[tier][id][b];
+      ctx.fillStyle = ink[ghost ? 2 : koiMaterials[b]];
+      for (let k=0; k<indices.length; k += ghost ? 4 : 1) {
+        const i=indices[k], fx=fish[i*2];
+        if (ghost && fx > -.45) continue;
+        const fy=fish[i*2+1] + bendSin[i]*cos + bendCos[i]*sin;
+        dot(x + (fx - ghost*.12) * ux - fy * uy, y + fx * uy + fy * ux + Math.sin(fx*6+t)*.85, ghost ? 1.45 : 1.95);
+      }
     }
   }
 
@@ -178,11 +202,12 @@ export function createPond(canvas) {
     }
   }
 
-  function draw(dt) {
+  function draw(dt, backdrop) {
     clock += dt * (calm ? 0.24 : 1);
     fishTime += dt * (calm ? 0.24 : 1) * (1 - 0.73 * winter);
     if (!calm && clock >= nextWake) {
-      if (!waves.length) ripple(.51 + .22 * Math.cos(fishTime * .085), .5 + .26 * Math.sin(fishTime * .1445), 'wake');
+      const head = 1.05 + fishTime*.076;
+      if (!waves.length) ripple(.51 + .18 * Math.cos(head), .5 + .17 * Math.sin(head*1.7), 'wake');
       nextWake = clock + 3.3;
     }
     for (const wave of waves) {
@@ -196,7 +221,8 @@ export function createPond(canvas) {
     }
     dots = 0;
     const q = quality[tier];
-    ctx.clearRect(0, 0, w, h);
+    if (backdrop) backdrop(ctx, w, h);
+    else ctx.clearRect(0, 0, w, h);
     ctx.fillStyle = ink[0];
     ctx.globalAlpha = 0.57;
     for (let g = 0; g < q[0] / 4; g++) {
@@ -230,7 +256,7 @@ export function createPond(canvas) {
     const count = 1 + Math.round((q[1] - 1) * (1 - winter) ** 2);
     const ghosts = Math.round(q[3] * (1 - winter));
     for (let k = 0; k < count; k++) {
-      for (let g = ghosts; g >= 0; g--) drawFish(k, fishTime - g * 0.17, g, q[2]);
+      for (let g = ghosts; g >= 0; g--) drawFish(k, fishTime - g * 0.17, g);
     }
 
     if (flora > 0) {
@@ -250,7 +276,7 @@ export function createPond(canvas) {
       const sway = Math.sin(clock * .26 + px * 9);
       const x = w * px + 2 * sway, y = h * py;
       ctx.globalAlpha = .68 + .14 * sway;
-      plant(flotsam, q[5] * 3, x, y + displacement(x, y), unit * size);
+      plant(flotsam, q[5] * 9, x, y + displacement(x, y), unit * size);
     }
 
     drawBank(q[5]);

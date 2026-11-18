@@ -166,9 +166,10 @@ test("site review assets and retained public modules keep independent cache vers
   const articleLabels = read("js/data/article-labels.mjs");
 
   const pondVersion = "20261118-home-pond-r1";
-  for (const asset of ["/js/ui-motion.js", "/css/home-crt.css"]) {
-    assert.ok(index.includes(`${asset}?v=${pondVersion}`));
-  }
+  const rendererVersion = "20261118-home-pond-r2";
+  assert.ok(index.includes(`/js/ui-motion.js?v=${pondVersion}`));
+  assert.ok(index.includes(`/css/home-crt.css?v=${rendererVersion}`));
+  assert.ok(main.includes(`./home/desktop.mjs?v=${rendererVersion}`));
   for (const asset of ["/js/mobile-shell.js"]) {
     assert.ok(index.includes(`${asset}?v=${reviewVersion}`), `${asset} should use ${reviewVersion}`);
   }
@@ -176,7 +177,7 @@ test("site review assets and retained public modules keep independent cache vers
     assert.ok(index.includes(`${asset}?v=${reviewVersion}`), `${asset} should use ${reviewVersion}`);
   }
   assert.ok(index.includes(`/css/mobile-ios-shell.css?v=${cloudSaveReleaseVersion}`));
-  assert.ok(index.includes(`/js/main.js?v=${pondVersion}`));
+  assert.ok(index.includes(`/js/main.js?v=${rendererVersion}`));
   assert.ok(main.includes(`wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));
   assert.ok(changelog.includes(switchRouteMotionVersion), "the wallpaper route-motion release token must remain in project history");
   assert.ok(changelog.includes(videoLinkAutofillVersion), "the video-link release token must remain in project history");

@@ -3102,7 +3102,7 @@ function initWallpaperTimeSwitch() {
         if (!wanted() || mine !== ticket) return;
         loading = true;
         try {
-          const { startDesktop } = await import("./home/desktop.mjs");
+          const { startDesktop } = await import("./home/desktop.mjs?v=20261118-home-pond-r2");
           if (mine !== ticket || !wanted()) return;
           const canvas = document.getElementById("home-pond-canvas");
           if (canvas) stop = startDesktop(canvas);

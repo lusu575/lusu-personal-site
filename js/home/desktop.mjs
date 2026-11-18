@@ -1,12 +1,10 @@
 import { createPond, quality } from "./pond.mjs";
-import { mixColor } from "./point-sets.mjs";
 import { createSeasonControl } from "./season-control.mjs";
-import { paintBed } from "./water-bed.mjs";
+import { createWaterBed } from "./water-bed.mjs";
 import { beginBoot } from "./boot.mjs";
 
 const WINDOW = 60;
-const water = [0x284537, 0x164940, 0x4f3e25, 0x26394b];
-const tones = [0xe4bbc7, 0xb0ddcb, 0xe4bb91, 0xb5d2ee];
+const tones = ["#e4bbc7", "#b0ddcb", "#e4bb91", "#b5d2ee"];
 
 export function startDesktop(canvas) {
   const home = canvas.closest("#home");
@@ -44,9 +42,23 @@ export function startDesktop(canvas) {
   let season;
   let blend = 1;
 
-  const bed = document.createElement("canvas");
-  bed.className = "pond-bed";
-  canvas.before(bed);
+  const bed = createWaterBed(() => document.createElement("canvas"));
+  let warmHandle = 0;
+  const cancelWarm = window.cancelIdleCallback?.bind(window) || clearTimeout;
+  function warmPlates() {
+    cancelWarm(warmHandle);
+    const missing = [0, 1, 2, 3].filter(s => s !== target);
+    function next() {
+      if (disposed || !active || document.hidden || !missing.length) return;
+      const prepare = () => {
+        if (disposed || !active || document.hidden) return;
+        bed.plate(missing.shift());
+        next();
+      };
+      warmHandle = window.requestIdleCallback ? window.requestIdleCallback(prepare) : setTimeout(prepare, 80);
+    }
+    next();
+  }
   const slider = home.querySelector("#pond-season-slider");
   const icons = [...home.querySelectorAll(".desktop-icon")];
   const sweeps = new Map();
@@ -54,14 +66,23 @@ export function startDesktop(canvas) {
   function paintSeason(p) {
     season = p;
     pond.setSeason(p);
-    home.style.setProperty("--pond-water", mixColor(water[Math.floor(p)], water[Math.ceil(p)], p % 1));
-    home.style.setProperty("--pond-tone",
-      mixColor(tones[Math.floor(p)], tones[Math.ceil(p)], p % 1));
+  }
+
+  function backdrop(ctx, w, h) {
+    // One opaque display surface. Copy retained, already-coloured ink at 1:1
+    // backing pixels; only a season change needs a second (blended) blit.
+    ctx.drawImage(bed.plate(Math.floor(season)), 0, 0, w, h);
+    if (season % 1) {
+      ctx.globalAlpha = season % 1;
+      ctx.drawImage(bed.plate(Math.ceil(season)), 0, 0, w, h);
+      ctx.globalAlpha = 1;
+    }
   }
 
   const control = createSeasonControl(home, n => {
     from = season;
     target = n;
+    home.style.setProperty("--pond-tone", tones[n]);
     blend = reduced ? 1 : 0;
     if (reduced) paintSeason(n);
     else {
@@ -82,6 +103,7 @@ export function startDesktop(canvas) {
   });
   from = target = control.value;
   paintSeason(target);
+  home.style.setProperty("--pond-tone", tones[target]);
 
   function schedule() {
     if (!frame && active && !disposed && !document.hidden) frame = requestAnimationFrame(tick);
@@ -154,7 +176,8 @@ export function startDesktop(canvas) {
     const reset = dirty;
     if (dirty) {
       pond.resize(width, height, debug.tier, reduced);
-      paintBed(bed, Math.max(1, width), Math.max(1, height), debug.tier);
+      bed.resize(canvas.width, canvas.height);
+      warmPlates();
       debug.dpr = pond.dpr;
       dirty = false;
     }
@@ -166,7 +189,8 @@ export function startDesktop(canvas) {
       const f = blend * blend * (3 - 2 * blend);
       paintSeason(blend === 1 ? target : from + (target - from) * f);
     }
-    debug.pondParticles = pond.draw(reduced ? 0 : dt);
+    debug.pondParticles = pond.draw(reduced ? 0 : dt, backdrop);
+    if (reset) home.setAttribute("data-pond-phosphor", "");
     debug.controlParticles = control.draw(dt, quality[debug.tier][5],
       Math.min(2, window.devicePixelRatio || 1, quality[debug.tier][8]), reduced);
     debug.particles = debug.pondParticles + debug.controlParticles;
@@ -247,8 +271,9 @@ export function startDesktop(canvas) {
     document.removeEventListener("visibilitychange", sync);
     home.removeEventListener("click", click);
     for (const animation of sweeps.values()) animation.cancel();
-    bed.remove();
-    home.style.removeProperty("--pond-water");
+    cancelWarm(warmHandle);
+    bed.clear();
+    home.removeAttribute("data-pond-phosphor");
     home.style.removeProperty("--pond-tone");
     canvas.width = canvas.height = 1;
     if (window.__pondDebug === debug) delete window.__pondDebug;

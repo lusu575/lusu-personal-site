@@ -71,7 +71,6 @@ body[data-route="home"] .site-shell::after {
   background: radial-gradient(ellipse at 47% 55%, var(--pond-water,#164940), #0c1b20 58%, #060c11 96%);
 }
 
-#home .pond-bed,
 #home-pond-canvas {
   position: absolute;
   inset: 0;
@@ -95,6 +94,19 @@ body[data-route="home"] .site-shell::after {
     radial-gradient(ellipse at center, transparent 53%, rgb(0 3 9 / 58%) 100%),
     repeating-linear-gradient(90deg, rgb(245 102 90 / 2%) 0 1px, transparent 1px 3px),
     repeating-linear-gradient(to bottom, transparent 0 2px, rgb(1 6 12 / 18%) 2px 3px);
+}
+
+/* The opaque renderer contains its own curved point field, scan mask,
+   vignette and seasonal colour. Keep CSS optics for the no-canvas fallback
+   only: another viewport-sized transparent layer is costly on a software Viz. */
+#home[data-pond-phosphor]::after,
+#home[data-pond-phosphor] .pond-temperature { display: none; }
+
+@media (forced-colors: none) {
+  /* Raster the foreground phosphor with its ink, not across the viewport. */
+  #home[data-pond-phosphor] :is(.pond-glyph, .icon-title, .pond-status, #pond-season-slider canvas) {
+    mask-image: repeating-linear-gradient(to bottom, #000 0 2px, rgb(0 0 0 / 88%) 2px 3px);
+  }
 }
 
 #home .pond-status,
@@ -374,6 +386,11 @@ body[data-route="home"] .site-shell::after {
 
 #home .pond-status {
   color: var(--pond-tone);
+  transition: color 700ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #home .pond-status { transition: none; }
 }
 
 #home .pond-temperature {

@@ -53,6 +53,7 @@ export function createSeasonControl(home, onCommit) {
   let height = el.clientHeight;
   let scale = 0;
   let resize = true;
+  let still = null;
 
   function aria() {
     const n = pointer === null ? value : Math.round(destination);
@@ -164,6 +165,9 @@ export function createSeasonControl(home, onCommit) {
   function draw(dt, n, dpr, reduced) {
     quiet = reduced;
     if (!ctx || width < 1 || height < 1) return 0;
+    const settled = pointer === null && !spring && !held && !dust && trail.every(t => t === 0);
+    if (!resize && scale === dpr && settled && still?.n === n && still.value === value) return still.count;
+    still = null;
     if (resize || scale !== dpr) {
       scale = dpr;
       canvas.width = Math.max(1, Math.round(width * dpr));
@@ -221,6 +225,7 @@ export function createSeasonControl(home, onCommit) {
         cy + size * my + r * Math.sin(z + time * 2) - 0.7, 1.45, 1.45);
     }
     ctx.globalAlpha = 1;
+    if (settled) still = { n, value, count: count + n };
     return count + n;
   }
 

@@ -16,12 +16,22 @@ export function bend(x, phase) {
   return tail * tail * 0.34 * Math.sin(phase + x * 2.8);
 }
 
-export const fish = sample(384, (t, i) => {
-  const a = TAU * t;
-  if (i % 5 === 0) return [-0.62 - 0.52 * t, (i % 2 ? 1 : -1) * (0.04 + 0.34 * t)];
-  if (i % 9 === 0) return [0.18 - 0.36 * t, (i % 2 ? 1 : -1) * (.21 + .23 * t)];
-  const r = Math.sqrt(((i + .5) * .41421356) % 1);
-  return [0.11 + .87 * r * Math.cos(a), r * Math.sin(a) * (.25 + .09 * Math.cos(a))];
+// A full belly behind the blunt snout, a narrow caudal peduncle, paired
+// translucent fins and a bifurcated veil. Prefixes remain usable at low LOD.
+function grain(i) {
+  // Separate integer noise for the transverse coordinate: using three
+  // linear irrational sequences together left diagonal holes in the body.
+  let b = Math.imul(i ^ (i >>> 16), 0x45d9f3b);
+  b = Math.imul(b ^ (b >>> 16), 0x45d9f3b);
+  return ((b ^ (b >>> 16)) >>> 0) / 4294967296;
+}
+export const fish = sample(1536, (t, i) => {
+  const u = grain(i+361), v = grain(i+2049);
+  if (i % 6 === 0) return [-.74 - .67*t, (i%4 ? 1 : -1)*(.03 + t*(.08+.29*u))];
+  if (i % 9 === 1) return [.32 - .44*t + .13*u, (i%2 ? 1 : -1)*(.13 + .30*t*u)];
+  const x = -.84 + 1.78*t;
+  const girth = (.08 + .226*Math.sin(t*1.90)) * Math.sin(Math.PI*t)**.52;
+  return [x, (v*2 - 1) * girth * (.66 + .35*u)];
 });
 
 export const reeds = sample(80, (t, i) => {
@@ -30,7 +40,7 @@ export const reeds = sample(80, (t, i) => {
 });
 
 // Oblique disc: missing sector, two cut edges and a few radial veins.
-export const lilyPad = sample(192, (t, i) => {
+export const lilyPad = sample(768, (t, i) => {
   let a = 0.4 + (TAU - 0.8) * t;
   let r = 1 - 0.04 * Math.cos(5 * a);
   if (i % 5 === 1) {
@@ -40,7 +50,7 @@ export const lilyPad = sample(192, (t, i) => {
     a = 0.65 + (i % 7) * 0.81;
     r = 0.15 + 0.72 * t;
   }
-  if (i % 3 === 0) r *= Math.sqrt(((i + .5) * .41421356) % 1);
+  if (i % 8 !== 0) r *= Math.sqrt(((i + .5) * .41421356) % 1);
   return [r * Math.cos(a), 0.59 * r * Math.sin(a)];
 });
 
@@ -55,12 +65,12 @@ export const lotusBloom = sample(192, (t, i) => {
 
 // Fallen leaves and ice crystals on the water are separate point fields
 // (never reuse the slider's identification marks in the scenery).
-export const fallenLeaf = sample(192, (t, i) => {
+export const fallenLeaf = sample(768, (t, i) => {
   const a = TAU * t;
   const r = (.28 + .63 * (1 - Math.abs(Math.sin(3.5 * a)))) * Math.sqrt(((i + 1) * .4142) % 1);
   return [r * Math.sin(a), .76 * r * Math.cos(a)];
 });
-export const frost = sample(192, (t, i) => {
+export const frost = sample(768, (t, i) => {
   const twig = i % 3;
   return [t * 1.4 - .7, -.32 * t + (twig ? (i % 2 ? 1 : -1) * (t % .25) : 0)];
 });

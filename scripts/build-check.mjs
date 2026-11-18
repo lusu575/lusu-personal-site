@@ -905,6 +905,7 @@ const publicSiteReleaseVersion = "20260827-private-room-lifecycle-r1";
 const mobileBlogRetiredReleaseVersion = "20260902-mobile-blog-retired-r1";
 const reviewReleaseVersion = "20260908-site-review-r1";
 const pondReleaseVersion = "20261118-home-pond-r1";
+const pondRendererVersion = "20261118-home-pond-r2";
 const homeContentReleaseVersion = "20261029-private-mcp-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = homeContentReleaseVersion;
@@ -3351,7 +3352,7 @@ const premiumUiVersion = "20260711-calm-motion-r13";
 const publicModulesVersion = reviewReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = pondReleaseVersion;
+const currentMainVersion = pondRendererVersion;
 const currentCssVersion = reviewReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260922-cloud-save-10min-r1";
@@ -3360,7 +3361,7 @@ const currentLifeRestartMobileTouchVersion = "20260726-life-mobile-touch-r1";
 
 for (const [asset, expected] of [
   ["/js/mobile-shell.js", publicModulesVersion], ["/js/ui-motion.js", pondReleaseVersion],
-  ["/css/home-crt.css", pondReleaseVersion]
+  ["/css/home-crt.css", pondRendererVersion]
 ]) {
   const versions = assetQueryVersions(indexHtml, asset);
   if (versions.length !== 1 || versions[0] !== expected) {
@@ -5136,7 +5137,7 @@ if (finalUpdateStarted) {
     }
   }
 
-  if (!changelog.split("\n## 2026-10-29")[0].includes(pondReleaseVersion)) {
+  if (![pondReleaseVersion, pondRendererVersion].every(v => changelog.split("\n## 2026-10-29")[0].includes(v))) {
     fail("CHANGELOG.md missing pond preview cache version");
   }
   for (const token of [
