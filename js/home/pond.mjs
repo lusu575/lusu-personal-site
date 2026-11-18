@@ -1,5 +1,7 @@
 import { fallenLeaf, fish, frost, lilyPad, lotusBloom, mixColor, reeds, seasons } from "./point-sets.mjs";
 
+import { createFrameRaster, packedColour } from './frame-raster.mjs';
+
 const TAU = Math.PI * 2;
 const pads = [[.32,.612,.98], [.778,.373,.85]];
 
@@ -55,9 +57,13 @@ const flecks = [
   [-4, 0, -1.8, 0.6, 0.4, 1.3, 4, -3]
 ];
 
-export function createPond(canvas) {
-  const ctx = canvas.getContext("2d", { alpha: false });
-  if (!ctx) return null;
+export function createPond(canvas, bed = null) {
+  const native = canvas.getContext("2d", { alpha: false });
+  if (!native) return null;
+  // The same dot geometry also supports drawing ink alone on a Canvas2D.
+  const raster = bed ? createFrameRaster(native, bed) : null;
+  const ctx = raster || native;
+  const colour = raster ? packedColour : mixColor;
   let tier = 0;
   let w = 1;
   let h = 1;
@@ -89,15 +95,15 @@ export function createPond(canvas) {
     winter = Math.max(0, p - 2);
     canopy = Math.min(1, Math.abs(p - 1));
     flora = weights[a] + (weights[b] - weights[a]) * f;
-    for (let i = 0; i < 4; i++) ink[i] = mixColor(seasons[a].colors[i], seasons[b].colors[i], f);
+    for (let i = 0; i < 4; i++) ink[i] = colour(seasons[a].colors[i], seasons[b].colors[i], f);
     const leaf = Math.min(1, Math.max(0, p - 1));
     for (let i = 0; i < flotsam.length; i++) {
       const xy = lilyPad[i] + leaf * (fallenLeaf[i] - lilyPad[i]);
       flotsam[i] = xy + winter * (frost[i] - xy);
     }
-    ink[4] = mixColor(0xe88e52, 0xa4baca, winter);
-    ink[5] = mixColor(0xffedbf, 0xc9d9e0, winter);
-    ink[6] = mixColor(0xca6341, 0x7b9aac, winter);
+    ink[4] = colour(0xe88e52, 0xa4baca, winter);
+    ink[5] = colour(0xffedbf, 0xc9d9e0, winter);
+    ink[6] = colour(0xca6341, 0x7b9aac, winter);
     for (let i = 0; i < 8; i++) fragment[i] = flecks[a][i] + (flecks[b][i] - flecks[a][i]) * f;
   }
 
@@ -113,7 +119,8 @@ export function createPond(canvas) {
     const bh = Math.max(1, Math.floor(h * dpr));
     if (canvas.width !== bw) canvas.width = bw;
     if (canvas.height !== bh) canvas.height = bh;
-    ctx.setTransform(bw / w, 0, 0, bh / h, 0, 0);
+    if (raster) raster.resize(bw,bh,w,h);
+    else native.setTransform(bw / w, 0, 0, bh / h, 0, 0);
     unit = Math.min(65, Math.max(16, Math.min(w, h) * 0.055));
   }
 
@@ -202,7 +209,7 @@ export function createPond(canvas) {
     }
   }
 
-  function draw(dt, backdrop) {
+  function draw(dt, target=1, progress=1) {
     clock += dt * (calm ? 0.24 : 1);
     fishTime += dt * (calm ? 0.24 : 1) * (1 - 0.73 * winter);
     if (!calm && clock >= nextWake) {
@@ -221,8 +228,8 @@ export function createPond(canvas) {
     }
     dots = 0;
     const q = quality[tier];
-    if (backdrop) backdrop(ctx, w, h);
-    else ctx.clearRect(0, 0, w, h);
+    if (raster) raster.begin(target, progress);
+    else native.clearRect(0, 0, w, h);
     ctx.fillStyle = ink[0];
     ctx.globalAlpha = 0.57;
     for (let g = 0; g < q[0] / 4; g++) {
@@ -299,11 +306,12 @@ export function createPond(canvas) {
       }
     }
     if (!calm && tier < 2) {
-      ctx.fillStyle = "#c3e3eb";
+      ctx.fillStyle = raster ? 0xffebe3c3 : "#c3e3eb";
       ctx.globalAlpha = 0.035;
       ctx.fillRect(0, (clock * 26) % (h + 4) - 4, w, 3);
     }
     ctx.globalAlpha = 1;
+    raster?.end();
     return dots;
   }
 

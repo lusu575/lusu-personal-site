@@ -153,23 +153,30 @@ function shoreline(pixels,w,h,s) {
 
 export function createWaterBed(makeCanvas) {
   let w=0,h=0,field;
-  const cache = new Map();
+  const cache = new Map(), surfaces = new Map();
   function resize(width,height){
     if(width===w&&height===h)return;
     clear(); w=width;h=height;field=waterField(w,h);
   }
+  function pixels(s){
+    if(cache.has(s)) return cache.get(s);
+    const ink=new Uint32Array(w*h), lut=water[s];
+    for(let i=0;i<ink.length;i++) ink[i]=lut[field[i]];
+    shoreline(ink,w,h,s); cache.set(s,ink);
+    return ink;
+  }
+  // A canvas projection for standalone/offscreen consumers. The live pond
+  // uses the packed plates directly and does not allocate four extra surfaces.
   function plate(s){
-    if(cache.has(s))return cache.get(s);
+    if(surfaces.has(s)) return surfaces.get(s);
     const canvas=makeCanvas(); canvas.width=w; canvas.height=h;
-    const ctx=canvas.getContext('2d',{alpha:false});
-    const image=ctx.createImageData(w,h), pixels=new Uint32Array(image.data.buffer), lut=water[s];
-    for(let i=0;i<pixels.length;i++)pixels[i]=lut[field[i]];
-    shoreline(pixels,w,h,s);ctx.putImageData(image,0,0);cache.set(s,canvas);
-    return canvas;
+    const ctx=canvas.getContext('2d',{alpha:false}), image=ctx.createImageData(w,h);
+    new Uint32Array(image.data.buffer).set(pixels(s));
+    ctx.putImageData(image,0,0); surfaces.set(s,canvas); return canvas;
   }
   function clear(){
-    for(const canvas of cache.values()) canvas.width=canvas.height=1;
-    cache.clear();field=null;w=h=0;
+    for(const canvas of surfaces.values()) canvas.width=canvas.height=1;
+    surfaces.clear();cache.clear();field=null;w=h=0;
   }
-  return {resize,plate,clear};
+  return {resize,pixels,plate,clear};
 }

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createPond, quality } from '../js/home/pond.mjs';
+import { createFrameRaster, packedColour } from '../js/home/frame-raster.mjs';
 import { createWaterBed } from '../js/home/water-bed.mjs';
 import { fish, lilyPad, fallenLeaf, frost, seasons } from '../js/home/point-sets.mjs';
 
@@ -63,6 +64,24 @@ test('the four procedural plates share a bounded cache and release their backing
   assert.equal(next.width, 256);
   bed.clear();
   assert.equal(next.width, 1);
+});
+
+test('the live raster uploads once, leaves cached ink immutable, and resumes a diagonal seasonal sweep', () => {
+  let uploaded, writes=0;
+  const ctx={createImageData:(w,h)=>({data:new Uint8ClampedArray(w*h*4)}),
+    putImageData(img){uploaded=new Uint32Array(img.data.buffer).slice(); writes++;}};
+  const base=Array.from({length:4},(_,i)=>new Uint32Array(64*32).fill(packedColour(i*0x405030,i*0x405030,0)));
+  const raster=createFrameRaster(ctx,{resize(){},pixels:s=>base[s]});
+  raster.resize(64,32,64,32);
+  raster.begin(1,1); raster.fillStyle=packedColour(0xffffff,0xffffff,0);
+  raster.fillRect(5,6,2,2); raster.end();
+  assert.equal(writes,1); assert.equal(uploaded[6*64+5],0xffffffff);
+  assert.notEqual(base[1][6*64+5],0xffffffff);
+  raster.begin(3,.5); raster.end();
+  assert.equal(uploaded[63],base[3][63]); assert.equal(uploaded[31*64],base[1][0]);
+  const middle=uploaded; raster.begin(0,0); raster.end(); assert.deepEqual(uploaded,middle);
+  raster.begin(0,.7); raster.end(); raster.begin(0,1); raster.end();
+  assert.deepEqual(uploaded,base[0]); assert.equal(writes,5);
 });
 
 test('season marks morph point-for-point and flora stays separate from slider glyphs', () => {

@@ -9,7 +9,8 @@ const tones = ["#e4bbc7", "#b0ddcb", "#e4bb91", "#b5d2ee"];
 export function startDesktop(canvas) {
   const home = canvas.closest("#home");
   if (!home) return () => {};
-  const pond = createPond(canvas);
+  const bed = createWaterBed(() => document.createElement("canvas"));
+  const pond = createPond(canvas, bed);
   if (!pond) return () => {};
 
   const root = document.documentElement;
@@ -42,7 +43,6 @@ export function startDesktop(canvas) {
   let season;
   let blend = 1;
 
-  const bed = createWaterBed(() => document.createElement("canvas"));
   let warmHandle = 0;
   const cancelWarm = window.cancelIdleCallback?.bind(window) || clearTimeout;
   function warmPlates() {
@@ -52,7 +52,7 @@ export function startDesktop(canvas) {
       if (disposed || !active || document.hidden || !missing.length) return;
       const prepare = () => {
         if (disposed || !active || document.hidden) return;
-        bed.plate(missing.shift());
+        bed.pixels(missing.shift());
         next();
       };
       warmHandle = window.requestIdleCallback ? window.requestIdleCallback(prepare) : setTimeout(prepare, 80);
@@ -66,17 +66,6 @@ export function startDesktop(canvas) {
   function paintSeason(p) {
     season = p;
     pond.setSeason(p);
-  }
-
-  function backdrop(ctx, w, h) {
-    // One opaque display surface. Copy retained, already-coloured ink at 1:1
-    // backing pixels; only a season change needs a second (blended) blit.
-    ctx.drawImage(bed.plate(Math.floor(season)), 0, 0, w, h);
-    if (season % 1) {
-      ctx.globalAlpha = season % 1;
-      ctx.drawImage(bed.plate(Math.ceil(season)), 0, 0, w, h);
-      ctx.globalAlpha = 1;
-    }
   }
 
   const control = createSeasonControl(home, n => {
@@ -176,7 +165,6 @@ export function startDesktop(canvas) {
     const reset = dirty;
     if (dirty) {
       pond.resize(width, height, debug.tier, reduced);
-      bed.resize(canvas.width, canvas.height);
       warmPlates();
       debug.dpr = pond.dpr;
       dirty = false;
@@ -189,7 +177,7 @@ export function startDesktop(canvas) {
       const f = blend * blend * (3 - 2 * blend);
       paintSeason(blend === 1 ? target : from + (target - from) * f);
     }
-    debug.pondParticles = pond.draw(reduced ? 0 : dt, backdrop);
+    debug.pondParticles = pond.draw(reduced ? 0 : dt, target, blend);
     if (reset) home.setAttribute("data-pond-phosphor", "");
     debug.controlParticles = control.draw(dt, quality[debug.tier][5],
       Math.min(2, window.devicePixelRatio || 1, quality[debug.tier][8]), reduced);
