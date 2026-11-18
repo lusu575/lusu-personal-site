@@ -86,8 +86,9 @@ test("Unpublished Blog has no top-level dead end and legacy hashes merge into Kn
   const publishedCount = blogContent.filter((item) => item.published === true && (item.url || item.content)).length;
   assert.equal(blogManifest.publishedCount, publishedCount, "Blog availability projection must match published fallback content");
   assert.equal(publishedCount, 0);
-  assert.equal((index.match(/data-blog-entry[^>]*hidden/g) || []).length, 2);
-  assert.match(index, /data-route="blog" data-blog-entry data-mobile-home-excluded hidden/);
+  assert.equal((index.match(/data-blog-entry[^>]*hidden/g) || []).length, 1);
+  assert.match(index, /data-route="blog" data-mobile-dock-excluded data-blog-entry hidden/);
+  assert.doesNotMatch(index.match(/<nav class="desktop-icons"[\s\S]*?<\/nav>/)[0], /data-route="blog"/);
   assert.match(
     mobileCss,
     /html\[data-ui-shell="mobile"\]\s+\.desktop-icons\s+\[data-mobile-home-excluded\],[\s\S]*?html\[data-ui-shell="mobile"\]\s+\.desktop-icons\s+\[data-blog-entry\]\[hidden\]\s*\{\s*display:\s*none;/,

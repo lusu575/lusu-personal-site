@@ -107,6 +107,7 @@
       const mobileShell = window.matchMedia?.("(max-width: 760px), (max-height: 520px) and (pointer: coarse)")?.matches;
       const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
       document.documentElement.dataset.motion = reducedMotion ? "reduced" : "full";
+      if (!window.location.pathname?.startsWith("/articles/") && (!window.location.hash || window.location.hash === "#home")) return;
       const saveData = (navigator.connection || navigator.mozConnection || navigator.webkitConnection)?.saveData === true;
       const selectedWidth = saveData || window.innerWidth <= 960 ? 960 : window.innerWidth <= 1440 ? 1440 : 1920;
       const preload = document.createElement("link");
@@ -196,13 +197,13 @@
       <div class="mobile-statusbar" aria-label="Mobile status bar">
         <time class="mobile-status-time" id="mobile-status-time" data-local-time="compact">--:--</time>
         <div class="mobile-status-island" aria-hidden="true">
-          <img src="/assets/images/lusu-tv-head-64.png?v=20260611-unified-tv-icon" width="64" height="64" alt="">
+          <img loading="lazy" src="/assets/images/lusu-tv-head-64.png?v=20260611-unified-tv-icon" width="64" height="64" alt="">
           <span>LUSU OS</span>
         </div>
       </div>
       <div class="mobile-appbar">
         <button class="mobile-home-button" type="button" data-route="home" aria-label="返回桌面" data-i18n-aria-label="brandHomeAria">
-          <img src="/assets/images/lusu-tv-head-64.png?v=20260611-unified-tv-icon" width="64" height="64" alt="" aria-hidden="true">
+          <img loading="lazy" src="/assets/images/lusu-tv-head-64.png?v=20260611-unified-tv-icon" width="64" height="64" alt="" aria-hidden="true">
           <span class="mobile-home-label" data-i18n="startButton">首页</span>
         </button>
         <div class="mobile-route-copy">
@@ -211,7 +212,7 @@
         </div>
       </div>
       <button class="brand-button" data-route="home" aria-label="返回桌面" data-i18n-aria-label="brandHomeAria">
-        <img class="brand-orb" src="/assets/images/lusu-tv-head-64.png?v=20260611-unified-tv-icon" width="64" height="64" alt="" aria-hidden="true">
+        <img class="brand-orb" loading="lazy" src="/assets/images/lusu-tv-head-64.png?v=20260611-unified-tv-icon" width="64" height="64" alt="" aria-hidden="true">
         <span data-i18n="siteName">鲁肃的个人站</span>
       </button>
       <div class="topbar-actions">
@@ -228,11 +229,11 @@
               <span class="wallpaper-time-accent" data-switch-theme="night"><img class="wallpaper-time-accent-atlas" data-atlas-cell="night" data-src="/assets/images/wallpaper-switch/accent-atlas.png?v=20260810-wallpaper-time-switch-r6" width="480" height="640" decoding="async" alt=""></span>
             </span>
           </span>
-          <img class="wallpaper-time-frame" src="/assets/images/wallpaper-switch/frame.png?v=20260810-wallpaper-time-switch-r6" data-src="/assets/images/wallpaper-switch/frame.png?v=20260810-wallpaper-time-switch-r6" width="880" height="220" alt="" aria-hidden="true">
-          <button class="wallpaper-time-option" type="button" role="radio" data-wallpaper-time="morning" aria-checked="true" aria-label="早上" data-i18n-aria-label="wallpaperTimeMorning" tabindex="0"><span class="wallpaper-time-marker" aria-hidden="true"><img class="wallpaper-time-marker-atlas" data-atlas-cell="morning" src="/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r6" data-src="/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r6" width="144" height="576" alt=""></span></button>
-          <button class="wallpaper-time-option" type="button" role="radio" data-wallpaper-time="day" aria-checked="false" aria-label="中午" data-i18n-aria-label="wallpaperTimeDay" tabindex="-1"><span class="wallpaper-time-marker" aria-hidden="true"><img class="wallpaper-time-marker-atlas" data-atlas-cell="day" src="/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r6" data-src="/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r6" width="144" height="576" alt=""></span></button>
-          <button class="wallpaper-time-option" type="button" role="radio" data-wallpaper-time="dusk" aria-checked="false" aria-label="下午" data-i18n-aria-label="wallpaperTimeDusk" tabindex="-1"><span class="wallpaper-time-marker" aria-hidden="true"><img class="wallpaper-time-marker-atlas" data-atlas-cell="dusk" src="/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r6" data-src="/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r6" width="144" height="576" alt=""></span></button>
-          <button class="wallpaper-time-option" type="button" role="radio" data-wallpaper-time="night" aria-checked="false" aria-label="晚上" data-i18n-aria-label="wallpaperTimeNight" tabindex="-1"><span class="wallpaper-time-marker" aria-hidden="true"><img class="wallpaper-time-marker-atlas" data-atlas-cell="night" src="/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r6" data-src="/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r6" width="144" height="576" alt=""></span></button>
+          <img class="wallpaper-time-frame" data-src="/assets/images/wallpaper-switch/frame.png?v=20260810-wallpaper-time-switch-r6" width="880" height="220" alt="" aria-hidden="true">
+          <button class="wallpaper-time-option" type="button" role="radio" data-wallpaper-time="morning" aria-checked="true" aria-label="早上" data-i18n-aria-label="wallpaperTimeMorning" tabindex="0"><span class="wallpaper-time-marker" aria-hidden="true"><img class="wallpaper-time-marker-atlas" data-atlas-cell="morning" data-src="/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r6" width="144" height="576" alt=""></span></button>
+          <button class="wallpaper-time-option" type="button" role="radio" data-wallpaper-time="day" aria-checked="false" aria-label="中午" data-i18n-aria-label="wallpaperTimeDay" tabindex="-1"><span class="wallpaper-time-marker" aria-hidden="true"><img class="wallpaper-time-marker-atlas" data-atlas-cell="day" data-src="/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r6" width="144" height="576" alt=""></span></button>
+          <button class="wallpaper-time-option" type="button" role="radio" data-wallpaper-time="dusk" aria-checked="false" aria-label="下午" data-i18n-aria-label="wallpaperTimeDusk" tabindex="-1"><span class="wallpaper-time-marker" aria-hidden="true"><img class="wallpaper-time-marker-atlas" data-atlas-cell="dusk" data-src="/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r6" width="144" height="576" alt=""></span></button>
+          <button class="wallpaper-time-option" type="button" role="radio" data-wallpaper-time="night" aria-checked="false" aria-label="晚上" data-i18n-aria-label="wallpaperTimeNight" tabindex="-1"><span class="wallpaper-time-marker" aria-hidden="true"><img class="wallpaper-time-marker-atlas" data-atlas-cell="night" data-src="/assets/images/wallpaper-switch/marker-atlas.png?v=20260810-wallpaper-time-switch-r6" width="144" height="576" alt=""></span></button>
           <span class="wallpaper-time-thumb" aria-hidden="true">
             <span class="wallpaper-time-celestial" data-switch-theme="morning"><img class="wallpaper-time-node-atlas" data-atlas-cell="morning" data-src="/assets/images/wallpaper-switch/node-atlas.png?v=20260810-wallpaper-time-switch-r6" width="192" height="960" decoding="async" alt=""></span>
             <span class="wallpaper-time-celestial" data-switch-theme="day"><img class="wallpaper-time-node-atlas" data-atlas-cell="day" data-src="/assets/images/wallpaper-switch/node-atlas.png?v=20260810-wallpaper-time-switch-r6" width="192" height="960" decoding="async" alt=""></span>
@@ -256,6 +257,7 @@
             });
             const initialRouteIsHome = !window.location.pathname.startsWith("/articles/")
               && (!window.location.hash || window.location.hash === "#home");
+            if (initialRouteIsHome) return;
             const initialMobileShell = document.documentElement.dataset.uiShell === "mobile";
             const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             const hardwareConcurrencyValue = Number(navigator.hardwareConcurrency);
@@ -267,7 +269,7 @@
               || (hardwareConcurrency > 0 && hardwareConcurrency <= 2)
               || (deviceMemory > 0 && deviceMemory <= 2);
             const firstPaintAssets = group?.querySelectorAll(
-              `.wallpaper-time-marker-atlas[data-src], .wallpaper-time-roller-atlas[data-src], [data-switch-theme="${selectedTheme}"] [data-src]`
+              `.wallpaper-time-frame[data-src], .wallpaper-time-marker-atlas[data-src], .wallpaper-time-roller-atlas[data-src], [data-switch-theme="${selectedTheme}"] [data-src]`
             ) || [];
             firstPaintAssets.forEach((asset) => {
               if (asset.closest(".wallpaper-time-accent")
@@ -611,7 +613,7 @@
     <footer class="xp-taskbar">
       <div class="mobile-dock-scroll">
         <span class="mobile-dock-selection" aria-hidden="true"></span>
-        <button class="start-button" data-route="home"><img class="start-windows-icon" src="/assets/images/start-windows-pixel.png?v=20260718-resource-icons-layout-r1" width="96" height="96" alt="" aria-hidden="true"><span class="dock-label-full" data-i18n="startButton">首页</span><span class="dock-label-short" data-i18n="dockHome">首页</span></button>
+        <button class="start-button" data-route="home"><img class="start-windows-icon" loading="lazy" src="/assets/images/start-windows-pixel.png?v=20260718-resource-icons-layout-r1" width="96" height="96" alt="" aria-hidden="true"><span class="dock-label-full" data-i18n="startButton">首页</span><span class="dock-label-short" data-i18n="dockHome">首页</span></button>
         <nav class="taskbar-tabs" aria-label="底部主导航" data-i18n-aria-label="taskbarNavAria">
           <button data-route="knowledge"><span class="mini-icon taskbar-icon taskbar-icon-knowledge" aria-hidden="true"></span><span class="dock-label-full" data-i18n="navKnowledge">知识库</span><span class="dock-label-short" data-i18n="dockKnowledge">知识</span></button>
           <button data-route="videos"><span class="mini-icon taskbar-icon taskbar-icon-videos" aria-hidden="true"></span><span class="dock-label-full" data-i18n="navVideos">视频区</span><span class="dock-label-short" data-i18n="dockVideos">视频</span></button>
@@ -695,7 +697,7 @@
   </div>
 
   <script src="/js/telemetry.js?v=20260802-traffic-budget-r1"></script>
-  <script src="/js/ui-motion.js?v=20260908-site-review-r1"></script>
+  <script src="/js/ui-motion.js?v=20261118-home-pond-r1"></script>
   <script type="module" src="/js/main.js?v=20261118-home-pond-r1"></script>
 </body>
 </html>

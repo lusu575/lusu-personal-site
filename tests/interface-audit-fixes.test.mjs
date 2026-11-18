@@ -165,17 +165,18 @@ test("site review assets and retained public modules keep independent cache vers
   const resources = read("js/routes/resources.mjs");
   const articleLabels = read("js/data/article-labels.mjs");
 
-  for (const asset of [
-    "/js/mobile-shell.js",
-    "/js/ui-motion.js"
-  ]) {
+  const pondVersion = "20261118-home-pond-r1";
+  for (const asset of ["/js/ui-motion.js", "/css/home-crt.css"]) {
+    assert.ok(index.includes(`${asset}?v=${pondVersion}`));
+  }
+  for (const asset of ["/js/mobile-shell.js"]) {
     assert.ok(index.includes(`${asset}?v=${reviewVersion}`), `${asset} should use ${reviewVersion}`);
   }
   for (const asset of ["/css/style.css", "/css/motion-system.css"]) {
     assert.ok(index.includes(`${asset}?v=${reviewVersion}`), `${asset} should use ${reviewVersion}`);
   }
   assert.ok(index.includes(`/css/mobile-ios-shell.css?v=${cloudSaveReleaseVersion}`));
-  assert.ok(index.includes(`/js/main.js?v=${cloudSaveReleaseVersion}`));
+  assert.ok(index.includes(`/js/main.js?v=${pondVersion}`));
   assert.ok(main.includes(`wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));
   assert.ok(changelog.includes(switchRouteMotionVersion), "the wallpaper route-motion release token must remain in project history");
   assert.ok(changelog.includes(videoLinkAutofillVersion), "the video-link release token must remain in project history");
@@ -212,7 +213,7 @@ test("site review assets and retained public modules keep independent cache vers
   assert.match(index, /class="wallpaper-time-roller-atlas" data-atlas-cell="roller" data-src="\/assets\/images\/wallpaper-switch\/node-atlas\.png\?v=20260810-wallpaper-time-switch-r6" width="192" height="960"/);
   assert.doesNotMatch(index, /wallpaper-switch\/(?:time-track|time-selector|fx-(?:morning|day|dusk|night)|node-inactive|atmosphere-(?:morning|day|dusk|night)-(?:ambient|far|mid|accent|atlas))\.png/);
   assert.ok(main.includes(`const routeStyleVersion = "${reviewVersion}"`));
-  assert.ok(main.includes(`./core/i18n.mjs?v=${reviewVersion}`));
+  assert.ok(main.includes(`./core/i18n.mjs?v=${pondVersion}`));
   assert.ok(main.includes(`./core/wallpaper-time.mjs?v=${publicVersion}`));
   assert.ok(main.includes(`./data/home-content.mjs?v=${cloudSaveReleaseVersion}`));
   assert.ok(main.includes(`./core/wallpaper-ambient.mjs?v=${displayFixReleaseVersion}`));

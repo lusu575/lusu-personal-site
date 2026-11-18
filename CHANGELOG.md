@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## 2026-11-18 · 首页本地预览（未部署）
+
+- `redesign-homepage`：首页改为四季粒子池塘与 CRT 管面，保留六个原路由及三语标签，不再显示 Blog、顶栏和任务栏。点阵 SVG、季节标记和池底均由代码绘制，不加载参考图。
+- 首页图标与真实窗口按矩形配对开合；深链、普通内页互跳和历史导航不参加配对。按压残影不拦截指针或延迟导航。
+- 粒子预算按设备与实测帧时分档，前两个完整采样窗只记录。首页样式进入生产哈希清单，预览资源版本 `20261118-home-pond-r1`；未改线上更新记录。
+
 ## 2026-10-29
 
 - Production adapter receipt: Approved production rollout: Pages commit c1c3c10f5f65d6a1d3eb138ac92c96f78c414da3; MCP Worker 355575bb-0d9c-4bde-9578-1a73ccd09275 at 100% traffic. PRIVATE_ADMIN_BACKEND=pages forwards the 51 backend operations to /api/private-mcp. Pages PRIVATE_MCP_AUTH calls PrivateMcpVerifier and pins the confirmed owner ID hash; preview has no binding. Existing secrets stay in Pages; no rotation, copying or new grant. Production health/metadata return 200, anonymous and invalid-token requests return 401. Local OAuth/RPC/Pages regression: 39 tests passed. Authenticated production tool calls have not been exercised without a new owner grant. Rollback must disable route/mode together while retaining owner restriction. Details: docs/agent-capabilities/PRIVATE_MCP_BACKEND_ADAPTER.md.

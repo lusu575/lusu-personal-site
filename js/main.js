@@ -1,3 +1,4 @@
+import { releaseIcon } from "./home/icon-echo.mjs";
 import { articleCategoryLabels, tagLabels } from "./data/article-labels.mjs?v=20260908-site-review-r1";
 import {
   labels,
@@ -1199,6 +1200,7 @@ function focusTargetIsVisible(element) {
 }
 
 let navigationRequestId = 0;
+let pondLaunchRoute = null;
 
 function navigate(route, options = {}) {
   const requestId = ++navigationRequestId;
@@ -1239,6 +1241,10 @@ function navigate(route, options = {}) {
     && !options.trigger?.matches?.(".desktop-icon")) {
     motionKind = "mobile-tab";
   }
+  if (motionKind === "mobile-tab" && nextRoute === "home" && previousRoute === pondLaunchRoute
+    && options.trigger?.matches?.(".mobile-home-button") && cachedRouteIconRect(previousRoute)) {
+    motionKind = "window-close";
+  }
   const isExitMotion = motionKind === "window-close" || motionKind === "window-minimize";
   const returnTarget = isExitMotion && nextRoute === "home" && previousRoute !== "home"
     ? routeReturnTarget(previousRoute, motionKind)
@@ -1252,12 +1258,21 @@ function navigate(route, options = {}) {
   const exitOriginRect = isExitMotion
     ? routeExitOriginRect(previousRoute, motionKind, returnTarget)
     : null;
+  const pondOpen = previousRoute === "home" && motionKind === "app-open"
+    && options.trigger?.matches?.("#home .desktop-icon");
+  const pondClose = nextRoute === "home" && motionKind === "window-close"
+    && previousRoute === pondLaunchRoute && Boolean(cachedRouteIconRect(previousRoute));
   let navigationCommitted = false;
   const commitNavigation = () => {
     if (navigationCommitted || requestId !== navigationRequestId) {
       return;
     }
     navigationCommitted = true;
+    pondLaunchRoute = pondOpen ? nextRoute : null;
+    if (pondOpen) {
+      const tint = document.getElementById("home").style.getPropertyValue("--pond-tone");
+      document.body.style.setProperty("--pond-edge", tint || "#c9e2dc");
+    } else document.body.style.removeProperty("--pond-edge");
     if (!(nextRoute === "knowledge" && options.articleSlug) && articleState.currentSlug) {
       articleState.currentSlug = "";
       articleState.currentArticle = null;
@@ -1298,7 +1313,12 @@ function navigate(route, options = {}) {
     }));
     const shouldFocusWindow = ["route", "app-open", "mobile-tab", "window-close", "window-minimize"].includes(motionKind)
       && options.focusWindow !== false;
-    if (shouldFocusWindow) {
+    if (pondClose && returnTarget && window.LusuUiMotion?.getMode() === "full") {
+      returnTarget.querySelector(".pond-glyph")?.animate?.([
+        { scale: ".96 .92" }, { scale: "1 1.03", offset: .62 }, { scale: "1" }
+      ], { duration: 200 });
+    }
+    if (shouldFocusWindow && !pondClose) {
       window.requestAnimationFrame(() => {
         if (requestId !== navigationRequestId || document.body.dataset.route !== nextRoute) {
           return;
@@ -1345,7 +1365,8 @@ function navigate(route, options = {}) {
   window.LusuUiMotion.run(motionKind, {
     route: nextRoute,
     trigger: options.trigger || null,
-    originRect: exitOriginRect,
+    pondPair: pondOpen || pondClose,
+    originRect: pondOpen ? cachedRouteIconRect(nextRoute) : exitOriginRect,
     deferCommit: isExitMotion,
     useViewTransition: false
   }, commitNavigation).catch(() => {
@@ -2714,6 +2735,7 @@ function decodeWallpaperAsset(url) {
 }
 
 function warmWallpaperTheme(theme, options = {}) {
+  if (document.body.dataset.route === "home") return Promise.resolve(true);
   if (!WALLPAPER_TIME_THEMES.includes(theme)) return Promise.resolve(false);
   const saveData = (navigator.connection || navigator.mozConnection || navigator.webkitConnection)?.saveData === true;
   if (saveData && !options.intent) return Promise.resolve(true);
@@ -3926,10 +3948,11 @@ document.addEventListener("click", (event) => {
             && routeButton.matches(".taskbar-tabs button, .start-button, .mobile-home-button")
             ? "mobile-tab"
             : "route";
+    if (motionKind === "app-open") releaseIcon(routeButton, keyboardActivation);
     navigate(routeButton.dataset.route, {
       trigger: routeButton,
       motionKind,
-      motion: keyboardActivation ? false : undefined
+      motion: keyboardActivation && motionKind !== "app-open" ? false : undefined
     });
     closeWelcome({ restoreFocus: false, motion: false });
     return;

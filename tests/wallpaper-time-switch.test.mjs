@@ -75,7 +75,7 @@ function runSwitchFirstPaint({
   deviceMemory = 8,
   mobileShell = false,
   pathname = "/",
-  hash = "#home"
+  hash = "#about"
 } = {}) {
   const makeAsset = (name, accent = false) => ({
     dataset: { src: `/${name}.png` },
@@ -258,6 +258,9 @@ test("top-bar switch exposes four localized radios with one roving tab stop", ()
 });
 
 test("cold first paint skips the accent atlas in Save-Data or hardware-low modes", () => {
+  for (const asset of Object.values(runSwitchFirstPaint({ hash: "#home" }).assets)) {
+    assert.equal(asset.src, "", "the pond does not request hidden switch artwork");
+  }
   const normal = runSwitchFirstPaint();
   assert.equal(normal.assets.marker.src, "/marker.png");
   assert.equal(normal.assets.scene.src, "/scene.png");

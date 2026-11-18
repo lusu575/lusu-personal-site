@@ -16,11 +16,12 @@ export function bend(x, phase) {
   return tail * tail * 0.34 * Math.sin(phase + x * 2.8);
 }
 
-export const fish = sample(96, (t, i) => {
+export const fish = sample(384, (t, i) => {
   const a = TAU * t;
   if (i % 5 === 0) return [-0.62 - 0.52 * t, (i % 2 ? 1 : -1) * (0.04 + 0.34 * t)];
-  if (i % 9 === 0) return [0.64 + 0.05 * Math.cos(a), -0.1 + 0.05 * Math.sin(a)];
-  return [0.14 + 0.82 * Math.cos(a), Math.sin(a) * (0.23 + 0.07 * Math.cos(a))];
+  if (i % 9 === 0) return [0.18 - 0.36 * t, (i % 2 ? 1 : -1) * (.21 + .23 * t)];
+  const r = Math.sqrt(((i + .5) * .41421356) % 1);
+  return [0.11 + .87 * r * Math.cos(a), r * Math.sin(a) * (.25 + .09 * Math.cos(a))];
 });
 
 export const reeds = sample(80, (t, i) => {
@@ -29,7 +30,7 @@ export const reeds = sample(80, (t, i) => {
 });
 
 // Oblique disc: missing sector, two cut edges and a few radial veins.
-export const lilyPad = sample(64, (t, i) => {
+export const lilyPad = sample(192, (t, i) => {
   let a = 0.4 + (TAU - 0.8) * t;
   let r = 1 - 0.04 * Math.cos(5 * a);
   if (i % 5 === 1) {
@@ -39,16 +40,29 @@ export const lilyPad = sample(64, (t, i) => {
     a = 0.65 + (i % 7) * 0.81;
     r = 0.15 + 0.72 * t;
   }
+  if (i % 3 === 0) r *= Math.sqrt(((i + .5) * .41421356) % 1);
   return [r * Math.cos(a), 0.59 * r * Math.sin(a)];
 });
 
 // Pond blossom: tilted, top-down double corolla with a seed head.
-export const lotusBloom = sample(64, (t, i) => {
+export const lotusBloom = sample(192, (t, i) => {
   const a = TAU * t;
   const r = i % 7 === 0 ? 0.16 : i % 3 === 0
     ? 0.45 + 0.14 * Math.cos(6 * a)
     : 0.71 + 0.24 * Math.cos(8 * a + 0.4);
   return [r * Math.cos(a), 0.74 * r * Math.sin(a) - 0.14 * r];
+});
+
+// Fallen leaves and ice crystals on the water are separate point fields
+// (never reuse the slider's identification marks in the scenery).
+export const fallenLeaf = sample(192, (t, i) => {
+  const a = TAU * t;
+  const r = (.28 + .63 * (1 - Math.abs(Math.sin(3.5 * a)))) * Math.sqrt(((i + 1) * .4142) % 1);
+  return [r * Math.sin(a), .76 * r * Math.cos(a)];
+});
+export const frost = sample(192, (t, i) => {
+  const twig = i % 3;
+  return [t * 1.4 - .7, -.32 * t + (twig ? (i % 2 ? 1 : -1) * (t % .25) : 0)];
 });
 
 const maple = [

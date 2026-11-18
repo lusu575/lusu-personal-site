@@ -904,6 +904,7 @@ const wallpaperGameDisplayReleaseVersion = "20260812-wallpaper-game-display-r1";
 const publicSiteReleaseVersion = "20260827-private-room-lifecycle-r1";
 const mobileBlogRetiredReleaseVersion = "20260902-mobile-blog-retired-r1";
 const reviewReleaseVersion = "20260908-site-review-r1";
+const pondReleaseVersion = "20261118-home-pond-r1";
 const homeContentReleaseVersion = "20261029-private-mcp-r1";
 const wallpaperTimeSwitchAssetVersion = "20260810-wallpaper-time-switch-r6";
 const transferReleaseVersion = homeContentReleaseVersion;
@@ -1334,7 +1335,7 @@ for (const route of lazyPublicRoutes) {
 }
 
 for (const [modulePath, expectedVersion] of [
-  ["./core/i18n.mjs", reviewReleaseVersion],
+  ["./core/i18n.mjs", pondReleaseVersion],
   ["./core/wallpaper-time.mjs", motionPolishReleaseVersion],
   ["./core/wallpaper-ambient.mjs", wallpaperGameDisplayReleaseVersion],
   ["./data/home-content.mjs", homeContentReleaseVersion],
@@ -3066,8 +3067,8 @@ const desktopIconsNavHtml = findRequiredHtml(
   "index.html missing bounded desktop icon navigation"
 );
 const desktopIconButtons = [...desktopIconsNavHtml.matchAll(/<button\b[^>]*class="desktop-icon"[^>]*data-route=/g)];
-if (desktopIconButtons.length !== 7 || /desktop-intro|<section\b|<footer\b/.test(desktopIconsNavHtml)) {
-  fail("index.html desktop icon navigation should wrap only the seven desktop icon buttons");
+if (desktopIconButtons.length !== 6 || /data-route="blog"/.test(desktopIconsNavHtml) || /desktop-intro|<section\b|<footer\b/.test(desktopIconsNavHtml)) {
+  fail("index.html desktop icon navigation should wrap only the six pond desktop icon buttons");
 }
 
 const taskbarNavHtml = findRequiredHtml(
@@ -3350,20 +3351,20 @@ const premiumUiVersion = "20260711-calm-motion-r13";
 const publicModulesVersion = reviewReleaseVersion;
 const transferLazyVersion = transferReleaseVersion;
 const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
-const currentMainVersion = homeContentReleaseVersion;
+const currentMainVersion = pondReleaseVersion;
 const currentCssVersion = reviewReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
 const currentGameShellVersion = "20260922-cloud-save-10min-r1";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
 const currentLifeRestartMobileTouchVersion = "20260726-life-mobile-touch-r1";
 
-for (const asset of [
-  "/js/mobile-shell.js",
-  "/js/ui-motion.js"
+for (const [asset, expected] of [
+  ["/js/mobile-shell.js", publicModulesVersion], ["/js/ui-motion.js", pondReleaseVersion],
+  ["/css/home-crt.css", pondReleaseVersion]
 ]) {
   const versions = assetQueryVersions(indexHtml, asset);
-  if (versions.length !== 1 || versions[0] !== publicModulesVersion) {
-    fail(`index.html ${asset} query should appear once as ${publicModulesVersion}`);
+  if (versions.length !== 1 || versions[0] !== expected) {
+    fail(`index.html ${asset} query should appear once as ${expected}`);
   }
 }
 
@@ -4171,14 +4172,14 @@ if (/input\.disabled\s*=\s*sending/.test(chatSendingStateContract)) {
   fail("js/routes/chatroom.mjs must not disable the composer or dismiss the soft keyboard while a send is in flight");
 }
 
-if (!hasPattern(mainJs, /const\s+routeButton[\s\S]*if\s*\(routeButton\)\s*\{[\s\S]*const\s+motionKind\s*=\s*routeButton\.matches\(\s*["']\.minimize-button["']\s*\)[\s\S]*["']window-minimize["'][\s\S]*routeButton\.matches\(\s*["']\.close-button["']\s*\)[\s\S]*["']window-close["'][\s\S]*navigate\(\s*routeButton\.dataset\.route\s*,\s*\{\s*trigger:\s*routeButton\s*,\s*motionKind\s*,\s*motion:\s*keyboardActivation\s*\?\s*false\s*:\s*undefined\s*\}\s*\)\s*;\s*closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*,\s*motion:\s*false\s*\}\s*\)/)) {
+if (!hasPattern(mainJs, /const\s+routeButton[\s\S]*if\s*\(routeButton\)\s*\{[\s\S]*const\s+motionKind\s*=\s*routeButton\.matches\(\s*["']\.minimize-button["']\s*\)[\s\S]*["']window-minimize["'][\s\S]*routeButton\.matches\(\s*["']\.close-button["']\s*\)[\s\S]*["']window-close["'][\s\S]*navigate\(\s*routeButton\.dataset\.route\s*,\s*\{\s*trigger:\s*routeButton\s*,\s*motionKind\s*,\s*motion:\s*keyboardActivation\s*&&\s*motionKind\s*!==\s*"app-open"\s*\?\s*false\s*:\s*undefined\s*\}\s*\)\s*;\s*closeWelcome\(\s*\{\s*restoreFocus:\s*false\s*,\s*motion:\s*false\s*\}\s*\)/)) {
   fail("js/main.js route click branch should classify minimize/close motion, pass its trigger, and close welcome without restoring stale modal focus");
 }
 
 if (!hasPattern(mainJs, /const\s+routeIconRectCache\s*=\s*new\s+Map[\s\S]*function\s+measureRouteIconRects[\s\S]*document\.body\.dataset\.route\s*!==\s*["']home["'][\s\S]*function\s+storeRouteIconRects[\s\S]*routeIconRectCache\.set/)
   || !hasPattern(mainJs, /function\s+cachedRouteIconRect[\s\S]*cached\.shell[\s\S]*cached\.viewportWidth\s*!==\s*window\.innerWidth[\s\S]*cached\.viewportHeight\s*!==\s*window\.innerHeight/)
   || !hasPattern(mainJs, /function\s+routeExitOriginRect[\s\S]*motionKind\s*===\s*["']window-minimize["'][\s\S]*cachedRouteIconRect\(route\)[\s\S]*taskbar-tabs button\[data-route\][\s\S]*\.start-button/)
-  || !hasPattern(mainJs, /function\s+navigate[\s\S]*const\s+exitOriginRect\s*=\s*isExitMotion[\s\S]*originRect:\s*exitOriginRect[\s\S]*deferCommit:\s*isExitMotion/)) {
+  || !hasPattern(mainJs, /function\s+navigate[\s\S]*const\s+exitOriginRect\s*=\s*isExitMotion[\s\S]*originRect:\s*pondOpen\s*\?\s*cachedRouteIconRect\(nextRoute\)\s*:\s*exitOriginRect[\s\S]*deferCommit:\s*isExitMotion/)) {
   fail("js/main.js navigate should retain the route-icon/task-button geometry used to reverse close and minimize motion");
 }
 
@@ -4482,7 +4483,7 @@ if (!hasPattern(mobileIosShellCss, /#transfer-app\s+\.transfer-network-status\s*
   fail("css/mobile-ios-shell.css should keep the lazy Quick Transfer network status at the readable mobile caption size");
 }
 
-if (!hasPattern(indexHtml, /data-route="blog"\s+data-blog-entry\s+data-mobile-home-excluded\s+hidden/)
+if (!hasPattern(taskbarNavHtml, /data-route="blog"\s+data-mobile-dock-excluded\s+data-blog-entry\s+hidden/)
   || !hasPattern(mobileIosShellCss, /html\[data-ui-shell="mobile"\]\s+\.desktop-icons\s+\[data-mobile-home-excluded\],[\s\S]*?html\[data-ui-shell="mobile"\]\s+\.desktop-icons\s+\[data-blog-entry\]\[hidden\]\s*\{\s*display:\s*none/)
   || !hasPattern(mainEntryJs, /const\s+mobileBlogRouteRetired\s*=\s*\(\)\s*=>\s*document\.documentElement\.dataset\.uiShell\s*===\s*"mobile"/)
   || !hasPattern(mainEntryJs, /lusu:shellchange[\s\S]*event\.detail\?\.shell\s*===\s*"mobile"[\s\S]*document\.body\.dataset\.route\s*===\s*"blog"[\s\S]*navigate\("knowledge"/)) {
@@ -5127,7 +5128,7 @@ if (finalUpdateStarted) {
     `/css/mobile-ios-shell.css?v=${homeContentReleaseVersion}`,
     `/css/motion-system.css?v=${finalCssVersion}`,
     `/js/mobile-shell.js?v=${reviewReleaseVersion}`,
-    `/js/ui-motion.js?v=${reviewReleaseVersion}`,
+    `/js/ui-motion.js?v=${pondReleaseVersion}`,
     `/js/main.js?v=${finalMainVersion}`
   ]) {
     if (!indexHtml.includes(token)) {
@@ -5135,8 +5136,11 @@ if (finalUpdateStarted) {
     }
   }
 
+  if (!changelog.split("\n## 2026-10-29")[0].includes(pondReleaseVersion)) {
+    fail("CHANGELOG.md missing pond preview cache version");
+  }
   for (const token of [
-    finalMainVersion,
+    homeContentReleaseVersion,
     finalUpdateId,
     finalUpdateSlug,
     "手机",

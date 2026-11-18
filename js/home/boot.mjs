@@ -16,7 +16,7 @@ export function beginBoot(home, reduced, ripple) {
       localStorage.setItem(VISIT, "1");
     } catch { /* startedHere still prevents same-document replay */ }
   }
-  if (reduced) {
+  if (reduced || document.querySelector('.modal:not([hidden])')) {
     copy?.remove();
     remember();
     return null;
@@ -26,7 +26,12 @@ export function beginBoot(home, reduced, ripple) {
   const layer = document.createElement("div");
   layer.className = "pond-boot-layer";
   layer.dataset.phase = "line";
-  layer.setAttribute("aria-hidden", "true");
+  const skip = document.createElement("button");
+  skip.type = "button";
+  skip.className = "pond-skip";
+  skip.textContent = "»";
+  skip.setAttribute("aria-label", ({zh: "跳过开机", ja: "起動演出をスキップ"})[document.documentElement.lang.slice(0, 2)] || "Skip startup");
+  layer.append(skip);
   const line = document.createElement("i");
   line.className = "pond-boot-line";
   layer.append(line);

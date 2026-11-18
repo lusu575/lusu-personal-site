@@ -43,6 +43,8 @@ export function createSeasonControl(home, onCommit) {
   let pointer = null;
   let box;
   let direction = 0;
+  let destination = value;
+  let held = 0;
   let spring = null;
   let dust = 0;
   let time = 0;
@@ -53,7 +55,7 @@ export function createSeasonControl(home, onCommit) {
   let resize = true;
 
   function aria() {
-    const n = pointer === null ? value : Math.round(clamp(x));
+    const n = pointer === null ? value : Math.round(destination);
     const label = labels.querySelector(`[data-i18n="pondSeason${names[n]}"]`);
     el.setAttribute("aria-valuenow", String(n));
     el.setAttribute("aria-valuetext", label.textContent.trim());
@@ -82,16 +84,16 @@ export function createSeasonControl(home, onCommit) {
   function preview(event) {
     const next = clamp(3 * (event.clientX - box.left - PAD) /
       Math.max(1, box.width - 2 * PAD));
-    const delta = next - x;
+    const delta = next - destination;
     if (delta) {
       direction = Math.sign(delta);
       // Include crossed stops even if pointermove skipped an entire stop.
       for (let i = 0; i < 4; i++) {
-        if ((i - next) * (i - x) <= 0) trail[i] = 1;
+        if ((i - next) * (i - destination) <= 0) trail[i] = 1;
       }
     }
-    x = next;
-    dust = quiet ? 0 : 1;
+    destination = next;
+    if (quiet) x = next;
     aria();
   }
 
@@ -100,7 +102,7 @@ export function createSeasonControl(home, onCommit) {
     const id = pointer;
     pointer = null;
     if (el.hasPointerCapture(id)) el.releasePointerCapture(id);
-    land(commit ? Math.round(clamp(x)) : value, commit);
+    land(commit ? Math.round(destination) : value, commit);
   }
 
   el.addEventListener("pointerdown", e => {
@@ -111,6 +113,8 @@ export function createSeasonControl(home, onCommit) {
     el.setPointerCapture(e.pointerId);
     pointer = e.pointerId;
     direction = 0;
+    destination = clamp(x);
+    held = 0;
     spring = null;
     preview(e);
   }, opts);
@@ -167,11 +171,17 @@ export function createSeasonControl(home, onCommit) {
       ctx.setTransform(canvas.width / width, 0, 0, canvas.height / height, 0, 0);
       resize = false;
     }
-    if (pointer === null) {
+    if (pointer !== null) {
+      held = Math.min(1, held + dt / .08);
+      dust = quiet ? 0 : Math.min(1, dust + dt * 8);
+      x += (destination - x) * (1 - Math.exp(-25 * dt));
+    } else {
+      held = Math.max(0, held - dt * 8);
       dust = quiet ? 0 : Math.max(0, dust - dt * 4);
       if (spring) {
         spring.t += dt;
         const { t, dx, kick } = spring;
+        if (!quiet && t < .18 && Math.abs(dx) > .15) dust = Math.min(1, dust + dt * 12);
         x = value + Math.exp(-9 * t) *
           (dx * Math.cos(15 * t) + kick * Math.sin(15 * t));
         if (quiet || t >= 0.65) {
@@ -198,15 +208,17 @@ export function createSeasonControl(home, onCommit) {
     const b = seasons[Math.ceil(p)].mark;
     const f = p % 1;
     const cx = PAD + step * x;
+    ctx.fillStyle = ['#ebc8d5', '#ead4d9', '#e4b47e', '#cfdeeb'][Math.round(p)];
     ctx.globalAlpha = 0.94;
+    const size = quiet ? 11 : 11 * (1 + held * .1) * (1 - dust * .72);
     for (let i = 0; i < n; i++) {
       const j = i * 2;
       const z = i * 2.39996;
       const r = quiet ? 0 : dust * (2 + i % 6);
       const mx = a[j] + f * (b[j] - a[j]);
       const my = a[j + 1] + f * (b[j + 1] - a[j + 1]);
-      ctx.fillRect(cx + 9 * mx + r * Math.cos(z + time * 2) - 0.7,
-        cy + 9 * my + r * Math.sin(z + time * 2) - 0.7, 1.45, 1.45);
+      ctx.fillRect(cx + size * mx - direction * dust * (i % 8) + r * Math.cos(z + time * 2) - 0.7,
+        cy + size * my + r * Math.sin(z + time * 2) - 0.7, 1.45, 1.45);
     }
     ctx.globalAlpha = 1;
     return count + n;

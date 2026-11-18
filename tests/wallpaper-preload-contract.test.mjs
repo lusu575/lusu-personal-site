@@ -26,7 +26,7 @@ function runBootstrap({ width, mobile = false, reduced = false, saveData = false
     navigator: { connection: { saveData } },
     window: {
       innerWidth: width,
-      location: { search: `?wallpaper=${theme}` },
+      location: { pathname: "/", hash: "#knowledge", search: `?wallpaper=${theme}` },
       matchMedia: (query) => ({
         matches: query.includes("prefers-reduced-motion") ? reduced : mobile
       })

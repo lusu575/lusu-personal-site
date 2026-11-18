@@ -53,7 +53,12 @@ export async function openIsolatedKittens(t, options = {}) {
     } catch { res.writeHead(404).end(); }
   });
   await new Promise(r => server.listen(0, "127.0.0.1", r));
-  t.after(() => new Promise(r => server.close(r)));
+  t.after(() => new Promise(r => {
+    server.close(r);
+    // Chromium may have speculative connections with no HTTP request yet.
+    // The loopback fixture has no more consumers once the test is finished.
+    server.closeAllConnections();
+  }));
   const profile = await mkdtemp(join(tmpdir(), "lusu-kittens-test-"));
   const process = spawn(chrome, ["--headless=new", "--remote-debugging-port=0", "--remote-debugging-address=127.0.0.1", `--user-data-dir=${profile}`, "--no-first-run", "--disable-background-networking", "about:blank"], { windowsHide: true, stdio: "ignore" });
   let cdp;
@@ -70,7 +75,10 @@ export async function openIsolatedKittens(t, options = {}) {
   assert.ok(port, "Browser debugging endpoint did not start");
   const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
   cdp = new CDP(targets.find(x => x.type === "page").webSocketDebuggerUrl); await cdp.connect();
-  if (options.initScript) await cdp.send("Page.addScriptToEvaluateOnNewDocument", { source: options.initScript });
+  if (options.initScript) {
+    await cdp.send("Page.enable");
+    await cdp.send("Page.addScriptToEvaluateOnNewDocument", { source: options.initScript });
+  }
   await cdp.send("Page.navigate", { url: `http://127.0.0.1:${server.address().port}/${options.path || ""}` });
   const evaluate = async expression => {
     const r = await cdp.send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true });
