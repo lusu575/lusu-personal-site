@@ -1,0 +1,266 @@
+/* The mobile bars and dock are children of these same two shell elements. */
+html body[data-route="home"] .site-shell > :is(.xp-topbar, .xp-taskbar) {
+  display: none !important;
+}
+
+html body[data-route="home"] .site-shell {
+  display: block;
+  padding: 0;
+  gap: 0;
+}
+
+body[data-route="home"] #main-content {
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  width: auto;
+  max-width: none;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  background: #071018;
+}
+
+body[data-route="home"] #home.active {
+  --pond-ink: #dcebf5;
+  --pond-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+  --pond-top: max(1rem, env(safe-area-inset-top));
+  --pond-left: max(1rem, env(safe-area-inset-left));
+  --pond-right: max(1rem, env(safe-area-inset-right));
+  --pond-bottom: max(1rem, env(safe-area-inset-bottom));
+  display: block;
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-height: 20rem;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  color: var(--pond-ink);
+  background: #071018;
+}
+
+#home #wallpaper-root {
+  z-index: 0;
+}
+
+#home .pond-surface,
+#home .pond-surface::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+#home .pond-surface {
+  z-index: 1;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 46% 59%, #17343c, #0c1d29 52%, #080f19);
+}
+
+#home-pond-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#home .pond-surface::after {
+  content: "";
+  background:
+    radial-gradient(ellipse at center, transparent 44%, rgb(0 3 9 / 52%) 100%),
+    repeating-linear-gradient(to bottom, transparent 0 2px, rgb(1 6 12 / 18%) 2px 3px);
+}
+
+#home .pond-status,
+#home .pond-season {
+  position: absolute;
+  top: var(--pond-top);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  gap: .65em;
+  font: 500 .78rem/1.35 var(--pond-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--pond-ink);
+  text-shadow: -.5px 0 #639295, .5px 0 #977a99, 0 0 .6em #607c89;
+}
+
+#home .pond-status {
+  left: var(--pond-left);
+  flex-wrap: wrap;
+  max-width: calc(100% - var(--pond-left) - var(--pond-right) - 9rem);
+}
+
+#home .pond-season {
+  right: var(--pond-right);
+  color-scheme: dark;
+}
+
+#pond-season-slider {
+  width: clamp(3.5rem, 8vw, 6rem);
+  margin: 0;
+  accent-color: #c5dbe5;
+}
+
+#home .desktop-icons {
+  position: absolute;
+  inset: calc(var(--pond-top) + 3.5rem) var(--pond-right)
+    var(--pond-bottom) var(--pond-left);
+  z-index: 2;
+  display: grid;
+  grid-template: repeat(2, minmax(0, 1fr)) / repeat(3, minmax(0, 1fr));
+  grid-auto-flow: row;
+  place-items: center;
+  box-sizing: border-box;
+  width: auto;
+  height: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+#home .desktop-icon[data-route] {
+  position: relative;
+  inset: auto;
+  left: var(--pond-x, 0%);
+  top: var(--pond-y, 0%);
+  display: grid;
+  grid-template-columns: 1fr;
+  place-items: center;
+  align-content: center;
+  gap: .35rem;
+  box-sizing: border-box;
+  width: min(100%, 7rem);
+  min-width: 44px;
+  height: auto;
+  min-height: 44px;
+  margin: 0;
+  padding: .35rem;
+  appearance: none;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: #bfd2df;
+  transform: none;
+  transition: color 140ms ease;
+}
+
+#home .desktop-icon[data-route="knowledge"] { --pond-x: 5%; --pond-y: 9%; }
+#home .desktop-icon[data-route="videos"]    { --pond-x: -8%; --pond-y: -10%; }
+#home .desktop-icon[data-route="resources"] { --pond-x: -4%; --pond-y: 4%; }
+#home .desktop-icon[data-route="games"]     { --pond-x: 12%; --pond-y: -4%; }
+#home .desktop-icon[data-route="chatroom"]  { --pond-x: 4%; --pond-y: 9%; }
+#home .desktop-icon[data-route="about"]     { --pond-x: -9%; --pond-y: -13%; }
+
+#home .desktop-icon::before,
+#home .desktop-icon::after {
+  content: none;
+}
+
+#home .pond-glyph {
+  display: block;
+  width: clamp(2.25rem, 5vw, 3.6rem);
+  height: auto;
+  aspect-ratio: 1;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: .65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 3px rgb(175 224 246 / 32%));
+}
+
+/* Same contour twice: a fine wire, then brighter points at regular intervals. */
+#home .pond-glyph use {
+  stroke-width: 1.65;
+  stroke-dasharray: .1 3.7;
+}
+
+#home .desktop-icon .icon-title {
+  display: block;
+  position: static;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  white-space: normal;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  text-align: center;
+  font: 500 .8rem/1.35 var(--pond-mono);
+  text-shadow: -.5px 0 #507988, .5px 0 #866b85;
+}
+
+#home .desktop-icon:is(:hover, :focus-visible, .is-hovered) {
+  color: #f3fbff;
+}
+
+#home .desktop-icon:is(:hover, :focus-visible, .is-hovered) .pond-glyph {
+  filter: drop-shadow(0 0 4px rgb(191 232 255 / 72%));
+}
+
+#home .desktop-icon:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  body[data-route="home"] #home.active {
+    min-height: 24rem;
+  }
+
+  #home .desktop-icons {
+    grid-template: repeat(3, minmax(0, 1fr)) / repeat(2, minmax(0, 1fr));
+  }
+
+  #home .desktop-icon[data-route] {
+    left: clamp(-.65rem, var(--pond-x), .65rem);
+    top: clamp(-.8rem, var(--pond-y), .8rem);
+  }
+}
+
+@media (max-height: 520px) {
+  #home .desktop-icons {
+    inset-block-start: calc(var(--pond-top) + 2.75rem);
+  }
+
+  #home .pond-glyph {
+    width: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #home .desktop-icon[data-route],
+  #home .desktop-icon .pond-glyph,
+  #home .desktop-icon .icon-title {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  #home .pond-surface::after {
+    display: none;
+  }
+
+  #home .desktop-icon[data-route] {
+    color: ButtonText;
+  }
+
+  #home .pond-glyph {
+    filter: none;
+  }
+}

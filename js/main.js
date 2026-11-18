@@ -4,7 +4,7 @@ import {
   isI18nNodeInScope,
   normalizeLanguage,
   translationFor
-} from "./core/i18n.mjs?v=20260908-site-review-r1";
+} from "./core/i18n.mjs?v=20261118-home-pond-r1";
 import { homeContent } from "./data/home-content.mjs?v=20261029-private-mcp-r1";
 import {
   WALLPAPER_TIME_THEMES,
@@ -1273,6 +1273,7 @@ function navigate(route, options = {}) {
     void ensureWallpaperTimeSwitchAssets();
     updateWallpaperMotionState();
     localizeRouteLanguage(nextRoute);
+    if (nextRoute === "home") localizePondSeasonValue();
     transitionRouteLifecycle(nextRoute, options.lifecycleReason || "navigation");
     updateNavigationState(nextRoute);
     if (nextRoute === "knowledge" && options.articleSlug) {
@@ -3321,10 +3322,34 @@ const compactClockFormatter = new Intl.DateTimeFormat(undefined, {
     hour12: false
   });
 
+
+const pondTimeNode = document.getElementById("pond-time");
+const pondDateNode = document.getElementById("pond-date");
+const pondSeasonSlider = document.getElementById("pond-season-slider");
+const pondDateFormatters = new Map();
+
+function updatePondClock(now) {
+  if (document.body.dataset.route !== "home") return;
+  const time = now.toTimeString().slice(0, 8);
+  pondTimeNode.textContent = time;
+  pondTimeNode.dateTime = time;
+
+  if (!pondDateFormatters.has(currentLang)) {
+    pondDateFormatters.set(currentLang, new Intl.DateTimeFormat(currentLang, {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    }));
+  }
+  const date = pondDateFormatters.get(currentLang).format(now);
+  if (pondDateNode.textContent !== date) pondDateNode.textContent = date;
+}
+
 function updateClock() {
   const now = new Date();
   const fullTime = fullClockFormatter.format(now).replace(/\//g, ".");
   const compactTime = compactClockFormatter.format(now);
+  updatePondClock(now);
   document.querySelectorAll("[data-local-time]").forEach((node) => {
     node.textContent = node.dataset.localTime === "compact" ? compactTime : fullTime;
     if (node.tagName === "TIME") {
@@ -3982,8 +4007,13 @@ Object.assign(window, publicApi);
 
 const initialLang = initialLanguage();
 
+function localizePondSeasonValue() {
+  pondSeasonSlider.setAttribute("aria-valuetext", t("pondSeasonSpring"));
+}
+
 syncOptionalRouteEntries();
 setLanguage(initialLang);
+localizePondSeasonValue();
 initAccountWidget();
 initWallpaperTimeSwitch();
 siteConnectionStatus.start();

@@ -130,6 +130,7 @@
   <link rel="stylesheet" href="/css/style.css?v=20260908-site-review-r1">
   <link rel="stylesheet" data-mobile-shell-style href="/css/mobile-ios-shell.css?v=20261029-private-mcp-r1">
   <link rel="stylesheet" href="/css/motion-system.css?v=20260908-site-review-r1">
+  <link rel="stylesheet" href="/css/home-crt.css?v=20261118-home-pond-r1">
   <style id="pixel-cursor-r3">
     @media (hover: hover) and (pointer: fine) and (forced-colors: none) {
       html,
@@ -297,33 +298,62 @@
           </div>
         </div>
 
+        <div class="pond-surface" aria-hidden="true">
+          <canvas id="home-pond-canvas"></canvas>
+        </div>
+        <div class="pond-status" aria-live="off">
+          <time id="pond-time">--:--:--</time>
+          <span aria-hidden="true">/</span>
+          <span id="pond-date"></span>
+        </div>
+        <div class="pond-season">
+          <input type="range" id="pond-season-slider" min="0" max="3" step="1" value="0"
+            aria-label="池塘季节" data-i18n-aria-label="pondSeasonLabel"
+            aria-valuetext="春季" disabled>
+          <span id="pond-season-value" data-i18n="pondSeasonSpring" aria-hidden="true">春季</span>
+        </div>
+
         <nav class="desktop-icons" aria-label="主要栏目" data-i18n-aria-label="desktopIconsAria">
           <button class="desktop-icon" data-route="knowledge">
-            <span class="pixel-icon folder-icon"></span>
+            <svg class="pond-glyph" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+              <path id="pond-book" d="M24 14Q16 8 5 11V35Q15 32 24 38Q33 32 43 35V11Q32 8 24 14V38M10 17Q16 16 20 19M28 19Q33 16 38 17M10 23Q16 22 20 25"/>
+              <use href="#pond-book"/>
+            </svg>
             <span class="icon-title" data-i18n="navKnowledge">知识库</span>
           </button>
           <button class="desktop-icon" data-route="videos">
-            <span class="pixel-icon tv-icon"></span>
+            <svg class="pond-glyph" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+              <path id="pond-screen" d="M10 10H38Q43 10 43 15V33Q43 38 38 38H10Q5 38 5 33V15Q5 10 10 10ZM20 17L31 24L20 31Z"/>
+              <use href="#pond-screen"/>
+            </svg>
             <span class="icon-title" data-i18n="navVideos">视频区</span>
           </button>
           <button class="desktop-icon" data-route="resources">
-            <span class="pixel-icon disk-icon"></span>
+            <svg class="pond-glyph" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+              <path id="pond-wrench" d="M37 6L30 13L35 18L42 11Q46 24 32 27L28 26L14 41Q10 45 6 41Q3 38 7 34L22 20Q18 5 32 5ZM10 37L12 35"/>
+              <use href="#pond-wrench"/>
+            </svg>
             <span class="icon-title" data-i18n="navResourcesBuilding">工具区</span>
           </button>
           <button class="desktop-icon" data-route="games">
-            <span class="pixel-icon game-icon"></span>
+            <svg class="pond-glyph" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+              <path id="pond-pad" d="M15 13Q9 12 7 19L4 31Q2 42 10 37L17 30H31L38 37Q46 42 44 31L41 19Q39 12 33 13Q24 16 15 13ZM10 22H20M15 17V27M31 23L33 25M35 19L37 21"/>
+              <use href="#pond-pad"/>
+            </svg>
             <span class="icon-title" data-i18n="navGames">游戏区</span>
           </button>
-          <button class="desktop-icon" data-route="blog" data-blog-entry data-mobile-home-excluded hidden>
-            <span class="pixel-icon chat-icon"></span>
-            <span class="icon-title" data-i18n="navBlogBuilding">杂谈区</span>
-          </button>
           <button class="desktop-icon" data-route="chatroom">
-            <span class="pixel-icon chatroom-icon"></span>
+            <svg class="pond-glyph" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+              <path id="pond-chat" d="M10 8H27Q32 8 32 13V22Q32 27 27 27H17L9 33V27Q4 27 4 22V14Q4 8 10 8ZM36 18H38Q44 18 44 24V30Q44 35 39 35V41L31 35H24Q19 35 19 31M10 17H24"/>
+              <use href="#pond-chat"/>
+            </svg>
             <span class="icon-title" data-i18n="navChatroom">匿名聊天室</span>
           </button>
           <button class="desktop-icon" data-route="about">
-            <span class="pixel-icon avatar-icon"></span>
+            <svg class="pond-glyph" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+              <path id="pond-portrait" d="M24 4A20 20 0 1 1 24 44A20 20 0 1 1 24 4ZM24 12A6 6 0 1 1 24 24A6 6 0 1 1 24 12ZM10 37Q13 27 24 27Q35 27 38 37"/>
+              <use href="#pond-portrait"/>
+            </svg>
             <span class="icon-title" data-i18n="navAbout">关于我</span>
           </button>
         </nav>
@@ -652,6 +682,6 @@
 
   <script src="/js/telemetry.js?v=20260802-traffic-budget-r1"></script>
   <script src="/js/ui-motion.js?v=20260908-site-review-r1"></script>
-  <script type="module" src="/js/main.js?v=20261029-private-mcp-r1"></script>
+  <script type="module" src="/js/main.js?v=20261118-home-pond-r1"></script>
 </body>
 </html>
