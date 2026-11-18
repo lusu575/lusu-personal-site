@@ -4075,7 +4075,7 @@ Object.assign(window, publicApi);
 const initialLang = initialLanguage();
 
 function localizePondSeasonValue() {
-  pondSeasonSlider.setAttribute("aria-valuetext", t("pondSeasonSpring"));
+  pondSeasonSlider?.dispatchEvent(new Event("pond:localize"));
 }
 
 syncOptionalRouteEntries();

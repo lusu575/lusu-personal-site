@@ -289,6 +289,12 @@
 
     <main id="main-content" tabindex="-1">
       <section class="page page-home active" id="home" aria-labelledby="home-title">
+        <div class="pond-temperature" aria-hidden="true"></div>
+        <div id="pond-post-copy" hidden aria-hidden="true">
+          <div data-i18n="pondPostMemory">内存 ........ 就绪</div>
+          <div data-i18n="pondPostWater">水面缓存 .... 清澈</div>
+          <div data-i18n="pondPostKoi">锦鲤 ........ 拒绝超频</div>
+        </div>
         <h1 class="sr-only" id="home-title" tabindex="-1" data-i18n="heroTitle">鲁肃的个人站</h1>
         <div class="wallpaper-root" id="wallpaper-root" aria-hidden="true">
           <div class="wallpaper-stage" id="wallpaper-stage">
@@ -307,10 +313,18 @@
           <span id="pond-date"></span>
         </div>
         <div class="pond-season">
-          <input type="range" id="pond-season-slider" min="0" max="3" step="1" value="0"
-            aria-label="池塘季节" data-i18n-aria-label="pondSeasonLabel"
-            aria-valuetext="春季" disabled>
-          <span id="pond-season-value" data-i18n="pondSeasonSpring" aria-hidden="true">春季</span>
+          <div id="pond-season-slider" role="slider" tabindex="0"
+               aria-orientation="horizontal" aria-valuemin="0" aria-valuemax="3"
+               aria-valuenow="1" aria-valuetext="夏季"
+               aria-label="池塘季节" data-i18n-aria-label="pondSeasonLabel">
+            <canvas aria-hidden="true"></canvas>
+          </div>
+          <span id="pond-season-value" hidden aria-hidden="true">
+            <span data-i18n="pondSeasonSpring">春季</span>
+            <span data-i18n="pondSeasonSummer">夏季</span>
+            <span data-i18n="pondSeasonAutumn">秋季</span>
+            <span data-i18n="pondSeasonWinter">冬季</span>
+          </span>
         </div>
 
         <nav class="desktop-icons" aria-label="主要栏目" data-i18n-aria-label="desktopIconsAria">

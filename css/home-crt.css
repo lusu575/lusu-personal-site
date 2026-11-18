@@ -109,10 +109,53 @@ body[data-route="home"] #home.active {
   color-scheme: dark;
 }
 
+#home .pond-season {
+  padding-inline: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
 #pond-season-slider {
-  width: clamp(3.5rem, 8vw, 6rem);
-  margin: 0;
-  accent-color: #c5dbe5;
+  position: relative;
+  display: block;
+  width: clamp(5.5rem, 11vw, 8rem);
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  touch-action: none;
+  user-select: none;
+  cursor: pointer;
+  outline: none;
+}
+
+#pond-season-slider::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: calc(50% - 1px);
+  height: 2px;
+  background: radial-gradient(ellipse at center, #9ab5c65e 0 0.8px,
+    transparent 1.1px) 0 0 / 5px 2px repeat-x;
+}
+
+#pond-season-slider canvas {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#pond-season-slider:focus-visible {
+  outline: 1px dashed var(--pond-tone, #b8cfdb);
+  outline-offset: 1px;
+}
+
+#pond-season-value[hidden], #pond-post-copy[hidden] {
+  display: none !important;
 }
 
 #home .desktop-icons {
@@ -271,4 +314,127 @@ body[data-route="home"] #home.active {
   #home .pond-glyph {
     filter: none;
   }
+}
+
+#home {
+  --pond-tone: #b0ddcb;
+}
+
+#home .pond-status {
+  color: var(--pond-tone);
+}
+
+#home .pond-temperature {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(174deg, var(--pond-tone), transparent 58%,
+    var(--pond-tone));
+  opacity: calc(0.075 + var(--pond-warm, 0) * 0.09);
+}
+
+.pond-boot-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  overflow: hidden;
+  background: #020304;
+  color: #d3e3e1;
+  touch-action: none;
+  user-select: none;
+  cursor: default;
+}
+
+.pond-boot-line {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 23vw;
+  height: 2px;
+  transform: translate(-50%, -50%);
+  background: #f4f6f7;
+  animation: pond-line-in 350ms ease-out both;
+}
+
+@keyframes pond-line-in {
+  from { transform: translate(-50%, -50%) scaleX(.06); }
+  to   { transform: translate(-50%, -50%) scaleX(1); }
+}
+
+.pond-boot-layer[data-phase="warm"] {
+  background: #0b1011;
+  animation: pond-warm-jitter 95ms steps(2, end) 5;
+}
+
+.pond-boot-layer[data-phase="warm"] .pond-boot-line {
+  width: 100%;
+  height: 100%;
+  animation: pond-open-field 500ms ease-out both;
+}
+
+@keyframes pond-open-field {
+  0%   { transform: translate(-50%, -50%) scale(.23, .002); opacity: .95; }
+  38%  { transform: translate(-50%, -50%) scale(1, .008); opacity: .72; }
+  100% { transform: translate(-50%, -50%) scale(1, 1); opacity: .04; }
+}
+
+@keyframes pond-warm-jitter {
+  50% { background-color: #172020; }
+  75% { background-position-y: 1px; }
+}
+
+.pond-boot-layer #pond-post-copy {
+  display: none;
+  position: absolute;
+  left: max(8vw, 1rem);
+  top: 43%;
+  font: 500 clamp(.8rem, 2vw, 1rem)/1.55 ui-monospace, monospace;
+  white-space: pre;
+}
+
+.pond-boot-layer[data-phase="post"] #pond-post-copy { display: block; }
+.pond-boot-layer #pond-post-copy > div { opacity: 0; }
+.pond-boot-layer #pond-post-copy > .is-on { opacity: 1; }
+.pond-boot-layer:not([data-phase="line"]):not([data-phase="warm"]) .pond-boot-line {
+  display: none;
+}
+
+.pond-boot-layer[data-phase="reveal"] {
+  opacity: 0;
+  transition: opacity 260ms ease-out;
+}
+
+.pond-boot-layer[data-phase="shield"] {
+  opacity: 0;
+  transition: none;
+}
+
+#home[data-pond-boot="hold"] .desktop-icon { opacity: 0; }
+#home .desktop-icon:nth-child(1) { --pond-i: 0; }
+#home .desktop-icon:nth-child(2) { --pond-i: 1; }
+#home .desktop-icon:nth-child(3) { --pond-i: 2; }
+#home .desktop-icon:nth-child(4) { --pond-i: 3; }
+#home .desktop-icon:nth-child(5) { --pond-i: 4; }
+#home .desktop-icon:nth-child(6) { --pond-i: 5; }
+
+#home[data-pond-boot="reveal"] .desktop-icon {
+  animation: pond-icon-in 490ms cubic-bezier(.2,.82,.25,1) both;
+  animation-delay: calc(var(--pond-i, 0) * 112ms);
+}
+
+#home[data-pond-quick][data-pond-boot="reveal"] .desktop-icon {
+  animation-duration: 165ms;
+  animation-delay: calc(var(--pond-i, 0) * 21ms);
+}
+
+@keyframes pond-icon-in {
+  from { opacity: 0; translate: 0 6px; scale: .89; }
+  70%  { opacity: 1; translate: 0 -1px; scale: 1.035; }
+  to   { opacity: 1; translate: 0 0; scale: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #home[data-pond-boot] .desktop-icon,
+  .pond-boot-layer, .pond-boot-line { animation: none; transition: none; }
 }
