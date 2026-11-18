@@ -3051,6 +3051,68 @@ function initWallpaperTimeSwitch() {
   }
 }
 
+{
+  let ticket = 0;
+  let queued = 0;
+  let stop = null;
+  let loading = false;
+  let away = false;
+
+  function wanted() {
+    return !away && !document.hidden && document.body.dataset.route === "home";
+  }
+
+  function syncPondDesktop() {
+    if (!wanted()) {
+      ++ticket;
+      cancelAnimationFrame(queued);
+      queued = 0;
+      loading = false;
+      stop?.();
+      stop = null;
+      return;
+    }
+    if (queued || loading || stop) return;
+    const mine = ++ticket;
+    queued = requestAnimationFrame(() => {
+      queued = requestAnimationFrame(async () => {
+        queued = 0;
+        if (!wanted() || mine !== ticket) return;
+        loading = true;
+        try {
+          const { startDesktop } = await import("./home/desktop.mjs");
+          if (mine !== ticket || !wanted()) return;
+          const canvas = document.getElementById("home-pond-canvas");
+          if (canvas) stop = startDesktop(canvas);
+        } catch (error) {
+          // The existing CSS pond remains visible without a canvas renderer.
+          console.warn("Pond desktop unavailable:", error);
+        } finally {
+          if (mine === ticket) loading = false;
+        }
+      });
+    });
+  }
+
+  function observePondRoute() {
+    const observer = new MutationObserver(syncPondDesktop);
+    observer.observe(document.body, { attributes: true, attributeFilter: ["data-route"] });
+    document.addEventListener("visibilitychange", syncPondDesktop);
+    window.addEventListener("pagehide", () => {
+      away = true;
+      syncPondDesktop();
+    });
+    window.addEventListener("pageshow", () => {
+      away = false;
+      syncPondDesktop();
+    });
+    syncPondDesktop();
+  }
+
+  if (document.body) observePondRoute();
+  else document.addEventListener("DOMContentLoaded", observePondRoute, { once: true });
+}
+
 function measureHomeViewportLayout() {
   const root = document.getElementById("wallpaper-root");
   const stage = document.getElementById("wallpaper-stage");
@@ -3127,7 +3189,12 @@ function ensureWallpaperAmbientController() {
     document,
     window,
     stage,
-    getState: wallpaperAmbientState
+    getState: () => {
+      const state = wallpaperAmbientState();
+      return document.body.dataset.route === "home"
+        ? { ...state, eligible: false, active: false }
+        : state;
+    }
   });
   return wallpaperAmbientController;
 }

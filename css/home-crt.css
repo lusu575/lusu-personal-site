@@ -68,6 +68,14 @@ body[data-route="home"] #home.active {
   height: 100%;
 }
 
+#home .pond-surface {
+  contain: layout paint;
+}
+
+#home-pond-canvas {
+  pointer-events: none;
+}
+
 #home .pond-surface::after {
   content: "";
   background:
