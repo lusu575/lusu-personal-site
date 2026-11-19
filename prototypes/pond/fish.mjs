@@ -1,14 +1,14 @@
 export const FISH = Object.freeze({
   segments: 16,
-  maxJointAngle: 0.16,
-  waveNumber: 5.4,
+  maxJointAngle: 0.22,
+  waveNumber: 6.2,
   beatSpeedRatio: 0.90,
   glideSpeedRatio: 1.12,
-  beatFrequency: 0.78,
+  beatFrequency: 0.80,
   glideFrequency: 0.52,
-  beatAmplitude: 0.075,
-  glideAmplitude: 0.01875,
-  peduncle: 0.80
+  beatAmplitude: 0.088,
+  glideAmplitude: 0.024,
+  peduncle: 0.78
 });
 
 const MAIN_LENGTH_FRACTION = 0.187;
@@ -35,6 +35,10 @@ export const KOI_ROUTES = [
 const TAU = 2 * Math.PI;
 const clamp = (value, low, high) => Math.min(high, Math.max(low, value));
 const mix = (from, to, amount) => from + (to - from) * amount;
+const smoothstep = (edge0, edge1, x) => {
+  const t = clamp((x - edge0) / (edge1 - edge0), 0, 1);
+  return t * t * (3 - 2 * t);
+};
 const angleDifference = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 
 function easedInset(distance, edge) {
@@ -42,9 +46,16 @@ function easedInset(distance, edge) {
   return t * t * edge + Math.max(0, distance - edge);
 }
 
+// True top-down Kohaku koi spindle profile: blunt rounded snout, muscular shoulder, slender caudal peduncle.
 const WIDTHS = [
-  [0, 0.022, 1.55], [0.032, 0.052, 0.60], [0.110, 0.071, 0.15], [0.232, 0.076, 0],
-  [0.340, 0.070, -0.11], [0.510, 0.050, -0.17], [0.660, 0.025, -0.15], [FISH.peduncle, 0.012, -0.04]
+  [0, 0.029, 1.35],
+  [0.036, 0.056, 0.58],
+  [0.105, 0.075, 0.16],
+  [0.215, 0.081, 0.01],
+  [0.335, 0.073, -0.12],
+  [0.495, 0.050, -0.17],
+  [0.645, 0.024, -0.15],
+  [FISH.peduncle, 0.011, -0.04]
 ];
 
 function bodyWidth(along) {
@@ -68,107 +79,172 @@ export function seededRandom(seed) {
 function fishParticles({ seed, shoulderScale, patchBias, tailPatch }) {
   const random = seededRandom(seed);
   const particles = [];
-  const pearl = [1.0, 0.97, 0.79];
-  const orange = [1.0, 0.34, 0.13];
+  const pearl = [1.0, 0.97, 0.83];
+  const vermilion = [0.99, 0.30, 0.11];
+
+  // Classic Kohaku (红白锦鲤) dorsal Hi markings: bold irregular crown, shoulder saddle, and rump patches.
   const patchShapes = [
-    [0.14, 0.016, 0.085, 0.050 * shoulderScale],
-    [0.37, -0.019, 0.100, 0.057],
-    [0.59, 0.019, 0.072, 0.036]
+    [0.125, 0.008, 0.078, 0.054 * shoulderScale],
+    [0.345, -0.014, 0.115, 0.068 * shoulderScale],
+    [0.575, 0.012, 0.080, 0.044]
   ];
-  if (tailPatch) patchShapes.push([0.70, -0.004, 0.030, 0.020]);
+  if (tailPatch) patchShapes.push([0.695, -0.005, 0.036, 0.022]);
+
   const patches = patchShapes.map(([center, side, length, width], index) => [
-    center + (random() - 0.5) * 0.032,
-    side + (patchBias[index] ?? 0) + (random() - 0.5) * 0.020,
-    length,
-    width,
-    (random() - 0.5) * 0.44
+    center + (random() - 0.5) * 0.028,
+    side + (patchBias[index] ?? 0) + (random() - 0.5) * 0.018,
+    length * (0.94 + 0.14 * random()),
+    width * (0.94 + 0.14 * random()),
+    (random() - 0.5) * 0.48,
+    TAU * random(),
+    TAU * random()
   ]);
 
-  function add(along, across, color, opacity, size, drift = 0, floatBack = 0) {
-    const light = 0.87 + 0.13 * random();
-    const station = along * FISH.segments;
+  // Deterministic organic boundary warp for realistic non-elliptical Kohaku Hi edges.
+  const warpP1 = TAU * random();
+  const warpP2 = TAU * random();
+  const warpP3 = TAU * random();
+  function patchField(along, across) {
+    const wx = 0.018 * Math.sin(along * 26.0 + across * 32.0 + warpP1) +
+               0.010 * Math.cos(along * 52.0 - across * 44.0 + warpP2);
+    const wy = 0.011 * Math.cos(along * 31.0 - across * 28.0 + warpP3) +
+               0.006 * Math.sin(along * 58.0 + across * 41.0 + warpP1);
+    const ax = along + wx;
+    const ay = across + wy;
+    let best = Infinity;
+    for (const [center, side, length, width, skew, ph1, ph2] of patches) {
+      const lx = (ax - center) / length;
+      const ly = (ay - side) / width + skew * lx;
+      const angle = Math.atan2(ly, lx);
+      const lobe = 1.0 + 0.18 * Math.sin(2.0 * angle + ph1) + 0.11 * Math.cos(3.0 * angle + ph2);
+      const d = (lx * lx + ly * ly) / (lobe * lobe);
+      if (d < best) best = d;
+    }
+    return best;
+  }
+
+  function add(along, across, color, opacity, size, drift = 0, floatBack = 0, tailLag = 0) {
+    const micro = 0.90 + 0.10 * random();
+    const station = clamp(along, 0, 1) * FISH.segments;
     const joint = Math.min(Math.floor(station), FISH.segments - 1);
     particles.push({
-      joint, blend: station - joint, across, opacity, size, drift, floatBack, phase: TAU * random(),
-      color: color.map((channel) => channel * light)
+      joint, blend: station - joint, across, opacity, size, drift, floatBack, tailLag,
+      phase: TAU * random(),
+      color: color.map((channel) => channel * micro)
     });
   }
 
+  // 1. Pectoral, pelvic, and forked caudal fins drawn beneath the body layer.
   for (const side of [-1, 1]) {
-    // Draw each fan below the body so its root can disappear into the shoulder.
+    // Pectoral fans: rooted right behind the operculum, sweeping outward and smoothly back.
     for (let ray = 0; ray < 9; ray += 1) {
-      for (let grain = 0; grain < 17; grain += 1) {
-        const fan = (ray + (random() - 0.5) * 0.46) / 8;
-        const t = (grain + random()) / 17;
-        const reach = Math.sin(Math.PI * t * 0.63);
-        const across = side * (0.063 + reach * (0.112 - 0.078 * fan * fan));
-        const along = 0.205 + 0.086 * t + reach * (0.114 * fan - 0.010);
-        const vein = ray % 3 === 0 ? 1 : 0.86;
-        const opacity = mix(0.65, 0.28, t) + 0.17 * random();
-        add(along, across, [vein, 0.91 * vein, 0.68 * vein], opacity,
-          1.85 + random() * 1.45, t * 0.008);
+      const fan = ray / 8;
+      for (let grain = 0; grain < 16; grain += 1) {
+        const t = (grain + random()) / 16;
+        const reach = Math.sin(Math.PI * (0.08 + 0.62 * t));
+        const sweep = 0.058 + reach * (0.115 - 0.068 * fan * fan);
+        const along = 0.195 + 0.095 * t + reach * (0.110 * fan - 0.012);
+        const across = side * (sweep + (random() - 0.5) * 0.008);
+        const isRib = ray % 2 === 0;
+        const lum = (isRib ? 0.98 : 0.85) * (1.0 - 0.14 * t);
+        const opacity = mix(0.64, 0.22, t) + (isRib ? 0.10 : 0.04) * random();
+        add(along, across, [lum, 0.93 * lum, 0.74 * lum], opacity,
+          1.75 + (1.0 - 0.35 * t) * 1.25 * random(), t * 0.009, 0.008 * t);
       }
     }
 
-    // The shorter pelvic fan tilts back from the pale edge of the belly.
+    // Pelvic fans: tucked naturally at mid-belly.
     for (let ray = 0; ray < 4; ray += 1) {
       const fan = ray / 3;
-      for (let grain = 0; grain < 8; grain += 1) {
-        const t = (grain + random()) / 8;
-        const across = side * (0.045 + 0.030 * t * (1 - 0.36 * fan));
-        const along = 0.53 + (0.085 + 0.025 * fan) * t;
-        add(along, across, [0.89, 0.77, 0.54], 0.28 + 0.20 * random(), 1.4 + 0.8 * random());
+      for (let grain = 0; grain < 7; grain += 1) {
+        const t = (grain + random()) / 7;
+        const across = side * (0.042 + 0.032 * Math.sin(Math.PI * t * 0.7) * (1 - 0.30 * fan));
+        const along = 0.475 + (0.082 + 0.026 * fan) * t;
+        add(along, across, [0.90, 0.82, 0.62], 0.26 + 0.22 * random(), 1.35 + 0.75 * random(), t * 0.005);
       }
     }
 
-    // The two tapering lobes diverge away from the peduncle and leave the middle open.
-    for (let i = 0; i < 185; i += 1) {
-      const t = random() ** 1.33;
-      const width = 0.010 + 0.042 * Math.sin(Math.PI * t) ** 1.10;
-      const along = FISH.peduncle - 0.010 + 0.210 * t;
-      const across = side * (0.007 + 0.098 * t ** 1.22 + (random() - 0.5) * width);
-      const warm = t < 0.42 && random() > t;
-      add(along, across, warm ? [0.99, 0.67, 0.35] : [0.98, 0.94, 0.70],
-        (0.3 + random() * 0.63) * (1 - 0.69 * t), 1.4 + random() * 1.55, 0.013 * t);
+    // Forked caudal fin: two distinct tapering lobes fanning from the peduncle with a crisp V-notch.
+    const lobeRays = 7;
+    for (let ray = 0; ray < lobeRays; ray += 1) {
+      const fan = ray / (lobeRays - 1); // 0 = inner fork edge, 1 = outer lobe edge
+      const rayLen = mix(0.115, 0.235, Math.sin(Math.PI * (0.15 + 0.62 * fan)));
+      const grains = 20;
+      for (let g = 0; g < grains; g += 1) {
+        const t = ((g + random()) / grains) ** 1.08;
+        const along = FISH.peduncle - 0.012 + rayLen * t;
+        const splay = mix(0.018, 0.118, fan ** 0.85) * (t ** 1.15);
+        const curl = -0.010 * Math.sin(Math.PI * t) * (1.0 - fan);
+        const across = side * (0.006 + splay + curl + (random() - 0.5) * 0.009 * (0.3 + t));
+        const warmRoot = t < 0.34 && random() > t * 1.8;
+        const color = warmRoot ? [0.99, 0.68, 0.38] : [0.98, 0.95, 0.76];
+        const opacity = (0.34 + 0.48 * (ray % 2 === 0 ? 1 : 0.75) * random()) * (1.0 - 0.68 * t);
+        add(along, across, color, opacity, 1.30 + (1.0 - 0.3 * t) * 1.45 * random(),
+          0.016 * t, 0.075 * t * t, 0.45 * t);
+      }
     }
   }
 
-  for (let i = 0; i < 90; i += 1) {
-    const t = random();
-    const drift = 0.009 + 0.034 * t;
-    const halfSpan = 0.034 + 0.086 * t;
-    const across = (2 * random() - 1) * (halfSpan - drift);
-    add(FISH.peduncle + 0.17 * t, across, i % 3 ? [0.99, 0.69, 0.38] : pearl,
-      (0.41 + random() * 0.23) * (1 - 0.67 * t), 1.1 + random() * 1.45,
-      drift, 0.13 * t * random());
+  // Delicate trailing veil particles along the fork tips (kept sparse in the central V-notch).
+  for (let i = 0; i < 48; i += 1) {
+    const side = i % 2 === 0 ? 1 : -1;
+    const t = 0.28 + 0.72 * random();
+    const along = FISH.peduncle + 0.05 + 0.19 * t;
+    const across = side * (0.022 + 0.088 * t + (random() - 0.5) * 0.028);
+    add(along, across, i % 3 === 0 ? [0.99, 0.74, 0.46] : pearl,
+      (0.32 + 0.24 * random()) * (1.0 - 0.68 * t), 1.05 + 1.25 * random(),
+      0.018 * t, 0.12 * t * random(), 0.55 * t);
   }
-  // Jittered stations keep gaps between grains. The orange patches stay in bone coordinates.
-  const spacing = 0.0125;
-  const rows = Math.ceil(FISH.peduncle / spacing) + 1;
+
+  // 2. Curved spindle body: denser along the 3D dorsal crown, naturally sparser toward the flanks.
+  const alongStep = 0.0112;
+  const acrossStep = 0.0115;
+  const rows = Math.ceil(FISH.peduncle / alongStep) + 1;
   const maxHalfWidth = Math.max(...WIDTHS.map(([, width]) => width));
-  const halfColumns = Math.ceil(1.18 * maxHalfWidth / spacing) + 1;
+  const halfColumns = Math.ceil(1.12 * maxHalfWidth / acrossStep) + 1;
+
   for (let row = 0; row < rows; row += 1) {
     for (let column = -halfColumns; column <= halfColumns; column += 1) {
-      const along = (row + random() * 0.8) * spacing;
-      const across = (column + (random() - 0.5) * 0.9) * spacing;
+      const along = (row + random() * 0.85) * alongStep;
       if (along > FISH.peduncle) continue;
-      const edge = Math.abs(across) / bodyWidth(along);
-      if (edge > 1.09 || (edge > 0.96 && random() > (1.09 - edge) * 7.0)) continue;
+      const halfW = bodyWidth(along);
+      const across = (column + (random() - 0.5) * 0.90) * acrossStep;
+      const edge = Math.abs(across) / halfW;
+      if (edge > 1.05) continue;
 
-      const patch = Math.min(...patches.map(([center, side, length, width, skew]) => {
-        const local = (along - center) / length;
-        return local ** 2 + ((across - side) / width + skew * local) ** 2;
-      }));
-      const ink = along < 0.04 ? 0 : clamp((1.17 - patch) / 0.50, 0, 1);
-      const paint = ink * ink * (3 - 2 * ink);
-      const color = pearl.map((channel, i) => mix(channel, orange[i], paint));
-      const opacity = (0.76 + random() * 0.19) * (1 - 0.42 * edge ** 3);
-      add(along, across, color, opacity, 2.0 + random() * 1.2, edge > 0.97 ? 0.0045 : 0);
+      // Curvature-driven density falloff: dense dorsal ridge, progressively sparser flanks.
+      const densityKeep = edge < 0.45 ? 0.98 : mix(0.95, 0.28, smoothstep(0.45, 1.05, edge));
+      if (random() > densityKeep) continue;
+
+      // 3D ellipsoidal back curvature shading (dorsal ridge brightest, flanks curve into shadow).
+      const z = Math.sqrt(Math.max(0.0, 1.0 - Math.min(1.0, edge * edge)));
+      const shade = 0.72 + 0.28 * z + 0.05 * Math.cos(Math.PI * along);
+
+      // Bold, crisp-edged Kohaku red patches (keep snout tip white).
+      const snoutClear = smoothstep(0.024, 0.062, along);
+      const dPatch = patchField(along, across);
+      const paint = snoutClear * (1.0 - smoothstep(0.84, 1.06, dPatch));
+      const baseColor = pearl.map((channel, i) => mix(channel, vermilion[i], paint) * shade);
+
+      const opacity = (0.74 + 0.22 * random()) * (0.48 + 0.52 * z) * (1.0 - 0.35 * smoothstep(0.82, 1.05, edge));
+      const ptSize = (1.75 + 1.15 * random()) * (0.86 + 0.24 * z);
+      add(along, across, baseColor, opacity, ptSize, edge > 0.86 ? 0.005 : 0);
     }
   }
 
+  // 3. Subtle dorsal fin ridge along the center spine (adds top-down 3D silhouette).
+  for (let i = 0; i < 26; i += 1) {
+    const t = (i + random()) / 26;
+    const along = 0.34 + 0.25 * t;
+    const across = (random() - 0.5) * 0.008;
+    const paint = 1.0 - smoothstep(0.84, 1.06, patchField(along, 0));
+    const color = pearl.map((ch, k) => mix(ch, vermilion[k], paint * 0.55) * 1.04);
+    add(along, across, color, 0.46 + 0.26 * Math.sin(Math.PI * t), 1.55 + 0.85 * random(), 0.006 * Math.sin(Math.PI * t));
+  }
+
+  // 4. Eyes positioned on the blunt rounded head sides.
   for (const side of [-1, 1]) {
-    add(0.074, side * 0.049, [0.20, 0.24, 0.19], 0.94, 2.8);
+    add(0.068, side * 0.050, [0.16, 0.20, 0.17], 0.96, 2.75);
   }
   return particles;
 }
@@ -207,7 +283,7 @@ export class Koi {
     this.outline = Array.from({ length: FISH.segments }, () => ({ across: 0, back: 0 }));
     for (const part of this.particles) {
       const outline = this.outline[part.joint];
-      outline.across = Math.max(outline.across, Math.abs(part.across) + part.drift);
+      outline.across = Math.max(outline.across, Math.abs(part.across) + part.drift + 0.015 * part.tailLag);
       outline.back = Math.max(outline.back, part.floatBack);
     }
   }
@@ -267,16 +343,20 @@ export class Koi {
     return Math.floor(this.phase / Math.PI) !== Math.floor(previousPhase / Math.PI);
   }
 
+  // Full-body subcarangiform traveling wave: subtle head recoil, growing smoothly from shoulder to tail.
   tailOffset(along) {
-    return this.amplitude * this.length * along ** 2.35 * Math.sin(this.phase - FISH.waveNumber * along);
+    const envelope = 0.08 + 0.24 * along + 0.68 * (along ** 1.75);
+    return this.amplitude * this.length * envelope * Math.sin(this.phase - FISH.waveNumber * along);
   }
 
   pose() {
     this.posedX[0] = this.guideX[0] = this.headX;
     this.posedY[0] = this.guideY[0] = this.headY;
+    // Slight natural head counter-yaw coupled to the swimming wave.
+    const headSway = 0.72 * this.amplitude * Math.cos(this.phase);
     let guideAngle = this.heading + this.yaw + Math.PI;
-    let jointAngle = guideAngle;
-    let previousOffset = 0;
+    let jointAngle = guideAngle + headSway;
+    let previousOffset = this.tailOffset(0);
     for (let i = 1; i <= FISH.segments; i += 1) {
       const follow = Math.atan2(this.guideY[i] - this.guideY[i - 1], this.guideX[i] - this.guideX[i - 1]);
       guideAngle += clamp(angleDifference(follow, guideAngle), -FISH.maxJointAngle, FISH.maxJointAngle);
@@ -331,19 +411,20 @@ export class Koi {
   }
 
   drawData(time) {
-    const { posedX, posedY, tangentX, tangentY, length, vertices, renderOffsetY } = this;
+    const { posedX, posedY, tangentX, tangentY, length, vertices, renderOffsetY, phase: swimPhase, amplitude } = this;
     const driftTime = time * 1.42;
     const tailTime = time * 0.82;
     const brightnessTime = time * 2.1;
     let index = 0;
     for (const part of this.particles) {
-      const { joint, blend, phase } = part;
+      const { joint, blend, phase, tailLag } = part;
       const dx = mix(tangentX[joint], tangentX[joint + 1], blend);
       const dy = mix(tangentY[joint], tangentY[joint + 1], blend);
       const unit = length / Math.sqrt(dx * dx + dy * dy);
       const drift = part.drift ? part.drift * Math.sin(driftTime + phase) : 0;
+      const tailFlutter = tailLag ? tailLag * amplitude * 0.65 * Math.sin(swimPhase - FISH.waveNumber * (1.0 + tailLag * 0.4)) : 0;
       const back = part.floatBack ? unit * part.floatBack * (0.77 + 0.23 * Math.sin(tailTime + phase)) : 0;
-      const across = unit * (part.across + drift);
+      const across = unit * (part.across + drift + tailFlutter);
       vertices[index] = mix(posedX[joint], posedX[joint + 1], blend) - dy * across + dx * back;
       vertices[index + 1] = mix(posedY[joint], posedY[joint + 1], blend) + dx * across + dy * back + renderOffsetY;
       vertices[index + 6] = part.opacity * (0.91 + 0.09 * Math.sin(brightnessTime + phase));

@@ -1,5 +1,9 @@
 # PROJECT_CONTEXT.md
 
+## 2026-11-19 池塘样机 Gemini 任务模式迭代
+
+- `pond-gl-prototype` 新增两轮：水光离散微面元（`20261119-gemini-water1`）与鱼/荷叶/荷花三维曲面重做（`20261119-gemini-fishlotus1`）。代码由 Gemini 网页端「任务」模式在同一对话里两轮各生成 1 次（roshuku Ultra、Neon），思思搬运合并并本地验证（语法、点数与 Gemini 报告逐项对齐、零控制台报错）。样机仍无首页入口或公开更新记录，等站长真机签收后再决定是否全量实现。
+
 ## 2026-11-18 池塘 WebGL2 样机
 
 - 阶段一点五的 `pond-gl-prototype` 从 `d897898` 起步，验收路径是 Pages Preview 的 `/prototypes/pond/`。现有构建按文件登记复制独立 HTML 和模块到 `dist/`。页面直接访问，无首页入口或公开更新记录。

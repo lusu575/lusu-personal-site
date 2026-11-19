@@ -1,4 +1,4 @@
-import { KOI_ROUTES } from "./fish.mjs?v=20261119-gemini-water1";
+import { KOI_ROUTES } from "./fish.mjs?v=20261119-gemini-fishlotus1";
 
 export const WATER = Object.freeze({
   scale: 0.80,

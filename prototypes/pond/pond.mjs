@@ -1,7 +1,7 @@
-import { KOI_ROUTES, Koi, seededRandom } from "./fish.mjs?v=20261119-gemini-water1";
+import { KOI_ROUTES, Koi, seededRandom } from "./fish.mjs?v=20261119-gemini-fishlotus1";
 import {
   CRT, WATER, fullscreenVertex, pointVertex, pointFragment, bedFragment, waterFragment, desktopFragment, crtFragment
-} from "./shaders.mjs?v=20261119-gemini-water1";
+} from "./shaders.mjs?v=20261119-gemini-fishlotus1";
 
 const browser = globalThis;
 const canvas = browser.document.querySelector("canvas");
@@ -130,18 +130,28 @@ const LEAVES = [
 ];
 
 const LEAF_MATERIALS = {
-  main: { step: 4.2, size: [1.8, 3.1], alpha: [0.46, 0.72], veins: 10,
-    surface: [0.48, 0.81, 0.25], rib: [0.69, 0.89, 0.31], lip: [0.82, 0.94, 0.32] },
-  companion: { step: 4.7, size: [1.5, 2.6], alpha: [0.32, 0.58], veins: 5,
-    surface: [0.34, 0.70, 0.24], rib: [0.52, 0.76, 0.27], lip: [0.62, 0.79, 0.29] },
-  dark: { step: 6.1, size: [1.5, 2.6], alpha: [0.22, 0.42], veins: 4,
-    surface: [0.07, 0.17, 0.12], rib: [0.12, 0.23, 0.14], lip: [0.14, 0.24, 0.15] }
+  main: {
+    step: 4.15, size: [1.85, 3.05], alpha: [0.50, 0.82], veins: 11,
+    deep: [0.22, 0.44, 0.16], surface: [0.44, 0.78, 0.24],
+    rib: [0.68, 0.88, 0.32], sheen: [0.88, 0.96, 0.42]
+  },
+  companion: {
+    step: 4.65, size: [1.55, 2.55], alpha: [0.36, 0.68], veins: 7,
+    deep: [0.16, 0.36, 0.15], surface: [0.32, 0.67, 0.23],
+    rib: [0.50, 0.75, 0.28], sheen: [0.68, 0.84, 0.34]
+  },
+  dark: {
+    step: 6.00, size: [1.50, 2.50], alpha: [0.22, 0.44], veins: 5,
+    deep: [0.04, 0.10, 0.08], surface: [0.07, 0.17, 0.12],
+    rib: [0.12, 0.23, 0.14], sheen: [0.16, 0.27, 0.17]
+  }
 };
 
 const FLOWERS = [
-  { x: 0.285, y: 0.580, width: 0.056, lean: -0.12, opening: 1, petals: 8, seed: 2273 },
-  { x: 0.712, y: 0.335, width: 0.048, lean: 0.15, opening: 0.91, petals: 7, seed: 2281 },
-  { x: 0.251, y: 0.393, width: 0.015, lean: 0.17, petals: 0, seed: 2287 }
+  { x: 0.285, y: 0.580, width: 0.056, lean: -0.12, opening: 1.0, petals: 18, seed: 2273 },
+  { x: 0.712, y: 0.335, width: 0.048, lean: 0.15, opening: 0.92, petals: 16, seed: 2281 },
+  { x: 0.251, y: 0.393, width: 0.017, lean: 0.17, opening: 0, petals: 0, seed: 2287 },
+  { x: 0.742, y: 0.528, width: 0.016, lean: -0.11, opening: 0, petals: 0, seed: 2293 }
 ];
 
 function lotusPoints(width, height) {
@@ -150,13 +160,16 @@ function lotusPoints(width, height) {
   const scale = Math.min(width, 1.65 * height);
   const size = Math.sqrt(scale / 1536);
   const turn = 2 * Math.PI;
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const mix = (a, b, t) => a + (b - a) * t;
 
+  // 1. Curved umbrella-shaped lotus leaves with organic notch, undulating rim, carved veins, and waxy sheen.
   for (const { material, placement } of LEAVES) {
-    const { step: spacing, size: [small, large], alpha: [faint, solid], veins, surface, rib, lip } =
+    const { step: spacing, size: [small, large], alpha: [faint, solid], veins, deep, surface, rib, sheen } =
       LEAF_MATERIALS[material];
     const dark = material === "dark";
-    const directionalShade = material === "main" ? 0.22 : 0.13;
-    const [rimAlpha, rimVariation] = dark ? [0.36, 0.06] : [0.68, 0.20];
+    const reliefGain = material === "main" ? 1.0 : material === "companion" ? 0.75 : 0.45;
+
     for (const [x, y, radius, roll, notch, flatten, seed] of placement) {
       const random = seededRandom(seed);
       const span = radius * scale;
@@ -165,125 +178,294 @@ function lotusPoints(width, height) {
       const step = spacing / (radius * 1536);
       const baseX = x * width;
       const baseY = (1 - y) * height;
-      const lightX = y < 0.5 ? 0.408 : 0.610;
-      const lightY = y < 0.5 ? 0.305 : 0.650;
+
+      // Scene light direction in leaf-local coordinates (upper/lower pond beams).
+      const lightX = y < 0.5 ? 0.412 : 0.640;
+      const lightY = y < 0.5 ? 0.302 : 0.655;
       const lightAngle = Math.atan2((y - lightY) * height, (lightX - x) * width) - roll;
-      const notchDepth = 0.55 + 0.17 * random();
-      const towardLight = (angle) => Math.cos(angle - lightAngle);
+      const lx = Math.cos(lightAngle) * 0.64;
+      const ly = Math.sin(lightAngle) * 0.64;
+      const lz = 0.768;
+      // Half-vector with top-down view (0, 0, 1) for waxy leaf sheen.
+      const hLen = Math.hypot(lx, ly, lz + 1.0);
+      const hx = lx / hLen;
+      const hy = ly / hLen;
+      const hz = (lz + 1.0) / hLen;
+
+      // Per-leaf organic variation so no two leaves look copy-pasted.
+      const notchDepth = 0.42 + 0.24 * random();
+      const notchWidth = 22 + 18 * random();
+      const waveFreqA = 4 + Math.floor(random() * 3);
+      const waveFreqB = 7 + Math.floor(random() * 4);
+      const phaseA = turn * random();
+      const phaseB = turn * random();
+      const veinTwist = (random() - 0.5) * 0.24;
+      const veinCount = veins + Math.floor(random() * 3) - 1;
+      const veinOffset = turn * random();
+      const hubU = (random() - 0.5) * 0.08;
+      const hubV = (random() - 0.5) * 0.08;
+
       const rimAt = (angle) => {
-        const cut = Math.max(0, Math.cos(angle - notch)) ** 34;
-        return 0.97 + 0.018 * Math.cos(5 * angle + notch) + 0.023 * Math.sin(9 * angle) - notchDepth * cut;
+        const dNotch = Math.cos(angle - notch);
+        const cut = Math.max(0, dNotch) ** notchWidth;
+        const undulate = 0.024 * Math.cos(waveFreqA * angle + phaseA) +
+                         0.018 * Math.sin(waveFreqB * angle + phaseB) +
+                         0.012 * Math.cos(3 * angle - notch);
+        return 0.96 + undulate - notchDepth * cut;
       };
-      const leafPoint = (angle, radial, diameter, color, opacity, shade = 1) => {
-        const u = radial * Math.cos(angle);
-        const v = radial * Math.sin(angle) * flatten;
-        afloat.push(baseX + span * (u * cos - v * sin), baseY + span * (u * sin + v * cos),
-          diameter * size, color[0] * shade, color[1] * shade, color[2] * shade, opacity);
+
+      // 3D leaf surface height z(u, v): sunken central petiole dimple, gentle umbrella dome, ruffled curled rim, and puffed mesophyll between radial veins.
+      const heightAt = (u, v) => {
+        const du = u - hubU;
+        const dv = v - hubV;
+        const r = Math.hypot(du, dv);
+        const ang = Math.atan2(dv, du);
+        const dome = 0.16 * Math.sin(Math.min(1.0, r) * Math.PI * 0.82);
+        const dimple = -0.14 * Math.exp(-r * r * 26.0);
+        const curl = 0.055 * (r ** 3.2) * (0.55 + 0.45 * Math.cos(waveFreqA * ang + phaseA));
+        const vPhase = veinCount * (ang + veinTwist * r) + veinOffset;
+        const pillow = 0.022 * Math.sin(Math.min(1.0, r) * Math.PI) * (0.5 - 0.5 * Math.cos(vPhase));
+        return (dome + dimple + curl + pillow) * reliefGain;
       };
+
+      const leafPoint = (u, v, z, diameter, color, opacity) => {
+        // Project 3D leaf height slightly upward in screen Y so the umbrella dome and curled rim read with real depth.
+        const sx = baseX + span * (u * cos - v * flatten * sin);
+        const sy = baseY + span * (u * sin + v * flatten * cos + z * 0.28);
+        afloat.push(sx, sy, diameter * size, color[0], color[1], color[2], opacity);
+      };
+
+      const eps = 0.032;
       for (let row = -1; row <= 1; row += step / flatten) {
         for (let column = -1; column <= 1; column += step) {
-          const u = column + (random() - 0.5) * step * 0.94;
+          const u = column + (random() - 0.5) * step * 0.92;
           const v = row + (random() - 0.5) * step / flatten;
           const angle = Math.atan2(v, u);
           const radial = Math.hypot(u, v);
           const rim = rimAt(angle);
-          if (radial > rim + 0.035 || (radial > rim - 0.035 && random() > 0.60)) continue;
-          const shade = 0.76 + 0.22 * random() + directionalShade * radial * towardLight(angle);
-          leafPoint(angle, radial, small + (large - small) * Math.sqrt(random()), surface,
-            faint + (solid - faint) * random(), shade);
+          if (radial > rim + 0.025 || (radial > rim - 0.035 && random() > 0.58)) continue;
+
+          // Surface normal from finite differences of z(u, v).
+          const z0 = heightAt(u, v);
+          const dzdu = (heightAt(u + eps, v) - z0) / eps;
+          const dzdv = (heightAt(u, v + eps) - z0) / eps;
+          const nLen = Math.hypot(-dzdu, -dzdv, 1.0);
+          const nx = -dzdu / nLen;
+          const ny = -dzdv / nLen;
+          const nz = 1.0 / nLen;
+
+          // Directional illumination across the curved umbrella + waxy specular sheen.
+          const ndotl = clamp(nx * lx + ny * ly + nz * lz, 0.0, 1.0);
+          const ndoth = clamp(nx * hx + ny * hy + nz * hz, 0.0, 1.0);
+          const spec = (ndoth ** 12.0) * (dark ? 0.14 : 0.42);
+          const dimpleOcc = 1.0 - 0.34 * Math.exp(-radial * radial * 24.0);
+          const sectorSlope = 0.5 + 0.5 * Math.cos(angle - lightAngle);
+          const tone = clamp((0.28 + 0.72 * ndotl) * (0.76 + 0.36 * sectorSlope) * dimpleOcc, 0.0, 1.15);
+
+          // Vein ridge accent where the radial vein meets the curved surface.
+          const du = u - hubU;
+          const dv = v - hubV;
+          const rHub = Math.hypot(du, dv);
+          const aHub = Math.atan2(dv, du);
+          const vCos = Math.cos(veinCount * (aHub + veinTwist * rHub) + veinOffset);
+          const veinMask = radial > 0.08 && radial < rim - 0.05 ? Math.max(0, vCos) ** 14.0 : 0.0;
+
+          const micro = 0.91 + 0.16 * random();
+          const baseR = mix(deep[0], surface[0], clamp(tone, 0, 1));
+          const baseG = mix(deep[1], surface[1], clamp(tone, 0, 1));
+          const baseB = mix(deep[2], surface[2], clamp(tone, 0, 1));
+          const rCol = mix(baseR, rib[0], veinMask * 0.62) * micro + sheen[0] * spec;
+          const gCol = mix(baseG, rib[1], veinMask * 0.62) * micro + sheen[1] * spec;
+          const bCol = mix(baseB, rib[2], veinMask * 0.62) * micro + sheen[2] * spec;
+
+          const opacity = clamp(mix(faint, solid, 0.35 + 0.65 * tone) + 0.12 * veinMask - 0.08 * random(), 0.14, 0.92);
+          leafPoint(u, v, z0, small + (large - small) * Math.sqrt(random()), [rCol, gCol, bCol], opacity);
         }
       }
-      for (let angle = 0; angle < turn; angle += step * (dark ? 2.6 : 1.0)) {
-        const radial = rimAt(angle) + (random() - 0.5) * 0.055;
-        const bright = towardLight(angle) > 0.50;
-        const index = afloat.length;
-        if (bright || random() < (dark ? 0.17 : 0.45)) {
-          leafPoint(angle, radial, small + (large - small) * random(), bright ? lip : surface,
-            bright ? rimAlpha + rimVariation * random() : faint + 0.11 * random());
-          submerged.push(afloat[index] + 3, afloat[index + 1] - 5, (2.8 + 1.4 * random()) * size,
-            0.024, 0.060, 0.046, 0.10 + 0.08 * random());
-        }
-      }
-      for (let ray = 0; ray < veins; ray += 1) {
-        const heading = (ray + 0.25 * random()) * turn / veins;
-        const limit = rimAt(heading) - step;
-        for (let radial = step * 1.25; radial < limit; radial += step * 1.21) {
-          if (random() < 0.20) continue;
-          const angle = heading - 0.12 * radial + (random() - 0.5) * 0.12;
-          leafPoint(angle, radial, small + (large - small) * 0.72 * random(), rib,
-            faint + (solid - faint) * random(), 1 - 0.20 * radial);
+
+      // Curled wavy rim lip highlights + submerged leaf shadow underneath.
+      for (let angle = 0; angle < turn; angle += step * (dark ? 2.4 : 1.15)) {
+        const radial = rimAt(angle) + (random() - 0.5) * 0.04;
+        const u = radial * Math.cos(angle);
+        const v = radial * Math.sin(angle);
+        const z0 = heightAt(u, v);
+        const lit = Math.cos(angle - lightAngle);
+        const bright = lit > 0.28;
+        if (bright || random() < (dark ? 0.18 : 0.42)) {
+          const lipGain = bright ? 0.85 + 0.32 * lit : 0.62 + 0.18 * random();
+          const col = bright ? sheen : deep;
+          const index = afloat.length;
+          leafPoint(u, v, z0, small + (large - small) * (0.4 + 0.6 * random()),
+            [col[0] * lipGain, col[1] * lipGain, col[2] * lipGain],
+            bright ? (dark ? 0.36 : 0.72) + 0.16 * random() : faint + 0.12 * random());
+          submerged.push(afloat[index] + 3.5, afloat[index + 1] - 5.5, (2.7 + 1.4 * random()) * size,
+            0.020, 0.052, 0.044, 0.11 + 0.08 * random());
         }
       }
     }
   }
 
+  // 2. Layered 3D lotus flowers (with depth-occluded petals, central seedpod & stamens) and spindle buds.
   for (const { x, y, width: fraction, lean, opening, petals, seed } of FLOWERS) {
     const random = seededRandom(seed);
     const span = fraction * scale;
     const originX = x * width;
     const originY = (1 - y) * height;
-    const baseY = originY - span * (petals ? 0.13 : 0.38);
-    const stemX = (t) => originX + span * (-lean * t - 0.11 * Math.sin(3.0 * t));
-    // A calyx rises with the flower. Separate, fading stem fragments sit below the water.
-    for (let i = 0; i < 22; i += 1) {
-      const t = (i + random()) / 22;
-      const offset = (random() - 0.5) * span * 0.18 * (1 - 0.72 * t);
-      afloat.push(stemX(t) + offset, baseY - span * 0.18 * t, (1.4 + random()) * size,
-        0.40, 0.63, 0.26, 0.62 - 0.22 * t);
+    const baseY = originY - span * (petals ? 0.14 : 0.34);
+    const stemX = (t) => originX + span * (-lean * t - 0.10 * Math.sin(2.8 * t));
+
+    // Aerial stem / calyx rising cleanly above water; submerged stem fragments below.
+    const stemCount = petals ? 18 : 22;
+    for (let i = 0; i < stemCount; i += 1) {
+      const t = (i + random()) / stemCount;
+      const offset = (random() - 0.5) * span * (petals ? 0.16 : 0.22) * (1 - 0.65 * t);
+      afloat.push(stemX(t) + offset, baseY - span * (petals ? 0.17 : 0.34) * t, (1.35 + 0.9 * random()) * size,
+        0.34, 0.56, 0.24, 0.64 - 0.22 * t);
     }
     for (let segment = 0; segment < 3; segment += 1) {
-      for (let i = 0; i < 8; i += 1) {
-        const t = (segment + 0.64 * (i + random()) / 8) / 3;
-        submerged.push(stemX(t) + 3 + (random() - 0.5) * 2, baseY - 5 - span * 0.89 * t,
-          (1.55 + 1.05 * random()) * size, 0.32, 0.45, 0.19, 0.37 - 0.26 * t);
+      for (let i = 0; i < 7; i += 1) {
+        const t = (segment + 0.64 * (i + random()) / 7) / 3;
+        submerged.push(stemX(t) + 3 + (random() - 0.5) * 2, baseY - 5 - span * 0.88 * t,
+          (1.5 + 1.0 * random()) * size, 0.26, 0.40, 0.20, 0.34 - 0.24 * t);
       }
     }
+
     if (petals) {
-      // Back petals fan upward. The lower row overlaps their roots around the stamens.
-      const petalTips = [
-        [-0.49, 0.24], [-0.31, 0.39], [-0.15, 0.54], [0.02, 0.60], [0.23, 0.52],
-        [0.49, 0.30], [-0.25, 0.19], [0.24, 0.20]
+      // Build 3 concentric staggered tiers of curved 3D spoon petals, plus central seedpod & stamens.
+      // Camera projection: oblique top-down matching leaf foreshortening; front petals occlude back roots via a local z-buffer.
+      const candidates = [];
+      const lightDir = [-0.34, -0.42, 0.84];
+      const tiers = [
+        { count: Math.max(6, Math.round(petals * 0.40)), tilt: 1.18 * opening, len: 0.56, wid: 0.19, cup: 0.08, az0: 0.15, lift: 0.00 },
+        { count: Math.max(5, Math.round(petals * 0.34)), tilt: 0.82 * opening, len: 0.52, wid: 0.17, cup: 0.10, az0: 0.62, lift: 0.04 },
+        { count: Math.max(5, petals - Math.round(petals * 0.74)), tilt: 0.46 * opening, len: 0.44, wid: 0.135, cup: 0.11, az0: 1.08, lift: 0.08 }
       ];
-      for (let petal = 0; petal < petals; petal += 1) {
-        const [tipX, tipY] = petalTips[petal];
-        const dx = tipX * opening + lean * tipY;
-        const dy = tipY * opening;
-        const length = Math.hypot(dx, dy);
-        const lengthSteps = Math.ceil(length * fraction * 1536 / 1.75);
-        const halfWidth = 0.034 + 0.014 * random();
-        for (let row = 0; row < lengthSteps; row += 1) {
-          for (let column = -2; column <= 2; column += 1) {
-            const t = (row + random()) / lengthSteps;
-            const spread = (column + (random() - 0.5) * 0.67) * 0.5 * halfWidth *
-              Math.sin(Math.PI * t) ** 0.72;
-            const bend = 0.045 * Math.sin(Math.PI * t) * Math.sign(tipX);
-            afloat.push(originX + span * (dx * t + bend - dy * spread / length),
-              baseY + span * (dy * t + dx * spread / length), (1.8 + 1.10 * random()) * size,
-              0.93 + 0.07 * t, 0.48 + 0.38 * t, 0.56 + 0.26 * t, 0.60 + 0.25 * random());
+
+      const pushCandidate = (lx, ly, lz, diam, r, g, b, alpha) => {
+        const px = lx + lean * lz * 0.55;
+        const sx = originX + span * px;
+        const sy = baseY + span * (ly * 0.46 + lz * 0.88 + 0.10);
+        const depth = -ly * 0.88 + lz * 0.46;
+        candidates.push({ sx, sy, depth, diam: diam * size, r, g, b, alpha });
+      };
+
+      for (let tierIdx = 0; tierIdx < tiers.length; tierIdx += 1) {
+        const tier = tiers[tierIdx];
+        for (let p = 0; p < tier.count; p += 1) {
+          const az = tier.az0 + (p + (random() - 0.5) * 0.18) * turn / tier.count;
+          const ca = Math.cos(az);
+          const sa = Math.sin(az);
+          const tilt = tier.tilt + (random() - 0.5) * 0.10;
+          const sinT = Math.sin(tilt);
+          const cosT = Math.cos(tilt);
+          const pLen = tier.len * (0.93 + 0.14 * random());
+          const pWid = tier.wid * (0.92 + 0.16 * random());
+
+          const uSteps = 9;
+          const vSteps = 6;
+          for (let ui = 0; ui < uSteps; ui += 1) {
+            for (let vi = 0; vi < vSteps; vi += 1) {
+              const t = (ui + 0.15 + 0.75 * random()) / uSteps;
+              const s = ((vi + 0.15 + 0.70 * random()) / vSteps) * 2 - 1;
+              const halfW = pWid * (Math.sin(Math.PI * (t ** 0.76)) ** 0.72);
+              const lateral = s * halfW;
+
+              // Curved longitudinal spine + transverse spoon cupping.
+              const along = pLen * t;
+              const bow = -0.10 * pLen * (t ** 2.1); // petals curve gently inward toward the flower heart
+              const cup = tier.cup * (1.0 - s * s) * Math.sin(Math.PI * t);
+
+              const rOut = 0.06 + along * sinT + (bow + cup) * cosT;
+              const zUp = tier.lift + along * cosT - (bow + cup) * sinT;
+              const lx = rOut * ca - lateral * sa;
+              const ly = rOut * sa + lateral * ca;
+
+              // Approximate outward/upward petal normal for soft sunlit volume.
+              const nx = ca * cosT * 0.75 - sa * s * 0.35;
+              const ny = sa * cosT * 0.75 + ca * s * 0.35;
+              const nz = Math.max(0.25, sinT * 0.72 + 0.35 * t);
+              const nLen = Math.hypot(nx, ny, nz);
+              const ndotl = clamp((nx * lightDir[0] + ny * lightDir[1] + nz * lightDir[2]) / nLen, 0.0, 1.0);
+
+              // Root shadow in lower/inner cup -> rich lotus pink belly -> glowing pale-pink/white tips.
+              const rootOcc = mix(0.54 + 0.12 * tierIdx, 1.0, Math.min(1.0, t * 1.45));
+              const light = (0.64 + 0.44 * ndotl) * rootOcc;
+              const tipGlow = t ** 1.35;
+              const rCol = clamp(mix(0.88, 1.00, tipGlow) * light, 0, 1.05);
+              const gCol = clamp(mix(0.36, 0.84, tipGlow) * light, 0, 1.02);
+              const bCol = clamp(mix(0.46, 0.86, tipGlow) * light, 0, 1.02);
+              const alpha = clamp(0.68 + 0.24 * random() - 0.10 * Math.abs(s), 0.45, 0.92);
+
+              pushCandidate(lx, ly, zUp, 1.85 + 1.05 * random(), rCol, gCol, bCol, alpha);
+            }
           }
         }
       }
-      for (let i = 0; i < 22; i += 1) {
-        const angle = turn * random();
-        const radial = Math.sqrt(random());
-        afloat.push(originX + span * 0.105 * radial * Math.cos(angle),
-          baseY + span * (0.14 + 0.065 * radial * Math.sin(angle)), (1.5 + random()) * size,
-          0.95, 0.75, 0.32, 0.70 + 0.23 * random());
+
+      // Central lotus seedpod (莲蓬) nestled inside the inner petals.
+      for (let i = 0; i < 20; i += 1) {
+        const ang = turn * random();
+        const rad = Math.sqrt(random()) * 0.095;
+        const seedPit = i < 6;
+        pushCandidate(
+          rad * Math.cos(ang), rad * Math.sin(ang), 0.16 + 0.03 * (1 - rad / 0.095),
+          seedPit ? 1.55 : 1.75 + 0.65 * random(),
+          seedPit ? 0.36 : 0.74, seedPit ? 0.42 : 0.80, seedPit ? 0.18 : 0.26,
+          0.78 + 0.18 * random()
+        );
+      }
+      // Golden stamen ring (雄蕊点) encircling the seedpod.
+      for (let i = 0; i < 34; i += 1) {
+        const ang = (i + random() * 0.7) * turn / 34;
+        const rad = 0.095 + 0.065 * random();
+        const zUp = 0.15 + 0.09 * random();
+        pushCandidate(
+          rad * Math.cos(ang), rad * Math.sin(ang), zUp,
+          1.40 + 0.85 * random(),
+          0.98, 0.79, 0.26, 0.76 + 0.20 * random()
+        );
+      }
+
+      // Local 2px z-buffer occlusion so front petals cleanly hide back petal roots and frame the receptacle.
+      const cellPx = Math.max(1.8, 2.1 * size);
+      const zMap = new Map();
+      const keyOf = (sx, sy) => `${Math.round(sx / cellPx)},${Math.round(sy / cellPx)}`;
+      for (const pt of candidates) {
+        const key = keyOf(pt.sx, pt.sy);
+        const prev = zMap.get(key);
+        if (prev === undefined || pt.depth > prev) zMap.set(key, pt.depth);
+      }
+      candidates.sort((a, b) => a.depth - b.depth);
+      for (const pt of candidates) {
+        const front = zMap.get(keyOf(pt.sx, pt.sy));
+        if (pt.depth < front - 0.14) continue;
+        afloat.push(pt.sx, pt.sy, pt.diam, pt.r, pt.g, pt.b, pt.alpha);
       }
     } else {
-      for (let row = 0; row < 20; row += 1) {
-        for (let column = -8; column <= 8; column += 1) {
-          const t = (row + random()) / 20;
-          const across = (column + random() - 0.5) / 8;
-          const breadth = Math.sin(Math.PI * t) ** 0.83 * (1.20 - 0.53 * t);
+      // Unopened lotus bud: spindle silhouette, jade-green calyx base, blush belly, vivid pink tip.
+      const rows = 18;
+      for (let row = 0; row < rows; row += 1) {
+        for (let col = -7; col <= 7; col += 1) {
+          const t = (row + random()) / rows;
+          const across = (col + random() - 0.5) / 7;
+          const breadth = (Math.sin(Math.PI * (t ** 0.82)) ** 0.78) * (1.16 - 0.44 * t);
           if (Math.abs(across) > breadth) continue;
-          const seam = Math.cos((across / Math.max(breadth, 0.01) + t * 0.49) * 13);
-          const light = 0.75 + 0.16 * random() + 0.16 * Math.max(0, seam);
-          const petal = Math.min(1, t * 5);
-          afloat.push(originX + span * (across + lean * t) * 0.5,
-            originY + span * (1.125 * t - 0.515), (1.55 + 1.35 * random()) * size,
-            (0.52 + 0.42 * petal) * light, (0.68 - 0.08 * petal) * light,
-            (0.23 + 0.45 * petal) * light, 0.62 + 0.33 * random());
+          const normX = across / Math.max(breadth, 0.01);
+          const z = Math.sqrt(Math.max(0.0, 1.0 - normX * normX));
+          const seam = Math.cos((normX + 0.35 * t) * 11.0);
+          const light = (0.64 + 0.34 * z - 0.16 * normX) * (0.92 + 0.12 * Math.max(0, seam));
+          const pink = clamp((t - 0.18) / 0.62, 0.0, 1.0);
+          const tip = clamp((t - 0.58) / 0.42, 0.0, 1.0);
+          const rCol = mix(0.42, mix(0.95, 1.00, tip), pink) * light;
+          const gCol = mix(0.64, mix(0.68, 0.46, tip), pink) * light;
+          const bCol = mix(0.24, mix(0.72, 0.60, tip), pink) * light;
+          afloat.push(
+            originX + span * (across * 0.54 + lean * t * 0.48),
+            originY + span * (1.16 * t - 0.48),
+            (1.45 + 1.15 * random()) * size,
+            rCol, gCol, bCol,
+            clamp((0.58 + 0.34 * random()) * (0.62 + 0.38 * z), 0.35, 0.94)
+          );
         }
       }
     }
