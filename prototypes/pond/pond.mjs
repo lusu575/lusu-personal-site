@@ -1,12 +1,15 @@
-import { KOI_ROUTES, Koi, seededRandom } from "./fish.mjs?v=20261119-gemini-11align1";
+import { KOI_ROUTES, Koi, seededRandom } from "./fish.mjs?v=20261119-gemini-sample1";
 import {
   CRT, WATER, fullscreenVertex, pointVertex, pointFragment, bedFragment, waterFragment, desktopFragment, crtFragment
-} from "./shaders.mjs?v=20261119-gemini-11align1";
+} from "./shaders.mjs?v=20261119-gemini-sample1";
+import { LEAF_SAMPLES, FLOWER_SAMPLES, BUD_SAMPLES, PLANT_POINT_BUDGET } from "./sampled-data.mjs";
 
 const browser = globalThis;
 const canvas = browser.document.querySelector("canvas");
 const status = browser.document.querySelector("#status");
 const params = new URLSearchParams(browser.location.search);
+
+const MAX_PLANT_POINTS = Math.min(12000, Number(PLANT_POINT_BUDGET) || 12000);
 
 function createProgram(gl, vertexSource, fragmentSource, uniforms) {
   const program = gl.createProgram();
@@ -92,7 +95,7 @@ function createClock(gl) {
   return { texture, width, height };
 }
 
-// Top-left scene coordinates aligned 1:1 with 15561.png.
+// Scene placement tables (top-left normalized coordinates): [x, y, radius, roll, notch, flatten, seed].
 const LEAVES = [
   { material: "main", placement: [
     [0.250, 0.521, 0.056, -0.05, -0.58, 0.52, 1207],
@@ -132,31 +135,17 @@ const LEAVES = [
   ] }
 ];
 
-const LEAF_MATERIALS = {
-  main: {
-    pitch: 5.20, beadSize: [4.10, 4.95], veins: 8,
-    under: [0.08, 0.25, 0.12, 0.64],
-    shade: [0.18, 0.45, 0.20], mid: [0.43, 0.70, 0.26],
-    sun: [0.80, 0.85, 0.36], rim: [0.92, 0.93, 0.44]
-  },
-  companion: {
-    pitch: 5.25, beadSize: [3.80, 4.55], veins: 6,
-    under: [0.06, 0.20, 0.11, 0.56],
-    shade: [0.16, 0.41, 0.19], mid: [0.35, 0.63, 0.24],
-    sun: [0.68, 0.79, 0.32], rim: [0.82, 0.87, 0.40]
-  },
-  dark: {
-    pitch: 5.55, beadSize: [3.40, 4.10], veins: 5,
-    under: [0.02, 0.07, 0.05, 0.38],
-    shade: [0.08, 0.20, 0.12], mid: [0.15, 0.30, 0.16],
-    sun: [0.22, 0.38, 0.19], rim: [0.27, 0.43, 0.21]
-  }
+// Material tint fallback when companion / dark reuse the same sampled leaf sprite.
+const LEAF_FALLBACK_TINT = {
+  main: [1.0, 1.0, 1.0, 1.0],
+  companion: [0.88, 0.94, 0.92, 0.92],
+  dark: [0.30, 0.44, 0.38, 0.62]
 };
 
 const FLOWERS = [
-  { x: 0.285, y: 0.578, width: 0.055, lean: -0.04, opening: 1.0, petals: 13, seed: 2273 },
-  { x: 0.708, y: 0.336, width: 0.047, lean: 0.04, opening: 0.95, petals: 13, seed: 2281 },
-  { x: 0.253, y: 0.390, width: 0.017, lean: 0.06, opening: 0, petals: 0, seed: 2287 }
+  { x: 0.285, y: 0.578, width: 0.055, lean: -0.04, petals: 13, seed: 2273 },
+  { x: 0.708, y: 0.336, width: 0.047, lean: 0.04, petals: 13, seed: 2281 },
+  { x: 0.253, y: 0.390, width: 0.017, lean: 0.06, petals: 0, seed: 2287 }
 ];
 
 const AMBIENT_RIPPLE_SITES = [
@@ -167,284 +156,180 @@ const AMBIENT_RIPPLE_SITES = [
   [0.925, 0.215]
 ];
 
+function pickTemplate(group, preferredKey, seed) {
+  if (!group) return null;
+  if (group.points) return { template: group, exactKey: true };
+  if (Array.isArray(group)) {
+    return group.length ? { template: group[seed % group.length], exactKey: true } : null;
+  }
+  const direct = preferredKey ? group[preferredKey] : null;
+  if (direct) {
+    if (Array.isArray(direct)) {
+      return direct.length ? { template: direct[seed % direct.length], exactKey: true } : null;
+    }
+    if (direct.points) return { template: direct, exactKey: true };
+  }
+  const values = Object.values(group).flatMap((v) => (Array.isArray(v) ? v : [v])).filter((v) => v?.points);
+  if (!values.length) return null;
+  return { template: values[seed % values.length], exactKey: false };
+}
+
+function thinPointStream(flatArray, maxPoints) {
+  const count = Math.floor(flatArray.length / 7);
+  if (count <= maxPoints) return new Float32Array(flatArray);
+  const out = new Float32Array(maxPoints * 7);
+  const step = count / maxPoints;
+  for (let i = 0; i < maxPoints; i += 1) {
+    const src = Math.min(count - 1, Math.floor(i * step)) * 7;
+    const dst = i * 7;
+    for (let k = 0; k < 7; k += 1) out[dst + k] = flatArray[src + k];
+  }
+  return out;
+}
+
+// Assembles static afloat & submerged plant point clouds solely by instancing sampled sprite datasets.
 function lotusPoints(width, height) {
   const afloat = [];
   const submerged = [];
   const scale = Math.min(width, 1.65 * height);
   const size = Math.sqrt(scale / 1536);
-  const turn = 2 * Math.PI;
-  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
-  const mix = (a, b, t) => a + (b - a) * t;
-  const smoothstep = (e0, e1, x) => {
-    const t = clamp((x - e0) / (e1 - e0), 0, 1);
-    return t * t * (3 - 2 * t);
-  };
-  const angleDiff = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 
-  // 1. Natural feathered-edge 5.2px beaded lotus leaves.
+  // 1. Assemble lotus leaves from LEAF_SAMPLES.
   for (const { material, placement } of LEAVES) {
-    const { pitch, beadSize: [bMin, bMax], veins, under, shade, mid, sun, rim } = LEAF_MATERIALS[material];
     const dark = material === "dark";
-
     for (const [x, y, radius, roll, notch, flatten, seed] of placement) {
+      const picked = pickTemplate(LEAF_SAMPLES, material, seed);
+      if (!picked) continue;
+      const { template, exactKey } = picked;
+      const { points, stride = 7, aspect = 1.85, projected = true } = template;
+      const count = Math.floor(points.length / stride);
+      if (!count) continue;
+
+      const [tr, tg, tb, ta] = exactKey ? [1, 1, 1, 1] : LEAF_FALLBACK_TINT[material];
       const random = seededRandom(seed);
       const span = radius * scale;
-      const cos = Math.cos(roll);
-      const sin = Math.sin(roll);
       const baseX = x * width;
       const baseY = (1 - y) * height;
+      const cosR = Math.cos(roll);
+      const sinR = Math.sin(roll);
+      const cosN = Math.cos(notch);
+      const sinN = Math.sin(notch);
+      const flipX = Math.cos(notch) >= 0 ? -1 : 1;
+      const radiusPointScale = Math.max(0.70, Math.min(1.12, Math.sqrt(radius / 0.052)));
+      const shadowStride = Math.max(2, Math.round(count / 24));
 
-      const lightX = y < 0.48 ? 0.415 : 0.540;
-      const lightY = y < 0.48 ? 0.298 : 0.520;
-      const worldLightAngle = Math.atan2((y - lightY) * height, (lightX - x) * width);
-      const lightAngle = worldLightAngle - roll;
+      for (let i = 0; i < count; i += 1) {
+        const idx = i * stride;
+        const nx = points[idx] - 0.5;
+        const ny = 0.5 - points[idx + 1];
+        const r = points[idx + 2] * tr;
+        const g = points[idx + 3] * tg;
+        const b = points[idx + 4] * tb;
+        const a = points[idx + 5] * ta;
+        const ptSize = points[idx + 6] * radiusPointScale * size;
 
-      const waveA = 4 + Math.floor(random() * 3);
-      const waveB = 7 + Math.floor(random() * 3);
-      const phA = turn * random();
-      const phB = turn * random();
-      const wedgeHalf = 0.29 + 0.04 * random();
-
-      const outerAt = (ang) => 0.99 + 0.020 * Math.cos(waveA * ang + phA) + 0.014 * Math.sin(waveB * ang + phB);
-      const insideLeaf = (u, v) => {
-        const r = Math.hypot(u, v);
-        const ang = Math.atan2(v, u);
-        const outer = outerAt(ang);
-        if (r > outer) return -1;
-        const dAng = Math.abs(angleDiff(ang, notch));
-        if (dAng < wedgeHalf) {
-          const wedgeRadius = 0.09 + 0.91 * (dAng / wedgeHalf) ** 1.12;
-          if (r > wedgeRadius) return -1;
-          return (wedgeRadius - r) * 0.85;
+        let dx;
+        let dy;
+        if (projected) {
+          // Sprite already carries oblique pond perspective; preserve its aspect ratio and apply gentle roll/flip.
+          const lx = nx * 2 * span * flipX;
+          const ly = ny * 2 * (span / Math.max(0.25, aspect));
+          dx = lx * cosR - ly * sinR;
+          dy = lx * sinR + ly * cosR;
+        } else {
+          // Top-down disc sprite: rotate in leaf plane by notch, foreshorten by flatten, then roll.
+          const ux = nx * 2 * span;
+          const uy = ny * 2 * (span / Math.max(0.25, aspect));
+          const rx = ux * cosN - uy * sinN;
+          const ry = (ux * sinN + uy * cosN) * flatten;
+          dx = rx * cosR - ry * sinR;
+          dy = rx * sinR + ry * cosR;
         }
-        return outer - r;
-      };
 
-      const underStep = (pitch * 1.38) * size;
-      const maxX = span * 1.05;
-      const maxY = span * flatten * 1.05;
-      for (let dy = -maxY; dy <= maxY; dy += underStep) {
-        for (let dx = -maxX; dx <= maxX; dx += underStep) {
-          const rx = dx * cos + dy * sin;
-          const ry = (-dx * sin + dy * cos) / flatten;
-          const margin = insideLeaf(rx / span, ry / span);
-          if (margin < 0.04) continue;
-          if (!dark && random() < 0.45) {
-            submerged.push(baseX + dx + 4.5 * size, baseY + dy - 6.0 * size, 5.5 * size,
-              0.014, 0.046, 0.036, 0.15);
-          }
-          afloat.push(baseX + dx, baseY + dy, (pitch * 1.36) * size,
-            under[0], under[1], under[2], under[3] * smoothstep(0.03, 0.18, margin));
-        }
-      }
+        const sx = baseX + dx;
+        const sy = baseY + dy;
+        afloat.push(sx, sy, ptSize, r, g, b, a);
 
-      const dxStep = pitch * size;
-      const dyStep = (pitch * 0.94) * size;
-      const rowStart = Math.floor(-maxY / dyStep) - 1;
-      const rowEnd = Math.ceil(maxY / dyStep) + 1;
-      const colStart = Math.floor(-maxX / dxStep) - 1;
-      const colEnd = Math.ceil(maxX / dxStep) + 1;
-
-      for (let rIdx = rowStart; rIdx <= rowEnd; rIdx += 1) {
-        const py = rIdx * dyStep;
-        const stagger = (rIdx & 1) ? 0.5 * dxStep : 0;
-        for (let cIdx = colStart; cIdx <= colEnd; cIdx += 1) {
-          const px = cIdx * dxStep + stagger + (random() - 0.5) * 0.95 * size;
-          const jy = py + (random() - 0.5) * 0.85 * size;
-
-          const lx = (px * cos + jy * sin) / span;
-          const ly = (-px * sin + jy * cos) / (span * flatten);
-          const margin = insideLeaf(lx, ly);
-          if (margin < 0) continue;
-
-          const rad = Math.hypot(lx, ly);
-          const ang = Math.atan2(ly, lx);
-          const dNotch = Math.abs(angleDiff(ang, notch));
-          const towardSun = Math.cos(ang - lightAngle);
-
-          const umbrellaSlope = 0.50 + 0.50 * towardSun * Math.min(1.0, 0.25 + rad * 1.15);
-          const domeLift = Math.sin(Math.min(1.0, rad) * Math.PI * 0.82);
-          const hubCup = 1.0 - 0.20 * Math.exp(-rad * rad * 26.0);
-          const tone = clamp((0.15 + 0.78 * umbrellaSlope + 0.13 * domeLift) * hubCup + (random() - 0.5) * 0.08, 0.0, 1.0);
-
-          const vCos = dNotch > wedgeHalf * 1.12 ? Math.cos(veins * (ang - notch)) : -1;
-          const vein = rad > 0.11 && margin > 0.06 ? Math.max(0, vCos) ** 20.0 : 0.0;
-          const sunLip = margin < 0.095 && !dark ? smoothstep(-0.15, 0.85, towardSun) * 0.65 : 0.0;
-
-          let colR, colG, colB;
-          if (tone < 0.5) {
-            const t2 = tone * 2.0;
-            colR = mix(shade[0], mid[0], t2);
-            colG = mix(shade[1], mid[1], t2);
-            colB = mix(shade[2], mid[2], t2);
-          } else {
-            const t2 = (tone - 0.5) * 2.0;
-            colR = mix(mid[0], sun[0], t2);
-            colG = mix(mid[1], sun[1], t2);
-            colB = mix(mid[2], sun[2], t2);
-          }
-
-          const highlight = Math.max(vein * 0.50, sunLip);
-          colR = mix(colR, rim[0], highlight);
-          colG = mix(colG, rim[1], highlight);
-          colB = mix(colB, rim[2], highlight);
-
-          const isNavel = !dark && rad < 0.090;
-          const edgeSoft = smoothstep(0.0, 0.075, margin);
-          const diam = isNavel ? bMax * 1.12 : mix(bMin, bMax, 0.35 + 0.45 * tone + 0.20 * random()) * (0.80 + 0.20 * edgeSoft);
-          const alpha = (dark ? 0.58 + 0.22 * tone : clamp(0.84 + 0.14 * tone, 0.78, 0.98)) * (0.55 + 0.45 * edgeSoft);
-          afloat.push(
-            baseX + px,
-            baseY + jy + domeLift * span * 0.03,
-            diam * size,
-            isNavel ? rim[0] * 1.08 : colR,
-            isNavel ? rim[1] * 1.04 : colG,
-            isNavel ? rim[2] * 1.25 : colB,
-            alpha
-          );
-        }
-      }
-
-      if (dark || radius > 0.045) {
-        const stemLen = span * (dark ? 1.45 : 0.85);
-        const steps = Math.max(5, Math.round(stemLen / (6.5 * size)));
-        for (let s = 1; s <= steps; s += 1) {
-          const t = s / steps;
-          const curveX = Math.sin(t * 2.4 + seed) * span * 0.14;
+        if (!dark && i % shadowStride === 0) {
           submerged.push(
-            baseX + curveX, baseY - t * stemLen, 3.4 * size,
-            dark ? 0.10 : 0.18, dark ? 0.24 : 0.36, dark ? 0.15 : 0.20,
-            (dark ? 0.36 : 0.38) * (1.0 - 0.62 * t)
+            sx + 4.5 * size,
+            sy - 6.0 * size,
+            5.2 * size,
+            0.015, 0.048, 0.038,
+            0.14 + 0.04 * random()
           );
         }
       }
     }
   }
 
-  // 2. Unified Staggered-Bead-Grid Lotus Crown Flowers & Plump Pink Bud.
-  for (const { x, y, width: fraction, lean, opening, petals, seed } of FLOWERS) {
-    const random = seededRandom(seed);
+  // 2. Assemble lotus blooms & buds from FLOWER_SAMPLES and BUD_SAMPLES.
+  for (const { x, y, width: fraction, lean, petals, seed } of FLOWERS) {
+    const isBloom = petals > 0;
+    const picked = isBloom
+      ? pickTemplate(FLOWER_SAMPLES, "bloom", seed)
+      : pickTemplate(BUD_SAMPLES, "closed", seed);
+    if (!picked) continue;
+
+    const { template } = picked;
+    const { points, stride = 7, aspect = 1.4 } = template;
+    const count = Math.floor(points.length / stride);
+    if (!count) continue;
+
     const span = fraction * scale;
+    const halfW = span * (isBloom ? 0.86 : 0.72);
+    const halfH = halfW / Math.max(0.25, aspect);
     const originX = x * width;
     const originY = (1 - y) * height;
-    const baseY = originY - span * (petals ? 0.22 : 0.30);
-    const stemX = (t) => originX + span * (-lean * 0.40 * t - 0.05 * Math.sin(2.8 * t));
+    const cosL = Math.cos(-lean * 0.35);
+    const sinL = Math.sin(-lean * 0.35);
 
-    for (let i = 0; i < 9; i += 1) {
-      const t = i / 9;
-      afloat.push(stemX(t), baseY - span * 0.26 * t, 3.2 * size, 0.36, 0.60, 0.26, 0.80 - 0.25 * t);
+    for (let i = 0; i < count; i += 1) {
+      const idx = i * stride;
+      const lx = (points[idx] - 0.5) * 2 * halfW;
+      const ly = (0.5 - points[idx + 1]) * 2 * halfH;
+      const sx = originX + lx * cosL - ly * sinL;
+      const sy = originY + lx * sinL + ly * cosL;
+      afloat.push(
+        sx,
+        sy,
+        points[idx + 6] * size,
+        points[idx + 2],
+        points[idx + 3],
+        points[idx + 4],
+        points[idx + 5]
+      );
     }
-    for (let i = 1; i <= 11; i += 1) {
-      const t = i / 11;
-      submerged.push(stemX(t) + 2, baseY - span * (0.22 + 0.90 * t), 3.3 * size,
-        0.26, 0.46, 0.22, 0.44 * (1.0 - 0.65 * t));
-      if (petals && i <= 8) {
-        const rx = (random() - 0.5) * span * 0.52 * (1.0 - 0.45 * t);
-        submerged.push(originX + rx, baseY - span * (0.10 + 0.52 * t), 3.6 * size,
-          0.62, 0.32, 0.36, 0.24 * (1.0 - t / 9));
-      }
-    }
 
-    if (petals) {
-      const petalDefs = [
-        // Back 3 tall pointed lotus crown peaks (z = 1)
-        { bx: -0.09, by: 0.08, tx: -0.27 * opening, ty: 0.70, wid: 0.135, whiteAt: 0.42, z: 1 },
-        { bx:  0.00, by: 0.10, tx:  0.01 * opening, ty: 0.78, wid: 0.145, whiteAt: 0.40, z: 1 },
-        { bx:  0.09, by: 0.08, tx:  0.28 * opening, ty: 0.69, wid: 0.135, whiteAt: 0.42, z: 1 },
-        // Middle 4 fanning pointed lateral lotus petals (z = 2)
-        { bx: -0.14, by: 0.05, tx: -0.52 * opening, ty: 0.54, wid: 0.135, whiteAt: 0.46, z: 2 },
-        { bx:  0.14, by: 0.05, tx:  0.52 * opening, ty: 0.53, wid: 0.135, whiteAt: 0.46, z: 2 },
-        { bx: -0.16, by: 0.02, tx: -0.72 * opening, ty: 0.34, wid: 0.130, whiteAt: 0.50, z: 2 },
-        { bx:  0.16, by: 0.02, tx:  0.72 * opening, ty: 0.33, wid: 0.130, whiteAt: 0.50, z: 2 },
-        // Front 5 shorter cupped rose-pink foreground petals cradling the golden stamen heart (z = 4)
-        { bx: -0.15, by: -0.02, tx: -0.56 * opening, ty: 0.14, wid: 0.125, whiteAt: 0.68, z: 4 },
-        { bx: -0.08, by: -0.03, tx: -0.30 * opening, ty: 0.20, wid: 0.130, whiteAt: 0.72, z: 4 },
-        { bx:  0.00, by: -0.04, tx:  0.00,           ty: 0.19, wid: 0.140, whiteAt: 0.75, z: 4 },
-        { bx:  0.08, by: -0.03, tx:  0.30 * opening, ty: 0.20, wid: 0.130, whiteAt: 0.72, z: 4 },
-        { bx:  0.15, by: -0.02, tx:  0.56 * opening, ty: 0.14, wid: 0.125, whiteAt: 0.68, z: 4 }
-      ];
-
-      const evalPetal = (u, v, p) => {
-        const dx = p.tx - p.bx;
-        const dy = p.ty - p.by;
-        const len2 = dx * dx + dy * dy;
-        const t = ((u - p.bx) * dx + (v - p.by) * dy) / len2;
-        if (t < -0.04 || t > 1.0) return null;
-        const tc = clamp(t, 0, 1);
-        const len = Math.sqrt(len2);
-        const perp = Math.abs((u - p.bx) * dy - (v - p.by) * dx) / len;
-        const halfW = p.wid * (1.0 - Math.pow(tc, 1.08)) * (0.52 + 0.48 * smoothstep(0.0, 0.28, tc));
-        if (perp > halfW) return null;
-        return { t: tc, edge: perp / Math.max(halfW, 0.001) };
-      };
-
-      afloat.push(originX, baseY + 0.13 * span, span * 0.46, 0.30, 0.14, 0.18, 0.52);
-
-      const gStepX = 4.45 * size;
-      const gStepY = 4.25 * size;
-      const maxU = Math.ceil((0.78 * span) / gStepX);
-      const minV = Math.floor((-0.08 * span) / gStepY);
-      const maxV = Math.ceil((0.82 * span) / gStepY);
-
-      for (let rIdx = minV; rIdx <= maxV; rIdx += 1) {
-        const py = rIdx * gStepY;
-        const stagger = (rIdx & 1) ? 0.5 * gStepX : 0;
-        for (let cIdx = -maxU; cIdx <= maxU; cIdx += 1) {
-          const px = cIdx * gStepX + stagger + (random() - 0.5) * 0.35 * size;
-          const jy = py + (random() - 0.5) * 0.30 * size;
-          const u = (px - lean * jy * 0.15) / span;
-          const v = jy / span;
-
-          const stDist = Math.hypot(u / 0.19, (v - 0.25) / 0.105);
-          let bestZ = -1;
-          let bestCol = null;
-
-          if (stDist <= 1.0) {
-            bestZ = 3;
-            const goldBright = 0.94 + 0.14 * (1.0 - stDist);
-            bestCol = [1.05 * goldBright, 0.84 * goldBright, 0.24 * goldBright];
-          }
-
-          for (const p of petalDefs) {
-            if (p.z < bestZ) continue;
-            const hit = evalPetal(u, v, p);
-            if (!hit) continue;
-            const whiteMix = smoothstep(p.whiteAt - 0.18, p.whiteAt + 0.24, hit.t);
-            const seamShade = 1.0 - 0.22 * (hit.edge ** 2.0) * (1.0 - 0.45 * whiteMix);
-            const rCol = mix(0.88, 1.05, whiteMix) * seamShade;
-            const gCol = mix(0.52, 1.02, whiteMix) * (seamShade - 0.04 * hit.edge);
-            const bCol = mix(0.56, 0.97, whiteMix) * (seamShade - 0.03 * hit.edge);
-            bestZ = p.z;
-            bestCol = [rCol, gCol, bCol];
-          }
-
-          if (bestCol) {
-            afloat.push(originX + px, baseY + jy, 4.35 * size, bestCol[0], bestCol[1], bestCol[2], 0.96);
-          }
-        }
-      }
-    } else {
-      afloat.push(originX, baseY + 0.38 * span, span * 0.85, 0.36, 0.18, 0.22, 0.48);
-      const bStep = 4.35 * size;
-      for (let rIdx = 0; rIdx <= 5; rIdx += 1) {
-        const t = rIdx / 5;
-        const stagger = (rIdx & 1) ? 0.5 : 0;
-        const halfW = 0.48 * span * Math.sin(Math.PI * (0.14 + 0.82 * t)) ** 0.72;
-        const cols = Math.floor(halfW / bStep);
-        for (let cIdx = -cols; cIdx <= cols; cIdx += 1) {
-          const px = (cIdx + stagger * 0.4) * bStep;
-          if (Math.abs(px) > halfW + 0.8 * size) continue;
-          const calyx = 1.0 - smoothstep(0.0, 0.28, t);
-          const whiteMix = smoothstep(0.32, 0.85, t);
-          const rCol = mix(mix(0.88, 1.05, whiteMix), 0.44, calyx);
-          const gCol = mix(mix(0.54, 1.01, whiteMix), 0.68, calyx);
-          const bCol = mix(mix(0.60, 0.96, whiteMix), 0.32, calyx);
-          afloat.push(originX + px, baseY + rIdx * bStep * 0.92, 4.45 * size, rCol, gCol, bCol, 0.96);
-        }
-      }
+    // Subtle underwater stem & soft reflection below each flower/bud.
+    const stemBaseY = originY - halfH * 0.78;
+    for (let s = 0; s < 8; s += 1) {
+      const t = (s + 0.5) / 8;
+      const stemX = originX - lean * span * 0.35 * t;
+      submerged.push(
+        stemX + 2.0 * size,
+        stemBaseY - span * 0.85 * t,
+        3.2 * size,
+        0.24, 0.44, 0.21,
+        0.40 * (1 - 0.65 * t)
+      );
     }
   }
-  return { afloat: new Float32Array(afloat), submerged: new Float32Array(submerged) };
+
+  // Enforce total plant budget <= 12,000 points across afloat + submerged.
+  const afloatCount = afloat.length / 7;
+  const submergedCount = submerged.length / 7;
+  const totalCount = afloatCount + submergedCount;
+  if (totalCount <= MAX_PLANT_POINTS) {
+    return { afloat: new Float32Array(afloat), submerged: new Float32Array(submerged) };
+  }
+
+  const submergedBudget = Math.min(submergedCount, Math.max(120, Math.round(MAX_PLANT_POINTS * (submergedCount / totalCount))));
+  const afloatBudget = Math.max(1, MAX_PLANT_POINTS - submergedBudget);
+  return {
+    afloat: thinPointStream(afloat, afloatBudget),
+    submerged: thinPointStream(submerged, submergedBudget)
+  };
 }
 
 function createPointBuffer(gl) {
@@ -514,13 +399,15 @@ function createRenderer(gl) {
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
     }
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    gl.bindVertexArray(vao);
-    gl.uniform1f(uniforms.uDpr, density);
-    gl.drawArrays(gl.POINTS, 0, count);
-    gl.disable(gl.BLEND);
-    gl.bindVertexArray(null);
+    if (count > 0) {
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      gl.bindVertexArray(vao);
+      gl.uniform1f(uniforms.uDpr, density);
+      gl.drawArrays(gl.POINTS, 0, count);
+      gl.disable(gl.BLEND);
+      gl.bindVertexArray(null);
+    }
   }
 
   function fit() {
@@ -596,10 +483,17 @@ function createRenderer(gl) {
       }
       const edge = WATER.fishRefraction + cssPerTexel;
       const bound = i * 4;
-      fishBounds[bound] = x0 <= 0 ? -edge : x0;
-      fishBounds[bound + 1] = y0 <= 0 ? -edge : y0;
-      fishBounds[bound + 2] = x1 >= width ? width + edge : x1;
-      fishBounds[bound + 3] = y1 >= height ? height + edge : y1;
+      if (vertices.length === 0) {
+        fishBounds[bound] = -10;
+        fishBounds[bound + 1] = -10;
+        fishBounds[bound + 2] = -5;
+        fishBounds[bound + 3] = -5;
+      } else {
+        fishBounds[bound] = x0 <= 0 ? -edge : x0;
+        fishBounds[bound + 1] = y0 <= 0 ? -edge : y0;
+        fishBounds[bound + 2] = x1 >= width ? width + edge : x1;
+        fishBounds[bound + 3] = y1 >= height ? height + edge : y1;
+      }
     }
     gl.bindBuffer(gl.ARRAY_BUFFER, fishPoints.buffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, fishVertices);

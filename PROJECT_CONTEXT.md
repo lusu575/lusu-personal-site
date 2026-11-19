@@ -270,7 +270,7 @@ Approved production rollout: Pages commit c1c3c10f5f65d6a1d3eb138ac92c96f78c414d
 - Hextris Agent 是 `games/hextris/agent/` 下自包含的 GPL-3.0-or-later 程序，包含确定性引擎、独立会话存储、专用 CLI、专用 stdio MCP、测试、完整许可证与来源／修改说明。它不导入主站 `lib/capabilities/`、`cli/` 或 `mcp/local/`；主 `lusu` CLI 和通用 MCP 也不静态包含它。当前只能把它作为单独进程启动，未经单独的兼容性评估和站点所有者明确许可证决定，不得把实现并入通用能力层。
 - 专用 Agent 由用户从 GitHub 源码仓库取得和在本机运行，`config/public-production-build.json` 整目录排除 `games/hextris/agent/`，不把含包元数据的本地进程复制到 Pages `dist`；浏览器 Hextris、完整浏览器许可证和 NOTICE 仍正常部署。这个构建边界不改变专用 CLI／MCP 的源码可得性。
 - 引擎只接受 `{ type: "place", lane: 0..5 }` 语义动作；可选种子使 incoming block 和状态演进可复现。专用会话继续使用 revision CAS、`clientActionId` 最近 128 条幂等收据、32 会话／256 KiB／24 小时闲置上限，以及带随机 token marker 的非空目录锁。锁记录 PID、进程实例与心跳；存活 owner 一律失败关闭，只有精确陈旧 owner 才可恢复；释放先把同一 token marker 进入 retiring 状态，写入／删除在原子替换前再次执行 owner fence，旧 owner 或恢复者都不能删除 successor。observe／actions 真正只读且不续期，reset／close 必须显式确认；这些保证只适用于隔离模拟会话，不代表浏览器游戏控制。
-- 浏览器 Hextris 副本补齐 GPL-3.0-or-later 全文、SPDX／修改说明和上游 attribution；2048 也补回完整 MIT 文本与来源说明。公开三语更新为 `seed-update-2026-08-07-hextris-agent`，同步 fallback、Home 最近五条、Functions seed 与 schema seed，公开 API／文章 seed／主模块缓存版本为 `20260807-hextris-agent-r1`；在线画板保持 1.0.7，Quick Transfer 保持 1.0.6。该阶段当时独立远程 MCP Worker 尚未部署；当前状态以上方最新部署段为准。
+当前状态：池塘样机在 pond-gl-prototype 分支迭代（未合 main）。2026-11-19 第四轮已换「图采样点云」方案：tools/sample-points.mjs 构建时把参考图裁切采样成 prototypes/pond/sampled-data.mjs，fish.mjs/pond.mjs 改为数据驱动组装，shaders.mjs 维持第三轮。等站长真机复审第四轮。
 - 发布凭据扫描覆盖受管理源码及工作树中新建源码，但按精确路径排除子项目已忽略的 `自动新闻/data/mcp-runs/` 本地运行证据。该目录会保存外部检索正文，可能自然出现形似 JWT 的文本；排除只作用于这个运行证据前缀，不改变密钥识别规则，也不扩大到其他源码目录。
 - 异步回归不能用固定次数的 1ms 计时轮询推断请求已经开始；Chat 私房切换测试由 mock 请求直接发出 deferred 信号，再断言 single-flight 与 busy 状态，避免 Linux 共享 runner 的计时器饥饿造成假失败。
 
