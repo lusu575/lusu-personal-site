@@ -1,20 +1,20 @@
-import { KOI_ROUTES } from "./fish.mjs?v=20261119-gemini-fishlotus1";
+import { KOI_ROUTES } from "./fish.mjs?v=20261119-gemini-11align1";
 
 export const WATER = Object.freeze({
-  scale: 0.80,
+  scale: 1.0,
   flows: [0.007, 0.013],
   clickCapacity: 16,
   clickSink: 0.060,
-  clickLifetime: 1.6,
-  clickSpeed: 0.22,
-  wakeCapacity: 4,
-  wakeLifetime: 1.25,
-  wakeSpeed: 0.165,
-  bottomRefraction: 6.0,
-  fishRefraction: 3.5,
-  lotusRefraction: 1.30,
-  fishSpread: 0.95,
-  caustics: 0.06
+  clickLifetime: 2.0,
+  clickSpeed: 0.185,
+  wakeCapacity: 6,
+  wakeLifetime: 2.2,
+  wakeSpeed: 0.115,
+  bottomRefraction: 5.5,
+  fishRefraction: 1.75,
+  lotusRefraction: 1.00,
+  fishSpread: 0.50,
+  caustics: 0.068
 });
 
 export const CRT = Object.freeze({
@@ -61,7 +61,7 @@ out vec4 outColor;
 
 void main() {
   float radius = length(gl_PointCoord - 0.5);
-  float alpha = vColor.a * (1.0 - smoothstep(0.29, 0.50, radius));
+  float alpha = vColor.a * (1.0 - smoothstep(0.28, 0.50, radius));
   outColor = vec4(vColor.rgb * alpha, alpha);
 }`;
 
@@ -98,47 +98,57 @@ float noise(vec2 p) {
   );
 }
 
-float sand(vec2 px, vec2 cellSize, float chance, float salt) {
-  vec2 grid = px / cellSize;
-  vec2 cell = floor(grid);
-  float pick = hash(cell + salt);
-  vec2 center = 0.23 + 0.54 * vec2(hash(cell + 17.3 + salt), hash(cell + 42.7 + salt));
-  vec2 offset = (fract(grid) - center) * cellSize;
-  return step(pick, chance) * (1.0 - smoothstep(0.35, 1.25 + pick * 1.8, length(offset)));
+float fbm(vec2 p) {
+  float v = 0.54 * noise(p);
+  v += 0.30 * noise(p * 2.05 + vec2(5.2, 1.3));
+  v += 0.16 * noise(p * 4.11 + vec2(1.7, 9.2));
+  return v;
 }
 
 void main() {
   vec2 uv = vUV;
+  vec2 q = vec2(uv.x, 1.0 - uv.y);
   vec2 px = uv * uSize;
-  float broad = noise(uv * vec2(8.5, 7.2) + vec2(0.4, 2.7));
-  float patches = noise(uv * vec2(14.5, 13.0) + vec2(3.1, 5.4));
-  float bands = noise(uv * vec2(19.0, 36.0) + vec2(6.4, 8.7));
 
-  // Spatially restricted central pool with broken mid-scale illumination.
-  float axis = 0.480 + 0.036 * sin(7.4 * uv.y + 0.35);
-  vec2 fromLight = (uv - vec2(axis, 0.505)) / vec2(0.265, 0.425);
-  float pool = exp(-1.38 * pow(abs(fromLight.x), 2.15) - 1.18 * pow(abs(fromLight.y), 1.95));
-  float midBreak = 0.78 + 0.22 * broad + 0.16 * (patches - 0.5);
-  float light = clamp(pool * midBreak, 0.0, 1.0);
-  light = smoothstep(0.05, 0.96, light);
+  float clouds = fbm(q * vec2(7.4, 6.6) + vec2(0.8, 2.1));
+  float detail = fbm(q * vec2(16.0, 14.0) + vec2(4.3, 7.6));
+  float streaks = noise(q * vec2(11.0, 32.0) + vec2(3.1, 6.2));
 
-  // Localized left shallow shelf (restricted to the left band so outer dark water stays deep teal).
-  float shelf = exp(-square((uv.x - 0.105) / 0.105) - square((uv.y - 0.50) / 0.235));
-  float banks = smoothstep(0.38, 1.02, length((uv - 0.5) * vec2(1.78, 1.60)) + 0.12 * (broad - 0.5));
+  vec2 cMain = (q - vec2(0.495, 0.515)) / vec2(0.258, 0.250);
+  float mainPool = exp(-1.28 * pow(length(cMain), 2.18));
 
-  // Deep abyssal teal base preserves darkness and keeps green excess low outside the central pool.
-  vec3 deepTeal = vec3(0.022, 0.106, 0.110);
-  vec3 litEmerald = vec3(0.155, 0.555, 0.455);
-  vec3 bed = mix(deepTeal, litEmerald, light);
-  bed += shelf * vec3(0.048, 0.215, 0.172) * (0.86 + 0.24 * patches);
-  bed *= (0.86 + 0.18 * bands + 0.09 * broad) * (1.0 - banks * 0.36);
+  vec2 cUpper = (q - vec2(0.418, 0.325)) / vec2(0.125, 0.128);
+  float upperPool = exp(-dot(cUpper, cUpper));
 
-  float grit = noise(px / vec2(7.5, 3.4) + vec2(19.1, 0.0));
-  bed *= 0.90 + 0.20 * grit;
-  float flecks = sand(px, vec2(7.4, 5.0), 0.24, 21.0) +
-                 0.28 * sand(px, vec2(4.8, 4.0), 0.16, 80.0);
-  vec3 fleckColor = mix(vec3(0.09, 0.18, 0.17), vec3(0.21, 0.27, 0.16), light);
-  bed += fleckColor * flecks * (0.18 + 0.42 * light + 0.18 * shelf);
+  vec2 cLower = (q - vec2(0.610, 0.665)) / vec2(0.145, 0.125);
+  float lowerPool = exp(-dot(cLower, cLower));
+
+  float rawLight = max(mainPool * 0.98, max(upperPool * 0.94, lowerPool * 0.88));
+  float dapple = smoothstep(0.22, 0.78, 0.58 * clouds + 0.42 * detail);
+  float light = clamp(rawLight * (0.54 + 0.68 * dapple), 0.0, 1.0);
+
+  float shelf = exp(-square((q.x - 0.108) / 0.098) - square((q.y - 0.50) / 0.21));
+  float banks = smoothstep(0.45, 1.04, length((q - 0.5) * vec2(1.66, 1.60)) + 0.10 * (clouds - 0.5));
+
+  vec3 deepTeal = vec3(0.048, 0.172, 0.158);
+  vec3 midTeal = vec3(0.162, 0.520, 0.405);
+  vec3 brightEmerald = vec3(0.290, 0.675, 0.505);
+
+  vec3 bed = mix(deepTeal, midTeal, smoothstep(0.03, 0.50, light));
+  bed = mix(bed, brightEmerald, smoothstep(0.44, 0.97, light));
+  bed += shelf * vec3(0.036, 0.158, 0.122) * (0.78 + 0.30 * clouds);
+  bed *= (0.91 + 0.14 * streaks) * (1.0 - banks * 0.24);
+
+  vec2 beadCell = vec2(5.0, 5.0);
+  vec2 grid = px / beadCell;
+  grid.x += 0.5 * mod(floor(grid.y), 2.0);
+  vec2 gc = floor(grid);
+  vec2 gf = (fract(grid) - (0.36 + 0.28 * hash22(gc))) * beadCell;
+  float bead = 1.0 - smoothstep(1.10, 2.05, length(gf));
+  float pick = hash(gc + 17.3);
+  bed *= 0.90 + 0.18 * bead * (0.65 + 0.35 * pick);
+  bed += vec3(0.14, 0.21, 0.14) * bead * step(0.74, pick) * light * 0.40;
+
   outColor = vec4(bed, light);
 }`;
 
@@ -161,62 +171,80 @@ uniform vec4 uWakeShape[${WATER.wakeCapacity * KOI_ROUTES.length}];
 const float TAU = ${TAU};
 const float PEAK_SLOPE = 0.29;
 
-// Discrete microfacet lattice constants (pond-space pixels at 1024px reference height).
-const float CELL_PITCH = 6.2;
-const float MAX_KERNEL_DIST2 = 10.5;
-const vec2 TARGET_SLOPE = vec2(-0.038, 0.145);
-const vec2 MICRO_SLOPE_SPREAD = vec2(0.23, 0.25);
-const mat2 LATTICE_ROT = mat2(0.848048, -0.529919, 0.529919, 0.848048);
-const mat2 LATTICE_INV = mat2(0.848048, 0.529919, -0.529919, 0.848048);
+const float CELL_PITCH = 5.1;
+const vec2 TARGET_SLOPE = vec2(-0.025, 0.100);
+const vec2 MICRO_SLOPE_SPREAD = vec2(0.148, 0.165);
+const mat2 LATTICE_ROT = mat2(0.939693, -0.342020, 0.342020, 0.939693);
+const mat2 LATTICE_INV = mat2(0.939693, 0.342020, -0.342020, 0.939693);
 
-// Height and its analytic gradient in short-edge units.
 vec3 wave(vec2 p, vec2 direction, float wavelength, float amplitude, float phase) {
   vec2 k = direction * (TAU / wavelength);
   float argument = dot(k, p) + phase;
   return amplitude * vec3(sin(argument), cos(argument) * k);
 }
 
-vec3 packet(vec2 p, vec4 event, vec4 shape, float waveNumber) {
+vec4 packet(vec2 p, vec4 event, vec4 shape, float waveNumber) {
   vec2 offset = p - event.xy;
-  float r2 = dot(offset, offset);
-  // The CPU provides the Gaussian envelope and its conservative radial bounds.
-  if (r2 < shape.z || r2 > shape.w) return vec3(0.0);
+  vec2 ellip = vec2(offset.x * 0.76, offset.y * 1.36);
+  float r2 = dot(ellip, ellip);
+  if (r2 < shape.z || r2 > shape.w) return vec4(0.0);
 
   float invSigma2 = shape.x;
   if (shape.y > 0.0) {
     float height = event.w * exp(-0.5 * r2 * invSigma2);
-    return vec3(height, -height * offset * invSigma2);
+    vec2 grad = -height * vec2(ellip.x * 0.76, ellip.y * 1.36) * invSigma2;
+    return vec4(height, grad, 0.0);
   }
 
   float r = sqrt(r2);
   float d = r - event.z;
-  float strength = event.w * exp(-0.5 * d * d * invSigma2);
-  float height = strength * cos(d * waveNumber);
-  float slope = -strength * waveNumber * sin(d * waveNumber) - height * d * invSigma2;
-  return vec3(height, offset * (slope / max(r, 0.0001)));
+  float env = exp(-0.5 * d * d * invSigma2);
+  float strength = event.w * env;
+  float ph = d * waveNumber;
+  float c = cos(ph);
+  float height = strength * c;
+  float dHdr = -strength * waveNumber * sin(ph) - height * d * invSigma2;
+  vec2 grad = vec2(ellip.x * 0.76, ellip.y * 1.36) * (dHdr / max(r, 0.0001));
+
+  float ang = atan(ellip.y, ellip.x);
+  float seedPhase = fract(event.x * 13.7 + event.y * 29.3) * TAU;
+  float arcMod = 0.66 + 0.34 * sin(2.0 * ang + seedPhase) + 0.18 * cos(ang - seedPhase);
+  float arcMask = smoothstep(0.18, 0.72, arcMod);
+  float innerFade = smoothstep(0.016, 0.044, r);
+  float crestLine = smoothstep(0.72, 0.986, c) * env * innerFade * arcMask * clamp(abs(event.w) * 540.0, 0.0, 1.30);
+  return vec4(height, grad, crestLine);
 }
 
-vec3 heightField(vec2 p) {
+vec4 heightField(vec2 p) {
   vec2 first = p - uTime * ${WATER.flows[0]} * vec2(0.8, -0.6);
   vec2 second = p - uTime * ${WATER.flows[1]} * vec2(-0.96, 0.28);
-  vec3 surface = wave(first, vec2(0.16, 0.9871), 0.055, 0.00086, 0.7);
-  surface += wave(first, vec2(-0.46, 0.8879), 0.099, 0.00102, 2.6);
-  surface += wave(second, vec2(-0.20, 0.9798), 0.033, 0.00054, 1.3);
-  surface += wave(second, vec2(0.62, 0.7846), 0.076, 0.00081, 4.1);
-  surface += wave(p, vec2(-0.91, 0.4146), 0.23, 0.00090, -0.46 * uTime);
-  surface += wave(p, vec2(0.36, 0.9330), 0.127, 0.00057, 0.67 * uTime);
+  vec3 surface = wave(first, vec2(0.12, 0.993), 0.046, 0.00098, 0.7);
+  surface += wave(first, vec2(-0.38, 0.925), 0.088, 0.00106, 2.6);
+  surface += wave(second, vec2(-0.16, 0.987), 0.030, 0.00064, 1.3);
+  surface += wave(second, vec2(0.55, 0.835), 0.072, 0.00082, 4.1);
+  surface += wave(p, vec2(-0.91, 0.415), 0.220, 0.00086, -0.46 * uTime);
+  surface += wave(p, vec2(0.30, 0.954), 0.115, 0.00062, 0.67 * uTime);
+
+  float ringCrest = 0.0;
   for (int i = 0; i < uClickCount; i++) {
-    surface += packet(p, uClicks[i], uClickShape[i], TAU / 0.020);
+    vec4 pk = packet(p, uClicks[i], uClickShape[i], TAU / 0.046);
+    surface += pk.xyz;
+    ringCrest = max(ringCrest, pk.w * 1.25);
   }
   for (int i = 0; i < uWakeCount; i++) {
-    surface += packet(p, uWakes[i], uWakeShape[i], TAU / 0.025);
+    vec4 pk = packet(p, uWakes[i], uWakeShape[i], TAU / 0.050);
+    surface += pk.xyz;
+    ringCrest = max(ringCrest, pk.w);
   }
-  return surface;
+  return vec4(surface, ringCrest);
 }
 
 void main() {
   vec2 p = vUV * uSize / min(uSize.x, uSize.y);
-  vec3 surface = heightField(p);
+  vec4 field = heightField(p);
+  vec3 surface = field.xyz;
+  float ringCrest = field.w;
+
   float slopeMag = length(surface.yz);
   vec2 slope = surface.yz / max(PEAK_SLOPE, slopeMag);
   vec2 px = 1.0 / uSize;
@@ -224,90 +252,117 @@ void main() {
   vec4 ground = texture(uBed, vUV + slope * px * ${WATER.bottomRefraction.toFixed(2)});
   vec3 bed = ground.rgb;
 
-  // Subtle zero-mean wave shading keeps ambient flow and ripples legible without painting bright bands.
-  float waveFacing = dot(surface.yz, vec2(-0.19, 0.982));
-  float waveCrest = smoothstep(-0.0003, 0.0016, surface.x) * smoothstep(-0.015, 0.115, waveFacing);
-  float relief = clamp(waveFacing * 2.2, -1.0, 1.0);
-  bed *= 1.0 + ${WATER.caustics.toFixed(3)} * relief * (0.35 + 0.65 * ground.a);
+  float waveFacing = dot(surface.yz, vec2(-0.14, 0.990));
+  float waveCrest = smoothstep(-0.0002, 0.0015, surface.x) * smoothstep(-0.010, 0.110, waveFacing);
+  float relief = clamp(waveFacing * 2.1, -1.0, 1.0);
+  bed *= 1.0 + ${WATER.caustics.toFixed(3)} * relief * (0.30 + 0.70 * ground.a);
 
-  // Scene-space light paths (top-left coordinates): dense upper beam U, sparser lower-right beam D, weak bridge.
   vec2 q = vec2(vUV.x, 1.0 - vUV.y);
-  float axis = mix(0.412, 0.640, smoothstep(0.30, 0.66, q.y));
-  vec2 upper = (q - vec2(0.412, 0.302)) / vec2(0.064, 0.135);
-  vec2 lower = (q - vec2(0.640, 0.655)) / vec2(0.105, 0.125);
-  vec2 bridge = (q - vec2(axis, 0.485)) / vec2(0.100, 0.210);
-  float upperBeam = exp(-dot(upper, upper));
-  float lowerBeam = exp(-dot(lower, lower));
+  float axis = mix(0.415, 0.635, smoothstep(0.28, 0.68, q.y));
+  vec2 upperCore = (q - vec2(0.415, 0.298)) / vec2(0.052, 0.092);
+  vec2 upperHalo = (q - vec2(0.418, 0.312)) / vec2(0.102, 0.155);
+  vec2 lowerCore = (q - vec2(0.648, 0.668)) / vec2(0.080, 0.075);
+  vec2 bridge = (q - vec2(axis, 0.495)) / vec2(0.140, 0.210);
+
+  float uCore = exp(-dot(upperCore, upperCore));
+  float uHalo = exp(-dot(upperHalo, upperHalo));
+  float upperBeam = max(uCore, 0.56 * uHalo);
+  float lowerBeam = 0.78 * exp(-dot(lowerCore, lowerCore));
   float bridgeBeam = exp(-dot(bridge, bridge));
-  float beamPath = max(upperBeam, max(0.72 * lowerBeam, 0.38 * bridgeBeam));
-  float rippleBoost = smoothstep(0.14, 0.34, slopeMag);
+  float beamPath = max(upperBeam, max(0.68 * lowerBeam, 0.28 * bridgeBeam));
 
-  // Compute screen-space derivative outside conditional branch for spec-compliant GLSL ES 3.00.
-  vec2 pondPx = p * 1024.0 + slope * 1.1;
-  float aa = max(0.50, 0.55 * max(fwidth(pondPx.x), fwidth(pondPx.y)));
+  float waveletBand = smoothstep(-0.0003, 0.0010, surface.x) * (0.45 + 0.55 * smoothstep(-0.02, 0.08, waveFacing));
+  bed += uCore * waveletBand * vec3(0.32, 0.22, 0.06);
+  bed += lowerBeam * waveletBand * vec3(0.10, 0.08, 0.02) * ground.a;
 
+  vec2 pondPx = p * 1024.0 + slope * 0.85;
+  float aa = max(0.45, 0.55 * max(fwidth(pondPx.x), fwidth(pondPx.y)));
+
+  // 1. Discrete Microfacet Sunbeam & Caustic Sparkles (fast 2x2 nearest-cell lookup).
   vec3 reflection = vec3(0.0);
-  float glintPotential = max(beamPath, max(0.28 * ground.a, 0.72 * rippleBoost));
-  if (glintPotential > 0.015) {
-    // Stable rotated pond-space lattice breaks horizontal row alignment and CRT scanline locking.
+  float glintPotential = max(beamPath, ground.a * 0.55);
+  if (glintPotential > 0.02) {
     vec2 rotPos = (LATTICE_ROT * pondPx) / CELL_PITCH;
-    vec2 baseCell = floor(rotPos);
+    vec2 nearest = floor(rotPos + 0.5);
 
-    // Area-light angular acceptance cone: wider in upper beam U, tighter in lower beam D.
-    float cone = mix(0.056, 0.106, upperBeam) + 0.022 * rippleBoost;
+    float cone = mix(0.066, 0.225, upperBeam) + 0.044 * lowerBeam;
     float cone2 = cone * cone;
-    float heightBias = 0.62 + 0.38 * smoothstep(-0.0014, 0.0014, surface.x);
-    float warmGate = smoothstep(0.16, 0.88, beamPath) + 0.45 * rippleBoost * smoothstep(0.18, 0.78, ground.a);
+    float heightBias = 0.60 + 0.40 * smoothstep(-0.0011, 0.0012, surface.x);
 
     vec3 warmAccum = vec3(0.0);
     vec3 coolAccum = vec3(0.0);
 
-    for (int dy = -1; dy <= 1; dy++) {
-      for (int dx = -1; dx <= 1; dx++) {
-        vec2 cell = baseCell + vec2(float(dx), float(dy));
+    for (int dy = -1; dy <= 0; dy++) {
+      for (int dx = -1; dx <= 0; dx++) {
+        vec2 cell = nearest + vec2(float(dx), float(dy));
         vec2 jitter = hash22(cell);
-        vec2 center = 0.16 + 0.68 * jitter;
+        vec2 center = 0.22 + 0.56 * jitter;
         vec2 diffRot = (cell + center - rotPos) * CELL_PITCH;
-        float dist2 = dot(diffRot, diffRot);
-        if (dist2 > MAX_KERNEL_DIST2) continue;
+        if (dot(diffRot, diffRot) > 9.2) continue;
 
-        // Independent per-microfacet random micro-slope in the local tangent plane.
         vec2 r1 = hash22(cell + vec2(19.37, 7.13));
         vec2 r2 = hash22(cell + vec2(73.19, 41.57));
         vec2 microSlope = (r1 + r2 - 1.0) * MICRO_SLOPE_SPREAD;
 
-        // Combine macro wave slope with micro-slope and test angular hit against area light half-vector.
-        vec2 slopeErr = (surface.yz + microSlope - TARGET_SLOPE) * vec2(1.0, 1.12);
+        vec2 macroSlope = vec2(surface.y * 0.58, surface.z * 1.12);
+        vec2 slopeErr = (macroSlope + microSlope - TARGET_SLOPE) * vec2(0.92, 1.05);
         float err2 = dot(slopeErr, slopeErr);
         if (err2 >= cone2) continue;
 
-        float hit = (1.0 - smoothstep(cone2 * 0.08, cone2, err2)) * heightBias;
-
-        // Transform offset back to pond space for mild natural foreshortening without bar-stretching.
+        float hit = (1.0 - smoothstep(cone2 * 0.12, cone2, err2)) * heightBias;
         vec2 diffPond = LATTICE_INV * diffRot;
-        float dist = length(diffPond * vec2(0.92, 1.12));
+        float dist = length(diffPond * vec2(0.88, 1.06));
         float grain = fract(jitter.x * 17.3 + jitter.y * 11.7);
-        float coreRadius = mix(1.05, 1.56, grain) * (0.90 + 0.18 * hit);
+        float coreRadius = mix(1.46, 1.98, grain) * (0.92 + 0.16 * hit);
         float core = 1.0 - smoothstep(coreRadius - aa, coreRadius + aa, dist);
-        float halo = (1.0 - smoothstep(coreRadius * 0.35, coreRadius * 1.85, dist)) * 0.18;
+        float halo = (1.0 - smoothstep(coreRadius * 0.45, coreRadius * 2.05, dist)) * 0.23;
         float kernel = core + halo;
 
         float tint = hash(cell + vec2(91.1, 29.4));
-        float warmChance = mix(0.24, 0.78, upperBeam);
-        float isWarm = step(tint, warmChance) * warmGate;
-        float hotCore = smoothstep(0.62, 0.96, hit) * core * (0.45 + 0.55 * upperBeam);
+        float warmChance = clamp(0.10 + 0.86 * upperBeam + 0.52 * lowerBeam, 0.0, 0.98);
+        float isWarm = step(tint, warmChance) * smoothstep(0.06, 0.42, beamPath);
+        float hotCore = smoothstep(0.46, 0.88, hit) * core * max(uCore, 0.62 * lowerBeam);
 
-        // Pale yellow-green / champagne warm glints (target HSV ~73 deg, S ~0.26) + rare near-white cores.
-        vec3 warmTone = mix(vec3(0.74, 0.62, 0.32), vec3(0.94, 0.88, 0.64), hotCore);
-        warmAccum += warmTone * (hit * isWarm * kernel * (0.78 + 0.52 * upperBeam));
+        vec3 warmTone = mix(vec3(1.16, 0.85, 0.30), vec3(1.30, 1.12, 0.70), hotCore);
+        float warmGain = 0.84 + 0.66 * upperBeam + 0.40 * lowerBeam;
+        warmAccum += warmTone * (hit * isWarm * kernel * warmGain);
 
-        // Cooler dim water-grain sparkles for non-warm hits inside the lit pool or ripples.
-        float coolWeight = hit * (1.0 - 0.65 * isWarm) * max(0.32 * ground.a, max(0.55 * beamPath, 0.60 * rippleBoost));
-        coolAccum += vec3(0.22, 0.44, 0.35) * (coolWeight * (core * 0.70 + halo * 0.30));
+        float coolWeight = hit * (1.0 - 0.74 * isWarm) * (0.20 + 0.62 * ground.a);
+        coolAccum += vec3(0.26, 0.48, 0.35) * (coolWeight * (core * 0.78 + halo * 0.22));
       }
     }
+    reflection += warmAccum + coolAccum;
+  }
 
-    reflection = warmAccum + coolAccum;
+  // 2. Crisp Beaded Elliptical Ripple Rings around swimming koi & outer pads.
+  if (ringCrest > 0.012) {
+    vec2 rGrid = pondPx / 4.7;
+    rGrid.x += 0.5 * mod(floor(rGrid.y), 2.0);
+    vec2 rCell = floor(rGrid);
+    vec2 rJit = 0.30 + 0.40 * hash22(rCell + 11.7);
+    float rDist = length((fract(rGrid) - rJit) * 4.7);
+    float rDot = 1.0 - smoothstep(1.18, 2.00, rDist);
+    float rKeep = step(0.14, hash(rCell + 53.9));
+    vec3 darkRingTone = vec3(0.24, 0.46, 0.40);
+    vec3 litRingTone = mix(vec3(0.92, 0.90, 0.56), vec3(1.12, 1.06, 0.80), clamp(beamPath + 0.35 * ground.a, 0.0, 1.0));
+    vec3 ringColor = mix(darkRingTone, litRingTone, smoothstep(0.06, 0.42, ground.a + 0.5 * beamPath));
+    reflection += ringColor * (ringCrest * rDot * rKeep * mix(0.68, 1.05, smoothstep(0.05, 0.42, ground.a)));
+  }
+
+  // 3. Sparse Starlight Pinpricks across the dark pond ("暗处稀疏暗光点").
+  {
+    vec2 sGrid = (vUV * uSize) / 78.0;
+    vec2 sCell = floor(sGrid);
+    float sPick = hash(sCell + 307.1);
+    if (sPick > 0.46) {
+      vec2 sCenter = 0.14 + 0.72 * hash22(sCell + 91.3);
+      float sDist = length((fract(sGrid) - sCenter) * 78.0);
+      float twinkle = 0.78 + 0.22 * sin(uTime * (1.0 + 1.3 * sPick) + sPick * 41.0);
+      float sCore = 1.0 - smoothstep(0.95, 2.25, sDist);
+      vec3 sColor = sPick > 0.72 ? vec3(1.08, 0.88, 0.52) : vec3(0.76, 0.96, 0.88);
+      float darkFade = 1.0 - 0.62 * ground.a;
+      reflection += sColor * (sCore * twinkle * darkFade * 0.88);
+    }
   }
 
   vec2 fishUV = vUV + slope * px * ${WATER.fishRefraction.toFixed(2)};
@@ -320,17 +375,15 @@ void main() {
     inFish = inFish || (all(greaterThanEqual(fishPx, box.xy)) && all(lessThanEqual(fishPx, box.zw)));
   }
   if (inFish) {
-    koi = 0.84 * textureLod(uFish, fishUV, 0.0);
-    koi += 0.08 * (textureLod(uFish, fishUV + spread, 0.0) + textureLod(uFish, fishUV - spread, 0.0));
+    koi = 0.88 * textureLod(uFish, fishUV, 0.0);
+    koi += 0.06 * (textureLod(uFish, fishUV + spread, 0.0) + textureLod(uFish, fishUV - spread, 0.0));
   }
-  koi.rgb *= (1.97 + 0.20 * waveCrest) * vec3(0.93, 0.93, 0.88);
-  koi.rgb += koi.a * vec3(0.0, 0.016, 0.013);
-  vec3 water = bed * (1.0 - koi.a) + koi.rgb + reflection;
+  koi.rgb *= (1.52 + 0.15 * waveCrest) * vec3(1.00, 0.98, 0.93);
+  vec3 water = bed * (1.0 - koi.a) + koi.rgb + reflection * (1.0 - 0.65 * koi.a);
 
-  // Floating particles follow the same surface through a shallower displacement and wave lighting.
-  vec2 lotusOffset = slope * ${WATER.lotusRefraction.toFixed(2)} + vec2(0.0, -clamp(480.0 * surface.x, -1.5, 1.5));
+  vec2 lotusOffset = slope * ${WATER.lotusRefraction.toFixed(2)} + vec2(0.0, -clamp(420.0 * surface.x, -1.2, 1.2));
   vec4 lotus = texture(uLotus, vUV + lotusOffset * px);
-  float lotusLight = 1.35 + 0.22 * waveCrest + 0.14 * clamp(surface.x * 410.0, -1.0, 1.0);
+  float lotusLight = 1.20 + 0.14 * waveCrest + 0.08 * clamp(surface.x * 380.0, -1.0, 1.0);
   outColor = vec4(water * (1.0 - lotus.a) + lotus.rgb * lotusLight, 1.0);
 }`;
 
@@ -349,8 +402,7 @@ void main() {
   if (uGrid) {
     vec2 stepSize = uSize / vec2(16.0, 10.0);
     vec2 distance = abs(fract(px / stepSize + 0.5) - 0.5) * stepSize;
-    float grid = 1.0 - smoothstep(0.35, 1.10, min(distance.x, distance.y));
-    color = mix(color, vec3(0.72, 0.88, 0.86), 0.60 * grid);
+    color = mix(color, vec3(0.72, 0.88, 0.86), 0.60 * (1.0 - smoothstep(0.35, 1.10, min(distance.x, distance.y))));
   }
 
   float cell = min(2.0, uSize.x / (uClockSize.x + 22.0));
