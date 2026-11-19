@@ -1,7 +1,7 @@
-import { KOI_ROUTES, Koi, seededRandom } from "./fish.mjs?v=20261118-pond-r2-perf";
+import { KOI_ROUTES, Koi, seededRandom } from "./fish.mjs?v=20261119-gemini-water1";
 import {
   CRT, WATER, fullscreenVertex, pointVertex, pointFragment, bedFragment, waterFragment, desktopFragment, crtFragment
-} from "./shaders.mjs?v=20261118-pond-r2-perf";
+} from "./shaders.mjs?v=20261119-gemini-water1";
 
 const browser = globalThis;
 const canvas = browser.document.querySelector("canvas");
