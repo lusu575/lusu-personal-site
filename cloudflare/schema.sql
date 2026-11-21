@@ -15471,6 +15471,20 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 4. チャット・概要・ホーム：チャット上部を1行に収め先頭メッセージの見切れを解消、概要タイトルを点陣アイコン化し、左下 ID／言語表示のコントラストを高めました。
 5. 一時転送サブパネル（#transfer-app）も深夜の池 CRT 暗色ガラスへ統一しました。', '2026-11-22T03:31:00+08:00', '2026-11-22T03:31:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r4', '2026-11-22T03:31:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-home-login-z', '2026-11-22-pond-home-login-z', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T03:38:00+08:00', '2026-11-22T03:38:00+08:00', '2026-11-22T03:38:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-home-login-z-zh', 'seed-update-2026-11-22-pond-home-login-z', 'zh', '修复首页登录浮层被画布压住的问题并统一登录框暗色点阵控件', '调整首页 .site-shell 与池塘背景画布的层级顺序，确保点击左下角 ID 后登录窗直接浮在首页最顶层，同时将登录框内标签页、密码框与底部提示盒统一为暗色 CRT 风格。', '本次紧急修复彻底解决了首页点击左下角 ID 按钮后登录浮层不可见的问题：
+
+1. 将首页 #pond-visual-backdrop 层级置于 .site-shell（pointer-events: none）之下，使点击仍可直达池塘画布，而打开的 #account-popover 直接浮现在首页池塘最顶层正中央。
+2. 将登录框内的登录/注册切换条、密码输入框、显示密码按钮、关闭按钮及底部说明条全部统一为深夜池塘暗色玻璃与点阵虚线样式，彻底消除浅色残留。', '2026-11-22T03:38:00+08:00', '2026-11-22T03:38:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-home-login-z-en', 'seed-update-2026-11-22-pond-home-login-z', 'en', 'Fixed Home Login Popover Z-Index Stacking & Darkened Inner Login Controls', 'Placed .site-shell above the Home pond canvas while preserving pointer passthrough so the login modal renders cleanly on top of Home, and themed the login tabs, password input, and footer note.', 'This targeted fix resolves the Home-route login popover stacking order:
+
+1. Lowered #pond-visual-backdrop below .site-shell (pointer-events: none) on Home so canvas clicks still pass through while #account-popover renders cleanly on top of the Home pond.
+2. Styled the login/register mode tabs, password field, close button, and footer note box in matching Midnight Pond CRT dark glass.', '2026-11-22T03:38:00+08:00', '2026-11-22T03:38:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-home-login-z-ja', 'seed-update-2026-11-22-pond-home-login-z', 'ja', 'ホーム画面ログイン窓の重なり順修正と内部コントロール暗色統一', 'ホーム画面で池キャンバスがログイン窓を覆っていた重なり順を修正し、左下 ID クリック時に画面最前面中央へ確実に表示されるようにしました。タブ・パスワード欄・注記も暗色化しています。', 'ホーム画面で左下 ID ボタンからログイン窓を開いた際の重なり順を修正しました：
+
+1. ホーム画面の #pond-visual-backdrop を .site-shell（pointer-events: none）の下層へ配置し、池キャンバスの操作性を保ちつつ #account-popover が画面中央最前面に正しく描画されるようにしました。
+2. ログイン窓内部のタブ切替・パスワード入力欄・閉じるボタン・下部注記ボックスも深夜の池 CRT 暗色ガラスへ統一しました。', '2026-11-22T03:38:00+08:00', '2026-11-22T03:38:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r5', '2026-11-22T03:38:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r4', '2026-11-22T03:31:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r5', '2026-11-22T03:38:00+08:00', 'schema') on conflict(version) do nothing;

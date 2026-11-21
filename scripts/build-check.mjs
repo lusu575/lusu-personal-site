@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-qa-sweep";
-const finalUpdateSlug = "2026-11-22-pond-qa-sweep";
+const finalUpdateId = "seed-update-2026-11-22-pond-home-login-z";
+const finalUpdateSlug = "2026-11-22-pond-home-login-z";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Midnight Pond Full Desktop QA Sweep: Bright Video Copy, Compact Tool/Game Cards, Chatroom & Quick Transfer Skin";
-const finalPublishedAt = "2026-11-22T03:31:00+08:00";
+const finalTitleEn = "Fixed Home Login Popover Z-Index Stacking & Darkened Inner Login Controls";
+const finalPublishedAt = "2026-11-22T03:38:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-qa-sweep",
   "seed-update-2026-11-22-pond-final-fit",
   "seed-update-2026-11-22-pond-geometry-sync",
   "seed-update-2026-11-22-pond-visual-polish",

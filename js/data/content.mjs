@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-home-login-z",
+  "slug": "2026-11-22-pond-home-login-z",
+  "category": "site-updates",
+  "tags": [
+    "site-update",
+    "ui"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T03:38:00+08:00",
+  "updated_at": "2026-11-22T03:38:00+08:00",
+  "published_at": "2026-11-22T03:38:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "date": "2026.11.22",
+  "title": {
+    "zh": "修复首页登录浮层被画布压住的问题并统一登录框暗色点阵控件",
+    "en": "Fixed Home Login Popover Z-Index Stacking & Darkened Inner Login Controls",
+    "ja": "ホーム画面ログイン窓の重なり順修正と内部コントロール暗色統一"
+  },
+  "summary": {
+    "zh": "调整首页 .site-shell 与池塘背景画布的层级顺序，确保点击左下角 ID 后登录窗直接浮在首页最顶层，同时将登录框内标签页、密码框与底部提示盒统一为暗色 CRT 风格。",
+    "en": "Placed .site-shell above the Home pond canvas while preserving pointer passthrough so the login modal renders cleanly on top of Home, and themed the login tabs, password input, and footer note.",
+    "ja": "ホーム画面で池キャンバスがログイン窓を覆っていた重なり順を修正し、左下 ID クリック時に画面最前面中央へ確実に表示されるようにしました。タブ・パスワード欄・注記も暗色化しています。"
+  },
+  "content_markdown": {
+    "zh": "本次紧急修复彻底解决了首页点击左下角 ID 按钮后登录浮层不可见的问题：\n\n1. 将首页 #pond-visual-backdrop 层级置于 .site-shell（pointer-events: none）之下，使点击仍可直达池塘画布，而打开的 #account-popover 直接浮现在首页池塘最顶层正中央。\n2. 将登录框内的登录/注册切换条、密码输入框、显示密码按钮、关闭按钮及底部说明条全部统一为深夜池塘暗色玻璃与点阵虚线样式，彻底消除浅色残留。",
+    "en": "This targeted fix resolves the Home-route login popover stacking order:\n\n1. Lowered #pond-visual-backdrop below .site-shell (pointer-events: none) on Home so canvas clicks still pass through while #account-popover renders cleanly on top of the Home pond.\n2. Styled the login/register mode tabs, password field, close button, and footer note box in matching Midnight Pond CRT dark glass.",
+    "ja": "ホーム画面で左下 ID ボタンからログイン窓を開いた際の重なり順を修正しました：\n\n1. ホーム画面の #pond-visual-backdrop を .site-shell（pointer-events: none）の下層へ配置し、池キャンバスの操作性を保ちつつ #account-popover が画面中央最前面に正しく描画されるようにしました。\n2. ログイン窓内部のタブ切替・パスワード入力欄・閉じるボタン・下部注記ボックスも深夜の池 CRT 暗色ガラスへ統一しました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-qa-sweep",
   "slug": "2026-11-22-pond-qa-sweep",
   "category": "site-updates",

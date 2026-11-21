@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-home-login-z",
+      "slug": "2026-11-22-pond-home-login-z",
+      "category": "site-updates",
+      "tags": [
+        "site-update",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T03:38:00+08:00",
+      "updated_at": "2026-11-22T03:38:00+08:00",
+      "published_at": "2026-11-22T03:38:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "修复首页登录浮层被画布压住的问题并统一登录框暗色点阵控件",
+        "en": "Fixed Home Login Popover Z-Index Stacking & Darkened Inner Login Controls",
+        "ja": "ホーム画面ログイン窓の重なり順修正と内部コントロール暗色統一"
+      },
+      "summary": {
+        "zh": "调整首页 .site-shell 与池塘背景画布的层级顺序，确保点击左下角 ID 后登录窗直接浮在首页最顶层，同时将登录框内标签页、密码框与底部提示盒统一为暗色 CRT 风格。",
+        "en": "Placed .site-shell above the Home pond canvas while preserving pointer passthrough so the login modal renders cleanly on top of Home, and themed the login tabs, password input, and footer note.",
+        "ja": "ホーム画面で池キャンバスがログイン窓を覆っていた重なり順を修正し、左下 ID クリック時に画面最前面中央へ確実に表示されるようにしました。タブ・パスワード欄・注記も暗色化しています。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-qa-sweep",
       "slug": "2026-11-22-pond-qa-sweep",
       "category": "site-updates",
@@ -112,37 +140,6 @@ export const homeContent = Object.freeze({
         "zh": "修复左下角 ID 登录窗触发、重构两段式可打断季节粒子汇聚过渡、首屏直出零闪烁、统一全站居中窗口几何与加载态，并同步适配五个小游戏内页。",
         "en": "Fixed the bottom-left ID login popover trigger, rebuilt interruptible two-stage season particle transitions, eliminated cold-load legacy flash, unified centered window geometry and dark loading states, and themed all five game inner pages.",
         "ja": "左下のIDログイン窓修正、割り込み可能な二段階季節粒子演出、初回描画の旧画面チラつき解消、全ウィンドウ中央サイズ統一と暗色ロード状態、5つのゲーム内ページ刷新を実施しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-chat-mobile-polish",
-      "slug": "2026-11-22-pond-chat-mobile-polish",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "修复记录",
-        "聊天室",
-        "移动端",
-        "界面"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-21T18:51:00.000Z",
-      "updated_at": "2026-11-21T18:51:00.000Z",
-      "published_at": "2026-11-21T18:51:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "聊天室紧凑气泡、移动端防溢出与同日 D1 迁移收尾",
-        "en": "Compact CRT Chat Bubbles, Mobile Overflow Fix, and Same-Day D1 Migration Record",
-        "ja": "チャット吹き出し最適化・モバイル横はみ出し解消・D1移行記録"
-      },
-      "summary": {
-        "zh": "补齐 02:31 线上收尾记录并同步完成精修：聊天室消息改为紧凑点阵气泡并放大提亮 6 枚点阵圆形 SVG 头像；移动端知识库全链路钳制宽度消除横向溢出并统一深色标签与阅读按钮；同步登记同日 D1 种子迁移前序版本。",
-        "en": "Completes the release record and final polish: compact fit-content CRT chat bubbles with larger brighter dot-matrix SVG avatars, full mobile width clamping with dark tag/button styling to eliminate horizontal overflow, and same-day D1 migration compatibility.",
-        "ja": "02:31修正の更新記録と最終調整を反映しました。チャットのコンパクト吹き出し化と42pxドットアバター発光、モバイル知識庫の横はみ出し解消と濃色タグ/ボタン化、同日D1移行互換を完了しています。"
       }
     }
   ]
