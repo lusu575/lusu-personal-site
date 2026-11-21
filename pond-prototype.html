@@ -17,7 +17,77 @@
       display: block;
       width: 100vw;
       height: 100vh;
+      touch-action: none;
     }
+    #fps-badge {
+      position: fixed;
+      right: 16px;
+      bottom: 12px;
+      display: none;
+      color: rgba(195, 240, 220, 0.72);
+      font-size: 11px;
+      pointer-events: none;
+      z-index: 50;
+      letter-spacing: 0.06em;
+    }
+    /* Minimal CRT terminal feedback panel for wired routes & account popover */
+    .crt-panel {
+      position: fixed;
+      display: none;
+      color: rgba(232, 246, 250, 0.94);
+      background: rgba(5, 14, 16, 0.84);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(195, 236, 245, 0.28);
+      box-shadow: 0 0 24px rgba(120, 220, 235, 0.14), inset 0 0 18px rgba(0, 0, 0, 0.55);
+      padding: 14px 18px;
+      font-size: 13px;
+      line-height: 1.55;
+      z-index: 60;
+      letter-spacing: 0.03em;
+    }
+    .crt-panel.open { display: block; }
+    #route-panel {
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 300px;
+      max-width: 420px;
+    }
+    #account-panel {
+      left: 5.5%;
+      bottom: 9.5%;
+      min-width: 240px;
+    }
+    .crt-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      border-bottom: 1px dashed rgba(195, 236, 245, 0.25);
+      font-size: 12px;
+      color: rgba(215, 245, 255, 0.92);
+    }
+    .crt-close {
+      background: none;
+      border: none;
+      color: rgba(205, 238, 248, 0.72);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      padding: 2px 6px;
+    }
+    .crt-close:hover { color: #ffffff; }
+    .crt-action {
+      display: inline-block;
+      margin-top: 10px;
+      color: rgba(185, 245, 230, 0.95);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(185, 245, 230, 0.55);
+      font-size: 12px;
+    }
+    .crt-action:hover { color: #ffffff; border-bottom-color: #ffffff; }
     #error-banner {
       position: fixed;
       inset: 24px;
@@ -36,28 +106,111 @@
 </head>
 <body>
   <canvas id="pond-canvas"></canvas>
-  <div id="fps-badge" style="position:fixed;right:14px;bottom:10px;display:none;color:rgba(195,240,220,0.72);font-size:11px;pointer-events:none;z-index:50;letter-spacing:0.06em;">-- FPS</div>
+  <div id="fps-badge">-- FPS</div>
+
+  <div id="route-panel" class="crt-panel" role="dialog" aria-live="polite">
+    <div class="crt-panel-header">
+      <span id="route-panel-title">ROUTE</span>
+      <button type="button" class="crt-close" id="route-panel-close">[×]</button>
+    </div>
+    <div id="route-panel-body"></div>
+    <a id="route-panel-link" class="crt-action" href="/index.html">→ 打开完整模块</a>
+  </div>
+
+  <div id="account-panel" class="crt-panel" role="dialog" aria-live="polite">
+    <div class="crt-panel-header">
+      <span id="account-panel-title">• TERMINAL ID</span>
+      <button type="button" class="crt-close" id="account-panel-close">[×]</button>
+    </div>
+    <div id="account-panel-body"></div>
+  </div>
+
   <div id="error-banner"></div>
   <script type="module">
     import { PondCRTEngine } from './js/pond-crt/engine.mjs';
 
     const params = new URLSearchParams(window.location.search);
     const season = params.get('season') || 'summer';
-    const lang = params.get('lang') || 'zh';
+    let currentLang = params.get('lang') || 'zh';
     const demoClock = params.get('demoClock') === '1';
     const showFps = params.get('fps') === '1';
     const canvas = document.getElementById('pond-canvas');
     const errEl = document.getElementById('error-banner');
     const fpsEl = document.getElementById('fps-badge');
+    const routePanel = document.getElementById('route-panel');
+    const routeTitle = document.getElementById('route-panel-title');
+    const routeBody = document.getElementById('route-panel-body');
+    const routeLink = document.getElementById('route-panel-link');
+    const accountPanel = document.getElementById('account-panel');
+    const accountTitle = document.getElementById('account-panel-title');
+    const accountBody = document.getElementById('account-panel-body');
+
     if (showFps) fpsEl.style.display = 'block';
+
+    const ROUTE_COPY = {
+      knowledge: { zh: '知识库', en: 'Knowledge', ja: '知識庫' },
+      videos:    { zh: '视频区', en: 'Videos',    ja: '動画' },
+      resources: { zh: '工具区', en: 'Tools',     ja: 'ツール' },
+      games:     { zh: '游戏区', en: 'Games',     ja: 'ゲーム' },
+      chatroom:  { zh: '聊天室', en: 'Chat Room', ja: 'チャット' },
+      about:     { zh: '关于',   en: 'About',     ja: '概要' }
+    };
+
+    const closePanels = () => {
+      routePanel.classList.remove('open');
+      accountPanel.classList.remove('open');
+    };
+    document.getElementById('route-panel-close').addEventListener('click', closePanels);
+    document.getElementById('account-panel-close').addEventListener('click', closePanels);
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closePanels();
+    });
 
     try {
       const engine = new PondCRTEngine(canvas, {
         season,
-        lang,
+        lang: currentLang,
         demoClock,
         preserveDrawingBuffer: true,
-        onFpsUpdate: showFps ? (fps) => { fpsEl.textContent = `${fps} FPS`; } : null
+        onFpsUpdate: showFps ? (fps) => { fpsEl.textContent = `${fps} FPS`; } : null,
+        onNavigate: (route, id) => {
+          accountPanel.classList.remove('open');
+          window.location.hash = route;
+          const label = ROUTE_COPY[id]?.[currentLang] || id;
+          routeTitle.textContent = `> ${label} (${route})`;
+          routeBody.textContent = currentLang === 'en'
+            ? `Prototype route wired: ${route}. Click below to enter the full page.`
+            : currentLang === 'ja'
+              ? `ルート接続済み: ${route}。下のリンクから本体ページへ移動できます。`
+              : `已接入路由 ${route}（原型预览模式）。点击下方可跳转现有站点对应模块。`;
+          routeLink.href = `/index.html${route}`;
+          routeLink.textContent = currentLang === 'en'
+            ? '→ Open full module'
+            : currentLang === 'ja'
+              ? '→ モジュールを開く'
+              : '→ 打开完整模块';
+          routePanel.classList.add('open');
+        },
+        onAccountClick: () => {
+          routePanel.classList.remove('open');
+          const willOpen = !accountPanel.classList.contains('open');
+          if (willOpen) {
+            accountTitle.textContent = currentLang === 'en' ? '• TERMINAL ID' : currentLang === 'ja' ? '• ターミナル ID' : '• 账号终端';
+            accountBody.textContent = currentLang === 'en'
+              ? 'Game cloud-save account entry (discreet CRT corner). Ready to bind existing /api/auth session.'
+              : currentLang === 'ja'
+                ? 'ゲームクラウドセーブ用アカウント入口。既存セッションと接続可能です。'
+                : '游戏云存档账号入口（低调终端角标）。正式接入首页后直接复用现有账号登录/存档会话。';
+            accountPanel.classList.add('open');
+          } else {
+            accountPanel.classList.remove('open');
+          }
+        },
+        onLanguageChange: (lang) => {
+          currentLang = lang;
+          document.documentElement.lang = lang === 'en' ? 'en' : lang === 'ja' ? 'ja' : 'zh-CN';
+          closePanels();
+        }
       });
       window.__pondEngine = engine;
       window.addEventListener('resize', () => engine.resize());

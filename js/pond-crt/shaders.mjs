@@ -186,17 +186,20 @@ void main() {
 
   if (uSeasonSweep < 0.999) {
     vec4 floraOld = texture(uFloraPrevTex, clamp(floraUv, 0.001, 0.999));
-    // Organic FBM-warped wave front (not a rigid geometric circle!)
-    float sweepDist = length((uv - uSweepOrigin) * vec2(aspect, 1.0)) + (depthNoise - 0.5) * 0.14;
-    float sweepFront = uSeasonSweep * 2.25;
-    float sweepMix = 1.0 - smoothstep(sweepFront - 0.18, sweepFront + 0.05, sweepDist);
+    // Synced with Video 1: Stardust ribbon reaches pond center around uSeasonSweep = 0.28,
+    // then the new season radiates smoothly OUTWARD from pond center (0.50, 0.48) with NO harsh white flash!
+    float radialPhase = clamp((uSeasonSweep - 0.24) / 0.76, 0.0, 1.0);
+    vec2 fromPondCenter = (uv - vec2(0.50, 0.48)) * vec2(aspect, 1.65);
+    float sweepDist = length(fromPondCenter) + (depthNoise - 0.5) * 0.12;
+    float sweepFront = radialPhase * 1.85;
+    float sweepMix = 1.0 - smoothstep(sweepFront - 0.22, sweepFront + 0.06, sweepDist);
     flora = mix(floraOld, floraNew, sweepMix);
 
-    // Dual-ring luminous shockwave riding along the season transition wavefront
-    float waveEnvelope = sin(uSeasonSweep * 3.14159);
-    float ring1 = exp(-pow((sweepDist - sweepFront) * 22.0, 2.0));
-    float ring2 = exp(-pow((sweepDist - (sweepFront - 0.11)) * 28.0, 2.0)) * 0.55;
-    col += mix(uCausticTint, uSpecularTint, 0.72) * (ring1 + ring2) * waveEnvelope * 0.88;
+    // Restrained, warm seasonal concentric ripple glow along the pond-center expanding vortex (never harsh white!)
+    float env = sin(radialPhase * 3.14159);
+    float spiralRing = exp(-pow((sweepDist - sweepFront) * 16.0, 2.0)) * 0.42;
+    float innerRing = exp(-pow((sweepDist - (sweepFront - 0.14)) * 22.0, 2.0)) * 0.24;
+    col += uCausticTint * (spiralRing + innerRing) * env;
   }
 
   vec3 floraLit = flora.rgb * (0.94 + 0.12 * columnMask + 0.12 * rip.z);

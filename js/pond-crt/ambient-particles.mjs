@@ -10,6 +10,21 @@ function makeRng(seed) {
   };
 }
 
+function createStardustSprite(r, g, b) {
+  const c = document.createElement('canvas');
+  c.width = 20;
+  c.height = 20;
+  const ctx = c.getContext('2d');
+  const grad = ctx.createRadialGradient(10, 10, 0.5, 10, 10, 9.5);
+  grad.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');
+  grad.addColorStop(0.28, `rgba(${r}, ${g}, ${b}, 0.92)`);
+  grad.addColorStop(0.62, `rgba(${r}, ${g}, ${b}, 0.28)`);
+  grad.addColorStop(1.0, `rgba(${r}, ${g}, ${b}, 0.0)`);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 20, 20);
+  return c;
+}
+
 export class AmbientParticleLayer {
   constructor() {
     this.canvas = document.createElement('canvas');
@@ -19,6 +34,43 @@ export class AmbientParticleLayer {
     this.seasonId = '';
     this.particles = [];
     this.gustBoost = 0;
+
+    // Video-matched Season Transition Stardust Ribbon -> Pond-Center Spiral Vortex!
+    this.stardustSprites = {
+      spring: createStardustSprite(255, 162, 208),
+      summer: createStardustSprite(138, 255, 205),
+      autumn: createStardustSprite(255, 164, 62),
+      winter: createStardustSprite(188, 232, 255)
+    };
+    this.transitionFX = null;
+  }
+
+  // Matches media-generation-slider-summer-autumn-v2:
+  // Stardust ribbon spirals from slider down into pond center, blooming into a golden/seasonal spiral vortex!
+  triggerSeasonTransitionFX(fromSeason, toSeason, originX, originY, nowSec) {
+    const rand = makeRng(Math.floor(nowSec * 1000) + 77);
+    const count = 175;
+    const sparks = [];
+    for (let i = 0; i < count; i++) {
+      sparks.push({
+        delay: rand() * 0.24,
+        ribbonSpread: (rand() - 0.5) * 0.065,
+        vortexAngle: rand() * Math.PI * 2,
+        vortexSpeed: 2.2 + rand() * 3.4,
+        vortexRadius: 0.08 + Math.pow(rand(), 0.72) * 0.44,
+        size: 0.65 + rand() * 1.15,
+        useNewColorAt: 0.22 + rand() * 0.28
+      });
+    }
+    this.transitionFX = {
+      fromSeason,
+      toSeason,
+      ox: originX,
+      oy: originY,
+      start: nowSec,
+      duration: 1.95,
+      sparks
+    };
   }
 
   _initSeason(seasonId) {
@@ -260,6 +312,68 @@ export class AmbientParticleLayer {
         ctx.beginPath();
         ctx.arc(p.x * w, p.y * h, sr, 0, Math.PI * 2);
         ctx.fill();
+      }
+    }
+
+    // Render Video-Matched Stardust Ribbon -> Pond-Center Spiral Vortex Transition FX (120 FPS sprites!)
+    if (this.transitionFX) {
+      const fx = this.transitionFX;
+      const elapsed = t - fx.start;
+      const pGlobal = elapsed / fx.duration;
+      if (pGlobal >= 1.0) {
+        this.transitionFX = null;
+      } else {
+        const oldSprite = this.stardustSprites[fx.fromSeason] || this.stardustSprites.summer;
+        const newSprite = this.stardustSprites[fx.toSeason] || this.stardustSprites.autumn;
+        // S-curve control points from slider (ox, oy) gracefully curving down into pond center (0.50, 0.50)
+        const p0x = fx.ox;
+        const p0y = fx.oy;
+        const c1x = fx.ox - 0.24;
+        const c1y = fx.oy + 0.14;
+        const c2x = 0.64;
+        const c2y = 0.34;
+        const cx = 0.50;
+        const cy = 0.52;
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        for (let i = 0; i < fx.sparks.length; i++) {
+          const sp = fx.sparks[i];
+          const lp = (pGlobal - sp.delay) / (1.0 - sp.delay);
+          if (lp <= 0 || lp >= 1) continue;
+
+          let px, py, alpha, scale;
+          if (lp < 0.38) {
+            // Phase 1: Graceful S-curved stardust ribbon flowing from slider into pond center
+            const u = lp / 0.38;
+            const e = u * u * (3 - 2 * u);
+            const mt = 1 - e;
+            const bx = mt * mt * mt * p0x + 3 * mt * mt * e * c1x + 3 * mt * e * e * c2x + e * e * e * cx;
+            const by = mt * mt * mt * p0y + 3 * mt * mt * e * c1y + 3 * mt * e * e * c2y + e * e * e * cy;
+            const swirl = Math.sin(u * Math.PI * 3.0 + sp.vortexAngle) * sp.ribbonSpread * Math.sin(u * Math.PI);
+            px = bx + swirl;
+            py = by + Math.cos(u * Math.PI * 2.5 + sp.vortexAngle) * sp.ribbonSpread * 0.6;
+            alpha = Math.min(1.0, u * 3.2) * 0.92;
+            scale = sp.size * (0.7 + 0.5 * u);
+          } else {
+            // Phase 2: Pond-center swirling spiral vortex radiating outward across the water surface!
+            const u = (lp - 0.38) / 0.62;
+            const easeOut = 1.0 - Math.pow(1.0 - u, 2.2);
+            const ang = sp.vortexAngle + u * sp.vortexSpeed;
+            const rad = sp.vortexRadius * (0.14 + 0.98 * easeOut);
+            // Perspective foreshortening (2.0x wider horizontally like pond water surface)
+            px = cx + Math.cos(ang) * rad * 1.15;
+            py = cy + Math.sin(ang) * rad * 0.58;
+            alpha = Math.sin(u * Math.PI) * (1.0 - u * 0.35) * 0.95;
+            scale = sp.size * (1.15 - u * 0.55);
+          }
+
+          const sprite = lp < sp.useNewColorAt ? oldSprite : newSprite;
+          const rPx = Math.max(3.0, w * 0.0085 * scale);
+          ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+          ctx.drawImage(sprite, px * w - rPx, py * h - rPx, rPx * 2, rPx * 2);
+        }
+        ctx.restore();
       }
     }
 

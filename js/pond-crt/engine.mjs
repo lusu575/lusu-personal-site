@@ -41,7 +41,8 @@ export class PondCRTEngine {
     this.seasonId = options.season && SEASONS[options.season] ? options.season : 'summer';
     this.fromSeasonId = this.seasonId;
     this.seasonTransitionStart = -10;
-    this.seasonTransitionDuration = 1.15;
+    this.seasonTransitionDuration = 1.90;
+    this._draggingSlider = false;
     this.onNavigate = options.onNavigate || null;
     this.onAccountClick = options.onAccountClick || null;
     this.onLanguageChange = options.onLanguageChange || null;
@@ -197,6 +198,15 @@ export class PondCRTEngine {
     this._onPointerMove = (e) => {
       const { nx, ny } = this._screenToWarpedUv(e.clientX, e.clientY);
       const hit = this.uiOverlay.hitTest(nx, ny);
+
+      // Support smooth dragging across the top-right season slider (matching Video 1!)
+      if (this._draggingSlider && hit && hit.type === 'season') {
+        if (hit.seasonId !== this.seasonId) {
+          this.setSeason(hit.seasonId, nx, ny);
+        }
+        return;
+      }
+
       const prevCorner = this.uiOverlay.cornerHover;
       if (hit && hit.type === 'icon') {
         this.uiOverlay.setIconHover(hit.icon.id, true);
@@ -220,18 +230,21 @@ export class PondCRTEngine {
       }
     };
 
+    this._onPointerUp = () => {
+      this._draggingSlider = false;
+    };
+
     this._onPointerDown = (e) => {
       const { nx, ny } = this._screenToWarpedUv(e.clientX, e.clientY);
       const hit = this.uiOverlay.hitTest(nx, ny);
       if (hit && hit.type === 'season') {
-        this.sweepOrigin = [nx, 1.0 - ny];
-        this.setSeason(hit.seasonId);
-        this.spawnRipple(nx, 1.0 - ny, 1.45);
+        this._draggingSlider = true;
+        this.setSeason(hit.seasonId, nx, ny);
         return;
       }
       if (hit && hit.type === 'icon') {
         this.uiOverlay.triggerIconClick(hit.icon.id);
-        this.spawnRipple(hit.icon.x, 1.0 - hit.icon.y, 1.15);
+        this.spawnRipple(hit.icon.x, 1.0 - hit.icon.y, 1.05);
         if (this.onNavigate) this.onNavigate(hit.icon.route, hit.icon.id);
         return;
       }
@@ -249,6 +262,7 @@ export class PondCRTEngine {
 
     this.canvas.addEventListener('pointermove', this._onPointerMove);
     this.canvas.addEventListener('pointerdown', this._onPointerDown);
+    window.addEventListener('pointerup', this._onPointerUp);
   }
 
   spawnRipple(uvX, uvY, strength = 1.0) {
@@ -328,13 +342,21 @@ export class PondCRTEngine {
     this.uiOverlay.markDirty();
   }
 
-  setSeason(seasonId) {
+  setSeason(seasonId, originNx = 0.86, originNy = 0.072) {
     if (SEASONS[seasonId] && seasonId !== this.seasonId) {
-      this.fromSeasonId = this.seasonId;
+      const prev = this.seasonId;
+      this.fromSeasonId = prev;
       this.seasonId = seasonId;
       this.seasonTransitionStart = this.elapsed;
+      this.sweepOrigin = [0.50, 0.48];
       this.uiOverlay.setSeason(seasonId, this.elapsed);
       this.ambientLayer.triggerSeasonGust(seasonId);
+      // Launch Video 1 Stardust Ribbon -> Pond-Center Spiral Vortex FX (zero cheap corner white flash!)
+      this.ambientLayer.triggerSeasonTransitionFX(prev, seasonId, originNx, originNy, this.elapsed);
+      // Gentle expanding water ripple from pond center synced with stardust ribbon landing
+      setTimeout(() => {
+        if (this.running) this.spawnRipple(0.50, 0.48, 1.15);
+      }, 420);
       this._uploadFlora();
     }
   }
@@ -342,8 +364,10 @@ export class PondCRTEngine {
   _getInterpolatedSeason(t) {
     const a = SEASONS[this.fromSeasonId] || SEASONS.summer;
     const b = SEASONS[this.seasonId] || SEASONS.summer;
-    const p = Math.max(0, Math.min(1, (t - this.seasonTransitionStart) / this.seasonTransitionDuration));
-    if (p >= 1 || a === b) return b;
+    const rawP = Math.max(0, Math.min(1, (t - this.seasonTransitionStart) / this.seasonTransitionDuration));
+    if (rawP >= 1 || a === b) return b;
+    // Palette blooms smoothly as the stardust ribbon hits pond center (0.24..0.92)
+    const p = Math.max(0, Math.min(1, (rawP - 0.24) / 0.68));
     const s = p * p * (3 - 2 * p);
     return {
       waterDeep: lerpVec3(a.waterDeep, b.waterDeep, s),
@@ -526,6 +550,7 @@ export class PondCRTEngine {
     this.stop();
     if (this._onPointerMove) this.canvas.removeEventListener('pointermove', this._onPointerMove);
     if (this._onPointerDown) this.canvas.removeEventListener('pointerdown', this._onPointerDown);
+    if (this._onPointerUp) window.removeEventListener('pointerup', this._onPointerUp);
     this._destroyFBOs();
     const gl = this.gl;
     gl.deleteTexture(this.floraTex);

@@ -299,86 +299,123 @@ function drawMapleLeaf(ctx, x, y, r, rot, colorA = '#e84814', colorB = '#ff9828'
   ctx.restore();
 }
 
-// --- Completely Redesigned Winter Ice & Frost Shoreline (soft, feathery, translucent ice shelves) ---
+// --- Real Crystalline Fractured Pond Ice & Snowbanks (2D Heightfield + Voronoi Ice Cracks, computed ONCE -> 0ms/frame!) ---
+
+function hash2(x, y) {
+  const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453123;
+  return n - Math.floor(n);
+}
+
+function vnoise(x, y) {
+  const ix = Math.floor(x);
+  const iy = Math.floor(y);
+  const fx = x - ix;
+  const fy = y - iy;
+  const ux = fx * fx * (3 - 2 * fx);
+  const uy = fy * fy * (3 - 2 * fy);
+  const a = hash2(ix, iy);
+  const b = hash2(ix + 1, iy);
+  const c = hash2(ix, iy + 1);
+  const d = hash2(ix + 1, iy + 1);
+  return a + (b - a) * ux + (c - a) * uy + (a - b - c + d) * ux * uy;
+}
+
+function fbm2(x, y) {
+  let v = 0;
+  let a = 0.5;
+  for (let i = 0; i < 4; i++) {
+    v += a * vnoise(x, y);
+    x = x * 2.02 + 13.7;
+    y = y * 2.02 + 27.3;
+    a *= 0.5;
+  }
+  return v;
+}
 
 function drawWinterIceShelves(ctx, w, h) {
-  ctx.save();
+  // Compute pixel-accurate organic frozen shoreline + layered crystalline ice depth + internal ice fractures ONCE!
+  const img = ctx.createImageData(w, h);
+  const data = img.data;
 
-  // Soft overlapping feathered frost plumes — NO hard cartoon polygon edges!
-  const drawFrostPlume = (cx, cy, rx, ry, rot, innerAlpha, outerColor) => {
-    ctx.save();
-    ctx.translate(cx * w, cy * h);
-    ctx.rotate(rot);
-    const g = ctx.createRadialGradient(0, 0, rx * w * 0.08, 0, 0, rx * w);
-    g.addColorStop(0.0, `rgba(186, 210, 232, ${innerAlpha})`);
-    g.addColorStop(0.45, `rgba(112, 140, 168, ${innerAlpha * 0.62})`);
-    g.addColorStop(0.78, outerColor || `rgba(56, 82, 110, ${innerAlpha * 0.22})`);
-    g.addColorStop(1.0, 'rgba(30, 50, 74, 0)');
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.ellipse(0, 0, rx * w, ry * h, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  };
+  for (let py = 0; py < h; py++) {
+    const ny = py / h;
+    for (let px = 0; px < w; px++) {
+      const nx = px / w;
 
-  // 1. Soft submerged translucent ice apron along left, right, and bottom pond edges
-  const shelves = [
-    // Left bank gentle frost shelf
-    [0.02, 0.40, 0.18, 0.08, 0.08, 0.44],
-    [0.00, 0.65, 0.12, 0.09, -0.10, 0.42],
-    // Right bank gentle frost shelf
-    [0.98, 0.33, 0.16, 0.08, -0.06, 0.40],
-    [0.97, 0.66, 0.16, 0.09, 0.08, 0.46],
-    // Bottom layered snow & ice shelves
-    [0.10, 0.88, 0.24, 0.13, 0.12, 0.62],
-    [0.30, 0.96, 0.26, 0.11, -0.04, 0.56],
-    [0.56, 0.94, 0.28, 0.12, -0.08, 0.58],
-    [0.82, 0.90, 0.25, 0.13, -0.12, 0.64],
-    [0.96, 0.84, 0.16, 0.10, 0.05, 0.54]
-  ];
-  for (const [cx, cy, rx, ry, rot, a] of shelves) {
-    drawFrostPlume(cx, cy, rx, ry, rot, a);
-  }
+      // Irregular open-water pond basin distance (leaves central ~64% pond open for water & koi, matching final2-winter.png)
+      const dx = (nx - 0.50) / 0.44;
+      const dy = (ny - 0.45) / 0.37;
+      const baseDist = Math.sqrt(dx * dx + dy * dy);
 
-  // 2. Delicate crystalline frost-edge sparkle arcs (organic stippled ice rim where ice meets dark water)
-  const iceRims = [
-    [[0.0, 0.39], [0.08, 0.41], [0.16, 0.42], [0.09, 0.44], [0.0, 0.46]],
-    [[1.0, 0.60], [0.91, 0.64], [0.87, 0.68], [0.94, 0.72], [1.0, 0.74]],
-    [[0.0, 0.80], [0.12, 0.82], [0.24, 0.86], [0.34, 0.92], [0.48, 0.89], [0.64, 0.86], [0.80, 0.82], [0.92, 0.86], [1.0, 0.88]]
-  ];
+      // Multi-scale FBM shoreline crinkling + cove indentations
+      const nMacro = fbm2(nx * 5.2 + 1.4, ny * 4.4 + 2.1);
+      const nDetail = fbm2(nx * 16.0 + 7.2, ny * 14.0 + 3.8);
+      const nFine = vnoise(nx * 44.0, ny * 38.0);
 
-  for (let rIdx = 0; rIdx < iceRims.length; rIdx++) {
-    const rim = iceRims[rIdx];
-    for (let i = 0; i < rim.length - 1; i++) {
-      const a = rim[i];
-      const b = rim[i + 1];
-      const steps = 18;
-      for (let s = 0; s <= steps; s++) {
-        const u = s / steps;
-        const j = Math.sin((i * 19 + s) * 1.7 + rIdx * 3.1) * 0.008;
-        const px = (a[0] + (b[0] - a[0]) * u) * w;
-        const py = (a[1] + (b[1] - a[1]) * u + j) * h;
-        const rad = 1.0 + ((s * 13 + i * 7) % 5) * 0.45;
-        const alpha = 0.18 + ((s * 23 + i * 11) % 10) * 0.048;
-        ctx.fillStyle = `rgba(218, 236, 252, ${alpha})`;
-        ctx.beginPath();
-        ctx.arc(px, py, rad, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      // Keep top edge mostly open dark sky/water; build richer ice along left, right, and bottom banks
+      const bottomBoost = Math.max(0, (ny - 0.64) * 1.15);
+      const sideBoost = Math.max(0, (Math.abs(nx - 0.5) - 0.36) * 0.95) * (ny > 0.22 ? 1.0 : 0.2);
+      const topSuppress = ny < 0.24 ? (0.24 - ny) * 2.2 : 0.0;
+
+      const iceField = baseDist + bottomBoost + sideBoost - topSuppress + (nMacro - 0.5) * 0.44 + (nDetail - 0.5) * 0.14;
+
+      if (iceField < 0.88) continue;
+
+      const thickness = Math.min(1.0, (iceField - 0.88) / 0.48);
+
+      // Crisp crystalline frozen meniscus right at the water-ice boundary (thickness 0.0..0.11)
+      const rim = Math.exp(-Math.pow((thickness - 0.045) * 22.0, 2.0));
+
+      // Subtle internal ice ridge/fracture striations using abs(noise - 0.5)
+      const ridgeA = 1.0 - Math.min(1.0, Math.abs(vnoise(nx * 14.0 + nMacro * 2.5, ny * 12.0 - nMacro * 2.0) - 0.5) * 14.0);
+      const ridgeB = 1.0 - Math.min(1.0, Math.abs(vnoise(nx * 26.0 - 4.1, ny * 22.0 + 8.3) - 0.5) * 18.0);
+      const cracks = Math.max(ridgeA * 0.55, ridgeB * 0.35) * Math.min(1.0, thickness * 2.4);
+
+      // Layered realistic ice coloring:
+      // Thin edge = translucent dark steel-blue ice; mid = frosted slate-blue with bright ridges; thick bank = snowdrift
+      const snowMix = Math.max(0, Math.min(1, (thickness - 0.38) * 1.35 + (nDetail - 0.45) * 0.45));
+      const shade = 0.72 + 0.32 * nDetail + 0.14 * nFine;
+
+      let r = (36 + 88 * thickness + 76 * snowMix) * shade + rim * 115 + cracks * 88;
+      let g = (58 + 102 * thickness + 74 * snowMix) * shade + rim * 130 + cracks * 102;
+      let b = (88 + 112 * thickness + 68 * snowMix) * shade + rim * 148 + cracks * 118;
+
+      // Subtle darker translucent ice troughs near thin water edge
+      const alpha = Math.min(0.92, Math.pow(thickness, 0.55) * 0.84 + rim * 0.55 + cracks * 0.22);
+
+      const idx = (py * w + px) * 4;
+      data[idx] = Math.min(242, Math.max(0, r));
+      data[idx + 1] = Math.min(248, Math.max(0, g));
+      data[idx + 2] = Math.min(255, Math.max(0, b));
+      data[idx + 3] = Math.min(255, Math.max(0, Math.round(alpha * 255)));
     }
   }
 
-  // 3. Fine translucent frost grain speckles on the lower ice shelves
-  for (let k = 0; k < 140; k++) {
-    const gx = ((k * 193.7 + 17.3) % 1000) / 1000;
-    const gy = 0.78 + (((k * 311.3 + 41.9) % 1000) / 1000) * 0.22;
-    const gr = 0.9 + ((k * 17) % 6) * 0.35;
-    ctx.fillStyle = `rgba(210, 232, 250, ${0.14 + ((k * 29) % 10) * 0.032})`;
-    ctx.beginPath();
-    ctx.arc(gx * w, gy * h, gr, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  ctx.putImageData(img, 0, 0);
 
+  // Delicate frost-dusted arching winter reeds along left & bottom-right banks (matching final2-winter.png)
+  ctx.save();
+  const reedClusters = [
+    { x: 0.035, y: 0.42, count: 5, h: 0.095, dir: 1 },
+    { x: 0.075, y: 0.88, count: 6, h: 0.125, dir: 1 },
+    { x: 0.855, y: 0.92, count: 5, h: 0.105, dir: -1 },
+    { x: 0.935, y: 0.89, count: 6, h: 0.135, dir: -1 }
+  ];
+  ctx.lineCap = 'round';
+  for (const cl of reedClusters) {
+    for (let i = 0; i < cl.count; i++) {
+      const bx = (cl.x + (i - cl.count * 0.5) * 0.011) * w;
+      const by = cl.y * h;
+      const rh = cl.h * h * (0.72 + 0.36 * ((i * 37) % 10) / 10);
+      const bend = (0.32 + i * 0.11) * cl.dir * w * 0.038;
+      ctx.strokeStyle = 'rgba(204, 226, 246, 0.62)';
+      ctx.lineWidth = Math.max(1.1, w * 0.0014);
+      ctx.beginPath();
+      ctx.moveTo(bx, by);
+      ctx.quadraticCurveTo(bx + bend * 0.45, by - rh * 0.65, bx + bend, by - rh);
+      ctx.stroke();
+    }
+  }
   ctx.restore();
 }
 

@@ -98,14 +98,45 @@ function buildIconDots(id) {
     dots.push(...sampleRoundedRect(-0.84, -0.58, 1.68, 1.16, 0.28, sp));
     dots.push(...samplePolyline([[-0.18, -0.26], [0.28, 0.0], [-0.18, 0.26], [-0.18, -0.26]], sp));
   } else if (id === 'resources') {
-    const raw = [];
-    raw.push(...sampleArc(0.34, -0.34, 0.42, -0.15, Math.PI * 1.18, sp));
-    raw.push(...samplePolyline([[0.74, -0.40], [0.48, -0.14], [0.22, -0.40], [0.48, -0.66]], sp));
-    raw.push(...samplePolyline([[0.04, -0.06], [-0.54, 0.52]], sp));
-    raw.push(...samplePolyline([[0.24, 0.14], [-0.34, 0.72]], sp));
-    raw.push(...sampleArc(-0.44, 0.62, 0.14, Math.PI * 0.25, Math.PI * 1.25, sp));
-    raw.push([-0.44, 0.62]);
-    dots.push(...raw);
+    // Exact symmetric diagonal Wrench matching icons-v7-dotted-glyphs.png:
+    // Built cleanly in unrotated vertical coordinates (jaw facing straight UP), then rotated +45 deg!
+    const local = [];
+    const jawR = 0.36;
+    const jawCy = -0.42;
+    // Outer C-jaw arc: from top-right jaw tip (-0.65 rad) clockwise around bottom-right, left, to top-left jaw tip (-PI + 0.65)
+    // Wait: in Canvas Y-down, -PI/2 is straight UP. Open jaw spans [-PI/2 - 0.62, -PI/2 + 0.62].
+    // Left side of head down to left shaft neck:
+    const neckAngle = 0.44; // where shaft meets head at bottom
+    // Right outer head arc: from top-right tip (-PI/2 + 0.60) down to right neck (PI/2 - neckAngle)
+    local.push(...sampleArc(0, jawCy, jawR, -Math.PI / 2 + 0.62, Math.PI / 2 - neckAngle, sp));
+    // Left outer head arc: from left neck (PI/2 + neckAngle) up to top-left tip (3*PI/2 - 0.62)
+    local.push(...sampleArc(0, jawCy, jawR, Math.PI / 2 + neckAngle, Math.PI * 1.5 - 0.62, sp));
+    // Clean inner hex U-jaw opening (connects top-left tip -> inner pocket -> top-right tip)
+    const tipX = Math.cos(-Math.PI / 2 + 0.62) * jawR;
+    const tipY = jawCy + Math.sin(-Math.PI / 2 + 0.62) * jawR;
+    local.push(...samplePolyline([
+      [-tipX, tipY],
+      [-0.17, jawCy - 0.02],
+      [0.0, jawCy + 0.08],
+      [0.17, jawCy - 0.02],
+      [tipX, tipY]
+    ], sp));
+    // Parallel straight wrench shaft from head neck down to handle base
+    const neckX = Math.cos(Math.PI / 2 - neckAngle) * jawR;
+    const neckY = jawCy + Math.sin(Math.PI / 2 - neckAngle) * jawR;
+    const handleY = 0.66;
+    local.push(...samplePolyline([[neckX, neckY], [neckX, handleY]], sp));
+    local.push(...samplePolyline([[-neckX, neckY], [-neckX, handleY]], sp));
+    // Smooth semicircular rounded handle end + centered eyelet dot
+    local.push(...sampleArc(0, handleY, neckX, 0, Math.PI, sp));
+    local.push([0, handleY]);
+
+    // Rotate +45 deg clockwise so open jaw points top-right & handle points bottom-left (exact match to icons-v7!)
+    const ca = Math.SQRT1_2;
+    const sa = Math.SQRT1_2;
+    for (const [lx, ly] of local) {
+      dots.push([lx * ca - ly * sa, lx * sa + ly * ca]);
+    }
   } else if (id === 'games') {
     dots.push(...sampleQuad([-0.45, -0.52], [0.0, -0.44], [0.45, -0.52], sp));
     dots.push(...sampleQuad([0.45, -0.52], [0.82, -0.48], [0.84, 0.16], sp));
@@ -308,6 +339,7 @@ export class PondUIOverlay {
     });
 
     this.cornerHover = null;
+    this.cornerHitBoxes = [];
     this.accountLabel = options.accountLabel || 'ID';
     this.lastRenderTime = -1;
     this.dirty = true;
@@ -376,11 +408,11 @@ export class PondUIOverlay {
       }
     }
 
-    if (ny > 0.90 && ny < 0.975 && nx > 0.055 && nx < 0.26) {
-      if (nx < 0.125) return { type: 'account' };
-      if (nx < 0.165) return { type: 'lang', lang: 'zh' };
-      if (nx < 0.205) return { type: 'lang', lang: 'en' };
-      return { type: 'lang', lang: 'ja' };
+    // 3. Pixel-accurate dynamic hit-boxes for bottom-left Account & Language corner
+    for (const box of this.cornerHitBoxes) {
+      if (nx >= box.x0 && nx <= box.x1 && ny >= box.y0 && ny <= box.y1) {
+        return box.hit;
+      }
     }
 
     return null;
@@ -558,6 +590,22 @@ export class PondUIOverlay {
       const dots = this.iconDotMaps[ic.id];
       const sr = spriteHalf * (1.0 + st.hoverAnim * 0.14);
 
+      // Video 2 iridescent pink-violet-white bloom halo pulse on icon click!
+      if (st.clickPulse > 0.01) {
+        const p = st.clickPulse;
+        const haloR = baseRadius * (1.35 + (1.0 - p) * 0.55);
+        const hg = ctx.createRadialGradient(cx, cy, baseRadius * 0.25, cx, cy, haloR);
+        hg.addColorStop(0.0, `rgba(255, 220, 245, ${0.52 * p})`);
+        hg.addColorStop(0.45, `rgba(235, 118, 210, ${0.42 * p})`);
+        hg.addColorStop(0.80, `rgba(148, 128, 255, ${0.18 * p})`);
+        hg.addColorStop(1.0, 'rgba(120, 140, 255, 0)');
+        ctx.globalAlpha = 1.0;
+        ctx.fillStyle = hg;
+        ctx.beginPath();
+        ctx.arc(cx, cy, haloR, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
       // Subtle anime afterimage trail on hover/click
       if (st.hoverAnim > 0.04 || st.clickPulse > 0.02) {
         ctx.globalAlpha = Math.max(st.hoverAnim * 0.24, st.clickPulse * 0.36);
@@ -614,9 +662,24 @@ export class PondUIOverlay {
       ? 'rgba(244, 252, 255, 0.96)'
       : `rgba(204, 228, 236, ${isAnyHover ? 0.68 : 0.44})`;
     const accText = this.accountLabel || 'ID';
-    ctx.fillText(accText, x0 + fontSize * 0.72, y0);
+    const accTextX = x0 + fontSize * 0.72;
+    const accTextW = ctx.measureText(accText).width;
+    ctx.fillText(accText, accTextX, y0);
 
-    const sepX = x0 + fontSize * (1.2 + accText.length * 0.68);
+    // Record exact normalized hit-boxes for pixel-accurate clicking at any aspect ratio
+    const padX = fontSize * 0.45;
+    const padY = fontSize * 1.15;
+    this.cornerHitBoxes = [
+      {
+        x0: (x0 - padX) / w,
+        x1: (accTextX + accTextW + padX * 0.7) / w,
+        y0: (y0 - padY) / h,
+        y1: (y0 + padY) / h,
+        hit: { type: 'account' }
+      }
+    ];
+
+    const sepX = accTextX + accTextW + fontSize * 0.65;
     ctx.fillStyle = 'rgba(190, 220, 230, 0.28)';
     ctx.fillRect(sepX - 1, y0 - 1, 2, 2);
 
@@ -629,18 +692,25 @@ export class PondUIOverlay {
     for (const item of langs) {
       const active = this.lang === item.id;
       const hov = this.cornerHover === item.id;
+      const tw = ctx.measureText(item.text).width;
       ctx.fillStyle = hov
         ? 'rgba(255, 255, 255, 0.98)'
         : active
-          ? 'rgba(232, 248, 252, 0.78)'
-          : `rgba(195, 220, 228, ${isAnyHover ? 0.50 : 0.30})`;
+          ? 'rgba(232, 248, 252, 0.82)'
+          : `rgba(195, 220, 228, ${isAnyHover ? 0.54 : 0.34})`;
       ctx.fillText(item.text, curX, y0);
       if (active) {
-        const tw = ctx.measureText(item.text).width;
-        ctx.fillStyle = 'rgba(220, 248, 255, 0.65)';
+        ctx.fillStyle = 'rgba(220, 248, 255, 0.70)';
         ctx.fillRect(curX + tw * 0.5 - 1.2, y0 + fontSize * 0.58, 2.4, 2.4);
       }
-      curX += ctx.measureText(item.text).width + fontSize * 0.72;
+      this.cornerHitBoxes.push({
+        x0: (curX - padX * 0.55) / w,
+        x1: (curX + tw + padX * 0.55) / w,
+        y0: (y0 - padY) / h,
+        y1: (y0 + padY) / h,
+        hit: { type: 'lang', lang: item.id }
+      });
+      curX += tw + fontSize * 0.85;
     }
 
     ctx.restore();

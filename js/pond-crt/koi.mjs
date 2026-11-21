@@ -1,26 +1,29 @@
-// Underwater skeletal Nishikigoi (Koi) renderer — Overhauled for:
-// - Anatomically graceful rounded snout & muscular shoulders (no sharp pointy nose!)
-// - Smooth Bezier flanks & seamlessly integrated flowing caudal tail fin (zero detachment!)
-// - Natural, calm tail-thrust wake ripples emitted at realistic position & cadence
-// - Lean 640x426 offscreen canvas for rock-solid 120 FPS
+// Underwater skeletal Nishikigoi (Koi) renderer — Round 2 Overhaul:
+// - Strict per-segment angular curvature clamp (MAX_SEG_BEND = 0.085 rad) -> silky realistic turns, NEVER 90° kinks!
+// - Wide, graceful lazy pond orbits with organic smooth curvature
+// - Broad rounded koi snout, smooth Bezier flanks, seamlessly connected flowing caudal tail
+// - Calm, realistic tail-thrust wake ripples
 
 const SPINE_SEGMENTS = 18;
+const MAX_SEG_BEND = 0.082; // ~4.7 deg max bend per segment -> max ~55 deg graceful arc across whole body, never a sharp kink!
 
-// Authentic Nishikigoi (Kohaku) width profile from rounded snout (0) to peduncle (1)
 function koiWidthProfile(t) {
-  if (t < 0.08) {
-    // Broad, gently rounded koi nose (not pointy!)
-    const u = t / 0.08;
-    return 0.42 + 0.44 * Math.sin(u * Math.PI * 0.5);
+  if (t < 0.09) {
+    const u = t / 0.09;
+    return 0.44 + 0.44 * Math.sin(u * Math.PI * 0.5);
   }
   if (t < 0.28) {
-    // Smooth swell to full koi shoulders
-    const u = (t - 0.08) / 0.20;
-    return 0.86 + 0.16 * Math.sin(u * Math.PI * 0.65);
+    const u = (t - 0.09) / 0.19;
+    return 0.88 + 0.14 * Math.sin(u * Math.PI * 0.65);
   }
-  // Graceful aerodynamic taper from shoulders to slender tail peduncle
   const u = (t - 0.28) / 0.72;
-  return Math.max(0.16, Math.pow(1.0 - u, 1.38) * 0.98 + 0.10 * Math.sin(u * Math.PI));
+  return Math.max(0.16, Math.pow(1.0 - u, 1.38) * 0.98 + 0.09 * Math.sin(u * Math.PI));
+}
+
+function wrapAngle(a) {
+  while (a > Math.PI) a -= Math.PI * 2;
+  while (a < -Math.PI) a += Math.PI * 2;
+  return a;
 }
 
 class KoiFish {
@@ -35,18 +38,19 @@ class KoiFish {
     this.speed = config.speed;
     this.phase = config.phase;
     this.dir = config.dir ?? 1;
-    this.swimFreq = config.swimFreq ?? 3.1;
+    this.swimFreq = config.swimFreq ?? 2.8;
     this.depth = config.depth ?? 0.94;
     this.spots = config.spots;
     this.lastRippleTime = config.initialRippleOffset ?? -2.0;
-    this.rippleInterval = config.rippleInterval ?? 4.6;
+    this.rippleInterval = config.rippleInterval ?? 4.8;
     this.spine = [];
   }
 
+  // Smooth wide oval pond glide (no tight hairpin figure-8 loops!)
   _pathPos(u) {
     const a = this.phase + u * this.dir;
-    const x = this.cx + Math.cos(a) * this.rx + Math.sin(a * 2.0) * this.rx * 0.16;
-    const y = this.cy + Math.sin(a) * this.ry + Math.cos(a * 1.5) * this.ry * 0.12;
+    const x = this.cx + Math.cos(a) * this.rx + Math.sin(a * 2.0) * this.rx * 0.06;
+    const y = this.cy + Math.sin(a) * this.ry + Math.cos(a * 1.5) * this.ry * 0.05;
     return { x, y };
   }
 
@@ -55,45 +59,65 @@ class KoiFish {
     const bodyLenPx = this.lengthFrac * w;
     const segLen = bodyLenPx / (SPINE_SEGMENTS - 1);
 
-    const pts = [];
+    // 1. Sample head position & tangent heading
+    const pHead = this._pathPos(uHead);
+    const pAhead = this._pathPos(uHead + 0.025);
+    const hx = pHead.x * w;
+    const hy = pHead.y * h;
+    let heading = Math.atan2(pAhead.y * h - hy, pAhead.x * w - hx);
+
+    // 2. Build raw target spine along path behind head, then enforce STRICT angular bend clamping!
+    const spinePts = [{ x: hx, y: hy, heading }];
     let uCur = uHead;
-    const p0 = this._pathPos(uCur);
-    pts.push({ x: p0.x * w, y: p0.y * h });
 
     for (let i = 1; i < SPINE_SEGMENTS; i++) {
-      const dtStep = 0.04;
-      const prev = pts[i - 1];
-      const pNext = this._pathPos(uCur - dtStep);
-      const d = Math.hypot(pNext.x * w - prev.x, pNext.y * h - prev.y) || 1;
-      uCur -= (segLen / d) * dtStep;
-      const p = this._pathPos(uCur);
-      pts.push({ x: p.x * w, y: p.y * h });
+      const frac = i / (SPINE_SEGMENTS - 1);
+      const prev = spinePts[i - 1];
+
+      // Target point backward along path
+      const pBack = this._pathPos(uCur - 0.04);
+      const dPath = Math.hypot(pBack.x * w - prev.x, pBack.y * h - prev.y) || 1;
+      uCur -= (segLen / dPath) * 0.04;
+      const target = this._pathPos(uCur);
+
+      // Desired backward vector from prev -> target
+      const desiredBackAngle = Math.atan2(target.y * h - prev.y, target.x * w - prev.x);
+      const prevBackAngle = prev.heading + Math.PI;
+
+      // Subtle sinusoidal swimming tail sway (increases smoothly toward tail)
+      const swimSway = Math.sin(t * this.swimFreq - frac * 4.2 + this.phase) * 0.055 * Math.pow(frac, 1.35);
+
+      // Clamp angular change per segment so body NEVER kinks or bends 90 degrees!
+      const rawDelta = wrapAngle(desiredBackAngle - prevBackAngle);
+      const clampedDelta = Math.max(-MAX_SEG_BEND, Math.min(MAX_SEG_BEND, rawDelta)) + swimSway;
+      const actualBackAngle = prevBackAngle + clampedDelta;
+
+      const nxPos = prev.x + Math.cos(actualBackAngle) * segLen;
+      const nyPos = prev.y + Math.sin(actualBackAngle) * segLen;
+      spinePts.push({
+        x: nxPos,
+        y: nyPos,
+        heading: actualBackAngle - Math.PI
+      });
     }
 
-    // Apply natural traveling S-curve swimming wave (head stays steady, tail sweeps smoothly)
-    this.spine = pts.map((p, i) => {
+    // 3. Compute tangent & normal vectors for each spine joint
+    this.spine = spinePts.map((p, i) => {
       const frac = i / (SPINE_SEGMENTS - 1);
-      const prevPt = pts[Math.max(0, i - 1)];
-      const nextPt = pts[Math.min(SPINE_SEGMENTS - 1, i + 1)];
-      const tx = prevPt.x - nextPt.x;
-      const ty = prevPt.y - nextPt.y;
-      const len = Math.hypot(tx, ty) || 1;
-      const nx = -ty / len;
-      const ny = tx / len;
-      const wave = Math.sin(t * this.swimFreq - frac * 4.6 + this.phase) * bodyLenPx * 0.052 * Math.pow(frac, 1.45);
+      const tx = Math.cos(p.heading);
+      const ty = Math.sin(p.heading);
       return {
-        x: p.x + nx * wave,
-        y: p.y + ny * wave,
-        tx: tx / len,
-        ty: ty / len,
-        nx,
-        ny,
+        x: p.x,
+        y: p.y,
+        tx,
+        ty,
+        nx: -ty,
+        ny: tx,
         frac,
         halfW: koiWidthProfile(frac) * bodyLenPx * this.widthFrac
       };
     });
 
-    // Emit calm wake ripples from the sweeping mid-tail thrust zone (spine[12]), NOT head spam!
     const thrustSeg = this.spine[12];
     const ready = (t - this.lastRippleTime) >= this.rippleInterval;
     return {
@@ -108,7 +132,6 @@ class KoiFish {
     const headAngle = Math.atan2(head.ty, head.tx);
     const noseR = head.halfW * expand;
 
-    // Build smooth left & right flank control points
     const leftPts = [];
     const rightPts = [];
     for (let i = 0; i < sp.length; i++) {
@@ -118,36 +141,31 @@ class KoiFish {
     }
 
     ctx.beginPath();
-    // Rounded U-shaped koi snout using two smooth cubic Beziers around the head
-    const snoutTipX = head.x + Math.cos(headAngle) * noseR * 0.92;
-    const snoutTipY = head.y + Math.sin(headAngle) * noseR * 0.92;
+    const snoutTipX = head.x + Math.cos(headAngle) * noseR * 0.90;
+    const snoutTipY = head.y + Math.sin(headAngle) * noseR * 0.90;
 
     ctx.moveTo(rightPts[0].x, rightPts[0].y);
     ctx.quadraticCurveTo(
-      rightPts[0].x + Math.cos(headAngle) * noseR * 0.88,
-      rightPts[0].y + Math.sin(headAngle) * noseR * 0.88,
+      rightPts[0].x + Math.cos(headAngle) * noseR * 0.85,
+      rightPts[0].y + Math.sin(headAngle) * noseR * 0.85,
       snoutTipX,
       snoutTipY
     );
     ctx.quadraticCurveTo(
-      leftPts[0].x + Math.cos(headAngle) * noseR * 0.88,
-      leftPts[0].y + Math.sin(headAngle) * noseR * 0.88,
+      leftPts[0].x + Math.cos(headAngle) * noseR * 0.85,
+      leftPts[0].y + Math.sin(headAngle) * noseR * 0.85,
       leftPts[0].x,
       leftPts[0].y
     );
 
-    // Smooth quadratic midpoint spline down the left flank
     for (let i = 1; i < leftPts.length - 1; i++) {
       const mx = (leftPts[i].x + leftPts[i + 1].x) * 0.5;
       const my = (leftPts[i].y + leftPts[i + 1].y) * 0.5;
       ctx.quadraticCurveTo(leftPts[i].x, leftPts[i].y, mx, my);
     }
-    const lastL = leftPts[leftPts.length - 1];
-    const lastR = rightPts[rightPts.length - 1];
-    ctx.lineTo(lastL.x, lastL.y);
-    ctx.lineTo(lastR.x, lastR.y);
+    ctx.lineTo(leftPts[leftPts.length - 1].x, leftPts[leftPts.length - 1].y);
+    ctx.lineTo(rightPts[rightPts.length - 1].x, rightPts[rightPts.length - 1].y);
 
-    // Smooth quadratic midpoint spline back up the right flank
     for (let i = rightPts.length - 2; i >= 1; i--) {
       const mx = (rightPts[i].x + rightPts[i - 1].x) * 0.5;
       const my = (rightPts[i].y + rightPts[i - 1].y) * 0.5;
@@ -166,21 +184,20 @@ class KoiFish {
     ctx.save();
     ctx.globalAlpha = alpha;
 
-    // 1. Soft dark underwater shadow beneath the koi
+    // 1. Soft underwater shadow
     ctx.save();
-    ctx.translate(0, bodyLen * 0.065);
-    this._traceSmoothBodyPath(ctx, sp, 1.12);
-    ctx.fillStyle = 'rgba(1, 10, 12, 0.36)';
+    ctx.translate(0, bodyLen * 0.06);
+    this._traceSmoothBodyPath(ctx, sp, 1.10);
+    ctx.fillStyle = 'rgba(1, 10, 12, 0.34)';
     ctx.fill();
     ctx.restore();
 
-    // 2. Graceful fan-shaped translucent pectoral & pelvic fins
+    // 2. Pectoral & pelvic fins
     const drawSideFin = (segIdx, side, finLen, finWidth, swingAmp) => {
       const s = sp[segIdx];
       const baseAngle = Math.atan2(s.ty, s.tx);
       const swing = Math.sin(t * this.swimFreq * 0.8 + side * 0.35 + this.phase) * swingAmp;
       const finAngle = baseAngle + side * (Math.PI * 0.64 + swing);
-      // Anchor slightly INSIDE the body so fin never detaches
       const bx = s.x + s.nx * side * s.halfW * 0.45;
       const by = s.y + s.ny * side * s.halfW * 0.45;
 
@@ -217,24 +234,23 @@ class KoiFish {
     };
 
     const shoulderW = sp[4].halfW;
-    drawSideFin(4, 1, shoulderW * 2.45, 0.62, 0.12);
-    drawSideFin(4, -1, shoulderW * 2.45, 0.62, 0.12);
-    drawSideFin(10, 1, shoulderW * 1.15, 0.52, 0.09);
-    drawSideFin(10, -1, shoulderW * 1.15, 0.52, 0.09);
+    drawSideFin(4, 1, shoulderW * 2.45, 0.62, 0.11);
+    drawSideFin(4, -1, shoulderW * 2.45, 0.62, 0.11);
+    drawSideFin(10, 1, shoulderW * 1.15, 0.52, 0.08);
+    drawSideFin(10, -1, shoulderW * 1.15, 0.52, 0.08);
 
-    // 3. Seamlessly Connected Flowing Caudal Tail Fin
-    // Anchored deep into sp[length - 3] so it NEVER separates from the peduncle at any curve!
+    // 3. Seamlessly connected flowing caudal tail fin
     const root = sp[sp.length - 3];
     const midTail = sp[sp.length - 2];
     const tail = sp[sp.length - 1];
     const tailAngle = Math.atan2(tail.y - root.y, tail.x - root.x);
     const tailLen = bodyLen * 0.27;
-    const tailFlick = Math.sin(t * this.swimFreq - 4.9 + this.phase) * 0.20;
+    const tailFlick = Math.sin(t * this.swimFreq - 4.6 + this.phase) * 0.16;
 
-    const lobe1X = tail.x + Math.cos(tailAngle + 0.44 + tailFlick) * tailLen;
-    const lobe1Y = tail.y + Math.sin(tailAngle + 0.44 + tailFlick) * tailLen;
-    const lobe2X = tail.x + Math.cos(tailAngle - 0.44 + tailFlick) * tailLen;
-    const lobe2Y = tail.y + Math.sin(tailAngle - 0.44 + tailFlick) * tailLen;
+    const lobe1X = tail.x + Math.cos(tailAngle + 0.42 + tailFlick) * tailLen;
+    const lobe1Y = tail.y + Math.sin(tailAngle + 0.42 + tailFlick) * tailLen;
+    const lobe2X = tail.x + Math.cos(tailAngle - 0.42 + tailFlick) * tailLen;
+    const lobe2Y = tail.y + Math.sin(tailAngle - 0.42 + tailFlick) * tailLen;
     const forkX = tail.x + Math.cos(tailAngle + tailFlick * 0.65) * tailLen * 0.46;
     const forkY = tail.y + Math.sin(tailAngle + tailFlick * 0.65) * tailLen * 0.46;
 
@@ -247,21 +263,21 @@ class KoiFish {
     ctx.beginPath();
     ctx.moveTo(root.x + root.nx * root.halfW * 0.92, root.y + root.ny * root.halfW * 0.92);
     ctx.quadraticCurveTo(
-      midTail.x + midTail.nx * midTail.halfW * 1.15,
-      midTail.y + midTail.ny * midTail.halfW * 1.15,
+      midTail.x + midTail.nx * midTail.halfW * 1.12,
+      midTail.y + midTail.ny * midTail.halfW * 1.12,
       lobe1X, lobe1Y
     );
     ctx.quadraticCurveTo(forkX, forkY, lobe2X, lobe2Y);
     ctx.quadraticCurveTo(
-      midTail.x - midTail.nx * midTail.halfW * 1.15,
-      midTail.y - midTail.ny * midTail.halfW * 1.15,
+      midTail.x - midTail.nx * midTail.halfW * 1.12,
+      midTail.y - midTail.ny * midTail.halfW * 1.12,
       root.x - root.nx * root.halfW * 0.92, root.y - root.ny * root.halfW * 0.92
     );
     ctx.closePath();
     ctx.fillStyle = tg;
     ctx.fill();
 
-    // 4. Main Koi Body Silhouette (smooth rounded snout & curved flanks)
+    // 4. Main Koi Body Silhouette
     this._traceSmoothBodyPath(ctx, sp, 1.0);
 
     const bg = ctx.createLinearGradient(sp[0].x, sp[0].y, tail.x, tail.y);
@@ -271,7 +287,6 @@ class KoiFish {
     ctx.fillStyle = bg;
     ctx.fill();
 
-    // Clip inside body for Kohaku red-orange saddle markings + dorsal sheen + eyes
     ctx.save();
     ctx.clip();
 
@@ -291,7 +306,6 @@ class KoiFish {
       ctx.fill();
     }
 
-    // Soft dorsal volume sheen along spine
     ctx.strokeStyle = 'rgba(255, 252, 242, 0.36)';
     ctx.lineWidth = Math.max(1.5, sp[4].halfW * 0.38);
     ctx.lineCap = 'round';
@@ -302,7 +316,6 @@ class KoiFish {
     }
     ctx.stroke();
 
-    // Subtle dark eyes positioned naturally on the rounded head
     const headSeg = sp[1];
     const eyeR = Math.max(1.0, headSeg.halfW * 0.15);
     ctx.fillStyle = 'rgba(18, 22, 24, 0.68)';
@@ -328,22 +341,22 @@ export class KoiLayer {
     this.width = 0;
     this.height = 0;
 
-    // Two graceful Nishikigoi swimming calmly beneath the water surface
+    // Wide, serene orbits so koi glide gracefully without tight turns
     this.fish = [
       new KoiFish({
         id: 'koi-main',
-        lengthFrac: 0.21,
-        widthFrac: 0.108,
-        cx: 0.44,
+        lengthFrac: 0.205,
+        widthFrac: 0.106,
+        cx: 0.47,
         cy: 0.56,
-        rx: 0.15,
-        ry: 0.10,
-        speed: 0.19,
+        rx: 0.24,
+        ry: 0.16,
+        speed: 0.145,
         phase: 0.85,
         dir: 1,
-        swimFreq: 3.1,
+        swimFreq: 2.8,
         depth: 0.96,
-        rippleInterval: 4.5,
+        rippleInterval: 4.8,
         initialRippleOffset: -3.2,
         spots: [
           { t: 0.08, r: 0.95, offset: 0.04 },
@@ -354,18 +367,18 @@ export class KoiLayer {
       }),
       new KoiFish({
         id: 'koi-companion',
-        lengthFrac: 0.175,
-        widthFrac: 0.106,
-        cx: 0.60,
-        cy: 0.42,
-        rx: 0.12,
-        ry: 0.09,
-        speed: 0.22,
-        phase: 3.75,
+        lengthFrac: 0.172,
+        widthFrac: 0.104,
+        cx: 0.55,
+        cy: 0.44,
+        rx: 0.21,
+        ry: 0.14,
+        speed: 0.165,
+        phase: 3.95,
         dir: -1,
-        swimFreq: 3.5,
+        swimFreq: 3.1,
         depth: 0.88,
-        rippleInterval: 5.2,
+        rippleInterval: 5.5,
         initialRippleOffset: -1.4,
         spots: [
           { t: 0.10, r: 1.05, offset: -0.04 },
@@ -377,7 +390,6 @@ export class KoiLayer {
   }
 
   render(t, width, height, seasonId, onWakeRipple) {
-    // Lean 640x426 canvas: sharper than the 4px CRT dot grid while 5.5x faster for 120 FPS!
     const w = Math.max(360, Math.min(640, Math.round(width * 0.5)));
     const h = Math.max(240, Math.min(426, Math.round(height * 0.5)));
     if (this.width !== w || this.height !== h) {
@@ -390,7 +402,7 @@ export class KoiLayer {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, w, h);
 
-    const speedMult = seasonId === 'winter' ? 0.52 : 1.0;
+    const speedMult = seasonId === 'winter' ? 0.50 : 1.0;
     const depthMult = seasonId === 'winter' ? 0.68 : 1.0;
 
     for (let i = 0; i < this.fish.length; i++) {
@@ -401,7 +413,7 @@ export class KoiLayer {
 
       if (info.shouldEmitRipple && onWakeRipple) {
         f.lastRippleTime = t * speedMult;
-        onWakeRipple(info.uvX, info.uvY, seasonId === 'winter' ? 0.34 : 0.56);
+        onWakeRipple(info.uvX, info.uvY, seasonId === 'winter' ? 0.32 : 0.52);
       }
     }
 
