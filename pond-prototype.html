@@ -129,11 +129,16 @@
   <div id="error-banner"></div>
   <script type="module">
     import { PondCRTEngine } from './js/pond-crt/engine.mjs';
+    import {
+      resolveInitialPondSeason,
+      saveManualSeasonOverride,
+      startSeasonTimeSchedule
+    } from './js/pond-crt/season-schedule.mjs';
     import { CRTWindowManager } from './js/pond-windows/window-manager.mjs';
     import { createKnowledgeWindowView } from './js/pond-windows/knowledge-window.mjs';
 
     const params = new URLSearchParams(window.location.search);
-    const season = params.get('season') || 'summer';
+    const { season, isPreview } = resolveInitialPondSeason(window.location.search);
     let currentLang = params.get('lang') || 'zh';
     const initialWindow = params.get('window') || '';
     const demoClock = params.get('demoClock') === '1';
@@ -226,11 +231,18 @@
           currentLang = lang;
           document.documentElement.lang = lang === 'en' ? 'en' : lang === 'ja' ? 'ja' : 'zh-CN';
           winMgr.setLang(lang);
+        },
+        onSeasonChange: (nextSeason, { manual } = {}) => {
+          if (manual) saveManualSeasonOverride(nextSeason);
         }
       });
       window.__pondEngine = engine;
       window.addEventListener('resize', () => engine.resize());
       engine.start();
+      startSeasonTimeSchedule({
+        isPreview,
+        onAutoSeasonChange: (nextSeason) => engine.setSeason(nextSeason, 0.86, 0.072, { manual: false })
+      });
 
       if (initialWindow) {
         winMgr.open(initialWindow);

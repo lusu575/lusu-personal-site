@@ -3,7 +3,6 @@ import {
   normalizeKnowledgeSearchText,
   knowledgeSearchTokens,
   visibleArticleTags,
-  knowledgeArticlesForCategory,
   sortKnowledgeArticles,
   knowledgeCategoryValues
 } from '../routes/knowledge.mjs';
@@ -23,7 +22,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 const UI_COPY = {
   zh: {
     title: '知识库',
-    metaTop: '/ Knowledge Base',
+    metaTop: '/ Knowledge Base v2.0',
     metaSub: '个人学习笔记 · 实践记录 · 资料收藏',
     searchPlaceholder: '搜索知识库',
     clearSearch: '清空搜索',
@@ -38,7 +37,7 @@ const UI_COPY = {
   },
   en: {
     title: 'Knowledge',
-    metaTop: '/ Knowledge Base',
+    metaTop: '/ Knowledge Base v2.0',
     metaSub: 'Study Notes · Engineering Logs · Curated Docs',
     searchPlaceholder: 'Search knowledge base',
     clearSearch: 'Clear search',
@@ -53,7 +52,7 @@ const UI_COPY = {
   },
   ja: {
     title: '知識庫',
-    metaTop: '/ Knowledge Base',
+    metaTop: '/ Knowledge Base v2.0',
     metaSub: '学習ノート · 実践記録 · 資料アーカイブ',
     searchPlaceholder: '知識庫を検索',
     clearSearch: '検索をクリア',
@@ -160,12 +159,13 @@ function articleMatchesTokens(item, tokens) {
   return tokens.every((tok) => haystack.includes(tok));
 }
 
-export function createKnowledgeWindowView({ container, lang = 'zh', close, openWindow }) {
+export function createKnowledgeWindowView({ container, lang = 'zh', params = {}, close, openWindow }) {
   let currentLang = lang;
   let allArticles = [];
   let loaded = false;
   let mounted = true;
   let requestSerial = 0;
+  const onOpenArticle = typeof params?.onOpenArticle === 'function' ? params.onOpenArticle : null;
 
   const copy = () => UI_COPY[currentLang] || UI_COPY.zh;
 
@@ -286,12 +286,13 @@ export function createKnowledgeWindowView({ container, lang = 'zh', close, openW
     closeBtn.title = c.close;
   }
 
+  function articlesInCategory(cat) {
+    if (cat === 'all') return allArticles;
+    return allArticles.filter((item) => String(item?.category || '') === String(cat));
+  }
+
   function getFilteredArticles() {
-    const byCategory = knowledgeArticlesForCategory(
-      allArticles,
-      persistentState.category,
-      'site-updates'
-    );
+    const byCategory = articlesInCategory(persistentState.category);
     const tokens = knowledgeSearchTokens(persistentState.searchTerm);
     const matched = tokens.length
       ? byCategory.filter((item) => articleMatchesTokens(item, tokens))
@@ -311,7 +312,7 @@ export function createKnowledgeWindowView({ container, lang = 'zh', close, openW
 
     const categories = ['all', ...ordered];
     for (const cat of categories) {
-      const count = knowledgeArticlesForCategory(allArticles, cat, 'site-updates').length;
+      const count = articlesInCategory(cat).length;
       if (cat !== 'all' && count === 0) continue;
 
       const btn = document.createElement('button');
@@ -448,6 +449,10 @@ export function createKnowledgeWindowView({ container, lang = 'zh', close, openW
 
       row.addEventListener('click', () => {
         saveCurrentScroll();
+        if (onOpenArticle) {
+          onOpenArticle(item);
+          return;
+        }
         // Open Article Reader window if registered (Window #2), else display non-intrusive status
         const opened = openWindow('article', { article: item });
         if (!opened) {
@@ -509,9 +514,9 @@ export function createKnowledgeWindowView({ container, lang = 'zh', close, openW
   // Initial render + async load
   renderAll({ restoreScroll: false });
   const myReq = ++requestSerial;
-  loadKnowledgeArticles().then((items) => {
+  loadKnowledgeArticles().then((result) => {
     if (!mounted || myReq !== requestSerial) return;
-    allArticles = Array.isArray(items) ? items : [];
+    allArticles = Array.isArray(result?.items) ? result.items : [];
     loaded = true;
     renderAll({ restoreScroll: true });
   });

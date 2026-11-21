@@ -59,6 +59,7 @@ export class PondCRTEngine {
     this.onNavigate = options.onNavigate || null;
     this.onAccountClick = options.onAccountClick || null;
     this.onLanguageChange = options.onLanguageChange || null;
+    this.onSeasonChange = options.onSeasonChange || null;
     this.onFpsUpdate = options.onFpsUpdate || null;
     this.startTime = performance.now();
     this.lastFrameTime = 0;
@@ -418,7 +419,7 @@ export class PondCRTEngine {
     ];
   }
 
-  setSeason(seasonId, originNx = 0.86, originNy = 0.072) {
+  setSeason(seasonId, originNx = 0.86, originNy = 0.072, { manual = true } = {}) {
     if (SEASONS[seasonId] && seasonId !== this.seasonId) {
       const prev = this.seasonId;
       this.fromSeasonId = prev;
@@ -436,6 +437,15 @@ export class PondCRTEngine {
         this._rippleTimerId = 0;
         if (this.running) this.spawnRipple(0.50, 0.48, 1.05);
       }, 450);
+      if (typeof this.onSeasonChange === 'function') {
+        this.onSeasonChange(seasonId, { manual });
+      }
+    }
+  }
+
+  setLanguage(lang) {
+    if (this.uiOverlay && typeof this.uiOverlay.setLanguage === 'function') {
+      this.uiOverlay.setLanguage(lang);
     }
   }
 
