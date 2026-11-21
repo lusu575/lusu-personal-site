@@ -99,8 +99,8 @@ function bootPondVisualBridge() {
     if (!isMobileShell() && !isWelcomeModalOpen()) {
       if (route === 'home') {
         nextMode = 'home';
-      } else if (route === 'knowledge' && !isArticleDetailOpen()) {
-        nextMode = 'knowledge';
+      } else if (route === 'knowledge') {
+        nextMode = isArticleDetailOpen() ? 'article' : 'knowledge';
       }
     }
 
@@ -133,16 +133,29 @@ function bootPondVisualBridge() {
     observer.observe(welcomeEl, { attributes: true, attributeFilter: ['hidden'] });
   }
 
-  // Clicking outside the skinned Knowledge window returns to Home desktop
+  // Clicking outside the skinned window returns to parent view
   document.addEventListener('click', (e) => {
-    if (activeMode !== 'knowledge') return;
-    if (e.target === canvas || e.target === backdrop) {
+    if (e.target !== canvas && e.target !== backdrop) return;
+    if (activeMode === 'article') {
+      const backBtn = document.querySelector('[data-article-back]');
+      if (backBtn) backBtn.click();
+      else triggerSiteRoute('knowledge');
+      return;
+    }
+    if (activeMode === 'knowledge') {
       triggerSiteRoute('home');
     }
   });
 
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && activeMode === 'knowledge') {
+    if (e.key !== 'Escape') return;
+    if (activeMode === 'article') {
+      const backBtn = document.querySelector('[data-article-back]');
+      if (backBtn) backBtn.click();
+      else triggerSiteRoute('knowledge');
+      return;
+    }
+    if (activeMode === 'knowledge') {
       const searchInput = document.getElementById('knowledge-search-input');
       if (document.activeElement === searchInput && searchInput.value) return;
       triggerSiteRoute('home');

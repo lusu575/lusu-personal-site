@@ -2,6 +2,37 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-article-reader",
+      "slug": "2026-11-22-pond-article-reader",
+      "category": "site-updates",
+      "tags": [
+        "网站更新",
+        "知识库",
+        "文章详情",
+        "阅读体验",
+        "界面"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-21T17:38:00.000Z",
+      "updated_at": "2026-11-21T17:38:00.000Z",
+      "published_at": "2026-11-21T17:38:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "文章阅读页换装深夜终端 CRT 玻璃阅读窗",
+        "en": "Article Reader Refreshed with Midnight Pond CRT Glass Styling",
+        "ja": "記事リーダーを深夜端末・CRTガラス表示へ刷新"
+      },
+      "summary": {
+        "zh": "逐步视觉替换第 2 批上线：桌面端文章阅读页（#article-detail）换装半透明 CRT 玻璃阅读窗，保留现站目录 TOC、顶部阅读进度条、摘要框、复制链接与正文排版逻辑；其余未替换栏目与手机端保持原样。",
+        "en": "Batch 2 of the visual refresh is live: the desktop Article Reader (#article-detail) adopts the translucent CRT glass layout over the live Pond background while keeping TOC, reading progress, summary toggle, link copying, and markdown rendering untouched.",
+        "ja": "段階的ビジュアル刷新の第2弾を公開しました。デスクトップの記事閲覧ページ（#article-detail）を池塘背景上の半透明CRTガラス窓へ換装し、目次・読書進捗・要約・リンクコピー等の機能はすべて従来のまま維持しています。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-21-pond-home-knowledge",
       "slug": "2026-11-21-pond-home-knowledge",
       "category": "site-updates",
@@ -117,37 +148,6 @@ export const homeContent = Object.freeze({
         "zh": "登录后的游戏自动云同步由30秒调整为10分钟，减少长时间挂机产生的 Cloudflare 请求和 D1 写入；手动“立即同步”和切出页面时的补同步保持不变。",
         "en": "Signed-in games now auto-sync to the cloud every 10 minutes instead of every 30 seconds, reducing Cloudflare requests and D1 writes during long sessions. Manual Sync Now and the page-hide sync remain immediate.",
         "ja": "ログイン中のゲームの自動クラウド同期を30秒から10分間隔へ変更し、長時間プレイ時のCloudflareリクエストとD1書き込みを削減しました。手動同期とページを離れる際の補助同期は従来どおり即時です。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-09-08-site-review-optimization",
-      "slug": "2026-09-08-site-review-optimization",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "界面",
-        "移动端",
-        "工具",
-        "可靠性"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-09-07T23:00:00.000Z",
-      "updated_at": "2026-09-07T23:00:00.000Z",
-      "published_at": "2026-09-07T23:00:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.09.08",
-      "title": {
-        "zh": "全站体验与可靠性优化",
-        "en": "A Clearer, More Reliable Personal Site",
-        "ja": "サイト全体の使いやすさと信頼性を改善"
-      },
-      "summary": {
-        "zh": "欢迎窗改为主动查看，工具与画板入口更清晰，手机手势和动效更稳定；知识库支持完整分页搜索，临时互传修复跨房草稿与后台上传，发布增加精确版本校验。",
-        "en": "Welcome is now optional, tool and whiteboard entries are clearer, and mobile gestures are more predictable. Knowledge gains complete pagination and search; Transfer fixes room drafts and background uploads, with exact release checks.",
-        "ja": "歓迎画面を任意表示にし、ツールと画板の入口を整理しました。モバイル操作を安定させ、Knowledgeの全件ページングと検索、転送の下書き・バックグラウンド送信、公開バージョン確認を改善しています。"
       }
     }
   ]

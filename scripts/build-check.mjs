@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-21-pond-home-knowledge";
-const finalUpdateSlug = "2026-11-21-pond-home-knowledge";
+const finalUpdateId = "seed-update-2026-11-22-pond-article-reader";
+const finalUpdateSlug = "2026-11-22-pond-article-reader";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Desktop Home and Knowledge List Refresh with Midnight Pond CRT Visuals";
-const finalPublishedAt = "2026-11-21T15:30:00.000Z";
+const finalTitleEn = "Article Reader Refreshed with Midnight Pond CRT Glass Styling";
+const finalPublishedAt = "2026-11-21T17:38:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-21-pond-home-knowledge",
   "seed-update-2026-10-29-tool-maintenance",
   "seed-update-2026-09-28-mobile-layout",
   "seed-update-2026-09-22-cloud-save-10min",
@@ -4910,7 +4911,7 @@ const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 
 
 const changelog20260827Section = markdownSection(changelog, "## 2026-08-27");
-const changelog20260928Section = markdownSection(changelog, "## 2026-11-21");
+const changelog20260928Section = markdownSection(changelog, "## 2026-11-22");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {

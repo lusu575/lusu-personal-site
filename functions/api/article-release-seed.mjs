@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-article-reader', '2026-11-22-pond-article-reader', 'site-updates', '["网站更新","知识库","文章详情","阅读体验","界面"]', '', 'published', 0, 0, '2026-11-21T17:38:00.000Z', '2026-11-21T17:38:00.000Z', '2026-11-21T17:38:00.000Z') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-article-reader", {
+  "zh": {
+    "title": "文章阅读页换装深夜终端 CRT 玻璃阅读窗",
+    "summary": "逐步视觉替换第 2 批上线：桌面端文章阅读页（#article-detail）换装半透明 CRT 玻璃阅读窗，保留现站目录 TOC、顶部阅读进度条、摘要框、复制链接与正文排版逻辑；其余未替换栏目与手机端保持原样。",
+    "content_markdown": "# 文章阅读页换装深夜终端 CRT 玻璃阅读窗\n\n本次为全站视觉逐步替换的第 2 批上线，仅替换桌面端文章阅读页（`#article-detail`）的视觉呈现层，不改动现站文章拉取接口、目录生成、进度计算或任何交互逻辑。\n\n- 阅读窗直接悬浮于四季池塘 CRT 背景之上，顶部阅读进度条升级为青→紫→粉荧光点阵渐变条。\n- 左侧目录区采用点阵竖线与荧光高亮当前章节，右侧正文区配点阵虚线摘要框与深色高对比 Markdown 排版。\n- 视频、工具、游戏、聊天室、关于、登录、欢迎窗及手机端 iOS Shell 均保持原样，继续按顺序逐批替换。"
+  },
+  "en": {
+    "title": "Article Reader Refreshed with Midnight Pond CRT Glass Styling",
+    "summary": "Batch 2 of the visual refresh is live: the desktop Article Reader (#article-detail) adopts the translucent CRT glass layout over the live Pond background while keeping TOC, reading progress, summary toggle, link copying, and markdown rendering untouched.",
+    "content_markdown": "# Article Reader Refreshed with Midnight Pond CRT Glass Styling\n\nBatch 2 of the gradual visual replacement updates only the presentation layer of the desktop Article Reader (`#article-detail`), leaving all article APIs, TOC generation, scroll progress math, and interactions untouched.\n\n- The reader floats cleanly over the four-season Pond CRT background with a cyan-to-pink glowing reading progress bar.\n- The left TOC sidebar uses dotted guides and phosphor active states, paired with a dotted summary callout and high-contrast dark CRT markdown typography.\n- Videos, Tools, Games, Chatroom, About, Login, Welcome, and mobile remain unchanged and will roll out next."
+  },
+  "ja": {
+    "title": "記事リーダーを深夜端末・CRTガラス表示へ刷新",
+    "summary": "段階的ビジュアル刷新の第2弾を公開しました。デスクトップの記事閲覧ページ（#article-detail）を池塘背景上の半透明CRTガラス窓へ換装し、目次・読書進捗・要約・リンクコピー等の機能はすべて従来のまま維持しています。",
+    "content_markdown": "# 記事リーダーを深夜端末・CRTガラス表示へ刷新\n\n段階的ビジュアル刷新の第2弾として、デスクトップの記事閲覧ページ（`#article-detail`）の表示レイヤーのみを更新しました。記事取得API・目次生成・進捗計算・各種操作は一切変更していません。\n\n- 四季池塘CRT背景の上に半透明ガラス窓を重ね、上部の読書進捗バーを青〜ピンクの発光グラデーションへ統一しました。\n- 左側の目次サイドバーと右側の点線要約枠・高コントラストMarkdown本文をCRT端末風に整えています。\n- 動画・ツール・ゲーム・チャット・概要・ログイン・歓迎窓・モバイル版は従来のまま維持し、順次置き換えます。"
+  }
+}, "2026-11-21T17:38:00.000Z"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-21-pond-home-knowledge', '2026-11-21-pond-home-knowledge', 'site-updates', '["网站更新","首页","知识库","界面"]', '', 'published', 0, 0, '2026-11-21T15:30:00.000Z', '2026-11-21T15:30:00.000Z', '2026-11-21T15:30:00.000Z') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-21-pond-home-knowledge", {
   "zh": {
