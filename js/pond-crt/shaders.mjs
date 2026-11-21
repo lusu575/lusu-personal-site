@@ -115,8 +115,7 @@ uniform sampler2D uFloraSpring;
 uniform sampler2D uFloraSummer;
 uniform sampler2D uFloraAutumn;
 uniform sampler2D uFloraWinter;
-uniform vec4 uFromWeights;
-uniform vec4 uToWeights;
+uniform vec4 uSeasonWeights;
 uniform vec2 uResolution;
 uniform float uTime;
 uniform float uSeasonSweep;
@@ -184,26 +183,24 @@ void main() {
     cos(uTime * 0.52 + uv.x * 5.0) * 0.0011
   );
   vec2 floraUv = clamp(vec2(uv.x, 1.0 - uv.y) + sway + rip.xy * 0.50, 0.001, 0.999);
-  vec4 w = uToWeights;
+  vec4 w = uSeasonWeights;
   vec3 sweepGlow = vec3(0.0);
 
+  // Subtle pure-additive expanding seasonal shimmer ring from pond center (NEVER causes hard snaps!)
   if (uSeasonSweep < 0.999) {
-    float radialPhase = clamp((uSeasonSweep - 0.20) / 0.80, 0.0, 1.0);
+    float radialPhase = clamp((uSeasonSweep - 0.18) / 0.82, 0.0, 1.0);
     float n = noise(uv * 5.0);
     vec2 fromCenter = (uv - vec2(0.50, 0.48)) * vec2(aspect, 1.65);
-    float sweepDist = length(fromCenter) + (n - 0.5) * 0.12;
+    float sweepDist = length(fromCenter) + (n - 0.5) * 0.10;
     float sweepFront = radialPhase * 1.85;
-    float sweepMix = 1.0 - smoothstep(sweepFront - 0.24, sweepFront + 0.06, sweepDist);
-    // Interruptible continuous 4-season weight blend -> ZERO flash or hard-snap on rapid clicks!
-    w = mix(uFromWeights, uToWeights, sweepMix);
-
     float env = sin(radialPhase * 3.14159);
-    float ring = exp(-pow((sweepDist - sweepFront) * 16.0, 2.0)) * 0.34
-               + exp(-pow((sweepDist - (sweepFront - 0.14)) * 22.0, 2.0)) * 0.18;
+    float ring = exp(-pow((sweepDist - sweepFront) * 16.0, 2.0)) * 0.30
+               + exp(-pow((sweepDist - (sweepFront - 0.14)) * 22.0, 2.0)) * 0.16;
     sweepGlow = uCausticTint * ring * env;
   }
 
-  // Proper alpha-weighted premultiplied accumulation + un-premultiply so fading flora NEVER leaves dark black shadows!
+  // True premultiplied-alpha accumulation (paired with gl.blendFunc(ONE, ONE_MINUS_SRC_ALPHA))
+  // Guarantees ZERO dark ghosting or double-alpha darkening at ANY blend weight!
   vec3 floraPremul = vec3(0.0);
   float floraAlpha = 0.0;
   if (w.x > 0.002) {
@@ -226,15 +223,12 @@ void main() {
     floraPremul += tW.rgb * (tW.a * w.w);
     floraAlpha += tW.a * w.w;
   }
-  vec4 flora = vec4(floraAlpha > 0.001 ? (floraPremul / floraAlpha) : vec3(0.0), clamp(floraAlpha, 0.0, 1.0));
+  floraAlpha = clamp(floraAlpha, 0.0, 1.0);
 
-  vec3 rippleCol = mix(uCausticTint, uSpecularTint, 0.52) * rip.z * 0.72 + sweepGlow;
-  float ripAlpha = clamp(rip.z * 0.78 + length(sweepGlow) * 0.65, 0.0, 0.95);
-
-  // Combine flora & ripples into premultiplied-ready RGBA over water+koi
-  vec3 outRgb = mix(rippleCol, flora.rgb * (0.96 + 0.10 * rip.z), flora.a);
-  float outA = clamp(flora.a + ripAlpha * (1.0 - flora.a), 0.0, 1.0);
-  fragColor = vec4(outRgb, outA);
+  // Ripples & seasonal shimmer glow are purely additive light (alpha = 0 contribution to darkening!)
+  vec3 additiveLight = mix(uCausticTint, uSpecularTint, 0.52) * rip.z * 0.65 + sweepGlow;
+  vec3 outPremul = floraPremul * (0.96 + 0.10 * rip.z) + additiveLight * (1.0 - floraAlpha * 0.65);
+  fragColor = vec4(outPremul, floraAlpha);
 }
 `;
 
