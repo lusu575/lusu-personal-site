@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-geometry-sync",
+      "slug": "2026-11-22-pond-geometry-sync",
+      "category": "site-updates",
+      "tags": [
+        "site-update",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T03:22:00+08:00",
+      "updated_at": "2026-11-22T03:22:00+08:00",
+      "published_at": "2026-11-22T03:22:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "深夜池塘全窗像素级对齐、左下角 ID 点击热区扩大与加载态图标统一",
+        "en": "Midnight Pond Pixel-Identical Window Geometry, Wider ID Hitbox & Loading State Icon Sync",
+        "ja": "深夜の池ウィンドウ寸法完全統一・左下ID判定拡大・ロード表示アイコン統一"
+      },
+      "summary": {
+        "zh": "将全部桌面窗口像素级对齐至文章阅读窗居中位置（避开顶部时钟）、扩大左下角 ID 按钮热区并彻底替换所有加载态深蓝字与旧图标。",
+        "en": "Aligned every desktop window to the exact Article Reader centered frame below the top clock, widened the bottom-left ID hitbox for CRT curvature, and enforced high-contrast loading text and dotted icons.",
+        "ja": "全デスクトップ窓を記事閲覧窓と完全同一の中央サイズへ統一し、CRT曲率に合わせて左下IDボタンのクリック判定を拡大、ロード文言とアイコンを点陣スタイルへ統一しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-visual-polish",
       "slug": "2026-11-22-pond-visual-polish",
       "category": "site-updates",
@@ -118,36 +146,6 @@ export const homeContent = Object.freeze({
         "zh": "逐步视觉替换第 8 批（收官批）上线：手机端统一换装深夜池塘深色玻璃配色，保留 44px 触控区、六入口 Dock 与原有排版；同步完成文章阅读进度条加粗、黄虚线摘要框与工具卡图标放大提亮收尾。",
         "en": "Batch 8 (final batch) of the visual refresh is live: the mobile shell adopts the Midnight Pond dark glass palette while preserving 44px touch targets and the 6-route Dock, alongside final desktop polish for the Article progress bar, yellow-dotted summary box, and larger brighter Tool SVG icons.",
         "ja": "段階的ビジュアル刷新の第8弾（最終回）を公開しました。モバイル版を深夜池塘ダークガラス配色へ統一し、44pxタッチ領域と6入口Dockを維持。記事進捗バー・黄点線要約枠・ツールアイコン拡大発光も仕上げました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-about-login-welcome",
-      "slug": "2026-11-22-pond-about-login-welcome",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "欢迎窗",
-        "账号",
-        "界面"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-21T18:02:00.000Z",
-      "updated_at": "2026-11-21T18:02:00.000Z",
-      "published_at": "2026-11-21T18:02:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "关于、登录浮层与欢迎窗换装深夜终端 CRT 视觉",
-        "en": "About, Account Login, and Welcome Modal Refreshed with Midnight Pond CRT Visuals",
-        "ja": "概要・ログイン・歓迎ウィンドウを深夜端末CRTビジュアルへ刷新"
-      },
-      "summary": {
-        "zh": "逐步视觉替换第 7 批上线：桌面端关于页（#about）、账号登录/注册浮层（#account-popover）与欢迎/最近更新窗（#welcome-modal）全部换装半透明 CRT 玻璃视觉；头像、RSS 订阅、社交链接、会话登录与默认不自动弹窗规则保持原样。",
-        "en": "Batch 7 of the visual refresh is live: About (#about), the Account login/register popover (#account-popover), and the Welcome modal (#welcome-modal) adopt the translucent CRT glass skin while keeping all existing profile links, RSS feed, auth sessions, and non-auto-popup rules intact.",
-        "ja": "段階的ビジュアル刷新の第7弾を公開しました。デスクトップの概要（#about）・ログイン/登録ポップオーバー・歓迎ウィンドウ（#welcome-modal）を半透明CRTガラスへ統一し、RSS・認証・自動非表示ルールはそのまま維持しています。"
       }
     }
   ]

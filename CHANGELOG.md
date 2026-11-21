@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 深夜池塘全窗像素级对齐（全部桌面窗口统一至文章阅读窗居中尺寸且避开顶部时钟）、扩大左下角 ID/语言 CRT 曲面热区，并强制覆盖视频区等加载态深蓝字与旧图标（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-geometry-sync` / `2026-11-22-pond-geometry-sync`；视觉层缓存 `20261122-pond-polish-r2`。
+
 - 深夜池塘视觉与交互综合修复：修复左下角 ID 登录窗触发与可见性、重构两段式可打断季节粒子汇聚过渡、首屏直出零闪烁并移除桌面旧壁纸预加载、全站桌面窗口对齐文章阅读窗居中尺寸、修复目录重叠/按钮/视频对齐/暗色加载态/手机知识库溢出，并适配 5 个小游戏内页（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-visual-polish` / `2026-11-22-pond-visual-polish`；视觉层缓存 `20261122-pond-polish-r1`。
 
 - 补齐线上收尾记录并完成聊天室与移动端精修：登记同日 D1 迁移前序版本保证 `/api/articles` 稳定 200，聊天室改为紧凑点阵气泡并放大提亮 6 枚点阵圆形 SVG 头像，移动端知识库彻底消除横向溢出并统一深色标签与按钮（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-chat-mobile-polish` / `2026-11-22-pond-chat-mobile-polish`；视觉层缓存 `20261122-pond-chat-mobile-r1`。

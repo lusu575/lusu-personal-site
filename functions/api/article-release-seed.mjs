@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-geometry-sync', '2026-11-22-pond-geometry-sync', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T03:22:00+08:00', '2026-11-22T03:22:00+08:00', '2026-11-22T03:22:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-geometry-sync", {
+  "zh": {
+    "summary": "将全部桌面窗口像素级对齐至文章阅读窗居中位置（避开顶部时钟）、扩大左下角 ID 按钮热区并彻底替换所有加载态深蓝字与旧图标。",
+    "title": "深夜池塘全窗像素级对齐、左下角 ID 点击热区扩大与加载态图标统一",
+    "content_markdown": "本次更新完成了线上实测后的最后一轮微调：\n\n1. 将知识库、文章阅读、视频、工具、游戏、聊天室、关于与欢迎窗统一至完全一致的居中宽高与顶距，切窗零跳位且不遮挡顶部时钟。\n2. 扩大左下角 ID（登录）与语言按钮在 CRT 曲面下的点击热区，点击更稳。\n3. 提高全站加载态文字与图标覆盖优先级，视频区等加载提示全部切换为高对比度青白字与点阵发光图标。"
+  },
+  "en": {
+    "summary": "Aligned every desktop window to the exact Article Reader centered frame below the top clock, widened the bottom-left ID hitbox for CRT curvature, and enforced high-contrast loading text and dotted icons.",
+    "title": "Midnight Pond Pixel-Identical Window Geometry, Wider ID Hitbox & Loading State Icon Sync",
+    "content_markdown": "This follow-up polish pass resolves the final live-QA items:\n\n1. Aligned Knowledge, Article Reader, Videos, Tools, Games, Chatroom, About, and Welcome to the exact same centered box below the top clock.\n2. Widened the bottom-left ID and language hitboxes to account for CRT barrel curvature.\n3. Enforced high-contrast cyan-white text and dotted phosphor emblems across all loading/empty/error states."
+  },
+  "ja": {
+    "summary": "全デスクトップ窓を記事閲覧窓と完全同一の中央サイズへ統一し、CRT曲率に合わせて左下IDボタンのクリック判定を拡大、ロード文言とアイコンを点陣スタイルへ統一しました。",
+    "title": "深夜の池ウィンドウ寸法完全統一・左下ID判定拡大・ロード表示アイコン統一",
+    "content_markdown": "本番環境での実機検証に基づき、以下の最終微調整を行いました：\n\n1. 知識庫・記事閲覧・動画・ツール・ゲーム・チャット・概要・ようこそ窓のすべてを記事閲覧窓と完全に同一の中央サイズおよび配置へ統一し、切り替え時の位置ズレや上部時計との重なりを解消しました。\n2. CRT 曲率による端のズレを考慮し、左下 ID（ログイン）ボタンと言語切り替えボタンのクリック判定領域を広げ、確実に開けるよう改善しました。\n3. 動画区を含む全ウィンドウの読み込み中・空状態・エラー表示の文字色とアイコンを、高コントラストな青白文字および点陣発光アイコンへ統一しました。"
+  }
+}, "2026-11-22T03:22:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-visual-polish', '2026-11-22-pond-visual-polish', 'site-updates', '["site-update","ui","games"]', '', 'published', 0, 0, '2026-11-22T03:10:00+08:00', '2026-11-22T03:10:00+08:00', '2026-11-22T03:10:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-visual-polish", {
   "zh": {

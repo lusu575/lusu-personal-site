@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-visual-polish";
-const finalUpdateSlug = "2026-11-22-pond-visual-polish";
+const finalUpdateId = "seed-update-2026-11-22-pond-geometry-sync";
+const finalUpdateSlug = "2026-11-22-pond-geometry-sync";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Midnight Pond Visual & Interaction Polish: Login Popover, Staged Season Vortex, Unified Windows & Game Inner Pages";
-const finalPublishedAt = "2026-11-22T03:10:00+08:00";
+const finalTitleEn = "Midnight Pond Pixel-Identical Window Geometry, Wider ID Hitbox & Loading State Icon Sync";
+const finalPublishedAt = "2026-11-22T03:22:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-visual-polish",
   "seed-update-2026-11-22-pond-chat-mobile-polish",
   "seed-update-2026-11-22-pond-live-fix",
   "seed-update-2026-11-22-pond-mobile-polish",

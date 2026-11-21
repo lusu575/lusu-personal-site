@@ -720,8 +720,8 @@ export class PondUIOverlay {
           : `rgba(204, 228, 236, ${isAnyHover ? 0.72 : 0.48})`
     );
 
-    const padX = fontSize * 0.45;
-    const padY = fontSize * 1.15;
+    const padX = fontSize * 1.15;
+    const padY = fontSize * 1.85;
     this.cornerHitBoxes = [
       {
         x0: (x0 - padX) / w,

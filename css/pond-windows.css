@@ -3568,3 +3568,94 @@ html[data-shell="mobile"] .card-action {
   font-size: 13px !important;
   box-shadow: none !important;
 }
+
+
+/* --- Exact Pixel-Identical Window Geometry (rArticle Baseline: 1040x702, below top clock) & High-Specificity Loading State --- */
+html[data-pond-mode="knowledge"] .site-shell > main,
+html[data-pond-mode="article"] .site-shell > main,
+html[data-pond-mode="videos"] .site-shell > main,
+html[data-pond-mode="resources"] .site-shell > main,
+html[data-pond-mode="games"] .site-shell > main,
+html[data-pond-mode="chatroom"] .site-shell > main,
+html[data-pond-mode="about"] .site-shell > main {
+  padding: 78px 24px 36px !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge.page,
+html[data-pond-mode="article"] #knowledge.page,
+html[data-pond-mode="videos"] #videos.page,
+html[data-pond-mode="resources"] #resources.page,
+html[data-pond-mode="games"] #games.page,
+html[data-pond-mode="chatroom"] #chatroom.page,
+html[data-pond-mode="about"] #about.page {
+  width: min(1040px, 78vw) !important;
+  min-width: min(720px, 92vw) !important;
+  height: min(702px, 76vh) !important;
+  min-height: 0 !important;
+  max-height: min(702px, 76vh) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge .xp-window.folder-window,
+html[data-pond-mode="article"] #knowledge .xp-window.folder-window,
+html[data-pond-mode="videos"] #videos .xp-window,
+html[data-pond-mode="resources"] #resources .xp-window,
+html[data-pond-mode="games"] #games .xp-window,
+html[data-pond-mode="chatroom"] #chatroom .xp-window.chatroom-window,
+html[data-pond-mode="about"] #about .xp-window {
+  width: 100% !important;
+  height: min(702px, 76vh) !important;
+  min-height: 0 !important;
+  max-height: min(702px, 76vh) !important;
+  margin: 0 !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .xp-window.welcome-window {
+  width: min(1040px, 78vw) !important;
+  height: min(702px, 76vh) !important;
+  min-height: 0 !important;
+  max-height: min(702px, 76vh) !important;
+}
+
+/* Override all legacy dark-blue text & emoji/sprite icons inside loading/empty/error states */
+html[data-pond-mode] .content-state,
+html[data-pond-mode] .content-state *,
+html[data-pond-mode] #video-list .content-state,
+html[data-pond-mode] #video-list .content-state *,
+html[data-pond-mode] #knowledge-list .content-state,
+html[data-pond-mode] #knowledge-list .content-state *,
+html[data-pond-mode] #game-list .content-state,
+html[data-pond-mode] #game-list .content-state *,
+html[data-pond-mode] #resource-list .content-state,
+html[data-pond-mode] #resource-list .content-state *,
+html[data-pond-mode] #chat-message-list .content-state,
+html[data-pond-mode] #chat-message-list .content-state * {
+  color: #e6fbf7 !important;
+}
+
+html[data-pond-mode] .content-state-icon,
+html[data-pond-mode] .content-state .content-state-icon,
+html[data-ui-shell="mobile"] .content-state-icon {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+  background-color: rgba(8, 30, 36, 0.72) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%239ef8ec' stroke-width='2' stroke-dasharray='1 3.5' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='3.5' fill='%2388fce8'/%3E%3C/svg%3E") !important;
+  background-size: 20px 20px !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+}
+
+html[data-pond-mode] .content-state-icon::before,
+html[data-pond-mode] .content-state-icon::after,
+html[data-ui-shell="mobile"] .content-state-icon::before,
+html[data-ui-shell="mobile"] .content-state-icon::after {
+  content: none !important;
+  display: none !important;
+}
+
+html[data-pond-mode] .content-state-icon > *,
+html[data-ui-shell="mobile"] .content-state-icon > * {
+  display: none !important;
+}
