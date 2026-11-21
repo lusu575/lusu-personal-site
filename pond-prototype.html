@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>深夜终端 · Pond CRT Prototype</title>
+  <link rel="stylesheet" href="./css/pond-windows.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
@@ -128,10 +129,13 @@
   <div id="error-banner"></div>
   <script type="module">
     import { PondCRTEngine } from './js/pond-crt/engine.mjs';
+    import { CRTWindowManager } from './js/pond-windows/window-manager.mjs';
+    import { createKnowledgeWindowView } from './js/pond-windows/knowledge-window.mjs';
 
     const params = new URLSearchParams(window.location.search);
     const season = params.get('season') || 'summer';
     let currentLang = params.get('lang') || 'zh';
+    const initialWindow = params.get('window') || '';
     const demoClock = params.get('demoClock') === '1';
     const showFps = params.get('fps') === '1';
     const preserveDrawingBuffer = params.get('capture') === '1';
@@ -157,9 +161,15 @@
       about:     { zh: '关于',   en: 'About',     ja: '概要' }
     };
 
+    const winMgr = new CRTWindowManager();
+    winMgr.setLang(currentLang);
+    winMgr.register('knowledge', createKnowledgeWindowView);
+    window.__pondWinMgr = winMgr;
+
     const closePanels = () => {
       routePanel.classList.remove('open');
       accountPanel.classList.remove('open');
+      winMgr.close();
     };
     document.getElementById('route-panel-close').addEventListener('click', closePanels);
     document.getElementById('account-panel-close').addEventListener('click', closePanels);
@@ -176,7 +186,11 @@
         onFpsUpdate: showFps ? (fps) => { fpsEl.textContent = `${fps} FPS`; } : null,
         onNavigate: (route, id) => {
           accountPanel.classList.remove('open');
+          routePanel.classList.remove('open');
           window.location.hash = route;
+          if (winMgr.open(id)) {
+            return;
+          }
           const label = ROUTE_COPY[id]?.[currentLang] || id;
           routeTitle.textContent = `> ${label} (${route})`;
           routeBody.textContent = currentLang === 'en'
@@ -194,6 +208,7 @@
         },
         onAccountClick: () => {
           routePanel.classList.remove('open');
+          winMgr.close();
           const willOpen = !accountPanel.classList.contains('open');
           if (willOpen) {
             accountTitle.textContent = currentLang === 'en' ? '• TERMINAL ID' : currentLang === 'ja' ? '• ターミナル ID' : '• 账号终端';
@@ -210,12 +225,16 @@
         onLanguageChange: (lang) => {
           currentLang = lang;
           document.documentElement.lang = lang === 'en' ? 'en' : lang === 'ja' ? 'ja' : 'zh-CN';
-          closePanels();
+          winMgr.setLang(lang);
         }
       });
       window.__pondEngine = engine;
       window.addEventListener('resize', () => engine.resize());
       engine.start();
+
+      if (initialWindow) {
+        winMgr.open(initialWindow);
+      }
     } catch (err) {
       errEl.style.display = 'flex';
       errEl.textContent = String(err && err.stack ? err.stack : err);
