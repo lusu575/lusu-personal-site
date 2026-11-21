@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>深夜终端 · Pond CRT Prototype</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000000;
+      font-family: "JetBrains Mono", "Cascadia Mono", Consolas, "PingFang SC", "Microsoft YaHei", monospace;
+    }
+    #pond-canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+    #error-banner {
+      position: fixed;
+      inset: 24px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: #ff9c9c;
+      background: rgba(12, 8, 8, 0.92);
+      border: 1px solid rgba(255, 120, 120, 0.4);
+      padding: 20px;
+      white-space: pre-wrap;
+      font-size: 13px;
+      z-index: 99;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="pond-canvas"></canvas>
+  <div id="error-banner"></div>
+  <script type="module">
+    import { PondCRTEngine } from './js/pond-crt/engine.mjs';
+
+    const params = new URLSearchParams(window.location.search);
+    const season = params.get('season') || 'summer';
+    const lang = params.get('lang') || 'zh';
+    const demoClock = params.get('demoClock') === '1';
+    const canvas = document.getElementById('pond-canvas');
+    const errEl = document.getElementById('error-banner');
+
+    try {
+      const engine = new PondCRTEngine(canvas, {
+        season,
+        lang,
+        demoClock,
+        preserveDrawingBuffer: true
+      });
+      window.__pondEngine = engine;
+      window.addEventListener('resize', () => engine.resize());
+      engine.start();
+    } catch (err) {
+      errEl.style.display = 'flex';
+      errEl.textContent = String(err && err.stack ? err.stack : err);
+      console.error(err);
+    }
+  </script>
+</body>
+</html>
