@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#e8f4ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0 4">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#f4fffe" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.4 4.2">
   <path d="M8 39V23h16v16"/>
   <path d="M8 39h16l4 4H4z"/>
   <path d="M49 19h8a2 2 0 0 1 2 2v22a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2V21a2 2 0 0 1 2-2z"/>

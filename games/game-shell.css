@@ -1083,3 +1083,13 @@ body {
   background: rgba(58, 16, 24, 0.76) !important;
   color: #ffd4da !important;
 }
+
+
+.game-topbar {
+  padding: 8px 22px !important;
+}
+
+.game-topbar > div {
+  padding-right: 4px !important;
+  text-align: right;
+}

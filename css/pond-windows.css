@@ -4229,3 +4229,20 @@ html[data-pond-mode="videos"] #video-list .video-body {
   overflow: visible !important;
   min-height: auto !important;
 }
+
+
+/* --- Final Polish (r14): Clean Open-Zero Digits on Filter Counts & Brighter Larger Tool Icons --- */
+html[data-pond-mode] .filter-count {
+  font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-hero .resource-icon-image {
+  width: 104px !important;
+  height: 78px !important;
+  filter: brightness(1.45) contrast(1.12) drop-shadow(0 0 14px rgba(176, 252, 244, 0.95)) !important;
+}
+
+html[data-pond-mode="chatroom"] .pond-chat-avatar {
+  filter: brightness(1.30) drop-shadow(0 0 8px rgba(154, 246, 236, 0.65)) !important;
+}

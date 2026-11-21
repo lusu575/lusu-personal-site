@@ -15606,6 +15606,20 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 1. 列幅 308px に対する厳密な 16:9 となる 174px をサムネイルの高さおよび flex-basis に明示指定し、カード最小高さを 320px とすることで、表紙文字の切り抜きゼロかつタイトル・概要・下部再生ボタンが重ならず整然と表示されます。
 2. 他の全ウィンドウ中央配置や暗色ロード表示・ログイン窓・ゲーム内ページの統一デザインもそのまま維持しています。', '2026-11-22T04:36:00+08:00', '2026-11-22T04:36:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r13', '2026-11-22T04:36:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-icons-digits-fit', '2026-11-22-pond-icons-digits-fit', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T04:50:00+08:00', '2026-11-22T04:50:00+08:00', '2026-11-22T04:50:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-icons-digits-fit-zh', 'seed-update-2026-11-22-pond-icons-digits-fit', 'zh', '放大提亮工具区点阵图标、优化分类计数字形与游戏页顶栏边距', '将工具卡三枚点阵 SVG 图标加粗放大并增强辉光、为分类计数切换无斜杠无衬线数字以清晰区分 0 与 8，并增加游戏内页顶栏右边距。', '本次更新完成了最后一轮精细视觉打磨：
+
+1. 工具区三张卡片的调色盘、临时互传与鸟居点阵 SVG 图标描边加粗至 3.6 并放大至 104×78px，配合高亮度青白辉光，在深色玻璃窗上清晰醒目。
+2. 知识库与各窗口分类计数改为清晰的无衬线等宽数字（无斜杠零），避免 106 在小字号下被误看成 186；同时提亮聊天室 6 枚点阵圆头像辉光并放宽游戏内页顶栏右边距。', '2026-11-22T04:50:00+08:00', '2026-11-22T04:50:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-icons-digits-fit-en', 'seed-update-2026-11-22-pond-icons-digits-fit', 'en', 'Larger Brighter Tool Dotted Icons, Open-Zero Filter Digits & Game Topbar Padding', 'Thickened and enlarged the three dotted tool SVG icons with brighter glow, switched filter counts to clean open-zero sans-serif numerals, and added right padding to the game topbar.', 'This final detail polish refines legibility across Tools, Knowledge, Chatroom, and Games:
+
+1. Thickened the palette, transfer, and torii SVG strokes to 3.6 and enlarged tool hero icons to 104x78px with stronger cyan glow.
+2. Switched category count numerals to open-zero sans-serif so 106 is never misread as 186, brightened chatroom dot-matrix avatars, and widened right padding on the game shell topbar.', '2026-11-22T04:50:00+08:00', '2026-11-22T04:50:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-icons-digits-fit-ja', 'seed-update-2026-11-22-pond-icons-digits-fit', 'ja', 'ツール点陣アイコン拡大明度向上・件数数字視認性改善・ゲーム上端余白調整', 'ツールカードのパレット・転送・鳥居点陣アイコンを太線拡大して発光を強化し、分類件数に斜線なしの明瞭な数字を適用、ゲーム内ページ上端の右余白を広げました。', '細部の視認性をさらに引き上げる最終調整を実施しました：
+
+1. ツール区 3 カードの点陣 SVG アイコンの線幅を 3.6 に太め、表示サイズを 104×78px へ拡大して青白グローを強化しました。
+2. 分類件数の数字を斜線ゼロのないサンセリフ体へ変更して 106 が 186 に見間違えないようにし、チャット点陣アバターの輝度向上およびゲーム内ページ上部バーの右余白調整を行いました。', '2026-11-22T04:50:00+08:00', '2026-11-22T04:50:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r14', '2026-11-22T04:50:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r13', '2026-11-22T04:36:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r14', '2026-11-22T04:50:00+08:00', 'schema') on conflict(version) do nothing;

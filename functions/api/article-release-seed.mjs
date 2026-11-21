@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-icons-digits-fit', '2026-11-22-pond-icons-digits-fit', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T04:50:00+08:00', '2026-11-22T04:50:00+08:00', '2026-11-22T04:50:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-icons-digits-fit", {
+  "zh": {
+    "summary": "将工具卡三枚点阵 SVG 图标加粗放大并增强辉光、为分类计数切换无斜杠无衬线数字以清晰区分 0 与 8，并增加游戏内页顶栏右边距。",
+    "title": "放大提亮工具区点阵图标、优化分类计数字形与游戏页顶栏边距",
+    "content_markdown": "本次更新完成了最后一轮精细视觉打磨：\n\n1. 工具区三张卡片的调色盘、临时互传与鸟居点阵 SVG 图标描边加粗至 3.6 并放大至 104×78px，配合高亮度青白辉光，在深色玻璃窗上清晰醒目。\n2. 知识库与各窗口分类计数改为清晰的无衬线等宽数字（无斜杠零），避免 106 在小字号下被误看成 186；同时提亮聊天室 6 枚点阵圆头像辉光并放宽游戏内页顶栏右边距。"
+  },
+  "en": {
+    "summary": "Thickened and enlarged the three dotted tool SVG icons with brighter glow, switched filter counts to clean open-zero sans-serif numerals, and added right padding to the game topbar.",
+    "title": "Larger Brighter Tool Dotted Icons, Open-Zero Filter Digits & Game Topbar Padding",
+    "content_markdown": "This final detail polish refines legibility across Tools, Knowledge, Chatroom, and Games:\n\n1. Thickened the palette, transfer, and torii SVG strokes to 3.6 and enlarged tool hero icons to 104x78px with stronger cyan glow.\n2. Switched category count numerals to open-zero sans-serif so 106 is never misread as 186, brightened chatroom dot-matrix avatars, and widened right padding on the game shell topbar."
+  },
+  "ja": {
+    "summary": "ツールカードのパレット・転送・鳥居点陣アイコンを太線拡大して発光を強化し、分類件数に斜線なしの明瞭な数字を適用、ゲーム内ページ上端の右余白を広げました。",
+    "title": "ツール点陣アイコン拡大明度向上・件数数字視認性改善・ゲーム上端余白調整",
+    "content_markdown": "細部の視認性をさらに引き上げる最終調整を実施しました：\n\n1. ツール区 3 カードの点陣 SVG アイコンの線幅を 3.6 に太め、表示サイズを 104×78px へ拡大して青白グローを強化しました。\n2. 分類件数の数字を斜線ゼロのないサンセリフ体へ変更して 106 が 186 に見間違えないようにし、チャット点陣アバターの輝度向上およびゲーム内ページ上部バーの右余白調整を行いました。"
+  }
+}, "2026-11-22T04:50:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-videos-explicit-h', '2026-11-22-pond-videos-explicit-h', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T04:36:00+08:00', '2026-11-22T04:36:00+08:00', '2026-11-22T04:36:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-videos-explicit-h", {
   "zh": {

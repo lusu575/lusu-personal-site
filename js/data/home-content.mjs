@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-icons-digits-fit",
+      "slug": "2026-11-22-pond-icons-digits-fit",
+      "category": "site-updates",
+      "tags": [
+        "site-update",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T04:50:00+08:00",
+      "updated_at": "2026-11-22T04:50:00+08:00",
+      "published_at": "2026-11-22T04:50:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "放大提亮工具区点阵图标、优化分类计数字形与游戏页顶栏边距",
+        "en": "Larger Brighter Tool Dotted Icons, Open-Zero Filter Digits & Game Topbar Padding",
+        "ja": "ツール点陣アイコン拡大明度向上・件数数字視認性改善・ゲーム上端余白調整"
+      },
+      "summary": {
+        "zh": "将工具卡三枚点阵 SVG 图标加粗放大并增强辉光、为分类计数切换无斜杠无衬线数字以清晰区分 0 与 8，并增加游戏内页顶栏右边距。",
+        "en": "Thickened and enlarged the three dotted tool SVG icons with brighter glow, switched filter counts to clean open-zero sans-serif numerals, and added right padding to the game topbar.",
+        "ja": "ツールカードのパレット・転送・鳥居点陣アイコンを太線拡大して発光を強化し、分類件数に斜線なしの明瞭な数字を適用、ゲーム内ページ上端の右余白を広げました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-videos-explicit-h",
       "slug": "2026-11-22-pond-videos-explicit-h",
       "category": "site-updates",
@@ -111,34 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "恢复视频 16:9 完整封面比例消除裁切、消除聊天室右上房间标签叠字、提亮猫国封面并升级 Hextris 霓虹六边形封面、优化知识库 3 排显示与手机端 Dock 底部留白。",
         "en": "Restored 16:9 uncropped video thumbnails, fixed the chatroom room-label overlap, brightened Kittens Game cover and upgraded Hextris art, and refined Knowledge & mobile Dock bottom spacing.",
         "ja": "動画サムネイルを 16:9 比率へ戻して見切れを解消し、チャット右上の文字重なり修正、猫国表紙の明度向上と Hextris 表紙刷新、知識庫とモバイル Dock 下部余白を整えました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-cascade-root",
-      "slug": "2026-11-22-pond-cascade-root",
-      "category": "site-updates",
-      "tags": [
-        "site-update",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T04:01:00+08:00",
-      "updated_at": "2026-11-22T04:01:00+08:00",
-      "published_at": "2026-11-22T04:01:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "根治路由样式后插层叠顺序问题并彻底移除视频封面中央播放覆盖层",
-        "en": "Root Fix for Lazy Route CSS Cascade Order & Removed Center Video Play Overlay",
-        "ja": "遅延読み込みルート CSS のカスケード順を根本修正・動画中央再生枠を削除"
-      },
-      "summary": {
-        "zh": "在桥接层监听 document.head 并将 pond-windows.css 固定维持为最后一个样式表，从根源解决 main.js 懒加载 routes/*.css 与 transfer.css 覆盖新视觉层的问题，并直接删除视频封面中央播放覆盖层规则。",
-        "en": "Pinned pond-windows.css as the final stylesheet in document.head whenever main.js lazily injects route CSS or transfer.css, and deleted the source center video-thumb play overlay.",
-        "ja": "main.js がルート専用 CSS や transfer.css を後から <head> 末尾へ追加しても pond-windows.css が常に最後尾に維持されるよう修正し、動画サムネイル中央の再生枠定義を元から削除しました。"
       }
     }
   ]

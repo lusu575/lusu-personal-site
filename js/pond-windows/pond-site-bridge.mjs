@@ -43,9 +43,9 @@ function triggerSiteRoute(routeId) {
 }
 
 const TOOL_SVG_MAP = [
-  { match: 'whiteboard', src: '/assets/pond-windows/svg/icon-palette.svg' },
-  { match: 'quick-transfer', src: '/assets/pond-windows/svg/icon-transfer.svg' },
-  { match: 'japanese-subtext', src: '/assets/pond-windows/svg/icon-torii.svg' }
+  { match: 'whiteboard', src: '/assets/pond-windows/svg/icon-palette.svg?v=20261122-pond-polish-r14' },
+  { match: 'quick-transfer', src: '/assets/pond-windows/svg/icon-transfer.svg?v=20261122-pond-polish-r14' },
+  { match: 'japanese-subtext', src: '/assets/pond-windows/svg/icon-torii.svg?v=20261122-pond-polish-r14' }
 ];
 const DOWNLOAD_SVGS = [
   '/assets/pond-windows/svg/icon-box.svg',
