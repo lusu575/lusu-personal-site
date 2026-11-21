@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 为视频区 3 列网格缩略图指定 174px 显式 16:9 高度与 320px 最小卡片高度，彻底解决 Chromium 网格行高折叠重叠（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-videos-explicit-h` / `2026-11-22-pond-videos-explicit-h`；视觉层缓存 `20261122-pond-polish-r13`。
+
 - 将视频区 3 列网格卡片高度由 100% 改为 auto，修复纵向行重叠并保持 16:9 完整封面与底部按钮齐平（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-videos-row-height` / `2026-11-22-pond-videos-row-height`；视觉层缓存 `20261122-pond-polish-r12`。
 
 - 恢复视频区 3 列标准 16:9 网格并放开卡片内容区自适应高度，确保封面零裁切且标题、简介与底部播放按钮完整呈现（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-videos-16x9` / `2026-11-22-pond-videos-16x9`；视觉层缓存 `20261122-pond-polish-r11`。

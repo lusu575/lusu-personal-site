@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-videos-explicit-h",
+  "slug": "2026-11-22-pond-videos-explicit-h",
+  "category": "site-updates",
+  "tags": [
+    "site-update",
+    "ui"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T04:36:00+08:00",
+  "updated_at": "2026-11-22T04:36:00+08:00",
+  "published_at": "2026-11-22T04:36:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "date": "2026.11.22",
+  "title": {
+    "zh": "明确视频区 3 列封面 174px 显式高度以根治行间叠压",
+    "en": "Explicit 174px 16:9 Thumbnail Height to Eliminate 3-Column Video Row Overlap",
+    "ja": "動画区 3 列サムネイルの 174px 明示高さ指定で縦重なりを解消"
+  },
+  "summary": {
+    "zh": "为 3 列视频卡片指定 174px 显式 16:9 封面高度与 320px 最小卡片高度，彻底解决 Chromium 网格自动行高下 aspect-ratio 折叠为 0 引发的封面重叠问题。",
+    "en": "Set explicit 174px 16:9 thumbnail height and 320px minimum card height in the 3-column Videos grid so Chromium never collapses auto-sized rows.",
+    "ja": "3 列動画グリッドのサムネイルに 16:9 対応の 174px 明示高さとカード最小高さ 320px を指定し、Chromium の自動行高計算による縦重なりを完全に解消しました。"
+  },
+  "content_markdown": {
+    "zh": "本次更新彻底解决了视频区 3 列网格中行间重叠的浏览器排版特性：\n\n1. 在 3 列布局（单列约 308px）下，为视频缩略图指定与 16:9 精确对应的 174px 显式高度及 flex-basis，同时为卡片设定 320px 最小高度，确保每行卡片完整撑开，封面文字零裁切且标题、简介与底部播放按钮清晰呈现。\n2. 保持全站其余窗口居中尺寸、暗色点阵加载态、登录浮层正居中及全部游戏与工具内页视觉一致性。",
+    "en": "This fix resolves a Chromium flex-inside-grid intrinsic sizing issue on Videos:\n\n1. Assigned an explicit 174px height and flex-basis (exact 16:9 for 308px columns) to video thumbnails and a 320px minimum card height so every row expands cleanly with uncropped thumbnails, bright titles, and aligned Play buttons.\n2. Preserved all other Midnight Pond window geometries, dark loading states, and inner page themes.",
+    "ja": "動画区 3 列レイアウトで発生していた Chromium の行高折りたたみ問題を修正しました：\n\n1. 列幅 308px に対する厳密な 16:9 となる 174px をサムネイルの高さおよび flex-basis に明示指定し、カード最小高さを 320px とすることで、表紙文字の切り抜きゼロかつタイトル・概要・下部再生ボタンが重ならず整然と表示されます。\n2. 他の全ウィンドウ中央配置や暗色ロード表示・ログイン窓・ゲーム内ページの統一デザインもそのまま維持しています。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-videos-row-height",
   "slug": "2026-11-22-pond-videos-row-height",
   "category": "site-updates",

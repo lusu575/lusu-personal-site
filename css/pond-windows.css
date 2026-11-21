@@ -4200,18 +4200,21 @@ html[data-pond-mode="videos"] #video-list {
 }
 
 html[data-pond-mode="videos"] #video-list .video-card {
+  display: flex !important;
+  flex-direction: column !important;
   height: auto !important;
-  min-height: 0 !important;
-  overflow: visible !important;
+  min-height: 320px !important;
+  overflow: hidden !important;
 }
 
 html[data-pond-mode="videos"] #video-list .video-thumb-wrap,
 html[data-pond-mode="videos"] #video-list .video-thumb {
   width: 100% !important;
-  height: auto !important;
+  height: 174px !important;
+  min-height: 174px !important;
   aspect-ratio: 16 / 9 !important;
   overflow: hidden !important;
-  flex: 0 0 auto !important;
+  flex: 0 0 174px !important;
 }
 
 html[data-pond-mode="videos"] #video-list .video-thumb img {

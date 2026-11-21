@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-videos-row-height";
-const finalUpdateSlug = "2026-11-22-pond-videos-row-height";
+const finalUpdateId = "seed-update-2026-11-22-pond-videos-explicit-h";
+const finalUpdateSlug = "2026-11-22-pond-videos-explicit-h";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Fixed 3-Column Video Card Row Collapse in CSS Grid";
-const finalPublishedAt = "2026-11-22T04:32:00+08:00";
+const finalTitleEn = "Explicit 174px 16:9 Thumbnail Height to Eliminate 3-Column Video Row Overlap";
+const finalPublishedAt = "2026-11-22T04:36:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-videos-row-height",
   "seed-update-2026-11-22-pond-videos-16x9",
   "seed-update-2026-11-22-pond-final-finish",
   "seed-update-2026-11-22-pond-cascade-root",

@@ -15592,6 +15592,20 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 1. 動画カードの高さを自動調整へ戻し、行内の高さ揃えと下部再生ボタンの配置を維持することで、16:9 の無裁切サムネイル・高コントラストなタイトル・概要・作者日時・下部再生ボタンが重ならず整然と表示されるようにしました。
 2. 全ウィンドウの中央配置統一・暗色 CRT ロード表示・ログイン窓の中央表示およびツール・ゲーム内ページの深夜の池スタイルもあわせて維持しています。', '2026-11-22T04:32:00+08:00', '2026-11-22T04:32:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r12', '2026-11-22T04:32:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-videos-explicit-h', '2026-11-22-pond-videos-explicit-h', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T04:36:00+08:00', '2026-11-22T04:36:00+08:00', '2026-11-22T04:36:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-videos-explicit-h-zh', 'seed-update-2026-11-22-pond-videos-explicit-h', 'zh', '明确视频区 3 列封面 174px 显式高度以根治行间叠压', '为 3 列视频卡片指定 174px 显式 16:9 封面高度与 320px 最小卡片高度，彻底解决 Chromium 网格自动行高下 aspect-ratio 折叠为 0 引发的封面重叠问题。', '本次更新彻底解决了视频区 3 列网格中行间重叠的浏览器排版特性：
+
+1. 在 3 列布局（单列约 308px）下，为视频缩略图指定与 16:9 精确对应的 174px 显式高度及 flex-basis，同时为卡片设定 320px 最小高度，确保每行卡片完整撑开，封面文字零裁切且标题、简介与底部播放按钮清晰呈现。
+2. 保持全站其余窗口居中尺寸、暗色点阵加载态、登录浮层正居中及全部游戏与工具内页视觉一致性。', '2026-11-22T04:36:00+08:00', '2026-11-22T04:36:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-videos-explicit-h-en', 'seed-update-2026-11-22-pond-videos-explicit-h', 'en', 'Explicit 174px 16:9 Thumbnail Height to Eliminate 3-Column Video Row Overlap', 'Set explicit 174px 16:9 thumbnail height and 320px minimum card height in the 3-column Videos grid so Chromium never collapses auto-sized rows.', 'This fix resolves a Chromium flex-inside-grid intrinsic sizing issue on Videos:
+
+1. Assigned an explicit 174px height and flex-basis (exact 16:9 for 308px columns) to video thumbnails and a 320px minimum card height so every row expands cleanly with uncropped thumbnails, bright titles, and aligned Play buttons.
+2. Preserved all other Midnight Pond window geometries, dark loading states, and inner page themes.', '2026-11-22T04:36:00+08:00', '2026-11-22T04:36:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-videos-explicit-h-ja', 'seed-update-2026-11-22-pond-videos-explicit-h', 'ja', '動画区 3 列サムネイルの 174px 明示高さ指定で縦重なりを解消', '3 列動画グリッドのサムネイルに 16:9 対応の 174px 明示高さとカード最小高さ 320px を指定し、Chromium の自動行高計算による縦重なりを完全に解消しました。', '動画区 3 列レイアウトで発生していた Chromium の行高折りたたみ問題を修正しました：
+
+1. 列幅 308px に対する厳密な 16:9 となる 174px をサムネイルの高さおよび flex-basis に明示指定し、カード最小高さを 320px とすることで、表紙文字の切り抜きゼロかつタイトル・概要・下部再生ボタンが重ならず整然と表示されます。
+2. 他の全ウィンドウ中央配置や暗色ロード表示・ログイン窓・ゲーム内ページの統一デザインもそのまま維持しています。', '2026-11-22T04:36:00+08:00', '2026-11-22T04:36:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r13', '2026-11-22T04:36:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r12', '2026-11-22T04:32:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r13', '2026-11-22T04:36:00+08:00', 'schema') on conflict(version) do nothing;

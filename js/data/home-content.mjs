@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-videos-explicit-h",
+      "slug": "2026-11-22-pond-videos-explicit-h",
+      "category": "site-updates",
+      "tags": [
+        "site-update",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T04:36:00+08:00",
+      "updated_at": "2026-11-22T04:36:00+08:00",
+      "published_at": "2026-11-22T04:36:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "明确视频区 3 列封面 174px 显式高度以根治行间叠压",
+        "en": "Explicit 174px 16:9 Thumbnail Height to Eliminate 3-Column Video Row Overlap",
+        "ja": "動画区 3 列サムネイルの 174px 明示高さ指定で縦重なりを解消"
+      },
+      "summary": {
+        "zh": "为 3 列视频卡片指定 174px 显式 16:9 封面高度与 320px 最小卡片高度，彻底解决 Chromium 网格自动行高下 aspect-ratio 折叠为 0 引发的封面重叠问题。",
+        "en": "Set explicit 174px 16:9 thumbnail height and 320px minimum card height in the 3-column Videos grid so Chromium never collapses auto-sized rows.",
+        "ja": "3 列動画グリッドのサムネイルに 16:9 対応の 174px 明示高さとカード最小高さ 320px を指定し、Chromium の自動行高計算による縦重なりを完全に解消しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-videos-row-height",
       "slug": "2026-11-22-pond-videos-row-height",
       "category": "site-updates",
@@ -111,34 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "在桥接层监听 document.head 并将 pond-windows.css 固定维持为最后一个样式表，从根源解决 main.js 懒加载 routes/*.css 与 transfer.css 覆盖新视觉层的问题，并直接删除视频封面中央播放覆盖层规则。",
         "en": "Pinned pond-windows.css as the final stylesheet in document.head whenever main.js lazily injects route CSS or transfer.css, and deleted the source center video-thumb play overlay.",
         "ja": "main.js がルート専用 CSS や transfer.css を後から <head> 末尾へ追加しても pond-windows.css が常に最後尾に維持されるよう修正し、動画サムネイル中央の再生枠定義を元から削除しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-eager-covers",
-      "slug": "2026-11-22-pond-eager-covers",
-      "category": "site-updates",
-      "tags": [
-        "site-update",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T03:59:00+08:00",
-      "updated_at": "2026-11-22T03:59:00+08:00",
-      "published_at": "2026-11-22T03:59:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "修复游戏区封面与关于页头像在窗口切换时懒加载停滞的问题",
-        "en": "Fixed Lazy-Image Stall on Game Covers & About Avatar After Route Switch",
-        "ja": "ゲーム表紙・概要アバターのルート切替時遅延読み込み停滞を修正"
-      },
-      "summary": {
-        "zh": "在游戏区封面换装、工具区图标与关于页激活时强制切换图片为 eager 即时加载，彻底解决切换路由后封面与头像偶发黑框未解码的问题。",
-        "en": "Forced eager loading on game covers, tool icons, and the About avatar when activating those windows so covers and avatars never stall as blank frames.",
-        "ja": "ゲーム表紙・ツールアイコン・概要アバターのウィンドウ表示時に即時読み込み（eager）を強制し、黒い空枠のまま止まる現象を解消しました。"
       }
     }
   ]
