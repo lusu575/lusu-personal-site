@@ -2192,23 +2192,22 @@ html[data-pond-mode="chatroom"] .chatroom-log article:not(.content-state) {
   display: flex !important;
   align-items: flex-start;
   gap: 12px;
-  padding: 10px 14px !important;
-  border-radius: 14px !important;
-  border: 1.2px dashed rgba(182, 238, 232, 0.42) !important;
-  background: rgba(6, 24, 28, 0.56) !important;
+  padding: 4px 2px !important;
+  border: none !important;
+  background: transparent !important;
   box-shadow: none !important;
   color: #eefcf9 !important;
 }
 
 html[data-pond-mode="chatroom"] .pond-chat-avatar {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 999px;
-  border: 1px solid rgba(186, 242, 236, 0.48);
-  background: rgba(4, 16, 20, 0.72);
-  padding: 3px;
+  border: 1.3px solid rgba(194, 248, 242, 0.62);
+  background: rgba(6, 22, 28, 0.80);
+  padding: 4px;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 6px rgba(176, 248, 236, 0.42));
+  filter: brightness(1.38) drop-shadow(0 0 8px rgba(186, 250, 242, 0.72));
 }
 
 html[data-pond-mode="chatroom"] .chatroom-log .chat-avatar,
@@ -2220,14 +2219,27 @@ html[data-pond-mode="chatroom"] .chatroom-log img:not(.pond-chat-avatar) {
 
 html[data-pond-mode="chatroom"] .chatroom-log .chat-bubble,
 html[data-pond-mode="chatroom"] .chatroom-log .chat-message-bubble,
-html[data-pond-mode="chatroom"] .chatroom-log .chat-message-body,
 html[data-pond-mode="chatroom"] .chatroom-log .chat-message-text,
 html[data-pond-mode="chatroom"] .chatroom-log .chat-text {
-  background: rgba(10, 34, 40, 0.76) !important;
+  display: inline-block !important;
+  width: fit-content !important;
+  max-width: min(560px, 78%) !important;
+  padding: 8px 14px !important;
+  margin-top: 4px !important;
+  background: rgba(8, 30, 36, 0.76) !important;
   color: #f0fefa !important;
-  border: 1px solid rgba(176, 238, 230, 0.36) !important;
-  border-radius: 12px !important;
+  border: 1.2px dashed rgba(186, 242, 236, 0.52) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 0 12px rgba(96, 228, 218, 0.14) !important;
+  line-height: 1.5;
+}
+
+html[data-pond-mode="chatroom"] .chatroom-log .chat-message-body {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
   box-shadow: none !important;
+  min-width: 0;
 }
 
 html[data-pond-mode="chatroom"] .chatroom-log .chat-author,
@@ -2773,12 +2785,72 @@ html[data-shell="mobile"] .xp-window {
   box-sizing: border-box !important;
 }
 
-html[data-ui-shell="mobile"] .page,
-html[data-shell="mobile"] .page {
-  width: 100% !important;
+html[data-ui-shell="mobile"],
+html[data-shell="mobile"],
+html[data-ui-shell="mobile"] body,
+html[data-shell="mobile"] body,
+html[data-ui-shell="mobile"] .site-shell,
+html[data-shell="mobile"] .site-shell,
+html[data-ui-shell="mobile"] .site-shell > main,
+html[data-shell="mobile"] .site-shell > main {
   max-width: 100vw !important;
   overflow-x: hidden !important;
   box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"] .page,
+html[data-shell="mobile"] .page {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"] .article-card,
+html[data-shell="mobile"] .article-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+
+html[data-ui-shell="mobile"] .article-card .tag,
+html[data-ui-shell="mobile"] .article-card .article-tag,
+html[data-shell="mobile"] .article-card .tag,
+html[data-shell="mobile"] .article-card .article-tag {
+  background: rgba(8, 32, 36, 0.78) !important;
+  color: #c8f6ee !important;
+  border: 1px solid rgba(154, 236, 224, 0.44) !important;
+  border-radius: 999px !important;
+}
+
+html[data-ui-shell="mobile"] .article-card .xp-button,
+html[data-ui-shell="mobile"] .article-card button,
+html[data-shell="mobile"] .article-card .xp-button,
+html[data-shell="mobile"] .article-card button {
+  background: rgba(10, 34, 40, 0.78) !important;
+  background-image: none !important;
+  color: #f0fefa !important;
+  border: 1.2px dashed rgba(182, 242, 236, 0.56) !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+}
+
+html[data-ui-shell="mobile"] #knowledge-categories,
+html[data-shell="mobile"] #knowledge-categories {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+}
+
+html[data-ui-shell="mobile"] #knowledge-categories::-webkit-scrollbar,
+html[data-shell="mobile"] #knowledge-categories::-webkit-scrollbar {
+  display: none !important;
 }
 
 html[data-ui-shell="mobile"] .window-titlebar,

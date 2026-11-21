@@ -2,6 +2,37 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-chat-mobile-polish",
+      "slug": "2026-11-22-pond-chat-mobile-polish",
+      "category": "site-updates",
+      "tags": [
+        "网站更新",
+        "修复记录",
+        "聊天室",
+        "移动端",
+        "界面"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-21T18:51:00.000Z",
+      "updated_at": "2026-11-21T18:51:00.000Z",
+      "published_at": "2026-11-21T18:51:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "聊天室紧凑气泡、移动端防溢出与同日 D1 迁移收尾",
+        "en": "Compact CRT Chat Bubbles, Mobile Overflow Fix, and Same-Day D1 Migration Record",
+        "ja": "チャット吹き出し最適化・モバイル横はみ出し解消・D1移行記録"
+      },
+      "summary": {
+        "zh": "补齐 02:31 线上收尾记录并同步完成精修：聊天室消息改为紧凑点阵气泡并放大提亮 6 枚点阵圆形 SVG 头像；移动端知识库全链路钳制宽度消除横向溢出并统一深色标签与阅读按钮；同步登记同日 D1 种子迁移前序版本。",
+        "en": "Completes the release record and final polish: compact fit-content CRT chat bubbles with larger brighter dot-matrix SVG avatars, full mobile width clamping with dark tag/button styling to eliminate horizontal overflow, and same-day D1 migration compatibility.",
+        "ja": "02:31修正の更新記録と最終調整を反映しました。チャットのコンパクト吹き出し化と42pxドットアバター発光、モバイル知識庫の横はみ出し解消と濃色タグ/ボタン化、同日D1移行互換を完了しています。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-live-fix",
       "slug": "2026-11-22-pond-live-fix",
       "category": "site-updates",
@@ -117,35 +148,6 @@ export const homeContent = Object.freeze({
         "zh": "逐步视觉替换第 6 批上线：桌面端匿名聊天室（#chatroom）换装半透明 CRT 玻璃聊天窗并接入 6 枚点阵圆形 SVG 默认头像；匿名昵称、普通房/密码房、5 秒同步、300 字计数与发送节流均保持原样。",
         "en": "Batch 6 of the visual refresh is live: the desktop anonymous Chatroom (#chatroom) adopts translucent CRT glass bubbles and 6 circular dot-matrix SVG avatars while keeping anonymous identity, password rooms, 5s polling, 300-char limit, and cooldown untouched.",
         "ja": "段階的ビジュアル刷新の第6弾を公開しました。デスクトップの匿名チャット（#chatroom）を半透明CRTガラス窓と6種の円形ドットSVGアバターへ換装し、合言葉ルーム・5秒同期・300文字制限は従来のまま維持しています。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-games",
-      "slug": "2026-11-22-pond-games",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "游戏区",
-        "界面"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-21T17:56:00.000Z",
-      "updated_at": "2026-11-21T17:56:00.000Z",
-      "published_at": "2026-11-21T17:56:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "游戏区换装深夜终端 CRT 游戏货架与点阵封面",
-        "en": "Games Shelf Refreshed with Midnight Pond CRT Layout and Dot-Matrix Covers",
-        "ja": "ゲーム棚を深夜端末CRTレイアウトとドット風カバーへ刷新"
-      },
-      "summary": {
-        "zh": "逐步视觉替换第 5 批上线：桌面端游戏区（#games）换装半透明 CRT 玻璃货架，接入 3 张点阵插图封面（猫国建设者、小黑屋、人生重开模拟器）及 2048、Hextris 点阵封面；游戏启动、三语参数与云存档同步保持原样。",
-        "en": "Batch 5 of the visual refresh is live: the desktop Games shelf (#games) adopts the translucent CRT glass 3+2 shelf layout with 3 dot-matrix illustrated covers and 2 geometric SVG covers while keeping catalog loading, launch links, and cloud saves untouched.",
-        "ja": "段階的ビジュアル刷新の第5弾を公開しました。デスクトップのゲーム欄（#games）を半透明CRTガラス棚と3種のドット風イラストカバー＋2種の幾何SVGカバーへ換装し、起動・クラウドセーブ機能は従来のまま維持しています。"
       }
     }
   ]

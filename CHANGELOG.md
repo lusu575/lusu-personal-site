@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 补齐线上收尾记录并完成聊天室与移动端精修：登记同日 D1 迁移前序版本保证 `/api/articles` 稳定 200，聊天室改为紧凑点阵气泡并放大提亮 6 枚点阵圆形 SVG 头像，移动端知识库彻底消除横向溢出并统一深色标签与按钮（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-chat-mobile-polish` / `2026-11-22-pond-chat-mobile-polish`；视觉层缓存 `20261122-pond-chat-mobile-r1`。
+
 - 修复生产环境池塘桥接脚本因引用未单独产出的 `/js/core/wallpaper-time.mjs` 导致模块加载中止的问题（内联时段规则进 `season-schedule.mjs` 并刷新缓存参数），同时补全手机端内层深色玻璃换装、修复横向溢出、提亮欢迎窗文字与底部 Esc 提示、提亮关于页社交图标（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-live-fix` / `2026-11-22-pond-live-fix`；视觉层缓存 `20261122-pond-live-fix-r1`。
 
 - 逐步视觉替换上线第 8 批（手机端视觉统一 + 全站细节收尾）：手机端换装深夜池塘深色玻璃与荧光点阵配色（保持 44px 触控目标、六入口底部 Dock 与收起手势不变）；并完成全站收尾优化（文章页加粗彩虹阅读进度条与大号百分比、黄虚线「摘要：」框、工具卡点阵 SVG 图标放大提亮）（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-mobile-polish` / `2026-11-22-pond-mobile-polish`；视觉层缓存 `20261122-pond-mobile-polish-r1`。

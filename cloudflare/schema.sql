@@ -15369,6 +15369,28 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - 時刻切り替えロジックを `js/pond-crt/season-schedule.mjs` 内に統合し、本番環境での確実な起動を保証しました。
 - モバイル版の内層UIダークガラス化・横はみ出し解消・歓迎窓コントラスト改善・概要SNSアイコン視認性向上を反映しました。', '2026-11-21T18:22:00.000Z', '2026-11-21T18:22:00.000Z') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-live-fix-r1', '2026-11-21T18:22:00.000Z')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-chat-mobile-polish', '2026-11-22-pond-chat-mobile-polish', 'site-updates', '["网站更新","修复记录","聊天室","移动端","界面"]', '', 'published', 0, 0, '2026-11-21T18:51:00.000Z', '2026-11-21T18:51:00.000Z', '2026-11-21T18:51:00.000Z') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-chat-mobile-polish-zh', 'seed-update-2026-11-22-pond-chat-mobile-polish', 'zh', '聊天室紧凑气泡、移动端防溢出与同日 D1 迁移收尾', '补齐 02:31 线上收尾记录并同步完成精修：聊天室消息改为紧凑点阵气泡并放大提亮 6 枚点阵圆形 SVG 头像；移动端知识库全链路钳制宽度消除横向溢出并统一深色标签与阅读按钮；同步登记同日 D1 种子迁移前序版本。', '# 聊天室紧凑气泡、移动端防溢出与同日 D1 迁移收尾
+
+本次更新补齐 02:31 线上收尾热修记录，并完成聊天室与移动端实机复审发现的细节修复。
+
+- 聊天室移除外层整行虚线框，改为紧贴文字的紧凑 CRT 玻璃气泡，隐藏重复旧头像，将 6 枚点阵圆形 SVG 默认头像放大至 42px 并提亮。
+- 移动端知识库对 `html / body / .site-shell / .page / .xp-window / .article-card` 全面钳制最大宽度并开启自然断行，消除右侧截断，同时将卡片标签与「阅读」按钮换装深色 CRT 风格。
+- 登记同日 D1 迁移前序版本，保障 `/api/articles` 稳定 `HTTP 200`。', '2026-11-21T18:51:00.000Z', '2026-11-21T18:51:00.000Z') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-chat-mobile-polish-en', 'seed-update-2026-11-22-pond-chat-mobile-polish', 'en', 'Compact CRT Chat Bubbles, Mobile Overflow Fix, and Same-Day D1 Migration Record', 'Completes the release record and final polish: compact fit-content CRT chat bubbles with larger brighter dot-matrix SVG avatars, full mobile width clamping with dark tag/button styling to eliminate horizontal overflow, and same-day D1 migration compatibility.', '# Compact CRT Chat Bubbles, Mobile Overflow Fix, and Same-Day D1 Migration Record
+
+This release records the 02:31 live hotfix and resolves the remaining chatroom and mobile visual findings.
+
+- Switched chatroom rows to compact fit-content CRT glass bubbles and enlarged/brightened the 6 circular dot-matrix SVG avatars to 42px.
+- Clamped mobile shell, page, window, and card widths with word-wrapping and dark CRT tags/buttons to eliminate horizontal clipping.
+- Registered same-day D1 seed predecessors to keep `/api/articles` returning `HTTP 200`.', '2026-11-21T18:51:00.000Z', '2026-11-21T18:51:00.000Z') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-chat-mobile-polish-ja', 'seed-update-2026-11-22-pond-chat-mobile-polish', 'ja', 'チャット吹き出し最適化・モバイル横はみ出し解消・D1移行記録', '02:31修正の更新記録と最終調整を反映しました。チャットのコンパクト吹き出し化と42pxドットアバター発光、モバイル知識庫の横はみ出し解消と濃色タグ/ボタン化、同日D1移行互換を完了しています。', '# チャット吹き出し最適化・モバイル横はみ出し解消・D1移行記録
+
+02:31の本番修正記録とチャット・モバイルの最終調整を反映しました。
+
+- チャット行をテキスト幅に沿うコンパクトなCRTガラス吹き出しへ変更し、6種の円形ドットSVGアバターを42pxで明るく表示しました。
+- モバイル知識庫の全階層幅を制御して横はみ出しを解消し、タグと「読む」ボタンも濃色CRTへ統一しました。', '2026-11-21T18:51:00.000Z', '2026-11-21T18:51:00.000Z') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-chat-mobile-r1', '2026-11-21T18:51:00.000Z')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-live-fix-r1', '2026-11-21T18:22:00.000Z', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-chat-mobile-r1', '2026-11-21T18:51:00.000Z', 'schema') on conflict(version) do nothing;
