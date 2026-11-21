@@ -1,6 +1,40 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-game-inner-dark",
+  "slug": "2026-11-22-pond-game-inner-dark",
+  "category": "site-updates",
+  "tags": [
+    "site-update",
+    "games",
+    "ui"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T05:00:00+08:00",
+  "updated_at": "2026-11-22T05:00:00+08:00",
+  "published_at": "2026-11-22T05:00:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "date": "2026.11.22",
+  "title": {
+    "zh": "游戏内页本体纯 CSS 暗色适配并默认收起顶部工具栏释放画面空间",
+    "en": "Pure-CSS Dark Theme for Game Inner Frames & Default-Collapsed Top Toolbar",
+    "ja": "ゲーム本体 iframe の純 CSS 暗色適応と上部ツール欄の初期折りたたみ"
+  },
+  "summary": {
+    "zh": "为猫国建设者等五款游戏内页默认收起顶部存档与接管工具栏（保留一键展开入口），并在同源游戏框架加载时注入深夜池塘纯 CSS 暗色样式，零改动任何游戏逻辑与存档。",
+    "en": "Collapsed the game shell top toolbar by default (with one-click expand) to maximize gameplay height and injected a pure-CSS Midnight Pond dark theme into same-origin game frames without touching game logic.",
+    "ja": "5 つのゲーム内ページで上部セーブ／AI 操作欄を初期折りたたみにしてゲーム画面を大幅に広げ、同オリジン iframe 読み込み時に純 CSS の深夜の池暗色テーマを注入しました。"
+  },
+  "content_markdown": {
+    "zh": "本次更新完成了五个游戏内页本体与空间的最终适配：\n\n1. 将游戏外框顶部工具栏改为默认收起状态，保留顶部一行展开入口按钮，将近 90% 的视口高度让给游戏本体，点击即可随时展开本地存档、云端存档、协议与 AI 游戏接管面板。\n2. 在同源游戏框架加载完成后注入纯 CSS 暗色样式，将猫国建设者等游戏本体白底无缝切换为深夜池塘暗青玻璃风格，不改动任何游戏脚本、存档键名或接管逻辑。",
+    "en": "This release completes the inner-frame visual integration across all five games:\n\n1. Defaulted the game tools/saves/AI-takeover panel to collapsed so games occupy ~90% of the viewport, while keeping a single-click expand button right at the top.\n2. Injected a pure-CSS dark Midnight Pond stylesheet into same-origin game iframes (including Kittens Game) on load, leaving all game logic, saves, and agent controls completely untouched.",
+    "ja": "5 つのゲーム内ページについて、画面比率とゲーム本体の配色統一を完了しました：\n\n1. 上部のローカル／クラウドセーブ・ライセンス・AI 操作パネルを初期状態で折りたたみ、ワンクリック展開ボタンのみを残すことで、ゲーム本体の表示領域を約 90% まで広げました。\n2. 猫国建設者を含む同オリジンゲーム本体へ読み込み時に純 CSS の暗色テーマを適用し、ゲームロジックやセーブ機能には一切手を加えていません。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-icons-digits-fit",
   "slug": "2026-11-22-pond-icons-digits-fit",
   "category": "site-updates",

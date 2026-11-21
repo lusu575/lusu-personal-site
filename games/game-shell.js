@@ -395,7 +395,9 @@
     button.type = "button";
     button.setAttribute("aria-controls", "game-tools game-license game-agent-panel");
     tools.id ||= "game-tools";
-    const collapseByDefault = window.matchMedia?.("(max-width: 860px), (max-height: 720px)")?.matches === true;
+    // Default to collapsed on both desktop and mobile so the game gets maximum viewport height;
+    // users can expand local/cloud saves, license, and AI takeover tools anytime with one click.
+    const collapseByDefault = true;
     const setCollapsed = (collapsed) => {
       card.dataset.toolsCollapsed = String(collapsed);
       button.setAttribute("aria-expanded", String(!collapsed));
@@ -1853,7 +1855,93 @@
 
     applyStorageDefaults(game);
     applyLanguagePreference(game);
+    function applyPondInnerGameTheme(targetFrame, targetGame) {
+      try {
+        const doc = targetFrame?.contentDocument;
+        if (!doc || !doc.head) return;
+        if (doc.getElementById("pond-game-inner-theme")) return;
+        const style = doc.createElement("style");
+        style.id = "pond-game-inner-theme";
+        const slug = String(targetGame?.slug || "");
+        const baseCss = `
+          html, body {
+            background: #06161b !important;
+            color: #e6fbf7 !important;
+            color-scheme: dark;
+          }
+          a { color: #88fce2 !important; }
+          input, select, textarea {
+            background: rgba(4, 18, 22, 0.88) !important;
+            color: #f0fefa !important;
+            border: 1px solid rgba(164, 236, 228, 0.42) !important;
+          }
+        `;
+        const kittensCss = slug === "kittens-game" ? `
+          #topBar, #footerLinks, #gamePageContainer, #game, #leftColumn, #midColumn, #rightColumn,
+          #loadingContainer, .panelContainer, .tabsContainer, .tabInner, .dialog, .popup {
+            background: #06161b !important;
+            color: #e6fbf7 !important;
+            border-color: rgba(164, 236, 228, 0.28) !important;
+          }
+          #topBar {
+            background: linear-gradient(180deg, rgba(10, 34, 40, 0.96), rgba(6, 22, 26, 0.96)) !important;
+            border-bottom: 1px dotted rgba(176, 238, 232, 0.36) !important;
+          }
+          .tabInner, .panelContainer, .dialog {
+            background: rgba(8, 28, 34, 0.78) !important;
+            border: 1px solid rgba(164, 236, 228, 0.30) !important;
+            border-radius: 10px !important;
+          }
+          .btn, .btnContent, button {
+            background: rgba(10, 36, 42, 0.84) !important;
+            color: #eefcf9 !important;
+            border: 1px dashed rgba(176, 240, 234, 0.48) !important;
+            border-radius: 8px !important;
+            box-shadow: none !important;
+          }
+          .btn:hover:not(.disabled), .btnContent:hover, button:hover:not(:disabled) {
+            border-style: solid !important;
+            border-color: rgba(154, 248, 238, 0.88) !important;
+            background: rgba(20, 64, 70, 0.76) !important;
+          }
+          .btn.disabled, .disabled {
+            opacity: 0.45 !important;
+            color: rgba(182, 218, 214, 0.56) !important;
+          }
+          .tab.activeTab {
+            color: #88fce2 !important;
+            border-bottom-color: #88fce2 !important;
+          }
+          .msg, .res-row, .resource-name, .resAmount, .resLimitNotice {
+            color: #dcf8f4 !important;
+          }
+          .resPerTick { color: #88fce2 !important; }
+          .tooltip-inner, .tooltip-block {
+            background: rgba(6, 22, 26, 0.96) !important;
+            color: #eefcf9 !important;
+            border: 1px solid rgba(176, 238, 232, 0.48) !important;
+          }
+        ` : "";
+        const genericUiCss = (slug !== "kittens-game" && slug !== "hextris") ? `
+          .container, .wrapper, #wrapper, #outerSlider, #content, #main, .game-container, .heading, .above-game {
+            background-color: transparent !important;
+            color: #e6fbf7 !important;
+          }
+          button, .button, .btn {
+            background: rgba(10, 36, 42, 0.84) !important;
+            color: #eefcf9 !important;
+            border: 1px dashed rgba(176, 240, 234, 0.48) !important;
+          }
+        ` : "";
+        style.textContent = baseCss + kittensCss + genericUiCss;
+        doc.head.appendChild(style);
+      } catch {
+        // Ignore cross-origin or transient iframe access errors
+      }
+    }
+
     frame.addEventListener("load", () => {
+      applyPondInnerGameTheme(frame, game);
       setStatus(cloudConflict
         ? t("cloudConflictPaused")
         : authUser

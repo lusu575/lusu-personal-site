@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-game-inner-dark",
+      "slug": "2026-11-22-pond-game-inner-dark",
+      "category": "site-updates",
+      "tags": [
+        "site-update",
+        "games",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T05:00:00+08:00",
+      "updated_at": "2026-11-22T05:00:00+08:00",
+      "published_at": "2026-11-22T05:00:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "游戏内页本体纯 CSS 暗色适配并默认收起顶部工具栏释放画面空间",
+        "en": "Pure-CSS Dark Theme for Game Inner Frames & Default-Collapsed Top Toolbar",
+        "ja": "ゲーム本体 iframe の純 CSS 暗色適応と上部ツール欄の初期折りたたみ"
+      },
+      "summary": {
+        "zh": "为猫国建设者等五款游戏内页默认收起顶部存档与接管工具栏（保留一键展开入口），并在同源游戏框架加载时注入深夜池塘纯 CSS 暗色样式，零改动任何游戏逻辑与存档。",
+        "en": "Collapsed the game shell top toolbar by default (with one-click expand) to maximize gameplay height and injected a pure-CSS Midnight Pond dark theme into same-origin game frames without touching game logic.",
+        "ja": "5 つのゲーム内ページで上部セーブ／AI 操作欄を初期折りたたみにしてゲーム画面を大幅に広げ、同オリジン iframe 読み込み時に純 CSS の深夜の池暗色テーマを注入しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-icons-digits-fit",
       "slug": "2026-11-22-pond-icons-digits-fit",
       "category": "site-updates",
@@ -111,34 +140,6 @@ export const homeContent = Object.freeze({
         "zh": "将视频区恢复为 3 列网格并保持标准 16:9 封面比例，消除 2 列高封面挤出文字区的问题，实现封面无裁切且标题、简介与播放按钮完整对齐。",
         "en": "Switched Videos back to a 3-column grid with true 16:9 thumbnails and unclipped card bodies so covers, titles, descriptions, and Play buttons all render cleanly.",
         "ja": "動画区を 3 列グリッドの標準 16:9 サムネイルへ戻し、カードの切り抜きを解除して表紙・タイトル・概要・再生ボタンをすべて見切れなく整列させました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-final-finish",
-      "slug": "2026-11-22-pond-final-finish",
-      "category": "site-updates",
-      "tags": [
-        "site-update",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T04:15:00+08:00",
-      "updated_at": "2026-11-22T04:15:00+08:00",
-      "published_at": "2026-11-22T04:15:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "深夜池塘最终细节收尾：视频 16:9 完整封面、聊天室防叠字、游戏封面与手机端留白",
-        "en": "Midnight Pond Final Visual Finish: 16:9 Uncropped Video Covers, Chatroom Spacing, Bright Game Art & Mobile Dock Clearance",
-        "ja": "深夜の池最終ディテール仕上げ：動画 16:9 表紙・チャット重なり解消・ゲーム表紙・モバイル余白"
-      },
-      "summary": {
-        "zh": "恢复视频 16:9 完整封面比例消除裁切、消除聊天室右上房间标签叠字、提亮猫国封面并升级 Hextris 霓虹六边形封面、优化知识库 3 排显示与手机端 Dock 底部留白。",
-        "en": "Restored 16:9 uncropped video thumbnails, fixed the chatroom room-label overlap, brightened Kittens Game cover and upgraded Hextris art, and refined Knowledge & mobile Dock bottom spacing.",
-        "ja": "動画サムネイルを 16:9 比率へ戻して見切れを解消し、チャット右上の文字重なり修正、猫国表紙の明度向上と Hextris 表紙刷新、知識庫とモバイル Dock 下部余白を整えました。"
       }
     }
   ]

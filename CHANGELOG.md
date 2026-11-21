@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 五个游戏内页默认收起顶部存档与 AI 接管面板（保留一键展开入口），并在同源 iframe 加载时注入深夜池塘纯 CSS 暗色主题（零改动游戏逻辑与存档）（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-game-inner-dark` / `2026-11-22-pond-game-inner-dark`；视觉层缓存 `20261122-pond-polish-r15`。
+
 - 放大提亮工具区 3 枚点阵 SVG 图标（描边 3.6 / 104×78px）、分类计数改用无斜杠数字避免 106 误看为 186、提亮聊天室 6 枚点阵头像并放宽游戏内页顶栏右边距（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-icons-digits-fit` / `2026-11-22-pond-icons-digits-fit`；视觉层缓存 `20261122-pond-polish-r14`。
 
 - 为视频区 3 列网格缩略图指定 174px 显式 16:9 高度与 320px 最小卡片高度，彻底解决 Chromium 网格行高折叠重叠（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-videos-explicit-h` / `2026-11-22-pond-videos-explicit-h`；视觉层缓存 `20261122-pond-polish-r13`。
