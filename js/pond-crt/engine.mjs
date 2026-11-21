@@ -120,35 +120,27 @@ export class PondCRTEngine {
       if (!res.ok) return;
       const manifest = await res.json();
 
-      // 1. Full-season transparent PNG scene decorations (spring/summer/autumn/winter)
-      if (manifest.flora) {
-        for (const [seasonId, url] of Object.entries(manifest.flora)) {
-          if (url && this.floraTextures[seasonId]) {
-            this.loadFloraAsset(seasonId, url).catch(() => {});
-          }
-        }
-      }
-
-      // 2. Fallback top-left overhanging branch art (used only when full flora PNG is not set)
-      if (manifest.branches) {
-        for (const [seasonId, url] of Object.entries(manifest.branches)) {
-          if (url && !manifest.flora?.[seasonId] && this.floraTextures[seasonId]) {
+      // 1. Load all finalized transparent PNG parts (design-assets/parts/*) in parallel,
+      // then re-bake all 4 resident GPU flora textures cleanly once loaded!
+      if (manifest.parts) {
+        const entries = Object.entries(manifest.parts).filter(([, url]) => Boolean(url));
+        const loaded = await Promise.allSettled(
+          entries.map(([key, url]) => new Promise((resolve, reject) => {
             const img = new Image();
             img.onload = () => {
-              if (!this.gl || !this.floraTextures[seasonId] || this.floraLayer.customAssets[seasonId]) return;
-              this.floraLayer.setBranchAsset(seasonId, img);
-              const floraCanvas = this.floraLayer.render(seasonId, this.cssWidth, this.cssHeight);
-              const gl = this.gl;
-              gl.bindTexture(gl.TEXTURE_2D, this.floraTextures[seasonId]);
-              gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, floraCanvas);
-              gl.bindTexture(gl.TEXTURE_2D, null);
+              this.floraLayer.setPart(key, img);
+              resolve(key);
             };
+            img.onerror = reject;
             img.src = url;
-          }
+          }))
+        );
+        if (this.gl && loaded.some((r) => r.status === 'fulfilled')) {
+          this._prebakeAllFlora();
         }
       }
 
-      // 3. Desktop icon transparent PNG slots (knowledge, videos, resources, games, chatroom, about)
+      // 2. Desktop icon transparent PNG slots (knowledge, videos, resources, games, chatroom, about)
       if (manifest.icons) {
         for (const [iconId, url] of Object.entries(manifest.icons)) {
           if (url) {
@@ -157,7 +149,7 @@ export class PondCRTEngine {
         }
       }
     } catch {
-      // Manifest optional; keep procedural fallback cleanly
+      // Manifest optional
     }
   }
 

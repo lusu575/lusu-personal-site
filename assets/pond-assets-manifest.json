@@ -1,14 +1,17 @@
 {
-  "flora": {
-    "spring": null,
-    "summer": null,
-    "autumn": null,
-    "winter": null
-  },
-  "branches": {
-    "spring": "./assets/pond-flora/spring-branch.jpg",
-    "autumn": "./assets/pond-flora/autumn-branch.jpg",
-    "winter": "./assets/pond-flora/winter-branch.jpg"
+  "parts": {
+    "sakuraBranch": "./design-assets/parts/part-sakura-branch.png",
+    "mapleBranch": "./design-assets/parts/part-maple-branch.png",
+    "winterBranch": "./design-assets/parts/part-winter-branch.png",
+    "iceOverlay": "./design-assets/parts/part-ice-overlay.png",
+    "lotusFlower": "./design-assets/parts/part-lotus-flower.png",
+    "lotusBud": "./design-assets/parts/part-lotus-bud.png",
+    "lotusLeaf1": "./design-assets/parts/part-lotus-leaf-1.png",
+    "lotusLeaf2": "./design-assets/parts/part-lotus-leaf-2.png",
+    "lotusLeaf3": "./design-assets/parts/part-lotus-leaf-3.png",
+    "mapleLeaf1": "./design-assets/parts/part-maple-leaf-1.png",
+    "mapleLeaf2": "./design-assets/parts/part-maple-leaf-2.png",
+    "mapleLeaf3": "./design-assets/parts/part-maple-leaf-3.png"
   },
   "icons": {
     "knowledge": null,
