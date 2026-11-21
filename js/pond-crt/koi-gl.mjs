@@ -106,10 +106,23 @@ void main() {
   vec3 kohakuRed = mix(vec3(0.92, 0.24, 0.06), vec3(1.0, 0.36, 0.10), 1.0 - y * y * 0.6);
   col = mix(col, kohakuRed, clamp(redMask, 0.0, 1.0));
 
-  // Natural Nishikigoi eyes positioned behind the rounded snout (t ~ 0.135) & near lateral head margin (|y| ~ 0.74)
-  float eyeL = 1.0 - smoothstep(0.014, 0.026, length(vec2((t - 0.135) * 1.15, (y - 0.72) * 0.24)));
-  float eyeR = 1.0 - smoothstep(0.014, 0.026, length(vec2((t - 0.135) * 1.15, (y + 0.72) * 0.24)));
-  col = mix(col, vec3(0.05, 0.07, 0.08), max(eyeL, eyeR) * 0.78);
+  // Subtle blunted koi mouth lip shadow at front snout tip (t ~ 0.01..0.035)
+  float mouthArc = 1.0 - smoothstep(0.012, 0.032, length(vec2((t - 0.014) * 1.6, y * 0.14)));
+  col = mix(col, col * 0.72, mouthArc * 0.55);
+
+  // Subtle operculum (gill-plate) curvature shading behind head (t ~ 0.21)
+  float gillCurve = exp(-pow(((t - 0.21) - (1.0 - y * y) * 0.035) * 34.0, 2.0)) * smoothstep(0.25, 0.85, abs(y));
+  col = mix(col, col * 0.86, gillCurve * 0.38);
+
+  // Anatomically accurate top-down Nishikigoi eyes:
+  // Elongated along body axis, tucked right near outer cheek margin (t ~ 0.105, |y| ~ 0.80)
+  float eyeDistL = length(vec2((t - 0.105) * 1.05, (y - 0.80) * 0.20));
+  float eyeDistR = length(vec2((t - 0.105) * 1.05, (y + 0.80) * 0.20));
+  float eyeMin = min(eyeDistL, eyeDistR);
+  float eyeRim = (1.0 - smoothstep(0.020, 0.034, eyeMin)) * smoothstep(0.012, 0.022, eyeMin);
+  float eyePupil = 1.0 - smoothstep(0.012, 0.022, eyeMin);
+  col = mix(col, vec3(0.88, 0.92, 0.94), eyeRim * 0.42);
+  col = mix(col, vec3(0.04, 0.06, 0.08), eyePupil * 0.88);
 
   // Underwater absorption / veiling so koi genuinely lives beneath the water surface
   vec3 waterVeil = mix(uWaterMid * 1.55, uCausticTint * 0.72, 0.32);
@@ -120,17 +133,18 @@ void main() {
 `;
 
 function koiWidthProfile(t) {
-  if (t < 0.12) {
-    // Fuller, smoother rounded koi head transitioning into shoulders
-    const u = t / 0.12;
-    return 0.52 + 0.38 * Math.sin(u * Math.PI * 0.5);
+  if (t < 0.14) {
+    // Smooth, gently blunted U-shaped koi head swelling into rounded cheeks
+    const u = t / 0.14;
+    return 0.44 + 0.44 * Math.sin(u * Math.PI * 0.5);
   }
   if (t < 0.30) {
-    const u = (t - 0.12) / 0.18;
-    return 0.90 + 0.12 * Math.sin(u * Math.PI * 0.65);
+    // Full muscular Nishikigoi shoulders
+    const u = (t - 0.14) / 0.16;
+    return 0.88 + 0.14 * Math.sin(u * Math.PI * 0.65);
   }
   const u = (t - 0.30) / 0.70;
-  return Math.max(0.16, Math.pow(1.0 - u, 1.38) * 0.98 + 0.09 * Math.sin(u * Math.PI));
+  return Math.max(0.15, Math.pow(1.0 - u, 1.38) * 0.98 + 0.09 * Math.sin(u * Math.PI));
 }
 
 function wrapAngle(a) {
@@ -294,7 +308,7 @@ export class KoiGLRenderer {
     const invA = 1.0 / aspect;
 
     const addBodyStrip = (part, offsetY, expand) => {
-      // Rounded snout fan (4 smooth wedges around sp[0])
+      // Blunted, gently rounded koi snout fan (6 wedges, shorter forward projection so nose isn't bullet-like)
       const h = sp[0];
       const snoutR = h.halfW * expand;
       const headAng = Math.atan2(h.ty, h.tx);
@@ -302,16 +316,25 @@ export class KoiGLRenderer {
       for (let k = 0; k < fanSteps; k++) {
         const a0 = headAng - Math.PI * 0.5 + (k / fanSteps) * Math.PI;
         const a1 = headAng - Math.PI * 0.5 + ((k + 1) / fanSteps) * Math.PI;
-        const p1x = (h.x + Math.cos(a0) * snoutR * 0.92) * invA;
-        const p1y = h.y + Math.sin(a0) * snoutR * 0.92 + offsetY;
-        const p2x = (h.x + Math.cos(a1) * snoutR * 0.92) * invA;
-        const p2y = h.y + Math.sin(a1) * snoutR * 0.92 + offsetY;
-        const v1 = Math.sin(a0 - headAng);
-        const v2 = Math.sin(a1 - headAng);
+        // Slightly flatten forward projection (0.66 along forward axis, 1.0 laterally) for authentic blunted koi mouth!
+        const c0 = Math.cos(a0 - headAng);
+        const s0 = Math.sin(a0 - headAng);
+        const c1 = Math.cos(a1 - headAng);
+        const s1 = Math.sin(a1 - headAng);
+        const f0 = snoutR * (0.68 * Math.abs(c0) + 1.0 * Math.abs(s0) * 0.32 + 0.68 * (1.0 - Math.abs(c0)));
+        const lx0 = Math.cos(headAng) * (c0 * snoutR * 0.66) - Math.sin(headAng) * (s0 * snoutR);
+        const ly0 = Math.sin(headAng) * (c0 * snoutR * 0.66) + Math.cos(headAng) * (s0 * snoutR);
+        const lx1 = Math.cos(headAng) * (c1 * snoutR * 0.66) - Math.sin(headAng) * (s1 * snoutR);
+        const ly1 = Math.sin(headAng) * (c1 * snoutR * 0.66) + Math.cos(headAng) * (s1 * snoutR);
+        void f0;
+        const p1x = (h.x + lx0) * invA;
+        const p1y = h.y + ly0 + offsetY;
+        const p2x = (h.x + lx1) * invA;
+        const p2y = h.y + ly1 + offsetY;
         this._pushTri(
-          h.x * invA, h.y + offsetY, 0.02, 0.0,
-          p1x, p1y, 0.0, v1,
-          p2x, p2y, 0.0, v2,
+          h.x * invA, h.y + offsetY, 0.03, 0.0,
+          p1x, p1y, 0.005, s0,
+          p2x, p2y, 0.005, s1,
           part, fi
         );
       }

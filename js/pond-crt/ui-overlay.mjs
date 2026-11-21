@@ -207,20 +207,22 @@ function buildSeasonEmblem(seasonId) {
     }
     pts.push([0, 0]);
   } else if (seasonId === 'summer') {
-    // Refined symmetrical Lotus flower silhouette (5 crisp pointed petals + base arc)
-    const addPetal = (ang, len, wid) => {
-      const ca = Math.cos(ang);
-      const sa = Math.sin(ang);
-      const rot = (x, y) => [x * ca - y * sa, x * sa + y * ca + 0.42];
-      pts.push(...sampleQuad(rot(0, 0), rot(len * 0.52, -wid), rot(len, 0), sp));
-      pts.push(...sampleQuad(rot(len, 0), rot(len * 0.52, wid), rot(0, 0), sp));
-    };
-    addPetal(-Math.PI / 2, 1.05, 0.34);
-    addPetal(-Math.PI / 2 - 0.52, 0.94, 0.28);
-    addPetal(-Math.PI / 2 + 0.52, 0.94, 0.28);
-    addPetal(-Math.PI / 2 - 1.08, 0.78, 0.24);
-    addPetal(-Math.PI / 2 + 1.08, 0.78, 0.24);
-    pts.push(...sampleArc(0, 0.50, 0.46, -Math.PI * 0.85, -Math.PI * 0.15, sp));
+    // Distinct Summer Emerald-Green Notched Lotus Pad with radial dot veins (clearly distinct from Spring pink Sakura!)
+    const notchA = -Math.PI * 0.22;
+    const notchW = 0.44;
+    // Outer notched circular lotus pad rim
+    pts.push(...sampleArc(0, 0.06, 0.90, notchA + notchW * 0.5, notchA + Math.PI * 2 - notchW * 0.5, sp * 0.92));
+    // V-notch inward to center hub
+    const n1x = Math.cos(notchA + notchW * 0.5) * 0.90;
+    const n1y = 0.06 + Math.sin(notchA + notchW * 0.5) * 0.90;
+    const n2x = Math.cos(notchA - notchW * 0.5) * 0.90;
+    const n2y = 0.06 + Math.sin(notchA - notchW * 0.5) * 0.90;
+    pts.push(...samplePolyline([[n1x, n1y], [0, 0.06], [n2x, n2y]], sp));
+    // 7 delicate radial leaf-vein dot rays from center hub
+    for (let v = 0; v < 7; v++) {
+      const va = notchA + notchW * 0.85 + (v / 6) * (Math.PI * 2 - notchW * 1.7);
+      pts.push(...samplePolyline([[0, 0.06], [Math.cos(va) * 0.72, 0.06 + Math.sin(va) * 0.72]], sp * 1.45));
+    }
   } else if (seasonId === 'autumn') {
     // Crisp 5-lobed serrated Japanese Maple leaf outline + center vein dots + stem
     const outline = [
@@ -260,10 +262,10 @@ function buildSeasonEmblem(seasonId) {
 }
 
 const SEASON_EMBLEMS = {
-  spring: { pts: buildSeasonEmblem('spring'), color: [255, 166, 206] },
-  summer: { pts: buildSeasonEmblem('summer'), color: [255, 136, 186] },
-  autumn: { pts: buildSeasonEmblem('autumn'), color: [255, 146, 58] },
-  winter: { pts: buildSeasonEmblem('winter'), color: [192, 234, 255] }
+  spring: { pts: buildSeasonEmblem('spring'), color: [255, 166, 206] }, // Pink Sakura
+  summer: { pts: buildSeasonEmblem('summer'), color: [128, 245, 168] }, // Emerald-Jade Lotus Pad
+  autumn: { pts: buildSeasonEmblem('autumn'), color: [255, 146, 58] },  // Amber-Orange Maple
+  winter: { pts: buildSeasonEmblem('winter'), color: [192, 234, 255] }  // Ice-Blue Snowflake
 };
 
 export const DESKTOP_ICONS = [
@@ -303,7 +305,7 @@ export class PondUIOverlay {
     this.whiteDotSprite = createGlowDotSprite(216, 240, 255);
     this.seasonDotSprites = {
       spring: createGlowDotSprite(255, 166, 206),
-      summer: createGlowDotSprite(255, 136, 186),
+      summer: createGlowDotSprite(128, 245, 168),
       autumn: createGlowDotSprite(255, 146, 58),
       winter: createGlowDotSprite(192, 234, 255)
     };
