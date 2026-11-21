@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-kittens-id-match",
+      "slug": "2026-11-22-pond-kittens-id-match",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "游戏区",
+        "猫国建设者"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T05:32:00.000Z",
+      "updated_at": "2026-11-22T05:32:00.000Z",
+      "published_at": "2026-11-22T05:32:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "猫国建设者内页暗色主题规则生效修复",
+        "en": "Kittens Game Inner Dark Theme Rule Activation Fix",
+        "ja": "Kittens Game 内ページダークテーマ適用条件の修正"
+      },
+      "summary": {
+        "zh": "修正游戏内页暗色主题注入器按 game.id 匹配猫国建设者，彻底隐藏营火行左右问号残影并提亮齿轮图标与资源栏。",
+        "en": "Fixed the game shell dark-theme injector to match catalog game.id so Kittens Game dark styles, cyan gear icons, and question-mark cleanup take effect.",
+        "ja": "ゲームシェルのダークテーマ判定を game.id 優先へ修正し、焚き火行左右の疑問符残影除去と歯車アイコン明色化を確実に適用しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-kittens-svg-mask-fix",
       "slug": "2026-11-22-pond-kittens-svg-mask-fix",
       "category": "site-updates",
@@ -114,34 +142,6 @@ export const homeContent = Object.freeze({
         "zh": "为猫国建设者等五款游戏内页默认收起顶部存档与接管工具栏（保留一键展开入口），并在同源游戏框架加载时注入深夜池塘纯 CSS 暗色样式，零改动任何游戏逻辑与存档。",
         "en": "Collapsed the game shell top toolbar by default (with one-click expand) to maximize gameplay height and injected a pure-CSS Midnight Pond dark theme into same-origin game frames without touching game logic.",
         "ja": "5 つのゲーム内ページで上部セーブ／AI 操作欄を初期折りたたみにしてゲーム画面を大幅に広げ、同オリジン iframe 読み込み時に純 CSS の深夜の池暗色テーマを注入しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-icons-digits-fit",
-      "slug": "2026-11-22-pond-icons-digits-fit",
-      "category": "site-updates",
-      "tags": [
-        "site-update",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T04:50:00+08:00",
-      "updated_at": "2026-11-22T04:50:00+08:00",
-      "published_at": "2026-11-22T04:50:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "放大提亮工具区点阵图标、优化分类计数字形与游戏页顶栏边距",
-        "en": "Larger Brighter Tool Dotted Icons, Open-Zero Filter Digits & Game Topbar Padding",
-        "ja": "ツール点陣アイコン拡大明度向上・件数数字視認性改善・ゲーム上端余白調整"
-      },
-      "summary": {
-        "zh": "将工具卡三枚点阵 SVG 图标加粗放大并增强辉光、为分类计数切换无斜杠无衬线数字以清晰区分 0 与 8，并增加游戏内页顶栏右边距。",
-        "en": "Thickened and enlarged the three dotted tool SVG icons with brighter glow, switched filter counts to clean open-zero sans-serif numerals, and added right padding to the game topbar.",
-        "ja": "ツールカードのパレット・転送・鳥居点陣アイコンを太線拡大して発光を強化し、分類件数に斜線なしの明瞭な数字を適用、ゲーム内ページ上端の右余白を広げました。"
       }
     }
   ]

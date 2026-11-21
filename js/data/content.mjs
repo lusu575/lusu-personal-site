@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-kittens-id-match",
+  "slug": "2026-11-22-pond-kittens-id-match",
+  "category": "site-updates",
+  "tags": [
+    "视觉升级",
+    "游戏区",
+    "猫国建设者"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T05:32:00.000Z",
+  "updated_at": "2026-11-22T05:32:00.000Z",
+  "published_at": "2026-11-22T05:32:00.000Z",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "猫国建设者内页暗色主题规则生效修复",
+    "en": "Kittens Game Inner Dark Theme Rule Activation Fix",
+    "ja": "Kittens Game 内ページダークテーマ適用条件の修正"
+  },
+  "summary": {
+    "zh": "修正游戏内页暗色主题注入器按 game.id 匹配猫国建设者，彻底隐藏营火行左右问号残影并提亮齿轮图标与资源栏。",
+    "en": "Fixed the game shell dark-theme injector to match catalog game.id so Kittens Game dark styles, cyan gear icons, and question-mark cleanup take effect.",
+    "ja": "ゲームシェルのダークテーマ判定を game.id 優先へ修正し、焚き火行左右の疑問符残影除去と歯車アイコン明色化を確実に適用しました。"
+  },
+  "content_markdown": {
+    "zh": "本次修复游戏内页外壳脚本中猫国建设者专属暗色样式未命中的根因：目录配置字段为 id 而非 slug，导致此前专属暗色规则集未注入。修正为优先读取 targetGame.id 后，猫国建设者专属的月夜池塘暗色样式、左侧资源栏高对比文字、浅青色齿轮与折叠箭头遮罩图标、以及营火标签行左右两侧问号图标与外框的彻底隐藏全部立即生效。全站游戏逻辑、云端存档与 AI 接管功能均保持原样，并已准备完成线上实拍终验。",
+    "en": "This release fixes the root cause preventing Kittens Game specific dark-theme rules from activating inside the game iframe: catalog entries expose id rather than slug. Reading targetGame.id first now activates the full Midnight Pond Kittens Game styling, crisp resource column contrast, cyan CSS-masked gear and chevron icons, and complete removal of the faint question-mark remnants flanking the Bonfire tab row. All game logic, cloud save APIs, and AI controls remain untouched.",
+    "ja": "今回の更新では、ゲームシェルの暗色テーマ注入処理で Kittens Game 専用スタイルが適用されていなかった原因（カタログの識別子フィールドが slug ではなく id であった点）を修正しました。targetGame.id を優先参照することで、月夜池ダークテーマの資源欄コントラスト、シアン色の歯車・矢印マスクアイコン、および焚き火タブ行左右の疑問符アイコンと枠の非表示が確実に有効化されます。ゲーム本体ロジックやクラウドセーブ、AI 制御には影響ありません。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-kittens-svg-mask-fix",
   "slug": "2026-11-22-pond-kittens-svg-mask-fix",
   "category": "site-updates",

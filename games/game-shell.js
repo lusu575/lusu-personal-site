@@ -1862,7 +1862,7 @@
         if (doc.getElementById("pond-game-inner-theme")) return;
         const style = doc.createElement("style");
         style.id = "pond-game-inner-theme";
-        const slug = String(targetGame?.slug || "");
+        const slug = String(targetGame?.id || targetGame?.slug || "");
         const baseCss = `
           html, body {
             background: #06161b !important;
