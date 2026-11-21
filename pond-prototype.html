@@ -36,6 +36,7 @@
 </head>
 <body>
   <canvas id="pond-canvas"></canvas>
+  <div id="fps-badge" style="position:fixed;right:14px;bottom:10px;display:none;color:rgba(195,240,220,0.72);font-size:11px;pointer-events:none;z-index:50;letter-spacing:0.06em;">-- FPS</div>
   <div id="error-banner"></div>
   <script type="module">
     import { PondCRTEngine } from './js/pond-crt/engine.mjs';
@@ -44,15 +45,19 @@
     const season = params.get('season') || 'summer';
     const lang = params.get('lang') || 'zh';
     const demoClock = params.get('demoClock') === '1';
+    const showFps = params.get('fps') === '1';
     const canvas = document.getElementById('pond-canvas');
     const errEl = document.getElementById('error-banner');
+    const fpsEl = document.getElementById('fps-badge');
+    if (showFps) fpsEl.style.display = 'block';
 
     try {
       const engine = new PondCRTEngine(canvas, {
         season,
         lang,
         demoClock,
-        preserveDrawingBuffer: true
+        preserveDrawingBuffer: true,
+        onFpsUpdate: showFps ? (fps) => { fpsEl.textContent = `${fps} FPS`; } : null
       });
       window.__pondEngine = engine;
       window.addEventListener('resize', () => engine.resize());
