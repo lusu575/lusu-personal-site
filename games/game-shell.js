@@ -1925,6 +1925,13 @@
             color: #9af8ec !important;
             opacity: 0.92 !important;
           }
+          .svg-icon.question-mark, .tooltip-block .svg-icon.question-mark {
+            display: none !important;
+          }
+          .svg-icon.gear, .svg-icon.down, .svg-icon.right {
+            filter: invert(1) brightness(1.18) !important;
+            opacity: 0.78 !important;
+          }
           .resPerTick { color: #88fce2 !important; }
           .tooltip-inner, .tooltip-block {
             background: rgba(6, 22, 26, 0.96) !important;

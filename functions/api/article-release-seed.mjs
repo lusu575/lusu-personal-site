@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-kittens-icons-clean', '2026-11-22-pond-kittens-icons-clean', 'site-updates', '["视觉升级","游戏区","猫国建设者","云存档"]', '', 'published', 0, 0, '2026-11-22T05:22:00.000Z', '2026-11-22T05:22:00.000Z', '2026-11-22T05:22:00.000Z') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-kittens-icons-clean", {
+  "zh": {
+    "title": "猫国建设者暗色主题图标与云存档视觉收尾",
+    "summary": "清理猫国建设者营火行左右两侧暗色问号残影并提亮齿轮图标，同时完成登录态云存档实拍验收。",
+    "content_markdown": "本次更新针对猫国建设者游戏内页注入的纯 CSS 月夜池塘暗色主题做了细节收尾：一是隐藏营火标签行左右两侧因深底叠加而显现的暗色问号图标残影，避免视觉上出现疑似截断的隐藏元素漏出；二是将左侧资源栏顶部的设置齿轮以及折叠箭头图标做反色提亮处理，使其在暗色背景下保持清晰可辨。同时已在线上生产环境使用登录态账号展开顶部存档工具栏，确认云端存档卡片中的立即同步按钮、退出按钮、云端同步正常状态以及自动同步时间均正常显示。全站游戏本体逻辑、云存档接口、AI 接管逻辑与知识库数据均保持原样未作修改。"
+  },
+  "en": {
+    "title": "Kittens Game Dark Theme Icon Cleanup and Signed-In Cloud Sync Check",
+    "summary": "Cleared faint dark question-mark icon remnants beside the Bonfire tab row and brightened the resource gear icon while verifying signed-in cloud sync UI.",
+    "content_markdown": "This release refines the pure-CSS Midnight Pond dark theme injected into the Kittens Game iframe by hiding the faint dark question-mark icon remnants flanking the Bonfire tab row and inverting the resource settings gear and collapse chevron icons for crisp contrast against the dark background. We also verified the signed-in expanded toolbar live on production, confirming that the Sync Now button, Log out button, healthy sync status, and automatic sync timestamp all render cleanly. All game mechanics, cloud save APIs, AI control logic, and knowledge base data remain untouched."
+  },
+  "ja": {
+    "title": "Kittens Game ダークテーマのアイコン残影整理とクラウド同期確認",
+    "summary": "焚き火タブ行左右の暗い疑問符アイコン残影を除去し歯車アイコンの視認性を向上させ、ログイン時クラウド同期表示も確認しました。",
+    "content_markdown": "今回の更新では Kittens Game の iframe 内に適用している純粋な CSS 月夜池ダークテーマを細部まで調整し、焚き火タブ行の左右に薄く残っていた暗い疑問符アイコン残影を非表示にするとともに、左側資源欄の歯車アイコンや折りたたみ矢印を反転して暗色背景でもはっきり視認できるようにしました。さらに本番環境でログイン状態のツールバー展開表示を確認し、今すぐ同期ボタン、ログアウトボタン、自動同期ステータスが正常に動作することを検証しています。ゲーム本体ロジックやクラウドセーブ API、AI 制御、知識ベースデータには一切変更を加えていません。"
+  }
+}, "2026-11-22T05:22:00.000Z"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-kittens-res-contrast', '2026-11-22-pond-kittens-res-contrast', 'site-updates', '["site-update","games","ui"]', '', 'published', 0, 0, '2026-11-22T05:10:00+08:00', '2026-11-22T05:10:00+08:00', '2026-11-22T05:10:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-kittens-res-contrast", {
   "zh": {

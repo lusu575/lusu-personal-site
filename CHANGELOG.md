@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## undefined
+
+- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-kittens-icons-clean` / `2026-11-22-pond-kittens-icons-clean`；视觉层缓存 `20261122-pond-polish-r17`。
+
 ## 2026-11-22
 
 - 提亮猫国建设者暗色主题左栏资源名、数值、上限及顶部齿轮/问号图标对比度（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-kittens-res-contrast` / `2026-11-22-pond-kittens-res-contrast`；视觉层缓存 `20261122-pond-polish-r16`。

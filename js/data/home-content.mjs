@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-kittens-icons-clean",
+      "slug": "2026-11-22-pond-kittens-icons-clean",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "游戏区",
+        "猫国建设者",
+        "云存档"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T05:22:00.000Z",
+      "updated_at": "2026-11-22T05:22:00.000Z",
+      "published_at": "2026-11-22T05:22:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "猫国建设者暗色主题图标与云存档视觉收尾",
+        "en": "Kittens Game Dark Theme Icon Cleanup and Signed-In Cloud Sync Check",
+        "ja": "Kittens Game ダークテーマのアイコン残影整理とクラウド同期確認"
+      },
+      "summary": {
+        "zh": "清理猫国建设者营火行左右两侧暗色问号残影并提亮齿轮图标，同时完成登录态云存档实拍验收。",
+        "en": "Cleared faint dark question-mark icon remnants beside the Bonfire tab row and brightened the resource gear icon while verifying signed-in cloud sync UI.",
+        "ja": "焚き火タブ行左右の暗い疑問符アイコン残影を除去し歯車アイコンの視認性を向上させ、ログイン時クラウド同期表示も確認しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-kittens-res-contrast",
       "slug": "2026-11-22-pond-kittens-res-contrast",
       "category": "site-updates",
@@ -113,34 +142,6 @@ export const homeContent = Object.freeze({
         "zh": "为 3 列视频卡片指定 174px 显式 16:9 封面高度与 320px 最小卡片高度，彻底解决 Chromium 网格自动行高下 aspect-ratio 折叠为 0 引发的封面重叠问题。",
         "en": "Set explicit 174px 16:9 thumbnail height and 320px minimum card height in the 3-column Videos grid so Chromium never collapses auto-sized rows.",
         "ja": "3 列動画グリッドのサムネイルに 16:9 対応の 174px 明示高さとカード最小高さ 320px を指定し、Chromium の自動行高計算による縦重なりを完全に解消しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-videos-row-height",
-      "slug": "2026-11-22-pond-videos-row-height",
-      "category": "site-updates",
-      "tags": [
-        "site-update",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T04:32:00+08:00",
-      "updated_at": "2026-11-22T04:32:00+08:00",
-      "published_at": "2026-11-22T04:32:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "修复视频区 3 列卡片高度塌陷重叠问题",
-        "en": "Fixed 3-Column Video Card Row Collapse in CSS Grid",
-        "ja": "動画区 3 列カードの縦重なりを修正"
-      },
-      "summary": {
-        "zh": "将 3 列视频网格中视频卡片高度由 100% 改为 auto，彻底消除行间重叠，完整呈现 16:9 无裁切封面、标题、简介与齐平播放按钮。",
-        "en": "Changed video card height from 100% to auto inside the auto-sized 3-column grid so 16:9 thumbnails, titles, descriptions, and aligned Play buttons never overlap vertically.",
-        "ja": "CSS Grid の自動行高における動画カードの height を 100% から auto へ修正し、16:9 表紙・タイトル・概要・再生ボタンの縦重なりを完全に解消しました。"
       }
     }
   ]
