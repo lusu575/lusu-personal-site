@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-about-login-welcome', '2026-11-22-pond-about-login-welcome', 'site-updates', '["网站更新","欢迎窗","账号","界面"]', '', 'published', 0, 0, '2026-11-21T18:02:00.000Z', '2026-11-21T18:02:00.000Z', '2026-11-21T18:02:00.000Z') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-about-login-welcome", {
+  "zh": {
+    "title": "关于、登录浮层与欢迎窗换装深夜终端 CRT 视觉",
+    "summary": "逐步视觉替换第 7 批上线：桌面端关于页（#about）、账号登录/注册浮层（#account-popover）与欢迎/最近更新窗（#welcome-modal）全部换装半透明 CRT 玻璃视觉；头像、RSS 订阅、社交链接、会话登录与默认不自动弹窗规则保持原样。",
+    "content_markdown": "# 关于、登录浮层与欢迎窗换装深夜终端 CRT 视觉\n\n本次为全站视觉逐步替换的第 7 批上线，桌面端 9 个核心窗口与弹层至此全部完成深夜终端 CRT 玻璃视觉统一，零功能与数据改动。\n\n- 关于页保留现站鲁肃头像、个人介绍、独立每日 AI 新闻 RSS 订阅行与社交链接。\n- 账号登录/注册浮层居中呈现为 CRT 发光玻璃卡片，保留现站 HttpOnly Cookie 会话与表单校验。\n- 欢迎窗保持默认不自动弹出规则，主动打开或 `?welcome=1` 时以 CRT 玻璃窗展示最近更新。\n- 下一批将完成手机端视觉统一与全站细节收尾。"
+  },
+  "en": {
+    "title": "About, Account Login, and Welcome Modal Refreshed with Midnight Pond CRT Visuals",
+    "summary": "Batch 7 of the visual refresh is live: About (#about), the Account login/register popover (#account-popover), and the Welcome modal (#welcome-modal) adopt the translucent CRT glass skin while keeping all existing profile links, RSS feed, auth sessions, and non-auto-popup rules intact.",
+    "content_markdown": "# About, Account Login, and Welcome Modal Refreshed with Midnight Pond CRT Visuals\n\nBatch 7 completes the Midnight Pond CRT visual refresh across all 9 desktop windows and dialogs without modifying any live logic or data.\n\n- About retains the existing avatar, profile info, standalone Daily AI News RSS row, and social links.\n- Account login/register renders as a centered CRT glass card over live HttpOnly cookie sessions.\n- Welcome keeps its opt-in display rule and renders recent updates in CRT glass.\n- Mobile shell visual unification and final polish follow next."
+  },
+  "ja": {
+    "title": "概要・ログイン・歓迎ウィンドウを深夜端末CRTビジュアルへ刷新",
+    "summary": "段階的ビジュアル刷新の第7弾を公開しました。デスクトップの概要（#about）・ログイン/登録ポップオーバー・歓迎ウィンドウ（#welcome-modal）を半透明CRTガラスへ統一し、RSS・認証・自動非表示ルールはそのまま維持しています。",
+    "content_markdown": "# 概要・ログイン・歓迎ウィンドウを深夜端末CRTビジュアルへ刷新\n\n段階的ビジュアル刷新の第7弾として、概要・ログイン・歓迎ウィンドウの表示レイヤーを更新し、デスクトップ全9ウィンドウのCRTガラス統一が完了しました。\n\n- 概要ページは既存アバター・毎日AIニュースRSS・SNSリンクを維持しています。\n- ログインと歓迎ウィンドウも既存機能のまま半透明CRTガラスへ刷新しました。\n- 続いてモバイル版のビジュアル統一と最終仕上げへ進みます。"
+  }
+}, "2026-11-21T18:02:00.000Z"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-chatroom', '2026-11-22-pond-chatroom', 'site-updates', '["网站更新","聊天室","界面"]', '', 'published', 0, 0, '2026-11-21T17:59:00.000Z', '2026-11-21T17:59:00.000Z', '2026-11-21T17:59:00.000Z') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-chatroom", {
   "zh": {

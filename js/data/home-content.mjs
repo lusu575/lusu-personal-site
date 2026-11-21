@@ -2,6 +2,36 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-about-login-welcome",
+      "slug": "2026-11-22-pond-about-login-welcome",
+      "category": "site-updates",
+      "tags": [
+        "网站更新",
+        "欢迎窗",
+        "账号",
+        "界面"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-21T18:02:00.000Z",
+      "updated_at": "2026-11-21T18:02:00.000Z",
+      "published_at": "2026-11-21T18:02:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "关于、登录浮层与欢迎窗换装深夜终端 CRT 视觉",
+        "en": "About, Account Login, and Welcome Modal Refreshed with Midnight Pond CRT Visuals",
+        "ja": "概要・ログイン・歓迎ウィンドウを深夜端末CRTビジュアルへ刷新"
+      },
+      "summary": {
+        "zh": "逐步视觉替换第 7 批上线：桌面端关于页（#about）、账号登录/注册浮层（#account-popover）与欢迎/最近更新窗（#welcome-modal）全部换装半透明 CRT 玻璃视觉；头像、RSS 订阅、社交链接、会话登录与默认不自动弹窗规则保持原样。",
+        "en": "Batch 7 of the visual refresh is live: About (#about), the Account login/register popover (#account-popover), and the Welcome modal (#welcome-modal) adopt the translucent CRT glass skin while keeping all existing profile links, RSS feed, auth sessions, and non-auto-popup rules intact.",
+        "ja": "段階的ビジュアル刷新の第7弾を公開しました。デスクトップの概要（#about）・ログイン/登録ポップオーバー・歓迎ウィンドウ（#welcome-modal）を半透明CRTガラスへ統一し、RSS・認証・自動非表示ルールはそのまま維持しています。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-chatroom",
       "slug": "2026-11-22-pond-chatroom",
       "category": "site-updates",
@@ -116,37 +146,6 @@ export const homeContent = Object.freeze({
         "zh": "逐步视觉替换第 3 批上线：桌面端视频区（#videos）与播放弹窗换装半透明 CRT 玻璃窗，保留现站 /api/videos 接口、分类筛选、平台徽标与外链播放逻辑；工具、游戏、聊天室、关于、登录、欢迎窗及手机端保持原样。",
         "en": "Batch 3 of the visual refresh is live: the desktop Videos window (#videos) and player modal adopt translucent CRT glass styling with 3-column 16:9 cards and dotted play badges while keeping live /api/videos data and playback links untouched.",
         "ja": "段階的ビジュアル刷新の第3弾を公開しました。デスクトップの動画欄（#videos）と再生モーダルを半透明CRTガラス窓へ換装し、既存の/api/videos連携・カテゴリ絞り込み・外部リンク再生はそのまま維持しています。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-article-reader",
-      "slug": "2026-11-22-pond-article-reader",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "知识库",
-        "文章详情",
-        "阅读体验",
-        "界面"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-21T17:38:00.000Z",
-      "updated_at": "2026-11-21T17:38:00.000Z",
-      "published_at": "2026-11-21T17:38:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "文章阅读页换装深夜终端 CRT 玻璃阅读窗",
-        "en": "Article Reader Refreshed with Midnight Pond CRT Glass Styling",
-        "ja": "記事リーダーを深夜端末・CRTガラス表示へ刷新"
-      },
-      "summary": {
-        "zh": "逐步视觉替换第 2 批上线：桌面端文章阅读页（#article-detail）换装半透明 CRT 玻璃阅读窗，保留现站目录 TOC、顶部阅读进度条、摘要框、复制链接与正文排版逻辑；其余未替换栏目与手机端保持原样。",
-        "en": "Batch 2 of the visual refresh is live: the desktop Article Reader (#article-detail) adopts the translucent CRT glass layout over the live Pond background while keeping TOC, reading progress, summary toggle, link copying, and markdown rendering untouched.",
-        "ja": "段階的ビジュアル刷新の第2弾を公開しました。デスクトップの記事閲覧ページ（#article-detail）を池塘背景上の半透明CRTガラス窓へ換装し、目次・読書進捗・要約・リンクコピー等の機能はすべて従来のまま維持しています。"
       }
     }
   ]

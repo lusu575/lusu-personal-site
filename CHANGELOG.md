@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 逐步视觉替换上线第 7 批（关于 `#about` + 登录浮层 `#account-popover` + 欢迎窗 `#welcome-modal`）：全部桌面窗口与弹层现已完成深夜终端 CRT 玻璃视觉统一，保留现站头像、每日 AI 新闻 RSS、社交链接、HttpOnly 会话登录/注册与欢迎窗默认不自动弹规则（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-about-login-welcome` / `2026-11-22-pond-about-login-welcome`；视觉层缓存 `20261122-pond-about-login-welcome-r1`。
+
 - 逐步视觉替换上线第 6 批（聊天室 `#chatroom`）：在现站匿名身份、普通房/密码房、5 秒轮询、300 字计数与 3 秒节流逻辑之上换装深夜终端 CRT 玻璃聊天窗，接入 6 枚点阵圆形 SVG 默认头像；全部消息收发与密码房加密逻辑完全不变（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-chatroom` / `2026-11-22-pond-chatroom`；视觉层缓存 `20261122-pond-chat-r1`。
 
 - 逐步视觉替换上线第 5 批（游戏区 `#games`）：在现站 `games/catalog.json` 与云存档逻辑之上换装深夜终端 CRT 游戏货架，接入猫国建设者、小黑屋、人生重开模拟器 3 张点阵封面与 2048、Hextris 点阵几何封面；游戏启动与云存档同步逻辑完全不变（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-games` / `2026-11-22-pond-games`；视觉层缓存 `20261122-pond-games-r1`。

@@ -220,8 +220,10 @@ function bootPondVisualBridge() {
   function syncVisualMode() {
     const route = document.body.dataset.route || 'home';
     let nextMode = '';
-    if (!isMobileShell() && !isWelcomeModalOpen()) {
-      if (route === 'home') {
+    if (!isMobileShell()) {
+      if (isWelcomeModalOpen()) {
+        nextMode = 'welcome';
+      } else if (route === 'home') {
         nextMode = 'home';
       } else if (route === 'knowledge') {
         nextMode = isArticleDetailOpen() ? 'article' : 'knowledge';
@@ -233,6 +235,8 @@ function bootPondVisualBridge() {
         nextMode = 'games';
       } else if (route === 'chatroom') {
         nextMode = 'chatroom';
+      } else if (route === 'about') {
+        nextMode = 'about';
       }
     }
 
@@ -299,7 +303,7 @@ function bootPondVisualBridge() {
       else triggerSiteRoute('knowledge');
       return;
     }
-    if (activeMode === 'knowledge' || activeMode === 'videos' || activeMode === 'resources' || activeMode === 'games' || activeMode === 'chatroom') {
+    if (activeMode === 'knowledge' || activeMode === 'videos' || activeMode === 'resources' || activeMode === 'games' || activeMode === 'chatroom' || activeMode === 'about') {
       triggerSiteRoute('home');
     }
   });
@@ -324,7 +328,7 @@ function bootPondVisualBridge() {
       triggerSiteRoute('home');
       return;
     }
-    if (activeMode === 'games' || activeMode === 'chatroom') {
+    if (activeMode === 'games' || activeMode === 'chatroom' || activeMode === 'about') {
       const privForm = document.getElementById('chat-private-room-form');
       if (activeMode === 'chatroom' && privForm && !privForm.hidden) return;
       triggerSiteRoute('home');

@@ -15301,6 +15301,31 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - 6種の円形ドットSVGアバターと点線枠バブル、丸型入力バーを適用しました。
 - 概要・ログイン・歓迎窓・モバイル版へ順次進みます。', '2026-11-21T17:59:00.000Z', '2026-11-21T17:59:00.000Z') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-chat-r1', '2026-11-21T17:59:00.000Z')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-about-login-welcome', '2026-11-22-pond-about-login-welcome', 'site-updates', '["网站更新","欢迎窗","账号","界面"]', '', 'published', 0, 0, '2026-11-21T18:02:00.000Z', '2026-11-21T18:02:00.000Z', '2026-11-21T18:02:00.000Z') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-about-login-welcome-zh', 'seed-update-2026-11-22-pond-about-login-welcome', 'zh', '关于、登录浮层与欢迎窗换装深夜终端 CRT 视觉', '逐步视觉替换第 7 批上线：桌面端关于页（#about）、账号登录/注册浮层（#account-popover）与欢迎/最近更新窗（#welcome-modal）全部换装半透明 CRT 玻璃视觉；头像、RSS 订阅、社交链接、会话登录与默认不自动弹窗规则保持原样。', '# 关于、登录浮层与欢迎窗换装深夜终端 CRT 视觉
+
+本次为全站视觉逐步替换的第 7 批上线，桌面端 9 个核心窗口与弹层至此全部完成深夜终端 CRT 玻璃视觉统一，零功能与数据改动。
+
+- 关于页保留现站鲁肃头像、个人介绍、独立每日 AI 新闻 RSS 订阅行与社交链接。
+- 账号登录/注册浮层居中呈现为 CRT 发光玻璃卡片，保留现站 HttpOnly Cookie 会话与表单校验。
+- 欢迎窗保持默认不自动弹出规则，主动打开或 `?welcome=1` 时以 CRT 玻璃窗展示最近更新。
+- 下一批将完成手机端视觉统一与全站细节收尾。', '2026-11-21T18:02:00.000Z', '2026-11-21T18:02:00.000Z') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-about-login-welcome-en', 'seed-update-2026-11-22-pond-about-login-welcome', 'en', 'About, Account Login, and Welcome Modal Refreshed with Midnight Pond CRT Visuals', 'Batch 7 of the visual refresh is live: About (#about), the Account login/register popover (#account-popover), and the Welcome modal (#welcome-modal) adopt the translucent CRT glass skin while keeping all existing profile links, RSS feed, auth sessions, and non-auto-popup rules intact.', '# About, Account Login, and Welcome Modal Refreshed with Midnight Pond CRT Visuals
+
+Batch 7 completes the Midnight Pond CRT visual refresh across all 9 desktop windows and dialogs without modifying any live logic or data.
+
+- About retains the existing avatar, profile info, standalone Daily AI News RSS row, and social links.
+- Account login/register renders as a centered CRT glass card over live HttpOnly cookie sessions.
+- Welcome keeps its opt-in display rule and renders recent updates in CRT glass.
+- Mobile shell visual unification and final polish follow next.', '2026-11-21T18:02:00.000Z', '2026-11-21T18:02:00.000Z') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-about-login-welcome-ja', 'seed-update-2026-11-22-pond-about-login-welcome', 'ja', '概要・ログイン・歓迎ウィンドウを深夜端末CRTビジュアルへ刷新', '段階的ビジュアル刷新の第7弾を公開しました。デスクトップの概要（#about）・ログイン/登録ポップオーバー・歓迎ウィンドウ（#welcome-modal）を半透明CRTガラスへ統一し、RSS・認証・自動非表示ルールはそのまま維持しています。', '# 概要・ログイン・歓迎ウィンドウを深夜端末CRTビジュアルへ刷新
+
+段階的ビジュアル刷新の第7弾として、概要・ログイン・歓迎ウィンドウの表示レイヤーを更新し、デスクトップ全9ウィンドウのCRTガラス統一が完了しました。
+
+- 概要ページは既存アバター・毎日AIニュースRSS・SNSリンクを維持しています。
+- ログインと歓迎ウィンドウも既存機能のまま半透明CRTガラスへ刷新しました。
+- 続いてモバイル版のビジュアル統一と最終仕上げへ進みます。', '2026-11-21T18:02:00.000Z', '2026-11-21T18:02:00.000Z') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-about-login-welcome-r1', '2026-11-21T18:02:00.000Z')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-chat-r1', '2026-11-21T17:59:00.000Z', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-about-login-welcome-r1', '2026-11-21T18:02:00.000Z', 'schema') on conflict(version) do nothing;

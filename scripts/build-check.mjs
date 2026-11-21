@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-chatroom";
-const finalUpdateSlug = "2026-11-22-pond-chatroom";
+const finalUpdateId = "seed-update-2026-11-22-pond-about-login-welcome";
+const finalUpdateSlug = "2026-11-22-pond-about-login-welcome";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Chatroom Refreshed with Midnight Pond CRT Glass UI and Dot-Matrix Avatars";
-const finalPublishedAt = "2026-11-21T17:59:00.000Z";
+const finalTitleEn = "About, Account Login, and Welcome Modal Refreshed with Midnight Pond CRT Visuals";
+const finalPublishedAt = "2026-11-21T18:02:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-chatroom",
   "seed-update-2026-11-22-pond-games",
   "seed-update-2026-11-22-pond-tools",
   "seed-update-2026-11-22-pond-videos",
