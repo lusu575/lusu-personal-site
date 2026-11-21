@@ -1,10 +1,11 @@
+import { releaseIcon } from "./home/icon-echo.mjs";
 import { articleCategoryLabels, tagLabels } from "./data/article-labels.mjs?v=20260908-site-review-r1";
 import {
   labels,
   isI18nNodeInScope,
   normalizeLanguage,
   translationFor
-} from "./core/i18n.mjs?v=20260908-site-review-r1";
+} from "./core/i18n.mjs?v=20261118-home-pond-r1";
 import { homeContent } from "./data/home-content.mjs?v=20261029-private-mcp-r1";
 import {
   WALLPAPER_TIME_THEMES,
@@ -1199,6 +1200,7 @@ function focusTargetIsVisible(element) {
 }
 
 let navigationRequestId = 0;
+let pondLaunchRoute = null;
 
 function navigate(route, options = {}) {
   const requestId = ++navigationRequestId;
@@ -1239,6 +1241,10 @@ function navigate(route, options = {}) {
     && !options.trigger?.matches?.(".desktop-icon")) {
     motionKind = "mobile-tab";
   }
+  if (motionKind === "mobile-tab" && nextRoute === "home" && previousRoute === pondLaunchRoute
+    && options.trigger?.matches?.(".mobile-home-button") && cachedRouteIconRect(previousRoute)) {
+    motionKind = "window-close";
+  }
   const isExitMotion = motionKind === "window-close" || motionKind === "window-minimize";
   const returnTarget = isExitMotion && nextRoute === "home" && previousRoute !== "home"
     ? routeReturnTarget(previousRoute, motionKind)
@@ -1252,12 +1258,21 @@ function navigate(route, options = {}) {
   const exitOriginRect = isExitMotion
     ? routeExitOriginRect(previousRoute, motionKind, returnTarget)
     : null;
+  const pondOpen = previousRoute === "home" && motionKind === "app-open"
+    && options.trigger?.matches?.("#home .desktop-icon");
+  const pondClose = nextRoute === "home" && motionKind === "window-close"
+    && previousRoute === pondLaunchRoute && Boolean(cachedRouteIconRect(previousRoute));
   let navigationCommitted = false;
   const commitNavigation = () => {
     if (navigationCommitted || requestId !== navigationRequestId) {
       return;
     }
     navigationCommitted = true;
+    pondLaunchRoute = pondOpen ? nextRoute : null;
+    if (pondOpen) {
+      const tint = document.getElementById("home").style.getPropertyValue("--pond-tone");
+      document.body.style.setProperty("--pond-edge", tint || "#c9e2dc");
+    } else document.body.style.removeProperty("--pond-edge");
     if (!(nextRoute === "knowledge" && options.articleSlug) && articleState.currentSlug) {
       articleState.currentSlug = "";
       articleState.currentArticle = null;
@@ -1273,6 +1288,7 @@ function navigate(route, options = {}) {
     void ensureWallpaperTimeSwitchAssets();
     updateWallpaperMotionState();
     localizeRouteLanguage(nextRoute);
+    if (nextRoute === "home") localizePondSeasonValue();
     transitionRouteLifecycle(nextRoute, options.lifecycleReason || "navigation");
     updateNavigationState(nextRoute);
     if (nextRoute === "knowledge" && options.articleSlug) {
@@ -1297,7 +1313,12 @@ function navigate(route, options = {}) {
     }));
     const shouldFocusWindow = ["route", "app-open", "mobile-tab", "window-close", "window-minimize"].includes(motionKind)
       && options.focusWindow !== false;
-    if (shouldFocusWindow) {
+    if (pondClose && returnTarget && window.LusuUiMotion?.getMode() === "full") {
+      returnTarget.querySelector(".pond-glyph")?.animate?.([
+        { scale: ".96 .92" }, { scale: "1 1.03", offset: .62 }, { scale: "1" }
+      ], { duration: 200 });
+    }
+    if (shouldFocusWindow && !pondClose) {
       window.requestAnimationFrame(() => {
         if (requestId !== navigationRequestId || document.body.dataset.route !== nextRoute) {
           return;
@@ -1344,7 +1365,8 @@ function navigate(route, options = {}) {
   window.LusuUiMotion.run(motionKind, {
     route: nextRoute,
     trigger: options.trigger || null,
-    originRect: exitOriginRect,
+    pondPair: pondOpen || pondClose,
+    originRect: pondOpen ? cachedRouteIconRect(nextRoute) : exitOriginRect,
     deferCommit: isExitMotion,
     useViewTransition: false
   }, commitNavigation).catch(() => {
@@ -2713,6 +2735,7 @@ function decodeWallpaperAsset(url) {
 }
 
 function warmWallpaperTheme(theme, options = {}) {
+  if (document.body.dataset.route === "home") return Promise.resolve(true);
   if (!WALLPAPER_TIME_THEMES.includes(theme)) return Promise.resolve(false);
   const saveData = (navigator.connection || navigator.mozConnection || navigator.webkitConnection)?.saveData === true;
   if (saveData && !options.intent) return Promise.resolve(true);
@@ -3050,6 +3073,68 @@ function initWallpaperTimeSwitch() {
   }
 }
 
+{
+  let ticket = 0;
+  let queued = 0;
+  let stop = null;
+  let loading = false;
+  let away = false;
+
+  function wanted() {
+    return !away && !document.hidden && document.body.dataset.route === "home";
+  }
+
+  function syncPondDesktop() {
+    if (!wanted()) {
+      ++ticket;
+      cancelAnimationFrame(queued);
+      queued = 0;
+      loading = false;
+      stop?.();
+      stop = null;
+      return;
+    }
+    if (queued || loading || stop) return;
+    const mine = ++ticket;
+    queued = requestAnimationFrame(() => {
+      queued = requestAnimationFrame(async () => {
+        queued = 0;
+        if (!wanted() || mine !== ticket) return;
+        loading = true;
+        try {
+          const { startDesktop } = await import("./home/desktop.mjs?v=20261118-home-pond-r3");
+          if (mine !== ticket || !wanted()) return;
+          const canvas = document.getElementById("home-pond-canvas");
+          if (canvas) stop = startDesktop(canvas);
+        } catch (error) {
+          // The existing CSS pond remains visible without a canvas renderer.
+          console.warn("Pond desktop unavailable:", error);
+        } finally {
+          if (mine === ticket) loading = false;
+        }
+      });
+    });
+  }
+
+  function observePondRoute() {
+    const observer = new MutationObserver(syncPondDesktop);
+    observer.observe(document.body, { attributes: true, attributeFilter: ["data-route"] });
+    document.addEventListener("visibilitychange", syncPondDesktop);
+    window.addEventListener("pagehide", () => {
+      away = true;
+      syncPondDesktop();
+    });
+    window.addEventListener("pageshow", () => {
+      away = false;
+      syncPondDesktop();
+    });
+    syncPondDesktop();
+  }
+
+  if (document.body) observePondRoute();
+  else document.addEventListener("DOMContentLoaded", observePondRoute, { once: true });
+}
+
 function measureHomeViewportLayout() {
   const root = document.getElementById("wallpaper-root");
   const stage = document.getElementById("wallpaper-stage");
@@ -3126,7 +3211,12 @@ function ensureWallpaperAmbientController() {
     document,
     window,
     stage,
-    getState: wallpaperAmbientState
+    getState: () => {
+      const state = wallpaperAmbientState();
+      return document.body.dataset.route === "home"
+        ? { ...state, eligible: false, active: false }
+        : state;
+    }
   });
   return wallpaperAmbientController;
 }
@@ -3321,10 +3411,34 @@ const compactClockFormatter = new Intl.DateTimeFormat(undefined, {
     hour12: false
   });
 
+
+const pondTimeNode = document.getElementById("pond-time");
+const pondDateNode = document.getElementById("pond-date");
+const pondSeasonSlider = document.getElementById("pond-season-slider");
+const pondDateFormatters = new Map();
+
+function updatePondClock(now) {
+  if (document.body.dataset.route !== "home") return;
+  const time = now.toTimeString().slice(0, 8);
+  pondTimeNode.textContent = time;
+  pondTimeNode.dateTime = time;
+
+  if (!pondDateFormatters.has(currentLang)) {
+    pondDateFormatters.set(currentLang, new Intl.DateTimeFormat(currentLang, {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    }));
+  }
+  const date = pondDateFormatters.get(currentLang).format(now);
+  if (pondDateNode.textContent !== date) pondDateNode.textContent = date;
+}
+
 function updateClock() {
   const now = new Date();
   const fullTime = fullClockFormatter.format(now).replace(/\//g, ".");
   const compactTime = compactClockFormatter.format(now);
+  updatePondClock(now);
   document.querySelectorAll("[data-local-time]").forEach((node) => {
     node.textContent = node.dataset.localTime === "compact" ? compactTime : fullTime;
     if (node.tagName === "TIME") {
@@ -3834,10 +3948,11 @@ document.addEventListener("click", (event) => {
             && routeButton.matches(".taskbar-tabs button, .start-button, .mobile-home-button")
             ? "mobile-tab"
             : "route";
+    if (motionKind === "app-open") releaseIcon(routeButton, keyboardActivation);
     navigate(routeButton.dataset.route, {
       trigger: routeButton,
       motionKind,
-      motion: keyboardActivation ? false : undefined
+      motion: keyboardActivation && motionKind !== "app-open" ? false : undefined
     });
     closeWelcome({ restoreFocus: false, motion: false });
     return;
@@ -3982,8 +4097,13 @@ Object.assign(window, publicApi);
 
 const initialLang = initialLanguage();
 
+function localizePondSeasonValue() {
+  pondSeasonSlider?.dispatchEvent(new Event("pond:localize"));
+}
+
 syncOptionalRouteEntries();
 setLanguage(initialLang);
+localizePondSeasonValue();
 initAccountWidget();
 initWallpaperTimeSwitch();
 siteConnectionStatus.start();

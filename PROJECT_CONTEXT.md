@@ -1,5 +1,21 @@
 # PROJECT_CONTEXT.md
 
+## 2026-11-19 池塘样机 Gemini 任务模式迭代
+
+- `pond-gl-prototype` 新增两轮：水光离散微面元（`20261119-gemini-water1`）与鱼/荷叶/荷花三维曲面重做（`20261119-gemini-fishlotus1`）。代码由 Gemini 网页端「任务」模式在同一对话里两轮各生成 1 次（roshuku Ultra、Neon），思思搬运合并并本地验证（语法、点数与 Gemini 报告逐项对齐、零控制台报错）。样机仍无首页入口或公开更新记录，等站长真机签收后再决定是否全量实现。
+- 第三轮（站长本人追加）：站长给参考图 15561.png 要求 1:1 还原，Gemini（Carbon）一轮重写三文件做像素级对齐，样机版本 `20261119-gemini-11align1`：统一约 5 px 圆珠点阵、水面采样 1.0 原生分辨率、鱼 1,763 点（586/588/589）、荷 9,537 点，本地实测与报告逐项一致、构建与渲染通过。仍等真机签收。
+
+## 2026-11-18 池塘 WebGL2 样机
+
+- 阶段一点五的 `pond-gl-prototype` 从 `d897898` 起步，验收路径是 Pages Preview 的 `/prototypes/pond/`。现有构建按文件登记复制独立 HTML 和模块到 `dist/`。页面直接访问，无首页入口或公开更新记录。
+- 样机第二轮按 Astra 靶图拆解校准双束反光、固定格的波峰碎闪和三层折射。尺寸改变时重绘静态池底与 27 片荷叶、两朵开花和一枚小苞。叶下影与断续沉水茎仅写入池底 RGB，池底 alpha 继续记录宽域照明。鱼点逐帧合并写入同一个目标，三条鱼按主鱼尺寸同比缩放，各保留四槽尾波队列。
+- 性能修复版本为 `20261118-pond-r2-perf`。每个波包的振幅、波前和包络由 CPU 每帧打包，片元先以半径平方剔除七个标准差外的高斯尾，再计算共享高度和坡度。三层继续共用同一结果，水面比例为 0.65，折射系数为 6.0、3.5、1.30 CSS px。鱼点包围盒包含点精灵、扩散和线性过滤边距。离屏 llvmpipe 用于分段计时与同相位像素比对，实时帧率门槛由 Chrome 158 / SwiftShader 复测。
+
+## 2026-11-18 首页四季池塘本地预览
+
+- `redesign-homepage` 的第二轮视觉返工改用分季水面缓存和独立岸景。每帧一次上传，先合成水底与下潜的鱼，再叠点环、微光和近处浮叶。六入口、四档滑块和所有季相由代码绘制，参考图仅用于对照。
+- 预览版本为 `20261118-home-pond-r3`。此分支使用时间日期状态线，预览记录写入根 CHANGELOG，公开发布记录仍以正式站点为准。
+
 ## 2026-10-29 Private MCP production adapter
 
 Approved production rollout: Pages commit c1c3c10f5f65d6a1d3eb138ac92c96f78c414da3; MCP Worker 355575bb-0d9c-4bde-9578-1a73ccd09275 at 100% traffic. PRIVATE_ADMIN_BACKEND=pages forwards the 51 backend operations to /api/private-mcp. Pages PRIVATE_MCP_AUTH calls PrivateMcpVerifier and pins the confirmed owner ID hash; preview has no binding. Existing secrets stay in Pages; no rotation, copying or new grant. Production health/metadata return 200, anonymous and invalid-token requests return 401. Local OAuth/RPC/Pages regression: 39 tests passed. Authenticated production tool calls have not been exercised without a new owner grant. Rollback must disable route/mode together while retaining owner restriction. Details: docs/agent-capabilities/PRIVATE_MCP_BACKEND_ADAPTER.md.
@@ -254,7 +270,7 @@ Approved production rollout: Pages commit c1c3c10f5f65d6a1d3eb138ac92c96f78c414d
 - Hextris Agent 是 `games/hextris/agent/` 下自包含的 GPL-3.0-or-later 程序，包含确定性引擎、独立会话存储、专用 CLI、专用 stdio MCP、测试、完整许可证与来源／修改说明。它不导入主站 `lib/capabilities/`、`cli/` 或 `mcp/local/`；主 `lusu` CLI 和通用 MCP 也不静态包含它。当前只能把它作为单独进程启动，未经单独的兼容性评估和站点所有者明确许可证决定，不得把实现并入通用能力层。
 - 专用 Agent 由用户从 GitHub 源码仓库取得和在本机运行，`config/public-production-build.json` 整目录排除 `games/hextris/agent/`，不把含包元数据的本地进程复制到 Pages `dist`；浏览器 Hextris、完整浏览器许可证和 NOTICE 仍正常部署。这个构建边界不改变专用 CLI／MCP 的源码可得性。
 - 引擎只接受 `{ type: "place", lane: 0..5 }` 语义动作；可选种子使 incoming block 和状态演进可复现。专用会话继续使用 revision CAS、`clientActionId` 最近 128 条幂等收据、32 会话／256 KiB／24 小时闲置上限，以及带随机 token marker 的非空目录锁。锁记录 PID、进程实例与心跳；存活 owner 一律失败关闭，只有精确陈旧 owner 才可恢复；释放先把同一 token marker 进入 retiring 状态，写入／删除在原子替换前再次执行 owner fence，旧 owner 或恢复者都不能删除 successor。observe／actions 真正只读且不续期，reset／close 必须显式确认；这些保证只适用于隔离模拟会话，不代表浏览器游戏控制。
-- 浏览器 Hextris 副本补齐 GPL-3.0-or-later 全文、SPDX／修改说明和上游 attribution；2048 也补回完整 MIT 文本与来源说明。公开三语更新为 `seed-update-2026-08-07-hextris-agent`，同步 fallback、Home 最近五条、Functions seed 与 schema seed，公开 API／文章 seed／主模块缓存版本为 `20260807-hextris-agent-r1`；在线画板保持 1.0.7，Quick Transfer 保持 1.0.6。该阶段当时独立远程 MCP Worker 尚未部署；当前状态以上方最新部署段为准。
+当前状态：池塘样机在 pond-gl-prototype 分支迭代（未合 main）。2026-11-19 第四轮已换「图采样点云」方案：tools/sample-points.mjs 构建时把参考图裁切采样成 prototypes/pond/sampled-data.mjs，fish.mjs/pond.mjs 改为数据驱动组装，shaders.mjs 维持第三轮。等站长真机复审第四轮。
 - 发布凭据扫描覆盖受管理源码及工作树中新建源码，但按精确路径排除子项目已忽略的 `自动新闻/data/mcp-runs/` 本地运行证据。该目录会保存外部检索正文，可能自然出现形似 JWT 的文本；排除只作用于这个运行证据前缀，不改变密钥识别规则，也不扩大到其他源码目录。
 - 异步回归不能用固定次数的 1ms 计时轮询推断请求已经开始；Chat 私房切换测试由 mock 请求直接发出 deferred 信号，再断言 single-flight 与 busy 状态，避免 Linux 共享 runner 的计时器饥饿造成假失败。
 

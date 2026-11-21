@@ -97,6 +97,11 @@
     }
   ],
   "standaloneFiles": [
+    "prototypes/pond/fish.mjs",
+    "prototypes/pond/index.html",
+    "prototypes/pond/pond.mjs",
+    "prototypes/pond/sampled-data.mjs",
+    "prototypes/pond/shaders.mjs",
     "tools/japanese-subtext/index.html",
     "tools/japanese-subtext/manifest.json",
     "tools/whiteboard/index.html",

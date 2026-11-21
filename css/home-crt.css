@@ -1,0 +1,574 @@
+/* The mobile bars and dock are children of these same two shell elements. */
+html body[data-route="home"] .site-shell > :is(.xp-topbar, .xp-taskbar) {
+  display: none !important;
+}
+
+html body[data-route="home"] .site-shell {
+  display: block;
+  padding: 0;
+  gap: 0;
+}
+
+body[data-route="home"] #main-content {
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  width: auto;
+  max-width: none;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  background: #071018;
+}
+
+body[data-route="home"] #home.active {
+  --pond-ink: #dcebf5;
+  --pond-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+  --pond-top: max(1rem, env(safe-area-inset-top));
+  --pond-left: max(1rem, env(safe-area-inset-left));
+  --pond-right: max(1rem, env(safe-area-inset-right));
+  --pond-bottom: max(1rem, env(safe-area-inset-bottom));
+  display: block;
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-height: 20rem;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  color: var(--pond-ink);
+  background: #071018;
+}
+
+/* Leave the bitmap cursors in the other routes, not on the CRT face. */
+html:has(body[data-route="home"]),
+body[data-route="home"], body[data-route="home"] .site-shell, #home {
+  cursor: default !important;
+}
+#home button, #pond-season-slider { cursor: pointer !important; }
+
+#home #wallpaper-root,
+body[data-route="home"] .site-shell::before,
+body[data-route="home"] .site-shell::after {
+  display: none;
+}
+
+#home .pond-surface,
+#home::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+#home .pond-surface {
+  z-index: 1;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 47% 55%, var(--pond-water,#164940), #0c1b20 58%, #060c11 96%);
+}
+
+#home-pond-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#home .pond-surface {
+  contain: layout paint;
+}
+
+#home-pond-canvas {
+  pointer-events: none;
+}
+
+#home::after {
+  z-index: 4;
+  content: "";
+  background:
+    radial-gradient(ellipse at center, transparent 53%, rgb(0 3 9 / 58%) 100%),
+    repeating-linear-gradient(90deg, rgb(245 102 90 / 2%) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(to bottom, transparent 0 2px, rgb(1 6 12 / 18%) 2px 3px);
+}
+
+/* The opaque renderer contains its own curved point field, scan mask,
+   vignette and seasonal colour. Keep CSS optics for the no-canvas fallback
+   only: another viewport-sized transparent layer is costly on a software Viz. */
+#home[data-pond-phosphor]::after,
+#home[data-pond-phosphor] .pond-temperature { display: none; }
+
+@media (forced-colors: none) {
+  /* Raster the foreground phosphor with its ink, not across the viewport. */
+  #home[data-pond-phosphor] :is(.pond-glyph, .icon-title, .pond-status, #pond-season-slider canvas) {
+    mask-image: repeating-linear-gradient(to bottom, #000 0 2px, rgb(0 0 0 / 88%) 2px 3px);
+  }
+}
+
+#home .pond-status,
+#home .pond-season {
+  position: absolute;
+  top: var(--pond-top);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  gap: .65em;
+  font: 500 clamp(.78rem, 1.15vw, 1rem)/1.35 var(--pond-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--pond-ink);
+  text-shadow: -.5px 0 #639295, .5px 0 #977a99, 0 0 .6em #607c89;
+}
+
+#home .pond-status {
+  left: 50%;
+  transform: translateX(-50%);
+  flex-wrap: wrap;
+  max-width: calc(100% - var(--pond-left) - var(--pond-right) - 9rem);
+}
+
+#home .pond-season {
+  right: var(--pond-right);
+  color-scheme: dark;
+}
+
+#home .pond-season {
+  padding-inline: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+#pond-season-slider {
+  --pond-track-inset: 24px;
+  --pond-mark-radius: 17;
+  position: relative;
+  display: block;
+  width: 272px;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  touch-action: none;
+  user-select: none;
+  cursor: pointer;
+  outline: none;
+}
+
+#pond-season-slider::before {
+  content: "";
+  position: absolute;
+  inset-inline: var(--pond-track-inset);
+  top: calc(50% - 1px);
+  height: 2px;
+  background: radial-gradient(ellipse at center, #c0d9e47a 0 0.85px,
+    transparent 1.25px) 0 0 / 5px 2px repeat-x;
+}
+
+@media (max-width: 820px) {
+  #pond-season-slider {
+    --pond-track-inset: 16px;
+    --pond-mark-radius: 12;
+    width: clamp(5.5rem, 11vw, 8rem);
+  }
+}
+
+#pond-season-slider canvas {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#pond-season-slider:focus-visible {
+  outline: 1px dashed var(--pond-tone, #b8cfdb);
+  outline-offset: 1px;
+}
+
+#pond-season-value[hidden], #pond-post-copy[hidden] {
+  display: none !important;
+}
+
+#home .desktop-icons {
+  position: absolute;
+  inset: calc(var(--pond-top) + 3.5rem) var(--pond-right)
+    var(--pond-bottom) var(--pond-left);
+  z-index: 2;
+  display: grid;
+  grid-template: repeat(2, minmax(0, 1fr)) / repeat(3, minmax(0, 1fr));
+  grid-auto-flow: row;
+  place-items: center;
+  box-sizing: border-box;
+  width: auto;
+  height: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+#home .desktop-icon[data-route] {
+  position: relative;
+  inset: auto;
+  /* Placement is independent of the legacy keyboard/reduced transform reset. */
+  translate: var(--pond-x) var(--pond-y);
+  transform: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  place-items: center;
+  align-content: center;
+  gap: .35rem;
+  box-sizing: border-box;
+  width: min(100%, max(9rem, calc(var(--pond-glyph-width) + .7rem)));
+  min-width: 44px;
+  height: auto;
+  min-height: 44px;
+  margin: 0;
+  padding: .35rem;
+  appearance: none;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: #eff8ff;
+  transition: color 140ms ease;
+}
+
+#home .desktop-icon[data-route="knowledge"] {
+  --pond-x: 3vw;
+  --pond-y: -6vh;
+  --pond-glyph-width: clamp(56px, 9.75vw, 156px);
+  --pond-dot: 1.21;
+  --pond-dash-gap: 1.607;
+}
+
+#home .desktop-icon[data-route="videos"] {
+  --pond-x: 10vw;
+  --pond-y: -4vh;
+  --pond-glyph-width: clamp(56px, 9.75vw, 156px);
+  --pond-dot: 1.21;
+  --pond-dash-gap: 1.607;
+}
+
+#home .desktop-icon[data-route="resources"] {
+  --pond-x: 5vw;
+  --pond-y: 8vh;
+  --pond-glyph-width: clamp(49px, 7.6875vw, 123px);
+  --pond-dot: 1.57;
+  --pond-dash-gap: 2.113;
+}
+
+#home .desktop-icon[data-route="games"] {
+  --pond-x: -5vw;
+  --pond-y: -16vh;
+  --pond-glyph-width: clamp(64px, 11vw, 176px);
+  --pond-dot: 1.12;
+  --pond-dash-gap: 1.481;
+}
+
+#home .desktop-icon[data-route="chatroom"] {
+  --pond-x: -14vw;
+  --pond-y: 2vh;
+  --pond-glyph-width: clamp(54px, 8.875vw, 142px);
+  --pond-dot: 1.39;
+  --pond-dash-gap: 1.860;
+}
+
+#home .desktop-icon[data-route="about"] {
+  --pond-x: 2vw;
+  --pond-y: -1vh;
+  --pond-glyph-width: clamp(48px, 7.5vw, 120px);
+  --pond-dot: 1.65;
+  --pond-dash-gap: 2.219;
+}
+
+#home .desktop-icon::before,
+#home .desktop-icon::after {
+  content: none;
+}
+
+#home .pond-glyph {
+  display: block;
+  width: var(--pond-glyph-width);
+  height: auto;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 0;
+  transition: transform 120ms ease-out;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 2px rgb(190 231 255 / 44%));
+}
+
+/* The path is the master; only its dotted instance produces ink. */
+#home .pond-glyph use {
+  stroke-width: var(--pond-dot);
+  stroke-dasharray: .1 var(--pond-dash-gap);
+}
+
+#home .desktop-icon .icon-title {
+  display: block;
+  position: static;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  white-space: normal;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  text-align: center;
+  font: 500 clamp(.85rem, 1.25vw, 1.15rem)/1.35 var(--pond-mono);
+  text-shadow: -.5px 0 #507988, .5px 0 #866b85;
+}
+
+#home .desktop-icon:is(:hover, :focus-visible, .is-hovered) {
+  color: #f3fbff;
+}
+
+#home .desktop-icon:is(:hover, :focus-visible, .is-hovered) .pond-glyph {
+  transform: scale(.97);
+  filter: drop-shadow(0 0 4px rgb(191 232 255 / 72%));
+}
+
+#home .desktop-icon:is(:active,.is-ui-pressed) .pond-glyph {
+  transform: translateY(2px) scale(1.02,.92);
+  transition-duration: 80ms;
+}
+
+/* A few phosphor grains on the live window edge, only during a pond launch. */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-ui-transition="app-open"][data-motion="full"] .page.active > .xp-window::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    pointer-events: none;
+    background: radial-gradient(circle, var(--pond-edge) 1px, transparent 1.5px) top / 17px 3px repeat-x,
+      radial-gradient(circle, var(--pond-edge) 1px, transparent 1.5px) left / 3px 23px repeat-y;
+    animation: pond-edge-dust 320ms ease-out both;
+  }
+  @keyframes pond-edge-dust {
+    from { opacity: .85; transform: translateY(-2px); }
+    to { opacity: 0; transform: translateY(3px); }
+  }
+}
+
+.pond-launch-echo {
+  position: fixed;
+  z-index: 40;
+  pointer-events: none;
+  overflow: visible;
+  fill: none;
+  stroke: #e9f4ff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#home .desktop-icon:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  #home .pond-status { left: var(--pond-left); transform: none; }
+
+  body[data-route="home"] #home.active {
+    min-height: 24rem;
+  }
+
+  #home .desktop-icons {
+    grid-template: repeat(3, minmax(0, 1fr)) / repeat(2, minmax(0, 1fr));
+  }
+
+  #home .desktop-icon[data-route] {
+    width: min(7rem, calc(100% - 2.5rem));
+    translate: clamp(-1.25rem, var(--pond-x), 1.25rem) clamp(-1rem, var(--pond-y), 1rem);
+  }
+
+  #home .pond-glyph { width: min(4.5rem, 23vw); }
+}
+
+@media (max-height: 520px) {
+  #home .desktop-icons {
+    inset-block-start: calc(var(--pond-top) + 2.75rem);
+  }
+
+  #home .pond-glyph {
+    width: 2.45rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #home .desktop-icon[data-route],
+  #home .desktop-icon .pond-glyph,
+  #home .desktop-icon .icon-title {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  #home::after {
+    display: none;
+  }
+
+  #home .desktop-icon[data-route] {
+    color: ButtonText;
+  }
+
+  #home .pond-glyph {
+    filter: none;
+  }
+}
+
+#home {
+  --pond-tone: #b0ddcb;
+}
+
+#home .pond-status {
+  color: var(--pond-tone);
+  transition: color 700ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #home .pond-status { transition: none; }
+}
+
+#home .pond-temperature {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(174deg, var(--pond-tone), transparent 58%,
+    var(--pond-tone));
+  opacity: calc(0.075 + var(--pond-warm, 0) * 0.09);
+}
+
+.pond-boot-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  overflow: hidden;
+  background: #020304;
+  color: #d3e3e1;
+  touch-action: none;
+  user-select: none;
+  cursor: default;
+}
+
+.pond-skip {
+  position: absolute;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 1;
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  background: none;
+  color: #bdcece;
+  font: 1.25rem monospace;
+  cursor: pointer !important;
+}
+
+.pond-boot-line {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 23vw;
+  height: 2px;
+  transform: translate(-50%, -50%);
+  background: #f4f6f7;
+  animation: pond-line-in 350ms ease-out both;
+}
+
+@keyframes pond-line-in {
+  from { transform: translate(-50%, -50%) scaleX(.06); }
+  to   { transform: translate(-50%, -50%) scaleX(1); }
+}
+
+.pond-boot-layer[data-phase="warm"] {
+  background: #0b1011;
+  animation: pond-warm-jitter 95ms steps(2, end) 5;
+}
+
+.pond-boot-layer[data-phase="warm"] .pond-boot-line {
+  width: 100%;
+  height: 100%;
+  animation: pond-open-field 500ms ease-out both;
+}
+
+@keyframes pond-open-field {
+  0%   { transform: translate(-50%, -50%) scale(.23, .002); opacity: .95; }
+  38%  { transform: translate(-50%, -50%) scale(1, .008); opacity: .72; }
+  100% { transform: translate(-50%, -50%) scale(1, 1); opacity: .04; }
+}
+
+@keyframes pond-warm-jitter {
+  50% { background-color: #172020; }
+  75% { background-position-y: 1px; }
+}
+
+.pond-boot-layer #pond-post-copy {
+  display: none;
+  position: absolute;
+  left: max(8vw, 1rem);
+  top: 43%;
+  font: 500 clamp(.8rem, 2vw, 1rem)/1.55 ui-monospace, monospace;
+  white-space: pre;
+}
+
+.pond-boot-layer[data-phase="post"] #pond-post-copy { display: block; }
+.pond-boot-layer #pond-post-copy > div { opacity: 0; }
+.pond-boot-layer #pond-post-copy > .is-on { opacity: 1; }
+.pond-boot-layer:not([data-phase="line"]):not([data-phase="warm"]) .pond-boot-line {
+  display: none;
+}
+
+.pond-boot-layer[data-phase="reveal"] {
+  opacity: 0;
+  transition: opacity 260ms ease-out;
+}
+
+.pond-boot-layer[data-phase="shield"] {
+  opacity: 0;
+  transition: none;
+}
+
+#home[data-pond-boot="hold"] .desktop-icon { opacity: 0; }
+#home .desktop-icon:nth-child(1) { --pond-i: 0; }
+#home .desktop-icon:nth-child(2) { --pond-i: 1; }
+#home .desktop-icon:nth-child(3) { --pond-i: 2; }
+#home .desktop-icon:nth-child(4) { --pond-i: 3; }
+#home .desktop-icon:nth-child(5) { --pond-i: 4; }
+#home .desktop-icon:nth-child(6) { --pond-i: 5; }
+
+#home[data-pond-boot="reveal"] .desktop-icon {
+  animation: pond-icon-in 490ms cubic-bezier(.2,.82,.25,1) both;
+  animation-delay: calc(var(--pond-i, 0) * 112ms);
+}
+
+#home[data-pond-quick][data-pond-boot="reveal"] .desktop-icon {
+  animation-duration: 165ms;
+  animation-delay: calc(var(--pond-i, 0) * 21ms);
+}
+
+@keyframes pond-icon-in {
+  from { opacity: 0; transform: translateY(6px); scale: .89; }
+  70%  { opacity: 1; transform: translateY(-1px); scale: 1.035; }
+  to   { opacity: 1; transform: none; scale: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #home[data-pond-boot] .desktop-icon,
+  .pond-boot-layer, .pond-boot-line { animation: none; transition: none; }
+}

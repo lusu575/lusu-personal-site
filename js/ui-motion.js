@@ -999,7 +999,7 @@
     ], { duration: minimizing ? DURATIONS.standard : DURATIONS.fast, easing: EASING.out });
   }
 
-  function flipAnimation(target, beforeRect) {
+  function flipAnimation(target, beforeRect, pondDirection) {
     if (!isElement(target) || !beforeRect) {
       return null;
     }
@@ -1009,8 +1009,12 @@
     }
     var deltaX = beforeRect.left - afterRect.left;
     var deltaY = beforeRect.top - afterRect.top;
-    var scaleX = clamp(beforeRect.width / afterRect.width, 0.2, 5);
-    var scaleY = clamp(beforeRect.height / afterRect.height, 0.2, 5);
+    var scaleX = beforeRect.width / afterRect.width;
+    var scaleY = beforeRect.height / afterRect.height;
+    if (!pondDirection) {
+      scaleX = clamp(scaleX, 0.2, 5);
+      scaleY = clamp(scaleY, 0.2, 5);
+    }
     var geometryChanged = Math.abs(deltaX) > 0.5
       || Math.abs(deltaY) > 0.5
       || Math.abs(scaleX - 1) > 0.002
@@ -1018,13 +1022,20 @@
     if (!geometryChanged) {
       return null;
     }
-    return animateElement(target, [
-      {
-        transformOrigin: "top left",
-        transform: "translate3d(" + deltaX.toFixed(2) + "px," + deltaY.toFixed(2) + "px,0) scale(" + scaleX.toFixed(4) + "," + scaleY.toFixed(4) + ")"
-      },
-      { transformOrigin: "top left", transform: "translate3d(0,0,0) scale(1,1)" }
-    ], { duration: DURATIONS.window, easing: EASING.inOut });
+    var iconFrame = {
+      transformOrigin: "top left",
+      transform: "translate3d(" + deltaX.toFixed(2) + "px," + deltaY.toFixed(2) + "px,0) scale(" + scaleX.toFixed(4) + "," + scaleY.toFixed(4) + ")"
+    };
+    var windowFrame = { transformOrigin: "top left", transform: "translate3d(0,0,0) scale(1,1)" };
+    if (pondDirection) {
+      var frames = [iconFrame, { transformOrigin: "top left", transform: "scale(1.012,1.018)" }, windowFrame];
+      var closing = pondDirection === "close";
+      frames[1].offset = closing ? .16 : .78;
+      return animateElement(target, closing ? frames.reverse() : frames, {
+        duration: closing ? 260 : 320, easing: closing ? "ease-in" : EASING.out
+      });
+    }
+    return animateElement(target, [iconFrame, windowFrame], { duration: DURATIONS.window, easing: EASING.inOut });
   }
 
   function routeEnterAnimation(target, direction) {
@@ -1130,7 +1141,7 @@
       context.immediate
       || context.motion === false
       || state.mode === "reduced"
-      || (snapshot && snapshot.inputMethod === "keyboard")
+      || (snapshot && snapshot.inputMethod === "keyboard" && !(context.pondPair && kind === "app-open"))
     );
     var pageNavigationKeepsChromeLive = kind === "route"
       || kind === "app-open"
@@ -1214,7 +1225,7 @@
       } else if (kind === "route" && options && options.routeFallback) {
         animation = routeEnterAnimation(target, direction);
       } else if (kind === "app-open" && options && options.appOpenFallback) {
-        animation = appOpenEnterAnimation(target);
+        animation = (context.pondPair && flipAnimation(target, origin, "open")) || appOpenEnterAnimation(target);
       } else if (kind === "mobile-tab" && options && options.mobileTabFallback) {
         animation = mobileTabEnterAnimation(target, direction);
       } else if (!isExitKind(kind) && !(kind === "route" && options && options.skipEnter)) {
@@ -1243,7 +1254,8 @@
       var surface = resolveContextElement(context.surface);
       var exit = kind === "modal-close" && surface
         ? transitionSurface(surface, false)
-        : exitAnimation(kind, beforeTarget, origin);
+        : (context.pondPair && kind === "window-close" && flipAnimation(beforeTarget, origin, "close"))
+          || exitAnimation(kind, beforeTarget, origin);
       if (global.Promise && exit && typeof exit.then === "function") {
         var commitAfterExit = function commitAfterExit() {
           try {

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>夏塘 · WebGL2 样机</title>
+  <link rel="icon" href="data:,">
+  <style>
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #000; color: #eff8ff; }
+    canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+    .status { position: absolute; inset: 0; display: grid; place-items: center; padding: 1rem; margin: 0; font: 1rem monospace; text-align: center; }
+    .status[hidden] { display: none; }
+  </style>
+  <script type="module" src="./pond.mjs?v=20261119-gemini-sample1"></script>
+</head>
+<body>
+  <canvas aria-label="夏塘里的三条点云鲤鱼和夏荷。点按水面产生涟漪。C 切换 CRT，G 切换网格，空格冻结画面。"></canvas>
+  <p id="status" class="status" role="alert" hidden></p>
+  <noscript><p class="status">此样机需要 JavaScript 和 WebGL2。</p></noscript>
+</body>
+</html>
