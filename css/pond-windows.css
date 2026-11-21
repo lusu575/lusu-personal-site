@@ -1195,26 +1195,7 @@ html[data-pond-mode="videos"] #video-list .video-card:nth-child(3n+3) .video-thu
   background: linear-gradient(135deg, rgba(14, 58, 56, 0.92), rgba(38, 92, 82, 0.84), rgba(18, 42, 48, 0.92)) !important;
 }
 
-html[data-pond-mode="videos"] #video-list .video-thumb::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 48px;
-  height: 34px;
-  transform: translate(-50%, -50%);
-  border-radius: 9px;
-  border: 1.5px dashed rgba(226, 250, 246, 0.82);
-  background: rgba(4, 14, 18, 0.45) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolygon points='8,5 19,12 8,19' fill='none' stroke='%23eefcf9' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
-  box-shadow: 0 0 12px rgba(154, 244, 236, 0.30);
-  pointer-events: none;
-  transition: transform 140ms ease, box-shadow 140ms ease;
-}
-
-html[data-pond-mode="videos"] #video-list .video-thumb:hover::after {
-  transform: translate(-50%, -50%) scale(1.08);
-  box-shadow: 0 0 18px rgba(154, 244, 236, 0.56);
-}
+/* Thumbnail play overlay removed so thumbnail cover text is never obscured */
 
 html[data-pond-mode="videos"] #video-list .video-thumb img {
   width: 100%;

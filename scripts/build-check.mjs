@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-eager-covers";
-const finalUpdateSlug = "2026-11-22-pond-eager-covers";
+const finalUpdateId = "seed-update-2026-11-22-pond-cascade-root";
+const finalUpdateSlug = "2026-11-22-pond-cascade-root";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Fixed Lazy-Image Stall on Game Covers & About Avatar After Route Switch";
-const finalPublishedAt = "2026-11-22T03:59:00+08:00";
+const finalTitleEn = "Root Fix for Lazy Route CSS Cascade Order & Removed Center Video Play Overlay";
+const finalPublishedAt = "2026-11-22T04:01:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-eager-covers",
   "seed-update-2026-11-22-pond-icons-close-sync",
   "seed-update-2026-11-22-pond-home-shell-clear",
   "seed-update-2026-11-22-pond-home-login-z",

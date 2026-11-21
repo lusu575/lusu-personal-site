@@ -174,6 +174,20 @@ function applyChatAvatarPresentation() {
 function bootPondVisualBridge() {
   if (window.__pondVisualBridge) return;
 
+  // Root architectural cascade fix:
+  // main.js lazily appends /css/routes/*.css and /css/transfer.css to document.head AFTER initial load.
+  // Keep pond-windows.css pinned as the last stylesheet in <head> so Midnight Pond always wins cascade order.
+  const keepPondStylesheetLast = () => {
+    const pondLink = document.head.querySelector('link[rel="stylesheet"][href*="pond-windows.css"]');
+    if (!pondLink) return;
+    const links = document.head.querySelectorAll('link[rel="stylesheet"]');
+    if (links.length > 0 && links[links.length - 1] !== pondLink) {
+      document.head.appendChild(pondLink);
+    }
+  };
+  keepPondStylesheetLast();
+  new MutationObserver(keepPondStylesheetLast).observe(document.head, { childList: true });
+
   const probe = document.createElement('canvas');
   if (!probe.getContext('webgl2')) return;
 

@@ -15530,6 +15530,20 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 1. ゲーム表紙（猫国建設者・小黑屋・人生重開シミュレーター等）に loading=''eager'' を強制し、黒い空枠にならず即座に表示されるようにしました。
 2. ツールアイコンおよび概要ページのアバター画像も表示時に即時読み込みへ統一しました。', '2026-11-22T03:59:00+08:00', '2026-11-22T03:59:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r8', '2026-11-22T03:59:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-cascade-root', '2026-11-22-pond-cascade-root', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T04:01:00+08:00', '2026-11-22T04:01:00+08:00', '2026-11-22T04:01:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-cascade-root-zh', 'seed-update-2026-11-22-pond-cascade-root', 'zh', '根治路由样式后插层叠顺序问题并彻底移除视频封面中央播放覆盖层', '在桥接层监听 document.head 并将 pond-windows.css 固定维持为最后一个样式表，从根源解决 main.js 懒加载 routes/*.css 与 transfer.css 覆盖新视觉层的问题，并直接删除视频封面中央播放覆盖层规则。', '本次从架构根源解决了生产环境中懒加载路由样式反向覆盖新视觉层的问题：
+
+1. js/main.js 会在切换路由时向 document.head 尾部动态追加 /css/routes/knowledge.css、/css/routes/videos.css、/css/routes/games.css、/css/routes/chatroom.css 与 /css/transfer.css，导致其层叠顺序排在 pond-windows.css 之后。现于 pond-site-bridge.mjs 增加 MutationObserver，确保 pond-windows.css 始终稳居 <head> 最末位。
+2. 直接从 pond-windows.css 源头删除旧版 .video-thumb::after 封面中央播放框，不再靠二次覆盖压制，确保视频封面文字零遮挡且标题与简介高对比完整呈现。', '2026-11-22T04:01:00+08:00', '2026-11-22T04:01:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-cascade-root-en', 'seed-update-2026-11-22-pond-cascade-root', 'en', 'Root Fix for Lazy Route CSS Cascade Order & Removed Center Video Play Overlay', 'Pinned pond-windows.css as the final stylesheet in document.head whenever main.js lazily injects route CSS or transfer.css, and deleted the source center video-thumb play overlay.', 'This release eliminates the root CSS cascade race between Midnight Pond and lazily injected route stylesheets:
+
+1. Added a document.head MutationObserver in pond-site-bridge.mjs that keeps pond-windows.css as the last stylesheet whenever main.js appends /css/routes/*.css or /css/transfer.css, guaranteeing deterministic visual precedence in production.
+2. Deleted the legacy .video-thumb::after center play overlay directly at its source so video thumbnails stay unobstructed.', '2026-11-22T04:01:00+08:00', '2026-11-22T04:01:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-cascade-root-ja', 'seed-update-2026-11-22-pond-cascade-root', 'ja', '遅延読み込みルート CSS のカスケード順を根本修正・動画中央再生枠を削除', 'main.js がルート専用 CSS や transfer.css を後から <head> 末尾へ追加しても pond-windows.css が常に最後尾に維持されるよう修正し、動画サムネイル中央の再生枠定義を元から削除しました。', '本番環境で遅延読み込みされるルート CSS が新テーマを上書きする根本原因を解消しました：
+
+1. js/main.js が遷移時に /css/routes/*.css や /css/transfer.css を document.head 末尾へ挿入する際、pond-site-bridge.mjs の MutationObserver が pond-windows.css を常に最後尾へ維持することで、カスケード優先順を完全に保証します。
+2. 動画サムネイル中央に重なっていた .video-thumb::after を元定義から削除し、タイトル・概要の視認性と表紙文字の見やすさを確保しました。', '2026-11-22T04:01:00+08:00', '2026-11-22T04:01:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r9', '2026-11-22T04:01:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r8', '2026-11-22T03:59:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r9', '2026-11-22T04:01:00+08:00', 'schema') on conflict(version) do nothing;
