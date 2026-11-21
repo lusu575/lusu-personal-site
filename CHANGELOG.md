@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 恢复视频区 3 列标准 16:9 网格并放开卡片内容区自适应高度，确保封面零裁切且标题、简介与底部播放按钮完整呈现（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-videos-16x9` / `2026-11-22-pond-videos-16x9`；视觉层缓存 `20261122-pond-polish-r11`。
+
 - 深夜池塘最终细节收尾：视频 16:9 完整封面零裁切、修复聊天室右上房间胶囊叠字与顶沿渐隐、提亮猫国封面并升级 Hextris 霓虹六边形封面、优化知识库 3 排适配与手机端 Dock 底部 96px 留白（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-final-finish` / `2026-11-22-pond-final-finish`；视觉层缓存 `20261122-pond-polish-r10`。
 
 - 从根源修复 main.js 懒加载 css/routes/*.css 与 	ransfer.css 后插导致覆盖 pond-windows.css 的层叠顺序问题（在 pond-site-bridge.mjs 将 pond-windows.css 固定维持在 document.head 末位），并从源头删除 .video-thumb::after 中央播放覆盖层（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-cascade-root` / `2026-11-22-pond-cascade-root`；视觉层缓存 `20261122-pond-polish-r9`。

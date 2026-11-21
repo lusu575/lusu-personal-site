@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-videos-16x9', '2026-11-22-pond-videos-16x9', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T04:23:00+08:00', '2026-11-22T04:23:00+08:00', '2026-11-22T04:23:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-videos-16x9", {
+  "zh": {
+    "summary": "将视频区恢复为 3 列网格并保持标准 16:9 封面比例，消除 2 列高封面挤出文字区的问题，实现封面无裁切且标题、简介与播放按钮完整对齐。",
+    "title": "恢复视频区 3 列标准 16:9 封面排布并确保标题与播放按钮完整呈现",
+    "content_markdown": "本次更新针对视频区实测结果完成最终排布校正：\n\n1. 将视频列表恢复为 3 列网格（每张封面自然呈 16:9 比例，约 308×173px），16:9 的 Bilibili 与 YouTube 封面满框显示不裁字也不留黑边。\n2. 放开 .video-card 与 .video-body 的 overflow: visible 与自适应高度，确保标题、简介、作者时间与底部「播放」按钮全部清晰完整且每行齐平。"
+  },
+  "en": {
+    "summary": "Switched Videos back to a 3-column grid with true 16:9 thumbnails and unclipped card bodies so covers, titles, descriptions, and Play buttons all render cleanly.",
+    "title": "Restored 3-Column True 16:9 Video Grid with Unclipped Titles & Aligned Play Buttons",
+    "content_markdown": "This quick layout correction resolves the Videos card overflow seen in live verification:\n\n1. Restored the 3-column grid so 16:9 thumbnails render at natural proportions without cropping cover text.\n2. Set .video-card and .video-body to natural unclipped height with aligned bottom Play buttons."
+  },
+  "ja": {
+    "summary": "動画区を 3 列グリッドの標準 16:9 サムネイルへ戻し、カードの切り抜きを解除して表紙・タイトル・概要・再生ボタンをすべて見切れなく整列させました。",
+    "title": "動画区 3 列 16:9 レイアウト復元・タイトルと再生ボタン完全表示",
+    "content_markdown": "動画区の実機確認に基づき、レイアウトを最終調整しました：\n\n1. 3 列グリッド＋標準 16:9 比率に戻すことで、Bilibili・YouTube サムネイルが文字切れや余白なしで自然に収まるようにしました。\n2. .video-card と .video-body の高さ制約を解除し、タイトル・概要・下部再生ボタンを全カード揃えて表示します。"
+  }
+}, "2026-11-22T04:23:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-final-finish', '2026-11-22-pond-final-finish', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T04:15:00+08:00', '2026-11-22T04:15:00+08:00', '2026-11-22T04:15:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-final-finish", {
   "zh": {

@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-videos-16x9",
+      "slug": "2026-11-22-pond-videos-16x9",
+      "category": "site-updates",
+      "tags": [
+        "site-update",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T04:23:00+08:00",
+      "updated_at": "2026-11-22T04:23:00+08:00",
+      "published_at": "2026-11-22T04:23:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "恢复视频区 3 列标准 16:9 封面排布并确保标题与播放按钮完整呈现",
+        "en": "Restored 3-Column True 16:9 Video Grid with Unclipped Titles & Aligned Play Buttons",
+        "ja": "動画区 3 列 16:9 レイアウト復元・タイトルと再生ボタン完全表示"
+      },
+      "summary": {
+        "zh": "将视频区恢复为 3 列网格并保持标准 16:9 封面比例，消除 2 列高封面挤出文字区的问题，实现封面无裁切且标题、简介与播放按钮完整对齐。",
+        "en": "Switched Videos back to a 3-column grid with true 16:9 thumbnails and unclipped card bodies so covers, titles, descriptions, and Play buttons all render cleanly.",
+        "ja": "動画区を 3 列グリッドの標準 16:9 サムネイルへ戻し、カードの切り抜きを解除して表紙・タイトル・概要・再生ボタンをすべて見切れなく整列させました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-final-finish",
       "slug": "2026-11-22-pond-final-finish",
       "category": "site-updates",
@@ -111,34 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "将登录浮层右上角关闭按钮统一为圆形虚线 × 控件、重绘知识库与文章标题栏翻书图标消除方块观感，并为聊天室滚动区增加顶沿渐隐过渡。",
         "en": "Matched the login modal close button to the circular dashed x style, redrew the Knowledge/Article open-book title icon for crispness, and added a soft top-edge scroll fade to the Chatroom log.",
         "ja": "ログイン窓右上の閉じるボタンを他窓と同じ点線丸 × へ統一し、知識庫と記事タイトルの本アイコンを鮮明な見開き SVG へ刷新、チャット上端に自然なフェードマスクを追加しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-home-shell-clear",
-      "slug": "2026-11-22-pond-home-shell-clear",
-      "category": "site-updates",
-      "tags": [
-        "site-update",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T03:42:00+08:00",
-      "updated_at": "2026-11-22T03:42:00+08:00",
-      "published_at": "2026-11-22T03:42:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "修复首页容器背景透明透出池塘画布并统一显示密码按钮",
-        "en": "Transparent Home Shell Pass-Through for Pond Canvas & Dark Password Toggle",
-        "ja": "ホーム画面の透過調整（池キャンバス表示維持）とパスワード表示ボタン暗色化"
-      },
-      "summary": {
-        "zh": "将首页 .site-shell 及其伪元素背景设为完全透明，确保首页 WebGL2 深夜池塘画布与登录浮层同时完整呈现，并同步将「显示密码」按钮统一为暗色点阵胶囊。",
-        "en": "Made .site-shell and its pseudo-elements transparent on Home so the WebGL2 pond canvas renders beneath the centered login modal, and styled the Show Password button in dark CRT glass.",
-        "ja": "ホーム画面の .site-shell と疑似要素の背景を完全透過にして WebGL2 の池キャンバスがログイン窓の背後にそのまま表示されるよう修正し、パスワード表示ボタンも暗色点陣スタイルへ統一しました。"
       }
     }
   ]

@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-final-finish";
-const finalUpdateSlug = "2026-11-22-pond-final-finish";
+const finalUpdateId = "seed-update-2026-11-22-pond-videos-16x9";
+const finalUpdateSlug = "2026-11-22-pond-videos-16x9";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Midnight Pond Final Visual Finish: 16:9 Uncropped Video Covers, Chatroom Spacing, Bright Game Art & Mobile Dock Clearance";
-const finalPublishedAt = "2026-11-22T04:15:00+08:00";
+const finalTitleEn = "Restored 3-Column True 16:9 Video Grid with Unclipped Titles & Aligned Play Buttons";
+const finalPublishedAt = "2026-11-22T04:23:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-final-finish",
   "seed-update-2026-11-22-pond-cascade-root",
   "seed-update-2026-11-22-pond-eager-covers",
   "seed-update-2026-11-22-pond-icons-close-sync",

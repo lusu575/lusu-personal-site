@@ -4189,3 +4189,40 @@ html[data-ui-shell="mobile"] #knowledge-list,
 html[data-shell="mobile"] #knowledge-list {
   padding-bottom: 96px !important;
 }
+
+
+/* --- Videos 3-Column True 16:9 Grid Fix (r11): Zero Cropping & Full Unclipped Body --- */
+html[data-pond-mode="videos"] #video-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  grid-auto-rows: auto !important;
+  align-items: stretch !important;
+  gap: 16px !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-card {
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-thumb-wrap,
+html[data-pond-mode="videos"] #video-list .video-thumb {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9 !important;
+  overflow: hidden !important;
+  flex: 0 0 auto !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-thumb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-body {
+  flex: 1 1 auto !important;
+  overflow: visible !important;
+  min-height: auto !important;
+}

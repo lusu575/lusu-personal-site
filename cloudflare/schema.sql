@@ -15564,6 +15564,20 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 3. ゲーム区：猫国建設者の表紙を明るく調整し、Hextris を多色ネオン六角形 SVG へ刷新、言語タグの間隔を整えました。
 4. 知識庫・モバイル：3行がすっきり収まる余白と下端フェードを加え、モバイル下部 Dock 用の 96px 余白を確保しました。', '2026-11-22T04:15:00+08:00', '2026-11-22T04:15:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r10', '2026-11-22T04:15:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-videos-16x9', '2026-11-22-pond-videos-16x9', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T04:23:00+08:00', '2026-11-22T04:23:00+08:00', '2026-11-22T04:23:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-videos-16x9-zh', 'seed-update-2026-11-22-pond-videos-16x9', 'zh', '恢复视频区 3 列标准 16:9 封面排布并确保标题与播放按钮完整呈现', '将视频区恢复为 3 列网格并保持标准 16:9 封面比例，消除 2 列高封面挤出文字区的问题，实现封面无裁切且标题、简介与播放按钮完整对齐。', '本次更新针对视频区实测结果完成最终排布校正：
+
+1. 将视频列表恢复为 3 列网格（每张封面自然呈 16:9 比例，约 308×173px），16:9 的 Bilibili 与 YouTube 封面满框显示不裁字也不留黑边。
+2. 放开 .video-card 与 .video-body 的 overflow: visible 与自适应高度，确保标题、简介、作者时间与底部「播放」按钮全部清晰完整且每行齐平。', '2026-11-22T04:23:00+08:00', '2026-11-22T04:23:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-videos-16x9-en', 'seed-update-2026-11-22-pond-videos-16x9', 'en', 'Restored 3-Column True 16:9 Video Grid with Unclipped Titles & Aligned Play Buttons', 'Switched Videos back to a 3-column grid with true 16:9 thumbnails and unclipped card bodies so covers, titles, descriptions, and Play buttons all render cleanly.', 'This quick layout correction resolves the Videos card overflow seen in live verification:
+
+1. Restored the 3-column grid so 16:9 thumbnails render at natural proportions without cropping cover text.
+2. Set .video-card and .video-body to natural unclipped height with aligned bottom Play buttons.', '2026-11-22T04:23:00+08:00', '2026-11-22T04:23:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-videos-16x9-ja', 'seed-update-2026-11-22-pond-videos-16x9', 'ja', '動画区 3 列 16:9 レイアウト復元・タイトルと再生ボタン完全表示', '動画区を 3 列グリッドの標準 16:9 サムネイルへ戻し、カードの切り抜きを解除して表紙・タイトル・概要・再生ボタンをすべて見切れなく整列させました。', '動画区の実機確認に基づき、レイアウトを最終調整しました：
+
+1. 3 列グリッド＋標準 16:9 比率に戻すことで、Bilibili・YouTube サムネイルが文字切れや余白なしで自然に収まるようにしました。
+2. .video-card と .video-body の高さ制約を解除し、タイトル・概要・下部再生ボタンを全カード揃えて表示します。', '2026-11-22T04:23:00+08:00', '2026-11-22T04:23:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r11', '2026-11-22T04:23:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r10', '2026-11-22T04:15:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r11', '2026-11-22T04:23:00+08:00', 'schema') on conflict(version) do nothing;
