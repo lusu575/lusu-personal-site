@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-videos', '2026-11-22-pond-videos', 'site-updates', '["网站更新","视频区","界面"]', '', 'published', 0, 0, '2026-11-21T17:46:00.000Z', '2026-11-21T17:46:00.000Z', '2026-11-21T17:46:00.000Z') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-videos", {
+  "zh": {
+    "title": "视频区换装深夜终端 CRT 玻璃卡片窗",
+    "summary": "逐步视觉替换第 3 批上线：桌面端视频区（#videos）与播放弹窗换装半透明 CRT 玻璃窗，保留现站 /api/videos 接口、分类筛选、平台徽标与外链播放逻辑；工具、游戏、聊天室、关于、登录、欢迎窗及手机端保持原样。",
+    "content_markdown": "# 视频区换装深夜终端 CRT 玻璃卡片窗\n\n本次为全站视觉逐步替换的第 3 批上线，仅替换桌面端视频区（`#videos`）与视频弹窗的视觉呈现层，不改动任何视频数据接口、分类逻辑或外链播放行为。\n\n- 悬浮于四季池塘 CRT 背景之上，采用三列 16:9 卡片网格、点阵虚线播放徽标与分类胶囊筛选。\n- 保留现站 `/api/videos` 实时拉取、平台标识（Bilibili / YouTube）与外链播放能力。\n- 工具、游戏、聊天室、关于、登录、欢迎窗及手机端均保持原样，继续按顺序逐批替换。"
+  },
+  "en": {
+    "title": "Videos Section Refreshed with Midnight Pond CRT Cards",
+    "summary": "Batch 3 of the visual refresh is live: the desktop Videos window (#videos) and player modal adopt translucent CRT glass styling with 3-column 16:9 cards and dotted play badges while keeping live /api/videos data and playback links untouched.",
+    "content_markdown": "# Videos Section Refreshed with Midnight Pond CRT Cards\n\nBatch 3 updates only the presentation layer for the desktop Videos section (`#videos`) and player modal, keeping all `/api/videos` requests, category filters, platform badges, and external links intact.\n\n- Renders a 3-column 16:9 CRT glass card grid over the live Pond background with dotted play overlays and glowing category pills.\n- Tools, Games, Chatroom, About, Login, Welcome, and mobile remain untouched and continue rolling out next."
+  },
+  "ja": {
+    "title": "動画セクションを深夜端末・CRTガラスカードへ刷新",
+    "summary": "段階的ビジュアル刷新の第3弾を公開しました。デスクトップの動画欄（#videos）と再生モーダルを半透明CRTガラス窓へ換装し、既存の/api/videos連携・カテゴリ絞り込み・外部リンク再生はそのまま維持しています。",
+    "content_markdown": "# 動画セクションを深夜端末・CRTガラスカードへ刷新\n\n段階的ビジュアル刷新の第3弾として、デスクトップの動画セクション（`#videos`）と再生モーダルの表示レイヤーのみを更新しました。`/api/videos` 取得・分類フィルタ・外部再生リンクは一切変更していません。\n\n- 四季池塘CRT背景の上に3列16:9カードグリッドと点線再生アイコン、カテゴリピルを配置しました。\n- ツール・ゲーム・チャット・概要・ログイン・歓迎窓・モバイル版は従来のまま維持し、順次置き換えます。"
+  }
+}, "2026-11-21T17:46:00.000Z"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-article-reader', '2026-11-22-pond-article-reader', 'site-updates', '["网站更新","知识库","文章详情","阅读体验","界面"]', '', 'published', 0, 0, '2026-11-21T17:38:00.000Z', '2026-11-21T17:38:00.000Z', '2026-11-21T17:38:00.000Z') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-article-reader", {
   "zh": {

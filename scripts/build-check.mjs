@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-article-reader";
-const finalUpdateSlug = "2026-11-22-pond-article-reader";
+const finalUpdateId = "seed-update-2026-11-22-pond-videos";
+const finalUpdateSlug = "2026-11-22-pond-videos";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Article Reader Refreshed with Midnight Pond CRT Glass Styling";
-const finalPublishedAt = "2026-11-21T17:38:00.000Z";
+const finalTitleEn = "Videos Section Refreshed with Midnight Pond CRT Cards";
+const finalPublishedAt = "2026-11-21T17:46:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-article-reader",
   "seed-update-2026-11-21-pond-home-knowledge",
   "seed-update-2026-10-29-tool-maintenance",
   "seed-update-2026-09-28-mobile-layout",

@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-videos",
+      "slug": "2026-11-22-pond-videos",
+      "category": "site-updates",
+      "tags": [
+        "网站更新",
+        "视频区",
+        "界面"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-21T17:46:00.000Z",
+      "updated_at": "2026-11-21T17:46:00.000Z",
+      "published_at": "2026-11-21T17:46:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "视频区换装深夜终端 CRT 玻璃卡片窗",
+        "en": "Videos Section Refreshed with Midnight Pond CRT Cards",
+        "ja": "動画セクションを深夜端末・CRTガラスカードへ刷新"
+      },
+      "summary": {
+        "zh": "逐步视觉替换第 3 批上线：桌面端视频区（#videos）与播放弹窗换装半透明 CRT 玻璃窗，保留现站 /api/videos 接口、分类筛选、平台徽标与外链播放逻辑；工具、游戏、聊天室、关于、登录、欢迎窗及手机端保持原样。",
+        "en": "Batch 3 of the visual refresh is live: the desktop Videos window (#videos) and player modal adopt translucent CRT glass styling with 3-column 16:9 cards and dotted play badges while keeping live /api/videos data and playback links untouched.",
+        "ja": "段階的ビジュアル刷新の第3弾を公開しました。デスクトップの動画欄（#videos）と再生モーダルを半透明CRTガラス窓へ換装し、既存の/api/videos連携・カテゴリ絞り込み・外部リンク再生はそのまま維持しています。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-article-reader",
       "slug": "2026-11-22-pond-article-reader",
       "category": "site-updates",
@@ -118,36 +147,6 @@ export const homeContent = Object.freeze({
         "zh": "首页入口、栏目卡片和底部导航统一调整；聊天室重新划分身份、房间、消息与输入区，改善短屏和横屏下的阅读与操作。",
         "en": "Home shortcuts, content cards, and navigation now share a clearer layout. Chat separates identity, room controls, messages, and composition for easier use on short and landscape screens.",
         "ja": "ホームの入口、各ページのカード、下部ナビゲーションを整理。チャットの名前・部屋・メッセージ・入力欄を分け、小さな画面や横向きでも使いやすくしました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-09-22-cloud-save-10min",
-      "slug": "2026-09-22-cloud-save-10min",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "游戏区",
-        "云存档",
-        "可靠性"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-09-21T16:24:26.443Z",
-      "updated_at": "2026-09-21T16:24:26.443Z",
-      "published_at": "2026-09-21T16:24:26.443Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.09.22",
-      "title": {
-        "zh": "游戏云存档调整为每10分钟同步",
-        "en": "Game Cloud Saves Now Sync Every 10 Minutes",
-        "ja": "ゲームのクラウド保存を10分間隔に変更"
-      },
-      "summary": {
-        "zh": "登录后的游戏自动云同步由30秒调整为10分钟，减少长时间挂机产生的 Cloudflare 请求和 D1 写入；手动“立即同步”和切出页面时的补同步保持不变。",
-        "en": "Signed-in games now auto-sync to the cloud every 10 minutes instead of every 30 seconds, reducing Cloudflare requests and D1 writes during long sessions. Manual Sync Now and the page-hide sync remain immediate.",
-        "ja": "ログイン中のゲームの自動クラウド同期を30秒から10分間隔へ変更し、長時間プレイ時のCloudflareリクエストとD1書き込みを削減しました。手動同期とページを離れる際の補助同期は従来どおり即時です。"
       }
     }
   ]

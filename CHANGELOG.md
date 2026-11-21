@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 逐步视觉替换上线第 3 批（视频区 `#videos` + `#video-modal`）：在现站真实 `/api/videos` 与视频卡片 DOM 之上换装深夜终端 CRT 玻璃窗（三列 16:9 渐变封面、点阵播放按钮、分类筛选胶囊与深色播放弹窗）；其余未替换栏目与手机端保持原样（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-videos` / `2026-11-22-pond-videos`；视觉层缓存 `20261122-pond-videos-r1`。
+
 - 逐步视觉替换上线第 2 批（文章阅读页 `#article-detail`）：在现站真实文章详情 DOM、TOC 目录、顶部阅读进度条、摘要折叠与复制链接逻辑之上换装深夜终端 CRT 玻璃阅读窗，复用四季池塘背景；视频、工具、游戏、聊天室、关于、登录、欢迎窗及手机端保持原样（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-article-reader` / `2026-11-22-pond-article-reader`；视觉层缓存 `20261122-pond-article-r1`。
 
 ## 2026-11-21

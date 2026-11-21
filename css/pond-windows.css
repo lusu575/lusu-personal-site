@@ -924,3 +924,362 @@ html[data-pond-mode="article"] .markdown-body img {
   border-radius: 10px;
   border: 1px solid rgba(176, 230, 224, 0.30);
 }
+
+/* ============================================================
+   Batch 3: Videos Window (html[data-pond-mode="videos"])
+   Matches design-assets/windows/videos.png over untouched #videos & #video-modal DOM
+   ============================================================ */
+
+html[data-pond-mode="videos"] #pond-visual-backdrop {
+  display: block;
+  z-index: 1;
+}
+
+html[data-pond-mode="videos"] body,
+html[data-pond-mode="videos"] .site-shell,
+html[data-pond-mode="videos"] .site-shell::before,
+html[data-pond-mode="videos"] .site-shell::after {
+  background: transparent !important;
+}
+
+html[data-pond-mode="videos"] .wallpaper-layer {
+  display: none !important;
+}
+
+html[data-pond-mode="videos"] .xp-taskbar,
+html[data-pond-mode="videos"] .site-shell > header {
+  opacity: 0;
+  pointer-events: none;
+}
+
+html[data-pond-mode="videos"] .site-shell {
+  position: relative;
+  z-index: 20;
+}
+
+html[data-pond-mode="videos"] .site-shell > main {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 78px 24px 44px;
+  background: transparent !important;
+  pointer-events: none;
+}
+
+html[data-pond-mode="videos"] #videos {
+  width: min(940px, 64vw);
+  min-width: min(640px, 92vw);
+  max-height: min(680px, 73vh);
+  margin: 16px 0 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  pointer-events: auto;
+}
+
+html[data-pond-mode="videos"] #videos .xp-window {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: min(680px, 73vh);
+  margin: 0 !important;
+  padding: 22px 28px 20px !important;
+  border-radius: 18px !important;
+  color: rgba(232, 248, 246, 0.94);
+  background: linear-gradient(
+    180deg,
+    rgba(6, 22, 24, 0.80) 0%,
+    rgba(4, 16, 19, 0.84) 55%,
+    rgba(5, 18, 22, 0.86) 100%
+  ) !important;
+  backdrop-filter: blur(10px) saturate(1.12);
+  -webkit-backdrop-filter: blur(10px) saturate(1.12);
+  border: 1.5px solid rgba(182, 244, 234, 0.56) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.14) inset,
+    0 0 26px rgba(108, 232, 220, 0.22),
+    0 0 46px rgba(182, 124, 238, 0.12),
+    inset 0 0 38px rgba(3, 14, 16, 0.72) !important;
+  overflow: hidden;
+  font-family: "JetBrains Mono", "Cascadia Mono", Consolas, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+html[data-pond-mode="videos"] #videos .xp-window::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  border-radius: inherit;
+  background-image:
+    radial-gradient(rgba(210, 255, 248, 0.11) 0.75px, transparent 0.75px),
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.14) 0px,
+      rgba(0, 0, 0, 0.14) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  background-size: 4px 4px, 100% 3px;
+  opacity: 0.50;
+}
+
+html[data-pond-mode="videos"] #videos .window-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 14px !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #effdf9 !important;
+  flex-shrink: 0;
+}
+
+html[data-pond-mode="videos"] #videos .window-titlebar > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: #effdf9;
+  text-shadow: 0 0 10px rgba(176, 246, 234, 0.42);
+}
+
+html[data-pond-mode="videos"] #videos .window-titlebar .title-icon-videos {
+  width: 34px !important;
+  height: 28px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 38'%3E%3Crect x='4' y='5' width='40' height='28' rx='6' fill='none' stroke='%23e8fcf7' stroke-width='2.3' stroke-dasharray='0.5 3.6' stroke-linecap='round'/%3E%3Cpolygon points='20,13 32,19 20,25' fill='none' stroke='%23e8fcf7' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  filter: drop-shadow(0 0 6px rgba(180, 248, 236, 0.55));
+}
+
+html[data-pond-mode="videos"] #videos .window-titlebar .close-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px !important;
+  border: 1px dashed rgba(185, 235, 230, 0.38) !important;
+  background: rgba(6, 20, 22, 0.50) !important;
+  color: rgba(210, 244, 240, 0.84) !important;
+  box-shadow: none !important;
+  font-size: 16px;
+}
+
+/* Video category filter row */
+html[data-pond-mode="videos"] #video-categories {
+  display: flex !important;
+  flex-wrap: nowrap;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 2px 2px 12px !important;
+  margin: 0 0 14px !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px dotted rgba(176, 230, 224, 0.28) !important;
+  flex-shrink: 0;
+  scrollbar-width: none;
+}
+
+html[data-pond-mode="videos"] #video-categories button {
+  flex: 0 0 auto;
+  height: 30px;
+  padding: 0 15px !important;
+  border-radius: 999px !important;
+  border: 1.3px dashed rgba(190, 238, 232, 0.42) !important;
+  background: rgba(5, 18, 20, 0.45) !important;
+  color: rgba(218, 244, 240, 0.86) !important;
+  box-shadow: none !important;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+html[data-pond-mode="videos"] #video-categories button.active,
+html[data-pond-mode="videos"] #video-categories button[aria-pressed="true"] {
+  border-style: solid !important;
+  border-color: rgba(164, 246, 238, 0.88) !important;
+  background: rgba(34, 152, 156, 0.42) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(96, 234, 224, 0.36) !important;
+}
+
+html[data-pond-mode="videos"] #video-categories .filter-count {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin-left: 3px;
+  color: inherit !important;
+  opacity: 0.82;
+  font-size: 11px;
+}
+
+html[data-pond-mode="videos"] #video-categories .filter-count::before {
+  content: "(";
+}
+
+html[data-pond-mode="videos"] #video-categories .filter-count::after {
+  content: ")";
+}
+
+/* 3-column video grid matching design-assets/windows/videos.png */
+html[data-pond-mode="videos"] #video-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+  padding: 2px 4px 8px 2px !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(142, 226, 216, 0.24) transparent;
+}
+
+html[data-pond-mode="videos"] #video-list .video-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: rgba(230, 248, 245, 0.94) !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px !important;
+  border: 1.4px solid rgba(176, 236, 230, 0.46) !important;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(16, 62, 68, 0.9), rgba(24, 38, 66, 0.92), rgba(56, 30, 56, 0.88)) !important;
+  box-shadow: 0 0 14px rgba(84, 216, 210, 0.16) !important;
+  cursor: pointer;
+  padding: 0 !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-card:nth-child(3n+2) .video-thumb.is-fallback {
+  background: linear-gradient(135deg, rgba(78, 34, 62, 0.90), rgba(148, 64, 78, 0.82), rgba(44, 24, 48, 0.92)) !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-card:nth-child(3n+3) .video-thumb.is-fallback {
+  background: linear-gradient(135deg, rgba(14, 58, 56, 0.92), rgba(38, 92, 82, 0.84), rgba(18, 42, 48, 0.92)) !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-thumb::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 48px;
+  height: 34px;
+  transform: translate(-50%, -50%);
+  border-radius: 9px;
+  border: 1.5px dashed rgba(226, 250, 246, 0.82);
+  background: rgba(4, 14, 18, 0.45) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolygon points='8,5 19,12 8,19' fill='none' stroke='%23eefcf9' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  box-shadow: 0 0 12px rgba(154, 244, 236, 0.30);
+  pointer-events: none;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+html[data-pond-mode="videos"] #video-list .video-thumb:hover::after {
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: 0 0 18px rgba(154, 244, 236, 0.56);
+}
+
+html[data-pond-mode="videos"] #video-list .video-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+html[data-pond-mode="videos"] #video-list .video-body {
+  padding: 10px 2px 4px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+html[data-pond-mode="videos"] #video-list .video-body .platform {
+  align-self: flex-start;
+  font-size: 10.5px !important;
+  padding: 1px 8px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(152, 232, 224, 0.42) !important;
+  background: rgba(6, 24, 28, 0.62) !important;
+  color: #c8f6ee !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-body h2 {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #eefdf9 !important;
+  margin: 2px 0 0 !important;
+  line-height: 1.4;
+}
+
+html[data-pond-mode="videos"] #video-list .video-body p {
+  font-size: 11.5px !important;
+  color: rgba(186, 224, 220, 0.72) !important;
+  margin: 0 !important;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+html[data-pond-mode="videos"] #video-list .video-meta {
+  font-size: 11px;
+  color: rgba(172, 214, 210, 0.66) !important;
+}
+
+html[data-pond-mode="videos"] #video-list .xp-button,
+html[data-pond-mode="videos"] #video-list .video-card button:not(.video-thumb),
+html[data-pond-mode="videos"] #video-list .video-card a.xp-button {
+  border-radius: 999px !important;
+  border: 1.2px dashed rgba(176, 236, 230, 0.50) !important;
+  background: rgba(6, 22, 26, 0.62) !important;
+  color: #eefcf9 !important;
+  box-shadow: none !important;
+  font-size: 11.5px !important;
+  padding: 4px 14px !important;
+  min-height: 28px !important;
+}
+
+html[data-pond-mode="videos"] #video-list .xp-button:hover,
+html[data-pond-mode="videos"] #video-list .video-card button:not(.video-thumb):hover {
+  border-color: rgba(154, 246, 236, 0.92) !important;
+  box-shadow: 0 0 10px rgba(102, 234, 224, 0.30) !important;
+}
+
+html[data-pond-mode="videos"] #video-list .content-state {
+  grid-column: 1 / -1;
+  padding: 22px 18px !important;
+  border-radius: 12px !important;
+  border: 1px dashed rgba(182, 236, 230, 0.38) !important;
+  background: rgba(5, 18, 22, 0.56) !important;
+  color: rgba(214, 244, 240, 0.88) !important;
+}
+
+/* Video Player modal in CRT mode */
+html[data-pond-mode="videos"] #video-modal .modal-window {
+  border-radius: 16px !important;
+  border: 1.5px solid rgba(182, 244, 234, 0.56) !important;
+  background: rgba(5, 18, 22, 0.92) !important;
+  color: #eefcf9 !important;
+  box-shadow: 0 0 32px rgba(96, 228, 216, 0.28) !important;
+}

@@ -101,6 +101,8 @@ function bootPondVisualBridge() {
         nextMode = 'home';
       } else if (route === 'knowledge') {
         nextMode = isArticleDetailOpen() ? 'article' : 'knowledge';
+      } else if (route === 'videos') {
+        nextMode = 'videos';
       }
     }
 
@@ -142,7 +144,7 @@ function bootPondVisualBridge() {
       else triggerSiteRoute('knowledge');
       return;
     }
-    if (activeMode === 'knowledge') {
+    if (activeMode === 'knowledge' || activeMode === 'videos') {
       triggerSiteRoute('home');
     }
   });
@@ -153,6 +155,12 @@ function bootPondVisualBridge() {
       const backBtn = document.querySelector('[data-article-back]');
       if (backBtn) backBtn.click();
       else triggerSiteRoute('knowledge');
+      return;
+    }
+    if (activeMode === 'videos') {
+      const modal = document.getElementById('video-modal');
+      if (modal && !modal.hidden) return;
+      triggerSiteRoute('home');
       return;
     }
     if (activeMode === 'knowledge') {
