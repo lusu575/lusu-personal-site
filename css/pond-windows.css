@@ -2211,6 +2211,35 @@ html[data-pond-mode="chatroom"] .pond-chat-avatar {
   filter: drop-shadow(0 0 6px rgba(176, 248, 236, 0.42));
 }
 
+html[data-pond-mode="chatroom"] .chatroom-log .chat-avatar,
+html[data-pond-mode="chatroom"] .chatroom-log .chat-message-avatar,
+html[data-pond-mode="chatroom"] .chatroom-log .chat-item-avatar,
+html[data-pond-mode="chatroom"] .chatroom-log img:not(.pond-chat-avatar) {
+  display: none !important;
+}
+
+html[data-pond-mode="chatroom"] .chatroom-log .chat-bubble,
+html[data-pond-mode="chatroom"] .chatroom-log .chat-message-bubble,
+html[data-pond-mode="chatroom"] .chatroom-log .chat-message-body,
+html[data-pond-mode="chatroom"] .chatroom-log .chat-message-text,
+html[data-pond-mode="chatroom"] .chatroom-log .chat-text {
+  background: rgba(10, 34, 40, 0.76) !important;
+  color: #f0fefa !important;
+  border: 1px solid rgba(176, 238, 230, 0.36) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode="chatroom"] .chatroom-log .chat-author,
+html[data-pond-mode="chatroom"] .chatroom-log .chat-nickname {
+  color: #88fce2 !important;
+}
+
+html[data-pond-mode="chatroom"] .chatroom-log .chat-time,
+html[data-pond-mode="chatroom"] .chatroom-log time {
+  color: rgba(186, 226, 222, 0.72) !important;
+}
+
 html[data-pond-mode="chatroom"] .chatroom-log .content-state {
   padding: 18px 16px !important;
   border-radius: 12px !important;
@@ -2737,6 +2766,19 @@ html[data-shell="mobile"] .xp-window {
   border-color: rgba(186, 244, 236, 0.56) !important;
   color: #eafbf8 !important;
   box-shadow: 0 0 22px rgba(96, 232, 220, 0.20) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"] .page,
+html[data-shell="mobile"] .page {
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
 }
 
 html[data-ui-shell="mobile"] .window-titlebar,

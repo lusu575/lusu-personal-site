@@ -18,8 +18,19 @@ export class ContentMigrationError extends Error {
   }
 }
 
+const KNOWN_PREDECESSOR_SEED_VERSIONS = Object.freeze(new Set([
+  "20261121-pond-home-kb-r1",
+  "20261122-pond-article-r1",
+  "20261122-pond-videos-r1",
+  "20261122-pond-tools-r1",
+  "20261122-pond-games-r1",
+  "20261122-pond-chat-r1",
+  "20261122-pond-about-login-welcome-r1",
+  "20261122-pond-mobile-polish-r1"
+]));
+
 function assertUpgradeableVersion(value) {
-  if (!value || value === ARTICLE_SEED_VERSION || value === HISTORICAL_ARTICLE_BASELINE) return;
+  if (!value || value === ARTICLE_SEED_VERSION || value === HISTORICAL_ARTICLE_BASELINE || KNOWN_PREDECESSOR_SEED_VERSIONS.has(value)) return;
   const date = value.match(/^(\d{8})-.+$/)?.[1];
   // Same-day unfamiliar releases are not ordered by their arbitrary label. Only
   // an explicitly older dated release may enter the compatibility migration.
