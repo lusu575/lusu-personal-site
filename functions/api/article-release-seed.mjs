@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-mobile-polish', '2026-11-22-pond-mobile-polish', 'site-updates', '["网站更新","移动端","界面"]', '', 'published', 0, 0, '2026-11-21T18:05:00.000Z', '2026-11-21T18:05:00.000Z', '2026-11-21T18:05:00.000Z') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-mobile-polish", {
+  "zh": {
+    "title": "手机端深夜池塘视觉统一与全站 CRT 细节收尾",
+    "summary": "逐步视觉替换第 8 批（收官批）上线：手机端统一换装深夜池塘深色玻璃配色，保留 44px 触控区、六入口 Dock 与原有排版；同步完成文章阅读进度条加粗、黄虚线摘要框与工具卡图标放大提亮收尾。",
+    "content_markdown": "# 手机端深夜池塘视觉统一与全站 CRT 细节收尾\n\n本次为全站视觉逐步替换的第 8 批（收官批）上线，实现桌面全栏目、三个工具子页面与手机端的深夜终端池塘视觉全站统一，全部业务功能、数据与接口保持原样。\n\n- 手机端窗口、卡片、顶部栏与底部六入口 Dock 统一套用深夜池塘深色磨砂玻璃与青色点阵边框，不改变 44px 触控尺寸与既有手势。\n- 收尾优化：文章阅读页进度条加粗为彩虹发光渐变条并放大百分比字号，摘要框增加黄虚线边与三语「摘要：」前缀，工具卡三枚点阵 SVG 图标放大并提亮。"
+  },
+  "en": {
+    "title": "Mobile Shell Visual Unification and Site-Wide CRT Final Polish",
+    "summary": "Batch 8 (final batch) of the visual refresh is live: the mobile shell adopts the Midnight Pond dark glass palette while preserving 44px touch targets and the 6-route Dock, alongside final desktop polish for the Article progress bar, yellow-dotted summary box, and larger brighter Tool SVG icons.",
+    "content_markdown": "# Mobile Shell Visual Unification and Site-Wide CRT Final Polish\n\nBatch 8 completes the Midnight Pond CRT visual refresh across desktop routes, all three tool sub-pages, and mobile without modifying any live logic or data.\n\n- Applies dark frosted pond glass and dotted mint accents to mobile windows, cards, and the 6-route Dock while preserving all 44px touch targets and gestures.\n- Final desktop polish: thicker rainbow reading progress bar with larger `%` readout, yellow-dotted localized summary box, and larger brighter Tool card SVG icons."
+  },
+  "ja": {
+    "title": "モバイル版ビジュアル統一と全サイトCRT最終仕上げ",
+    "summary": "段階的ビジュアル刷新の第8弾（最終回）を公開しました。モバイル版を深夜池塘ダークガラス配色へ統一し、44pxタッチ領域と6入口Dockを維持。記事進捗バー・黄点線要約枠・ツールアイコン拡大発光も仕上げました。",
+    "content_markdown": "# モバイル版ビジュアル統一と全サイトCRT最終仕上げ\n\n段階的ビジュアル刷新の最終回として、モバイル版の配色統一と全サイトの細部仕上げを完了しました。機能・データ・APIは一切変更していません。\n\n- モバイル版のウィンドウ・カード・6入口Dockに深夜池塘ダークガラス配色を適用し、44px操作領域を維持しました。\n- 記事の読書進捗バーの強調、黄点線要約枠、ツールSVGアイコンの拡大発光を反映しています。"
+  }
+}, "2026-11-21T18:05:00.000Z"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-about-login-welcome', '2026-11-22-pond-about-login-welcome', 'site-updates', '["网站更新","欢迎窗","账号","界面"]', '', 'published', 0, 0, '2026-11-21T18:02:00.000Z', '2026-11-21T18:02:00.000Z', '2026-11-21T18:02:00.000Z') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-about-login-welcome", {
   "zh": {

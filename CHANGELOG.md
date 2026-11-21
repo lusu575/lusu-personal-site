@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 逐步视觉替换上线第 8 批（手机端视觉统一 + 全站细节收尾）：手机端换装深夜池塘深色玻璃与荧光点阵配色（保持 44px 触控目标、六入口底部 Dock 与收起手势不变）；并完成全站收尾优化（文章页加粗彩虹阅读进度条与大号百分比、黄虚线「摘要：」框、工具卡点阵 SVG 图标放大提亮）（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-mobile-polish` / `2026-11-22-pond-mobile-polish`；视觉层缓存 `20261122-pond-mobile-polish-r1`。
+
 - 逐步视觉替换上线第 7 批（关于 `#about` + 登录浮层 `#account-popover` + 欢迎窗 `#welcome-modal`）：全部桌面窗口与弹层现已完成深夜终端 CRT 玻璃视觉统一，保留现站头像、每日 AI 新闻 RSS、社交链接、HttpOnly 会话登录/注册与欢迎窗默认不自动弹规则（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-about-login-welcome` / `2026-11-22-pond-about-login-welcome`；视觉层缓存 `20261122-pond-about-login-welcome-r1`。
 
 - 逐步视觉替换上线第 6 批（聊天室 `#chatroom`）：在现站匿名身份、普通房/密码房、5 秒轮询、300 字计数与 3 秒节流逻辑之上换装深夜终端 CRT 玻璃聊天窗，接入 6 枚点阵圆形 SVG 默认头像；全部消息收发与密码房加密逻辑完全不变（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-chatroom` / `2026-11-22-pond-chatroom`；视觉层缓存 `20261122-pond-chat-r1`。

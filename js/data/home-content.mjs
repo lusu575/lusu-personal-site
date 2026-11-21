@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-mobile-polish",
+      "slug": "2026-11-22-pond-mobile-polish",
+      "category": "site-updates",
+      "tags": [
+        "网站更新",
+        "移动端",
+        "界面"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-21T18:05:00.000Z",
+      "updated_at": "2026-11-21T18:05:00.000Z",
+      "published_at": "2026-11-21T18:05:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "手机端深夜池塘视觉统一与全站 CRT 细节收尾",
+        "en": "Mobile Shell Visual Unification and Site-Wide CRT Final Polish",
+        "ja": "モバイル版ビジュアル統一と全サイトCRT最終仕上げ"
+      },
+      "summary": {
+        "zh": "逐步视觉替换第 8 批（收官批）上线：手机端统一换装深夜池塘深色玻璃配色，保留 44px 触控区、六入口 Dock 与原有排版；同步完成文章阅读进度条加粗、黄虚线摘要框与工具卡图标放大提亮收尾。",
+        "en": "Batch 8 (final batch) of the visual refresh is live: the mobile shell adopts the Midnight Pond dark glass palette while preserving 44px touch targets and the 6-route Dock, alongside final desktop polish for the Article progress bar, yellow-dotted summary box, and larger brighter Tool SVG icons.",
+        "ja": "段階的ビジュアル刷新の第8弾（最終回）を公開しました。モバイル版を深夜池塘ダークガラス配色へ統一し、44pxタッチ領域と6入口Dockを維持。記事進捗バー・黄点線要約枠・ツールアイコン拡大発光も仕上げました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-about-login-welcome",
       "slug": "2026-11-22-pond-about-login-welcome",
       "category": "site-updates",
@@ -117,35 +146,6 @@ export const homeContent = Object.freeze({
         "zh": "逐步视觉替换第 4 批上线：桌面端工具区（#resources）换装提亮版 CRT 玻璃卡片并接入 6 枚点阵虚线 SVG 图标，同时为临时互传弹窗、在线画板与日语的言外之意统一套用深夜池塘 CRT 视觉主题；全部功能与交互逻辑保持原样。",
         "en": "Batch 4 of the visual refresh is live: the desktop Tools window (#resources) adopts the brightened CRT glass skin with 6 dotted SVG icons, and Quick Transfer, Online Whiteboard, and Behind the Japanese share the Midnight Pond CRT visual theme without changing any tool logic.",
         "ja": "段階的ビジュアル刷新の第4弾を公開しました。デスクトップのツール欄（#resources）を明るく透過感のあるCRTガラス窓と6種の点線SVGアイコンへ換装し、一時転送・ホワイトボード・日本語の裏側にも共通CRTテーマを適用しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-videos",
-      "slug": "2026-11-22-pond-videos",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "视频区",
-        "界面"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-21T17:46:00.000Z",
-      "updated_at": "2026-11-21T17:46:00.000Z",
-      "published_at": "2026-11-21T17:46:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "视频区换装深夜终端 CRT 玻璃卡片窗",
-        "en": "Videos Section Refreshed with Midnight Pond CRT Cards",
-        "ja": "動画セクションを深夜端末・CRTガラスカードへ刷新"
-      },
-      "summary": {
-        "zh": "逐步视觉替换第 3 批上线：桌面端视频区（#videos）与播放弹窗换装半透明 CRT 玻璃窗，保留现站 /api/videos 接口、分类筛选、平台徽标与外链播放逻辑；工具、游戏、聊天室、关于、登录、欢迎窗及手机端保持原样。",
-        "en": "Batch 3 of the visual refresh is live: the desktop Videos window (#videos) and player modal adopt translucent CRT glass styling with 3-column 16:9 cards and dotted play badges while keeping live /api/videos data and playback links untouched.",
-        "ja": "段階的ビジュアル刷新の第3弾を公開しました。デスクトップの動画欄（#videos）と再生モーダルを半透明CRTガラス窓へ換装し、既存の/api/videos連携・カテゴリ絞り込み・外部リンク再生はそのまま維持しています。"
       }
     }
   ]

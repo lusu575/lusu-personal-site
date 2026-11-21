@@ -617,37 +617,39 @@ html[data-pond-mode="article"] #knowledge .article-read-progress {
 html[data-pond-mode="article"] #knowledge .article-read-progress-label {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: rgba(196, 234, 230, 0.84);
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(206, 240, 236, 0.88);
   order: 2;
   white-space: nowrap;
 }
 
 html[data-pond-mode="article"] #knowledge .article-read-progress-label strong {
-  color: #effdf9;
-  font-weight: 500;
+  color: #f4fffe;
+  font-size: 16px;
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(154, 246, 236, 0.55);
   font-variant-numeric: tabular-nums;
 }
 
 html[data-pond-mode="article"] #knowledge .article-read-progress-track {
   flex: 1;
   order: 1;
-  height: 9px !important;
+  height: 13px !important;
   border-radius: 999px !important;
-  border: 1px dotted rgba(182, 234, 228, 0.52) !important;
-  background: rgba(3, 14, 16, 0.64) !important;
-  padding: 1px;
+  border: 1.4px dotted rgba(196, 244, 238, 0.68) !important;
+  background: rgba(3, 14, 16, 0.72) !important;
+  padding: 2px;
   overflow: hidden;
-  box-shadow: none !important;
+  box-shadow: 0 0 10px rgba(102, 234, 224, 0.16) !important;
 }
 
 html[data-pond-mode="article"] #knowledge #article-read-progress-fill {
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #68ecd8 0%, #78c8f4 46%, #b68ef8 76%, #f678cc 100%) !important;
-  box-shadow: 0 0 10px rgba(130, 226, 240, 0.50);
+  background: linear-gradient(90deg, #5ef4d8 0%, #6ed4ff 38%, #be8eff 70%, #ff74cc 100%) !important;
+  box-shadow: 0 0 14px rgba(130, 226, 244, 0.65);
 }
 
 /* Hide list-mode category sidebar when reading an article */
@@ -843,16 +845,31 @@ html[data-pond-mode="article"] #article-detail-meta .article-tag {
   padding: 1px 9px !important;
 }
 
-/* Dotted summary callout box matching article.png */
+/* Dotted yellow summary callout box with localized prefix matching article.png */
 html[data-pond-mode="article"] #article-detail-summary {
   margin: 12px 0 10px !important;
-  padding: 12px 15px !important;
+  padding: 13px 16px !important;
   border-radius: 10px !important;
-  border: 1.4px dotted rgba(226, 236, 178, 0.58) !important;
-  background: rgba(14, 30, 28, 0.54) !important;
-  color: rgba(232, 244, 214, 0.92) !important;
+  border: 1.6px dotted rgba(246, 232, 146, 0.78) !important;
+  background: rgba(24, 34, 22, 0.52) !important;
+  box-shadow: 0 0 14px rgba(240, 224, 130, 0.14);
+  color: rgba(244, 248, 220, 0.94) !important;
   font-size: 13.5px !important;
-  line-height: 1.65;
+  line-height: 1.68;
+}
+
+html[data-pond-mode="article"] #article-detail-summary::before {
+  content: "摘要：";
+  color: #f8e88c;
+  font-weight: 600;
+}
+
+html[lang="en"][data-pond-mode="article"] #article-detail-summary::before {
+  content: "Summary: ";
+}
+
+html[lang="ja"][data-pond-mode="article"] #article-detail-summary::before {
+  content: "要約：";
 }
 
 html[data-pond-mode="article"] .article-summary-toggle,
@@ -1542,15 +1559,15 @@ html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-hero h2
 }
 
 html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-hero .resource-icon-image {
-  width: 64px !important;
-  height: 48px !important;
+  width: 78px !important;
+  height: 58px !important;
   align-self: center;
   object-fit: contain;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
   padding: 0 !important;
-  filter: drop-shadow(0 0 8px rgba(176, 248, 236, 0.65));
+  filter: brightness(1.24) drop-shadow(0 0 12px rgba(186, 252, 242, 0.85));
 }
 
 html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-download {
@@ -2608,4 +2625,67 @@ html[data-pond-mode="welcome"] #welcome-modal .xp-button {
   background-image: none !important;
   color: #f0fefa !important;
   box-shadow: none !important;
+}
+
+/* ============================================================
+   Batch 8: Mobile Shell Midnight Pond CRT Visual Unification
+   Pure color/glass/border presentation layer; preserves 44px touch targets,
+   6-route Dock, collapse handle, and all mobile QA layout geometry intact.
+   ============================================================ */
+
+html[data-ui-shell="mobile"] body,
+html[data-shell="mobile"] body {
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 35%, rgba(18, 76, 72, 0.36), transparent 72%),
+    #030e10 !important;
+  color: #eafbf8 !important;
+}
+
+html[data-ui-shell="mobile"] .xp-window,
+html[data-shell="mobile"] .xp-window {
+  background: linear-gradient(180deg, rgba(10, 32, 36, 0.84), rgba(5, 20, 24, 0.90)) !important;
+  border-color: rgba(186, 244, 236, 0.56) !important;
+  color: #eafbf8 !important;
+  box-shadow: 0 0 22px rgba(96, 232, 220, 0.20) !important;
+}
+
+html[data-ui-shell="mobile"] .window-titlebar,
+html[data-shell="mobile"] .window-titlebar {
+  background: rgba(8, 28, 32, 0.88) !important;
+  border-bottom: 1px dotted rgba(182, 238, 232, 0.34) !important;
+  color: #f0fefa !important;
+}
+
+html[data-ui-shell="mobile"] .article-card,
+html[data-ui-shell="mobile"] .video-card,
+html[data-ui-shell="mobile"] .resource-card,
+html[data-ui-shell="mobile"] .game-card,
+html[data-ui-shell="mobile"] .profile-card,
+html[data-shell="mobile"] .article-card,
+html[data-shell="mobile"] .video-card,
+html[data-shell="mobile"] .resource-card,
+html[data-shell="mobile"] .game-card,
+html[data-shell="mobile"] .profile-card {
+  background: rgba(8, 28, 32, 0.72) !important;
+  border-color: rgba(176, 236, 230, 0.38) !important;
+  color: #eafbf8 !important;
+}
+
+html[data-ui-shell="mobile"] .xp-taskbar,
+html[data-shell="mobile"] .xp-taskbar {
+  background: rgba(6, 22, 26, 0.82) !important;
+  border-top: 1px solid rgba(182, 242, 234, 0.44) !important;
+  box-shadow: 0 -4px 20px rgba(96, 232, 220, 0.16) !important;
+}
+
+html[data-ui-shell="mobile"] .xp-taskbar button,
+html[data-shell="mobile"] .xp-taskbar button {
+  color: #e4faf6 !important;
+}
+
+html[data-ui-shell="mobile"] .mobile-appbar,
+html[data-shell="mobile"] .mobile-appbar {
+  background: rgba(6, 22, 26, 0.86) !important;
+  border-bottom: 1px dotted rgba(182, 238, 232, 0.34) !important;
+  color: #f0fefa !important;
 }
