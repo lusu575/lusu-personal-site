@@ -342,6 +342,7 @@ export class PondUIOverlay {
     this.cornerHitBoxes = [];
     this.accountLabel = options.accountLabel || 'ID';
     this.lastRenderTime = -1;
+    this.lastClockText = '';
     this.dirty = true;
   }
 
@@ -446,7 +447,10 @@ export class PondUIOverlay {
       this.dirty = true;
     }
 
-    // Check if active animations require high-rate UI redraw, otherwise refresh idle shimmer at 30 Hz
+    // ZERO idle redraws! Only redraw & upload UI texture when:
+    // - dirty (hover/click/season/lang/resize), OR
+    // - morphing / icon hover-click animating, OR
+    // - clock minute text actually changed!
     const morphing = (t - this.morphStartTime) < this.morphDuration + 0.05;
     let iconAnimating = false;
     for (const ic of DESKTOP_ICONS) {
@@ -457,12 +461,15 @@ export class PondUIOverlay {
         break;
       }
     }
+    const clockNow = this._formatClock();
+    const clockChanged = clockNow !== this.lastClockText;
 
-    if (!this.dirty && !morphing && !iconAnimating && (t - this.lastRenderTime) < 0.033) {
+    if (!this.dirty && !morphing && !iconAnimating && !clockChanged) {
       return { canvas: this.canvas, updated: false };
     }
 
     this.dirty = false;
+    this.lastClockText = clockNow;
     this.lastRenderTime = t;
 
     const ctx = this.ctx;
@@ -626,14 +633,18 @@ export class PondUIOverlay {
         ctx.drawImage(this.whiteDotSprite, px - sr, py - sr, sr * 2, sr * 2);
       }
 
-      // Crisp legible label underneath (fast dark drop offset instead of shadowBlur)
+      // Crisp legible label underneath (enhanced dark midnight backing in Winter so text pops cleanly over ice/snow!)
       const label = ic.label[this.lang] || ic.label.zh;
       const ly = cy + baseRadius * 0.92;
-      ctx.globalAlpha = 0.72;
-      ctx.fillStyle = '#020b0d';
-      ctx.fillText(label, cx + 1, ly + 1);
-      ctx.globalAlpha = st.hover ? 0.98 : 0.88;
-      ctx.fillStyle = '#e8f4f8';
+      const isWinter = this.seasonId === 'winter';
+      ctx.globalAlpha = isWinter ? 0.92 : 0.78;
+      ctx.fillStyle = isWinter ? '#040d18' : '#020b0d';
+      ctx.fillText(label, cx - 1, ly);
+      ctx.fillText(label, cx + 1, ly);
+      ctx.fillText(label, cx, ly - 1);
+      ctx.fillText(label, cx, ly + 1.5);
+      ctx.globalAlpha = st.hover ? 1.0 : (isWinter ? 0.96 : 0.90);
+      ctx.fillStyle = isWinter ? '#f4fbff' : '#e8f4f8';
       ctx.fillText(label, cx, ly);
     }
 
@@ -645,28 +656,45 @@ export class PondUIOverlay {
     const y0 = h * 0.935;
     const fontSize = Math.max(11, Math.round(Math.min(w, h * 1.4) * 0.0145));
     const isAnyHover = Boolean(this.cornerHover);
+    const isWinter = this.seasonId === 'winter';
 
     ctx.save();
-    ctx.font = `400 ${fontSize}px "JetBrains Mono", "Cascadia Mono", Consolas, monospace`;
+    ctx.font = `500 ${fontSize}px "JetBrains Mono", "Cascadia Mono", Consolas, monospace`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
+
+    const drawCornerText = (txt, tx, ty, fillCol) => {
+      if (isWinter) {
+        ctx.fillStyle = 'rgba(4, 12, 22, 0.92)';
+        ctx.fillText(txt, tx - 1, ty);
+        ctx.fillText(txt, tx + 1, ty);
+        ctx.fillText(txt, tx, ty + 1);
+      }
+      ctx.fillStyle = fillCol;
+      ctx.fillText(txt, tx, ty);
+    };
 
     const pulse = 0.55 + 0.25 * Math.sin(t * 1.8);
     const accHover = this.cornerHover === 'account';
     const dotR = accHover ? 5.5 : 4.0;
-    ctx.globalAlpha = accHover ? 0.95 : (0.42 * pulse + 0.16);
+    ctx.globalAlpha = accHover ? 0.98 : (isWinter ? 0.85 : (0.42 * pulse + 0.16));
     ctx.drawImage(this.whiteDotSprite, x0 - dotR, y0 - dotR, dotR * 2, dotR * 2);
 
     ctx.globalAlpha = 1.0;
-    ctx.fillStyle = accHover
-      ? 'rgba(244, 252, 255, 0.96)'
-      : `rgba(204, 228, 236, ${isAnyHover ? 0.68 : 0.44})`;
     const accText = this.accountLabel || 'ID';
     const accTextX = x0 + fontSize * 0.72;
     const accTextW = ctx.measureText(accText).width;
-    ctx.fillText(accText, accTextX, y0);
+    drawCornerText(
+      accText,
+      accTextX,
+      y0,
+      accHover
+        ? 'rgba(255, 255, 255, 0.98)'
+        : isWinter
+          ? 'rgba(235, 248, 255, 0.88)'
+          : `rgba(204, 228, 236, ${isAnyHover ? 0.72 : 0.48})`
+    );
 
-    // Record exact normalized hit-boxes for pixel-accurate clicking at any aspect ratio
     const padX = fontSize * 0.45;
     const padY = fontSize * 1.15;
     this.cornerHitBoxes = [
@@ -680,7 +708,7 @@ export class PondUIOverlay {
     ];
 
     const sepX = accTextX + accTextW + fontSize * 0.65;
-    ctx.fillStyle = 'rgba(190, 220, 230, 0.28)';
+    ctx.fillStyle = isWinter ? 'rgba(210, 235, 252, 0.55)' : 'rgba(190, 220, 230, 0.30)';
     ctx.fillRect(sepX - 1, y0 - 1, 2, 2);
 
     const langs = [
@@ -693,14 +721,16 @@ export class PondUIOverlay {
       const active = this.lang === item.id;
       const hov = this.cornerHover === item.id;
       const tw = ctx.measureText(item.text).width;
-      ctx.fillStyle = hov
+      const col = hov
         ? 'rgba(255, 255, 255, 0.98)'
         : active
-          ? 'rgba(232, 248, 252, 0.82)'
-          : `rgba(195, 220, 228, ${isAnyHover ? 0.54 : 0.34})`;
-      ctx.fillText(item.text, curX, y0);
+          ? (isWinter ? 'rgba(246, 253, 255, 0.96)' : 'rgba(232, 248, 252, 0.84)')
+          : isWinter
+            ? `rgba(215, 236, 250, ${isAnyHover ? 0.80 : 0.68})`
+            : `rgba(195, 220, 228, ${isAnyHover ? 0.54 : 0.36})`;
+      drawCornerText(item.text, curX, y0, col);
       if (active) {
-        ctx.fillStyle = 'rgba(220, 248, 255, 0.70)';
+        ctx.fillStyle = isWinter ? 'rgba(240, 252, 255, 0.92)' : 'rgba(220, 248, 255, 0.72)';
         ctx.fillRect(curX + tw * 0.5 - 1.2, y0 + fontSize * 0.58, 2.4, 2.4);
       }
       this.cornerHitBoxes.push({

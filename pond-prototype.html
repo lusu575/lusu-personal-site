@@ -134,6 +134,7 @@
     let currentLang = params.get('lang') || 'zh';
     const demoClock = params.get('demoClock') === '1';
     const showFps = params.get('fps') === '1';
+    const preserveDrawingBuffer = params.get('capture') === '1';
     const canvas = document.getElementById('pond-canvas');
     const errEl = document.getElementById('error-banner');
     const fpsEl = document.getElementById('fps-badge');
@@ -171,7 +172,7 @@
         season,
         lang: currentLang,
         demoClock,
-        preserveDrawingBuffer: true,
+        preserveDrawingBuffer,
         onFpsUpdate: showFps ? (fps) => { fpsEl.textContent = `${fps} FPS`; } : null,
         onNavigate: (route, id) => {
           accountPanel.classList.remove('open');

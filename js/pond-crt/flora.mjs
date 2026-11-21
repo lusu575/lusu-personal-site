@@ -299,123 +299,113 @@ function drawMapleLeaf(ctx, x, y, r, rot, colorA = '#e84814', colorB = '#ff9828'
   ctx.restore();
 }
 
-// --- Real Crystalline Fractured Pond Ice & Snowbanks (2D Heightfield + Voronoi Ice Cracks, computed ONCE -> 0ms/frame!) ---
-
-function hash2(x, y) {
-  const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453123;
-  return n - Math.floor(n);
-}
-
-function vnoise(x, y) {
-  const ix = Math.floor(x);
-  const iy = Math.floor(y);
-  const fx = x - ix;
-  const fy = y - iy;
-  const ux = fx * fx * (3 - 2 * fx);
-  const uy = fy * fy * (3 - 2 * fy);
-  const a = hash2(ix, iy);
-  const b = hash2(ix + 1, iy);
-  const c = hash2(ix, iy + 1);
-  const d = hash2(ix + 1, iy + 1);
-  return a + (b - a) * ux + (c - a) * uy + (a - b - c + d) * ux * uy;
-}
-
-function fbm2(x, y) {
-  let v = 0;
-  let a = 0.5;
-  for (let i = 0; i < 4; i++) {
-    v += a * vnoise(x, y);
-    x = x * 2.02 + 13.7;
-    y = y * 2.02 + 27.3;
-    a *= 0.5;
-  }
-  return v;
-}
+// --- Thin, Translucent, Delicate Winter Shore Ice (strictly calibrated to final2-winter.png!) ---
+// - NO lightning-bolt cracks, NO thick opaque white wall!
+// - Thin translucent dark-slate ice coves on left/right/bottom with a dark open water pocket bottom-center
+// - Whisper-thin frost rim + subtle translucent ice sheen so water & fish shadow remain visible beneath
 
 function drawWinterIceShelves(ctx, w, h) {
-  // Compute pixel-accurate organic frozen shoreline + layered crystalline ice depth + internal ice fractures ONCE!
-  const img = ctx.createImageData(w, h);
-  const data = img.data;
-
-  for (let py = 0; py < h; py++) {
-    const ny = py / h;
-    for (let px = 0; px < w; px++) {
-      const nx = px / w;
-
-      // Irregular open-water pond basin distance (leaves central ~64% pond open for water & koi, matching final2-winter.png)
-      const dx = (nx - 0.50) / 0.44;
-      const dy = (ny - 0.45) / 0.37;
-      const baseDist = Math.sqrt(dx * dx + dy * dy);
-
-      // Multi-scale FBM shoreline crinkling + cove indentations
-      const nMacro = fbm2(nx * 5.2 + 1.4, ny * 4.4 + 2.1);
-      const nDetail = fbm2(nx * 16.0 + 7.2, ny * 14.0 + 3.8);
-      const nFine = vnoise(nx * 44.0, ny * 38.0);
-
-      // Keep top edge mostly open dark sky/water; build richer ice along left, right, and bottom banks
-      const bottomBoost = Math.max(0, (ny - 0.64) * 1.15);
-      const sideBoost = Math.max(0, (Math.abs(nx - 0.5) - 0.36) * 0.95) * (ny > 0.22 ? 1.0 : 0.2);
-      const topSuppress = ny < 0.24 ? (0.24 - ny) * 2.2 : 0.0;
-
-      const iceField = baseDist + bottomBoost + sideBoost - topSuppress + (nMacro - 0.5) * 0.44 + (nDetail - 0.5) * 0.14;
-
-      if (iceField < 0.88) continue;
-
-      const thickness = Math.min(1.0, (iceField - 0.88) / 0.48);
-
-      // Crisp crystalline frozen meniscus right at the water-ice boundary (thickness 0.0..0.11)
-      const rim = Math.exp(-Math.pow((thickness - 0.045) * 22.0, 2.0));
-
-      // Subtle internal ice ridge/fracture striations using abs(noise - 0.5)
-      const ridgeA = 1.0 - Math.min(1.0, Math.abs(vnoise(nx * 14.0 + nMacro * 2.5, ny * 12.0 - nMacro * 2.0) - 0.5) * 14.0);
-      const ridgeB = 1.0 - Math.min(1.0, Math.abs(vnoise(nx * 26.0 - 4.1, ny * 22.0 + 8.3) - 0.5) * 18.0);
-      const cracks = Math.max(ridgeA * 0.55, ridgeB * 0.35) * Math.min(1.0, thickness * 2.4);
-
-      // Layered realistic ice coloring:
-      // Thin edge = translucent dark steel-blue ice; mid = frosted slate-blue with bright ridges; thick bank = snowdrift
-      const snowMix = Math.max(0, Math.min(1, (thickness - 0.38) * 1.35 + (nDetail - 0.45) * 0.45));
-      const shade = 0.72 + 0.32 * nDetail + 0.14 * nFine;
-
-      let r = (36 + 88 * thickness + 76 * snowMix) * shade + rim * 115 + cracks * 88;
-      let g = (58 + 102 * thickness + 74 * snowMix) * shade + rim * 130 + cracks * 102;
-      let b = (88 + 112 * thickness + 68 * snowMix) * shade + rim * 148 + cracks * 118;
-
-      // Subtle darker translucent ice troughs near thin water edge
-      const alpha = Math.min(0.92, Math.pow(thickness, 0.55) * 0.84 + rim * 0.55 + cracks * 0.22);
-
-      const idx = (py * w + px) * 4;
-      data[idx] = Math.min(242, Math.max(0, r));
-      data[idx + 1] = Math.min(248, Math.max(0, g));
-      data[idx + 2] = Math.min(255, Math.max(0, b));
-      data[idx + 3] = Math.min(255, Math.max(0, Math.round(alpha * 255)));
-    }
-  }
-
-  ctx.putImageData(img, 0, 0);
-
-  // Delicate frost-dusted arching winter reeds along left & bottom-right banks (matching final2-winter.png)
   ctx.save();
+
+  // Helper: draw one thin, translucent, softly scalloped winter ice cove (water color shows right through!)
+  const drawThinIceFlange = (pts, fillAlpha = 0.34, rimAlpha = 0.42) => {
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0] * w, pts[0][1] * h);
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1];
+      const b = pts[i];
+      const mx = ((a[0] + b[0]) * 0.5) * w;
+      const my = ((a[1] + b[1]) * 0.5) * h;
+      ctx.quadraticCurveTo(a[0] * w, a[1] * h, mx, my);
+    }
+    const last = pts[pts.length - 1];
+    ctx.lineTo(last[0] * w, last[1] * h);
+    ctx.closePath();
+
+    // Very restrained, translucent slate-blue thin ice (NEVER thick opaque white!)
+    const g = ctx.createLinearGradient(0, h * 0.35, 0, h);
+    g.addColorStop(0.0, `rgba(92, 114, 138, ${fillAlpha * 0.72})`);
+    g.addColorStop(0.6, `rgba(118, 138, 162, ${fillAlpha * 0.88})`);
+    g.addColorStop(1.0, `rgba(148, 168, 192, ${fillAlpha})`);
+    ctx.fillStyle = g;
+    ctx.fill();
+
+    // Whisper-thin delicate frost meniscus along shoreline edge (matching final2-winter.png)
+    ctx.strokeStyle = `rgba(196, 220, 242, ${rimAlpha})`;
+    ctx.lineWidth = Math.max(1.0, w * 0.0014);
+    ctx.stroke();
+
+    // Subtle soft frost-snow dapple inside the thin ice (restrained, zero lightning cracks!)
+    ctx.save();
+    ctx.clip();
+    for (let k = 0; k < 14; k++) {
+      const rx = (((k * 173 + 31) % 1000) / 1000) * w;
+      const ry = (((k * 289 + 57) % 1000) / 1000) * h;
+      const rr = (0.04 + (k % 4) * 0.018) * w;
+      const dg = ctx.createRadialGradient(rx, ry, 0, rx, ry, rr);
+      dg.addColorStop(0, `rgba(182, 206, 228, ${fillAlpha * 0.32})`);
+      dg.addColorStop(1, 'rgba(90, 112, 136, 0)');
+      ctx.fillStyle = dg;
+      ctx.beginPath();
+      ctx.ellipse(rx, ry, rr * 1.4, rr * 0.55, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  };
+
+  // 1. Left-upper small thin ice cove (compact, matching final2-winter.png)
+  drawThinIceFlange([
+    [0.0, 0.39], [0.06, 0.40], [0.13, 0.41], [0.17, 0.42],
+    [0.12, 0.435], [0.05, 0.455], [0.0, 0.465]
+  ], 0.28, 0.40);
+
+  // 2. Left-lower tiny ice edge
+  drawThinIceFlange([
+    [0.0, 0.62], [0.04, 0.64], [0.05, 0.67], [0.02, 0.70], [0.0, 0.72]
+  ], 0.26, 0.36);
+
+  // 3. Right-upper & right-lower small thin ice coves
+  drawThinIceFlange([
+    [1.0, 0.29], [0.94, 0.31], [0.90, 0.335], [0.95, 0.36], [1.0, 0.38]
+  ], 0.24, 0.36);
+  drawThinIceFlange([
+    [1.0, 0.61], [0.93, 0.64], [0.89, 0.675], [0.94, 0.705], [1.0, 0.72]
+  ], 0.30, 0.42);
+
+  // 4. Bottom-left compact thin ice floe (leaves wide dark open water in center & bottom-center!)
+  drawThinIceFlange([
+    [0.0, 0.82], [0.09, 0.83], [0.18, 0.85], [0.23, 0.88],
+    [0.19, 0.94], [0.22, 1.0], [0.0, 1.0]
+  ], 0.34, 0.44);
+
+  // 5. Bottom-right compact thin ice floe (no cracks, thin translucent edge)
+  drawThinIceFlange([
+    [0.58, 1.0], [0.65, 0.94], [0.71, 0.90], [0.79, 0.85],
+    [0.89, 0.835], [0.96, 0.86], [1.0, 0.88], [1.0, 1.0]
+  ], 0.36, 0.46);
+
+  // 6. Delicate frost-dusted arching winter reeds along extreme left & bottom-right corners
   const reedClusters = [
-    { x: 0.035, y: 0.42, count: 5, h: 0.095, dir: 1 },
-    { x: 0.075, y: 0.88, count: 6, h: 0.125, dir: 1 },
-    { x: 0.855, y: 0.92, count: 5, h: 0.105, dir: -1 },
-    { x: 0.935, y: 0.89, count: 6, h: 0.135, dir: -1 }
+    { x: 0.035, y: 0.43, count: 4, h: 0.085, dir: 1 },
+    { x: 0.065, y: 0.89, count: 5, h: 0.11, dir: 1 },
+    { x: 0.87, y: 0.93, count: 4, h: 0.095, dir: -1 },
+    { x: 0.94, y: 0.90, count: 5, h: 0.12, dir: -1 }
   ];
-  ctx.lineCap = 'round';
   for (const cl of reedClusters) {
     for (let i = 0; i < cl.count; i++) {
       const bx = (cl.x + (i - cl.count * 0.5) * 0.011) * w;
       const by = cl.y * h;
       const rh = cl.h * h * (0.72 + 0.36 * ((i * 37) % 10) / 10);
       const bend = (0.32 + i * 0.11) * cl.dir * w * 0.038;
-      ctx.strokeStyle = 'rgba(204, 226, 246, 0.62)';
-      ctx.lineWidth = Math.max(1.1, w * 0.0014);
+      ctx.strokeStyle = 'rgba(196, 220, 240, 0.58)';
+      ctx.lineWidth = Math.max(1.0, w * 0.0013);
       ctx.beginPath();
       ctx.moveTo(bx, by);
       ctx.quadraticCurveTo(bx + bend * 0.45, by - rh * 0.65, bx + bend, by - rh);
       ctx.stroke();
     }
   }
+
   ctx.restore();
 }
 
