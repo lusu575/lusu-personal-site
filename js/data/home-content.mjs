@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-kittens-svg-mask-fix",
+      "slug": "2026-11-22-pond-kittens-svg-mask-fix",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "游戏区",
+        "猫国建设者"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T05:27:00.000Z",
+      "updated_at": "2026-11-22T05:27:00.000Z",
+      "published_at": "2026-11-22T05:27:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "猫国建设者暗色主题遮罩图标着色修正",
+        "en": "Kittens Game Dark Theme Masked Icon Color Fix",
+        "ja": "Kittens Game ダークテーマのマスクアイコン着色修正"
+      },
+      "summary": {
+        "zh": "修正猫国建设者资源栏齿轮与折叠箭头遮罩图标的暗色着色，并彻底清理营火行左右问号图标容器。",
+        "en": "Fixed CSS-masked gear and chevron icon colors in Kittens Game dark theme and removed question-mark tooltip icon wrappers cleanly.",
+        "ja": "Kittens Game 資源欄の歯車・矢印マスクアイコンを明色化し、焚き火行左右の疑問符アイコン枠も完全に整理しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-kittens-icons-clean",
       "slug": "2026-11-22-pond-kittens-icons-clean",
       "category": "site-updates",
@@ -114,34 +142,6 @@ export const homeContent = Object.freeze({
         "zh": "将工具卡三枚点阵 SVG 图标加粗放大并增强辉光、为分类计数切换无斜杠无衬线数字以清晰区分 0 与 8，并增加游戏内页顶栏右边距。",
         "en": "Thickened and enlarged the three dotted tool SVG icons with brighter glow, switched filter counts to clean open-zero sans-serif numerals, and added right padding to the game topbar.",
         "ja": "ツールカードのパレット・転送・鳥居点陣アイコンを太線拡大して発光を強化し、分類件数に斜線なしの明瞭な数字を適用、ゲーム内ページ上端の右余白を広げました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-videos-explicit-h",
-      "slug": "2026-11-22-pond-videos-explicit-h",
-      "category": "site-updates",
-      "tags": [
-        "site-update",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T04:36:00+08:00",
-      "updated_at": "2026-11-22T04:36:00+08:00",
-      "published_at": "2026-11-22T04:36:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "明确视频区 3 列封面 174px 显式高度以根治行间叠压",
-        "en": "Explicit 174px 16:9 Thumbnail Height to Eliminate 3-Column Video Row Overlap",
-        "ja": "動画区 3 列サムネイルの 174px 明示高さ指定で縦重なりを解消"
-      },
-      "summary": {
-        "zh": "为 3 列视频卡片指定 174px 显式 16:9 封面高度与 320px 最小卡片高度，彻底解决 Chromium 网格自动行高下 aspect-ratio 折叠为 0 引发的封面重叠问题。",
-        "en": "Set explicit 174px 16:9 thumbnail height and 320px minimum card height in the 3-column Videos grid so Chromium never collapses auto-sized rows.",
-        "ja": "3 列動画グリッドのサムネイルに 16:9 対応の 174px 明示高さとカード最小高さ 320px を指定し、Chromium の自動行高計算による縦重なりを完全に解消しました。"
       }
     }
   ]

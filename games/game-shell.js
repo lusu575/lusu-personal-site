@@ -1925,12 +1925,12 @@
             color: #9af8ec !important;
             opacity: 0.92 !important;
           }
-          .svg-icon.question-mark, .tooltip-block .svg-icon.question-mark {
+          .svg-icon.question-mark, .tooltip-block .svg-icon.question-mark, .tooltip-block:has(.svg-icon.question-mark) {
             display: none !important;
           }
-          .svg-icon.gear, .svg-icon.down, .svg-icon.right {
-            filter: invert(1) brightness(1.18) !important;
-            opacity: 0.78 !important;
+          .svg-icon.gear, .svg-icon.down, .svg-icon.right, .svg-icon.left {
+            background-color: #9af8ec !important;
+            opacity: 0.82 !important;
           }
           .resPerTick { color: #88fce2 !important; }
           .tooltip-inner, .tooltip-block {

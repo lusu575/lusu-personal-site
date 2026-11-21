@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-kittens-svg-mask-fix', '2026-11-22-pond-kittens-svg-mask-fix', 'site-updates', '["视觉升级","游戏区","猫国建设者"]', '', 'published', 0, 0, '2026-11-22T05:27:00.000Z', '2026-11-22T05:27:00.000Z', '2026-11-22T05:27:00.000Z') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-kittens-svg-mask-fix", {
+  "zh": {
+    "title": "猫国建设者暗色主题遮罩图标着色修正",
+    "summary": "修正猫国建设者资源栏齿轮与折叠箭头遮罩图标的暗色着色，并彻底清理营火行左右问号图标容器。",
+    "content_markdown": "本次进一步修正猫国建设者游戏内页暗色主题中基于 CSS mask 遮罩渲染的小图标样式：将左侧资源栏设置齿轮与折叠箭头的遮罩底色由原版纯黑色调整为与月夜池塘主题一致的浅青色，使其在深色背景下清晰可辨；同时连同营火标签行左右两侧的暗色问号图标及其外层提示容器一并隐藏，彻底消除疑似截断的隐藏元素漏出残影。全站游戏本体逻辑、云端存档读写、登录态同步按钮与 AI 接管面板均保持原样未改动，并继续在线上生产环境复验。"
+  },
+  "en": {
+    "title": "Kittens Game Dark Theme Masked Icon Color Fix",
+    "summary": "Fixed CSS-masked gear and chevron icon colors in Kittens Game dark theme and removed question-mark tooltip icon wrappers cleanly.",
+    "content_markdown": "This release refines CSS-masked icons inside the Kittens Game dark iframe theme by coloring the gear and collapse chevron masks in crisp Midnight Pond cyan instead of black, while hiding both the question-mark icons and their surrounding tooltip wrappers beside the Bonfire tab row. All game mechanics, cloud saves, signed-in Sync Now controls, and AI control panels remain completely untouched and verified live."
+  },
+  "ja": {
+    "title": "Kittens Game ダークテーマのマスクアイコン着色修正",
+    "summary": "Kittens Game 資源欄の歯車・矢印マスクアイコンを明色化し、焚き火行左右の疑問符アイコン枠も完全に整理しました。",
+    "content_markdown": "今回の更新では Kittens Game のゲーム内ページに適用している純粋な CSS 月夜池ダークテーマのマスク描画アイコンを調整しました。左側資源欄の歯車アイコンおよび折りたたみ矢印のマスク背景色を従来の黒色から暗色背景でも見やすいシアン系へ変更し、あわせて焚き火タブ行の左右に薄く残っていた疑問符アイコンと外側のツールチップ枠を完全に非表示にしています。ゲーム本体のロジック、クラウドセーブ同期、ログイン時ボタン表示、AI 制御機能は一切変更していません。"
+  }
+}, "2026-11-22T05:27:00.000Z"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-kittens-icons-clean', '2026-11-22-pond-kittens-icons-clean', 'site-updates', '["视觉升级","游戏区","猫国建设者","云存档"]', '', 'published', 0, 0, '2026-11-22T05:22:00.000Z', '2026-11-22T05:22:00.000Z', '2026-11-22T05:22:00.000Z') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-kittens-icons-clean", {
   "zh": {

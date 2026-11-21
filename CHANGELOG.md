@@ -2,6 +2,8 @@
 
 ## undefined
 
+- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-kittens-svg-mask-fix` / `2026-11-22-pond-kittens-svg-mask-fix`；视觉层缓存 `20261122-pond-polish-r18`。
+
 - undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-kittens-icons-clean` / `2026-11-22-pond-kittens-icons-clean`；视觉层缓存 `20261122-pond-polish-r17`。
 
 ## 2026-11-22
