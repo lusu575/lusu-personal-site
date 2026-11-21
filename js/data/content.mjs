@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-final-finish",
+  "slug": "2026-11-22-pond-final-finish",
+  "category": "site-updates",
+  "tags": [
+    "site-update",
+    "ui"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T04:15:00+08:00",
+  "updated_at": "2026-11-22T04:15:00+08:00",
+  "published_at": "2026-11-22T04:15:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "date": "2026.11.22",
+  "title": {
+    "zh": "深夜池塘最终细节收尾：视频 16:9 完整封面、聊天室防叠字、游戏封面与手机端留白",
+    "en": "Midnight Pond Final Visual Finish: 16:9 Uncropped Video Covers, Chatroom Spacing, Bright Game Art & Mobile Dock Clearance",
+    "ja": "深夜の池最終ディテール仕上げ：動画 16:9 表紙・チャット重なり解消・ゲーム表紙・モバイル余白"
+  },
+  "summary": {
+    "zh": "恢复视频 16:9 完整封面比例消除裁切、消除聊天室右上房间标签叠字、提亮猫国封面并升级 Hextris 霓虹六边形封面、优化知识库 3 排显示与手机端 Dock 底部留白。",
+    "en": "Restored 16:9 uncropped video thumbnails, fixed the chatroom room-label overlap, brightened Kittens Game cover and upgraded Hextris art, and refined Knowledge & mobile Dock bottom spacing.",
+    "ja": "動画サムネイルを 16:9 比率へ戻して見切れを解消し、チャット右上の文字重なり修正、猫国表紙の明度向上と Hextris 表紙刷新、知識庫とモバイル Dock 下部余白を整えました。"
+  },
+  "content_markdown": {
+    "zh": "本次收尾完成了最后一轮线上实拍图逐项细化：\n\n1. 视频区：将缩略图容器恢复为完整 16:9 比例并采用 object-fit: contain，封面文字与人像零裁切。\n2. 聊天室：修复右上「普通房间」胶囊与「每 5 秒自动刷新」文案叠字，并加宽顶沿渐隐遮罩消除残影轮廓。\n3. 游戏区：提亮猫国建设者等暗色封面使猫咪轮廓清晰可见，升级 Hextris 封面为六色霓虹六边形点阵，收紧语言胶囊间距防止断行。\n4. 知识库与手机端：微调桌面卡片内边距并加底部渐隐使 3 排文章完整落框；手机端列表底部增加 96px 内边距，避让悬浮 Dock。",
+    "en": "This final visual polish pass resolves the last fine details from live review:\n\n1. Videos: restored natural 16:9 thumbnail aspect ratio with object-fit: contain so cover text and portraits are never cropped.\n2. Chatroom: eliminated overlap between #chat-room-label and #chat-sync-status and refined the top scroll fade.\n3. Games: brightened dark art covers (Kittens Game), upgraded the Hextris neon hexagon SVG cover, and tightened language tag spacing.\n4. Knowledge & Mobile: tuned 3-row card spacing with a soft bottom fade and added 96px bottom padding on mobile Knowledge for Dock clearance.",
+    "ja": "本番スクリーンショットの最終確認に基づき、残りの細部を仕上げました：\n\n1. 動画区：サムネイルを 16:9 比率＋object-fit: contain へ調整し、表紙の文字や人物の見切れを解消しました。\n2. チャット：右上の部屋ラベルと更新表示の重なりを修正し、上端フェードを整えました。\n3. ゲーム区：猫国建設者の表紙を明るく調整し、Hextris を多色ネオン六角形 SVG へ刷新、言語タグの間隔を整えました。\n4. 知識庫・モバイル：3行がすっきり収まる余白と下端フェードを加え、モバイル下部 Dock 用の 96px 余白を確保しました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-cascade-root",
   "slug": "2026-11-22-pond-cascade-root",
   "category": "site-updates",

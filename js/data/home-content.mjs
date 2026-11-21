@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-final-finish",
+      "slug": "2026-11-22-pond-final-finish",
+      "category": "site-updates",
+      "tags": [
+        "site-update",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T04:15:00+08:00",
+      "updated_at": "2026-11-22T04:15:00+08:00",
+      "published_at": "2026-11-22T04:15:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "深夜池塘最终细节收尾：视频 16:9 完整封面、聊天室防叠字、游戏封面与手机端留白",
+        "en": "Midnight Pond Final Visual Finish: 16:9 Uncropped Video Covers, Chatroom Spacing, Bright Game Art & Mobile Dock Clearance",
+        "ja": "深夜の池最終ディテール仕上げ：動画 16:9 表紙・チャット重なり解消・ゲーム表紙・モバイル余白"
+      },
+      "summary": {
+        "zh": "恢复视频 16:9 完整封面比例消除裁切、消除聊天室右上房间标签叠字、提亮猫国封面并升级 Hextris 霓虹六边形封面、优化知识库 3 排显示与手机端 Dock 底部留白。",
+        "en": "Restored 16:9 uncropped video thumbnails, fixed the chatroom room-label overlap, brightened Kittens Game cover and upgraded Hextris art, and refined Knowledge & mobile Dock bottom spacing.",
+        "ja": "動画サムネイルを 16:9 比率へ戻して見切れを解消し、チャット右上の文字重なり修正、猫国表紙の明度向上と Hextris 表紙刷新、知識庫とモバイル Dock 下部余白を整えました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-cascade-root",
       "slug": "2026-11-22-pond-cascade-root",
       "category": "site-updates",
@@ -111,34 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "将首页 .site-shell 及其伪元素背景设为完全透明，确保首页 WebGL2 深夜池塘画布与登录浮层同时完整呈现，并同步将「显示密码」按钮统一为暗色点阵胶囊。",
         "en": "Made .site-shell and its pseudo-elements transparent on Home so the WebGL2 pond canvas renders beneath the centered login modal, and styled the Show Password button in dark CRT glass.",
         "ja": "ホーム画面の .site-shell と疑似要素の背景を完全透過にして WebGL2 の池キャンバスがログイン窓の背後にそのまま表示されるよう修正し、パスワード表示ボタンも暗色点陣スタイルへ統一しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-home-login-z",
-      "slug": "2026-11-22-pond-home-login-z",
-      "category": "site-updates",
-      "tags": [
-        "site-update",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T03:38:00+08:00",
-      "updated_at": "2026-11-22T03:38:00+08:00",
-      "published_at": "2026-11-22T03:38:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "修复首页登录浮层被画布压住的问题并统一登录框暗色点阵控件",
-        "en": "Fixed Home Login Popover Z-Index Stacking & Darkened Inner Login Controls",
-        "ja": "ホーム画面ログイン窓の重なり順修正と内部コントロール暗色統一"
-      },
-      "summary": {
-        "zh": "调整首页 .site-shell 与池塘背景画布的层级顺序，确保点击左下角 ID 后登录窗直接浮在首页最顶层，同时将登录框内标签页、密码框与底部提示盒统一为暗色 CRT 风格。",
-        "en": "Placed .site-shell above the Home pond canvas while preserving pointer passthrough so the login modal renders cleanly on top of Home, and themed the login tabs, password input, and footer note.",
-        "ja": "ホーム画面で池キャンバスがログイン窓を覆っていた重なり順を修正し、左下 ID クリック時に画面最前面中央へ確実に表示されるようにしました。タブ・パスワード欄・注記も暗色化しています。"
       }
     }
   ]

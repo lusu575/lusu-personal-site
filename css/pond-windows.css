@@ -4097,3 +4097,95 @@ html[data-pond-mode="chatroom"] .chatroom-log {
   mask-image: linear-gradient(180deg, transparent 0%, #000 22px, #000 100%);
   padding-top: 22px !important;
 }
+
+
+/* ============================================================
+   Final Visual Finish (r10):
+   1. Videos: restore 16:9 natural thumbnail aspect ratio (zero cover cropping!)
+   2. Chatroom: fix #chat-room-label overlap with #chat-sync-status + cleaner top fade
+   3. Games: brighten cat cover, keep language tags neatly inline without awkward wrapping
+   4. Knowledge: tighter card padding + subtle bottom scroll fade so 3 rows fit cleanly
+   5. Mobile Knowledge: bottom padding for Dock clearance
+   ============================================================ */
+
+/* 1. Videos: 16:9 full thumbnail display (zero vertical/horizontal cropping!) */
+html[data-pond-mode="videos"] #video-list .video-thumb-wrap,
+html[data-pond-mode="videos"] #video-list .video-thumb {
+  height: auto !important;
+  aspect-ratio: 16 / 9 !important;
+  width: 100% !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-thumb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  background: #041014 !important;
+}
+
+/* 2. Chatroom: eliminate #chat-room-label / #chat-sync-status overlap & smooth top fade */
+html[data-pond-mode="chatroom"] .chatroom-status {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: nowrap !important;
+}
+
+html[data-pond-mode="chatroom"] #chat-room-label {
+  position: static !important;
+  width: auto !important;
+  min-width: 0 !important;
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+html[data-pond-mode="chatroom"] #chat-sync-status {
+  position: static !important;
+  width: auto !important;
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+html[data-pond-mode="chatroom"] .chatroom-log {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 10px, #000 38px, #000 100%) !important;
+  mask-image: linear-gradient(180deg, transparent 0%, transparent 10px, #000 38px, #000 100%) !important;
+}
+
+/* 3. Games: brighten dark art covers (Kittens Game) & keep tags tidy on one line */
+html[data-pond-mode="games"] #game-list .game-card[data-pond-cover-kind="art"] .game-cover {
+  filter: brightness(1.36) contrast(1.08) saturate(1.12) !important;
+}
+
+html[data-pond-mode="games"] #game-list .meta-row {
+  gap: 5px 6px !important;
+  align-items: center !important;
+}
+
+html[data-pond-mode="games"] #game-list .tag {
+  white-space: nowrap !important;
+  flex: 0 0 auto !important;
+  padding: 2px 7px !important;
+  font-size: 10.5px !important;
+}
+
+/* 4. Knowledge: comfortable 3-row fit + soft bottom fade */
+html[data-pond-mode="knowledge"] #knowledge-list {
+  padding-bottom: 22px !important;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 calc(100% - 20px), transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 calc(100% - 20px), transparent 100%);
+}
+
+html[data-pond-mode="knowledge"] #knowledge-list .article-card {
+  padding: 10px 12px !important;
+  row-gap: 4px !important;
+}
+
+/* 5. Mobile Knowledge: Dock clearance at bottom of scroll list */
+html[data-ui-shell="mobile"] #knowledge-list,
+html[data-shell="mobile"] #knowledge-list {
+  padding-bottom: 96px !important;
+}
