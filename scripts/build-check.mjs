@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-home-shell-clear";
-const finalUpdateSlug = "2026-11-22-pond-home-shell-clear";
+const finalUpdateId = "seed-update-2026-11-22-pond-icons-close-sync";
+const finalUpdateSlug = "2026-11-22-pond-icons-close-sync";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Transparent Home Shell Pass-Through for Pond Canvas & Dark Password Toggle";
-const finalPublishedAt = "2026-11-22T03:42:00+08:00";
+const finalTitleEn = "Unified Login Close Button, Crisp Open-Book Title Icon & Chatroom Top Fade";
+const finalPublishedAt = "2026-11-22T03:54:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-home-shell-clear",
   "seed-update-2026-11-22-pond-home-login-z",
   "seed-update-2026-11-22-pond-qa-sweep",
   "seed-update-2026-11-22-pond-final-fit",

@@ -4067,3 +4067,52 @@ html[data-pond-mode] #account-popover .account-password-toggle {
   color: #eefcf9 !important;
   box-shadow: none !important;
 }
+
+
+/* --- Final QA Fixes (r7): Login Close Button, Crisp Open-Book Title Icon, Chatroom Top Fade --- */
+/* 1. Login popover close button (.account-close-button) unified with circular dashed x button */
+html[data-pond-mode] #account-popover .account-close-button {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  min-height: 30px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  border: 1.2px dashed rgba(186, 240, 234, 0.52) !important;
+  background: rgba(8, 28, 34, 0.72) !important;
+  background-image: none !important;
+  color: #eefcf9 !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+html[data-pond-mode] #account-popover .account-close-button:hover {
+  border-style: solid !important;
+  border-color: rgba(164, 248, 240, 0.90) !important;
+  background: rgba(22, 68, 74, 0.62) !important;
+  box-shadow: 0 0 10px rgba(102, 238, 226, 0.30) !important;
+}
+
+/* 2. Crisp unmistakable open-book icon for Knowledge & Article titlebars (replaces tiny box-like dots) */
+html[data-pond-mode="knowledge"] #knowledge .window-titlebar .title-icon-knowledge,
+html[data-pond-mode="article"] #knowledge .window-titlebar .title-icon-knowledge {
+  width: 30px !important;
+  height: 24px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 28' fill='none'%3E%3Cpath d='M3 6.5C8 4.5 14 5 18 8.5C22 5 28 4.5 33 6.5V23.5C28 21.5 22 22 18 25C14 22 8 21.5 3 23.5V6.5Z' stroke='%23eefcf9' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M18 8.5V25' stroke='%239ef8ec' stroke-width='1.6' stroke-linecap='round'/%3E%3Cpath d='M7 11.5H14M7 15.5H14M22 11.5H29M22 15.5H29' stroke='%239ef8ec' stroke-width='1.4' stroke-linecap='round' stroke-dasharray='1 2.6'/%3E%3C/svg%3E") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  filter: drop-shadow(0 0 6px rgba(176, 248, 236, 0.55)) !important;
+}
+
+/* 3. Chatroom log soft top-edge fade so scrolled-past top messages dissolve smoothly instead of hard-chopping */
+html[data-pond-mode="chatroom"] .chatroom-log {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 22px, #000 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 22px, #000 100%);
+  padding-top: 22px !important;
+}

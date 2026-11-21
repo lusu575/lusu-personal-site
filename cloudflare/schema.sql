@@ -15499,6 +15499,23 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 1. ホーム画面における .site-shell および疑似要素・.page-home の背景を透明化し、WebGL2 池キャンバスを隠さず中央のログイン窓を最前面に表示できるようにしました。
 2. ログイン窓内の「パスワードを表示」ボタンも暗色 CRT 点陣カプセルへ統一しました。', '2026-11-22T03:42:00+08:00', '2026-11-22T03:42:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r6', '2026-11-22T03:42:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-icons-close-sync', '2026-11-22-pond-icons-close-sync', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T03:54:00+08:00', '2026-11-22T03:54:00+08:00', '2026-11-22T03:54:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-icons-close-sync-zh', 'seed-update-2026-11-22-pond-icons-close-sync', 'zh', '统一登录窗关闭按钮、优化知识库翻书图标与聊天室顶沿柔化', '将登录浮层右上角关闭按钮统一为圆形虚线 × 控件、重绘知识库与文章标题栏翻书图标消除方块观感，并为聊天室滚动区增加顶沿渐隐过渡。', '本次更新完成了复审提出的最后三处界面细节统一：
+
+1. 将登录浮层 .account-close-button 由旧红底实心方块改为与其他窗口一致的圆形虚线 × 按钮。
+2. 重绘知识库与文章页标题栏 .title-icon-knowledge 为清晰的翻开书本与点阵页纹 SVG，彻底消除小字号下的方块错觉。
+3. 为聊天室消息滚动区顶部增加 22px 柔和渐隐遮罩，滚动时顶沿消息自然过渡不生硬裁切。', '2026-11-22T03:54:00+08:00', '2026-11-22T03:54:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-icons-close-sync-en', 'seed-update-2026-11-22-pond-icons-close-sync', 'en', 'Unified Login Close Button, Crisp Open-Book Title Icon & Chatroom Top Fade', 'Matched the login modal close button to the circular dashed x style, redrew the Knowledge/Article open-book title icon for crispness, and added a soft top-edge scroll fade to the Chatroom log.', 'This quick polish closes the final three visual details from review:
+
+1. Restyled .account-close-button in the login popover into the circular dashed x button used by all other windows.
+2. Redrew .title-icon-knowledge as a crisp open-book SVG with dotted page lines so it never looks like two empty squares.
+3. Added a soft 22px top-edge fade mask to .chatroom-log so scrolled-past messages dissolve cleanly.', '2026-11-22T03:54:00+08:00', '2026-11-22T03:54:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-icons-close-sync-ja', 'seed-update-2026-11-22-pond-icons-close-sync', 'ja', 'ログイン閉じるボタン統一・知識庫アイコン刷新・チャット上端フェード追加', 'ログイン窓右上の閉じるボタンを他窓と同じ点線丸 × へ統一し、知識庫と記事タイトルの本アイコンを鮮明な見開き SVG へ刷新、チャット上端に自然なフェードマスクを追加しました。', '最終レビューに基づく 3 点の細部調整を反映しました：
+
+1. ログイン窓の .account-close-button を赤い四角ボタンから他ウィンドウと共通の点線丸 × ボタンへ統一しました。
+2. 知識庫・記事タイトルの .title-icon-knowledge を鮮明な見開き本 SVG へ差し替えました。
+3. チャットログ上端に 22px のフェードマスクを加え、スクロール時の見切れを和らげました。', '2026-11-22T03:54:00+08:00', '2026-11-22T03:54:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r7', '2026-11-22T03:54:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r6', '2026-11-22T03:42:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r7', '2026-11-22T03:54:00+08:00', 'schema') on conflict(version) do nothing;

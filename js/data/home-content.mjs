@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-icons-close-sync",
+      "slug": "2026-11-22-pond-icons-close-sync",
+      "category": "site-updates",
+      "tags": [
+        "site-update",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T03:54:00+08:00",
+      "updated_at": "2026-11-22T03:54:00+08:00",
+      "published_at": "2026-11-22T03:54:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "统一登录窗关闭按钮、优化知识库翻书图标与聊天室顶沿柔化",
+        "en": "Unified Login Close Button, Crisp Open-Book Title Icon & Chatroom Top Fade",
+        "ja": "ログイン閉じるボタン統一・知識庫アイコン刷新・チャット上端フェード追加"
+      },
+      "summary": {
+        "zh": "将登录浮层右上角关闭按钮统一为圆形虚线 × 控件、重绘知识库与文章标题栏翻书图标消除方块观感，并为聊天室滚动区增加顶沿渐隐过渡。",
+        "en": "Matched the login modal close button to the circular dashed x style, redrew the Knowledge/Article open-book title icon for crispness, and added a soft top-edge scroll fade to the Chatroom log.",
+        "ja": "ログイン窓右上の閉じるボタンを他窓と同じ点線丸 × へ統一し、知識庫と記事タイトルの本アイコンを鮮明な見開き SVG へ刷新、チャット上端に自然なフェードマスクを追加しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-home-shell-clear",
       "slug": "2026-11-22-pond-home-shell-clear",
       "category": "site-updates",
@@ -111,34 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "解除顶栏层叠上下文使登录浮层正居中于视口、恢复视频卡片标题与简介完整高度，并将知识库加载骨架条切换为柔和深青点阵色。",
         "en": "Removed header containing-block traps so the login modal centers in the viewport, restored full video card title/description height, and switched Knowledge loading skeletons to soft dark cyan bars.",
         "ja": "隠しヘッダーの包含ブロックを解除してログイン窓を画面中央へ配置し、動画カードのタイトルと概要の高さを復元、知識庫ロード時の白スケルトンを暗色シアンへ統一しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-geometry-sync",
-      "slug": "2026-11-22-pond-geometry-sync",
-      "category": "site-updates",
-      "tags": [
-        "site-update",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T03:22:00+08:00",
-      "updated_at": "2026-11-22T03:22:00+08:00",
-      "published_at": "2026-11-22T03:22:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "深夜池塘全窗像素级对齐、左下角 ID 点击热区扩大与加载态图标统一",
-        "en": "Midnight Pond Pixel-Identical Window Geometry, Wider ID Hitbox & Loading State Icon Sync",
-        "ja": "深夜の池ウィンドウ寸法完全統一・左下ID判定拡大・ロード表示アイコン統一"
-      },
-      "summary": {
-        "zh": "将全部桌面窗口像素级对齐至文章阅读窗居中位置（避开顶部时钟）、扩大左下角 ID 按钮热区并彻底替换所有加载态深蓝字与旧图标。",
-        "en": "Aligned every desktop window to the exact Article Reader centered frame below the top clock, widened the bottom-left ID hitbox for CRT curvature, and enforced high-contrast loading text and dotted icons.",
-        "ja": "全デスクトップ窓を記事閲覧窓と完全同一の中央サイズへ統一し、CRT曲率に合わせて左下IDボタンのクリック判定を拡大、ロード文言とアイコンを点陣スタイルへ統一しました。"
       }
     }
   ]

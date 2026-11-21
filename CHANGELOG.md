@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 统一登录窗 .account-close-button 为圆形虚线 × 按钮、重绘知识库与文章标题栏翻书 SVG 图标消除方块观感，并为聊天室消息区增加顶沿柔和渐隐遮罩（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-icons-close-sync` / `2026-11-22-pond-icons-close-sync`；视觉层缓存 `20261122-pond-polish-r7`。
+
 - 将首页 .site-shell 及伪元素背景设为透明使 WebGL2 池塘完整透出并支持登录浮层居顶显示，同时暗色点阵化登录框「显示密码」按钮（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-home-shell-clear` / `2026-11-22-pond-home-shell-clear`；视觉层缓存 `20261122-pond-polish-r6`。
 
 - 修复首页点击左下角 ID 时 #account-popover 被池塘画布层压住的问题（调整首页 .site-shell 与 #pond-visual-backdrop 层级），并将登录框内标签页/密码框/提示条统一为暗色 CRT 玻璃风格（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-home-login-z` / `2026-11-22-pond-home-login-z`；视觉层缓存 `20261122-pond-polish-r5`。

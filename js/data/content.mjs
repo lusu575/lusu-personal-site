@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-icons-close-sync",
+  "slug": "2026-11-22-pond-icons-close-sync",
+  "category": "site-updates",
+  "tags": [
+    "site-update",
+    "ui"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T03:54:00+08:00",
+  "updated_at": "2026-11-22T03:54:00+08:00",
+  "published_at": "2026-11-22T03:54:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "date": "2026.11.22",
+  "title": {
+    "zh": "统一登录窗关闭按钮、优化知识库翻书图标与聊天室顶沿柔化",
+    "en": "Unified Login Close Button, Crisp Open-Book Title Icon & Chatroom Top Fade",
+    "ja": "ログイン閉じるボタン統一・知識庫アイコン刷新・チャット上端フェード追加"
+  },
+  "summary": {
+    "zh": "将登录浮层右上角关闭按钮统一为圆形虚线 × 控件、重绘知识库与文章标题栏翻书图标消除方块观感，并为聊天室滚动区增加顶沿渐隐过渡。",
+    "en": "Matched the login modal close button to the circular dashed x style, redrew the Knowledge/Article open-book title icon for crispness, and added a soft top-edge scroll fade to the Chatroom log.",
+    "ja": "ログイン窓右上の閉じるボタンを他窓と同じ点線丸 × へ統一し、知識庫と記事タイトルの本アイコンを鮮明な見開き SVG へ刷新、チャット上端に自然なフェードマスクを追加しました。"
+  },
+  "content_markdown": {
+    "zh": "本次更新完成了复审提出的最后三处界面细节统一：\n\n1. 将登录浮层 .account-close-button 由旧红底实心方块改为与其他窗口一致的圆形虚线 × 按钮。\n2. 重绘知识库与文章页标题栏 .title-icon-knowledge 为清晰的翻开书本与点阵页纹 SVG，彻底消除小字号下的方块错觉。\n3. 为聊天室消息滚动区顶部增加 22px 柔和渐隐遮罩，滚动时顶沿消息自然过渡不生硬裁切。",
+    "en": "This quick polish closes the final three visual details from review:\n\n1. Restyled .account-close-button in the login popover into the circular dashed x button used by all other windows.\n2. Redrew .title-icon-knowledge as a crisp open-book SVG with dotted page lines so it never looks like two empty squares.\n3. Added a soft 22px top-edge fade mask to .chatroom-log so scrolled-past messages dissolve cleanly.",
+    "ja": "最終レビューに基づく 3 点の細部調整を反映しました：\n\n1. ログイン窓の .account-close-button を赤い四角ボタンから他ウィンドウと共通の点線丸 × ボタンへ統一しました。\n2. 知識庫・記事タイトルの .title-icon-knowledge を鮮明な見開き本 SVG へ差し替えました。\n3. チャットログ上端に 22px のフェードマスクを加え、スクロール時の見切れを和らげました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-home-shell-clear",
   "slug": "2026-11-22-pond-home-shell-clear",
   "category": "site-updates",
