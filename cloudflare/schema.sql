@@ -15448,6 +15448,29 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 2. 動画カードの自然な高さを確保し、タイトルと概要が潰れずに表示され、再生ボタンが各行下部で揃うようにしました。
 3. 知識庫読み込み中の白いスケルトン帯を、深緑背景になじむ低コントラストな暗色シアン帯へ置き換えました。', '2026-11-22T03:28:00+08:00', '2026-11-22T03:28:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r3', '2026-11-22T03:28:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-qa-sweep', '2026-11-22-pond-qa-sweep', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T03:31:00+08:00', '2026-11-22T03:31:00+08:00', '2026-11-22T03:31:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-qa-sweep-zh', 'seed-update-2026-11-22-pond-qa-sweep', 'zh', '深夜池塘全站桌面端细节精修：视频高对比文字、工具/游戏卡片紧致、聊天室与临时互传换装', '按全站桌面端逐窗验收清单完成精修：视频高对比标题简介与去遮挡播放徽标、工具/游戏去空白、知识库同行等高齐平、聊天室单行顶栏、关于点阵标题图标、左下语言提亮与临时互传暗色换装。', '本次更新针对线上桌面端全窗口逐项验收清单完成集中精修：
+
+1. 视频区：全面提亮卡片标题与简介对比度，移除遮挡封面的中央播放覆盖层，保持每行底部播放按钮齐平，并统一暗色点阵加载态。
+2. 工具与游戏区：取消卡片内容区被窗高拉开的空白空洞，恢复自然紧致排布与底部留白，优化游戏区语言胶囊间距避免拥挤。
+3. 知识库与文章页：同行文章卡片统一等高并对齐右侧点阵「阅读」按钮；放宽文章阅读进度字号与右侧边距，保证左侧目录底部提示完整不裁切并清除残留 emoji 图标。
+4. 聊天室、关于页与首页：聊天室顶栏改为单行不换行、修复首条消息顶沿裁切；关于页标题替换为点阵人像图标；首页左下角 ID 与中/EN/日切换文字显著提亮。
+5. 临时互传子面板（#transfer-app）：全量适配深夜池塘 CRT 深色玻璃风格与暗青加载条。', '2026-11-22T03:31:00+08:00', '2026-11-22T03:31:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-qa-sweep-en', 'seed-update-2026-11-22-pond-qa-sweep', 'en', 'Midnight Pond Full Desktop QA Sweep: Bright Video Copy, Compact Tool/Game Cards, Chatroom & Quick Transfer Skin', 'Resolved every desktop QA checklist item across Videos, Tools, Games, Knowledge, Article Reader, Chatroom, About, Home corner contrast, and the Quick Transfer sub-panel.', 'This release closes the full desktop live-QA sweep across every window:
+
+1. Videos: enforced high-contrast cyan-white titles and descriptions, removed center thumbnail play overlays, aligned row Play buttons, and unified dark CRT loading states.
+2. Tools & Games: eliminated vertical stretching gaps inside cards, restored comfortable bottom padding, and prevented crowded language tags.
+3. Knowledge & Article Reader: equalized row card heights so Read buttons align across columns, enlarged reading progress labels, prevented TOC tip bottom clipping, and stripped legacy emoji prefixes.
+4. Chatroom, About & Home: kept the Chatroom header on one row and unclipped the first message, replaced the About title badge with a dotted CRT person icon, and boosted bottom-left ID/language contrast.
+5. Quick Transfer (#transfer-app): applied full Midnight Pond CRT dark glass styling.', '2026-11-22T03:31:00+08:00', '2026-11-22T03:31:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-qa-sweep-ja', 'seed-update-2026-11-22-pond-qa-sweep', 'ja', '深夜の池デスクトップ全窓品質総仕上げ：動画文字視認性・ツール／ゲーム配置・チャット・一時転送対応', 'デスクトップ全窓の実機チェック項目を一括修正：動画カード文字の高コントラスト化とサムネイル中央アイコン除去、ツール／ゲーム余白整理、知識庫行揃え、チャット単行ヘッダ、一時転送の暗色対応を完了しました。', '本番デスクトップ全窓の総点検に基づき、以下の項目を一括で仕上げました：
+
+1. 動画区：カードタイトルと概要のコントラストを大幅に引き上げ、サムネイル中央の再生オーバーレイを非表示にして下部再生ボタンを揃えました。
+2. ツール・ゲーム区：カード内部の不自然な縦余白を解消し、タグの詰まりと下部余白を整えました。
+3. 知識庫・記事閲覧：同行カードの高さを統一して閲覧ボタン位置を揃え、進捗表示と目次下部の見切れおよび残存絵文字を整理しました。
+4. チャット・概要・ホーム：チャット上部を1行に収め先頭メッセージの見切れを解消、概要タイトルを点陣アイコン化し、左下 ID／言語表示のコントラストを高めました。
+5. 一時転送サブパネル（#transfer-app）も深夜の池 CRT 暗色ガラスへ統一しました。', '2026-11-22T03:31:00+08:00', '2026-11-22T03:31:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r4', '2026-11-22T03:31:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r3', '2026-11-22T03:28:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r4', '2026-11-22T03:31:00+08:00', 'schema') on conflict(version) do nothing;

@@ -714,10 +714,8 @@ export class PondUIOverlay {
       accTextX,
       y0,
       accHover
-        ? 'rgba(255, 255, 255, 0.98)'
-        : isWinter
-          ? 'rgba(235, 248, 255, 0.88)'
-          : `rgba(204, 228, 236, ${isAnyHover ? 0.72 : 0.48})`
+        ? 'rgba(255, 255, 255, 1.0)'
+        : 'rgba(232, 252, 248, 0.94)'
     );
 
     const padX = fontSize * 1.15;
@@ -733,7 +731,7 @@ export class PondUIOverlay {
     ];
 
     const sepX = accTextX + accTextW + fontSize * 0.65;
-    ctx.fillStyle = isWinter ? 'rgba(210, 235, 252, 0.55)' : 'rgba(190, 220, 230, 0.30)';
+    ctx.fillStyle = 'rgba(204, 242, 238, 0.65)';
     ctx.fillRect(sepX - 1, y0 - 1, 2, 2);
 
     const langs = [
@@ -747,15 +745,13 @@ export class PondUIOverlay {
       const hov = this.cornerHover === item.id;
       const tw = ctx.measureText(item.text).width;
       const col = hov
-        ? 'rgba(255, 255, 255, 0.98)'
+        ? 'rgba(255, 255, 255, 1.0)'
         : active
-          ? (isWinter ? 'rgba(246, 253, 255, 0.96)' : 'rgba(232, 248, 252, 0.84)')
-          : isWinter
-            ? `rgba(215, 236, 250, ${isAnyHover ? 0.80 : 0.68})`
-            : `rgba(195, 220, 228, ${isAnyHover ? 0.54 : 0.36})`;
+          ? 'rgba(255, 255, 255, 0.98)'
+          : 'rgba(214, 244, 240, 0.78)';
       drawCornerText(item.text, curX, y0, col);
       if (active) {
-        ctx.fillStyle = isWinter ? 'rgba(240, 252, 255, 0.92)' : 'rgba(220, 248, 255, 0.72)';
+        ctx.fillStyle = 'rgba(136, 252, 232, 0.95)';
         ctx.fillRect(curX + tw * 0.5 - 1.2, y0 + fontSize * 0.58, 2.4, 2.4);
       }
       this.cornerHitBoxes.push({

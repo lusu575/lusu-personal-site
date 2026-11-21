@@ -3728,3 +3728,251 @@ html[data-ui-shell="mobile"] .article-card-skeleton::after {
   background: #5ef4d8 !important;
   box-shadow: -11px 0 0 rgba(190, 142, 255, 0.72), -22px 0 0 rgba(255, 126, 204, 0.65) !important;
 }
+
+
+/* ============================================================
+   Comprehensive Desktop QA Polish (r4):
+   - Videos: high-contrast bright titles/descriptions, hide center thumbnail play overlay
+   - Tools: remove 400px mid-card void, natural card height & clean bottom padding
+   - Games: remove 200px license/button void, prevent crowded language tags
+   - Knowledge: equal-height row cards & aligned bottom CTA buttons
+   - Article: larger progress label with right margin, unclipped TOC tip, strip emoji ::before
+   - Chatroom: single-row header (no wrapped password button), unclipped first message
+   - About: dotted CRT person icon (no yellow badge emoji), balanced vertical fill
+   - Quick Transfer (#transfer-app): full Midnight Pond CRT dark glass skin
+   ============================================================ */
+
+/* --- Videos: Crisp Bright Text + No Center Thumbnail Play Overlay --- */
+html[data-pond-mode="videos"] #video-list .video-card h2,
+html[data-pond-mode="videos"] #video-list .video-card h2 *,
+html[data-pond-mode="videos"] #video-list .video-body h2 {
+  color: #f4fffe !important;
+  text-shadow: 0 0 8px rgba(142, 244, 234, 0.20) !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-card p,
+html[data-pond-mode="videos"] #video-list .video-body > p {
+  color: rgba(214, 244, 240, 0.88) !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-thumb-play,
+html[data-pond-mode="videos"] #video-list .video-play-badge,
+html[data-pond-mode="videos"] #video-list .video-play-icon,
+html[data-pond-mode="videos"] #video-list .video-thumb::after {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+/* --- Tools: Natural Card Height (No 400px Mid-Card Void) & Clean Bottom Margin --- */
+html[data-pond-mode="resources"] #resource-list {
+  align-content: start !important;
+  align-items: stretch !important;
+  padding: 6px 6px 18px 2px !important;
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-card {
+  height: auto !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+  padding: 18px 18px 18px !important;
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-card .resource-main {
+  flex: 1 1 auto !important;
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-card .card-action,
+html[data-pond-mode="resources"] #resource-list .resource-card .xp-button {
+  margin-top: auto !important;
+  align-self: flex-start !important;
+}
+
+/* --- Games: Compact Natural Height (No 200px Void) & Uncrowded Tags --- */
+html[data-pond-mode="games"] #game-list {
+  align-content: start !important;
+  align-items: stretch !important;
+  padding: 6px 6px 18px 2px !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-card {
+  height: auto !important;
+  align-items: start !important;
+  padding: 16px !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-main {
+  gap: 8px !important;
+}
+
+html[data-pond-mode="games"] #game-list .tag {
+  white-space: nowrap !important;
+  padding: 2px 9px !important;
+  line-height: 1.45 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* --- Knowledge: Equal-Height Row Cards & Pixel-Aligned Bottom CTA --- */
+html[data-pond-mode="knowledge"] #knowledge-list {
+  align-items: stretch !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-list .article-card {
+  height: 100% !important;
+  grid-template-rows: auto 1fr auto !important;
+  align-items: start !important;
+  box-sizing: border-box !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-list .article-card h2 {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  min-height: 2.7em !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-list .article-card .meta-row,
+html[data-pond-mode="knowledge"] #knowledge-list .article-card .article-card-cta {
+  align-self: end !important;
+}
+
+/* --- Article Reader: Progress Label, Unclipped TOC Tip & Zero Emoji ::before --- */
+html[data-pond-mode="article"] #knowledge .article-read-progress {
+  padding: 0 6px 12px 2px !important;
+}
+
+html[data-pond-mode="article"] #knowledge .article-read-progress-label {
+  font-size: 13.5px !important;
+  padding-right: 4px !important;
+}
+
+html[data-pond-mode="article"] #knowledge .article-read-progress-label strong {
+  font-size: 17px !important;
+}
+
+html[data-pond-mode="article"] .article-reader-sidebar {
+  padding-bottom: 10px !important;
+}
+
+html[data-pond-mode="article"] .article-toc-tip {
+  flex: 0 0 auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  padding: 9px 11px 12px !important;
+  line-height: 1.52 !important;
+}
+
+html[data-pond-mode="article"] .article-toc > p::before,
+html[data-pond-mode="article"] .article-detail-meta::before,
+html[data-pond-mode="article"] .article-read-progress-label span::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* --- Chatroom: Single-Row Header & Unclipped First Message --- */
+html[data-pond-mode="chatroom"] .chatroom-header {
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+html[data-pond-mode="chatroom"] .chatroom-nickname-row,
+html[data-pond-mode="chatroom"] .chatroom-status {
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+}
+
+html[data-pond-mode="chatroom"] .chatroom-log {
+  justify-content: flex-start !important;
+  padding: 16px 8px 14px !important;
+}
+
+/* --- About: Dotted CRT Person Title Icon (No Yellow Badge) & Balanced Vertical Spacing --- */
+html[data-pond-mode="about"] #about .window-titlebar .title-icon-about {
+  width: 28px !important;
+  height: 28px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Ccircle cx='18' cy='18' r='14' fill='none' stroke='%23eefcf9' stroke-width='2' stroke-dasharray='0.6 3.2'/%3E%3Ccircle cx='18' cy='13' r='4.2' fill='none' stroke='%23eefcf9' stroke-width='2' stroke-dasharray='0.6 2.8'/%3E%3Cpath d='M10 27c1.6-4.5 4.8-6.5 8-6.5s6.4 2 8 6.5' fill='none' stroke='%23eefcf9' stroke-width='2' stroke-dasharray='0.6 3' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  filter: drop-shadow(0 0 6px rgba(180, 248, 236, 0.55)) !important;
+}
+
+html[data-pond-mode="about"] #about .profile-card {
+  padding: 28px 32px !important;
+  gap: 28px !important;
+  align-content: center !important;
+}
+
+/* --- Quick Transfer Sub-Panel (#transfer-app) Full Midnight Pond CRT Skin --- */
+html[data-pond-mode="resources"] #transfer-app,
+html[data-pond-mode="resources"] .transfer-shell,
+html[data-pond-mode="resources"] .transfer-panel,
+html[data-pond-mode="resources"] .transfer-card,
+html[data-pond-mode="resources"] .transfer-stage,
+html[data-pond-mode="resources"] .transfer-loading,
+html[data-pond-mode="resources"] [id^="transfer-"] {
+  color: #eafbf8 !important;
+  border-color: rgba(176, 238, 232, 0.34) !important;
+}
+
+html[data-pond-mode="resources"] #transfer-app {
+  background: linear-gradient(180deg, rgba(8, 28, 34, 0.88), rgba(4, 18, 22, 0.92)) !important;
+  border: 1.2px solid rgba(186, 244, 236, 0.48) !important;
+  border-radius: 14px !important;
+  padding: 16px 20px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  box-shadow: inset 0 0 22px rgba(4, 16, 20, 0.55) !important;
+}
+
+html[data-pond-mode="resources"] #transfer-app header,
+html[data-pond-mode="resources"] #transfer-app .transfer-header,
+html[data-pond-mode="resources"] #transfer-app .transfer-topbar,
+html[data-pond-mode="resources"] #transfer-app .transfer-banner,
+html[data-pond-mode="resources"] #transfer-app .transfer-hero {
+  background: rgba(6, 24, 28, 0.72) !important;
+  background-image: none !important;
+  border-bottom: 1px dotted rgba(182, 238, 232, 0.32) !important;
+  text-align: center !important;
+  justify-content: center !important;
+}
+
+html[data-pond-mode="resources"] #transfer-app .transfer-card,
+html[data-pond-mode="resources"] #transfer-app .transfer-box,
+html[data-pond-mode="resources"] #transfer-app .transfer-section,
+html[data-pond-mode="resources"] #transfer-app #transfer-login-gate,
+html[data-pond-mode="resources"] #transfer-app #transfer-room-entry,
+html[data-pond-mode="resources"] #transfer-app #transfer-room,
+html[data-pond-mode="resources"] #transfer-app #transfer-quota-card,
+html[data-pond-mode="resources"] #transfer-app #transfer-feed {
+  background: rgba(6, 22, 26, 0.72) !important;
+  background-image: none !important;
+  border: 1.2px dashed rgba(176, 238, 232, 0.38) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode="resources"] #transfer-app input,
+html[data-pond-mode="resources"] #transfer-app textarea {
+  background: rgba(3, 14, 18, 0.84) !important;
+  color: #f0fefa !important;
+  border: 1.2px dashed rgba(176, 238, 232, 0.50) !important;
+  border-radius: 10px !important;
+}
+
+html[data-pond-mode="resources"] #transfer-app button,
+html[data-pond-mode="resources"] #transfer-app .xp-button {
+  border-radius: 999px !important;
+  border: 1.2px dashed rgba(182, 242, 236, 0.56) !important;
+  background: rgba(10, 34, 40, 0.74) !important;
+  background-image: none !important;
+  color: #f0fefa !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode="resources"] #transfer-app .transfer-progress,
+html[data-pond-mode="resources"] #transfer-app progress {
+  background: rgba(4, 18, 22, 0.80) !important;
+  accent-color: #5ef4d8 !important;
+}
