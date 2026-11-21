@@ -4847,7 +4847,7 @@ const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
 const finalTitleEn = "Fixed 3-Column Video Card Row Collapse in CSS Grid";
-const finalPublishedAt = "2026-11-22T04:27:00+08:00";
+const finalPublishedAt = "2026-11-22T04:32:00+08:00";
 const preservedReleaseUpdateIds = [
   "seed-update-2026-11-22-pond-videos-16x9",
   "seed-update-2026-11-22-pond-final-finish",

@@ -2,24 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
-    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-videos-row-height', '2026-11-22-pond-videos-row-height', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T04:27:00+08:00', '2026-11-22T04:27:00+08:00', '2026-11-22T04:27:00+08:00') on conflict(article_id) do nothing`),
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-videos-row-height', '2026-11-22-pond-videos-row-height', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T04:32:00+08:00', '2026-11-22T04:32:00+08:00', '2026-11-22T04:32:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-videos-row-height", {
   "zh": {
-    "summary": "将 3 列视频网格中 .video-card 的 height 由 100% 改为 auto，彻底消除行间重叠，完整呈现 16:9 无裁切封面、标题、简介与齐平播放按钮。",
+    "summary": "将 3 列视频网格中视频卡片高度由 100% 改为 auto，彻底消除行间重叠，完整呈现 16:9 无裁切封面、标题、简介与齐平播放按钮。",
     "title": "修复视频区 3 列卡片高度塌陷重叠问题",
-    "content_markdown": "本次微调修复了 CSS Grid \u0007uto 行高下子项设置 height: 100% 导致的纵向行重叠问题：\n\n1. 将 .video-card 的高度恢复为 height: auto，同时保留 \u0007lign-items: stretch 与底部 margin-top: auto，确保每张视频卡片的 16:9 完整封面、高亮标题、简介、作者日期及底部「播放」按钮清晰分离、绝不重叠。"
+    "content_markdown": "本次微调修复了视频区 3 列网格在自动行高下子项设置 100% 高度导致的纵向行重叠问题：\n\n1. 将视频卡片高度恢复为自动自适应，同时保留行内等高对齐与底部播放按钮自动贴底，确保每张视频卡片的 16:9 完整封面、高亮标题、简介、作者日期及底部播放按钮清晰分离、绝不重叠。\n2. 同步保留桌面与移动端全窗口统一居中尺寸、暗色点阵加载态、登录浮层正居中及全部游戏与工具内页的深夜池塘视觉风格。"
   },
   "en": {
-    "summary": "Changed .video-card height from 100% to auto inside the auto-sized 3-column grid so 16:9 thumbnails, titles, descriptions, and aligned Play buttons never overlap vertically.",
+    "summary": "Changed video card height from 100% to auto inside the auto-sized 3-column grid so 16:9 thumbnails, titles, descriptions, and aligned Play buttons never overlap vertically.",
     "title": "Fixed 3-Column Video Card Row Collapse in CSS Grid",
-    "content_markdown": "This one-line layout fix resolves the CSS Grid row collapse on Videos:\n\n1. Switched .video-card to height: auto while retaining \u0007lign-items: stretch, ensuring every card's uncropped 16:9 thumbnail, title, summary, and bottom Play button render cleanly without vertical overlap."
+    "content_markdown": "This one-line layout fix resolves the CSS Grid row collapse on Videos:\n\n1. Switched video cards to natural auto height while retaining stretch alignment, ensuring every card's uncropped 16:9 thumbnail, title, summary, and bottom Play button render cleanly without vertical overlap.\n2. Preserved all unified Midnight Pond window dimensions, dark CRT loading states, and inner tool/game page styling."
   },
   "ja": {
-    "summary": "CSS Grid の自動行高における .video-card の height を 100% から auto へ修正し、16:9 表紙・タイトル・概要・再生ボタンの縦重なりを完全に解消しました。",
+    "summary": "CSS Grid の自動行高における動画カードの height を 100% から auto へ修正し、16:9 表紙・タイトル・概要・再生ボタンの縦重なりを完全に解消しました。",
     "title": "動画区 3 列カードの縦重なりを修正",
-    "content_markdown": "動画区 3 列グリッドの行高計算を修正しました：\n\n1. .video-card を height: auto に戻し、\u0007lign-items: stretch を維持することで、16:9 無裁切サムネイル・タイトル・概要・下部再生ボタンが重ならず整然と表示されます。"
+    "content_markdown": "動画区 3 列グリッドの行高計算と表示崩れを修正しました：\n\n1. 動画カードの高さを自動調整へ戻し、行内の高さ揃えと下部再生ボタンの配置を維持することで、16:9 の無裁切サムネイル・高コントラストなタイトル・概要・作者日時・下部再生ボタンが重ならず整然と表示されるようにしました。\n2. 全ウィンドウの中央配置統一・暗色 CRT ロード表示・ログイン窓の中央表示およびツール・ゲーム内ページの深夜の池スタイルもあわせて維持しています。"
   }
-}, "2026-11-22T04:27:00+08:00"),
+}, "2026-11-22T04:32:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-videos-16x9', '2026-11-22-pond-videos-16x9', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T04:23:00+08:00', '2026-11-22T04:23:00+08:00', '2026-11-22T04:23:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-videos-16x9", {
   "zh": {

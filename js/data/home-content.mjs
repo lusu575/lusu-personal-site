@@ -12,9 +12,9 @@ export const homeContent = Object.freeze({
       "cover_image": "",
       "status": "published",
       "is_pinned": 0,
-      "created_at": "2026-11-22T04:27:00+08:00",
-      "updated_at": "2026-11-22T04:27:00+08:00",
-      "published_at": "2026-11-22T04:27:00+08:00",
+      "created_at": "2026-11-22T04:32:00+08:00",
+      "updated_at": "2026-11-22T04:32:00+08:00",
+      "published_at": "2026-11-22T04:32:00+08:00",
       "fallbackOnly": true,
       "icon": "system",
       "date": "2026.11.22",
@@ -24,9 +24,9 @@ export const homeContent = Object.freeze({
         "ja": "動画区 3 列カードの縦重なりを修正"
       },
       "summary": {
-        "zh": "将 3 列视频网格中 .video-card 的 height 由 100% 改为 auto，彻底消除行间重叠，完整呈现 16:9 无裁切封面、标题、简介与齐平播放按钮。",
-        "en": "Changed .video-card height from 100% to auto inside the auto-sized 3-column grid so 16:9 thumbnails, titles, descriptions, and aligned Play buttons never overlap vertically.",
-        "ja": "CSS Grid の自動行高における .video-card の height を 100% から auto へ修正し、16:9 表紙・タイトル・概要・再生ボタンの縦重なりを完全に解消しました。"
+        "zh": "将 3 列视频网格中视频卡片高度由 100% 改为 auto，彻底消除行间重叠，完整呈现 16:9 无裁切封面、标题、简介与齐平播放按钮。",
+        "en": "Changed video card height from 100% to auto inside the auto-sized 3-column grid so 16:9 thumbnails, titles, descriptions, and aligned Play buttons never overlap vertically.",
+        "ja": "CSS Grid の自動行高における動画カードの height を 100% から auto へ修正し、16:9 表紙・タイトル・概要・再生ボタンの縦重なりを完全に解消しました。"
       }
     },
     {
