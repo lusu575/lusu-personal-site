@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-chatroom",
+      "slug": "2026-11-22-pond-chatroom",
+      "category": "site-updates",
+      "tags": [
+        "网站更新",
+        "聊天室",
+        "界面"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-21T17:59:00.000Z",
+      "updated_at": "2026-11-21T17:59:00.000Z",
+      "published_at": "2026-11-21T17:59:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "聊天室换装深夜终端 CRT 玻璃窗与点阵默认头像",
+        "en": "Chatroom Refreshed with Midnight Pond CRT Glass UI and Dot-Matrix Avatars",
+        "ja": "チャットルームを深夜端末CRTガラス窓とドットアバターへ刷新"
+      },
+      "summary": {
+        "zh": "逐步视觉替换第 6 批上线：桌面端匿名聊天室（#chatroom）换装半透明 CRT 玻璃聊天窗并接入 6 枚点阵圆形 SVG 默认头像；匿名昵称、普通房/密码房、5 秒同步、300 字计数与发送节流均保持原样。",
+        "en": "Batch 6 of the visual refresh is live: the desktop anonymous Chatroom (#chatroom) adopts translucent CRT glass bubbles and 6 circular dot-matrix SVG avatars while keeping anonymous identity, password rooms, 5s polling, 300-char limit, and cooldown untouched.",
+        "ja": "段階的ビジュアル刷新の第6弾を公開しました。デスクトップの匿名チャット（#chatroom）を半透明CRTガラス窓と6種の円形ドットSVGアバターへ換装し、合言葉ルーム・5秒同期・300文字制限は従来のまま維持しています。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-games",
       "slug": "2026-11-22-pond-games",
       "category": "site-updates",
@@ -118,36 +147,6 @@ export const homeContent = Object.freeze({
         "zh": "逐步视觉替换第 2 批上线：桌面端文章阅读页（#article-detail）换装半透明 CRT 玻璃阅读窗，保留现站目录 TOC、顶部阅读进度条、摘要框、复制链接与正文排版逻辑；其余未替换栏目与手机端保持原样。",
         "en": "Batch 2 of the visual refresh is live: the desktop Article Reader (#article-detail) adopts the translucent CRT glass layout over the live Pond background while keeping TOC, reading progress, summary toggle, link copying, and markdown rendering untouched.",
         "ja": "段階的ビジュアル刷新の第2弾を公開しました。デスクトップの記事閲覧ページ（#article-detail）を池塘背景上の半透明CRTガラス窓へ換装し、目次・読書進捗・要約・リンクコピー等の機能はすべて従来のまま維持しています。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-21-pond-home-knowledge",
-      "slug": "2026-11-21-pond-home-knowledge",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "首页",
-        "知识库",
-        "界面"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-21T15:30:00.000Z",
-      "updated_at": "2026-11-21T15:30:00.000Z",
-      "published_at": "2026-11-21T15:30:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.21",
-      "title": {
-        "zh": "桌面首页与知识库列表换装深夜终端池塘视觉",
-        "en": "Desktop Home and Knowledge List Refresh with Midnight Pond CRT Visuals",
-        "ja": "デスクトップのホームと知識庫一覧を深夜端末・池塘CRTビジュアルへ刷新"
-      },
-      "summary": {
-        "zh": "逐步视觉替换第 1 批上线：桌面端首页替换为四季池塘 CRT 点阵桌面（接入按时段自动切换与手动滑块），桌面端知识库列表换装半透明 CRT 玻璃窗口；全部数据、接口、分类、排序、搜索、分页及未替换栏目与移动端均保持原样。",
-        "en": "Batch 1 of the visual refresh is live: desktop Home adopts the four-season WebGL2 Pond CRT desktop (synced with the time-of-day schedule and manual slider), and the desktop Knowledge list uses the translucent CRT glass skin. All data, APIs, sorting, search, pagination, other sections, and mobile remain unchanged.",
-        "ja": "段階的ビジュアル刷新の第1弾を公開しました。デスクトップのホームを時間帯連動の四季池塘CRTへ、知識庫一覧を半透明CRTガラス窓へ切り替えました。データ・API・並び順・検索・ページングおよび他ページとモバイルは従来のままです。"
       }
     }
   ]

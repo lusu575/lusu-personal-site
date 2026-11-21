@@ -15280,6 +15280,27 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - 子猫ゲーム・暗い部屋・人生やり直しシミュレーターにドット風カバー、2048・Hextrisに幾何SVGカバーを適用しています。
 - チャット・概要・ログイン・歓迎窓・モバイル版へ順次進みます。', '2026-11-21T17:56:00.000Z', '2026-11-21T17:56:00.000Z') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-games-r1', '2026-11-21T17:56:00.000Z')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-chatroom', '2026-11-22-pond-chatroom', 'site-updates', '["网站更新","聊天室","界面"]', '', 'published', 0, 0, '2026-11-21T17:59:00.000Z', '2026-11-21T17:59:00.000Z', '2026-11-21T17:59:00.000Z') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-chatroom-zh', 'seed-update-2026-11-22-pond-chatroom', 'zh', '聊天室换装深夜终端 CRT 玻璃窗与点阵默认头像', '逐步视觉替换第 6 批上线：桌面端匿名聊天室（#chatroom）换装半透明 CRT 玻璃聊天窗并接入 6 枚点阵圆形 SVG 默认头像；匿名昵称、普通房/密码房、5 秒同步、300 字计数与发送节流均保持原样。', '# 聊天室换装深夜终端 CRT 玻璃窗与点阵默认头像
+
+本次为全站视觉逐步替换的第 6 批上线，仅替换桌面端聊天室（`#chatroom`）的视觉呈现层，不改动任何消息接口、密码房端到端加密、轮询或节流逻辑。
+
+- 悬浮于四季池塘 CRT 背景之上，消息气泡采用点阵虚线圆角边框，并按昵称确定性映射 6 枚点阵圆形 SVG 头像。
+- 保留现站匿名昵称切换、密码房说明浮层、300 字计数、自动滚动与重试功能。
+- 关于、登录、欢迎窗及手机端继续按顺序逐批推进。', '2026-11-21T17:59:00.000Z', '2026-11-21T17:59:00.000Z') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-chatroom-en', 'seed-update-2026-11-22-pond-chatroom', 'en', 'Chatroom Refreshed with Midnight Pond CRT Glass UI and Dot-Matrix Avatars', 'Batch 6 of the visual refresh is live: the desktop anonymous Chatroom (#chatroom) adopts translucent CRT glass bubbles and 6 circular dot-matrix SVG avatars while keeping anonymous identity, password rooms, 5s polling, 300-char limit, and cooldown untouched.', '# Chatroom Refreshed with Midnight Pond CRT Glass UI and Dot-Matrix Avatars
+
+Batch 6 updates only the presentation layer for the desktop Chatroom (`#chatroom`), preserving all `/api/chat/messages` calls, password-room encryption, polling, and rate-limit behavior.
+
+- Renders dotted CRT glass message bubbles with 6 deterministic circular dot-matrix SVG avatars over the live Pond canvas.
+- About, Login, Welcome, and mobile roll out next.', '2026-11-21T17:59:00.000Z', '2026-11-21T17:59:00.000Z') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-chatroom-ja', 'seed-update-2026-11-22-pond-chatroom', 'ja', 'チャットルームを深夜端末CRTガラス窓とドットアバターへ刷新', '段階的ビジュアル刷新の第6弾を公開しました。デスクトップの匿名チャット（#chatroom）を半透明CRTガラス窓と6種の円形ドットSVGアバターへ換装し、合言葉ルーム・5秒同期・300文字制限は従来のまま維持しています。', '# チャットルームを深夜端末CRTガラス窓とドットアバターへ刷新
+
+段階的ビジュアル刷新の第6弾として、デスクトップのチャットルーム（`#chatroom`）の表示レイヤーのみを更新しました。メッセージ送受信・パスワード部屋暗号化・クールダウンは一切変更していません。
+
+- 6種の円形ドットSVGアバターと点線枠バブル、丸型入力バーを適用しました。
+- 概要・ログイン・歓迎窓・モバイル版へ順次進みます。', '2026-11-21T17:59:00.000Z', '2026-11-21T17:59:00.000Z') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-chat-r1', '2026-11-21T17:59:00.000Z')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-games-r1', '2026-11-21T17:56:00.000Z', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-chat-r1', '2026-11-21T17:59:00.000Z', 'schema') on conflict(version) do nothing;

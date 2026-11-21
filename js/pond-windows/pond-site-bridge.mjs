@@ -130,6 +130,42 @@ function applyGamesCoverPresentation() {
   });
 }
 
+const CHAT_AVATARS = [
+  '/assets/pond-windows/svg/avatar-lotus.svg',
+  '/assets/pond-windows/svg/avatar-koi.svg',
+  '/assets/pond-windows/svg/avatar-moon.svg',
+  '/assets/pond-windows/svg/avatar-leaf.svg',
+  '/assets/pond-windows/svg/avatar-ripple.svg',
+  '/assets/pond-windows/svg/avatar-star.svg'
+];
+
+function hashString(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h);
+}
+
+function applyChatAvatarPresentation() {
+  const list = document.getElementById('chat-message-list');
+  if (!list) return;
+  list.querySelectorAll('.chat-message, .chat-item, article').forEach((msg) => {
+    if (msg.dataset.pondAvatarApplied === '1') return;
+    if (msg.classList.contains('content-state')) return;
+    const authorNode = msg.querySelector('.chat-author, .chat-nickname, strong');
+    const name = (authorNode?.textContent || 'visitor').trim();
+    const avatarSrc = CHAT_AVATARS[hashString(name) % CHAT_AVATARS.length];
+    const avatar = document.createElement('img');
+    avatar.className = 'pond-chat-avatar';
+    avatar.src = avatarSrc;
+    avatar.alt = '';
+    avatar.setAttribute('aria-hidden', 'true');
+    msg.prepend(avatar);
+    msg.dataset.pondAvatarApplied = '1';
+  });
+}
+
 function bootPondVisualBridge() {
   if (window.__pondVisualBridge) return;
 
@@ -195,6 +231,8 @@ function bootPondVisualBridge() {
         nextMode = 'resources';
       } else if (route === 'games') {
         nextMode = 'games';
+      } else if (route === 'chatroom') {
+        nextMode = 'chatroom';
       }
     }
 
@@ -210,6 +248,8 @@ function bootPondVisualBridge() {
         window.requestAnimationFrame(applyToolsSvgPresentation);
       } else if (nextMode === 'games') {
         window.requestAnimationFrame(applyGamesCoverPresentation);
+      } else if (nextMode === 'chatroom') {
+        window.requestAnimationFrame(applyChatAvatarPresentation);
       }
       activeMode = nextMode;
     } else if (activeMode) {
@@ -243,6 +283,12 @@ function bootPondVisualBridge() {
       if (activeMode === 'games') applyGamesCoverPresentation();
     }).observe(gameListEl, { childList: true });
   }
+  const chatListEl = document.getElementById('chat-message-list');
+  if (chatListEl) {
+    new MutationObserver(() => {
+      if (activeMode === 'chatroom') applyChatAvatarPresentation();
+    }).observe(chatListEl, { childList: true });
+  }
 
   // Clicking outside the skinned window returns to parent view
   document.addEventListener('click', (e) => {
@@ -253,7 +299,7 @@ function bootPondVisualBridge() {
       else triggerSiteRoute('knowledge');
       return;
     }
-    if (activeMode === 'knowledge' || activeMode === 'videos' || activeMode === 'resources' || activeMode === 'games') {
+    if (activeMode === 'knowledge' || activeMode === 'videos' || activeMode === 'resources' || activeMode === 'games' || activeMode === 'chatroom') {
       triggerSiteRoute('home');
     }
   });
@@ -278,7 +324,9 @@ function bootPondVisualBridge() {
       triggerSiteRoute('home');
       return;
     }
-    if (activeMode === 'games') {
+    if (activeMode === 'games' || activeMode === 'chatroom') {
+      const privForm = document.getElementById('chat-private-room-form');
+      if (activeMode === 'chatroom' && privForm && !privForm.hidden) return;
       triggerSiteRoute('home');
       return;
     }

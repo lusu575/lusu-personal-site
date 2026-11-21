@@ -1,6 +1,40 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-chatroom",
+  "slug": "2026-11-22-pond-chatroom",
+  "category": "site-updates",
+  "tags": [
+    "网站更新",
+    "聊天室",
+    "界面"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-21T17:59:00.000Z",
+  "updated_at": "2026-11-21T17:59:00.000Z",
+  "published_at": "2026-11-21T17:59:00.000Z",
+  "fallbackOnly": true,
+  "icon": "system",
+  "date": "2026.11.22",
+  "title": {
+    "zh": "聊天室换装深夜终端 CRT 玻璃窗与点阵默认头像",
+    "en": "Chatroom Refreshed with Midnight Pond CRT Glass UI and Dot-Matrix Avatars",
+    "ja": "チャットルームを深夜端末CRTガラス窓とドットアバターへ刷新"
+  },
+  "summary": {
+    "zh": "逐步视觉替换第 6 批上线：桌面端匿名聊天室（#chatroom）换装半透明 CRT 玻璃聊天窗并接入 6 枚点阵圆形 SVG 默认头像；匿名昵称、普通房/密码房、5 秒同步、300 字计数与发送节流均保持原样。",
+    "en": "Batch 6 of the visual refresh is live: the desktop anonymous Chatroom (#chatroom) adopts translucent CRT glass bubbles and 6 circular dot-matrix SVG avatars while keeping anonymous identity, password rooms, 5s polling, 300-char limit, and cooldown untouched.",
+    "ja": "段階的ビジュアル刷新の第6弾を公開しました。デスクトップの匿名チャット（#chatroom）を半透明CRTガラス窓と6種の円形ドットSVGアバターへ換装し、合言葉ルーム・5秒同期・300文字制限は従来のまま維持しています。"
+  },
+  "content_markdown": {
+    "zh": "# 聊天室换装深夜终端 CRT 玻璃窗与点阵默认头像\n\n本次为全站视觉逐步替换的第 6 批上线，仅替换桌面端聊天室（`#chatroom`）的视觉呈现层，不改动任何消息接口、密码房端到端加密、轮询或节流逻辑。\n\n- 悬浮于四季池塘 CRT 背景之上，消息气泡采用点阵虚线圆角边框，并按昵称确定性映射 6 枚点阵圆形 SVG 头像。\n- 保留现站匿名昵称切换、密码房说明浮层、300 字计数、自动滚动与重试功能。\n- 关于、登录、欢迎窗及手机端继续按顺序逐批推进。",
+    "en": "# Chatroom Refreshed with Midnight Pond CRT Glass UI and Dot-Matrix Avatars\n\nBatch 6 updates only the presentation layer for the desktop Chatroom (`#chatroom`), preserving all `/api/chat/messages` calls, password-room encryption, polling, and rate-limit behavior.\n\n- Renders dotted CRT glass message bubbles with 6 deterministic circular dot-matrix SVG avatars over the live Pond canvas.\n- About, Login, Welcome, and mobile roll out next.",
+    "ja": "# チャットルームを深夜端末CRTガラス窓とドットアバターへ刷新\n\n段階的ビジュアル刷新の第6弾として、デスクトップのチャットルーム（`#chatroom`）の表示レイヤーのみを更新しました。メッセージ送受信・パスワード部屋暗号化・クールダウンは一切変更していません。\n\n- 6種の円形ドットSVGアバターと点線枠バブル、丸型入力バーを適用しました。\n- 概要・ログイン・歓迎窓・モバイル版へ順次進みます。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-games",
   "slug": "2026-11-22-pond-games",
   "category": "site-updates",
