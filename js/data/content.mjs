@@ -1,6 +1,40 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-games",
+  "slug": "2026-11-22-pond-games",
+  "category": "site-updates",
+  "tags": [
+    "网站更新",
+    "游戏区",
+    "界面"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-21T17:56:00.000Z",
+  "updated_at": "2026-11-21T17:56:00.000Z",
+  "published_at": "2026-11-21T17:56:00.000Z",
+  "fallbackOnly": true,
+  "icon": "system",
+  "date": "2026.11.22",
+  "title": {
+    "zh": "游戏区换装深夜终端 CRT 游戏货架与点阵封面",
+    "en": "Games Shelf Refreshed with Midnight Pond CRT Layout and Dot-Matrix Covers",
+    "ja": "ゲーム棚を深夜端末CRTレイアウトとドット風カバーへ刷新"
+  },
+  "summary": {
+    "zh": "逐步视觉替换第 5 批上线：桌面端游戏区（#games）换装半透明 CRT 玻璃货架，接入 3 张点阵插图封面（猫国建设者、小黑屋、人生重开模拟器）及 2048、Hextris 点阵封面；游戏启动、三语参数与云存档同步保持原样。",
+    "en": "Batch 5 of the visual refresh is live: the desktop Games shelf (#games) adopts the translucent CRT glass 3+2 shelf layout with 3 dot-matrix illustrated covers and 2 geometric SVG covers while keeping catalog loading, launch links, and cloud saves untouched.",
+    "ja": "段階的ビジュアル刷新の第5弾を公開しました。デスクトップのゲーム欄（#games）を半透明CRTガラス棚と3種のドット風イラストカバー＋2種の幾何SVGカバーへ換装し、起動・クラウドセーブ機能は従来のまま維持しています。"
+  },
+  "content_markdown": {
+    "zh": "# 游戏区换装深夜终端 CRT 游戏货架与点阵封面\n\n本次为全站视觉逐步替换的第 5 批上线，仅替换桌面端游戏区（`#games`）的视觉呈现层，不改动任何游戏目录数据、启动参数或云存档同步逻辑。\n\n- 上三下二货架排布直接作用在现站 `games/catalog.json` 渲染结果之上。\n- 猫国建设者、小黑屋、人生重开模拟器接入点阵风插图封面，2048 与 Hextris 采用点阵几何 SVG 封面。\n- 聊天室、关于、登录、欢迎窗及手机端继续按顺序逐批推进。",
+    "en": "# Games Shelf Refreshed with Midnight Pond CRT Layout and Dot-Matrix Covers\n\nBatch 5 updates only the presentation layer for the desktop Games shelf (`#games`), preserving all `games/catalog.json` data, language launch links, and cloud-save behavior.\n\n- Applies the 3-over-2 CRT glass card shelf over the existing `#game-list` DOM.\n- Uses dot-matrix covers for Kittens Game, A Dark Room, and Life Restart, plus crisp geometric SVG covers for 2048 and Hextris.\n- Chatroom, About, Login, Welcome, and mobile roll out next.",
+    "ja": "# ゲーム棚を深夜端末CRTレイアウトとドット風カバーへ刷新\n\n段階的ビジュアル刷新の第5弾として、デスクトップのゲーム欄（`#games`）の表示レイヤーのみを更新しました。`games/catalog.json`・起動パラメータ・クラウドセーブ同期は一切変更していません。\n\n- 上段3件＋下段2件のCRTガラス棚レイアウトを既存DOMへ適用しました。\n- 子猫ゲーム・暗い部屋・人生やり直しシミュレーターにドット風カバー、2048・Hextrisに幾何SVGカバーを適用しています。\n- チャット・概要・ログイン・歓迎窓・モバイル版へ順次進みます。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-tools",
   "slug": "2026-11-22-pond-tools",
   "category": "site-updates",

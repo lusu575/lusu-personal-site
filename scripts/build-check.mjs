@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-tools";
-const finalUpdateSlug = "2026-11-22-pond-tools";
+const finalUpdateId = "seed-update-2026-11-22-pond-games";
+const finalUpdateSlug = "2026-11-22-pond-games";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Tools Window and Three Tool Sub-Pages Refreshed with Midnight Pond CRT Visuals";
-const finalPublishedAt = "2026-11-21T17:52:00.000Z";
+const finalTitleEn = "Games Shelf Refreshed with Midnight Pond CRT Layout and Dot-Matrix Covers";
+const finalPublishedAt = "2026-11-21T17:56:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-tools",
   "seed-update-2026-11-22-pond-videos",
   "seed-update-2026-11-22-pond-article-reader",
   "seed-update-2026-11-21-pond-home-knowledge",

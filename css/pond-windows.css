@@ -1664,3 +1664,271 @@ html[data-pond-mode="resources"] #quick-transfer-modal .xp-button {
   color: #f0fefa !important;
   box-shadow: none !important;
 }
+
+/* ============================================================
+   Batch 5: Games Shelf Window (html[data-pond-mode="games"])
+   Matches design-assets/windows/games.png over untouched #games DOM + GPT covers
+   ============================================================ */
+
+html[data-pond-mode="games"] #pond-visual-backdrop {
+  display: block;
+  z-index: 1;
+}
+
+html[data-pond-mode="games"] body,
+html[data-pond-mode="games"] .site-shell,
+html[data-pond-mode="games"] .site-shell::before,
+html[data-pond-mode="games"] .site-shell::after {
+  background: transparent !important;
+}
+
+html[data-pond-mode="games"] .wallpaper-layer {
+  display: none !important;
+}
+
+html[data-pond-mode="games"] .xp-taskbar,
+html[data-pond-mode="games"] .site-shell > header {
+  opacity: 0;
+  pointer-events: none;
+}
+
+html[data-pond-mode="games"] .site-shell {
+  position: relative;
+  z-index: 20;
+}
+
+html[data-pond-mode="games"] .site-shell > main {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 78px 24px 44px;
+  background: transparent !important;
+  pointer-events: none;
+}
+
+html[data-pond-mode="games"] #games {
+  width: min(980px, 68vw);
+  min-width: min(680px, 92vw);
+  max-height: min(700px, 75vh);
+  margin: 12px 0 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  pointer-events: auto;
+}
+
+html[data-pond-mode="games"] #games .xp-window {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: min(700px, 75vh);
+  margin: 0 !important;
+  padding: 20px 26px 20px !important;
+  border-radius: 18px !important;
+  color: rgba(236, 250, 248, 0.96);
+  backdrop-filter: blur(10px) saturate(1.16);
+  -webkit-backdrop-filter: blur(10px) saturate(1.16);
+  overflow: hidden;
+  font-family: "JetBrains Mono", "Cascadia Mono", Consolas, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+html[data-pond-mode="games"] #games .xp-window::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  border-radius: inherit;
+  background-image:
+    radial-gradient(rgba(210, 255, 248, 0.10) 0.75px, transparent 0.75px),
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.12) 0px,
+      rgba(0, 0, 0, 0.12) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  background-size: 4px 4px, 100% 3px;
+  opacity: 0.46;
+}
+
+html[data-pond-mode="games"] #games .window-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 14px !important;
+  margin: 0 0 14px !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px dotted rgba(188, 240, 234, 0.34) !important;
+  box-shadow: none !important;
+  color: #f0fefa !important;
+  flex-shrink: 0;
+}
+
+html[data-pond-mode="games"] #games .window-titlebar > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: #f0fefa;
+  text-shadow: 0 0 12px rgba(176, 248, 236, 0.50);
+}
+
+html[data-pond-mode="games"] #games .window-titlebar .title-icon-games {
+  width: 34px !important;
+  height: 26px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 32'%3E%3Cpath d='M10 8h24a8 8 0 0 1 7.6 10.4l-2 6A5 5 0 0 1 31 25l-4-4H17l-4 4a5 5 0 0 1-8.6-.6l-2-6A8 8 0 0 1 10 8z' fill='none' stroke='%23eefcf9' stroke-width='2.1' stroke-dasharray='0.5 3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  filter: drop-shadow(0 0 6px rgba(180, 248, 236, 0.55));
+}
+
+html[data-pond-mode="games"] #games .window-titlebar .close-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px !important;
+  border: 1px dashed rgba(185, 235, 230, 0.44) !important;
+  background: rgba(6, 22, 26, 0.52) !important;
+  color: rgba(214, 248, 244, 0.88) !important;
+  box-shadow: none !important;
+  font-size: 16px;
+}
+
+/* 6-column shelf matching games.png: top 3 cards span 2 cols each, bottom 2 cards span 3 cols each */
+html[data-pond-mode="games"] #game-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  padding: 2px 4px 8px 2px !important;
+  background: transparent !important;
+  border: none !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(142, 226, 216, 0.24) transparent;
+}
+
+html[data-pond-mode="games"] #game-list .game-card {
+  grid-column: span 2;
+  display: grid !important;
+  grid-template-columns: 108px minmax(0, 1fr) !important;
+  align-items: start;
+  gap: 14px !important;
+  padding: 14px !important;
+  margin: 0 !important;
+  border-radius: 14px !important;
+  border: 1.3px solid rgba(182, 242, 234, 0.48) !important;
+  background: rgba(8, 28, 32, 0.56) !important;
+  box-shadow: 0 0 16px rgba(92, 228, 218, 0.14), inset 0 0 18px rgba(4, 16, 20, 0.50) !important;
+  color: rgba(232, 248, 246, 0.94) !important;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+html[data-pond-mode="games"] #game-list .game-card:nth-child(4),
+html[data-pond-mode="games"] #game-list .game-card:nth-child(5) {
+  grid-column: span 3;
+  grid-template-columns: 136px minmax(0, 1fr) !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-card:hover {
+  border-color: rgba(200, 252, 246, 0.92) !important;
+  box-shadow: 0 0 24px rgba(108, 238, 228, 0.34), 0 0 20px rgba(244, 118, 192, 0.22) !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-cover {
+  width: 100% !important;
+  height: 108px !important;
+  border-radius: 10px !important;
+  object-fit: cover !important;
+  border: 1px solid rgba(182, 242, 234, 0.42) !important;
+  background: rgba(4, 16, 20, 0.72) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+html[data-pond-mode="games"] #game-list .game-card[data-pond-cover-kind="art"] .game-cover {
+  object-position: center;
+  filter: contrast(1.06) brightness(1.05);
+}
+
+html[data-pond-mode="games"] #game-list .game-card[data-pond-cover-kind="svg"] .game-cover {
+  object-fit: contain !important;
+  padding: 6px !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+html[data-pond-mode="games"] #game-list .game-main h2 {
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: #f0fefa !important;
+  margin: 0 !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-main p {
+  font-size: 12px !important;
+  line-height: 1.5;
+  color: rgba(196, 232, 228, 0.78) !important;
+  margin: 0 !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+html[data-pond-mode="games"] #game-list .meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-size: 11px;
+  color: rgba(182, 226, 220, 0.76) !important;
+}
+
+html[data-pond-mode="games"] #game-list .tag {
+  border-radius: 999px !important;
+  border: 1px solid rgba(142, 228, 216, 0.42) !important;
+  background: rgba(6, 24, 28, 0.62) !important;
+  color: #c8f4ec !important;
+  padding: 1px 7px !important;
+  font-size: 10.5px !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-secondary-details summary {
+  color: rgba(166, 236, 228, 0.80) !important;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+html[data-pond-mode="games"] #game-list .xp-button,
+html[data-pond-mode="games"] #game-list .game-card a,
+html[data-pond-mode="games"] #game-list .game-card button {
+  border-radius: 999px !important;
+  border: 1.3px dashed rgba(182, 242, 236, 0.58) !important;
+  background: rgba(8, 28, 34, 0.68) !important;
+  background-image: none !important;
+  color: #f0fefa !important;
+  box-shadow: none !important;
+  font-size: 12px !important;
+  padding: 5px 14px !important;
+  text-decoration: none !important;
+}
+
+html[data-pond-mode="games"] #game-list .xp-button:hover,
+html[data-pond-mode="games"] #game-list .game-card a:hover,
+html[data-pond-mode="games"] #game-list .game-card button:hover {
+  border-color: rgba(164, 248, 240, 0.94) !important;
+  box-shadow: 0 0 12px rgba(102, 238, 226, 0.36) !important;
+}

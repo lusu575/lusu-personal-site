@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-games",
+      "slug": "2026-11-22-pond-games",
+      "category": "site-updates",
+      "tags": [
+        "网站更新",
+        "游戏区",
+        "界面"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-21T17:56:00.000Z",
+      "updated_at": "2026-11-21T17:56:00.000Z",
+      "published_at": "2026-11-21T17:56:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "游戏区换装深夜终端 CRT 游戏货架与点阵封面",
+        "en": "Games Shelf Refreshed with Midnight Pond CRT Layout and Dot-Matrix Covers",
+        "ja": "ゲーム棚を深夜端末CRTレイアウトとドット風カバーへ刷新"
+      },
+      "summary": {
+        "zh": "逐步视觉替换第 5 批上线：桌面端游戏区（#games）换装半透明 CRT 玻璃货架，接入 3 张点阵插图封面（猫国建设者、小黑屋、人生重开模拟器）及 2048、Hextris 点阵封面；游戏启动、三语参数与云存档同步保持原样。",
+        "en": "Batch 5 of the visual refresh is live: the desktop Games shelf (#games) adopts the translucent CRT glass 3+2 shelf layout with 3 dot-matrix illustrated covers and 2 geometric SVG covers while keeping catalog loading, launch links, and cloud saves untouched.",
+        "ja": "段階的ビジュアル刷新の第5弾を公開しました。デスクトップのゲーム欄（#games）を半透明CRTガラス棚と3種のドット風イラストカバー＋2種の幾何SVGカバーへ換装し、起動・クラウドセーブ機能は従来のまま維持しています。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-tools",
       "slug": "2026-11-22-pond-tools",
       "category": "site-updates",
@@ -119,34 +148,6 @@ export const homeContent = Object.freeze({
         "zh": "逐步视觉替换第 1 批上线：桌面端首页替换为四季池塘 CRT 点阵桌面（接入按时段自动切换与手动滑块），桌面端知识库列表换装半透明 CRT 玻璃窗口；全部数据、接口、分类、排序、搜索、分页及未替换栏目与移动端均保持原样。",
         "en": "Batch 1 of the visual refresh is live: desktop Home adopts the four-season WebGL2 Pond CRT desktop (synced with the time-of-day schedule and manual slider), and the desktop Knowledge list uses the translucent CRT glass skin. All data, APIs, sorting, search, pagination, other sections, and mobile remain unchanged.",
         "ja": "段階的ビジュアル刷新の第1弾を公開しました。デスクトップのホームを時間帯連動の四季池塘CRTへ、知識庫一覧を半透明CRTガラス窓へ切り替えました。データ・API・並び順・検索・ページングおよび他ページとモバイルは従来のままです。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-10-29-tool-maintenance",
-      "slug": "2026-10-29-tool-maintenance",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "工具"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-10-29T15:00:00.000Z",
-      "updated_at": "2026-10-29T15:00:00.000Z",
-      "published_at": "2026-10-29T15:00:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.10.29",
-      "title": {
-        "zh": "工具维护与完整画板导出准备",
-        "en": "Tool Maintenance and Full Whiteboard Export Preparation",
-        "ja": "ツール保守とホワイトボード全体画像の準備"
-      },
-      "summary": {
-        "zh": "本地候选在现有画板和互传基础上完善完整图片导出与管理适配，保留现有大厅、帮助、上传和草稿保护；尚未部署。",
-        "en": "The local candidate adds full whiteboard image export and administration integration while retaining the existing lobby, help, uploads and draft protection. It has not been deployed.",
-        "ja": "ローカル候補版で全体画像の書き出しと管理連携を整備しました。既存のロビー、ヘルプ、アップロード、下書き保護を維持しています。まだ公開していません。"
       }
     }
   ]

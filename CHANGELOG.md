@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 逐步视觉替换上线第 5 批（游戏区 `#games`）：在现站 `games/catalog.json` 与云存档逻辑之上换装深夜终端 CRT 游戏货架，接入猫国建设者、小黑屋、人生重开模拟器 3 张点阵封面与 2048、Hextris 点阵几何封面；游戏启动与云存档同步逻辑完全不变（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-games` / `2026-11-22-pond-games`；视觉层缓存 `20261122-pond-games-r1`。
+
 - 逐步视觉替换上线第 4 批（工具区 `#resources` + 临时互传弹窗 + 在线画板与日语的言外之意子页面主题）：换装提亮后的深夜终端 CRT 玻璃窗，接入 GPT 制作的 6 枚点阵虚线 SVG 图标，并为三个工具子页面统一挂接深夜池塘 CRT 主题层；所有工具功能与子项目逻辑均保持原样（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-tools` / `2026-11-22-pond-tools`；视觉层缓存 `20261122-pond-tools-r1`。
 
 - 逐步视觉替换上线第 3 批（视频区 `#videos` + `#video-modal`）：在现站真实 `/api/videos` 与视频卡片 DOM 之上换装深夜终端 CRT 玻璃窗（三列 16:9 渐变封面、点阵播放按钮、分类筛选胶囊与深色播放弹窗）；其余未替换栏目与手机端保持原样（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-videos` / `2026-11-22-pond-videos`；视觉层缓存 `20261122-pond-videos-r1`。

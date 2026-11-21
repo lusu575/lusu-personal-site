@@ -94,6 +94,42 @@ function applyToolsSvgPresentation() {
   });
 }
 
+const GAME_COVER_MAP = [
+  { match: 'kittens-game', src: '/assets/pond-windows/covers/cover-cat.png', kind: 'art' },
+  { match: 'a-dark-room', src: '/assets/pond-windows/covers/cover-darkroom.png', kind: 'art' },
+  {
+    match: '2048',
+    src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect x='8' y='8' width='48' height='48' rx='7' fill='rgba(12,34,40,0.75)' stroke='%239cf6e8' stroke-width='2' stroke-dasharray='1 3'/%3E%3Crect x='64' y='8' width='48' height='48' rx='7' fill='rgba(18,44,48,0.75)' stroke='%239ce2f6' stroke-width='2' stroke-dasharray='1 3'/%3E%3Crect x='8' y='64' width='48' height='48' rx='7' fill='rgba(36,30,48,0.75)' stroke='%23f6b888' stroke-width='2' stroke-dasharray='1 3'/%3E%3Crect x='64' y='64' width='48' height='48' rx='7' fill='rgba(48,26,42,0.75)' stroke='%23ff9898' stroke-width='2' stroke-dasharray='1 3'/%3E%3Ctext x='32' y='40' text-anchor='middle' fill='%23eefcf9' font-family='monospace' font-size='22'%3E2%3C/text%3E%3Ctext x='88' y='40' text-anchor='middle' fill='%23eefcf9' font-family='monospace' font-size='22'%3E4%3C/text%3E%3Ctext x='32' y='96' text-anchor='middle' fill='%23ffddb4' font-family='monospace' font-size='22'%3E8%3C/text%3E%3Ctext x='88' y='96' text-anchor='middle' fill='%23ffb8b8' font-family='monospace' font-size='20'%3E16%3C/text%3E%3C/svg%3E",
+    kind: 'svg'
+  },
+  {
+    match: 'hextris',
+    src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cpolygon points='60,14 96,35 96,77 60,98 24,77 24,35' fill='none' stroke='%2378f2e2' stroke-width='2.2' stroke-dasharray='1 4'/%3E%3Cpolygon points='60,28 84,42 84,70 60,84 36,70 36,42' fill='rgba(20,56,64,0.45)' stroke='%23ff7cd6' stroke-width='2.4' stroke-dasharray='1 3.5'/%3E%3Cpolygon points='60,42 74,50 74,66 60,74 46,66 46,50' fill='rgba(110,236,220,0.22)' stroke='%23ffe680' stroke-width='2.2'/%3E%3C/svg%3E",
+    kind: 'svg'
+  },
+  { match: 'life-restart', src: '/assets/pond-windows/covers/cover-restart.png', kind: 'art' }
+];
+
+function applyGamesCoverPresentation() {
+  const list = document.getElementById('game-list');
+  if (!list) return;
+  list.querySelectorAll('.game-card').forEach((card) => {
+    if (card.dataset.pondCoverApplied === '1') return;
+    const html = card.innerHTML;
+    const cover = card.querySelector('img.game-cover');
+    if (cover) {
+      for (const entry of GAME_COVER_MAP) {
+        if (html.includes(entry.match) || (cover.src && cover.src.includes(entry.match))) {
+          cover.src = entry.src;
+          card.dataset.pondCoverKind = entry.kind;
+          break;
+        }
+      }
+    }
+    card.dataset.pondCoverApplied = '1';
+  });
+}
+
 function bootPondVisualBridge() {
   if (window.__pondVisualBridge) return;
 
@@ -157,6 +193,8 @@ function bootPondVisualBridge() {
         nextMode = 'videos';
       } else if (route === 'resources') {
         nextMode = 'resources';
+      } else if (route === 'games') {
+        nextMode = 'games';
       }
     }
 
@@ -170,6 +208,8 @@ function bootPondVisualBridge() {
       }
       if (nextMode === 'resources') {
         window.requestAnimationFrame(applyToolsSvgPresentation);
+      } else if (nextMode === 'games') {
+        window.requestAnimationFrame(applyGamesCoverPresentation);
       }
       activeMode = nextMode;
     } else if (activeMode) {
@@ -197,6 +237,12 @@ function bootPondVisualBridge() {
       if (activeMode === 'resources') applyToolsSvgPresentation();
     }).observe(resourceListEl, { childList: true });
   }
+  const gameListEl = document.getElementById('game-list');
+  if (gameListEl) {
+    new MutationObserver(() => {
+      if (activeMode === 'games') applyGamesCoverPresentation();
+    }).observe(gameListEl, { childList: true });
+  }
 
   // Clicking outside the skinned window returns to parent view
   document.addEventListener('click', (e) => {
@@ -207,7 +253,7 @@ function bootPondVisualBridge() {
       else triggerSiteRoute('knowledge');
       return;
     }
-    if (activeMode === 'knowledge' || activeMode === 'videos' || activeMode === 'resources') {
+    if (activeMode === 'knowledge' || activeMode === 'videos' || activeMode === 'resources' || activeMode === 'games') {
       triggerSiteRoute('home');
     }
   });
@@ -229,6 +275,10 @@ function bootPondVisualBridge() {
     if (activeMode === 'resources') {
       const qtModal = document.getElementById('quick-transfer-modal');
       if (qtModal && !qtModal.hidden) return;
+      triggerSiteRoute('home');
+      return;
+    }
+    if (activeMode === 'games') {
       triggerSiteRoute('home');
       return;
     }

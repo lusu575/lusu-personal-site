@@ -15257,6 +15257,29 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - 一時転送モーダル・オンラインホワイトボード・日本語の裏側にも深夜池塘CRTテーマを統一適用しています。
 - ゲーム・チャット・概要・ログイン・歓迎窓・モバイル版へ順次進みます。', '2026-11-21T17:52:00.000Z', '2026-11-21T17:52:00.000Z') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-tools-r1', '2026-11-21T17:52:00.000Z')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-games', '2026-11-22-pond-games', 'site-updates', '["网站更新","游戏区","界面"]', '', 'published', 0, 0, '2026-11-21T17:56:00.000Z', '2026-11-21T17:56:00.000Z', '2026-11-21T17:56:00.000Z') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-games-zh', 'seed-update-2026-11-22-pond-games', 'zh', '游戏区换装深夜终端 CRT 游戏货架与点阵封面', '逐步视觉替换第 5 批上线：桌面端游戏区（#games）换装半透明 CRT 玻璃货架，接入 3 张点阵插图封面（猫国建设者、小黑屋、人生重开模拟器）及 2048、Hextris 点阵封面；游戏启动、三语参数与云存档同步保持原样。', '# 游戏区换装深夜终端 CRT 游戏货架与点阵封面
+
+本次为全站视觉逐步替换的第 5 批上线，仅替换桌面端游戏区（`#games`）的视觉呈现层，不改动任何游戏目录数据、启动参数或云存档同步逻辑。
+
+- 上三下二货架排布直接作用在现站 `games/catalog.json` 渲染结果之上。
+- 猫国建设者、小黑屋、人生重开模拟器接入点阵风插图封面，2048 与 Hextris 采用点阵几何 SVG 封面。
+- 聊天室、关于、登录、欢迎窗及手机端继续按顺序逐批推进。', '2026-11-21T17:56:00.000Z', '2026-11-21T17:56:00.000Z') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-games-en', 'seed-update-2026-11-22-pond-games', 'en', 'Games Shelf Refreshed with Midnight Pond CRT Layout and Dot-Matrix Covers', 'Batch 5 of the visual refresh is live: the desktop Games shelf (#games) adopts the translucent CRT glass 3+2 shelf layout with 3 dot-matrix illustrated covers and 2 geometric SVG covers while keeping catalog loading, launch links, and cloud saves untouched.', '# Games Shelf Refreshed with Midnight Pond CRT Layout and Dot-Matrix Covers
+
+Batch 5 updates only the presentation layer for the desktop Games shelf (`#games`), preserving all `games/catalog.json` data, language launch links, and cloud-save behavior.
+
+- Applies the 3-over-2 CRT glass card shelf over the existing `#game-list` DOM.
+- Uses dot-matrix covers for Kittens Game, A Dark Room, and Life Restart, plus crisp geometric SVG covers for 2048 and Hextris.
+- Chatroom, About, Login, Welcome, and mobile roll out next.', '2026-11-21T17:56:00.000Z', '2026-11-21T17:56:00.000Z') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-games-ja', 'seed-update-2026-11-22-pond-games', 'ja', 'ゲーム棚を深夜端末CRTレイアウトとドット風カバーへ刷新', '段階的ビジュアル刷新の第5弾を公開しました。デスクトップのゲーム欄（#games）を半透明CRTガラス棚と3種のドット風イラストカバー＋2種の幾何SVGカバーへ換装し、起動・クラウドセーブ機能は従来のまま維持しています。', '# ゲーム棚を深夜端末CRTレイアウトとドット風カバーへ刷新
+
+段階的ビジュアル刷新の第5弾として、デスクトップのゲーム欄（`#games`）の表示レイヤーのみを更新しました。`games/catalog.json`・起動パラメータ・クラウドセーブ同期は一切変更していません。
+
+- 上段3件＋下段2件のCRTガラス棚レイアウトを既存DOMへ適用しました。
+- 子猫ゲーム・暗い部屋・人生やり直しシミュレーターにドット風カバー、2048・Hextrisに幾何SVGカバーを適用しています。
+- チャット・概要・ログイン・歓迎窓・モバイル版へ順次進みます。', '2026-11-21T17:56:00.000Z', '2026-11-21T17:56:00.000Z') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-games-r1', '2026-11-21T17:56:00.000Z')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-tools-r1', '2026-11-21T17:52:00.000Z', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-games-r1', '2026-11-21T17:56:00.000Z', 'schema') on conflict(version) do nothing;
