@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-kittens-res-contrast', '2026-11-22-pond-kittens-res-contrast', 'site-updates', '["site-update","games","ui"]', '', 'published', 0, 0, '2026-11-22T05:10:00+08:00', '2026-11-22T05:10:00+08:00', '2026-11-22T05:10:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-kittens-res-contrast", {
+  "zh": {
+    "summary": "为猫国建设者纯 CSS 暗色主题中的左栏资源表、资源名、数值、上限及顶部齿轮与问号图标全面提亮青白高对比度，确保暗底上清晰可读。",
+    "title": "提亮猫国建设者暗色主题左栏资源数值与齿轮问号图标对比度",
+    "content_markdown": "本次微调提升了猫国建设者暗色内页左侧资源栏的可读性：\n\n1. 为 #leftColumn、资源表 .res-table、资源名、当前数值与上限文字统一设置高对比青白色（#e8fbf7），并将顶部齿轮与问号帮助图标提亮至亮青色（#9af8ec）。\n2. 保持顶部存档与 AI 工具栏默认收起、一键展开功能完整，所有游戏逻辑与存档保持原样。"
+  },
+  "en": {
+    "summary": "Brightened resource names, counts, caps, and the gear/help icons in the Kittens Game dark inner theme for crisp legibility on dark glass.",
+    "title": "Boosted Contrast for Kittens Game Dark Resource Column & Header Icons",
+    "content_markdown": "This quick polish improves legibility in the Kittens Game dark inner stylesheet:\n\n1. Enforced high-contrast cyan-white text (#e8fbf7) across #leftColumn and .res-table cells, and brightened the top gear and help icons to #9af8ec.\n2. Preserved the default-collapsed save/AI toolbar and one-click expand behavior."
+  },
+  "ja": {
+    "summary": "猫国建設者の暗色テーマにおいて、左欄リソース名・数値・上限および上部歯車／ヘルプアイコンを明るい青白へ引き上げ、暗色背景での可読性を高めました。",
+    "title": "猫国建設者暗色テーマ左欄リソース数値・歯車アイコンの視認性向上",
+    "content_markdown": "猫国建設者の暗色内ページにおける左欄の視認性を改善しました：\n\n1. #leftColumn および .res-table のリソース名・数値・上限文字を高コントラストな青白（#e8fbf7）にし、歯車・ヘルプアイコンを #9af8ec へ引き上げました。\n2. 上部セーブ／AI ツール欄の初期折りたたみとワンクリック展開機能はそのまま維持しています。"
+  }
+}, "2026-11-22T05:10:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-game-inner-dark', '2026-11-22-pond-game-inner-dark', 'site-updates', '["site-update","games","ui"]', '', 'published', 0, 0, '2026-11-22T05:00:00+08:00', '2026-11-22T05:00:00+08:00', '2026-11-22T05:00:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-game-inner-dark", {
   "zh": {

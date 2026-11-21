@@ -3353,7 +3353,7 @@ const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = homeContentReleaseVersion;
 const currentCssVersion = reviewReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
-const currentGameShellVersion = "20261122-pond-polish-r15";
+const currentGameShellVersion = "20261122-pond-polish-r16";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
 const currentLifeRestartMobileTouchVersion = "20260726-life-mobile-touch-r1";
 
@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-game-inner-dark";
-const finalUpdateSlug = "2026-11-22-pond-game-inner-dark";
+const finalUpdateId = "seed-update-2026-11-22-pond-kittens-res-contrast";
+const finalUpdateSlug = "2026-11-22-pond-kittens-res-contrast";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Pure-CSS Dark Theme for Game Inner Frames & Default-Collapsed Top Toolbar";
-const finalPublishedAt = "2026-11-22T05:00:00+08:00";
+const finalTitleEn = "Boosted Contrast for Kittens Game Dark Resource Column & Header Icons";
+const finalPublishedAt = "2026-11-22T05:10:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-game-inner-dark",
   "seed-update-2026-11-22-pond-icons-digits-fit",
   "seed-update-2026-11-22-pond-videos-explicit-h",
   "seed-update-2026-11-22-pond-videos-row-height",

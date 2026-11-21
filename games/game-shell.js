@@ -1912,8 +1912,18 @@
             color: #88fce2 !important;
             border-bottom-color: #88fce2 !important;
           }
-          .msg, .res-row, .resource-name, .resAmount, .resLimitNotice {
-            color: #dcf8f4 !important;
+          .msg, .res-row, .res-table, .res-table td, .res-cell, .resource-name, .resAmount, .maxRes, .resLimitNotice {
+            color: #e8fbf7 !important;
+          }
+          #leftColumn, #leftColumn span, #leftColumn div, #leftColumn td {
+            color: #e8fbf7 !important;
+          }
+          #leftColumn .maxRes {
+            color: rgba(182, 232, 226, 0.78) !important;
+          }
+          #leftColumn a, #leftColumn .icon, #leftColumn .link, #midColumn .help {
+            color: #9af8ec !important;
+            opacity: 0.92 !important;
           }
           .resPerTick { color: #88fce2 !important; }
           .tooltip-inner, .tooltip-block {

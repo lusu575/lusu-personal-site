@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-kittens-res-contrast",
+      "slug": "2026-11-22-pond-kittens-res-contrast",
+      "category": "site-updates",
+      "tags": [
+        "site-update",
+        "games",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T05:10:00+08:00",
+      "updated_at": "2026-11-22T05:10:00+08:00",
+      "published_at": "2026-11-22T05:10:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "提亮猫国建设者暗色主题左栏资源数值与齿轮问号图标对比度",
+        "en": "Boosted Contrast for Kittens Game Dark Resource Column & Header Icons",
+        "ja": "猫国建設者暗色テーマ左欄リソース数値・歯車アイコンの視認性向上"
+      },
+      "summary": {
+        "zh": "为猫国建设者纯 CSS 暗色主题中的左栏资源表、资源名、数值、上限及顶部齿轮与问号图标全面提亮青白高对比度，确保暗底上清晰可读。",
+        "en": "Brightened resource names, counts, caps, and the gear/help icons in the Kittens Game dark inner theme for crisp legibility on dark glass.",
+        "ja": "猫国建設者の暗色テーマにおいて、左欄リソース名・数値・上限および上部歯車／ヘルプアイコンを明るい青白へ引き上げ、暗色背景での可読性を高めました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-game-inner-dark",
       "slug": "2026-11-22-pond-game-inner-dark",
       "category": "site-updates",
@@ -112,34 +141,6 @@ export const homeContent = Object.freeze({
         "zh": "将 3 列视频网格中视频卡片高度由 100% 改为 auto，彻底消除行间重叠，完整呈现 16:9 无裁切封面、标题、简介与齐平播放按钮。",
         "en": "Changed video card height from 100% to auto inside the auto-sized 3-column grid so 16:9 thumbnails, titles, descriptions, and aligned Play buttons never overlap vertically.",
         "ja": "CSS Grid の自動行高における動画カードの height を 100% から auto へ修正し、16:9 表紙・タイトル・概要・再生ボタンの縦重なりを完全に解消しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-videos-16x9",
-      "slug": "2026-11-22-pond-videos-16x9",
-      "category": "site-updates",
-      "tags": [
-        "site-update",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T04:23:00+08:00",
-      "updated_at": "2026-11-22T04:23:00+08:00",
-      "published_at": "2026-11-22T04:23:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "恢复视频区 3 列标准 16:9 封面排布并确保标题与播放按钮完整呈现",
-        "en": "Restored 3-Column True 16:9 Video Grid with Unclipped Titles & Aligned Play Buttons",
-        "ja": "動画区 3 列 16:9 レイアウト復元・タイトルと再生ボタン完全表示"
-      },
-      "summary": {
-        "zh": "将视频区恢复为 3 列网格并保持标准 16:9 封面比例，消除 2 列高封面挤出文字区的问题，实现封面无裁切且标题、简介与播放按钮完整对齐。",
-        "en": "Switched Videos back to a 3-column grid with true 16:9 thumbnails and unclipped card bodies so covers, titles, descriptions, and Play buttons all render cleanly.",
-        "ja": "動画区を 3 列グリッドの標準 16:9 サムネイルへ戻し、カードの切り抜きを解除して表紙・タイトル・概要・再生ボタンをすべて見切れなく整列させました。"
       }
     }
   ]
