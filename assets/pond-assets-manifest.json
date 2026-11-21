@@ -1,0 +1,21 @@
+{
+  "flora": {
+    "spring": null,
+    "summer": null,
+    "autumn": null,
+    "winter": null
+  },
+  "branches": {
+    "spring": "./assets/pond-flora/spring-branch.jpg",
+    "autumn": "./assets/pond-flora/autumn-branch.jpg",
+    "winter": "./assets/pond-flora/winter-branch.jpg"
+  },
+  "icons": {
+    "knowledge": null,
+    "videos": null,
+    "resources": null,
+    "games": null,
+    "chatroom": null,
+    "about": null
+  }
+}

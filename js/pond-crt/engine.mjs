@@ -110,30 +110,67 @@ export class PondCRTEngine {
     this.vao = createFullscreenVAO(this.gl);
     this.fbos = {};
     this.resize();
-    this._loadDefaultBranchAssets();
+    this._loadAssetManifest();
     this._bindInteractions();
   }
 
-  _loadDefaultBranchAssets() {
-    const base = './assets/pond-flora/';
-    const map = {
-      spring: `${base}spring-branch.jpg`,
-      autumn: `${base}autumn-branch.jpg`,
-      winter: `${base}winter-branch.jpg`
-    };
-    for (const [seasonId, url] of Object.entries(map)) {
+  async _loadAssetManifest() {
+    try {
+      const res = await fetch('./assets/pond-assets-manifest.json', { cache: 'no-store' });
+      if (!res.ok) return;
+      const manifest = await res.json();
+
+      // 1. Full-season transparent PNG scene decorations (spring/summer/autumn/winter)
+      if (manifest.flora) {
+        for (const [seasonId, url] of Object.entries(manifest.flora)) {
+          if (url && this.floraTextures[seasonId]) {
+            this.loadFloraAsset(seasonId, url).catch(() => {});
+          }
+        }
+      }
+
+      // 2. Fallback top-left overhanging branch art (used only when full flora PNG is not set)
+      if (manifest.branches) {
+        for (const [seasonId, url] of Object.entries(manifest.branches)) {
+          if (url && !manifest.flora?.[seasonId] && this.floraTextures[seasonId]) {
+            const img = new Image();
+            img.onload = () => {
+              if (!this.gl || !this.floraTextures[seasonId] || this.floraLayer.customAssets[seasonId]) return;
+              this.floraLayer.setBranchAsset(seasonId, img);
+              const floraCanvas = this.floraLayer.render(seasonId, this.cssWidth, this.cssHeight);
+              const gl = this.gl;
+              gl.bindTexture(gl.TEXTURE_2D, this.floraTextures[seasonId]);
+              gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, floraCanvas);
+              gl.bindTexture(gl.TEXTURE_2D, null);
+            };
+            img.src = url;
+          }
+        }
+      }
+
+      // 3. Desktop icon transparent PNG slots (knowledge, videos, resources, games, chatroom, about)
+      if (manifest.icons) {
+        for (const [iconId, url] of Object.entries(manifest.icons)) {
+          if (url) {
+            this.loadIconAsset(iconId, url).catch(() => {});
+          }
+        }
+      }
+    } catch {
+      // Manifest optional; keep procedural fallback cleanly
+    }
+  }
+
+  loadIconAsset(iconId, url) {
+    return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
-        if (!this.gl || !this.floraTextures[seasonId]) return;
-        this.floraLayer.setBranchAsset(seasonId, img);
-        const floraCanvas = this.floraLayer.render(seasonId, this.cssWidth, this.cssHeight);
-        const gl = this.gl;
-        gl.bindTexture(gl.TEXTURE_2D, this.floraTextures[seasonId]);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, floraCanvas);
-        gl.bindTexture(gl.TEXTURE_2D, null);
+        this.uiOverlay.setIconAsset(iconId, img);
+        resolve(img);
       };
+      img.onerror = reject;
       img.src = url;
-    }
+    });
   }
 
   _seedAmbientRipples() {

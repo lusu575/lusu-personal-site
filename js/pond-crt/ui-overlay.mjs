@@ -311,6 +311,7 @@ export class PondUIOverlay {
     };
 
     this.iconDotMaps = {};
+    this.iconAssets = {}; // Optional transparent PNG icon overrides (assets/pond-icons/<id>.png)
     this.iconStates = {};
     for (const ic of DESKTOP_ICONS) {
       this.iconDotMaps[ic.id] = buildIconDots(ic.id);
@@ -350,6 +351,13 @@ export class PondUIOverlay {
 
   markDirty() {
     this.dirty = true;
+  }
+
+  setIconAsset(id, img) {
+    if (this.iconStates[id]) {
+      this.iconAssets[id] = img;
+      this.dirty = true;
+    }
   }
 
   setLanguage(lang) {
@@ -618,24 +626,36 @@ export class PondUIOverlay {
         ctx.fill();
       }
 
-      // Subtle anime afterimage trail on hover/click
-      if (st.hoverAnim > 0.04 || st.clickPulse > 0.02) {
-        ctx.globalAlpha = Math.max(st.hoverAnim * 0.24, st.clickPulse * 0.36);
-        for (let i = 0; i < dots.length; i += 2) {
-          const d = dots[i];
-          const gx = cx + d[0] * baseRadius * scale * 1.05;
-          const gy = cy + d[1] * baseRadius * scale * 1.05 + 2.5;
-          ctx.drawImage(this.whiteDotSprite, gx - sr, gy - sr, sr * 2, sr * 2);
+      const customIcon = this.iconAssets[ic.id];
+      if (customIcon) {
+        // Render drop-in transparent PNG icon with full anime hover/overshoot & afterimage trail!
+        const drawSize = baseRadius * 2.15 * scale;
+        if (st.hoverAnim > 0.04 || st.clickPulse > 0.02) {
+          ctx.globalAlpha = Math.max(st.hoverAnim * 0.24, st.clickPulse * 0.36);
+          const gSize = drawSize * 1.06;
+          ctx.drawImage(customIcon, cx - gSize * 0.5, cy - gSize * 0.5 + 2.5, gSize, gSize);
         }
-      }
+        ctx.globalAlpha = st.hover ? 1.0 : 0.94;
+        ctx.drawImage(customIcon, cx - drawSize * 0.5, cy - drawSize * 0.5, drawSize, drawSize);
+      } else {
+        // Procedural icons-v7 dot-matrix fallback
+        if (st.hoverAnim > 0.04 || st.clickPulse > 0.02) {
+          ctx.globalAlpha = Math.max(st.hoverAnim * 0.24, st.clickPulse * 0.36);
+          for (let i = 0; i < dots.length; i += 2) {
+            const d = dots[i];
+            const gx = cx + d[0] * baseRadius * scale * 1.05;
+            const gy = cy + d[1] * baseRadius * scale * 1.05 + 2.5;
+            ctx.drawImage(this.whiteDotSprite, gx - sr, gy - sr, sr * 2, sr * 2);
+          }
+        }
 
-      // Stamp crisp glowing cold-white dot sprites (zero shadowBlur!)
-      for (let i = 0; i < dots.length; i++) {
-        const d = dots[i];
-        const px = cx + d[0] * baseRadius * scale;
-        const py = cy + d[1] * baseRadius * scale;
-        ctx.globalAlpha = Math.min(1.0, 0.84 + 0.14 * Math.sin(t * 2.2 + i * 0.55 + ic.x * 11.0) + st.hoverAnim * 0.15);
-        ctx.drawImage(this.whiteDotSprite, px - sr, py - sr, sr * 2, sr * 2);
+        for (let i = 0; i < dots.length; i++) {
+          const d = dots[i];
+          const px = cx + d[0] * baseRadius * scale;
+          const py = cy + d[1] * baseRadius * scale;
+          ctx.globalAlpha = Math.min(1.0, 0.84 + 0.14 * Math.sin(t * 2.2 + i * 0.55 + ic.x * 11.0) + st.hoverAnim * 0.15);
+          ctx.drawImage(this.whiteDotSprite, px - sr, py - sr, sr * 2, sr * 2);
+        }
       }
 
       // Crisp legible label underneath (enhanced dark midnight backing in Winter so text pops cleanly over ice/snow!)
