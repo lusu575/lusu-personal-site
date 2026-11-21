@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-home-shell-clear",
+      "slug": "2026-11-22-pond-home-shell-clear",
+      "category": "site-updates",
+      "tags": [
+        "site-update",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T03:42:00+08:00",
+      "updated_at": "2026-11-22T03:42:00+08:00",
+      "published_at": "2026-11-22T03:42:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "修复首页容器背景透明透出池塘画布并统一显示密码按钮",
+        "en": "Transparent Home Shell Pass-Through for Pond Canvas & Dark Password Toggle",
+        "ja": "ホーム画面の透過調整（池キャンバス表示維持）とパスワード表示ボタン暗色化"
+      },
+      "summary": {
+        "zh": "将首页 .site-shell 及其伪元素背景设为完全透明，确保首页 WebGL2 深夜池塘画布与登录浮层同时完整呈现，并同步将「显示密码」按钮统一为暗色点阵胶囊。",
+        "en": "Made .site-shell and its pseudo-elements transparent on Home so the WebGL2 pond canvas renders beneath the centered login modal, and styled the Show Password button in dark CRT glass.",
+        "ja": "ホーム画面の .site-shell と疑似要素の背景を完全透過にして WebGL2 の池キャンバスがログイン窓の背後にそのまま表示されるよう修正し、パスワード表示ボタンも暗色点陣スタイルへ統一しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-home-login-z",
       "slug": "2026-11-22-pond-home-login-z",
       "category": "site-updates",
@@ -111,35 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "将全部桌面窗口像素级对齐至文章阅读窗居中位置（避开顶部时钟）、扩大左下角 ID 按钮热区并彻底替换所有加载态深蓝字与旧图标。",
         "en": "Aligned every desktop window to the exact Article Reader centered frame below the top clock, widened the bottom-left ID hitbox for CRT curvature, and enforced high-contrast loading text and dotted icons.",
         "ja": "全デスクトップ窓を記事閲覧窓と完全同一の中央サイズへ統一し、CRT曲率に合わせて左下IDボタンのクリック判定を拡大、ロード文言とアイコンを点陣スタイルへ統一しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-visual-polish",
-      "slug": "2026-11-22-pond-visual-polish",
-      "category": "site-updates",
-      "tags": [
-        "site-update",
-        "ui",
-        "games"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T03:10:00+08:00",
-      "updated_at": "2026-11-22T03:10:00+08:00",
-      "published_at": "2026-11-22T03:10:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "深夜池塘视觉与交互综合修复：登录触发、季节粒子汇聚过渡、全窗统一与游戏内页换装",
-        "en": "Midnight Pond Visual & Interaction Polish: Login Popover, Staged Season Vortex, Unified Windows & Game Inner Pages",
-        "ja": "深夜の池ビジュアル＆操作総合修正：ログイン窓・季節粒子演出・全窓統一・ゲーム内ページ刷新"
-      },
-      "summary": {
-        "zh": "修复左下角 ID 登录窗触发、重构两段式可打断季节粒子汇聚过渡、首屏直出零闪烁、统一全站居中窗口几何与加载态，并同步适配五个小游戏内页。",
-        "en": "Fixed the bottom-left ID login popover trigger, rebuilt interruptible two-stage season particle transitions, eliminated cold-load legacy flash, unified centered window geometry and dark loading states, and themed all five game inner pages.",
-        "ja": "左下のIDログイン窓修正、割り込み可能な二段階季節粒子演出、初回描画の旧画面チラつき解消、全ウィンドウ中央サイズ統一と暗色ロード状態、5つのゲーム内ページ刷新を実施しました。"
       }
     }
   ]

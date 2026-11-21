@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-home-shell-clear",
+  "slug": "2026-11-22-pond-home-shell-clear",
+  "category": "site-updates",
+  "tags": [
+    "site-update",
+    "ui"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T03:42:00+08:00",
+  "updated_at": "2026-11-22T03:42:00+08:00",
+  "published_at": "2026-11-22T03:42:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "date": "2026.11.22",
+  "title": {
+    "zh": "修复首页容器背景透明透出池塘画布并统一显示密码按钮",
+    "en": "Transparent Home Shell Pass-Through for Pond Canvas & Dark Password Toggle",
+    "ja": "ホーム画面の透過調整（池キャンバス表示維持）とパスワード表示ボタン暗色化"
+  },
+  "summary": {
+    "zh": "将首页 .site-shell 及其伪元素背景设为完全透明，确保首页 WebGL2 深夜池塘画布与登录浮层同时完整呈现，并同步将「显示密码」按钮统一为暗色点阵胶囊。",
+    "en": "Made .site-shell and its pseudo-elements transparent on Home so the WebGL2 pond canvas renders beneath the centered login modal, and styled the Show Password button in dark CRT glass.",
+    "ja": "ホーム画面の .site-shell と疑似要素の背景を完全透過にして WebGL2 の池キャンバスがログイン窓の背後にそのまま表示されるよう修正し、パスワード表示ボタンも暗色点陣スタイルへ統一しました。"
+  },
+  "content_markdown": {
+    "zh": "本次微调完成了首页池塘与登录浮层的最终融合：\n\n1. 将 html[data-pond-mode='home'] 下的 .site-shell、伪元素及 .page-home 背景全部设为透明，使 WebGL2 池塘桌面完整透出，同时登录窗稳居最顶层正中央。\n2. 将登录框内的「显示密码」按钮同步改为深色 CRT 点阵虚线胶囊样式，消除最后的浅色按钮残留。",
+    "en": "This quick polish completes the Home pond and login overlay composition:\n\n1. Cleared .site-shell, its pseudo-elements, and .page-home backgrounds on Home so the live WebGL2 pond canvas shows cleanly behind the centered login popover.\n2. Styled the Show Password button inside the login popover as a matching dark CRT dotted pill.",
+    "ja": "ホーム画面とログイン窓の重なり表示を最終仕上げしました：\n\n1. ホーム画面における .site-shell および疑似要素・.page-home の背景を透明化し、WebGL2 池キャンバスを隠さず中央のログイン窓を最前面に表示できるようにしました。\n2. ログイン窓内の「パスワードを表示」ボタンも暗色 CRT 点陣カプセルへ統一しました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-home-login-z",
   "slug": "2026-11-22-pond-home-login-z",
   "category": "site-updates",

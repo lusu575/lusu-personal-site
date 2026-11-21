@@ -4046,3 +4046,24 @@ html[data-pond-mode] #account-popover .close-button {
   color: #f0fefa !important;
   box-shadow: none !important;
 }
+
+
+/* --- Home .site-shell transparent pass-through so WebGL2 Pond stays 100% visible under z-index:60 .site-shell (r6) --- */
+html[data-pond-mode="home"] .site-shell,
+html[data-pond-mode="home"] .site-shell::before,
+html[data-pond-mode="home"] .site-shell::after,
+html[data-pond-mode="home"] .site-shell > main,
+html[data-pond-mode="home"] .page-home {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+html[data-pond-mode] #account-popover .account-password-toggle {
+  border-radius: 999px !important;
+  border: 1.2px dashed rgba(182, 240, 234, 0.52) !important;
+  background: rgba(8, 28, 34, 0.76) !important;
+  background-image: none !important;
+  color: #eefcf9 !important;
+  box-shadow: none !important;
+}

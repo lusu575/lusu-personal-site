@@ -15485,6 +15485,20 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 1. ホーム画面の #pond-visual-backdrop を .site-shell（pointer-events: none）の下層へ配置し、池キャンバスの操作性を保ちつつ #account-popover が画面中央最前面に正しく描画されるようにしました。
 2. ログイン窓内部のタブ切替・パスワード入力欄・閉じるボタン・下部注記ボックスも深夜の池 CRT 暗色ガラスへ統一しました。', '2026-11-22T03:38:00+08:00', '2026-11-22T03:38:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r5', '2026-11-22T03:38:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-home-shell-clear', '2026-11-22-pond-home-shell-clear', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T03:42:00+08:00', '2026-11-22T03:42:00+08:00', '2026-11-22T03:42:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-home-shell-clear-zh', 'seed-update-2026-11-22-pond-home-shell-clear', 'zh', '修复首页容器背景透明透出池塘画布并统一显示密码按钮', '将首页 .site-shell 及其伪元素背景设为完全透明，确保首页 WebGL2 深夜池塘画布与登录浮层同时完整呈现，并同步将「显示密码」按钮统一为暗色点阵胶囊。', '本次微调完成了首页池塘与登录浮层的最终融合：
+
+1. 将 html[data-pond-mode=''home''] 下的 .site-shell、伪元素及 .page-home 背景全部设为透明，使 WebGL2 池塘桌面完整透出，同时登录窗稳居最顶层正中央。
+2. 将登录框内的「显示密码」按钮同步改为深色 CRT 点阵虚线胶囊样式，消除最后的浅色按钮残留。', '2026-11-22T03:42:00+08:00', '2026-11-22T03:42:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-home-shell-clear-en', 'seed-update-2026-11-22-pond-home-shell-clear', 'en', 'Transparent Home Shell Pass-Through for Pond Canvas & Dark Password Toggle', 'Made .site-shell and its pseudo-elements transparent on Home so the WebGL2 pond canvas renders beneath the centered login modal, and styled the Show Password button in dark CRT glass.', 'This quick polish completes the Home pond and login overlay composition:
+
+1. Cleared .site-shell, its pseudo-elements, and .page-home backgrounds on Home so the live WebGL2 pond canvas shows cleanly behind the centered login popover.
+2. Styled the Show Password button inside the login popover as a matching dark CRT dotted pill.', '2026-11-22T03:42:00+08:00', '2026-11-22T03:42:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-home-shell-clear-ja', 'seed-update-2026-11-22-pond-home-shell-clear', 'ja', 'ホーム画面の透過調整（池キャンバス表示維持）とパスワード表示ボタン暗色化', 'ホーム画面の .site-shell と疑似要素の背景を完全透過にして WebGL2 の池キャンバスがログイン窓の背後にそのまま表示されるよう修正し、パスワード表示ボタンも暗色点陣スタイルへ統一しました。', 'ホーム画面とログイン窓の重なり表示を最終仕上げしました：
+
+1. ホーム画面における .site-shell および疑似要素・.page-home の背景を透明化し、WebGL2 池キャンバスを隠さず中央のログイン窓を最前面に表示できるようにしました。
+2. ログイン窓内の「パスワードを表示」ボタンも暗色 CRT 点陣カプセルへ統一しました。', '2026-11-22T03:42:00+08:00', '2026-11-22T03:42:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r6', '2026-11-22T03:42:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r5', '2026-11-22T03:38:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r6', '2026-11-22T03:42:00+08:00', 'schema') on conflict(version) do nothing;
