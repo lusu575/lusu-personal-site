@@ -203,11 +203,30 @@ void main() {
     sweepGlow = uCausticTint * ring * env;
   }
 
-  vec4 flora = vec4(0.0);
-  if (w.x > 0.002) flora += texture(uFloraSpring, floraUv) * w.x;
-  if (w.y > 0.002) flora += texture(uFloraSummer, floraUv) * w.y;
-  if (w.z > 0.002) flora += texture(uFloraAutumn, floraUv) * w.z;
-  if (w.w > 0.002) flora += texture(uFloraWinter, floraUv) * w.w;
+  // Proper alpha-weighted premultiplied accumulation + un-premultiply so fading flora NEVER leaves dark black shadows!
+  vec3 floraPremul = vec3(0.0);
+  float floraAlpha = 0.0;
+  if (w.x > 0.002) {
+    vec4 tS = texture(uFloraSpring, floraUv);
+    floraPremul += tS.rgb * (tS.a * w.x);
+    floraAlpha += tS.a * w.x;
+  }
+  if (w.y > 0.002) {
+    vec4 tU = texture(uFloraSummer, floraUv);
+    floraPremul += tU.rgb * (tU.a * w.y);
+    floraAlpha += tU.a * w.y;
+  }
+  if (w.z > 0.002) {
+    vec4 tA = texture(uFloraAutumn, floraUv);
+    floraPremul += tA.rgb * (tA.a * w.z);
+    floraAlpha += tA.a * w.z;
+  }
+  if (w.w > 0.002) {
+    vec4 tW = texture(uFloraWinter, floraUv);
+    floraPremul += tW.rgb * (tW.a * w.w);
+    floraAlpha += tW.a * w.w;
+  }
+  vec4 flora = vec4(floraAlpha > 0.001 ? (floraPremul / floraAlpha) : vec3(0.0), clamp(floraAlpha, 0.0, 1.0));
 
   vec3 rippleCol = mix(uCausticTint, uSpecularTint, 0.52) * rip.z * 0.72 + sweepGlow;
   float ripAlpha = clamp(rip.z * 0.78 + length(sweepGlow) * 0.65, 0.0, 0.95);
