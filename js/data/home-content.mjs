@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-eager-covers",
+      "slug": "2026-11-22-pond-eager-covers",
+      "category": "site-updates",
+      "tags": [
+        "site-update",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T03:59:00+08:00",
+      "updated_at": "2026-11-22T03:59:00+08:00",
+      "published_at": "2026-11-22T03:59:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "修复游戏区封面与关于页头像在窗口切换时懒加载停滞的问题",
+        "en": "Fixed Lazy-Image Stall on Game Covers & About Avatar After Route Switch",
+        "ja": "ゲーム表紙・概要アバターのルート切替時遅延読み込み停滞を修正"
+      },
+      "summary": {
+        "zh": "在游戏区封面换装、工具区图标与关于页激活时强制切换图片为 eager 即时加载，彻底解决切换路由后封面与头像偶发黑框未解码的问题。",
+        "en": "Forced eager loading on game covers, tool icons, and the About avatar when activating those windows so covers and avatars never stall as blank frames.",
+        "ja": "ゲーム表紙・ツールアイコン・概要アバターのウィンドウ表示時に即時読み込み（eager）を強制し、黒い空枠のまま止まる現象を解消しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-icons-close-sync",
       "slug": "2026-11-22-pond-icons-close-sync",
       "category": "site-updates",
@@ -111,34 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "按全站桌面端逐窗验收清单完成精修：视频高对比标题简介与去遮挡播放徽标、工具/游戏去空白、知识库同行等高齐平、聊天室单行顶栏、关于点阵标题图标、左下语言提亮与临时互传暗色换装。",
         "en": "Resolved every desktop QA checklist item across Videos, Tools, Games, Knowledge, Article Reader, Chatroom, About, Home corner contrast, and the Quick Transfer sub-panel.",
         "ja": "デスクトップ全窓の実機チェック項目を一括修正：動画カード文字の高コントラスト化とサムネイル中央アイコン除去、ツール／ゲーム余白整理、知識庫行揃え、チャット単行ヘッダ、一時転送の暗色対応を完了しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-final-fit",
-      "slug": "2026-11-22-pond-final-fit",
-      "category": "site-updates",
-      "tags": [
-        "site-update",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T03:28:00+08:00",
-      "updated_at": "2026-11-22T03:28:00+08:00",
-      "published_at": "2026-11-22T03:28:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "深夜池塘最终实测收尾：登录窗正居中、视频卡片完整展示与暗色骨架屏",
-        "en": "Midnight Pond Final Live-QA Polish: Viewport-Centered Login, Full Video Cards & Dark Skeletons",
-        "ja": "深夜の池最終実機調整：ログイン窓中央配置・動画カード全文表示・暗色スケルトン"
-      },
-      "summary": {
-        "zh": "解除顶栏层叠上下文使登录浮层正居中于视口、恢复视频卡片标题与简介完整高度，并将知识库加载骨架条切换为柔和深青点阵色。",
-        "en": "Removed header containing-block traps so the login modal centers in the viewport, restored full video card title/description height, and switched Knowledge loading skeletons to soft dark cyan bars.",
-        "ja": "隠しヘッダーの包含ブロックを解除してログイン窓を画面中央へ配置し、動画カードのタイトルと概要の高さを復元、知識庫ロード時の白スケルトンを暗色シアンへ統一しました。"
       }
     }
   ]

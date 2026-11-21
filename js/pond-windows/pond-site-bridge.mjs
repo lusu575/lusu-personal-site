@@ -80,10 +80,12 @@ function applyToolsSvgPresentation() {
     const existingIcon = card.querySelector('.resource-icon-image, .resource-icon');
     if (existingIcon) {
       if (existingIcon.tagName === 'IMG') {
+        existingIcon.loading = 'eager';
         existingIcon.src = svgSrc;
       } else {
         const img = document.createElement('img');
         img.className = 'resource-icon-image';
+        img.loading = 'eager';
         img.src = svgSrc;
         img.alt = '';
         img.setAttribute('aria-hidden', 'true');
@@ -120,6 +122,9 @@ function applyGamesCoverPresentation() {
     if (cover) {
       for (const entry of GAME_COVER_MAP) {
         if (html.includes(entry.match) || (cover.src && cover.src.includes(entry.match))) {
+          cover.loading = 'eager';
+          cover.decoding = 'sync';
+          cover.removeAttribute('loading');
           cover.src = entry.src;
           card.dataset.pondCoverKind = entry.kind;
           break;
@@ -265,6 +270,19 @@ function bootPondVisualBridge() {
         window.requestAnimationFrame(applyGamesCoverPresentation);
       } else if (nextMode === 'chatroom') {
         window.requestAnimationFrame(applyChatAvatarPresentation);
+      } else if (nextMode === 'about') {
+        window.requestAnimationFrame(() => {
+          document.querySelectorAll('#about img').forEach((img) => {
+            img.loading = 'eager';
+            img.removeAttribute('loading');
+            if (!img.complete || img.naturalWidth === 0) {
+              const s = img.getAttribute('src');
+              if (s) {
+                img.src = s;
+              }
+            }
+          });
+        });
       }
       activeMode = nextMode;
     } else if (activeMode) {

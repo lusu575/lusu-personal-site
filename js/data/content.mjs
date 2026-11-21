@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-eager-covers",
+  "slug": "2026-11-22-pond-eager-covers",
+  "category": "site-updates",
+  "tags": [
+    "site-update",
+    "ui"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T03:59:00+08:00",
+  "updated_at": "2026-11-22T03:59:00+08:00",
+  "published_at": "2026-11-22T03:59:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "date": "2026.11.22",
+  "title": {
+    "zh": "修复游戏区封面与关于页头像在窗口切换时懒加载停滞的问题",
+    "en": "Fixed Lazy-Image Stall on Game Covers & About Avatar After Route Switch",
+    "ja": "ゲーム表紙・概要アバターのルート切替時遅延読み込み停滞を修正"
+  },
+  "summary": {
+    "zh": "在游戏区封面换装、工具区图标与关于页激活时强制切换图片为 eager 即时加载，彻底解决切换路由后封面与头像偶发黑框未解码的问题。",
+    "en": "Forced eager loading on game covers, tool icons, and the About avatar when activating those windows so covers and avatars never stall as blank frames.",
+    "ja": "ゲーム表紙・ツールアイコン・概要アバターのウィンドウ表示時に即時読み込み（eager）を強制し、黒い空枠のまま止まる現象を解消しました。"
+  },
+  "content_markdown": {
+    "zh": "本次修复了线上实测中发现的图片懒加载停滞问题：\n\n1. 在游戏区应用 GPT 封面与 SVG 封面时，先移除 loading='lazy' 并设为 eager 同步解码，确保猫国建设者、小黑屋、人生重开模拟器等 5 张封面即时显示不留黑框。\n2. 工具区图标与关于页头像及社交图标同步改为立即加载，切换窗口后立即可见。",
+    "en": "This fix resolves a Chromium lazy-loading stall discovered during live verification:\n\n1. Removed loading='lazy' and enforced loading='eager' before applying game covers so Kittens Game, A Dark Room, Life Restart, 2048, and Hextris render immediately.\n2. Applied the same eager-load guard to tool icons and the About avatar/social icons on window activation.",
+    "ja": "本番検証で見つかった画像遅延読み込みの停滞を修正しました：\n\n1. ゲーム表紙（猫国建設者・小黑屋・人生重開シミュレーター等）に loading='eager' を強制し、黒い空枠にならず即座に表示されるようにしました。\n2. ツールアイコンおよび概要ページのアバター画像も表示時に即時読み込みへ統一しました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-icons-close-sync",
   "slug": "2026-11-22-pond-icons-close-sync",
   "category": "site-updates",

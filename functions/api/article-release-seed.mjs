@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-eager-covers', '2026-11-22-pond-eager-covers', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T03:59:00+08:00', '2026-11-22T03:59:00+08:00', '2026-11-22T03:59:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-eager-covers", {
+  "zh": {
+    "summary": "在游戏区封面换装、工具区图标与关于页激活时强制切换图片为 eager 即时加载，彻底解决切换路由后封面与头像偶发黑框未解码的问题。",
+    "title": "修复游戏区封面与关于页头像在窗口切换时懒加载停滞的问题",
+    "content_markdown": "本次修复了线上实测中发现的图片懒加载停滞问题：\n\n1. 在游戏区应用 GPT 封面与 SVG 封面时，先移除 loading='lazy' 并设为 eager 同步解码，确保猫国建设者、小黑屋、人生重开模拟器等 5 张封面即时显示不留黑框。\n2. 工具区图标与关于页头像及社交图标同步改为立即加载，切换窗口后立即可见。"
+  },
+  "en": {
+    "summary": "Forced eager loading on game covers, tool icons, and the About avatar when activating those windows so covers and avatars never stall as blank frames.",
+    "title": "Fixed Lazy-Image Stall on Game Covers & About Avatar After Route Switch",
+    "content_markdown": "This fix resolves a Chromium lazy-loading stall discovered during live verification:\n\n1. Removed loading='lazy' and enforced loading='eager' before applying game covers so Kittens Game, A Dark Room, Life Restart, 2048, and Hextris render immediately.\n2. Applied the same eager-load guard to tool icons and the About avatar/social icons on window activation."
+  },
+  "ja": {
+    "summary": "ゲーム表紙・ツールアイコン・概要アバターのウィンドウ表示時に即時読み込み（eager）を強制し、黒い空枠のまま止まる現象を解消しました。",
+    "title": "ゲーム表紙・概要アバターのルート切替時遅延読み込み停滞を修正",
+    "content_markdown": "本番検証で見つかった画像遅延読み込みの停滞を修正しました：\n\n1. ゲーム表紙（猫国建設者・小黑屋・人生重開シミュレーター等）に loading='eager' を強制し、黒い空枠にならず即座に表示されるようにしました。\n2. ツールアイコンおよび概要ページのアバター画像も表示時に即時読み込みへ統一しました。"
+  }
+}, "2026-11-22T03:59:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-icons-close-sync', '2026-11-22-pond-icons-close-sync', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T03:54:00+08:00', '2026-11-22T03:54:00+08:00', '2026-11-22T03:54:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-icons-close-sync", {
   "zh": {

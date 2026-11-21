@@ -15516,6 +15516,20 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 2. 知識庫・記事タイトルの .title-icon-knowledge を鮮明な見開き本 SVG へ差し替えました。
 3. チャットログ上端に 22px のフェードマスクを加え、スクロール時の見切れを和らげました。', '2026-11-22T03:54:00+08:00', '2026-11-22T03:54:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r7', '2026-11-22T03:54:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-eager-covers', '2026-11-22-pond-eager-covers', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T03:59:00+08:00', '2026-11-22T03:59:00+08:00', '2026-11-22T03:59:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-eager-covers-zh', 'seed-update-2026-11-22-pond-eager-covers', 'zh', '修复游戏区封面与关于页头像在窗口切换时懒加载停滞的问题', '在游戏区封面换装、工具区图标与关于页激活时强制切换图片为 eager 即时加载，彻底解决切换路由后封面与头像偶发黑框未解码的问题。', '本次修复了线上实测中发现的图片懒加载停滞问题：
+
+1. 在游戏区应用 GPT 封面与 SVG 封面时，先移除 loading=''lazy'' 并设为 eager 同步解码，确保猫国建设者、小黑屋、人生重开模拟器等 5 张封面即时显示不留黑框。
+2. 工具区图标与关于页头像及社交图标同步改为立即加载，切换窗口后立即可见。', '2026-11-22T03:59:00+08:00', '2026-11-22T03:59:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-eager-covers-en', 'seed-update-2026-11-22-pond-eager-covers', 'en', 'Fixed Lazy-Image Stall on Game Covers & About Avatar After Route Switch', 'Forced eager loading on game covers, tool icons, and the About avatar when activating those windows so covers and avatars never stall as blank frames.', 'This fix resolves a Chromium lazy-loading stall discovered during live verification:
+
+1. Removed loading=''lazy'' and enforced loading=''eager'' before applying game covers so Kittens Game, A Dark Room, Life Restart, 2048, and Hextris render immediately.
+2. Applied the same eager-load guard to tool icons and the About avatar/social icons on window activation.', '2026-11-22T03:59:00+08:00', '2026-11-22T03:59:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-eager-covers-ja', 'seed-update-2026-11-22-pond-eager-covers', 'ja', 'ゲーム表紙・概要アバターのルート切替時遅延読み込み停滞を修正', 'ゲーム表紙・ツールアイコン・概要アバターのウィンドウ表示時に即時読み込み（eager）を強制し、黒い空枠のまま止まる現象を解消しました。', '本番検証で見つかった画像遅延読み込みの停滞を修正しました：
+
+1. ゲーム表紙（猫国建設者・小黑屋・人生重開シミュレーター等）に loading=''eager'' を強制し、黒い空枠にならず即座に表示されるようにしました。
+2. ツールアイコンおよび概要ページのアバター画像も表示時に即時読み込みへ統一しました。', '2026-11-22T03:59:00+08:00', '2026-11-22T03:59:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r8', '2026-11-22T03:59:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r7', '2026-11-22T03:54:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r8', '2026-11-22T03:59:00+08:00', 'schema') on conflict(version) do nothing;
