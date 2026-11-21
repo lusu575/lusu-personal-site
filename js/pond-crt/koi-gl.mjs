@@ -122,11 +122,9 @@ void main() {
   vec3 kohakuOrange = mix(vec3(0.92, 0.24, 0.06), vec3(1.0, 0.44, 0.10), clamp(0.45 + 0.55 * (1.0 - y * y), 0.0, 1.0));
   vec3 col = mix(pearlWhite, kohakuOrange, clamp(redMask, 0.0, 1.0)) * lightSide;
 
-  // Whisper-subtle blunted koi mouth contour (restrained so it doesn't stand out) + faint gill shading
-  float mouthArc = 1.0 - smoothstep(0.010, 0.026, length(vec2((t - 0.012) * 1.6, y * 0.14)));
-  col = mix(col, col * 0.92, mouthArc * 0.22);
+  // Clean, smooth rounded koi snout (no dark mouth mark) + ultra-subtle gill shading
   float gillCurve = exp(-pow(((t - 0.21) - (1.0 - y * y) * 0.035) * 34.0, 2.0)) * smoothstep(0.25, 0.85, abs(y));
-  col = mix(col, col * 0.88, gillCurve * 0.30);
+  col = mix(col, col * 0.92, gillCurve * 0.22);
 
   // Glossy dark cheek-side eyes tucked naturally along head margin (t ~ 0.10, |y| ~ 0.76)
   float eyeDistL = length(vec2((t - 0.10) * 1.10, (y - 0.76) * 0.21));
@@ -364,28 +362,7 @@ export class KoiGLRenderer {
     // 1. Deep offset cast shadow on pond floor -> gives real 3D floating depth!
     addBodyStrip(2.0, 0.006, -0.026, 1.14);
 
-    // 2. Tiny delicate glowing barbels (鱼须) curving from mouth corners
-    const head = sp[0];
-    const headAng = Math.atan2(head.ty, head.tx);
-    for (const side of [-1, 1]) {
-      const bx = head.x + head.tx * head.halfW * 0.42 + head.nx * side * head.halfW * 0.62;
-      const by = head.y + head.ty * head.halfW * 0.42 + head.ny * side * head.halfW * 0.62;
-      const barbAng = headAng + side * 0.92;
-      const barbLen = head.halfW * 0.72;
-      const barbW = head.halfW * 0.14;
-      const ex = bx + Math.cos(barbAng) * barbLen;
-      const ey = by + Math.sin(barbAng) * barbLen;
-      const bnx = -Math.sin(barbAng) * barbW;
-      const bny = Math.cos(barbAng) * barbW;
-      this._pushTri(
-        (bx + bnx) * invA, by + bny, 0.0, 1.0,
-        (bx - bnx) * invA, by - bny, 0.0, -1.0,
-        ex * invA, ey, 1.0, 0.0,
-        4.0, fi
-      );
-    }
-
-    // 3. Translucent dotted fan-ray pectoral & pelvic fins
+    // 2. Translucent fan-ray pectoral & pelvic fins (clean smooth snout without heavy mouth/barbel protrusions)
     const addSideFin = (segIdx, side, finLen, finSpread, swingAmp) => {
       const s = sp[segIdx];
       const baseAng = Math.atan2(s.ty, s.tx);
