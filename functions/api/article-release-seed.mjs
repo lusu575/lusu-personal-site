@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-21-pond-home-knowledge', '2026-11-21-pond-home-knowledge', 'site-updates', '["网站更新","首页","知识库","界面"]', '', 'published', 0, 0, '2026-11-21T15:30:00.000Z', '2026-11-21T15:30:00.000Z', '2026-11-21T15:30:00.000Z') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-21-pond-home-knowledge", {
+  "zh": {
+    "title": "桌面首页与知识库列表换装深夜终端池塘视觉",
+    "summary": "逐步视觉替换第 1 批上线：桌面端首页替换为四季池塘 CRT 点阵桌面（接入按时段自动切换与手动滑块），桌面端知识库列表换装半透明 CRT 玻璃窗口；全部数据、接口、分类、排序、搜索、分页及未替换栏目与移动端均保持原样。",
+    "content_markdown": "# 桌面首页与知识库列表换装深夜终端池塘视觉\n\n本次为全站视觉逐步替换的第 1 批上线，仅替换桌面端首页与知识库列表的视觉呈现层，不改动任何线上数据、后端接口或既有交互逻辑。\n\n- 桌面端首页替换为 WebGL2 四季池塘 CRT 桌面，接入现站时段壁纸规则（早/昼/暮/夜自动对应春/夏/秋/冬），右上角保留手动滑块切换。\n- 桌面端知识库列表在现站真实 DOM 与 `/api/articles` 接口之上换装半透明发光 CRT 玻璃窗口，沿用现站分类顺序、计数、置顶、搜索与分页逻辑。\n- 文章阅读页、视频、工具、游戏、聊天室、关于、账号浮层、欢迎窗及移动端 iOS Shell 均保持现状，后续按窗口逐一替换。"
+  },
+  "en": {
+    "title": "Desktop Home and Knowledge List Refresh with Midnight Pond CRT Visuals",
+    "summary": "Batch 1 of the visual refresh is live: desktop Home adopts the four-season WebGL2 Pond CRT desktop (synced with the time-of-day schedule and manual slider), and the desktop Knowledge list uses the translucent CRT glass skin. All data, APIs, sorting, search, pagination, other sections, and mobile remain unchanged.",
+    "content_markdown": "# Desktop Home and Knowledge List Refresh with Midnight Pond CRT Visuals\n\nThis is Batch 1 of the gradual visual replacement, updating only the presentation layer for desktop Home and the Knowledge list while keeping all live data, backend APIs, and existing logic untouched.\n\n- Desktop Home now renders the four-season WebGL2 Pond CRT scene connected to the site's time-of-day wallpaper schedule (morning/day/dusk/night -> spring/summer/autumn/winter) with a manual top-right slider.\n- Desktop Knowledge list applies the translucent CRT glass window skin directly over the existing DOM and live `/api/articles` flow, preserving category order, counts, pinning, search, and pagination.\n- Article Reader, Videos, Tools, Games, Chatroom, About, Account popover, Welcome modal, and the mobile shell remain unchanged and will be updated incrementally."
+  },
+  "ja": {
+    "title": "デスクトップのホームと知識庫一覧を深夜端末・池塘CRTビジュアルへ刷新",
+    "summary": "段階的ビジュアル刷新の第1弾を公開しました。デスクトップのホームを時間帯連動の四季池塘CRTへ、知識庫一覧を半透明CRTガラス窓へ切り替えました。データ・API・並び順・検索・ページングおよび他ページとモバイルは従来のままです。",
+    "content_markdown": "# デスクトップのホームと知識庫一覧を深夜端末・池塘CRTビジュアルへ刷新\n\n全サイト段階的ビジュアル刷新の第1弾として、デスクトップのホーム画面と知識庫一覧の表示レイヤーのみを更新しました。既存データ・API・機能ロジックは一切変更していません。\n\n- デスクトップのホームに WebGL2 四季池塘 CRT を導入し、既存の時刻壁紙ルール（朝・昼・夕・夜→春・夏・秋・冬）と右上の手動スライダーを接続しました。\n- デスクトップの知識庫一覧は既存 DOM と `/api/articles` のまま半透明 CRT ガラス窓へスキン適用し、カテゴリ順・件数・固定表示・検索・ページングを維持しています。\n- 記事本文、動画、ツール、ゲーム、チャット、概要、アカウント、歓迎ウィンドウ、モバイル版は従来のまま維持し、順次置き換えます。"
+  }
+}, "2026-11-21T15:30:00.000Z"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-10-29-tool-maintenance', '2026-10-29-tool-maintenance', 'site-updates', '["网站更新","工具"]', '', 'published',0,0,'2026-10-29T15:00:00.000Z', '2026-10-29T15:00:00.000Z', '2026-10-29T15:00:00.000Z') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-10-29-tool-maintenance", {
   "zh": {

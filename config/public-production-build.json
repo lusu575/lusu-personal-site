@@ -94,9 +94,20 @@
       "target": "tools/japanese-subtext/licenses",
       "excludeFiles": [],
       "excludePrefixes": []
+    },
+    {
+      "source": "js/pond-crt",
+      "excludeFiles": [],
+      "excludePrefixes": []
+    },
+    {
+      "source": "js/pond-windows",
+      "excludeFiles": [],
+      "excludePrefixes": []
     }
   ],
   "standaloneFiles": [
+    "css/pond-windows.css",
     "tools/japanese-subtext/index.html",
     "tools/japanese-subtext/manifest.json",
     "tools/whiteboard/index.html",

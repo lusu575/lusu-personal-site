@@ -2,6 +2,36 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-21-pond-home-knowledge",
+      "slug": "2026-11-21-pond-home-knowledge",
+      "category": "site-updates",
+      "tags": [
+        "网站更新",
+        "首页",
+        "知识库",
+        "界面"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-21T15:30:00.000Z",
+      "updated_at": "2026-11-21T15:30:00.000Z",
+      "published_at": "2026-11-21T15:30:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.21",
+      "title": {
+        "zh": "桌面首页与知识库列表换装深夜终端池塘视觉",
+        "en": "Desktop Home and Knowledge List Refresh with Midnight Pond CRT Visuals",
+        "ja": "デスクトップのホームと知識庫一覧を深夜端末・池塘CRTビジュアルへ刷新"
+      },
+      "summary": {
+        "zh": "逐步视觉替换第 1 批上线：桌面端首页替换为四季池塘 CRT 点阵桌面（接入按时段自动切换与手动滑块），桌面端知识库列表换装半透明 CRT 玻璃窗口；全部数据、接口、分类、排序、搜索、分页及未替换栏目与移动端均保持原样。",
+        "en": "Batch 1 of the visual refresh is live: desktop Home adopts the four-season WebGL2 Pond CRT desktop (synced with the time-of-day schedule and manual slider), and the desktop Knowledge list uses the translucent CRT glass skin. All data, APIs, sorting, search, pagination, other sections, and mobile remain unchanged.",
+        "ja": "段階的ビジュアル刷新の第1弾を公開しました。デスクトップのホームを時間帯連動の四季池塘CRTへ、知識庫一覧を半透明CRTガラス窓へ切り替えました。データ・API・並び順・検索・ページングおよび他ページとモバイルは従来のままです。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-10-29-tool-maintenance",
       "slug": "2026-10-29-tool-maintenance",
       "category": "site-updates",
@@ -118,37 +148,6 @@ export const homeContent = Object.freeze({
         "zh": "欢迎窗改为主动查看，工具与画板入口更清晰，手机手势和动效更稳定；知识库支持完整分页搜索，临时互传修复跨房草稿与后台上传，发布增加精确版本校验。",
         "en": "Welcome is now optional, tool and whiteboard entries are clearer, and mobile gestures are more predictable. Knowledge gains complete pagination and search; Transfer fixes room drafts and background uploads, with exact release checks.",
         "ja": "歓迎画面を任意表示にし、ツールと画板の入口を整理しました。モバイル操作を安定させ、Knowledgeの全件ページングと検索、転送の下書き・バックグラウンド送信、公開バージョン確認を改善しています。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-09-02-mobile-blog-retired",
-      "slug": "2026-09-02-mobile-blog-retired",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "移动端",
-        "杂谈区",
-        "导航",
-        "界面"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-09-02T07:20:00.000Z",
-      "updated_at": "2026-09-02T07:20:00.000Z",
-      "published_at": "2026-09-02T07:20:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.09.02",
-      "title": {
-        "zh": "手机端杂谈区入口下线",
-        "en": "Talk Removed from Mobile Home",
-        "ja": "モバイルホームから雑談入口を削除"
-      },
-      "summary": {
-        "zh": "手机端首页已移除“杂谈区”入口，避免未开放栏目继续占用 App 网格；桌面端导航、既有路由与内容数据保持不变。",
-        "en": "The Talk entry has been removed from mobile Home so an unpublished section no longer occupies the App grid. Desktop navigation, route behavior, and content data remain unchanged.",
-        "ja": "モバイルのホーム画面から「雑談」の入口を外し、未公開の項目が App グリッドを占有しないようにしました。デスクトップのナビゲーション、ルート動作、コンテンツデータは変更していません。"
       }
     }
   ]

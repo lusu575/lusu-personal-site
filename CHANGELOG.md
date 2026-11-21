@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2026-11-21
+
+- 逐步视觉替换上线第 1 批（桌面首页 + 知识库列表）：桌面端首页替换为 WebGL2 四季池塘 CRT 桌面（接入 `js/core/wallpaper-time.mjs` 按时段自动切换春/夏/秋/冬，右上角滑块保留手动覆盖至下一时段边界），桌面端知识库列表在现站真实 DOM 与 `/api/articles` 接口之上换装半透明 CRT 玻璃窗口（100% 沿用现站分类顺序、计数、置顶、搜索与分页逻辑）。文章详情、视频、工具、游戏、聊天室、关于、账号浮层、欢迎窗及手机端 iOS Shell 均保持原样不受影响（main.js 维持 `20261029-private-mcp-r1`）。site-updates：`seed-update-2026-11-21-pond-home-knowledge` / `2026-11-21-pond-home-knowledge`；视觉层缓存 `20261121-pond-home-kb-r1`。
+
 ## 2026-10-29
 
 - Production adapter receipt: Approved production rollout: Pages commit c1c3c10f5f65d6a1d3eb138ac92c96f78c414da3; MCP Worker 355575bb-0d9c-4bde-9578-1a73ccd09275 at 100% traffic. PRIVATE_ADMIN_BACKEND=pages forwards the 51 backend operations to /api/private-mcp. Pages PRIVATE_MCP_AUTH calls PrivateMcpVerifier and pins the confirmed owner ID hash; preview has no binding. Existing secrets stay in Pages; no rotation, copying or new grant. Production health/metadata return 200, anonymous and invalid-token requests return 401. Local OAuth/RPC/Pages regression: 39 tests passed. Authenticated production tool calls have not been exercised without a new owner grant. Rollback must disable route/mode together while retaining owner restriction. Details: docs/agent-capabilities/PRIVATE_MCP_BACKEND_ADAPTER.md.
