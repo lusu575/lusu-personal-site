@@ -1,6 +1,40 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-visual-polish",
+  "slug": "2026-11-22-pond-visual-polish",
+  "category": "site-updates",
+  "tags": [
+    "site-update",
+    "ui",
+    "games"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T03:10:00+08:00",
+  "updated_at": "2026-11-22T03:10:00+08:00",
+  "published_at": "2026-11-22T03:10:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "date": "2026.11.22",
+  "title": {
+    "zh": "深夜池塘视觉与交互综合修复：登录触发、季节粒子汇聚过渡、全窗统一与游戏内页换装",
+    "en": "Midnight Pond Visual & Interaction Polish: Login Popover, Staged Season Vortex, Unified Windows & Game Inner Pages",
+    "ja": "深夜の池ビジュアル＆操作総合修正：ログイン窓・季節粒子演出・全窓統一・ゲーム内ページ刷新"
+  },
+  "summary": {
+    "zh": "修复左下角 ID 登录窗触发、重构两段式可打断季节粒子汇聚过渡、首屏直出零闪烁、统一全站居中窗口几何与加载态，并同步适配五个小游戏内页。",
+    "en": "Fixed the bottom-left ID login popover trigger, rebuilt interruptible two-stage season particle transitions, eliminated cold-load legacy flash, unified centered window geometry and dark loading states, and themed all five game inner pages.",
+    "ja": "左下のIDログイン窓修正、割り込み可能な二段階季節粒子演出、初回描画の旧画面チラつき解消、全ウィンドウ中央サイズ統一と暗色ロード状態、5つのゲーム内ページ刷新を実施しました。"
+  },
+  "content_markdown": {
+    "zh": "本次更新完成了全站深夜池塘 CRT 视觉与交互的集中修复：\n\n1. 修复桌面左下角 ID（登录）按钮点击无反应与浮层被隐藏的问题，点击可正常打开居中登录窗并输入登录。\n2. 重构四季/时段切换过渡：先起明亮星尘汇聚动效，到位后水面与植物平滑切入，且支持中途随时打断无缝接续。\n3. 在首屏同步写入主题与关键保护样式，冷加载不再闪现旧桌面，并移除桌面端旧壁纸预加载。\n4. 统一全部桌面窗口到文章阅读窗的居中尺寸与位置，修复文章左侧目录重叠、知识库与各窗口点阵幽灵按钮、视频卡片对齐、全站暗色加载骨架与点阵状态图标，以及移动端知识库横向溢出。\n5. 五个小游戏内页（猫国建设者、小黑屋、2048、Hextris、人生重开模拟器）同步换装深夜池塘 CRT 风格，存档与 AI 接管逻辑保持原样。",
+    "en": "This release delivers a comprehensive Midnight Pond CRT polish pass:\n\n1. Fixed the bottom-left ID button trigger and popover visibility so the login modal opens reliably and accepts input.\n2. Rebuilt season transitions into a two-stage interruptible particle vortex: stardust gathers first while holding the current scene, then smoothly reveals the target season without snapping or queueing on rapid clicks.\n3. Added synchronous first-paint mode detection and removed legacy desktop wallpaper preloading to prevent any legacy desktop flash on cold load.\n4. Unified all desktop windows to the Article Reader centered geometry, fixed TOC item overlap, restyled primary CTA buttons as compact dotted CRT ghost pills, aligned video card layouts, unified dark CRT loading/skeleton states, and fixed mobile Knowledge overflow.\n5. Applied the Midnight Pond CRT theme to all five game inner pages while keeping game logic, saves, and AI takeover untouched.",
+    "ja": "今回のアップデートでは深夜の池 CRT スタイルの総合修正を行いました：\n\n1. 左下のIDボタンからログイン窓が確実に開き入力できるよう修正しました。\n2. 季節切替を「粒子収束→背景遷移」の二段階かつ途中割り込み可能な演出へ再構築しました。\n3. 初期描画ガードを追加し、初回読み込み時の旧デスクトップ一瞬表示を解消しました。\n4. 全ウィンドウを記事閲覧窓の中央サイズへ統一し、目次重なり・ボタン・動画カード整列・暗色ローディング表示・モバイル知識庫の横溢れを修正しました。\n5. 5つのゲーム内ページも深夜の池 CRT テーマへ統一しました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-chat-mobile-polish",
   "slug": "2026-11-22-pond-chat-mobile-polish",
   "category": "site-updates",

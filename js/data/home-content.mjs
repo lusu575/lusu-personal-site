@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-visual-polish",
+      "slug": "2026-11-22-pond-visual-polish",
+      "category": "site-updates",
+      "tags": [
+        "site-update",
+        "ui",
+        "games"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T03:10:00+08:00",
+      "updated_at": "2026-11-22T03:10:00+08:00",
+      "published_at": "2026-11-22T03:10:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "深夜池塘视觉与交互综合修复：登录触发、季节粒子汇聚过渡、全窗统一与游戏内页换装",
+        "en": "Midnight Pond Visual & Interaction Polish: Login Popover, Staged Season Vortex, Unified Windows & Game Inner Pages",
+        "ja": "深夜の池ビジュアル＆操作総合修正：ログイン窓・季節粒子演出・全窓統一・ゲーム内ページ刷新"
+      },
+      "summary": {
+        "zh": "修复左下角 ID 登录窗触发、重构两段式可打断季节粒子汇聚过渡、首屏直出零闪烁、统一全站居中窗口几何与加载态，并同步适配五个小游戏内页。",
+        "en": "Fixed the bottom-left ID login popover trigger, rebuilt interruptible two-stage season particle transitions, eliminated cold-load legacy flash, unified centered window geometry and dark loading states, and themed all five game inner pages.",
+        "ja": "左下のIDログイン窓修正、割り込み可能な二段階季節粒子演出、初回描画の旧画面チラつき解消、全ウィンドウ中央サイズ統一と暗色ロード状態、5つのゲーム内ページ刷新を実施しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-chat-mobile-polish",
       "slug": "2026-11-22-pond-chat-mobile-polish",
       "category": "site-updates",
@@ -119,35 +148,6 @@ export const homeContent = Object.freeze({
         "zh": "逐步视觉替换第 7 批上线：桌面端关于页（#about）、账号登录/注册浮层（#account-popover）与欢迎/最近更新窗（#welcome-modal）全部换装半透明 CRT 玻璃视觉；头像、RSS 订阅、社交链接、会话登录与默认不自动弹窗规则保持原样。",
         "en": "Batch 7 of the visual refresh is live: About (#about), the Account login/register popover (#account-popover), and the Welcome modal (#welcome-modal) adopt the translucent CRT glass skin while keeping all existing profile links, RSS feed, auth sessions, and non-auto-popup rules intact.",
         "ja": "段階的ビジュアル刷新の第7弾を公開しました。デスクトップの概要（#about）・ログイン/登録ポップオーバー・歓迎ウィンドウ（#welcome-modal）を半透明CRTガラスへ統一し、RSS・認証・自動非表示ルールはそのまま維持しています。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-chatroom",
-      "slug": "2026-11-22-pond-chatroom",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "聊天室",
-        "界面"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-21T17:59:00.000Z",
-      "updated_at": "2026-11-21T17:59:00.000Z",
-      "published_at": "2026-11-21T17:59:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "聊天室换装深夜终端 CRT 玻璃窗与点阵默认头像",
-        "en": "Chatroom Refreshed with Midnight Pond CRT Glass UI and Dot-Matrix Avatars",
-        "ja": "チャットルームを深夜端末CRTガラス窓とドットアバターへ刷新"
-      },
-      "summary": {
-        "zh": "逐步视觉替换第 6 批上线：桌面端匿名聊天室（#chatroom）换装半透明 CRT 玻璃聊天窗并接入 6 枚点阵圆形 SVG 默认头像；匿名昵称、普通房/密码房、5 秒同步、300 字计数与发送节流均保持原样。",
-        "en": "Batch 6 of the visual refresh is live: the desktop anonymous Chatroom (#chatroom) adopts translucent CRT glass bubbles and 6 circular dot-matrix SVG avatars while keeping anonymous identity, password rooms, 5s polling, 300-char limit, and cooldown untouched.",
-        "ja": "段階的ビジュアル刷新の第6弾を公開しました。デスクトップの匿名チャット（#chatroom）を半透明CRTガラス窓と6種の円形ドットSVGアバターへ換装し、合言葉ルーム・5秒同期・300文字制限は従来のまま維持しています。"
       }
     }
   ]

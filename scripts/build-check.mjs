@@ -3353,7 +3353,7 @@ const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = homeContentReleaseVersion;
 const currentCssVersion = reviewReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
-const currentGameShellVersion = "20260922-cloud-save-10min-r1";
+const currentGameShellVersion = "20261122-pond-polish-r1";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
 const currentLifeRestartMobileTouchVersion = "20260726-life-mobile-touch-r1";
 
@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-chat-mobile-polish";
-const finalUpdateSlug = "2026-11-22-pond-chat-mobile-polish";
+const finalUpdateId = "seed-update-2026-11-22-pond-visual-polish";
+const finalUpdateSlug = "2026-11-22-pond-visual-polish";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Compact CRT Chat Bubbles, Mobile Overflow Fix, and Same-Day D1 Migration Record";
-const finalPublishedAt = "2026-11-21T18:51:00.000Z";
+const finalTitleEn = "Midnight Pond Visual & Interaction Polish: Login Popover, Staged Season Vortex, Unified Windows & Game Inner Pages";
+const finalPublishedAt = "2026-11-22T03:10:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-chat-mobile-polish",
   "seed-update-2026-11-22-pond-live-fix",
   "seed-update-2026-11-22-pond-mobile-polish",
   "seed-update-2026-11-22-pond-about-login-welcome",

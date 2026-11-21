@@ -107,30 +107,71 @@
       const mobileShell = window.matchMedia?.("(max-width: 760px), (max-height: 520px) and (pointer: coarse)")?.matches;
       const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
       document.documentElement.dataset.motion = reducedMotion ? "reduced" : "full";
-      const saveData = (navigator.connection || navigator.mozConnection || navigator.webkitConnection)?.saveData === true;
-      const selectedWidth = saveData || window.innerWidth <= 960 ? 960 : window.innerWidth <= 1440 ? 1440 : 1920;
-      const preload = document.createElement("link");
-      preload.rel = "preload";
-      preload.as = "image";
-      if (mobileShell) {
+      if (!mobileShell) {
+        const rawHash = (window.location.hash || "").replace(/^#\/?/, "").toLowerCase();
+        const pathName = (window.location.pathname || "").toLowerCase();
+        let initialPondMode = "home";
+        if (/^\/articles\/[^/]+/i.test(pathName) || /^knowledge\/[^/]+/i.test(rawHash)) {
+          initialPondMode = "article";
+        } else if (rawHash.startsWith("knowledge")) {
+          initialPondMode = "knowledge";
+        } else if (rawHash.startsWith("videos")) {
+          initialPondMode = "videos";
+        } else if (rawHash.startsWith("resources")) {
+          initialPondMode = "resources";
+        } else if (rawHash.startsWith("games")) {
+          initialPondMode = "games";
+        } else if (rawHash.startsWith("chatroom")) {
+          initialPondMode = "chatroom";
+        } else if (rawHash.startsWith("about")) {
+          initialPondMode = "about";
+        }
+        document.documentElement.dataset.pondMode = initialPondMode;
+      } else {
+        const preload = document.createElement("link");
+        preload.rel = "preload";
+        preload.as = "image";
         preload.type = "image/webp";
         preload.href = `/assets/images/mobile-wallpapers/${activeTheme}.webp?v=20260711-calm-motion-r13`;
         preload.dataset.wallpaperPreload = `${activeTheme}:mobile`;
-      } else {
-        const family = reducedMotion ? "wallpapers/optimized" : `wallpaper-dynamic/${activeTheme}/optimized`;
-        const stem = reducedMotion ? activeTheme : "base";
-        preload.type = "image/avif";
-        preload.href = `/assets/images/${family}/${stem}-${selectedWidth}.avif`;
-        preload.dataset.wallpaperPreload = `${activeTheme}:desktop:${reducedMotion ? "static" : "dynamic"}`;
+        document.head.appendChild(preload);
       }
-      document.head.appendChild(preload);
     })();
   </script>
+  <style id="pond-first-paint-guard">
+    html[data-pond-mode],
+    html[data-pond-mode] body {
+      background:
+        radial-gradient(ellipse 80% 55% at 50% 42%, rgba(18, 76, 72, 0.42), transparent 72%),
+        #030e10 !important;
+      color: #eafbf8;
+    }
+    html[data-pond-mode] .wallpaper-layer {
+      display: none !important;
+    }
+    html[data-pond-mode] .xp-taskbar {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    html[data-pond-mode] .site-shell > header {
+      position: fixed !important;
+      inset: 0 0 auto 0 !important;
+      z-index: 90 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+    html[data-pond-mode="home"] .page-home,
+    html[data-pond-mode="home"] .desktop-intro,
+    html[data-pond-mode="home"] .desktop-icons {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  </style>
   <script src="/js/mobile-shell.js?v=20260908-site-review-r1"></script>
   <link rel="stylesheet" href="/css/style.css?v=20260908-site-review-r1">
   <link rel="stylesheet" data-mobile-shell-style href="/css/mobile-ios-shell.css?v=20261029-private-mcp-r1">
   <link rel="stylesheet" href="/css/motion-system.css?v=20260908-site-review-r1">
-  <link rel="stylesheet" href="/css/pond-windows.css?v=20261122-pond-chat-mobile-r1">
+  <link rel="stylesheet" href="/css/pond-windows.css?v=20261122-pond-polish-r1">
   <style id="pixel-cursor-r3">
     @media (hover: hover) and (pointer: fine) and (forced-colors: none) {
       html,
@@ -654,6 +695,6 @@
   <script src="/js/telemetry.js?v=20260802-traffic-budget-r1"></script>
   <script src="/js/ui-motion.js?v=20260908-site-review-r1"></script>
   <script type="module" src="/js/main.js?v=20261029-private-mcp-r1"></script>
-  <script type="module" src="/js/pond-windows/pond-site-bridge.mjs?v=20261122-pond-live-fix-r1"></script>
+  <script type="module" src="/js/pond-windows/pond-site-bridge.mjs?v=20261122-pond-polish-r1"></script>
 </body>
 </html>

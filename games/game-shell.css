@@ -822,3 +822,264 @@ input {
   }
 
 }
+
+
+/* ============================================================
+   Midnight Pond CRT Theme for All 5 Game Inner Pages
+   (Kittens Game / A Dark Room / 2048 / Hextris / Life Restart)
+   Pure CSS visual presentation layer — zero changes to game logic,
+   cloud saves, local saves, or AI agent takeover controls.
+   ============================================================ */
+:root {
+  --blue: #5ef4d8;
+  --blue-dark: #eafbf8;
+  --panel: rgba(8, 28, 34, 0.88);
+  --line: rgba(176, 238, 232, 0.34);
+  --text: #eafbf8;
+  --muted: rgba(196, 232, 228, 0.80);
+}
+
+body {
+  color: #eafbf8 !important;
+  font-family: "JetBrains Mono", "Cascadia Mono", Consolas, "PingFang SC", "Microsoft YaHei", sans-serif !important;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 35%, rgba(20, 82, 78, 0.40), transparent 72%),
+    radial-gradient(rgba(190, 250, 244, 0.08) 0.75px, transparent 0.75px),
+    #030e10 !important;
+  background-size: 100% 100%, 5px 5px, 100% 100% !important;
+}
+
+.game-topbar {
+  background: linear-gradient(180deg, rgba(10, 34, 38, 0.92), rgba(6, 22, 26, 0.94)) !important;
+  border-bottom: 1.5px dotted rgba(186, 242, 236, 0.44) !important;
+  box-shadow: 0 4px 20px rgba(84, 228, 218, 0.16) !important;
+  color: #f0fefa !important;
+}
+
+.game-topbar strong {
+  color: #f0fefa !important;
+  text-shadow: 0 0 10px rgba(154, 246, 236, 0.42);
+}
+
+.game-topbar span {
+  color: rgba(204, 240, 236, 0.84) !important;
+}
+
+.back-link,
+.play-button,
+.tool-button,
+.file-button,
+.game-tools-toggle {
+  border-radius: 999px !important;
+  border: 1.2px dashed rgba(184, 242, 236, 0.56) !important;
+  background: rgba(8, 30, 36, 0.72) !important;
+  background-image: none !important;
+  color: #f0fefa !important;
+  box-shadow: none !important;
+  font-weight: 500 !important;
+  transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
+}
+
+.back-link:hover,
+.play-button:hover,
+.tool-button:hover:not(:disabled),
+.file-button:hover,
+.game-tools-toggle:hover {
+  border-style: solid !important;
+  border-color: rgba(164, 248, 240, 0.92) !important;
+  background: rgba(22, 68, 74, 0.62) !important;
+  box-shadow: 0 0 12px rgba(102, 238, 226, 0.32) !important;
+}
+
+.tool-button.subtle {
+  border-color: rgba(176, 232, 226, 0.40) !important;
+  color: rgba(216, 246, 242, 0.88) !important;
+  background: rgba(6, 22, 26, 0.62) !important;
+}
+
+.tool-button:disabled,
+.cloud-actions .tool-button:disabled,
+.game-agent-controls button:disabled {
+  border-color: rgba(146, 188, 184, 0.28) !important;
+  color: rgba(168, 206, 202, 0.52) !important;
+  background: rgba(6, 18, 22, 0.46) !important;
+  box-shadow: none !important;
+}
+
+.game-frame-card {
+  border: 1.5px solid rgba(196, 250, 242, 0.58) !important;
+  border-radius: 16px !important;
+  background: linear-gradient(180deg, rgba(10, 32, 36, 0.86), rgba(5, 20, 24, 0.92)) !important;
+  box-shadow: 0 0 30px rgba(96, 232, 220, 0.22), inset 0 0 24px rgba(4, 14, 18, 0.55) !important;
+}
+
+.game-tools {
+  border-bottom: 1px dotted rgba(182, 238, 232, 0.30) !important;
+  background: rgba(6, 24, 28, 0.72) !important;
+}
+
+.game-title h1 {
+  color: #f0fefa !important;
+  font-weight: 500 !important;
+}
+
+.game-title p,
+.status-text {
+  color: rgba(196, 232, 228, 0.80) !important;
+}
+
+.meta-line span {
+  border-radius: 999px !important;
+  border: 1px solid rgba(148, 232, 222, 0.44) !important;
+  background: rgba(6, 24, 28, 0.66) !important;
+  color: #c8f6ee !important;
+  font-weight: 500 !important;
+}
+
+.cloud-login,
+.cloud-account {
+  border: 1.2px dashed rgba(176, 238, 232, 0.46) !important;
+  border-radius: 12px !important;
+  background: rgba(6, 22, 26, 0.72) !important;
+  box-shadow: none !important;
+  color: #eafbf8 !important;
+}
+
+.cloud-account.is-conflict {
+  border-color: rgba(255, 206, 102, 0.76) !important;
+  background: rgba(46, 32, 12, 0.72) !important;
+  box-shadow: 0 0 14px rgba(255, 198, 92, 0.20) !important;
+}
+
+.cloud-login strong,
+.cloud-account strong {
+  color: #8cfce4 !important;
+}
+
+.cloud-login input {
+  border: 1.2px dashed rgba(176, 238, 232, 0.48) !important;
+  border-radius: 8px !important;
+  background: rgba(3, 14, 18, 0.82) !important;
+  color: #f0fefa !important;
+}
+
+.cloud-login p,
+.cloud-account p,
+.cloud-account span {
+  color: rgba(202, 236, 232, 0.84) !important;
+}
+
+.cloud-account .cloud-conflict-message {
+  border: 1px dashed rgba(255, 206, 102, 0.66) !important;
+  background: rgba(36, 24, 8, 0.72) !important;
+  color: #ffe2a4 !important;
+}
+
+.cloud-review-button {
+  border-color: rgba(255, 204, 108, 0.72) !important;
+  color: #ffebb8 !important;
+  background: rgba(64, 42, 12, 0.72) !important;
+}
+
+.cloud-conflict-overlay {
+  background: rgba(2, 10, 14, 0.72) !important;
+  backdrop-filter: blur(6px) !important;
+}
+
+.cloud-conflict-dialog {
+  border: 1.6px solid rgba(196, 250, 242, 0.76) !important;
+  border-radius: 16px !important;
+  background: linear-gradient(180deg, rgba(10, 34, 38, 0.94), rgba(5, 20, 24, 0.96)) !important;
+  color: #eafbf8 !important;
+  box-shadow: 0 0 36px rgba(102, 238, 226, 0.30) !important;
+}
+
+.cloud-conflict-titlebar {
+  background: transparent !important;
+  border-bottom: 1px dotted rgba(182, 238, 232, 0.34) !important;
+  color: #f0fefa !important;
+  text-shadow: none !important;
+}
+
+.cloud-conflict-body h2 {
+  color: #f0fefa !important;
+}
+
+.cloud-conflict-time {
+  border: 1px dashed rgba(176, 238, 232, 0.42) !important;
+  border-radius: 8px !important;
+  background: rgba(4, 16, 20, 0.76) !important;
+  color: #9afce8 !important;
+}
+
+.cloud-conflict-advice {
+  border: 1px dashed rgba(255, 206, 102, 0.66) !important;
+  border-radius: 8px !important;
+  background: rgba(46, 32, 10, 0.68) !important;
+  color: #ffe5ad !important;
+}
+
+.cloud-conflict-backup {
+  border-color: rgba(110, 242, 186, 0.72) !important;
+  color: #c8ffe8 !important;
+  background: rgba(12, 52, 38, 0.72) !important;
+}
+
+.cloud-conflict-overwrite,
+.game-agent-controls .game-agent-take-back {
+  border-color: rgba(255, 134, 146, 0.72) !important;
+  color: #ffd0d6 !important;
+  background: rgba(66, 18, 28, 0.72) !important;
+}
+
+.license-panel {
+  border-bottom: 1px dotted rgba(182, 238, 232, 0.28) !important;
+  background: rgba(5, 20, 24, 0.76) !important;
+  color: rgba(194, 230, 226, 0.80) !important;
+}
+
+.license-panel a {
+  color: #88fce2 !important;
+}
+
+.game-agent-panel {
+  border-bottom: 1px dotted rgba(246, 212, 118, 0.36) !important;
+  background: linear-gradient(180deg, rgba(24, 36, 32, 0.84), rgba(14, 28, 28, 0.88)) !important;
+}
+
+.game-agent-heading h2 {
+  color: #ffe69e !important;
+}
+
+.game-agent-heading p,
+.game-agent-status,
+.game-agent-code-expiry {
+  color: rgba(232, 244, 236, 0.84) !important;
+}
+
+.game-agent-code-box {
+  border: 1.2px dashed rgba(246, 212, 118, 0.54) !important;
+  border-radius: 10px !important;
+  background: rgba(4, 16, 20, 0.82) !important;
+  color: #eefcf9 !important;
+}
+
+.game-agent-code-box code {
+  color: #8cfce4 !important;
+}
+
+.game-agent-input-shield {
+  background: rgba(4, 18, 24, 0.42) !important;
+  color: #9afce8 !important;
+  text-shadow: 0 0 8px rgba(102, 238, 226, 0.45) !important;
+}
+
+.game-frame {
+  background: #07161a !important;
+}
+
+.error-box {
+  border: 1.2px dashed rgba(255, 134, 146, 0.68) !important;
+  background: rgba(58, 16, 24, 0.76) !important;
+  color: #ffd4da !important;
+}

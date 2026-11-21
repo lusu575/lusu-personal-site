@@ -14,7 +14,7 @@
 import { FloraLayer } from './flora.mjs';
 import { createFBO, createFullscreenVAO, createProgram } from './gl-utils.mjs';
 import { KoiGLRenderer } from './koi-gl.mjs';
-import { ParticlesGLRenderer } from './particles-gl.mjs';
+import { ParticlesGLRenderer } from './particles-gl.mjs?v=20261122-pond-polish-r1';
 import { lerpNum, lerpVec3, SEASON_ORDER, SEASONS } from './seasons.mjs';
 import {
   BLOOM_EXTRACT_FRAG,
@@ -47,13 +47,22 @@ export class PondCRTEngine {
 
     this.seasonId = options.season && SEASONS[options.season] ? options.season : 'summer';
     this.fromSeasonId = this.seasonId;
+    this.visualSeasonId = this.seasonId;
     this.seasonTransitionStart = -10;
-    this.seasonTransitionDuration = 2.00;
-    // C1-continuous exponentially-damped live state -> ZERO snap, ZERO flash, ZERO darken even on rapid spam-clicks!
+    this.seasonGatherDuration = 0.55;
+    this.seasonRevealDuration = 1.35;
+    this.seasonTransitionDuration = 1.90;
+    this.transitionPhase = 'idle'; // 'idle' | 'gather' | 'reveal'
+    this._revealRippleFired = false;
+    // Two-stage interruptible live state:
+    // Stage 1 (gather): particles stream & converge first while current scene holds steady.
+    // Stage 2 (reveal): vortex blooms outward and scene smoothly eases from exact live snapshot to target.
+    // Interrupting mid-transition snapshots current live frame -> ZERO snap, ZERO flash, ZERO queue!
     this.livePalette = this._cloneSeasonPalette(this.seasonId);
+    this.revealStartPalette = this._cloneSeasonPalette(this.seasonId);
     this.liveWeights = this._seasonToWeights(this.seasonId);
+    this.revealStartWeights = this._seasonToWeights(this.seasonId);
     this.targetWeights = this._seasonToWeights(this.seasonId);
-    this._rippleTimerId = 0;
     this._pendingAmbientSeason = null;
     this._draggingSlider = false;
     this.onNavigate = options.onNavigate || null;
@@ -410,6 +419,22 @@ export class PondCRTEngine {
     };
   }
 
+  _copyPalette(p) {
+    return {
+      waterDeep: [...p.waterDeep],
+      waterMid: [...p.waterMid],
+      waterAccent: [...p.waterAccent],
+      causticTint: [...p.causticTint],
+      specularTint: [...p.specularTint],
+      glowColumnX: p.glowColumnX,
+      glowColumnWidth: p.glowColumnWidth,
+      causticStrength: p.causticStrength,
+      shimmerSpeed: p.shimmerSpeed,
+      koiDepthFog: p.koiDepthFog,
+      winterMode: p.winterMode
+    };
+  }
+
   _seasonToWeights(seasonId) {
     return [
       seasonId === 'spring' ? 1 : 0,
@@ -422,21 +447,36 @@ export class PondCRTEngine {
   setSeason(seasonId, originNx = 0.86, originNy = 0.072, { manual = true } = {}) {
     if (SEASONS[seasonId] && seasonId !== this.seasonId) {
       const prev = this.seasonId;
+      const wasInTransition = this.transitionPhase !== 'idle';
       this.fromSeasonId = prev;
       this.seasonId = seasonId;
-      this.targetWeights = this._seasonToWeights(seasonId);
-      this.seasonTransitionStart = this.elapsed;
 
-      // Immediately clear old ambient particles & launch Video-1 stardust ribbon
-      this.particlesGL.clearAmbient();
+      // Snapshot the EXACT current live visual state so interruption NEVER snaps, blinks, or rewinds!
+      this.revealStartPalette = this._copyPalette(this.livePalette);
+      this.revealStartWeights = [...this.liveWeights];
+      this.targetWeights = this._seasonToWeights(seasonId);
+
+      // Stage 1 (gather): particles converge first while scene holds steady; shorter when interrupting for snappy feel
+      this.seasonGatherDuration = wasInTransition ? 0.36 : 0.55;
+      this.seasonRevealDuration = 1.35;
+      this.seasonTransitionDuration = this.seasonGatherDuration + this.seasonRevealDuration;
+      this.seasonTransitionStart = this.elapsed;
+      this.transitionPhase = 'gather';
+      this._revealRippleFired = false;
+
+      // Smoothly fade old ambient particles (zero pop!) & launch luminous interruptible stardust ribbon
+      this.particlesGL.fadeOutAmbient();
       this._pendingAmbientSeason = seasonId;
       this.uiOverlay.setSeason(seasonId, this.elapsed);
-      this.particlesGL.triggerSeasonTransitionFX(prev, seasonId, originNx, 1.0 - originNy, this.elapsed);
-      if (this._rippleTimerId) clearTimeout(this._rippleTimerId);
-      this._rippleTimerId = setTimeout(() => {
-        this._rippleTimerId = 0;
-        if (this.running) this.spawnRipple(0.50, 0.48, 1.05);
-      }, 450);
+      this.particlesGL.triggerSeasonTransitionFX(
+        prev,
+        seasonId,
+        originNx,
+        1.0 - originNy,
+        this.elapsed,
+        this.seasonGatherDuration,
+        this.seasonRevealDuration
+      );
       if (typeof this.onSeasonChange === 'function') {
         this.onSeasonChange(seasonId, { manual });
       }
@@ -449,27 +489,65 @@ export class PondCRTEngine {
     }
   }
 
-  _stepContinuousSeason(dt) {
-    // Frame-rate-independent C1 smooth exponential damping toward target season (never jumps or snaps!)
-    const target = this._cloneSeasonPalette(this.seasonId);
-    const k = 1.0 - Math.exp(-dt * 2.6);
+  _stepContinuousSeason(t) {
+    if (this.transitionPhase === 'idle') {
+      return { palette: this.livePalette, revealSweepP: 1.0, inTransition: false };
+    }
+
+    const elapsed = Math.max(0, t - this.seasonTransitionStart);
+    const gatherDur = this.seasonGatherDuration;
+    const revealDur = this.seasonRevealDuration;
+
+    // Stage 1: Particle ribbon streams & converges to pond center — hold current scene steady (NO early jump!)
+    if (elapsed < gatherDur) {
+      this.transitionPhase = 'gather';
+      return { palette: this.livePalette, revealSweepP: 0.0, inTransition: true };
+    }
+
+    // Stage 2: Particles arrived -> fire pond-center ripple & smoothly reveal target season from exact snapshot!
+    this.transitionPhase = 'reveal';
+    if (!this._revealRippleFired) {
+      this._revealRippleFired = true;
+      this.spawnRipple(0.50, 0.48, 1.25);
+    }
+
+    const u = Math.min(1.0, (elapsed - gatherDur) / Math.max(0.01, revealDur));
+    const e = u * u * (3.0 - 2.0 * u); // C1 smoothstep easing
+    const startP = this.revealStartPalette;
+    const targetP = this._cloneSeasonPalette(this.seasonId);
     const p = this.livePalette;
-    p.waterDeep = lerpVec3(p.waterDeep, target.waterDeep, k);
-    p.waterMid = lerpVec3(p.waterMid, target.waterMid, k);
-    p.waterAccent = lerpVec3(p.waterAccent, target.waterAccent, k);
-    p.causticTint = lerpVec3(p.causticTint, target.causticTint, k);
-    p.specularTint = lerpVec3(p.specularTint, target.specularTint, k);
-    p.glowColumnX = lerpNum(p.glowColumnX, target.glowColumnX, k);
-    p.glowColumnWidth = lerpNum(p.glowColumnWidth, target.glowColumnWidth, k);
-    p.causticStrength = lerpNum(p.causticStrength, target.causticStrength, k);
-    p.shimmerSpeed = lerpNum(p.shimmerSpeed, target.shimmerSpeed, k);
-    p.koiDepthFog = lerpNum(p.koiDepthFog, target.koiDepthFog, k);
-    p.winterMode = lerpNum(p.winterMode, target.winterMode, k);
+
+    p.waterDeep = lerpVec3(startP.waterDeep, targetP.waterDeep, e);
+    p.waterMid = lerpVec3(startP.waterMid, targetP.waterMid, e);
+    p.waterAccent = lerpVec3(startP.waterAccent, targetP.waterAccent, e);
+    p.causticTint = lerpVec3(startP.causticTint, targetP.causticTint, e);
+    p.specularTint = lerpVec3(startP.specularTint, targetP.specularTint, e);
+    p.glowColumnX = lerpNum(startP.glowColumnX, targetP.glowColumnX, e);
+    p.glowColumnWidth = lerpNum(startP.glowColumnWidth, targetP.glowColumnWidth, e);
+    p.causticStrength = lerpNum(startP.causticStrength, targetP.causticStrength, e);
+    p.shimmerSpeed = lerpNum(startP.shimmerSpeed, targetP.shimmerSpeed, e);
+    p.koiDepthFog = lerpNum(startP.koiDepthFog, targetP.koiDepthFog, e);
+    p.winterMode = lerpNum(startP.winterMode, targetP.winterMode, e);
 
     for (let i = 0; i < 4; i++) {
-      this.liveWeights[i] += (this.targetWeights[i] - this.liveWeights[i]) * k;
+      this.liveWeights[i] = this.revealStartWeights[i] + (this.targetWeights[i] - this.revealStartWeights[i]) * e;
     }
-    return p;
+
+    if (u >= 0.45) {
+      this.visualSeasonId = this.seasonId;
+    }
+
+    if (u >= 1.0) {
+      this.transitionPhase = 'idle';
+      this.visualSeasonId = this.seasonId;
+      if (this._pendingAmbientSeason) {
+        this.particlesGL.startNewSeasonAmbient(this._pendingAmbientSeason);
+        this._pendingAmbientSeason = null;
+      }
+      return { palette: p, revealSweepP: 1.0, inTransition: false };
+    }
+
+    return { palette: p, revealSweepP: u, inTransition: true };
   }
 
   render(timeSec) {
@@ -488,7 +566,7 @@ export class PondCRTEngine {
       if (this.onFpsUpdate) this.onFpsUpdate(this.currentFps);
     }
 
-    const season = this._stepContinuousSeason(dt);
+    const { palette: season, revealSweepP, inTransition } = this._stepContinuousSeason(t);
     const rippleCount = this._updateRipples(t);
     const sw = this.fbos.scene.width;
     const sh = this.fbos.scene.height;
@@ -517,7 +595,7 @@ export class PondCRTEngine {
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
     // 1b. Pure GPU Underwater Nishikigoi (continuous integrated swimTime -> ZERO jump on Winter switch!)
-    this.koiGL.render(t, dt, aspect, season, this.seasonId, (rx, ry, str) => {
+    this.koiGL.render(t, dt, aspect, season, this.visualSeasonId, (rx, ry, str) => {
       this.spawnRipple(rx, ry, str);
     });
 
@@ -527,11 +605,6 @@ export class PondCRTEngine {
     gl.bindVertexArray(this.vao);
     gl.useProgram(this.programs.surfaceOverlay.program);
     const su = this.programs.surfaceOverlay.uniforms;
-    const sweepP = Math.max(0, Math.min(1, (t - this.seasonTransitionStart) / this.seasonTransitionDuration));
-    if (this._pendingAmbientSeason && sweepP >= 0.99) {
-      this.particlesGL.startNewSeasonAmbient(this._pendingAmbientSeason);
-      this._pendingAmbientSeason = null;
-    }
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.floraTextures.spring);
     gl.uniform1i(su.uFloraSpring, 0);
@@ -547,7 +620,7 @@ export class PondCRTEngine {
     gl.uniform4fv(su.uSeasonWeights, this.liveWeights);
     gl.uniform2f(su.uResolution, sw, sh);
     gl.uniform1f(su.uTime, t);
-    gl.uniform1f(su.uSeasonSweep, sweepP);
+    gl.uniform1f(su.uSeasonSweep, revealSweepP);
     gl.uniform3fv(su.uCausticTint, season.causticTint);
     gl.uniform3fv(su.uSpecularTint, season.specularTint);
     gl.uniform4fv(su.uRipples, this.rippleUniformData);
@@ -555,8 +628,8 @@ export class PondCRTEngine {
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     gl.disable(gl.BLEND);
 
-    // 1d. Pure GPU Botanical Falling Petals / Maple Leaves / Snow + Video-1 Stardust Vortex
-    this.particlesGL.render(t, dt, sw, this.seasonId, sweepP, (rx, ry, str) => {
+    // 1d. Pure GPU Botanical Falling Petals / Maple Leaves / Snow + Interruptible Stardust Vortex
+    this.particlesGL.render(t, dt, sw, this.seasonId, inTransition, (rx, ry, str) => {
       this.spawnRipple(rx, ry, str);
     });
 

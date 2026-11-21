@@ -214,7 +214,9 @@ export class ParticlesGLRenderer {
     this.seasonId = '';
     this.ambient = [];
     this.ambientFade = 1.0;
+    this.ambientFadeTarget = 1.0;
     this.transitionFX = null;
+    this.fadingTrails = [];
 
     // Upload 256x64 botanical sprite atlas ONCE at startup (0ms/frame!)
     const atlasCanvas = buildBotanicalAtlas();
@@ -228,7 +230,7 @@ export class ParticlesGLRenderer {
     gl.bindTexture(gl.TEXTURE_2D, null);
 
     // 10 floats per point: x, y, r, g, b, a, size, cell, rot, tumble
-    this.maxPoints = 440;
+    this.maxPoints = 960;
     this.data = new Float32Array(this.maxPoints * 10);
     this.count = 0;
 
@@ -337,27 +339,46 @@ export class ParticlesGLRenderer {
   clearAmbient() {
     this.ambient = [];
     this.seasonId = '';
+    this.ambientFade = 0.0;
+    this.ambientFadeTarget = 0.0;
+  }
+
+  fadeOutAmbient() {
+    this.ambientFadeTarget = 0.0;
   }
 
   startNewSeasonAmbient(seasonId) {
     this._initSeason(seasonId, true);
+    this.ambientFade = 0.0;
+    this.ambientFadeTarget = 1.0;
   }
 
-  triggerSeasonTransitionFX(fromSeason, toSeason, originX, originYUp, nowSec) {
+  triggerSeasonTransitionFX(fromSeason, toSeason, originX, originYUp, nowSec, gatherDuration = 0.55, revealDuration = 1.35) {
+    // Interruptible transition: keep any active in-flight sparks gracefully fading out instead of vanishing/flashing!
+    if (this.transitionFX) {
+      this.transitionFX.fadeOutStart = nowSec;
+      this.transitionFX.fadeOutDuration = 0.52;
+      this.transitionFX.toRgb = SEASON_DUST_RGB[toSeason] || SEASON_DUST_RGB.autumn;
+      this.fadingTrails.push(this.transitionFX);
+      if (this.fadingTrails.length > 2) {
+        this.fadingTrails.shift();
+      }
+    }
+
     const rand = makeRng(Math.floor(nowSec * 1000) + 77);
     const sparks = [];
-    for (let i = 0; i < 260; i++) {
+    for (let i = 0; i < 320; i++) {
       const arm = i % 3;
       const armBase = (arm * Math.PI * 2) / 3;
       sparks.push({
-        delay: rand() * 0.28,
-        ribbonSpread: (rand() - 0.5) * 0.032,
-        vortexAngle: armBase + (rand() - 0.5) * 0.95,
-        vortexSpeed: 2.6 + rand() * 3.2,
-        vortexRadius: 0.05 + Math.pow(rand(), 0.78) * 0.42,
-        size: 1.5 + Math.pow(rand(), 1.8) * 2.4,
+        delay: rand() * 0.22,
+        ribbonSpread: (rand() - 0.5) * 0.042,
+        vortexAngle: armBase + (rand() - 0.5) * 0.90,
+        vortexSpeed: 2.8 + rand() * 3.4,
+        vortexRadius: 0.06 + Math.pow(rand(), 0.76) * 0.46,
+        size: 3.4 + Math.pow(rand(), 1.5) * 6.2,
         twinklePhase: rand() * Math.PI * 2,
-        useNewColorAt: 0.20 + rand() * 0.30
+        useNewColorAt: 0.24 + rand() * 0.24
       });
     }
     this.transitionFX = {
@@ -366,9 +387,61 @@ export class ParticlesGLRenderer {
       ox: originX,
       oy: originYUp,
       start: nowSec,
-      duration: 2.10,
+      gatherDuration,
+      duration: gatherDuration + revealDuration,
       sparks
     };
+  }
+
+  _emitTransitionFX(fx, t, sizeScale, alphaMul = 1.0) {
+    const pGlobal = (t - fx.start) / fx.duration;
+    if (pGlobal >= 1.0 || alphaMul <= 0.01) return false;
+
+    const gatherFrac = Math.min(0.45, Math.max(0.22, fx.gatherDuration / fx.duration));
+    const p0x = fx.ox;
+    const p0y = fx.oy;
+    const c1x = fx.ox - 0.24;
+    const c1y = fx.oy - 0.14;
+    const c2x = 0.64;
+    const c2y = 0.66;
+    const cx = 0.50;
+    const cy = 0.48;
+
+    for (let i = 0; i < fx.sparks.length; i++) {
+      const sp = fx.sparks[i];
+      const lp = (pGlobal - sp.delay * gatherFrac) / Math.max(0.15, 1.0 - sp.delay * gatherFrac);
+      if (lp <= 0 || lp >= 1) continue;
+
+      let px;
+      let py;
+      let alpha;
+      let sz;
+      if (lp < gatherFrac) {
+        const u = lp / gatherFrac;
+        const e = u * u * (3 - 2 * u);
+        const mt = 1 - e;
+        const bx = mt * mt * mt * p0x + 3 * mt * mt * e * c1x + 3 * mt * e * e * c2x + e * e * e * cx;
+        const by = mt * mt * mt * p0y + 3 * mt * mt * e * c1y + 3 * mt * e * e * c2y + e * e * e * cy;
+        px = bx + Math.sin(u * Math.PI * 3.0 + sp.vortexAngle) * sp.ribbonSpread * Math.sin(u * Math.PI);
+        py = by + Math.cos(u * Math.PI * 2.5 + sp.vortexAngle) * sp.ribbonSpread * 0.65;
+        alpha = Math.min(1.0, u * 3.6) * 0.96;
+        sz = sp.size * (0.85 + 0.55 * u);
+      } else {
+        const u = (lp - gatherFrac) / (1.0 - gatherFrac);
+        const easeOut = 1.0 - Math.pow(1.0 - u, 2.2);
+        const ang = sp.vortexAngle + u * sp.vortexSpeed;
+        const rad = sp.vortexRadius * (0.08 + 1.04 * easeOut);
+        px = cx + Math.cos(ang) * rad * 1.18;
+        py = cy + Math.sin(ang) * rad * 0.62;
+        alpha = Math.sin(u * Math.PI) * (1.0 - u * 0.25) * 0.98;
+        sz = sp.size * (1.28 - u * 0.55);
+      }
+
+      const rgb = lp < sp.useNewColorAt ? fx.fromRgb : fx.toRgb;
+      const twinkle = 0.68 + 0.32 * Math.sin(t * 14.0 + sp.twinklePhase);
+      this._push(px, py, rgb[0], rgb[1], rgb[2], alpha * twinkle * alphaMul, sz * sizeScale, 0, 0, 1.0);
+    }
+    return true;
   }
 
   _push(x, y, r, g, b, a, size, cell, rot = 0, tumble = 1.0) {
@@ -382,25 +455,29 @@ export class ParticlesGLRenderer {
     this.count++;
   }
 
-  render(t, dt, sceneW, activeSeasonId, sweepP, onTouchdownRipple) {
-    const inTransition = sweepP < 0.99;
+  render(t, dt, sceneW, activeSeasonId, inTransition, onTouchdownRipple) {
+    // Smooth ambient fade (no abrupt pop on click; new season fades in after transition completes!)
+    const fadeSpeed = this.ambientFadeTarget > this.ambientFade ? 1.8 : 3.2;
+    this.ambientFade += (this.ambientFadeTarget - this.ambientFade) * Math.min(1, dt * fadeSpeed);
+    if (this.ambientFadeTarget === 0 && this.ambientFade < 0.015) {
+      this.ambient = [];
+      this.seasonId = '';
+      this.ambientFade = 0;
+    }
 
-    // Strict season-ownership guard:
-    // - During transition: ZERO ambient particles (prevents old-season maple leaves/petals from leaking across seasons!)
-    // - After transition completes: only render ambient particles that strictly belong to activeSeasonId!
     if (!inTransition && this.seasonId !== activeSeasonId) {
       this._initSeason(activeSeasonId, false);
+      this.ambientFade = 1.0;
+      this.ambientFadeTarget = 1.0;
     }
 
     const sizeScale = sceneW / 640;
     this.count = 0;
 
-    // 1. Dynamic seasonal ambient particles (STRICTLY owned by activeSeasonId, NEVER during transition!)
-    if (!inTransition && this.seasonId === activeSeasonId && this.ambient.length > 0) {
+    // 1. Dynamic seasonal ambient particles
+    if (this.ambient.length > 0 && this.ambientFade > 0.015) {
+      const aMul = this.ambientFade;
       for (const p of this.ambient) {
-        if ((p.cell === 2 || p.cell === 3) && activeSeasonId !== 'autumn') continue;
-        if (p.cell === 1 && activeSeasonId !== 'spring') continue;
-
         if (p.cell === 1 || p.cell === 2 || p.cell === 3) {
           if (p.state === 'fall') {
             p.x += (p.vx + Math.sin(t * 2.1 + p.phase) * 0.015) * dt;
@@ -431,9 +508,9 @@ export class ParticlesGLRenderer {
           if (p.y <= 1.06) {
             const fadeOut = p.state === 'float' ? Math.max(0, 1.0 - Math.max(0, p.life - (p.maxFloat - 1.5)) / 1.5) : 1.0;
             const tumble = p.state === 'float' ? 0.85 : (0.50 + 0.50 * Math.abs(Math.cos(t * 1.9 + p.phase)));
-            this._push(p.x, p.y, p.col[0], p.col[1], p.col[2], 0.92 * fadeOut, p.size * sizeScale, p.cell, p.rot, tumble);
+            this._push(p.x, p.y, p.col[0], p.col[1], p.col[2], 0.92 * fadeOut * aMul, p.size * sizeScale, p.cell, p.rot, tumble);
           }
-        } else if (activeSeasonId === 'winter') {
+        } else if (this.seasonId === 'winter') {
           p.x += (p.vx + Math.sin(t * 1.15 + p.phase) * 0.011) * dt;
           p.y += p.vy * dt;
           if (p.y < -0.04) {
@@ -443,9 +520,9 @@ export class ParticlesGLRenderer {
           if (p.x < -0.02) p.x += 1.04;
           if (p.x > 1.02) p.x -= 1.04;
           if (p.y <= 1.04) {
-            this._push(p.x, p.y, p.col[0], p.col[1], p.col[2], p.alpha, p.size * sizeScale, 0, 0, 1.0);
+            this._push(p.x, p.y, p.col[0], p.col[1], p.col[2], p.alpha * aMul, p.size * sizeScale, 0, 0, 1.0);
           }
-        } else if (activeSeasonId === 'summer') {
+        } else if (this.seasonId === 'summer') {
           p.x += (p.vx + Math.sin(t * 0.8 + p.phase) * 0.005) * dt;
           p.y += (p.vy + Math.cos(t * 0.7 + p.phase) * 0.004) * dt;
           if (p.x < 0.05) p.x = 0.95;
@@ -453,55 +530,27 @@ export class ParticlesGLRenderer {
           if (p.y < 0.08) p.y = 0.92;
           if (p.y > 0.92) p.y = 0.08;
           const pulse = 0.25 + 0.75 * Math.pow(0.5 + 0.5 * Math.sin(t * 1.7 + p.phase), 2.0);
-          this._push(p.x, p.y, p.col[0], p.col[1], p.col[2], 0.55 * pulse, p.size * sizeScale, 0, 0, 1.0);
+          this._push(p.x, p.y, p.col[0], p.col[1], p.col[2], 0.55 * pulse * aMul, p.size * sizeScale, 0, 0, 1.0);
         }
       }
     }
 
-    // 2. Video-1 Fine Stardust Ribbon -> Pond-Center Spiral Vortex Transition FX
+    // 2. Luminous Stardust Ribbon -> Pond-Center Spiral Vortex Transition FX (interruptible, zero flash!)
     const ambientCount = this.count;
-    if (this.transitionFX) {
-      const fx = this.transitionFX;
-      const pGlobal = (t - fx.start) / fx.duration;
-      if (pGlobal >= 1.0) {
-        this.transitionFX = null;
-      } else {
-        const p0x = fx.ox, p0y = fx.oy;
-        const c1x = fx.ox - 0.24, c1y = fx.oy - 0.14;
-        const c2x = 0.64, c2y = 0.66;
-        const cx = 0.50, cy = 0.48;
-
-        for (let i = 0; i < fx.sparks.length; i++) {
-          const sp = fx.sparks[i];
-          const lp = (pGlobal - sp.delay) / (1.0 - sp.delay);
-          if (lp <= 0 || lp >= 1) continue;
-
-          let px, py, alpha, sz;
-          if (lp < 0.38) {
-            const u = lp / 0.38;
-            const e = u * u * (3 - 2 * u);
-            const mt = 1 - e;
-            const bx = mt * mt * mt * p0x + 3 * mt * mt * e * c1x + 3 * mt * e * e * c2x + e * e * e * cx;
-            const by = mt * mt * mt * p0y + 3 * mt * mt * e * c1y + 3 * mt * e * e * c2y + e * e * e * cy;
-            px = bx + Math.sin(u * Math.PI * 3.0 + sp.vortexAngle) * sp.ribbonSpread * Math.sin(u * Math.PI);
-            py = by + Math.cos(u * Math.PI * 2.5 + sp.vortexAngle) * sp.ribbonSpread * 0.6;
-            alpha = Math.min(1.0, u * 3.2) * 0.92;
-            sz = sp.size * (0.75 + 0.45 * u);
-          } else {
-            const u = (lp - 0.38) / 0.62;
-            const easeOut = 1.0 - Math.pow(1.0 - u, 2.2);
-            const ang = sp.vortexAngle + u * sp.vortexSpeed;
-            const rad = sp.vortexRadius * (0.14 + 0.98 * easeOut);
-            px = cx + Math.cos(ang) * rad * 1.15;
-            py = cy + Math.sin(ang) * rad * 0.58;
-            alpha = Math.sin(u * Math.PI) * (1.0 - u * 0.35) * 0.95;
-            sz = sp.size * (1.15 - u * 0.52);
-          }
-
-          const rgb = lp < sp.useNewColorAt ? fx.fromRgb : fx.toRgb;
-          const twinkle = 0.62 + 0.38 * Math.sin(t * 14.0 + sp.twinklePhase);
-          this._push(px, py, rgb[0], rgb[1], rgb[2], alpha * twinkle, sz * sizeScale, 0, 0, 1.0);
+    if (this.fadingTrails.length > 0) {
+      const nextTrails = [];
+      for (const oldFx of this.fadingTrails) {
+        const fadeP = Math.max(0, 1.0 - (t - oldFx.fadeOutStart) / oldFx.fadeOutDuration);
+        if (fadeP > 0.02 && this._emitTransitionFX(oldFx, t, sizeScale, fadeP * 0.72)) {
+          nextTrails.push(oldFx);
         }
+      }
+      this.fadingTrails = nextTrails;
+    }
+    if (this.transitionFX) {
+      const alive = this._emitTransitionFX(this.transitionFX, t, sizeScale, 1.0);
+      if (!alive) {
+        this.transitionFX = null;
       }
     }
 

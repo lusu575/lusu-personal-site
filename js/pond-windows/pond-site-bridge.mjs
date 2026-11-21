@@ -2,7 +2,7 @@
 // Zero business-logic rewrites: all routing, API fetching, filtering, sorting, pinning,
 // search, pagination, account sessions, and language switching stay 100% in existing main.js & routes/*.mjs.
 
-import { PondCRTEngine } from '../pond-crt/engine.mjs';
+import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261122-pond-polish-r1';
 import {
   resolveInitialPondSeason,
   saveManualSeasonOverride,
@@ -184,6 +184,18 @@ function bootPondVisualBridge() {
   let engine = null;
   let stopSchedule = null;
   let activeMode = '';
+  let suppressNextOutsideClickUntil = 0;
+
+  function openAccountPopoverFromPond() {
+    const trigger = document.querySelector('#account-widget [data-account-toggle], #account-widget .account-button, #account-menu-trigger');
+    if (!trigger) return;
+    suppressNextOutsideClickUntil = performance.now() + 320;
+    window.setTimeout(() => {
+      trigger.click();
+      const firstInput = document.querySelector('#account-popover:not([hidden]) input:not([type="hidden"])');
+      if (firstInput) firstInput.focus({ preventScroll: true });
+    }, 0);
+  }
 
   function ensureEngine() {
     if (engine) return engine;
@@ -197,8 +209,7 @@ function bootPondVisualBridge() {
         triggerSiteRoute(id || String(route || '').replace(/^#/, '') || 'home');
       },
       onAccountClick: () => {
-        const trigger = document.getElementById('account-menu-trigger');
-        if (trigger) trigger.click();
+        openAccountPopoverFromPond();
       },
       onLanguageChange: (lang) => {
         const langBtn = document.querySelector(`[data-lang="${lang}"]`);
@@ -294,9 +305,19 @@ function bootPondVisualBridge() {
     }).observe(chatListEl, { childList: true });
   }
 
+  // Prevent the canvas click following pointerdown on the bottom-left ID button from triggering main.js outside-click close
+  document.addEventListener('click', (e) => {
+    if (performance.now() < suppressNextOutsideClickUntil && (e.target === canvas || e.target === backdrop)) {
+      e.stopImmediatePropagation();
+    }
+  }, true);
+
   // Clicking outside the skinned window returns to parent view
   document.addEventListener('click', (e) => {
     if (e.target !== canvas && e.target !== backdrop) return;
+    if (performance.now() < suppressNextOutsideClickUntil) return;
+    const acctPop = document.getElementById('account-popover');
+    if (acctPop && !acctPop.hidden) return;
     if (activeMode === 'article') {
       const backBtn = document.querySelector('[data-article-back]');
       if (backBtn) backBtn.click();

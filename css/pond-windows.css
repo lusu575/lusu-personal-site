@@ -3017,3 +3017,554 @@ html[data-shell="mobile"] .article-card p,
 html[data-shell="mobile"] .meta-row {
   color: rgba(196, 232, 228, 0.82) !important;
 }
+
+
+/* ============================================================
+   Site-Wide CRT Visual Unification & P0 Fixes (2026-11-22)
+   1. Account Popover visibility fix (header uses visibility:hidden, never opacity:0)
+   2. Unified centered window geometry across ALL desktop windows (matching Article Reader baseline)
+   3. Article TOC flex-shrink & line-height fix (zero text overlap)
+   4. Compact dotted CRT ghost CTA buttons (.article-card-cta & .card-action)
+   5. Video card vertical alignment, uniform bottom Play button & no 2nd-row clipping
+   6. Site-wide CRT dark loading/skeleton/empty/error states + dotted SVG icons (no white slabs / dark-blue text / emoji)
+   7. Mobile Knowledge horizontal-overflow fix (grid-template-columns: minmax(0, 1fr))
+   ============================================================ */
+
+/* --- 1. Login / Account Popover (P0 Fix) --- */
+html[data-pond-mode] .site-shell > header {
+  position: fixed !important;
+  inset: 0 0 auto 0 !important;
+  z-index: 90 !important;
+  opacity: 1 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  overflow: visible !important;
+}
+
+html[data-pond-mode] .xp-topbar {
+  overflow: visible !important;
+}
+
+html[data-pond-mode] #account-popover:not([hidden]) {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  left: 50% !important;
+  top: 50% !important;
+  bottom: auto !important;
+  right: auto !important;
+  transform: translate(-50%, -50%) !important;
+  width: min(410px, 90vw) !important;
+  z-index: 95 !important;
+  border-radius: 18px !important;
+  padding: 22px 26px !important;
+  background: linear-gradient(180deg, rgba(10, 34, 38, 0.92), rgba(6, 22, 26, 0.96)) !important;
+  backdrop-filter: blur(14px) saturate(1.18);
+  -webkit-backdrop-filter: blur(14px) saturate(1.18);
+  border: 1.6px solid rgba(202, 252, 244, 0.78) !important;
+  box-shadow: 0 0 38px rgba(114, 244, 232, 0.36), 0 0 60px rgba(212, 138, 248, 0.22) !important;
+  color: #f0fefa !important;
+}
+
+html[data-pond-mode] #account-popover .account-popover-header,
+html[data-pond-mode] #account-popover .account-popover-title,
+html[data-pond-mode] #account-popover h2,
+html[data-pond-mode] #account-popover h3,
+html[data-pond-mode] #account-popover strong {
+  color: #f0fefa !important;
+  background: transparent !important;
+  border-color: rgba(182, 238, 232, 0.30) !important;
+}
+
+html[data-pond-mode] #account-popover .account-button {
+  border-radius: 999px !important;
+  border: 1.2px dashed rgba(188, 244, 238, 0.58) !important;
+  background: rgba(10, 34, 38, 0.76) !important;
+  background-image: none !important;
+  color: #f0fefa !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode] #account-popover .account-primary-action {
+  border-style: solid !important;
+  border-color: rgba(196, 248, 246, 0.84) !important;
+  background: linear-gradient(95deg, rgba(46, 212, 214, 0.48), rgba(130, 134, 240, 0.40), rgba(244, 108, 182, 0.48)) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 14px rgba(102, 236, 226, 0.32) !important;
+}
+
+/* --- 2. Unified Centered Desktop Window Geometry (Baseline: Article Reader Window) --- */
+html[data-pond-mode="knowledge"] .site-shell > main,
+html[data-pond-mode="article"] .site-shell > main,
+html[data-pond-mode="videos"] .site-shell > main,
+html[data-pond-mode="resources"] .site-shell > main,
+html[data-pond-mode="games"] .site-shell > main,
+html[data-pond-mode="chatroom"] .site-shell > main,
+html[data-pond-mode="about"] .site-shell > main {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 20 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 58px 24px 36px !important;
+  margin: 0 !important;
+  background: transparent !important;
+  pointer-events: none !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge,
+html[data-pond-mode="article"] #knowledge,
+html[data-pond-mode="videos"] #videos,
+html[data-pond-mode="resources"] #resources,
+html[data-pond-mode="games"] #games,
+html[data-pond-mode="chatroom"] #chatroom,
+html[data-pond-mode="about"] #about {
+  width: min(1040px, 78vw) !important;
+  min-width: min(720px, 92vw) !important;
+  height: min(740px, 78vh) !important;
+  max-height: min(740px, 78vh) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge .xp-window,
+html[data-pond-mode="article"] #knowledge .xp-window,
+html[data-pond-mode="videos"] #videos .xp-window,
+html[data-pond-mode="resources"] #resources .xp-window,
+html[data-pond-mode="games"] #games .xp-window,
+html[data-pond-mode="chatroom"] #chatroom .xp-window,
+html[data-pond-mode="about"] #about .xp-window {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .xp-window.welcome-window {
+  width: min(1040px, 78vw) !important;
+  min-width: min(720px, 92vw) !important;
+  height: min(740px, 78vh) !important;
+  max-height: min(740px, 78vh) !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+html[data-pond-mode="about"] #about .profile-card {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  align-content: center !important;
+}
+
+/* --- 3. Article Reader Left TOC Fix (Zero Overlap / Crisp Line Wrapping) --- */
+html[data-pond-mode="article"] .article-reader-sidebar {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+html[data-pond-mode="article"] .article-toc {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+html[data-pond-mode="article"] .article-toc > p {
+  flex: 0 0 auto !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0.06em !important;
+  color: rgba(214, 246, 242, 0.92) !important;
+  margin: 0 0 8px !important;
+  padding: 0 0 6px !important;
+  border-bottom: 1px dotted rgba(176, 230, 224, 0.28) !important;
+  background: transparent !important;
+}
+
+html[data-pond-mode="article"] #article-detail-toc-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  border-left: 1px dotted rgba(176, 230, 224, 0.34) !important;
+  padding: 4px 6px 16px 10px !important;
+  margin: 0 !important;
+}
+
+html[data-pond-mode="article"] #article-detail-toc-list .article-toc-link,
+html[data-pond-mode="article"] #article-detail-toc-list a,
+html[data-pond-mode="article"] #article-detail-toc-list button {
+  display: block !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+  text-align: left !important;
+  padding: 5px 8px !important;
+  margin: 0 !important;
+  border: 1px solid transparent !important;
+  border-radius: 7px !important;
+  background: transparent !important;
+  color: rgba(210, 240, 236, 0.84) !important;
+  font-size: 12.5px !important;
+  font-weight: 400 !important;
+  line-height: 1.55 !important;
+  letter-spacing: 0.01em !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode="article"] #article-detail-toc-list .article-toc-link.level-3 {
+  padding-left: 16px !important;
+  font-size: 12px !important;
+  color: rgba(186, 226, 222, 0.74) !important;
+}
+
+html[data-pond-mode="article"] #article-detail-toc-list .article-toc-link:hover,
+html[data-pond-mode="article"] #article-detail-toc-list .article-toc-link.is-active,
+html[data-pond-mode="article"] #article-detail-toc-list [aria-current="true"] {
+  color: #8affdf !important;
+  background: rgba(92, 236, 210, 0.12) !important;
+  border-color: rgba(132, 244, 224, 0.34) !important;
+  text-shadow: 0 0 8px rgba(102, 248, 216, 0.45) !important;
+}
+
+html[data-pond-mode="article"] .article-toc-tip {
+  flex: 0 0 auto !important;
+  margin-top: 6px !important;
+}
+
+/* --- 4. Compact Dotted CRT Ghost Buttons (.article-card-cta & .card-action across ALL windows) --- */
+html[data-pond-mode="knowledge"] #knowledge-list .article-card {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  column-gap: 14px !important;
+  row-gap: 5px !important;
+  align-items: center !important;
+  padding: 13px 12px !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-list .article-card h2 {
+  grid-column: 1 / -1 !important;
+  margin: 0 !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-list .article-card p {
+  grid-column: 1 / -1 !important;
+  margin: 0 0 3px !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-list .article-card .meta-row {
+  grid-column: 1 !important;
+  min-width: 0 !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-list .article-card .article-card-cta {
+  grid-column: 2 !important;
+  justify-self: end !important;
+  align-self: center !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  min-width: 58px !important;
+  height: 26px !important;
+  min-height: 26px !important;
+  padding: 0 12px !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  border: 1.2px dashed rgba(182, 242, 236, 0.52) !important;
+  background: rgba(8, 28, 34, 0.48) !important;
+  background-image: none !important;
+  color: #dcfaf4 !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.06em !important;
+  box-shadow: none !important;
+  transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-list .article-card:hover .article-card-cta {
+  border-style: solid !important;
+  border-color: rgba(164, 248, 240, 0.88) !important;
+  background: rgba(24, 72, 78, 0.52) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 10px rgba(102, 238, 226, 0.30) !important;
+}
+
+html[data-pond-mode] .card-action {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  min-height: 28px !important;
+  padding: 4px 14px !important;
+  border-radius: 999px !important;
+  border: 1.2px dashed rgba(182, 242, 236, 0.54) !important;
+  background: rgba(8, 28, 34, 0.56) !important;
+  background-image: none !important;
+  color: #eefcf9 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.04em !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+}
+
+html[data-pond-mode] .card-action:hover:not(:disabled) {
+  border-style: solid !important;
+  border-color: rgba(164, 248, 240, 0.90) !important;
+  background: rgba(24, 72, 78, 0.54) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(102, 238, 226, 0.32) !important;
+}
+
+/* --- 5. Videos Card Internal Alignment, Fixed Bottom Play Button & No 2nd-Row Clipping --- */
+html[data-pond-mode="videos"] #video-list {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-auto-rows: minmax(256px, auto) !important;
+  align-content: start !important;
+  gap: 14px !important;
+  padding: 2px 6px 14px 2px !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-card {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 256px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-thumb-wrap,
+html[data-pond-mode="videos"] #video-list .video-thumb {
+  height: 126px !important;
+  flex-shrink: 0 !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-body {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: 7px !important;
+  padding: 12px 14px 13px !important;
+  min-height: 0 !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-body h2 {
+  font-size: 14.5px !important;
+  line-height: 1.38 !important;
+  margin: 0 !important;
+  color: #f0fefa !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-body > p {
+  font-size: 12px !important;
+  line-height: 1.46 !important;
+  margin: 0 !important;
+  color: rgba(196, 232, 228, 0.80) !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-body .meta-row {
+  margin-top: auto !important;
+  padding-top: 4px !important;
+  font-size: 11px !important;
+  color: rgba(176, 224, 218, 0.78) !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-body .card-action {
+  align-self: flex-start !important;
+  margin-top: 6px !important;
+  flex-shrink: 0 !important;
+}
+
+/* --- 6. Site-Wide CRT Dark Loading, Skeleton, Empty & Error States + Dotted SVG Icons --- */
+html[data-pond-mode] .content-state,
+html[data-pond-mode] .content-state.is-loading,
+html[data-pond-mode] .content-state[data-state="loading"],
+html[data-pond-mode] .content-state.is-empty,
+html[data-pond-mode] .content-state[data-state="empty"],
+html[data-pond-mode] .content-state.is-error,
+html[data-pond-mode] .content-state[data-state="error"],
+html[data-ui-shell="mobile"] .content-state,
+html[data-ui-shell="mobile"] .content-state.is-loading,
+html[data-ui-shell="mobile"] .content-state[data-state="loading"] {
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 16px 18px !important;
+  margin: 8px 0 !important;
+  border-radius: 14px !important;
+  border: 1.2px dashed rgba(176, 238, 232, 0.42) !important;
+  background: rgba(6, 24, 28, 0.62) !important;
+  background-image: radial-gradient(rgba(190, 250, 244, 0.08) 0.8px, transparent 0.8px) !important;
+  background-size: 5px 5px !important;
+  box-shadow: inset 0 0 18px rgba(4, 16, 20, 0.45) !important;
+  color: #e4faf6 !important;
+}
+
+html[data-pond-mode] .content-state-copy,
+html[data-pond-mode] .content-state-copy h2,
+html[data-pond-mode] .content-state-copy h3,
+html[data-pond-mode] .content-state-copy p,
+html[data-pond-mode] .content-state-copy .loading-text,
+html[data-pond-mode] .loading-text,
+html[data-ui-shell="mobile"] .content-state-copy,
+html[data-ui-shell="mobile"] .content-state-copy h2,
+html[data-ui-shell="mobile"] .content-state-copy h3,
+html[data-ui-shell="mobile"] .content-state-copy p,
+html[data-ui-shell="mobile"] .loading-text {
+  color: #e6fbf7 !important;
+  background: transparent !important;
+  text-shadow: 0 0 8px rgba(132, 242, 230, 0.24) !important;
+}
+
+html[data-pond-mode] .content-state-copy p,
+html[data-ui-shell="mobile"] .content-state-copy p {
+  color: rgba(206, 242, 238, 0.86) !important;
+  font-size: 13px !important;
+}
+
+/* Replace legacy emoji/XP folder/TV state icons with crisp dotted CRT phosphor emblem */
+html[data-pond-mode] .content-state-icon,
+html[data-ui-shell="mobile"] .content-state-icon {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  flex-shrink: 0 !important;
+  font-size: 0 !important;
+  color: transparent !important;
+  border-radius: 50% !important;
+  border: 1.2px dashed rgba(176, 244, 236, 0.56) !important;
+  background-color: rgba(8, 30, 36, 0.72) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%239ef8ec' stroke-width='2' stroke-dasharray='1 3.5' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='3.5' fill='%2388fce8'/%3E%3C/svg%3E") !important;
+  background-size: 20px 20px !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  box-shadow: 0 0 10px rgba(102, 238, 226, 0.24) !important;
+}
+
+/* Dark CRT dot-matrix skeletons (eliminates harsh white skeleton bars everywhere!) */
+html[data-pond-mode] .article-card-skeleton,
+html[data-pond-mode] .video-card-skeleton,
+html[data-pond-mode] .game-card-skeleton,
+html[data-pond-mode] [class*="skeleton-card"],
+html[data-ui-shell="mobile"] .article-card-skeleton,
+html[data-ui-shell="mobile"] .video-card-skeleton,
+html[data-ui-shell="mobile"] [class*="skeleton-card"] {
+  background: rgba(8, 28, 34, 0.42) !important;
+  border: 1px dotted rgba(164, 234, 226, 0.24) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode] .skeleton-line,
+html[data-pond-mode] .skeleton-lines > span,
+html[data-pond-mode] .skeleton-lines > div,
+html[data-pond-mode] [class*="skeleton"]::before,
+html[data-pond-mode] [class*="skeleton"]::after,
+html[data-ui-shell="mobile"] .skeleton-line,
+html[data-ui-shell="mobile"] .skeleton-lines > span,
+html[data-ui-shell="mobile"] .skeleton-lines > div {
+  background: linear-gradient(
+    90deg,
+    rgba(116, 214, 208, 0.08) 0%,
+    rgba(154, 240, 232, 0.20) 50%,
+    rgba(116, 214, 208, 0.08) 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  border: none !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+}
+
+/* Ensure inner scrollable lists across ALL windows never fall back to white XP panels */
+html[data-pond-mode] .folder-layout,
+html[data-pond-mode] .content-list,
+html[data-pond-mode] .card-grid,
+html[data-pond-mode] .download-list,
+html[data-pond-mode] .game-list,
+html[data-pond-mode] .chatroom-log {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-color: rgba(176, 236, 230, 0.24) !important;
+}
+
+/* --- 7. Mobile Knowledge Overflow Root Fix & Dark CRT CTA --- */
+html[data-ui-shell="mobile"] .folder-layout,
+html[data-shell="mobile"] .folder-layout {
+  grid-template-columns: minmax(0, 1fr) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+html[data-ui-shell="mobile"] #knowledge-categories,
+html[data-ui-shell="mobile"] #knowledge-list,
+html[data-ui-shell="mobile"] #knowledge-searchbar,
+html[data-shell="mobile"] #knowledge-categories,
+html[data-shell="mobile"] #knowledge-list,
+html[data-shell="mobile"] #knowledge-searchbar {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"] .article-card .article-card-cta,
+html[data-ui-shell="mobile"] .card-action,
+html[data-shell="mobile"] .article-card .article-card-cta,
+html[data-shell="mobile"] .card-action {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 44px !important;
+  padding: 0 16px !important;
+  border-radius: 999px !important;
+  border: 1.2px dashed rgba(182, 242, 236, 0.56) !important;
+  background: rgba(10, 34, 40, 0.72) !important;
+  background-image: none !important;
+  color: #f0fefa !important;
+  font-size: 13px !important;
+  box-shadow: none !important;
+}
