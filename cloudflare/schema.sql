@@ -15346,6 +15346,29 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - モバイル版のウィンドウ・カード・6入口Dockに深夜池塘ダークガラス配色を適用し、44px操作領域を維持しました。
 - 記事の読書進捗バーの強調、黄点線要約枠、ツールSVGアイコンの拡大発光を反映しています。', '2026-11-21T18:05:00.000Z', '2026-11-21T18:05:00.000Z') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-mobile-polish-r1', '2026-11-21T18:05:00.000Z')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-live-fix', '2026-11-22-pond-live-fix', 'site-updates', '["网站更新","修复记录","移动端","界面"]', '', 'published', 0, 0, '2026-11-21T18:22:00.000Z', '2026-11-21T18:22:00.000Z', '2026-11-21T18:22:00.000Z') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-live-fix-zh', 'seed-update-2026-11-22-pond-live-fix', 'zh', '修复生产环境池塘视觉桥接加载与手机端/欢迎窗/关于页样式', '修复线上 dist 生产构建中 season-schedule.mjs 引用未单独导出的 /js/core/wallpaper-time.mjs 导致桥接脚本未执行的问题，并同步修复手机端知识库白底与横向溢出、欢迎窗文字对比度与 Esc 提示、关于页暗色社交图标。', '# 修复生产环境池塘视觉桥接加载与手机端/欢迎窗/关于页样式
+
+本次热修解决线上实测发现的视觉层未生效及 4 处细节问题，全部功能与数据保持原样。
+
+- 将时段切换纯函数内联进 `js/pond-crt/season-schedule.mjs`，彻底消除生产环境对 `/js/core/wallpaper-time.mjs` 的跨目录导入失败。
+- 补全手机端内层搜索栏、分类行、列表、空状态与按钮的深色 CRT 玻璃换装并修复横向溢出。
+- 提升欢迎窗左栏文字与更新列表对比度，补充底部三语 `Esc 关闭此窗口` 提示。
+- 反色提亮关于页深色 X / GitHub 图标与状态提示框。', '2026-11-21T18:22:00.000Z', '2026-11-21T18:22:00.000Z') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-live-fix-en', 'seed-update-2026-11-22-pond-live-fix', 'en', 'Fix Production Pond Bridge Module Import and Mobile / Welcome / About Visual Polish', 'Inlined the time-based wallpaper schedule helpers into season-schedule.mjs so production dist/ loads the Pond CRT bridge cleanly, and fixed mobile inner dark-glass surfaces & overflow, Welcome text contrast & Esc hint, and About social icon contrast.', '# Fix Production Pond Bridge Module Import and Mobile / Welcome / About Visual Polish
+
+This hotfix resolves the production ES module import issue and four visual polish items while keeping all live functionality unchanged.
+
+- Inlined the time-of-day boundary helpers directly into `js/pond-crt/season-schedule.mjs` so production builds never request unbundled `/js/core/wallpaper-time.mjs`.
+- Completed mobile dark CRT glass styling across inner search bars, filter chips, lists, empty states, and buttons with zero horizontal overflow.
+- Improved Welcome modal text contrast and added the bottom `Esc` hint; brightened dark social icons on About.', '2026-11-21T18:22:00.000Z', '2026-11-21T18:22:00.000Z') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-live-fix-ja', 'seed-update-2026-11-22-pond-live-fix', 'ja', '本番環境の池塘ブリッジ読み込み修正とモバイル・歓迎窓・概要の表示改善', '本番distで未出力の/js/core/wallpaper-time.mjs参照によるブリッジ停止を解消し、モバイル内層のダークガラス化と横はみ出し修正、歓迎窓の文字コントラストとEsc案内、概要ページのSNSアイコン視認性を改善しました。', '# 本番環境の池塘ブリッジ読み込み修正とモバイル・歓迎窓・概要の表示改善
+
+本番環境でのモジュール読み込み不良と4点の表示不具合を修正しました。既存機能・データは変更していません。
+
+- 時刻切り替えロジックを `js/pond-crt/season-schedule.mjs` 内に統合し、本番環境での確実な起動を保証しました。
+- モバイル版の内層UIダークガラス化・横はみ出し解消・歓迎窓コントラスト改善・概要SNSアイコン視認性向上を反映しました。', '2026-11-21T18:22:00.000Z', '2026-11-21T18:22:00.000Z') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-live-fix-r1', '2026-11-21T18:22:00.000Z')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-mobile-polish-r1', '2026-11-21T18:05:00.000Z', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-live-fix-r1', '2026-11-21T18:22:00.000Z', 'schema') on conflict(version) do nothing;

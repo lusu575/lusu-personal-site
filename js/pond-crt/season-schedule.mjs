@@ -1,20 +1,93 @@
-// Connects the 4-season Pond CRT engine to the live site's time-based wallpaper schedule
-// (js/core/wallpaper-time.mjs):
+// Connects the 4-season Pond CRT engine to the live site's exact time-based wallpaper schedule
+// (mirrors js/core/wallpaper-time.mjs inline so production dist/ never depends on an unbundled /js/core/ file):
 //   morning (05:00-11:00) -> spring
 //   day     (11:00-17:00) -> summer
 //   dusk    (17:00-20:00) -> autumn
 //   night   (20:00-05:00) -> winter
 // Manual selection via the top-right season slider persists as an override until the next boundary.
 
-import {
-  WALLPAPER_TIME_THEMES,
-  wallpaperTimeThemeAt,
-  nextWallpaperTimeBoundary,
-  parseWallpaperTimeOverride,
-  createWallpaperTimeOverride
-} from '../core/wallpaper-time.mjs';
-
+const WALLPAPER_TIME_THEMES = Object.freeze(['morning', 'day', 'dusk', 'night']);
+const WALLPAPER_TIME_OVERRIDE_VERSION = 1;
+const WALLPAPER_TIME_OVERRIDE_MAX_MS = 12 * 60 * 60 * 1000;
 const OVERRIDE_STORAGE_KEY = 'lusu-wallpaper-time-override';
+
+function wallpaperTimeThemeAt(value = new Date()) {
+  const date = value instanceof Date ? value : new Date(value);
+  const minutes = date.getHours() * 60 + date.getMinutes();
+  if (minutes >= 5 * 60 && minutes < 11 * 60) return 'morning';
+  if (minutes >= 11 * 60 && minutes < 17 * 60) return 'day';
+  if (minutes >= 17 * 60 && minutes < 20 * 60) return 'dusk';
+  return 'night';
+}
+
+function nextWallpaperTimeBoundary(value = new Date()) {
+  const date = value instanceof Date ? new Date(value.getTime()) : new Date(value);
+  if (!Number.isFinite(date.getTime())) return null;
+  const boundaryHours = [5, 11, 17, 20];
+  const nextHour = boundaryHours.find((hour) => {
+    const candidate = new Date(date);
+    candidate.setHours(hour, 0, 0, 0);
+    return candidate.getTime() > date.getTime();
+  });
+  if (nextHour === undefined) {
+    date.setDate(date.getDate() + 1);
+    date.setHours(5, 0, 0, 0);
+    return date;
+  }
+  date.setHours(nextHour, 0, 0, 0);
+  return date;
+}
+
+function parseWallpaperTimeOverride(value, nowValue = new Date()) {
+  const now = nowValue instanceof Date ? nowValue : new Date(nowValue);
+  if (!Number.isFinite(now.getTime())) return null;
+  let record = value;
+  if (typeof value === 'string') {
+    if (!value) return null;
+    try {
+      record = JSON.parse(value);
+    } catch {
+      return null;
+    }
+  }
+  if (!record || typeof record !== 'object') return null;
+  const selectedAt = Number(record.selectedAt);
+  const expiresAt = Number(record.expiresAt);
+  const selectedDate = new Date(selectedAt);
+  const expectedBoundary = nextWallpaperTimeBoundary(selectedDate);
+  if (
+    record.v !== WALLPAPER_TIME_OVERRIDE_VERSION ||
+    !WALLPAPER_TIME_THEMES.includes(record.theme) ||
+    !Number.isFinite(selectedAt) ||
+    selectedAt > now.getTime() + 5000 ||
+    !Number.isFinite(expiresAt) ||
+    !expectedBoundary ||
+    expiresAt !== expectedBoundary.getTime() ||
+    expiresAt <= now.getTime() ||
+    expiresAt - selectedAt > WALLPAPER_TIME_OVERRIDE_MAX_MS
+  ) {
+    return null;
+  }
+  return Object.freeze({
+    v: WALLPAPER_TIME_OVERRIDE_VERSION,
+    theme: record.theme,
+    selectedAt,
+    expiresAt
+  });
+}
+
+function createWallpaperTimeOverride(theme, nowValue = new Date()) {
+  if (!WALLPAPER_TIME_THEMES.includes(theme)) return null;
+  const now = nowValue instanceof Date ? new Date(nowValue.getTime()) : new Date(nowValue);
+  const boundary = nextWallpaperTimeBoundary(now);
+  if (!boundary) return null;
+  return Object.freeze({
+    v: WALLPAPER_TIME_OVERRIDE_VERSION,
+    theme,
+    selectedAt: now.getTime(),
+    expiresAt: boundary.getTime()
+  });
+}
 
 export const THEME_TO_SEASON = Object.freeze({
   morning: 'spring',

@@ -7,7 +7,7 @@ import {
   resolveInitialPondSeason,
   saveManualSeasonOverride,
   startSeasonTimeSchedule
-} from '../pond-crt/season-schedule.mjs';
+} from '../pond-crt/season-schedule.mjs?v=20261122-pond-live-fix-r1';
 
 function isMobileShell() {
   return document.documentElement.dataset.shell === 'mobile' || window.innerWidth <= 768;

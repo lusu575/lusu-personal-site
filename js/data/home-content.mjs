@@ -2,6 +2,36 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-live-fix",
+      "slug": "2026-11-22-pond-live-fix",
+      "category": "site-updates",
+      "tags": [
+        "网站更新",
+        "修复记录",
+        "移动端",
+        "界面"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-21T18:22:00.000Z",
+      "updated_at": "2026-11-21T18:22:00.000Z",
+      "published_at": "2026-11-21T18:22:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "修复生产环境池塘视觉桥接加载与手机端/欢迎窗/关于页样式",
+        "en": "Fix Production Pond Bridge Module Import and Mobile / Welcome / About Visual Polish",
+        "ja": "本番環境の池塘ブリッジ読み込み修正とモバイル・歓迎窓・概要の表示改善"
+      },
+      "summary": {
+        "zh": "修复线上 dist 生产构建中 season-schedule.mjs 引用未单独导出的 /js/core/wallpaper-time.mjs 导致桥接脚本未执行的问题，并同步修复手机端知识库白底与横向溢出、欢迎窗文字对比度与 Esc 提示、关于页暗色社交图标。",
+        "en": "Inlined the time-based wallpaper schedule helpers into season-schedule.mjs so production dist/ loads the Pond CRT bridge cleanly, and fixed mobile inner dark-glass surfaces & overflow, Welcome text contrast & Esc hint, and About social icon contrast.",
+        "ja": "本番distで未出力の/js/core/wallpaper-time.mjs参照によるブリッジ停止を解消し、モバイル内層のダークガラス化と横はみ出し修正、歓迎窓の文字コントラストとEsc案内、概要ページのSNSアイコン視認性を改善しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-mobile-polish",
       "slug": "2026-11-22-pond-mobile-polish",
       "category": "site-updates",
@@ -116,36 +146,6 @@ export const homeContent = Object.freeze({
         "zh": "逐步视觉替换第 5 批上线：桌面端游戏区（#games）换装半透明 CRT 玻璃货架，接入 3 张点阵插图封面（猫国建设者、小黑屋、人生重开模拟器）及 2048、Hextris 点阵封面；游戏启动、三语参数与云存档同步保持原样。",
         "en": "Batch 5 of the visual refresh is live: the desktop Games shelf (#games) adopts the translucent CRT glass 3+2 shelf layout with 3 dot-matrix illustrated covers and 2 geometric SVG covers while keeping catalog loading, launch links, and cloud saves untouched.",
         "ja": "段階的ビジュアル刷新の第5弾を公開しました。デスクトップのゲーム欄（#games）を半透明CRTガラス棚と3種のドット風イラストカバー＋2種の幾何SVGカバーへ換装し、起動・クラウドセーブ機能は従来のまま維持しています。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-tools",
-      "slug": "2026-11-22-pond-tools",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "工具区",
-        "在线画板",
-        "界面"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-21T17:52:00.000Z",
-      "updated_at": "2026-11-21T17:52:00.000Z",
-      "published_at": "2026-11-21T17:52:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "工具区与三个工具子页面换装深夜终端 CRT 视觉",
-        "en": "Tools Window and Three Tool Sub-Pages Refreshed with Midnight Pond CRT Visuals",
-        "ja": "ツール欄と3つのツール子ページを深夜端末CRTビジュアルへ刷新"
-      },
-      "summary": {
-        "zh": "逐步视觉替换第 4 批上线：桌面端工具区（#resources）换装提亮版 CRT 玻璃卡片并接入 6 枚点阵虚线 SVG 图标，同时为临时互传弹窗、在线画板与日语的言外之意统一套用深夜池塘 CRT 视觉主题；全部功能与交互逻辑保持原样。",
-        "en": "Batch 4 of the visual refresh is live: the desktop Tools window (#resources) adopts the brightened CRT glass skin with 6 dotted SVG icons, and Quick Transfer, Online Whiteboard, and Behind the Japanese share the Midnight Pond CRT visual theme without changing any tool logic.",
-        "ja": "段階的ビジュアル刷新の第4弾を公開しました。デスクトップのツール欄（#resources）を明るく透過感のあるCRTガラス窓と6種の点線SVGアイコンへ換装し、一時転送・ホワイトボード・日本語の裏側にも共通CRTテーマを適用しました。"
       }
     }
   ]
