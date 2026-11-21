@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 深夜池塘最终实测收尾：解除顶栏层叠上下文使左下角 ID 登录窗正居中于视口、恢复视频卡片标题与简介完整高度并对齐底部播放按钮、将知识库骨架条切换为柔和暗青色（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-final-fit` / `2026-11-22-pond-final-fit`；视觉层缓存 `20261122-pond-polish-r3`。
+
 - 深夜池塘全窗像素级对齐（全部桌面窗口统一至文章阅读窗居中尺寸且避开顶部时钟）、扩大左下角 ID/语言 CRT 曲面热区，并强制覆盖视频区等加载态深蓝字与旧图标（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-geometry-sync` / `2026-11-22-pond-geometry-sync`；视觉层缓存 `20261122-pond-polish-r2`。
 
 - 深夜池塘视觉与交互综合修复：修复左下角 ID 登录窗触发与可见性、重构两段式可打断季节粒子汇聚过渡、首屏直出零闪烁并移除桌面旧壁纸预加载、全站桌面窗口对齐文章阅读窗居中尺寸、修复目录重叠/按钮/视频对齐/暗色加载态/手机知识库溢出，并适配 5 个小游戏内页（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-visual-polish` / `2026-11-22-pond-visual-polish`；视觉层缓存 `20261122-pond-polish-r1`。

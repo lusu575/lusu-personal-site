@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-final-fit",
+      "slug": "2026-11-22-pond-final-fit",
+      "category": "site-updates",
+      "tags": [
+        "site-update",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T03:28:00+08:00",
+      "updated_at": "2026-11-22T03:28:00+08:00",
+      "published_at": "2026-11-22T03:28:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "深夜池塘最终实测收尾：登录窗正居中、视频卡片完整展示与暗色骨架屏",
+        "en": "Midnight Pond Final Live-QA Polish: Viewport-Centered Login, Full Video Cards & Dark Skeletons",
+        "ja": "深夜の池最終実機調整：ログイン窓中央配置・動画カード全文表示・暗色スケルトン"
+      },
+      "summary": {
+        "zh": "解除顶栏层叠上下文使登录浮层正居中于视口、恢复视频卡片标题与简介完整高度，并将知识库加载骨架条切换为柔和深青点阵色。",
+        "en": "Removed header containing-block traps so the login modal centers in the viewport, restored full video card title/description height, and switched Knowledge loading skeletons to soft dark cyan bars.",
+        "ja": "隠しヘッダーの包含ブロックを解除してログイン窓を画面中央へ配置し、動画カードのタイトルと概要の高さを復元、知識庫ロード時の白スケルトンを暗色シアンへ統一しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-geometry-sync",
       "slug": "2026-11-22-pond-geometry-sync",
       "category": "site-updates",
@@ -117,35 +145,6 @@ export const homeContent = Object.freeze({
         "zh": "修复线上 dist 生产构建中 season-schedule.mjs 引用未单独导出的 /js/core/wallpaper-time.mjs 导致桥接脚本未执行的问题，并同步修复手机端知识库白底与横向溢出、欢迎窗文字对比度与 Esc 提示、关于页暗色社交图标。",
         "en": "Inlined the time-based wallpaper schedule helpers into season-schedule.mjs so production dist/ loads the Pond CRT bridge cleanly, and fixed mobile inner dark-glass surfaces & overflow, Welcome text contrast & Esc hint, and About social icon contrast.",
         "ja": "本番distで未出力の/js/core/wallpaper-time.mjs参照によるブリッジ停止を解消し、モバイル内層のダークガラス化と横はみ出し修正、歓迎窓の文字コントラストとEsc案内、概要ページのSNSアイコン視認性を改善しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-mobile-polish",
-      "slug": "2026-11-22-pond-mobile-polish",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "移动端",
-        "界面"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-21T18:05:00.000Z",
-      "updated_at": "2026-11-21T18:05:00.000Z",
-      "published_at": "2026-11-21T18:05:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "手机端深夜池塘视觉统一与全站 CRT 细节收尾",
-        "en": "Mobile Shell Visual Unification and Site-Wide CRT Final Polish",
-        "ja": "モバイル版ビジュアル統一と全サイトCRT最終仕上げ"
-      },
-      "summary": {
-        "zh": "逐步视觉替换第 8 批（收官批）上线：手机端统一换装深夜池塘深色玻璃配色，保留 44px 触控区、六入口 Dock 与原有排版；同步完成文章阅读进度条加粗、黄虚线摘要框与工具卡图标放大提亮收尾。",
-        "en": "Batch 8 (final batch) of the visual refresh is live: the mobile shell adopts the Midnight Pond dark glass palette while preserving 44px touch targets and the 6-route Dock, alongside final desktop polish for the Article progress bar, yellow-dotted summary box, and larger brighter Tool SVG icons.",
-        "ja": "段階的ビジュアル刷新の第8弾（最終回）を公開しました。モバイル版を深夜池塘ダークガラス配色へ統一し、44pxタッチ領域と6入口Dockを維持。記事進捗バー・黄点線要約枠・ツールアイコン拡大発光も仕上げました。"
       }
     }
   ]

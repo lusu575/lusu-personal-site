@@ -15431,6 +15431,23 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 2. CRT 曲率による端のズレを考慮し、左下 ID（ログイン）ボタンと言語切り替えボタンのクリック判定領域を広げ、確実に開けるよう改善しました。
 3. 動画区を含む全ウィンドウの読み込み中・空状態・エラー表示の文字色とアイコンを、高コントラストな青白文字および点陣発光アイコンへ統一しました。', '2026-11-22T03:22:00+08:00', '2026-11-22T03:22:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r2', '2026-11-22T03:22:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-final-fit', '2026-11-22-pond-final-fit', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T03:28:00+08:00', '2026-11-22T03:28:00+08:00', '2026-11-22T03:28:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-final-fit-zh', 'seed-update-2026-11-22-pond-final-fit', 'zh', '深夜池塘最终实测收尾：登录窗正居中、视频卡片完整展示与暗色骨架屏', '解除顶栏层叠上下文使登录浮层正居中于视口、恢复视频卡片标题与简介完整高度，并将知识库加载骨架条切换为柔和深青点阵色。', '基于线上真机实测结果完成最后三处细节收尾：
+
+1. 清除顶栏容器的滤镜与变换层叠上下文，确保点击左下角 ID 后登录浮层精确居中显示在屏幕正中央。
+2. 放开视频卡片自然高度并保留每行底部播放按钮齐平，确保标题与简介完整清晰不被压缩。
+3. 覆盖知识库骨架屏的多层浅色背景渐变，改为低对比度深青荧光骨架条。', '2026-11-22T03:28:00+08:00', '2026-11-22T03:28:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-final-fit-en', 'seed-update-2026-11-22-pond-final-fit', 'en', 'Midnight Pond Final Live-QA Polish: Viewport-Centered Login, Full Video Cards & Dark Skeletons', 'Removed header containing-block traps so the login modal centers in the viewport, restored full video card title/description height, and switched Knowledge loading skeletons to soft dark cyan bars.', 'This final polish pass closes the last three live-QA visual details:
+
+1. Cleared ancestor backdrop/transform containing blocks on the hidden topbar so clicking bottom-left ID centers the login popover squarely in the viewport.
+2. Restored natural video card height while keeping row Play buttons aligned at the bottom.
+3. Replaced the multi-layer light Knowledge skeleton gradients with subtle dark-cyan CRT skeleton bars.', '2026-11-22T03:28:00+08:00', '2026-11-22T03:28:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-final-fit-ja', 'seed-update-2026-11-22-pond-final-fit', 'ja', '深夜の池最終実機調整：ログイン窓中央配置・動画カード全文表示・暗色スケルトン', '隠しヘッダーの包含ブロックを解除してログイン窓を画面中央へ配置し、動画カードのタイトルと概要の高さを復元、知識庫ロード時の白スケルトンを暗色シアンへ統一しました。', '本番環境の実機スクリーンショット検証に基づき、最後の 3 点を仕上げました：
+
+1. 非表示ヘッダー側のフィルタ・変換指定を解除し、左下 ID クリック時にログイン窓が画面中央へ正しく表示されるようにしました。
+2. 動画カードの自然な高さを確保し、タイトルと概要が潰れずに表示され、再生ボタンが各行下部で揃うようにしました。
+3. 知識庫読み込み中の白いスケルトン帯を、深緑背景になじむ低コントラストな暗色シアン帯へ置き換えました。', '2026-11-22T03:28:00+08:00', '2026-11-22T03:28:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r3', '2026-11-22T03:28:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r2', '2026-11-22T03:22:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r3', '2026-11-22T03:28:00+08:00', 'schema') on conflict(version) do nothing;

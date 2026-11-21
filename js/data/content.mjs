@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-final-fit",
+  "slug": "2026-11-22-pond-final-fit",
+  "category": "site-updates",
+  "tags": [
+    "site-update",
+    "ui"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T03:28:00+08:00",
+  "updated_at": "2026-11-22T03:28:00+08:00",
+  "published_at": "2026-11-22T03:28:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "date": "2026.11.22",
+  "title": {
+    "zh": "深夜池塘最终实测收尾：登录窗正居中、视频卡片完整展示与暗色骨架屏",
+    "en": "Midnight Pond Final Live-QA Polish: Viewport-Centered Login, Full Video Cards & Dark Skeletons",
+    "ja": "深夜の池最終実機調整：ログイン窓中央配置・動画カード全文表示・暗色スケルトン"
+  },
+  "summary": {
+    "zh": "解除顶栏层叠上下文使登录浮层正居中于视口、恢复视频卡片标题与简介完整高度，并将知识库加载骨架条切换为柔和深青点阵色。",
+    "en": "Removed header containing-block traps so the login modal centers in the viewport, restored full video card title/description height, and switched Knowledge loading skeletons to soft dark cyan bars.",
+    "ja": "隠しヘッダーの包含ブロックを解除してログイン窓を画面中央へ配置し、動画カードのタイトルと概要の高さを復元、知識庫ロード時の白スケルトンを暗色シアンへ統一しました。"
+  },
+  "content_markdown": {
+    "zh": "基于线上真机实测结果完成最后三处细节收尾：\n\n1. 清除顶栏容器的滤镜与变换层叠上下文，确保点击左下角 ID 后登录浮层精确居中显示在屏幕正中央。\n2. 放开视频卡片自然高度并保留每行底部播放按钮齐平，确保标题与简介完整清晰不被压缩。\n3. 覆盖知识库骨架屏的多层浅色背景渐变，改为低对比度深青荧光骨架条。",
+    "en": "This final polish pass closes the last three live-QA visual details:\n\n1. Cleared ancestor backdrop/transform containing blocks on the hidden topbar so clicking bottom-left ID centers the login popover squarely in the viewport.\n2. Restored natural video card height while keeping row Play buttons aligned at the bottom.\n3. Replaced the multi-layer light Knowledge skeleton gradients with subtle dark-cyan CRT skeleton bars.",
+    "ja": "本番環境の実機スクリーンショット検証に基づき、最後の 3 点を仕上げました：\n\n1. 非表示ヘッダー側のフィルタ・変換指定を解除し、左下 ID クリック時にログイン窓が画面中央へ正しく表示されるようにしました。\n2. 動画カードの自然な高さを確保し、タイトルと概要が潰れずに表示され、再生ボタンが各行下部で揃うようにしました。\n3. 知識庫読み込み中の白いスケルトン帯を、深緑背景になじむ低コントラストな暗色シアン帯へ置き換えました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-geometry-sync",
   "slug": "2026-11-22-pond-geometry-sync",
   "category": "site-updates",
