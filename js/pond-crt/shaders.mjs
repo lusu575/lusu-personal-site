@@ -111,8 +111,12 @@ precision highp float;
 in vec2 vUv;
 out vec4 fragColor;
 
-uniform sampler2D uFloraTex;
-uniform sampler2D uFloraPrevTex;
+uniform sampler2D uFloraSpring;
+uniform sampler2D uFloraSummer;
+uniform sampler2D uFloraAutumn;
+uniform sampler2D uFloraWinter;
+uniform vec4 uFromWeights;
+uniform vec4 uToWeights;
 uniform vec2 uResolution;
 uniform float uTime;
 uniform float uSeasonSweep;
@@ -179,26 +183,31 @@ void main() {
     sin(uTime * 0.65 + uv.y * 6.0) * 0.0015,
     cos(uTime * 0.52 + uv.x * 5.0) * 0.0011
   );
-  vec2 floraUv = vec2(uv.x, 1.0 - uv.y) + sway + rip.xy * 0.50;
-  vec4 floraNew = texture(uFloraTex, clamp(floraUv, 0.001, 0.999));
-  vec4 flora = floraNew;
+  vec2 floraUv = clamp(vec2(uv.x, 1.0 - uv.y) + sway + rip.xy * 0.50, 0.001, 0.999);
+  vec4 w = uToWeights;
   vec3 sweepGlow = vec3(0.0);
 
   if (uSeasonSweep < 0.999) {
-    vec4 floraOld = texture(uFloraPrevTex, clamp(floraUv, 0.001, 0.999));
-    float radialPhase = clamp((uSeasonSweep - 0.24) / 0.76, 0.0, 1.0);
+    float radialPhase = clamp((uSeasonSweep - 0.20) / 0.80, 0.0, 1.0);
     float n = noise(uv * 5.0);
     vec2 fromCenter = (uv - vec2(0.50, 0.48)) * vec2(aspect, 1.65);
     float sweepDist = length(fromCenter) + (n - 0.5) * 0.12;
     float sweepFront = radialPhase * 1.85;
-    float sweepMix = 1.0 - smoothstep(sweepFront - 0.22, sweepFront + 0.06, sweepDist);
-    flora = mix(floraOld, floraNew, sweepMix);
+    float sweepMix = 1.0 - smoothstep(sweepFront - 0.24, sweepFront + 0.06, sweepDist);
+    // Interruptible continuous 4-season weight blend -> ZERO flash or hard-snap on rapid clicks!
+    w = mix(uFromWeights, uToWeights, sweepMix);
 
     float env = sin(radialPhase * 3.14159);
-    float ring = exp(-pow((sweepDist - sweepFront) * 16.0, 2.0)) * 0.38
-               + exp(-pow((sweepDist - (sweepFront - 0.14)) * 22.0, 2.0)) * 0.22;
+    float ring = exp(-pow((sweepDist - sweepFront) * 16.0, 2.0)) * 0.34
+               + exp(-pow((sweepDist - (sweepFront - 0.14)) * 22.0, 2.0)) * 0.18;
     sweepGlow = uCausticTint * ring * env;
   }
+
+  vec4 flora = vec4(0.0);
+  if (w.x > 0.002) flora += texture(uFloraSpring, floraUv) * w.x;
+  if (w.y > 0.002) flora += texture(uFloraSummer, floraUv) * w.y;
+  if (w.z > 0.002) flora += texture(uFloraAutumn, floraUv) * w.z;
+  if (w.w > 0.002) flora += texture(uFloraWinter, floraUv) * w.w;
 
   vec3 rippleCol = mix(uCausticTint, uSpecularTint, 0.52) * rip.z * 0.72 + sweepGlow;
   float ripAlpha = clamp(rip.z * 0.78 + length(sweepGlow) * 0.65, 0.0, 0.95);

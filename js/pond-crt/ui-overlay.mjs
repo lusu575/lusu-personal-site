@@ -361,9 +361,12 @@ export class PondUIOverlay {
 
   setSeason(newSeasonId, nowSec) {
     if (!SEASONS[newSeasonId] || newSeasonId === this.toSeasonId) return;
-    this.fromSeasonId = this.toSeasonId;
+    // Interruptible slider morph: continue smoothly from current mid-flight stop position instead of snapping!
+    const rawP = Math.max(0, Math.min(1, (nowSec - this.morphStartTime) / this.morphDuration));
+    const currentVisualStop = this.fromStopIdx + (this.toStopIdx - this.fromStopIdx) * animeEaseOutBack(rawP);
+    this.fromSeasonId = rawP > 0.5 ? this.toSeasonId : this.fromSeasonId;
     this.toSeasonId = newSeasonId;
-    this.fromStopIdx = this.toStopIdx;
+    this.fromStopIdx = currentVisualStop;
     this.toStopIdx = SEASON_ORDER.indexOf(newSeasonId);
     this.seasonId = newSeasonId;
     this.morphStartTime = nowSec;

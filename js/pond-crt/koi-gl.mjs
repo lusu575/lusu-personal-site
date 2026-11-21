@@ -122,11 +122,11 @@ void main() {
   vec3 kohakuOrange = mix(vec3(0.92, 0.24, 0.06), vec3(1.0, 0.44, 0.10), clamp(0.45 + 0.55 * (1.0 - y * y), 0.0, 1.0));
   vec3 col = mix(pearlWhite, kohakuOrange, clamp(redMask, 0.0, 1.0)) * lightSide;
 
-  // Subtle blunted koi mouth lip contour + operculum gill shading
-  float mouthArc = 1.0 - smoothstep(0.012, 0.032, length(vec2((t - 0.014) * 1.6, y * 0.14)));
-  col = mix(col, col * 0.76, mouthArc * 0.50);
+  // Whisper-subtle blunted koi mouth contour (restrained so it doesn't stand out) + faint gill shading
+  float mouthArc = 1.0 - smoothstep(0.010, 0.026, length(vec2((t - 0.012) * 1.6, y * 0.14)));
+  col = mix(col, col * 0.92, mouthArc * 0.22);
   float gillCurve = exp(-pow(((t - 0.21) - (1.0 - y * y) * 0.035) * 34.0, 2.0)) * smoothstep(0.25, 0.85, abs(y));
-  col = mix(col, col * 0.88, gillCurve * 0.32);
+  col = mix(col, col * 0.88, gillCurve * 0.30);
 
   // Glossy dark cheek-side eyes tucked naturally along head margin (t ~ 0.10, |y| ~ 0.76)
   float eyeDistL = length(vec2((t - 0.10) * 1.10, (y - 0.76) * 0.21));
@@ -284,6 +284,8 @@ export class KoiGLRenderer {
     this.maxVerts = 1600;
     this.data = new Float32Array(this.maxVerts * 6);
     this.vertCount = 0;
+    // Monotonically integrated swim clock -> ZERO teleporting when switching to/from Winter!
+    this.swimTime = 0;
 
     this.vao = gl.createVertexArray();
     this.vbo = gl.createBuffer();
@@ -451,17 +453,21 @@ export class KoiGLRenderer {
     }
   }
 
-  render(t, aspect, season, seasonId, onWakeRipple) {
+  render(t, dt, aspect, season, seasonId, onWakeRipple) {
     const gl = this.gl;
-    const speedMult = seasonId === 'winter' ? 0.50 : 1.0;
+    // Smoothly modulate speed by continuous winterMode [0..1] and integrate swimTime -> NEVER teleports!
+    const winterBlend = Number.isFinite(season.winterMode) ? season.winterMode : (seasonId === 'winter' ? 1.0 : 0.0);
+    const speedMult = 1.0 - 0.48 * winterBlend;
+    this.swimTime += dt * speedMult;
+    const st = this.swimTime;
     this.vertCount = 0;
 
     for (const f of this.fish) {
-      const info = f.update(t * speedMult, aspect);
-      this._buildFishMesh(f, t * speedMult, aspect);
+      const info = f.update(st, aspect);
+      this._buildFishMesh(f, st, aspect);
       if (info.shouldEmitRipple && onWakeRipple) {
-        f.lastRippleTime = t * speedMult;
-        onWakeRipple(info.uvX, info.uvY, seasonId === 'winter' ? 0.28 : 0.48);
+        f.lastRippleTime = st;
+        onWakeRipple(info.uvX, info.uvY, 0.48 - 0.20 * winterBlend);
       }
     }
 
@@ -480,7 +486,7 @@ export class KoiGLRenderer {
     gl.uniform3fv(u.uWaterMid, season.waterMid);
     gl.uniform3fv(u.uCausticTint, season.causticTint);
     gl.uniform1f(u.uKoiDepthFog, season.koiDepthFog);
-    gl.uniform1f(u.uWinterMode, seasonId === 'winter' ? 1.0 : 0.0);
+    gl.uniform1f(u.uWinterMode, winterBlend);
 
     gl.drawArrays(gl.TRIANGLES, 0, this.vertCount);
     gl.disable(gl.BLEND);

@@ -48,7 +48,12 @@ export class PondCRTEngine {
     this.seasonId = options.season && SEASONS[options.season] ? options.season : 'summer';
     this.fromSeasonId = this.seasonId;
     this.seasonTransitionStart = -10;
-    this.seasonTransitionDuration = 2.10;
+    this.seasonTransitionDuration = 2.00;
+    // Interruptible transition state snapshots (prevent any flash/snap on rapid season switches!)
+    this.fromPalette = this._cloneSeasonPalette(this.seasonId);
+    this.fromWeights = this._seasonToWeights(this.seasonId);
+    this.toWeights = this._seasonToWeights(this.seasonId);
+    this._rippleTimerId = 0;
     this._pendingAmbientSeason = null;
     this._draggingSlider = false;
     this.onNavigate = options.onNavigate || null;
@@ -335,36 +340,68 @@ export class PondCRTEngine {
     this.uiOverlay.markDirty();
   }
 
+  _cloneSeasonPalette(seasonId) {
+    const s = SEASONS[seasonId] || SEASONS.summer;
+    return {
+      waterDeep: [...s.waterDeep],
+      waterMid: [...s.waterMid],
+      waterAccent: [...s.waterAccent],
+      causticTint: [...s.causticTint],
+      specularTint: [...s.specularTint],
+      glowColumnX: s.glowColumnX,
+      glowColumnWidth: s.glowColumnWidth,
+      causticStrength: s.causticStrength,
+      shimmerSpeed: s.shimmerSpeed,
+      koiDepthFog: s.koiDepthFog,
+      winterMode: seasonId === 'winter' ? 1.0 : 0.0
+    };
+  }
+
+  _seasonToWeights(seasonId) {
+    return [
+      seasonId === 'spring' ? 1 : 0,
+      seasonId === 'summer' ? 1 : 0,
+      seasonId === 'autumn' ? 1 : 0,
+      seasonId === 'winter' ? 1 : 0
+    ];
+  }
+
   setSeason(seasonId, originNx = 0.86, originNy = 0.072) {
     if (SEASONS[seasonId] && seasonId !== this.seasonId) {
       const prev = this.seasonId;
+      // Snapshot EXACT current on-screen palette & 4-season flora blend weights before interrupting!
+      const livePalette = this._getInterpolatedSeason(this.elapsed);
+      const liveSweep = Math.max(0, Math.min(1, (this.elapsed - this.seasonTransitionStart) / this.seasonTransitionDuration));
+      const radialP = Math.max(0, Math.min(1, (liveSweep - 0.20) / 0.80));
+      const smoothP = radialP * radialP * (3 - 2 * radialP);
+      const liveWeights = [0, 1, 2, 3].map((i) => this.fromWeights[i] + (this.toWeights[i] - this.fromWeights[i]) * smoothP);
+
+      this.fromPalette = livePalette;
+      this.fromWeights = liveWeights;
+      this.toWeights = this._seasonToWeights(seasonId);
       this.fromSeasonId = prev;
       this.seasonId = seasonId;
       this.seasonTransitionStart = this.elapsed;
-      // Immediately clear old season's ambient particles so maple leaves/petals NEVER leak into transitions or other seasons!
+
       this.particlesGL.clearAmbient();
       this._pendingAmbientSeason = seasonId;
       this.uiOverlay.setSeason(seasonId, this.elapsed);
       this.particlesGL.triggerSeasonTransitionFX(prev, seasonId, originNx, 1.0 - originNy, this.elapsed);
-      setTimeout(() => {
+      if (this._rippleTimerId) clearTimeout(this._rippleTimerId);
+      this._rippleTimerId = setTimeout(() => {
+        this._rippleTimerId = 0;
         if (this.running) this.spawnRipple(0.50, 0.48, 1.05);
-      }, 480);
-      // ZERO _uploadFlora() here! Both old & new season textures are already resident on GPU!
+      }, 450);
     }
   }
 
   _getInterpolatedSeason(t) {
-    const a = SEASONS[this.fromSeasonId] || SEASONS.summer;
-    const b = SEASONS[this.seasonId] || SEASONS.summer;
+    const a = this.fromPalette || this._cloneSeasonPalette(this.fromSeasonId);
+    const b = this._cloneSeasonPalette(this.seasonId);
     const rawP = Math.max(0, Math.min(1, (t - this.seasonTransitionStart) / this.seasonTransitionDuration));
-    if (rawP >= 1 || a === b) {
-      return { ...b, winterMode: this.seasonId === 'winter' ? 1.0 : 0.0 };
-    }
-    // Smoothly bloom water palette & winterMode as stardust ribbon hits pond center (0.26..0.92)
-    const p = Math.max(0, Math.min(1, (rawP - 0.26) / 0.66));
+    if (rawP >= 1) return b;
+    const p = Math.max(0, Math.min(1, (rawP - 0.20) / 0.72));
     const s = p * p * (3 - 2 * p);
-    const wA = this.fromSeasonId === 'winter' ? 1.0 : 0.0;
-    const wB = this.seasonId === 'winter' ? 1.0 : 0.0;
     return {
       waterDeep: lerpVec3(a.waterDeep, b.waterDeep, s),
       waterMid: lerpVec3(a.waterMid, b.waterMid, s),
@@ -376,7 +413,7 @@ export class PondCRTEngine {
       causticStrength: lerpNum(a.causticStrength, b.causticStrength, s),
       shimmerSpeed: lerpNum(a.shimmerSpeed, b.shimmerSpeed, s),
       koiDepthFog: lerpNum(a.koiDepthFog, b.koiDepthFog, s),
-      winterMode: lerpNum(wA, wB, s)
+      winterMode: lerpNum(a.winterMode, b.winterMode, s)
     };
   }
 
@@ -424,29 +461,36 @@ export class PondCRTEngine {
     gl.uniform1f(wu.uWinterMode, season.winterMode);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-    // 1b. Pure GPU Underwater Nishikigoi (swimming BELOW ripples, lotus pads & thin winter ice!)
-    this.koiGL.render(t, aspect, season, this.seasonId, (rx, ry, str) => {
+    // 1b. Pure GPU Underwater Nishikigoi (continuous integrated swimTime -> ZERO jump on Winter switch!)
+    this.koiGL.render(t, dt, aspect, season, this.seasonId, (rx, ry, str) => {
       this.spawnRipple(rx, ry, str);
     });
 
-    // 1c. Surface Ripples + Floating Flora / Thin Winter Ice + Pond-Center Season Sweep
+    // 1c. Surface Ripples + Interruptible 4-Season Flora Blend + Pond-Center Season Sweep
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.bindVertexArray(this.vao);
     gl.useProgram(this.programs.surfaceOverlay.program);
     const su = this.programs.surfaceOverlay.uniforms;
     const sweepP = Math.max(0, Math.min(1, (t - this.seasonTransitionStart) / this.seasonTransitionDuration));
-    // Trigger new season falling petals/leaves/snow ONLY AFTER season transition completely finishes (sweepP >= 0.99)!
     if (this._pendingAmbientSeason && sweepP >= 0.99) {
       this.particlesGL.startNewSeasonAmbient(this._pendingAmbientSeason);
       this._pendingAmbientSeason = null;
     }
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.floraTextures[this.seasonId]);
-    gl.uniform1i(su.uFloraTex, 0);
+    gl.bindTexture(gl.TEXTURE_2D, this.floraTextures.spring);
+    gl.uniform1i(su.uFloraSpring, 0);
     gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, this.floraTextures[this.fromSeasonId]);
-    gl.uniform1i(su.uFloraPrevTex, 1);
+    gl.bindTexture(gl.TEXTURE_2D, this.floraTextures.summer);
+    gl.uniform1i(su.uFloraSummer, 1);
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, this.floraTextures.autumn);
+    gl.uniform1i(su.uFloraAutumn, 2);
+    gl.activeTexture(gl.TEXTURE3);
+    gl.bindTexture(gl.TEXTURE_2D, this.floraTextures.winter);
+    gl.uniform1i(su.uFloraWinter, 3);
+    gl.uniform4fv(su.uFromWeights, this.fromWeights);
+    gl.uniform4fv(su.uToWeights, this.toWeights);
     gl.uniform2f(su.uResolution, sw, sh);
     gl.uniform1f(su.uTime, t);
     gl.uniform1f(su.uSeasonSweep, sweepP);
