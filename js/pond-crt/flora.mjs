@@ -112,14 +112,13 @@ function drawLotusPad(ctx, w, h, pad, colorTheme = 'summer') {
   ctx.restore();
 }
 
-function drawLotusBud(ctx, w, h, bud) {
+// Layer 1 (UNDER lotus pads): Shimmering pink water reflection on the pond surface
+function drawLotusBudReflection(ctx, w, h, bud) {
   const bx = bud.x * w;
-  const by = bud.y * h;
   const size = bud.size * w;
   const stemBaseY = (bud.y + bud.stemLen) * h;
 
   ctx.save();
-
   const reflTop = stemBaseY + size * 0.15;
   const reflH = size * 3.6;
   for (let i = 0; i < 14; i++) {
@@ -137,6 +136,17 @@ function drawLotusBud(ctx, w, h, bud) {
     ctx.ellipse(bx + Math.sin(i * 1.9 + bud.seed) * size * 0.16, ry, rw, rh, 0, 0, Math.PI * 2);
     ctx.fill();
   }
+  ctx.restore();
+}
+
+// Layer 3 (ABOVE lotus pads): Slender stem + rose-pink lotus bud rising above the leaves
+function drawLotusBud(ctx, w, h, bud) {
+  const bx = bud.x * w;
+  const by = bud.y * h;
+  const size = bud.size * w;
+  const stemBaseY = (bud.y + bud.stemLen) * h;
+
+  ctx.save();
 
   ctx.strokeStyle = 'rgba(72, 162, 78, 0.85)';
   ctx.lineWidth = Math.max(2.0, size * 0.11);
@@ -245,11 +255,13 @@ function drawMapleLeaf(ctx, x, y, r, rot, colorA = '#e84814', colorB = '#ff9828'
   ctx.rotate(rot);
   ctx.globalAlpha = alpha;
 
-  ctx.strokeStyle = colorA;
-  ctx.lineWidth = Math.max(1.2, r * 0.08);
+  // Short, delicate curved petiole (no long awkward straight stick!)
+  ctx.strokeStyle = 'rgba(150, 44, 14, 0.72)';
+  ctx.lineWidth = Math.max(1.0, r * 0.055);
+  ctx.lineCap = 'round';
   ctx.beginPath();
-  ctx.moveTo(0, r * 0.15);
-  ctx.lineTo(0, r * 0.95);
+  ctx.moveTo(0, r * 0.14);
+  ctx.quadraticCurveTo(r * 0.08, r * 0.30, -r * 0.04, r * 0.44);
   ctx.stroke();
 
   const lobes = [
@@ -462,6 +474,35 @@ const AUTUMN_HERO_LEAVES = [
   [0.18, 0.67, 0.030, -0.75, '#d43a12', '#f28220']
 ];
 
+// Alpha-key pure pitch-black (#000000) background of hand-painted branch art cleanly into transparent RGBA
+function keyBlackToTransparent(img) {
+  const c = document.createElement('canvas');
+  c.width = img.naturalWidth || img.width;
+  c.height = img.naturalHeight || img.height;
+  const ctx = c.getContext('2d');
+  ctx.drawImage(img, 0, 0, c.width, c.height);
+  const id = ctx.getImageData(0, 0, c.width, c.height);
+  const d = id.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const r = d[i], g = d[i + 1], b = d[i + 2];
+    const m = Math.max(r, g, b);
+    if (m <= 9) {
+      d[i + 3] = 0;
+    } else if (m < 44) {
+      const t = (m - 9) / 35;
+      const a = t * t * (3 - 2 * t);
+      d[i + 3] = Math.round(a * 255);
+      // Slight un-darken on anti-aliased edge pixels to prevent any dark fringe
+      const boost = 1.0 / Math.max(0.35, a);
+      d[i] = Math.min(255, Math.round(r * Math.min(1.55, boost)));
+      d[i + 1] = Math.min(255, Math.round(g * Math.min(1.55, boost)));
+      d[i + 2] = Math.min(255, Math.round(b * Math.min(1.55, boost)));
+    }
+  }
+  ctx.putImageData(id, 0, 0);
+  return c;
+}
+
 export class FloraLayer {
   constructor() {
     this.canvas = document.createElement('canvas');
@@ -469,11 +510,17 @@ export class FloraLayer {
     this.width = 0;
     this.height = 0;
     this.season = '';
-    this.customAssets = {}; // Optional transparent PNG images keyed by season
+    this.customAssets = {}; // Full-canvas transparent PNG override per season
+    this.branchAssets = {}; // Hand-painted top-left overhanging branch art (keyed RGBA canvas per season)
   }
 
   setCustomAsset(season, img) {
     this.customAssets[season] = img;
+    this.season = '';
+  }
+
+  setBranchAsset(season, img) {
+    this.branchAssets[season] = keyBlackToTransparent(img);
     this.season = '';
   }
 
@@ -492,34 +539,55 @@ export class FloraLayer {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, w, h);
 
-    // Optional transparent PNG overlay hook if user provides custom GPT-generated transparent PNGs
     if (this.customAssets[season]) {
       ctx.drawImage(this.customAssets[season], 0, 0, w, h);
       return this.canvas;
     }
 
     if (season === 'summer') {
+      // Physically accurate layering:
+      // 1. Water reflections of buds ON the water surface (underneath lotus pads!)
+      for (const bud of SUMMER_BUDS) drawLotusBudReflection(ctx, w, h, bud);
+      // 2. Floating lotus pads occluding the water reflections naturally
       for (const pad of SUMMER_PADS) drawLotusPad(ctx, w, h, pad, 'summer');
+      // 3. Stems & lotus buds rising above the leaves
       for (const bud of SUMMER_BUDS) drawLotusBud(ctx, w, h, bud);
     } else if (season === 'spring') {
       for (const pad of SPRING_PADS) drawLotusPad(ctx, w, h, pad, 'spring');
-      drawBranchTree(ctx, w, h, OVERHANG_BRANCHES, 'rgba(130, 82, 88, 0.72)');
-      for (let i = 0; i < SAKURA_CLUSTERS.length; i++) {
-        const [fx, fy, fr] = SAKURA_CLUSTERS[i];
-        drawSakuraFlower(ctx, fx * w, fy * h, fr * w, i * 0.9, 0.94);
+      if (this.branchAssets.spring) {
+        // Draw museum-grade hand-painted cherry blossom branch cleanly in top-left corner
+        ctx.drawImage(this.branchAssets.spring, 0, 0, w * 0.86, h * 0.86);
+      } else {
+        drawBranchTree(ctx, w, h, OVERHANG_BRANCHES, 'rgba(130, 82, 88, 0.72)');
+        for (let i = 0; i < SAKURA_CLUSTERS.length; i++) {
+          const [fx, fy, fr] = SAKURA_CLUSTERS[i];
+          drawSakuraFlower(ctx, fx * w, fy * h, fr * w, i * 0.9, 0.94);
+        }
       }
     } else if (season === 'autumn') {
       for (const pad of AUTUMN_PADS) drawLotusPad(ctx, w, h, pad, 'autumn');
       for (const lf of AUTUMN_HERO_LEAVES) {
         drawMapleLeaf(ctx, lf[0] * w, lf[1] * h, lf[2] * w, lf[3], lf[4], lf[5], 0.92);
       }
-      drawBranchTree(ctx, w, h, OVERHANG_BRANCHES, 'rgba(105, 56, 28, 0.75)');
-      for (const lf of AUTUMN_CANOPY_LEAVES) {
-        drawMapleLeaf(ctx, lf[0] * w, lf[1] * h, lf[2] * w, lf[3], '#d84214', '#ff9428', 0.92);
+      if (this.branchAssets.autumn) {
+        // Draw museum-grade hand-painted autumn maple branch cleanly in top-left corner
+        ctx.drawImage(this.branchAssets.autumn, 0, 0, w * 0.88, h * 0.88);
+      } else {
+        drawBranchTree(ctx, w, h, OVERHANG_BRANCHES, 'rgba(105, 56, 28, 0.75)');
+        for (const lf of AUTUMN_CANOPY_LEAVES) {
+          drawMapleLeaf(ctx, lf[0] * w, lf[1] * h, lf[2] * w, lf[3], '#d84214', '#ff9428', 0.92);
+        }
       }
     } else if (season === 'winter') {
       drawWinterIceShelves(ctx, w, h);
-      drawWinterTwigs(ctx, w, h);
+      if (this.branchAssets.winter) {
+        ctx.save();
+        ctx.globalAlpha = 0.88;
+        ctx.drawImage(this.branchAssets.winter, 0, 0, w * 0.82, h * 0.82);
+        ctx.restore();
+      } else {
+        drawWinterTwigs(ctx, w, h);
+      }
     }
 
     return this.canvas;

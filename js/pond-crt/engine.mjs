@@ -110,7 +110,30 @@ export class PondCRTEngine {
     this.vao = createFullscreenVAO(this.gl);
     this.fbos = {};
     this.resize();
+    this._loadDefaultBranchAssets();
     this._bindInteractions();
+  }
+
+  _loadDefaultBranchAssets() {
+    const base = './assets/pond-flora/';
+    const map = {
+      spring: `${base}spring-branch.jpg`,
+      autumn: `${base}autumn-branch.jpg`,
+      winter: `${base}winter-branch.jpg`
+    };
+    for (const [seasonId, url] of Object.entries(map)) {
+      const img = new Image();
+      img.onload = () => {
+        if (!this.gl || !this.floraTextures[seasonId]) return;
+        this.floraLayer.setBranchAsset(seasonId, img);
+        const floraCanvas = this.floraLayer.render(seasonId, this.cssWidth, this.cssHeight);
+        const gl = this.gl;
+        gl.bindTexture(gl.TEXTURE_2D, this.floraTextures[seasonId]);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, floraCanvas);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+      };
+      img.src = url;
+    }
   }
 
   _seedAmbientRipples() {
