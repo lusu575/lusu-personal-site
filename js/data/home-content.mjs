@@ -2,6 +2,36 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-tools",
+      "slug": "2026-11-22-pond-tools",
+      "category": "site-updates",
+      "tags": [
+        "网站更新",
+        "工具区",
+        "在线画板",
+        "界面"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-21T17:52:00.000Z",
+      "updated_at": "2026-11-21T17:52:00.000Z",
+      "published_at": "2026-11-21T17:52:00.000Z",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "工具区与三个工具子页面换装深夜终端 CRT 视觉",
+        "en": "Tools Window and Three Tool Sub-Pages Refreshed with Midnight Pond CRT Visuals",
+        "ja": "ツール欄と3つのツール子ページを深夜端末CRTビジュアルへ刷新"
+      },
+      "summary": {
+        "zh": "逐步视觉替换第 4 批上线：桌面端工具区（#resources）换装提亮版 CRT 玻璃卡片并接入 6 枚点阵虚线 SVG 图标，同时为临时互传弹窗、在线画板与日语的言外之意统一套用深夜池塘 CRT 视觉主题；全部功能与交互逻辑保持原样。",
+        "en": "Batch 4 of the visual refresh is live: the desktop Tools window (#resources) adopts the brightened CRT glass skin with 6 dotted SVG icons, and Quick Transfer, Online Whiteboard, and Behind the Japanese share the Midnight Pond CRT visual theme without changing any tool logic.",
+        "ja": "段階的ビジュアル刷新の第4弾を公開しました。デスクトップのツール欄（#resources）を明るく透過感のあるCRTガラス窓と6種の点線SVGアイコンへ換装し、一時転送・ホワイトボード・日本語の裏側にも共通CRTテーマを適用しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-videos",
       "slug": "2026-11-22-pond-videos",
       "category": "site-updates",
@@ -117,36 +147,6 @@ export const homeContent = Object.freeze({
         "zh": "本地候选在现有画板和互传基础上完善完整图片导出与管理适配，保留现有大厅、帮助、上传和草稿保护；尚未部署。",
         "en": "The local candidate adds full whiteboard image export and administration integration while retaining the existing lobby, help, uploads and draft protection. It has not been deployed.",
         "ja": "ローカル候補版で全体画像の書き出しと管理連携を整備しました。既存のロビー、ヘルプ、アップロード、下書き保護を維持しています。まだ公開していません。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-09-28-mobile-layout",
-      "slug": "2026-09-28-mobile-layout",
-      "category": "site-updates",
-      "tags": [
-        "网站更新",
-        "移动端",
-        "聊天室",
-        "界面"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-09-28T02:00:00.000Z",
-      "updated_at": "2026-09-28T02:00:00.000Z",
-      "published_at": "2026-09-28T02:00:00.000Z",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.09.28",
-      "title": {
-        "zh": "手机界面重新排版",
-        "en": "A Reworked Mobile Layout",
-        "ja": "モバイル画面のレイアウトを刷新"
-      },
-      "summary": {
-        "zh": "首页入口、栏目卡片和底部导航统一调整；聊天室重新划分身份、房间、消息与输入区，改善短屏和横屏下的阅读与操作。",
-        "en": "Home shortcuts, content cards, and navigation now share a clearer layout. Chat separates identity, room controls, messages, and composition for easier use on short and landscape screens.",
-        "ja": "ホームの入口、各ページのカード、下部ナビゲーションを整理。チャットの名前・部屋・メッセージ・入力欄を分け、小さな画面や横向きでも使いやすくしました。"
       }
     }
   ]

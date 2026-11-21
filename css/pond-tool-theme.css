@@ -1,0 +1,114 @@
+/* Shared Midnight Pond CRT Visual Theme for Standalone Tool Sub-Pages
+   Applied as a pure presentation layer to /tools/whiteboard/ and /tools/japanese-subtext/
+   Zero functional or behavioral changes. */
+
+:root {
+  --pond-bg: #030e10;
+  --pond-panel: rgba(6, 22, 26, 0.86);
+  --pond-panel-soft: rgba(8, 28, 32, 0.72);
+  --pond-border: rgba(176, 238, 230, 0.46);
+  --pond-border-dim: rgba(162, 224, 218, 0.26);
+  --pond-text: #eafbf8;
+  --pond-muted: rgba(188, 226, 222, 0.76);
+  --pond-accent: #68ecd8;
+  --pond-accent-pink: #f474c4;
+}
+
+body {
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 42%, rgba(16, 72, 68, 0.34), transparent 72%),
+    radial-gradient(circle at 18% 82%, rgba(22, 92, 74, 0.22), transparent 55%),
+    #030c0e !important;
+  color: var(--pond-text) !important;
+}
+
+/* Subtle CRT scanline sheen on top of viewport (pointer-events: none) */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.12) 0px,
+    rgba(0, 0, 0, 0.12) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.38;
+}
+
+/* Whiteboard lobby / top chrome CRT glass treatment (keeps Excalidraw drawing canvas crisp) */
+.wb-shell,
+.wb-lobby,
+.wb-header,
+.wb-topbar,
+.wb-card,
+.wb-panel,
+.wb-modal,
+.wb-dialog {
+  background: var(--pond-panel) !important;
+  color: var(--pond-text) !important;
+  border-color: var(--pond-border) !important;
+  box-shadow: 0 0 22px rgba(96, 228, 216, 0.16) !important;
+}
+
+.wb-shell button,
+.wb-lobby button,
+.wb-topbar button {
+  border-color: var(--pond-border) !important;
+}
+
+/* Japanese Subtext app shell CRT glass treatment */
+.app-shell,
+.shell,
+.page-card,
+.card,
+.panel,
+.stage-card,
+.topbar,
+.site-header,
+header.header {
+  background: var(--pond-panel) !important;
+  color: var(--pond-text) !important;
+  border-color: var(--pond-border-dim) !important;
+}
+
+.app-shell h1,
+.app-shell h2,
+.app-shell h3,
+.card h1,
+.card h2,
+.card h3 {
+  color: #f0fefa !important;
+  text-shadow: 0 0 10px rgba(142, 240, 228, 0.28);
+}
+
+.app-shell p,
+.card p,
+.subtitle,
+.muted {
+  color: var(--pond-muted) !important;
+}
+
+.app-shell a,
+.card a {
+  color: var(--pond-accent) !important;
+}
+
+.app-shell button,
+.card button,
+.option-button,
+.choice-button {
+  background: var(--pond-panel-soft) !important;
+  color: var(--pond-text) !important;
+  border: 1.2px dashed var(--pond-border) !important;
+  box-shadow: none !important;
+}
+
+.app-shell button:hover:not(:disabled),
+.card button:hover:not(:disabled) {
+  border-color: var(--pond-accent) !important;
+  box-shadow: 0 0 12px rgba(104, 236, 216, 0.28) !important;
+}

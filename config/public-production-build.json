@@ -108,6 +108,7 @@
   ],
   "standaloneFiles": [
     "css/pond-windows.css",
+    "css/pond-tool-theme.css",
     "tools/japanese-subtext/index.html",
     "tools/japanese-subtext/manifest.json",
     "tools/whiteboard/index.html",

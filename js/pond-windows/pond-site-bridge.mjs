@@ -42,6 +42,58 @@ function triggerSiteRoute(routeId) {
   window.location.hash = routeId === 'home' ? '#home' : `#${routeId}`;
 }
 
+const TOOL_SVG_MAP = [
+  { match: 'whiteboard', src: '/assets/pond-windows/svg/icon-palette.svg' },
+  { match: 'quick-transfer', src: '/assets/pond-windows/svg/icon-transfer.svg' },
+  { match: 'japanese-subtext', src: '/assets/pond-windows/svg/icon-torii.svg' }
+];
+const DOWNLOAD_SVGS = [
+  '/assets/pond-windows/svg/icon-box.svg',
+  '/assets/pond-windows/svg/icon-vr.svg',
+  '/assets/pond-windows/svg/icon-layers.svg'
+];
+
+function applyToolsSvgPresentation() {
+  const list = document.getElementById('resource-list');
+  if (!list) return;
+  let dlIdx = 0;
+  list.querySelectorAll('.resource-card').forEach((card) => {
+    if (card.dataset.pondSvgApplied === '1') return;
+    const html = card.innerHTML;
+    let svgSrc = '';
+    for (const entry of TOOL_SVG_MAP) {
+      if (html.includes(entry.match) || card.querySelector(`[href*="${entry.match}"]`)) {
+        svgSrc = entry.src;
+        card.classList.add('pond-tool-hero');
+        break;
+      }
+    }
+    if (!svgSrc && card.querySelector('[data-action="quick-transfer"], [data-quick-transfer]')) {
+      svgSrc = '/assets/pond-windows/svg/icon-transfer.svg';
+      card.classList.add('pond-tool-hero');
+    }
+    if (!svgSrc) {
+      svgSrc = DOWNLOAD_SVGS[dlIdx % DOWNLOAD_SVGS.length];
+      dlIdx += 1;
+      card.classList.add('pond-tool-download');
+    }
+    const existingIcon = card.querySelector('.resource-icon-image, .resource-icon');
+    if (existingIcon) {
+      if (existingIcon.tagName === 'IMG') {
+        existingIcon.src = svgSrc;
+      } else {
+        const img = document.createElement('img');
+        img.className = 'resource-icon-image';
+        img.src = svgSrc;
+        img.alt = '';
+        img.setAttribute('aria-hidden', 'true');
+        existingIcon.replaceWith(img);
+      }
+    }
+    card.dataset.pondSvgApplied = '1';
+  });
+}
+
 function bootPondVisualBridge() {
   if (window.__pondVisualBridge) return;
 
@@ -103,6 +155,8 @@ function bootPondVisualBridge() {
         nextMode = isArticleDetailOpen() ? 'article' : 'knowledge';
       } else if (route === 'videos') {
         nextMode = 'videos';
+      } else if (route === 'resources') {
+        nextMode = 'resources';
       }
     }
 
@@ -113,6 +167,9 @@ function bootPondVisualBridge() {
       if (!activeMode) {
         eng.resize();
         eng.start();
+      }
+      if (nextMode === 'resources') {
+        window.requestAnimationFrame(applyToolsSvgPresentation);
       }
       activeMode = nextMode;
     } else if (activeMode) {
@@ -134,6 +191,12 @@ function bootPondVisualBridge() {
   if (welcomeEl) {
     observer.observe(welcomeEl, { attributes: true, attributeFilter: ['hidden'] });
   }
+  const resourceListEl = document.getElementById('resource-list');
+  if (resourceListEl) {
+    new MutationObserver(() => {
+      if (activeMode === 'resources') applyToolsSvgPresentation();
+    }).observe(resourceListEl, { childList: true });
+  }
 
   // Clicking outside the skinned window returns to parent view
   document.addEventListener('click', (e) => {
@@ -144,7 +207,7 @@ function bootPondVisualBridge() {
       else triggerSiteRoute('knowledge');
       return;
     }
-    if (activeMode === 'knowledge' || activeMode === 'videos') {
+    if (activeMode === 'knowledge' || activeMode === 'videos' || activeMode === 'resources') {
       triggerSiteRoute('home');
     }
   });
@@ -160,6 +223,12 @@ function bootPondVisualBridge() {
     if (activeMode === 'videos') {
       const modal = document.getElementById('video-modal');
       if (modal && !modal.hidden) return;
+      triggerSiteRoute('home');
+      return;
+    }
+    if (activeMode === 'resources') {
+      const qtModal = document.getElementById('quick-transfer-modal');
+      if (qtModal && !qtModal.hidden) return;
       triggerSiteRoute('home');
       return;
     }

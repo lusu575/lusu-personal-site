@@ -1283,3 +1283,384 @@ html[data-pond-mode="videos"] #video-modal .modal-window {
   color: #eefcf9 !important;
   box-shadow: 0 0 32px rgba(96, 228, 216, 0.28) !important;
 }
+
+/* ============================================================
+   Global Brightened Luminous CRT Glass Tokens (lifted per review)
+   Applies immediately to all CRT windows for brighter translucency + stronger border glow
+   ============================================================ */
+
+html[data-pond-mode="knowledge"] #knowledge .xp-window.folder-window,
+html[data-pond-mode="article"] #knowledge .xp-window.folder-window,
+html[data-pond-mode="videos"] #videos .xp-window,
+html[data-pond-mode="resources"] #resources .xp-window,
+html[data-pond-mode="games"] #games .xp-window,
+html[data-pond-mode="chatroom"] #chatroom .xp-window,
+html[data-pond-mode="about"] #about .xp-window {
+  background: linear-gradient(
+    180deg,
+    rgba(10, 34, 38, 0.72) 0%,
+    rgba(6, 24, 28, 0.76) 55%,
+    rgba(8, 26, 32, 0.78) 100%
+  ) !important;
+  border: 1.6px solid rgba(202, 252, 244, 0.78) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.24) inset,
+    0 0 34px rgba(114, 244, 232, 0.34),
+    0 0 60px rgba(206, 138, 248, 0.18),
+    inset 0 0 32px rgba(12, 46, 48, 0.45) !important;
+}
+
+/* ============================================================
+   Batch 4: Tools Window (html[data-pond-mode="resources"]) + Quick Transfer Modal
+   Matches design-assets/windows/tools.png over untouched #resources DOM + GPT SVGs
+   ============================================================ */
+
+html[data-pond-mode="resources"] #pond-visual-backdrop {
+  display: block;
+  z-index: 1;
+}
+
+html[data-pond-mode="resources"] body,
+html[data-pond-mode="resources"] .site-shell,
+html[data-pond-mode="resources"] .site-shell::before,
+html[data-pond-mode="resources"] .site-shell::after {
+  background: transparent !important;
+}
+
+html[data-pond-mode="resources"] .wallpaper-layer {
+  display: none !important;
+}
+
+html[data-pond-mode="resources"] .xp-taskbar,
+html[data-pond-mode="resources"] .site-shell > header {
+  opacity: 0;
+  pointer-events: none;
+}
+
+html[data-pond-mode="resources"] .site-shell {
+  position: relative;
+  z-index: 20;
+}
+
+html[data-pond-mode="resources"] .site-shell > main {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 78px 24px 44px;
+  background: transparent !important;
+  pointer-events: none;
+}
+
+html[data-pond-mode="resources"] #resources {
+  width: min(940px, 64vw);
+  min-width: min(640px, 92vw);
+  max-height: min(690px, 74vh);
+  margin: 12px 0 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  pointer-events: auto;
+}
+
+html[data-pond-mode="resources"] #resources .xp-window {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: min(690px, 74vh);
+  margin: 0 !important;
+  padding: 22px 28px 20px !important;
+  border-radius: 18px !important;
+  color: rgba(236, 250, 248, 0.96);
+  backdrop-filter: blur(10px) saturate(1.16);
+  -webkit-backdrop-filter: blur(10px) saturate(1.16);
+  overflow: hidden;
+  font-family: "JetBrains Mono", "Cascadia Mono", Consolas, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+html[data-pond-mode="resources"] #resources .xp-window::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  border-radius: inherit;
+  background-image:
+    radial-gradient(rgba(210, 255, 248, 0.10) 0.75px, transparent 0.75px),
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.12) 0px,
+      rgba(0, 0, 0, 0.12) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  background-size: 4px 4px, 100% 3px;
+  opacity: 0.48;
+}
+
+html[data-pond-mode="resources"] #resources .window-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 14px !important;
+  margin: 0 0 12px !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px dotted rgba(188, 240, 234, 0.34) !important;
+  box-shadow: none !important;
+  color: #f0fefa !important;
+  flex-shrink: 0;
+}
+
+html[data-pond-mode="resources"] #resources .window-titlebar > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: #f0fefa;
+  text-shadow: 0 0 12px rgba(176, 248, 236, 0.50);
+}
+
+html[data-pond-mode="resources"] #resources .window-titlebar .title-icon-resources {
+  width: 30px !important;
+  height: 30px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cpath d='M25 6a7 7 0 0 0-8.6 9.2L7.5 24.1a2.6 2.6 0 1 0 3.7 3.7l8.9-8.9A7 7 0 0 0 29.5 10l-4 4-3.5-3.5 3-4.5z' fill='none' stroke='%23eefcf9' stroke-width='2' stroke-dasharray='0.5 3.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  filter: drop-shadow(0 0 6px rgba(180, 248, 236, 0.55));
+}
+
+html[data-pond-mode="resources"] #resources .window-titlebar .close-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px !important;
+  border: 1px dashed rgba(185, 235, 230, 0.44) !important;
+  background: rgba(6, 22, 26, 0.52) !important;
+  color: rgba(214, 248, 244, 0.88) !important;
+  box-shadow: none !important;
+  font-size: 16px;
+}
+
+/* Filter row */
+html[data-pond-mode="resources"] #resource-categories {
+  display: flex !important;
+  flex-wrap: nowrap;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 2px 12px !important;
+  margin: 0 0 12px !important;
+  background: transparent !important;
+  border: none !important;
+  flex-shrink: 0;
+}
+
+html[data-pond-mode="resources"] #resource-categories button {
+  flex: 0 0 auto;
+  height: 29px;
+  padding: 0 13px !important;
+  border-radius: 999px !important;
+  border: 1.3px dashed rgba(190, 238, 232, 0.44) !important;
+  background: rgba(6, 22, 26, 0.46) !important;
+  color: rgba(220, 246, 242, 0.88) !important;
+  box-shadow: none !important;
+  font-size: 12px;
+}
+
+html[data-pond-mode="resources"] #resource-categories button.active,
+html[data-pond-mode="resources"] #resource-categories button[aria-pressed="true"] {
+  border-style: solid !important;
+  border-color: rgba(184, 248, 242, 0.9) !important;
+  background: linear-gradient(95deg, rgba(46, 212, 214, 0.46), rgba(130, 134, 240, 0.38), rgba(244, 108, 182, 0.46)) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(96, 234, 224, 0.36) !important;
+}
+
+html[data-pond-mode="resources"] #resource-categories .filter-count {
+  background: transparent !important;
+  border: none !important;
+  color: inherit !important;
+  padding: 0 !important;
+  margin-left: 3px;
+  opacity: 0.84;
+}
+
+/* 3-column tools & downloads grid matching design-assets/windows/tools.png */
+html[data-pond-mode="resources"] #resource-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  padding: 2px 4px 8px 2px !important;
+  background: transparent !important;
+  border: none !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(142, 226, 216, 0.24) transparent;
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-card {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 16px 14px !important;
+  margin: 0 !important;
+  border-radius: 14px !important;
+  border: 1.3px solid rgba(182, 242, 234, 0.48) !important;
+  background: rgba(8, 28, 32, 0.56) !important;
+  box-shadow: 0 0 16px rgba(92, 228, 218, 0.14), inset 0 0 18px rgba(4, 16, 20, 0.50) !important;
+  color: rgba(232, 248, 246, 0.94) !important;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-card:hover {
+  border-color: rgba(180, 250, 242, 0.88) !important;
+  box-shadow: 0 0 22px rgba(108, 238, 228, 0.28) !important;
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-card .resource-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-hero h2 {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  font-size: 16.5px !important;
+  font-weight: 500 !important;
+  color: #f0fefa !important;
+  margin: 0 !important;
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-hero .resource-icon-image {
+  width: 64px !important;
+  height: 48px !important;
+  align-self: center;
+  object-fit: contain;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  filter: drop-shadow(0 0 8px rgba(176, 248, 236, 0.65));
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-download {
+  padding: 12px 14px !important;
+  border-radius: 12px !important;
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-download h2 {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #eefdf9 !important;
+  margin: 0 !important;
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-download .resource-icon-image {
+  width: 28px !important;
+  height: 28px !important;
+  object-fit: contain;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  filter: drop-shadow(0 0 6px rgba(176, 248, 236, 0.55));
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-desc,
+html[data-pond-mode="resources"] #resource-list .resource-card p {
+  font-size: 12px !important;
+  line-height: 1.55;
+  color: rgba(196, 232, 228, 0.78) !important;
+  margin: 0 !important;
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-meta,
+html[data-pond-mode="resources"] #resource-list .resource-tags,
+html[data-pond-mode="resources"] #resource-list .meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11px;
+  color: rgba(176, 224, 218, 0.78) !important;
+}
+
+html[data-pond-mode="resources"] #resource-list .tag,
+html[data-pond-mode="resources"] #resource-list .resource-tag {
+  border-radius: 999px !important;
+  border: 1px solid rgba(142, 228, 216, 0.42) !important;
+  background: rgba(6, 24, 28, 0.62) !important;
+  color: #c8f4ec !important;
+  padding: 1px 8px !important;
+}
+
+html[data-pond-mode="resources"] #resource-list .xp-button,
+html[data-pond-mode="resources"] #resource-list .resource-card a,
+html[data-pond-mode="resources"] #resource-list .resource-card button {
+  border-radius: 999px !important;
+  border: 1.3px dashed rgba(182, 242, 236, 0.58) !important;
+  background: rgba(8, 28, 34, 0.68) !important;
+  background-image: none !important;
+  color: #f0fefa !important;
+  box-shadow: none !important;
+  font-size: 12.5px !important;
+  padding: 6px 16px !important;
+  text-decoration: none !important;
+}
+
+html[data-pond-mode="resources"] #resource-list .xp-button:hover,
+html[data-pond-mode="resources"] #resource-list .resource-card a:hover,
+html[data-pond-mode="resources"] #resource-list .resource-card button:hover {
+  border-color: rgba(164, 248, 240, 0.94) !important;
+  box-shadow: 0 0 14px rgba(102, 238, 226, 0.38) !important;
+}
+
+html[data-pond-mode="resources"] #resource-list details summary {
+  color: rgba(166, 236, 228, 0.84) !important;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+/* Quick Transfer modal (#quick-transfer-modal) CRT glass skin */
+html[data-pond-mode="resources"] #quick-transfer-modal .modal-window,
+html[data-pond-mode="resources"] #quick-transfer-modal .transfer-window {
+  border-radius: 18px !important;
+  border: 1.6px solid rgba(196, 250, 242, 0.72) !important;
+  background: rgba(6, 24, 28, 0.92) !important;
+  color: #eefcf9 !important;
+  box-shadow: 0 0 36px rgba(104, 238, 226, 0.32) !important;
+}
+
+html[data-pond-mode="resources"] #quick-transfer-modal .window-titlebar {
+  background: transparent !important;
+  border-bottom: 1px dotted rgba(180, 236, 230, 0.32) !important;
+  color: #f0fefa !important;
+}
+
+html[data-pond-mode="resources"] #quick-transfer-modal input,
+html[data-pond-mode="resources"] #quick-transfer-modal textarea {
+  background: rgba(4, 16, 20, 0.78) !important;
+  color: #eefcf9 !important;
+  border: 1.2px dashed rgba(176, 236, 230, 0.48) !important;
+  border-radius: 10px !important;
+}
+
+html[data-pond-mode="resources"] #quick-transfer-modal .xp-button {
+  border-radius: 999px !important;
+  border: 1.2px dashed rgba(180, 240, 234, 0.56) !important;
+  background: rgba(8, 28, 32, 0.72) !important;
+  color: #f0fefa !important;
+  box-shadow: none !important;
+}
