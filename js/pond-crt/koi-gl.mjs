@@ -106,10 +106,10 @@ void main() {
   vec3 kohakuRed = mix(vec3(0.92, 0.24, 0.06), vec3(1.0, 0.36, 0.10), 1.0 - y * y * 0.6);
   col = mix(col, kohakuRed, clamp(redMask, 0.0, 1.0));
 
-  // Subtle dark eyes near rounded head
-  float eyeL = 1.0 - smoothstep(0.015, 0.028, length(vec2((t - 0.065) * 1.4, (y - 0.58) * 0.18)));
-  float eyeR = 1.0 - smoothstep(0.015, 0.028, length(vec2((t - 0.065) * 1.4, (y + 0.58) * 0.18)));
-  col = mix(col, vec3(0.06, 0.08, 0.09), max(eyeL, eyeR) * 0.72);
+  // Natural Nishikigoi eyes positioned behind the rounded snout (t ~ 0.135) & near lateral head margin (|y| ~ 0.74)
+  float eyeL = 1.0 - smoothstep(0.014, 0.026, length(vec2((t - 0.135) * 1.15, (y - 0.72) * 0.24)));
+  float eyeR = 1.0 - smoothstep(0.014, 0.026, length(vec2((t - 0.135) * 1.15, (y + 0.72) * 0.24)));
+  col = mix(col, vec3(0.05, 0.07, 0.08), max(eyeL, eyeR) * 0.78);
 
   // Underwater absorption / veiling so koi genuinely lives beneath the water surface
   vec3 waterVeil = mix(uWaterMid * 1.55, uCausticTint * 0.72, 0.32);
@@ -120,15 +120,16 @@ void main() {
 `;
 
 function koiWidthProfile(t) {
-  if (t < 0.09) {
-    const u = t / 0.09;
-    return 0.46 + 0.42 * Math.sin(u * Math.PI * 0.5);
+  if (t < 0.12) {
+    // Fuller, smoother rounded koi head transitioning into shoulders
+    const u = t / 0.12;
+    return 0.52 + 0.38 * Math.sin(u * Math.PI * 0.5);
   }
-  if (t < 0.28) {
-    const u = (t - 0.09) / 0.19;
-    return 0.88 + 0.14 * Math.sin(u * Math.PI * 0.65);
+  if (t < 0.30) {
+    const u = (t - 0.12) / 0.18;
+    return 0.90 + 0.12 * Math.sin(u * Math.PI * 0.65);
   }
-  const u = (t - 0.28) / 0.72;
+  const u = (t - 0.30) / 0.70;
   return Math.max(0.16, Math.pow(1.0 - u, 1.38) * 0.98 + 0.09 * Math.sin(u * Math.PI));
 }
 

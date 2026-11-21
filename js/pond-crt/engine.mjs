@@ -435,9 +435,9 @@ export class PondCRTEngine {
     gl.useProgram(this.programs.surfaceOverlay.program);
     const su = this.programs.surfaceOverlay.uniforms;
     const sweepP = Math.max(0, Math.min(1, (t - this.seasonTransitionStart) / this.seasonTransitionDuration));
-    // Trigger new season ambient particle gust right when the stardust ribbon hits pond center!
-    if (this._pendingAmbientSeason && sweepP >= 0.34) {
-      this.particlesGL.triggerSeasonGust(this._pendingAmbientSeason);
+    // Trigger new season falling petals/leaves/snow ONLY AFTER season transition completely finishes (sweepP >= 0.99)!
+    if (this._pendingAmbientSeason && sweepP >= 0.99) {
+      this.particlesGL.startNewSeasonAmbient(this._pendingAmbientSeason);
       this._pendingAmbientSeason = null;
     }
     gl.activeTexture(gl.TEXTURE0);
@@ -456,8 +456,8 @@ export class PondCRTEngine {
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     gl.disable(gl.BLEND);
 
-    // 1d. Pure GPU Falling Petals / Maple Leaves / Snow + Video-1 Stardust Vortex
-    this.particlesGL.render(t, dt, sw, this.seasonId, (rx, ry, str) => {
+    // 1d. Pure GPU Botanical Falling Petals / Maple Leaves / Snow + Video-1 Stardust Vortex
+    this.particlesGL.render(t, dt, sw, this.seasonId, sweepP, (rx, ry, str) => {
       this.spawnRipple(rx, ry, str);
     });
 

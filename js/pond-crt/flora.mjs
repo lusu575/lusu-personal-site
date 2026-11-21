@@ -299,111 +299,53 @@ function drawMapleLeaf(ctx, x, y, r, rot, colorA = '#e84814', colorB = '#ff9828'
   ctx.restore();
 }
 
-// --- Thin, Translucent, Delicate Winter Shore Ice (strictly calibrated to final2-winter.png!) ---
-// - NO lightning-bolt cracks, NO thick opaque white wall!
-// - Thin translucent dark-slate ice coves on left/right/bottom with a dark open water pocket bottom-center
-// - Whisper-thin frost rim + subtle translucent ice sheen so water & fish shadow remain visible beneath
+// --- Completely New Winter Pond Approach: Soft Atmospheric Edge-Frost Mist (NO hard polygon outlines, NO crack lines, NO straight-line grass!) ---
+// Leaves a wide, serene, translucent frozen pond with soft feathered frost mist hugging only the outer banks,
+// plus delicate frost-dusted winter twigs top-left (matching the praised Spring branch quality).
 
 function drawWinterIceShelves(ctx, w, h) {
   ctx.save();
 
-  // Helper: draw one thin, translucent, softly scalloped winter ice cove (water color shows right through!)
-  const drawThinIceFlange = (pts, fillAlpha = 0.34, rimAlpha = 0.42) => {
-    ctx.beginPath();
-    ctx.moveTo(pts[0][0] * w, pts[0][1] * h);
-    for (let i = 1; i < pts.length; i++) {
-      const a = pts[i - 1];
-      const b = pts[i];
-      const mx = ((a[0] + b[0]) * 0.5) * w;
-      const my = ((a[1] + b[1]) * 0.5) * h;
-      ctx.quadraticCurveTo(a[0] * w, a[1] * h, mx, my);
-    }
-    const last = pts[pts.length - 1];
-    ctx.lineTo(last[0] * w, last[1] * h);
-    ctx.closePath();
-
-    // Very restrained, translucent slate-blue thin ice (NEVER thick opaque white!)
-    const g = ctx.createLinearGradient(0, h * 0.35, 0, h);
-    g.addColorStop(0.0, `rgba(92, 114, 138, ${fillAlpha * 0.72})`);
-    g.addColorStop(0.6, `rgba(118, 138, 162, ${fillAlpha * 0.88})`);
-    g.addColorStop(1.0, `rgba(148, 168, 192, ${fillAlpha})`);
-    ctx.fillStyle = g;
-    ctx.fill();
-
-    // Whisper-thin delicate frost meniscus along shoreline edge (matching final2-winter.png)
-    ctx.strokeStyle = `rgba(196, 220, 242, ${rimAlpha})`;
-    ctx.lineWidth = Math.max(1.0, w * 0.0014);
-    ctx.stroke();
-
-    // Subtle soft frost-snow dapple inside the thin ice (restrained, zero lightning cracks!)
+  // Soft, atmospheric, borderless edge-frost mist banks (layered low-alpha gradients, zero hard strokes, zero cracks!)
+  const drawFrostMist = (cx, cy, rx, ry, rot, peakAlpha) => {
     ctx.save();
-    ctx.clip();
-    for (let k = 0; k < 14; k++) {
-      const rx = (((k * 173 + 31) % 1000) / 1000) * w;
-      const ry = (((k * 289 + 57) % 1000) / 1000) * h;
-      const rr = (0.04 + (k % 4) * 0.018) * w;
-      const dg = ctx.createRadialGradient(rx, ry, 0, rx, ry, rr);
-      dg.addColorStop(0, `rgba(182, 206, 228, ${fillAlpha * 0.32})`);
-      dg.addColorStop(1, 'rgba(90, 112, 136, 0)');
-      ctx.fillStyle = dg;
-      ctx.beginPath();
-      ctx.ellipse(rx, ry, rr * 1.4, rr * 0.55, 0, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    ctx.translate(cx * w, cy * h);
+    ctx.rotate(rot);
+    const g = ctx.createRadialGradient(0, 0, rx * w * 0.05, 0, 0, rx * w);
+    g.addColorStop(0.0, `rgba(148, 174, 202, ${peakAlpha})`);
+    g.addColorStop(0.45, `rgba(98, 124, 152, ${peakAlpha * 0.52})`);
+    g.addColorStop(0.80, `rgba(54, 78, 104, ${peakAlpha * 0.16})`);
+    g.addColorStop(1.0, 'rgba(24, 42, 64, 0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rx * w, ry * h, 0, 0, Math.PI * 2);
+    ctx.fill();
     ctx.restore();
   };
 
-  // 1. Left-upper small thin ice cove (compact, matching final2-winter.png)
-  drawThinIceFlange([
-    [0.0, 0.39], [0.06, 0.40], [0.13, 0.41], [0.17, 0.42],
-    [0.12, 0.435], [0.05, 0.455], [0.0, 0.465]
-  ], 0.28, 0.40);
+  // Gentle frosted corner & bottom-edge mist (compact, thin, translucent -> water & koi shadow stay visible!)
+  drawFrostMist(0.03, 0.42, 0.15, 0.06, 0.06, 0.28);
+  drawFrostMist(0.97, 0.33, 0.13, 0.05, -0.05, 0.24);
+  drawFrostMist(0.96, 0.67, 0.14, 0.06, 0.06, 0.28);
+  drawFrostMist(0.08, 0.93, 0.22, 0.11, 0.10, 0.38);
+  drawFrostMist(0.88, 0.94, 0.24, 0.11, -0.10, 0.40);
+  drawFrostMist(0.50, 1.00, 0.34, 0.07, 0.0, 0.22);
 
-  // 2. Left-lower tiny ice edge
-  drawThinIceFlange([
-    [0.0, 0.62], [0.04, 0.64], [0.05, 0.67], [0.02, 0.70], [0.0, 0.72]
-  ], 0.26, 0.36);
-
-  // 3. Right-upper & right-lower small thin ice coves
-  drawThinIceFlange([
-    [1.0, 0.29], [0.94, 0.31], [0.90, 0.335], [0.95, 0.36], [1.0, 0.38]
-  ], 0.24, 0.36);
-  drawThinIceFlange([
-    [1.0, 0.61], [0.93, 0.64], [0.89, 0.675], [0.94, 0.705], [1.0, 0.72]
-  ], 0.30, 0.42);
-
-  // 4. Bottom-left compact thin ice floe (leaves wide dark open water in center & bottom-center!)
-  drawThinIceFlange([
-    [0.0, 0.82], [0.09, 0.83], [0.18, 0.85], [0.23, 0.88],
-    [0.19, 0.94], [0.22, 1.0], [0.0, 1.0]
-  ], 0.34, 0.44);
-
-  // 5. Bottom-right compact thin ice floe (no cracks, thin translucent edge)
-  drawThinIceFlange([
-    [0.58, 1.0], [0.65, 0.94], [0.71, 0.90], [0.79, 0.85],
-    [0.89, 0.835], [0.96, 0.86], [1.0, 0.88], [1.0, 1.0]
-  ], 0.36, 0.46);
-
-  // 6. Delicate frost-dusted arching winter reeds along extreme left & bottom-right corners
-  const reedClusters = [
-    { x: 0.035, y: 0.43, count: 4, h: 0.085, dir: 1 },
-    { x: 0.065, y: 0.89, count: 5, h: 0.11, dir: 1 },
-    { x: 0.87, y: 0.93, count: 4, h: 0.095, dir: -1 },
-    { x: 0.94, y: 0.90, count: 5, h: 0.12, dir: -1 }
-  ];
-  for (const cl of reedClusters) {
-    for (let i = 0; i < cl.count; i++) {
-      const bx = (cl.x + (i - cl.count * 0.5) * 0.011) * w;
-      const by = cl.y * h;
-      const rh = cl.h * h * (0.72 + 0.36 * ((i * 37) % 10) / 10);
-      const bend = (0.32 + i * 0.11) * cl.dir * w * 0.038;
-      ctx.strokeStyle = 'rgba(196, 220, 240, 0.58)';
-      ctx.lineWidth = Math.max(1.0, w * 0.0013);
-      ctx.beginPath();
-      ctx.moveTo(bx, by);
-      ctx.quadraticCurveTo(bx + bend * 0.45, by - rh * 0.65, bx + bend, by - rh);
-      ctx.stroke();
-    }
+  // Subtle fine crystalline frost-dust speckles along the outer icy corners (replaces ugly straight reeds & crack lines!)
+  for (let i = 0; i < 110; i++) {
+    const corner = i % 4;
+    const r1 = ((i * 197.3 + 19.1) % 1000) / 1000;
+    const r2 = ((i * 313.7 + 47.3) % 1000) / 1000;
+    let gx, gy;
+    if (corner === 0) { gx = r1 * 0.18; gy = 0.80 + r2 * 0.20; }
+    else if (corner === 1) { gx = 0.76 + r1 * 0.24; gy = 0.80 + r2 * 0.20; }
+    else if (corner === 2) { gx = r1 * 0.12; gy = 0.36 + r2 * 0.14; }
+    else { gx = 0.88 + r1 * 0.12; gy = 0.60 + r2 * 0.14; }
+    const rad = 0.7 + ((i * 13) % 5) * 0.32;
+    ctx.fillStyle = `rgba(210, 232, 250, ${0.14 + ((i * 29) % 10) * 0.028})`;
+    ctx.beginPath();
+    ctx.arc(gx * w, gy * h, rad, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   ctx.restore();
