@@ -334,6 +334,11 @@ export class ParticlesGLRenderer {
     }
   }
 
+  clearAmbient() {
+    this.ambient = [];
+    this.seasonId = '';
+  }
+
   startNewSeasonAmbient(seasonId) {
     this._initSeason(seasonId, true);
   }
@@ -378,21 +383,24 @@ export class ParticlesGLRenderer {
   }
 
   render(t, dt, sceneW, activeSeasonId, sweepP, onTouchdownRipple) {
-    if (!this.seasonId) {
+    const inTransition = sweepP < 0.99;
+
+    // Strict season-ownership guard:
+    // - During transition: ZERO ambient particles (prevents old-season maple leaves/petals from leaking across seasons!)
+    // - After transition completes: only render ambient particles that strictly belong to activeSeasonId!
+    if (!inTransition && this.seasonId !== activeSeasonId) {
       this._initSeason(activeSeasonId, false);
     }
-
-    // Smoothly fade OUT old ambient particles during season transition;
-    // new season petals/leaves ONLY begin falling AFTER sweepP >= 1.0!
-    const inTransition = sweepP < 0.999;
-    const fadeMult = inTransition ? Math.max(0, 1.0 - sweepP * 2.4) : 1.0;
 
     const sizeScale = sceneW / 640;
     this.count = 0;
 
-    // 1. Dynamic seasonal ambient particles
-    if (fadeMult > 0.01) {
+    // 1. Dynamic seasonal ambient particles (STRICTLY owned by activeSeasonId, NEVER during transition!)
+    if (!inTransition && this.seasonId === activeSeasonId && this.ambient.length > 0) {
       for (const p of this.ambient) {
+        if ((p.cell === 2 || p.cell === 3) && activeSeasonId !== 'autumn') continue;
+        if (p.cell === 1 && activeSeasonId !== 'spring') continue;
+
         if (p.cell === 1 || p.cell === 2 || p.cell === 3) {
           if (p.state === 'fall') {
             p.x += (p.vx + Math.sin(t * 2.1 + p.phase) * 0.015) * dt;
@@ -423,9 +431,9 @@ export class ParticlesGLRenderer {
           if (p.y <= 1.06) {
             const fadeOut = p.state === 'float' ? Math.max(0, 1.0 - Math.max(0, p.life - (p.maxFloat - 1.5)) / 1.5) : 1.0;
             const tumble = p.state === 'float' ? 0.85 : (0.50 + 0.50 * Math.abs(Math.cos(t * 1.9 + p.phase)));
-            this._push(p.x, p.y, p.col[0], p.col[1], p.col[2], 0.92 * fadeOut * fadeMult, p.size * sizeScale, p.cell, p.rot, tumble);
+            this._push(p.x, p.y, p.col[0], p.col[1], p.col[2], 0.92 * fadeOut, p.size * sizeScale, p.cell, p.rot, tumble);
           }
-        } else if (this.seasonId === 'winter') {
+        } else if (activeSeasonId === 'winter') {
           p.x += (p.vx + Math.sin(t * 1.15 + p.phase) * 0.011) * dt;
           p.y += p.vy * dt;
           if (p.y < -0.04) {
@@ -435,9 +443,9 @@ export class ParticlesGLRenderer {
           if (p.x < -0.02) p.x += 1.04;
           if (p.x > 1.02) p.x -= 1.04;
           if (p.y <= 1.04) {
-            this._push(p.x, p.y, p.col[0], p.col[1], p.col[2], p.alpha * fadeMult, p.size * sizeScale, 0, 0, 1.0);
+            this._push(p.x, p.y, p.col[0], p.col[1], p.col[2], p.alpha, p.size * sizeScale, 0, 0, 1.0);
           }
-        } else {
+        } else if (activeSeasonId === 'summer') {
           p.x += (p.vx + Math.sin(t * 0.8 + p.phase) * 0.005) * dt;
           p.y += (p.vy + Math.cos(t * 0.7 + p.phase) * 0.004) * dt;
           if (p.x < 0.05) p.x = 0.95;
@@ -445,7 +453,7 @@ export class ParticlesGLRenderer {
           if (p.y < 0.08) p.y = 0.92;
           if (p.y > 0.92) p.y = 0.08;
           const pulse = 0.25 + 0.75 * Math.pow(0.5 + 0.5 * Math.sin(t * 1.7 + p.phase), 2.0);
-          this._push(p.x, p.y, p.col[0], p.col[1], p.col[2], 0.55 * pulse * fadeMult, p.size * sizeScale, 0, 0, 1.0);
+          this._push(p.x, p.y, p.col[0], p.col[1], p.col[2], 0.55 * pulse, p.size * sizeScale, 0, 0, 1.0);
         }
       }
     }

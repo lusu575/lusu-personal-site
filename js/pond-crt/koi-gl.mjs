@@ -68,54 +68,44 @@ void main() {
     return;
   }
 
-  // Part 4: Tiny delicate glowing pearl barbels (鱼须) at mouth corners
+  // Part 4: Tiny delicate smooth barbels (鱼须) at mouth corners (no internal dot grid)
   if (vPart > 3.5) {
-    float along = vLocal.x;
-    float dotPattern = 1.0 - smoothstep(0.25, 0.48, length(vec2(fract(along * 3.0) - 0.5, vLocal.y * 0.6)));
-    float fade = 1.0 - smoothstep(0.4, 1.0, along);
-    vec3 col = mix(vec3(0.95, 0.98, 1.0), uWaterMid * 1.4, depthFog * 0.7);
-    fragColor = vec4(col, dotPattern * fade * 0.85 * baseAlpha);
+    float fade = (1.0 - smoothstep(0.15, 1.0, vLocal.x)) * (1.0 - smoothstep(0.45, 1.0, abs(vLocal.y)));
+    vec3 col = mix(vec3(0.95, 0.96, 0.94), uWaterMid * 1.4, depthFog * 0.72);
+    fragColor = vec4(col, fade * 0.72 * baseAlpha);
     return;
   }
 
-  // Part 1 & 3: Translucent Dotted Fan-Ray Fins (pectoral, pelvic, forked tail & dorsal crest)
-  // Pond water shows clearly RIGHT THROUGH the gaps between glowing fin dots!
+  // Part 1 & 3: Smooth, Silky Translucent Flowing Fins (no internal dot grid — clean CRT quantization only!)
   if (vPart > 0.5) {
     float u = vLocal.x; // 0 = root, 1 = fin tip
     float v = vLocal.y; // -1..+1 across fin fan
     float isDorsal = vPart > 2.5 ? 1.0 : 0.0;
 
-    float rayCols = isDorsal > 0.5 ? 10.0 : 7.0;
-    float rayRows = isDorsal > 0.5 ? 3.0 : 6.0;
-    vec2 grid = vec2(u * rayRows, (v * 0.5 + 0.5) * rayCols);
-    float rowOff = mod(floor(grid.y), 2.0) * 0.45;
-    vec2 cellUv = fract(vec2(grid.x + rowOff, grid.y)) - 0.5;
-    float dotR = mix(0.36, 0.24, u);
-    float dotGlow = 1.0 - smoothstep(dotR * 0.35, dotR, length(cellUv));
+    float shapeMask = (1.0 - smoothstep(0.08, 1.0, u)) * (1.0 - smoothstep(0.65, 1.0, abs(v)));
+    // Subtle soft fin-ray sheen without any dotted pattern
+    float raySheen = 0.88 + 0.12 * sin(v * (isDorsal > 0.5 ? 18.0 : 14.0));
+    vec3 finCol = mix(vec3(0.98, 0.94, 0.88), vec3(0.88, 0.95, 0.96), u) * raySheen;
+    finCol = mix(finCol, uWaterMid * 1.45, depthFog * 0.80);
 
-    float shapeMask = (1.0 - smoothstep(0.12, 1.0, u)) * (1.0 - smoothstep(0.68, 1.0, abs(v)));
-    // Subtle warm golden-orange hint near pectoral fin roots, glistening pearl-white toward tips
-    vec3 finCol = mix(vec3(1.0, 0.92, 0.82), vec3(0.92, 0.98, 1.0), u);
-    finCol = mix(finCol, uWaterMid * 1.4, depthFog * 0.78);
-
-    float alpha = (dotGlow * 0.92 + 0.10) * shapeMask * baseAlpha;
-    if (alpha < 0.02) discard;
-    fragColor = vec4(finCol * (0.95 + dotGlow * 0.35), alpha);
+    float alpha = shapeMask * (isDorsal > 0.5 ? 0.52 : 0.70) * baseAlpha;
+    if (alpha < 0.015) discard;
+    fragColor = vec4(finCol, alpha);
     return;
   }
 
-  // Part 0: Main Koi Body — Body-Conforming Luminous Pearl/Scale-Dot Lattice!
+  // Part 0: Smooth, Luminous 3D-Shaded Nishikigoi Body (ZERO internal dot-matrix grid!)
   float t = vLocal.x; // 0 = snout, 1 = tail peduncle
   float y = vLocal.y; // -1..+1 across width
 
-  float edgeAA = 1.0 - smoothstep(0.80 - depthFog * 0.10, 1.0, abs(y));
+  float edgeAA = 1.0 - smoothstep(0.76 - depthFog * 0.10, 1.0, abs(y));
   if (edgeAA <= 0.01) discard;
 
-  // 3D Volumetric Top-Side Lighting (bright sunlit upper dorsal curve, shaded lower belly!)
-  float lightSide = clamp(0.68 + 0.38 * (1.0 - y * y) + 0.18 * y, 0.38, 1.15);
-  vec3 pearlWhite = mix(vec3(1.0, 0.98, 0.94), vec3(0.84, 0.90, 0.92), t * 0.65);
+  // Smooth 3D Volumetric Top-Side Lighting (sunlit dorsal curve, softly shaded lower flank)
+  float lightSide = clamp(0.74 + 0.30 * (1.0 - y * y) + 0.14 * y, 0.48, 1.12);
+  vec3 pearlWhite = mix(vec3(1.0, 0.98, 0.93), vec3(0.86, 0.88, 0.86), t * 0.65);
 
-  // Vivid Kohaku orange-vermilion markings (matching reference rich fiery-orange dorsal + gleaming white nose & cheeks!)
+  // Vivid Kohaku orange-vermilion saddle markings
   float redMask = 0.0;
   if (vFish < 0.5) {
     redMask = max(redMask, spotField(vec2(t, y), vec2(0.18, 0.08), vec2(0.14, 0.78)));
@@ -127,41 +117,31 @@ void main() {
     redMask = max(redMask, spotField(vec2(t, y), vec2(0.44, -0.08), vec2(0.16, 0.86)));
     redMask = max(redMask, spotField(vec2(t, y), vec2(0.74, 0.06), vec2(0.13, 0.76)));
   }
-  // Keep gleaming pearl-white snout tip (t < 0.065) just like the reference image!
   redMask *= smoothstep(0.045, 0.10, t);
 
-  vec3 kohakuOrange = mix(vec3(0.90, 0.24, 0.06), vec3(1.0, 0.48, 0.12), clamp(0.45 + 0.55 * (1.0 - y * y), 0.0, 1.0));
-  vec3 baseCol = mix(pearlWhite, kohakuOrange, clamp(redMask, 0.0, 1.0)) * lightSide;
+  vec3 kohakuOrange = mix(vec3(0.92, 0.24, 0.06), vec3(1.0, 0.44, 0.10), clamp(0.45 + 0.55 * (1.0 - y * y), 0.0, 1.0));
+  vec3 col = mix(pearlWhite, kohakuOrange, clamp(redMask, 0.0, 1.0)) * lightSide;
 
-  // Glossy dark cheek-side eyes tucked naturally along head margin (t ~ 0.095, |y| ~ 0.74)
-  float eyeDistL = length(vec2((t - 0.095) * 1.15, (y - 0.74) * 0.22));
-  float eyeDistR = length(vec2((t - 0.095) * 1.15, (y + 0.74) * 0.22));
+  // Subtle blunted koi mouth lip contour + operculum gill shading
+  float mouthArc = 1.0 - smoothstep(0.012, 0.032, length(vec2((t - 0.014) * 1.6, y * 0.14)));
+  col = mix(col, col * 0.76, mouthArc * 0.50);
+  float gillCurve = exp(-pow(((t - 0.21) - (1.0 - y * y) * 0.035) * 34.0, 2.0)) * smoothstep(0.25, 0.85, abs(y));
+  col = mix(col, col * 0.88, gillCurve * 0.32);
+
+  // Glossy dark cheek-side eyes tucked naturally along head margin (t ~ 0.10, |y| ~ 0.76)
+  float eyeDistL = length(vec2((t - 0.10) * 1.10, (y - 0.76) * 0.21));
+  float eyeDistR = length(vec2((t - 0.10) * 1.10, (y + 0.76) * 0.21));
   float eyeMin = min(eyeDistL, eyeDistR);
-  float eyePupil = 1.0 - smoothstep(0.015, 0.028, eyeMin);
-
-  // Body-Conforming Staggered Pearl/Scale-Dot Matrix!
-  // Dots curve organically with the spine (t) and across the rounded body cylinder (asin(y))!
-  float curvedY = asin(clamp(y * 0.96, -0.98, 0.98)) * 0.6366; // cylindrical wrap [-1..1]
-  vec2 scaleGrid = vec2(t * 24.0, (curvedY * 0.5 + 0.5) * 6.5);
-  float rowStagger = mod(floor(scaleGrid.y), 2.0) * 0.5;
-  vec2 cellUv = fract(vec2(scaleGrid.x + rowStagger, scaleGrid.y)) - 0.5;
-  float distToDot = length(cellUv);
-
-  float lum = dot(baseCol, vec3(0.299, 0.587, 0.114));
-  float dotR = mix(0.36, 0.50, clamp(lum * 0.95, 0.0, 1.0));
-  float dotCore = 1.0 - smoothstep(dotR * 0.30, dotR, distToDot);
-  float dotSpec = exp(-distToDot * distToDot * 12.0) * 0.42 * smoothstep(0.45, 1.1, lightSide);
-
-  // Rich luminous underwater koi volume + subtle body-conforming pearl scale shimmer (zero double-quantization dimness!)
-  vec3 dotBody = baseCol * (0.74 + dotCore * 0.58) + vec3(1.0, 0.96, 0.88) * dotSpec;
-  dotBody = mix(dotBody, vec3(0.03, 0.05, 0.06), eyePupil * 0.94);
+  float eyeRim = (1.0 - smoothstep(0.020, 0.032, eyeMin)) * smoothstep(0.013, 0.022, eyeMin);
+  float eyePupil = 1.0 - smoothstep(0.013, 0.022, eyeMin);
+  col = mix(col, vec3(0.90, 0.93, 0.95), eyeRim * 0.40);
+  col = mix(col, vec3(0.04, 0.06, 0.08), eyePupil * 0.90);
 
   // Underwater absorption / depth veiling
   vec3 waterVeil = mix(uWaterMid * 1.50, uCausticTint * 0.70, 0.28);
-  dotBody = mix(dotBody, waterVeil, depthFog * 0.85);
+  col = mix(col, waterVeil, depthFog * 0.85);
 
-  float outAlpha = edgeAA * (0.88 + dotCore * 0.12) * baseAlpha;
-  fragColor = vec4(dotBody, outAlpha);
+  fragColor = vec4(col, edgeAA * baseAlpha);
 }
 `;
 

@@ -341,7 +341,8 @@ export class PondCRTEngine {
       this.fromSeasonId = prev;
       this.seasonId = seasonId;
       this.seasonTransitionStart = this.elapsed;
-      // Delay ambient particle switch until stardust ribbon lands in pond center -> continuous, never hard-snaps!
+      // Immediately clear old season's ambient particles so maple leaves/petals NEVER leak into transitions or other seasons!
+      this.particlesGL.clearAmbient();
       this._pendingAmbientSeason = seasonId;
       this.uiOverlay.setSeason(seasonId, this.elapsed);
       this.particlesGL.triggerSeasonTransitionFX(prev, seasonId, originNx, 1.0 - originNy, this.elapsed);
