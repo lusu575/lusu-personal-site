@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-videos-row-height",
+      "slug": "2026-11-22-pond-videos-row-height",
+      "category": "site-updates",
+      "tags": [
+        "site-update",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T04:27:00+08:00",
+      "updated_at": "2026-11-22T04:27:00+08:00",
+      "published_at": "2026-11-22T04:27:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "date": "2026.11.22",
+      "title": {
+        "zh": "修复视频区 3 列卡片高度塌陷重叠问题",
+        "en": "Fixed 3-Column Video Card Row Collapse in CSS Grid",
+        "ja": "動画区 3 列カードの縦重なりを修正"
+      },
+      "summary": {
+        "zh": "将 3 列视频网格中 .video-card 的 height 由 100% 改为 auto，彻底消除行间重叠，完整呈现 16:9 无裁切封面、标题、简介与齐平播放按钮。",
+        "en": "Changed .video-card height from 100% to auto inside the auto-sized 3-column grid so 16:9 thumbnails, titles, descriptions, and aligned Play buttons never overlap vertically.",
+        "ja": "CSS Grid の自動行高における .video-card の height を 100% から auto へ修正し、16:9 表紙・タイトル・概要・再生ボタンの縦重なりを完全に解消しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-videos-16x9",
       "slug": "2026-11-22-pond-videos-16x9",
       "category": "site-updates",
@@ -111,34 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "在游戏区封面换装、工具区图标与关于页激活时强制切换图片为 eager 即时加载，彻底解决切换路由后封面与头像偶发黑框未解码的问题。",
         "en": "Forced eager loading on game covers, tool icons, and the About avatar when activating those windows so covers and avatars never stall as blank frames.",
         "ja": "ゲーム表紙・ツールアイコン・概要アバターのウィンドウ表示時に即時読み込み（eager）を強制し、黒い空枠のまま止まる現象を解消しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-icons-close-sync",
-      "slug": "2026-11-22-pond-icons-close-sync",
-      "category": "site-updates",
-      "tags": [
-        "site-update",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T03:54:00+08:00",
-      "updated_at": "2026-11-22T03:54:00+08:00",
-      "published_at": "2026-11-22T03:54:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "统一登录窗关闭按钮、优化知识库翻书图标与聊天室顶沿柔化",
-        "en": "Unified Login Close Button, Crisp Open-Book Title Icon & Chatroom Top Fade",
-        "ja": "ログイン閉じるボタン統一・知識庫アイコン刷新・チャット上端フェード追加"
-      },
-      "summary": {
-        "zh": "将登录浮层右上角关闭按钮统一为圆形虚线 × 控件、重绘知识库与文章标题栏翻书图标消除方块观感，并为聊天室滚动区增加顶沿渐隐过渡。",
-        "en": "Matched the login modal close button to the circular dashed x style, redrew the Knowledge/Article open-book title icon for crispness, and added a soft top-edge scroll fade to the Chatroom log.",
-        "ja": "ログイン窓右上の閉じるボタンを他窓と同じ点線丸 × へ統一し、知識庫と記事タイトルの本アイコンを鮮明な見開き SVG へ刷新、チャット上端に自然なフェードマスクを追加しました。"
       }
     }
   ]

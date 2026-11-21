@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 将视频区 3 列网格 .video-card 高度由 100% 改为 uto，修复纵向行重叠并保持 16:9 完整封面与底部按钮齐平（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-videos-row-height` / `2026-11-22-pond-videos-row-height`；视觉层缓存 `20261122-pond-polish-r12`。
+
 - 恢复视频区 3 列标准 16:9 网格并放开卡片内容区自适应高度，确保封面零裁切且标题、简介与底部播放按钮完整呈现（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-videos-16x9` / `2026-11-22-pond-videos-16x9`；视觉层缓存 `20261122-pond-polish-r11`。
 
 - 深夜池塘最终细节收尾：视频 16:9 完整封面零裁切、修复聊天室右上房间胶囊叠字与顶沿渐隐、提亮猫国封面并升级 Hextris 霓虹六边形封面、优化知识库 3 排适配与手机端 Dock 底部 96px 留白（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-final-finish` / `2026-11-22-pond-final-finish`；视觉层缓存 `20261122-pond-polish-r10`。

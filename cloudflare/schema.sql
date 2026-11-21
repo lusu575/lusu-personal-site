@@ -15578,6 +15578,17 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 1. 3 列グリッド＋標準 16:9 比率に戻すことで、Bilibili・YouTube サムネイルが文字切れや余白なしで自然に収まるようにしました。
 2. .video-card と .video-body の高さ制約を解除し、タイトル・概要・下部再生ボタンを全カード揃えて表示します。', '2026-11-22T04:23:00+08:00', '2026-11-22T04:23:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r11', '2026-11-22T04:23:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-videos-row-height', '2026-11-22-pond-videos-row-height', 'site-updates', '["site-update","ui"]', '', 'published', 0, 0, '2026-11-22T04:27:00+08:00', '2026-11-22T04:27:00+08:00', '2026-11-22T04:27:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-videos-row-height-zh', 'seed-update-2026-11-22-pond-videos-row-height', 'zh', '修复视频区 3 列卡片高度塌陷重叠问题', '将 3 列视频网格中 .video-card 的 height 由 100% 改为 auto，彻底消除行间重叠，完整呈现 16:9 无裁切封面、标题、简介与齐平播放按钮。', '本次微调修复了 CSS Grid uto 行高下子项设置 height: 100% 导致的纵向行重叠问题：
+
+1. 将 .video-card 的高度恢复为 height: auto，同时保留 lign-items: stretch 与底部 margin-top: auto，确保每张视频卡片的 16:9 完整封面、高亮标题、简介、作者日期及底部「播放」按钮清晰分离、绝不重叠。', '2026-11-22T04:27:00+08:00', '2026-11-22T04:27:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-videos-row-height-en', 'seed-update-2026-11-22-pond-videos-row-height', 'en', 'Fixed 3-Column Video Card Row Collapse in CSS Grid', 'Changed .video-card height from 100% to auto inside the auto-sized 3-column grid so 16:9 thumbnails, titles, descriptions, and aligned Play buttons never overlap vertically.', 'This one-line layout fix resolves the CSS Grid row collapse on Videos:
+
+1. Switched .video-card to height: auto while retaining lign-items: stretch, ensuring every card''s uncropped 16:9 thumbnail, title, summary, and bottom Play button render cleanly without vertical overlap.', '2026-11-22T04:27:00+08:00', '2026-11-22T04:27:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-videos-row-height-ja', 'seed-update-2026-11-22-pond-videos-row-height', 'ja', '動画区 3 列カードの縦重なりを修正', 'CSS Grid の自動行高における .video-card の height を 100% から auto へ修正し、16:9 表紙・タイトル・概要・再生ボタンの縦重なりを完全に解消しました。', '動画区 3 列グリッドの行高計算を修正しました：
+
+1. .video-card を height: auto に戻し、lign-items: stretch を維持することで、16:9 無裁切サムネイル・タイトル・概要・下部再生ボタンが重ならず整然と表示されます。', '2026-11-22T04:27:00+08:00', '2026-11-22T04:27:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r12', '2026-11-22T04:27:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r11', '2026-11-22T04:23:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r12', '2026-11-22T04:27:00+08:00', 'schema') on conflict(version) do nothing;

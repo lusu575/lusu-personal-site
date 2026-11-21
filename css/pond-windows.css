@@ -4200,7 +4200,7 @@ html[data-pond-mode="videos"] #video-list {
 }
 
 html[data-pond-mode="videos"] #video-list .video-card {
-  height: 100% !important;
+  height: auto !important;
   min-height: 0 !important;
   overflow: visible !important;
 }
