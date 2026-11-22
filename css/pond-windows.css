@@ -5089,15 +5089,11 @@ html[data-ui-shell="mobile"] .article-copy-status {
   color: #88fce2 !important;
 }
 
-/* --- 3. Unified 30x30 Dotted Close Button (Including .account-close-button) & Zero-Shift Hover/Active Across All Buttons --- */
-html[data-pond-mode] .window-titlebar .close-button,
-html[data-pond-mode] .close-button,
-html[data-pond-mode] #account-popover .account-close-button,
-html[data-pond-mode] .account-close-button,
-html[data-pond-mode="welcome"] #welcome-modal .window-titlebar .close-button,
+/* --- 3. Unified 30x30 Dotted Close Button (ID-Specific Across ALL 9 Windows & Modals) & Zero-Shift Hover/Active --- */
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal, #video-modal, #account-popover) :is(.close-button, .account-close-button),
 #video-modal .window-titlebar .close-button,
-#video-modal .close-button,
-#welcome-modal .close-button {
+#welcome-modal .window-titlebar .close-button,
+#account-popover .account-close-button {
   width: 30px !important;
   height: 30px !important;
   min-width: 30px !important;
@@ -5112,27 +5108,18 @@ html[data-pond-mode="welcome"] #welcome-modal .window-titlebar .close-button,
   color: transparent !important;
   border-radius: 999px !important;
   border: 1.2px dashed rgba(185, 235, 230, 0.58) !important;
-  background-color: rgba(6, 22, 26, 0.56) !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 5.5 L14.5 14.5 M14.5 5.5 L5.5 14.5' fill='none' stroke='%23ecfffd' stroke-width='2' stroke-linecap='round' stroke-dasharray='2.5 1.4'/%3E%3C/svg%3E") !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  background-size: 15px 15px !important;
+  background: rgba(6, 22, 26, 0.56) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 5.5 L14.5 14.5 M14.5 5.5 L5.5 14.5' fill='none' stroke='%23ecfffd' stroke-width='2.1' stroke-linecap='round' stroke-dasharray='2.5 1.4'/%3E%3C/svg%3E") center / 15px 15px no-repeat !important;
   transform: none !important;
   transition: background-color 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease !important;
 }
 
-html[data-pond-mode] .window-titlebar .close-button:hover,
-html[data-pond-mode] .close-button:hover,
-html[data-pond-mode] #account-popover .account-close-button:hover,
-html[data-pond-mode] .account-close-button:hover,
-html[data-pond-mode="welcome"] #welcome-modal .window-titlebar .close-button:hover,
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal, #video-modal, #account-popover) :is(.close-button, .account-close-button):hover,
 #video-modal .window-titlebar .close-button:hover,
-#video-modal .close-button:hover,
-#welcome-modal .close-button:hover {
+#welcome-modal .window-titlebar .close-button:hover,
+#account-popover .account-close-button:hover {
   border-style: solid !important;
   border-color: rgba(154, 248, 238, 0.94) !important;
-  background-color: rgba(18, 56, 62, 0.80) !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 5.5 L14.5 14.5 M14.5 5.5 L5.5 14.5' fill='none' stroke='%23ffffff' stroke-width='2.1' stroke-linecap='round' stroke-dasharray='2.5 1.4'/%3E%3C/svg%3E") !important;
+  background: rgba(18, 56, 62, 0.82) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 5.5 L14.5 14.5 M14.5 5.5 L5.5 14.5' fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='2.5 1.4'/%3E%3C/svg%3E") center / 15px 15px no-repeat !important;
   box-shadow: 0 0 12px rgba(102, 236, 224, 0.36) !important;
   transform: none !important;
 }

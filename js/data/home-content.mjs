@@ -2,6 +2,33 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-close-id-specificity",
+      "slug": "2026-11-22-pond-close-id-specificity",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "全站图标"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T11:32:00+08:00",
+      "updated_at": "2026-11-22T11:32:00+08:00",
+      "published_at": "2026-11-22T11:32:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "全站九个窗口点阵关闭图标优先级收口",
+        "en": "Unified Dotted Close Button ID-Specificity Fix Across All Windows",
+        "ja": "全9ウィンドウ・モーダルの点陣閉じるアイコン詳細度修正"
+      },
+      "summary": {
+        "zh": "为全站所有窗口与弹窗的点阵关闭按钮补齐 ID 级选择器优先级，确保每个窗口右上角 30px 点阵叉号清晰可见且悬停零偏移。",
+        "en": "Applied ID-level specificity so the unified 30x30 dotted close X renders crisply with zero hover shift in all nine windows and modals.",
+        "ja": "全ウィンドウおよびモーダルにID詳細度で統一30px点陣×アイコンを適用し、確実に視認できホバー時に位置ずれしないよう修正しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-video-modal-details",
       "slug": "2026-11-22-pond-video-modal-details",
       "category": "site-updates",
@@ -112,33 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "收紧关于/工具/游戏窗尺寸贴合内容，替换全站残余旧图标与系统控件为点阵虚线风，并修复小黑屋/2048/Hextris暗色对比度及游戏页语言联动。",
         "en": "Shrank About, Tools, and Games windows to fit content, replaced remaining legacy icons with dot-matrix SVGs, and fixed dark colors and language sync across all 5 games.",
         "ja": "概要・ツール・ゲーム窓を内容に合わせて引き締め、残存する旧アイコンを点陣SVGへ統一し、全5ゲームの暗色表示と多言語連動を修正しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-welcome-dot-polish",
-      "slug": "2026-11-22-pond-welcome-dot-polish",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "欢迎窗"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T10:58:00+08:00",
-      "updated_at": "2026-11-22T10:58:00+08:00",
-      "published_at": "2026-11-22T10:58:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "欢迎窗摘要完整显示与全窗点阵图标统一提亮",
-        "en": "Welcome Modal Full Wrapped Summaries and Unified Dot-Matrix Icons",
-        "ja": "ウェルカムウィンドウの要約全文表示と点陣アイコン統一・高輝度化"
-      },
-      "summary": {
-        "zh": "放开最近更新摘要换行完整显示不截断，提亮分类点阵图标，并将站长状态与快捷入口图标统一替换为月夜池塘点阵风。",
-        "en": "Allowed update summaries to wrap completely without truncation, brightened category dot-matrix icons, and unified status and quick-link icons to dot-matrix CRT style.",
-        "ja": "最近更新の要約を折り返し全文表示に変更し、カテゴリアイコンを高輝度化するとともに状態・クイック入口アイコンも点陣風へ統一しました。"
       }
     }
   ]
