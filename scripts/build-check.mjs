@@ -4947,7 +4947,7 @@ const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 
 
 const changelog20260827Section = markdownSection(changelog, "## 2026-08-27");
-const changelog20260928Section = markdownSection(changelog, "## undefined");
+const changelog20260928Section = markdownSection(changelog, "## 2026-11-22");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {

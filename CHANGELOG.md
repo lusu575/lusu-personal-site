@@ -1,32 +1,32 @@
 # CHANGELOG.md
 
-## undefined
-
-- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-titlebar-close-final` / `2026-11-22-pond-titlebar-close-final`；视觉层缓存 `20261122-pond-polish-r28`。
-
-- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-close-id-specificity` / `2026-11-22-pond-close-id-specificity`；视觉层缓存 `20261122-pond-polish-r27`。
-
-- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-video-modal-details` / `2026-11-22-pond-video-modal-details`；视觉层缓存 `20261122-pond-polish-r26`。
-
-- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-account-signedin-states` / `2026-11-22-pond-account-signedin-states`；视觉层缓存 `20261122-pond-polish-r25`。
-
-- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-center-close-games-polish` / `2026-11-22-pond-center-close-games-polish`；视觉层缓存 `20261122-pond-polish-r24`。
-
-- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-sizing-icons-games` / `2026-11-22-pond-sizing-icons-games`；视觉层缓存 `20261122-pond-polish-r23`。
-
-- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-welcome-dot-polish` / `2026-11-22-pond-welcome-dot-polish`；视觉层缓存 `20261122-pond-polish-r22`。
-
-- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-welcome-icons-summary-tz` / `2026-11-22-pond-welcome-icons-summary-tz`；视觉层缓存 `20261122-pond-polish-r21`。
-
-- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-welcome-v2-singlecol` / `2026-11-22-pond-welcome-v2-singlecol`；视觉层缓存 `20261122-pond-polish-r20`。
-
-- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-kittens-id-match` / `2026-11-22-pond-kittens-id-match`；视觉层缓存 `20261122-pond-polish-r19`。
-
-- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-kittens-svg-mask-fix` / `2026-11-22-pond-kittens-svg-mask-fix`；视觉层缓存 `20261122-pond-polish-r18`。
-
-- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-kittens-icons-clean` / `2026-11-22-pond-kittens-icons-clean`；视觉层缓存 `20261122-pond-polish-r17`。
-
 ## 2026-11-22
+
+
+- 主窗口标题栏点阵关闭叉号优先级最终补齐（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-titlebar-close-final` / `2026-11-22-pond-titlebar-close-final`；视觉层缓存 `20261122-pond-polish-r28`。
+
+- 全站九个窗口点阵关闭图标优先级收口（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-close-id-specificity` / `2026-11-22-pond-close-id-specificity`；视觉层缓存 `20261122-pond-polish-r27`。
+
+- 视频播放浮层与工具游戏展开详情暗色点阵换装（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-video-modal-details` / `2026-11-22-pond-video-modal-details`；视觉层缓存 `20261122-pond-polish-r26`。
+
+- 云存档账号浮层已登录态重做与全站低频状态面暗色统一（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-account-signedin-states` / `2026-11-22-pond-account-signedin-states`；视觉层缓存 `20261122-pond-polish-r25`。
+
+- 内容适配窗口居中对齐、点阵关闭键与游戏暗色细节收口（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-center-close-games-polish` / `2026-11-22-pond-center-close-games-polish`；视觉层缓存 `20261122-pond-polish-r24`。
+
+- 按内容定窗尺寸、全站旧图标点阵化与五款游戏暗色和三语修复（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-sizing-icons-games` / `2026-11-22-pond-sizing-icons-games`；视觉层缓存 `20261122-pond-polish-r23`。
+
+- 欢迎窗摘要完整显示与全窗点阵图标统一提亮（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-welcome-dot-polish` / `2026-11-22-pond-welcome-dot-polish`；视觉层缓存 `20261122-pond-polish-r22`。
+
+- 欢迎窗补齐分类点阵图标、第二行摘要并修正四条更新时区（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-welcome-icons-summary-tz` / `2026-11-22-pond-welcome-icons-summary-tz`；视觉层缓存 `20261122-pond-polish-r21`。
+
+- 欢迎窗回归窄窗单列五条更新版式与知识库分页对齐（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-welcome-v2-singlecol` / `2026-11-22-pond-welcome-v2-singlecol`；视觉层缓存 `20261122-pond-polish-r20`。
+
+- 猫国建设者内页暗色主题规则生效修复（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-kittens-id-match` / `2026-11-22-pond-kittens-id-match`；视觉层缓存 `20261122-pond-polish-r19`。
+
+- 猫国建设者暗色主题遮罩图标着色修正（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-kittens-svg-mask-fix` / `2026-11-22-pond-kittens-svg-mask-fix`；视觉层缓存 `20261122-pond-polish-r18`。
+
+- 猫国建设者暗色主题图标与云存档视觉收尾（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-kittens-icons-clean` / `2026-11-22-pond-kittens-icons-clean`；视觉层缓存 `20261122-pond-polish-r17`。
+
 
 - 提亮猫国建设者暗色主题左栏资源名、数值、上限及顶部齿轮/问号图标对比度（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-kittens-res-contrast` / `2026-11-22-pond-kittens-res-contrast`；视觉层缓存 `20261122-pond-polish-r16`。
 
