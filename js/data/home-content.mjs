@@ -2,6 +2,29 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-button-spacing-system",
+      "slug": "2026-11-22-pond-button-spacing-system",
+      "category": "site-updates",
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T23:41:00+08:00",
+      "updated_at": "2026-11-22T23:41:00+08:00",
+      "published_at": "2026-11-22T23:41:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "全站按钮尺寸、光学居中与间距体系统一重构",
+        "en": "Site-Wide Button Sizing, Optical Centering, and Spacing System",
+        "ja": "全サイト共通のボタンサイズ・中央揃え・余白設計の統一"
+      },
+      "summary": {
+        "zh": "桌面与手机端全站拉网排查：消除标题栏横线压过关闭键问题，统一按钮最小尺寸、对称内边距与元素间距，并修复游戏展开溢边与移动端触碰。",
+        "en": "Full desktop and mobile audit fixing titlebar close-button line overlap, uneven quick-link alignment, undersized buttons, expanded card overflow, and tight gaps.",
+        "ja": "デスクトップとモバイル全画面のボタンを総点検し、閉じるボタンと線の重なり、サイズ不足、左右余白の偏り、ゲーム展開枠のはみ出しや要素接触を修正しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-welcome-rebuild-notice",
       "slug": "2026-11-22-pond-welcome-rebuild-notice",
       "category": "site-updates",
@@ -109,34 +132,6 @@ export const homeContent = Object.freeze({
         "zh": "提亮聊天室底部冷却提示文字并增加四周呼吸边距防止贴边，同时为右上角同步状态补充在线/离线/重连三态荧光指示灯。",
         "en": "Brightened the chatroom bottom cooldown hint with balanced padding and added a glowing online/reconnecting/offline status dot beside the sync label.",
         "ja": "チャット下部のクールダウン案内文字を明るくし余白を確保するとともに、右上の同期表示へ接続状態ランプを追加しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-about-balance-chat-avatars",
-      "slug": "2026-11-22-pond-about-balance-chat-avatars",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "关于页",
-        "聊天室"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T12:06:00+08:00",
-      "updated_at": "2026-11-22T12:06:00+08:00",
-      "published_at": "2026-11-22T12:06:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "关于页左右栏等高对齐与聊天室六枚点阵头像重绘提色",
-        "en": "Balanced About Column Height and Vibrant Glowing Dot-Matrix Chat Avatars",
-        "ja": "概要ウィンドウ左右高さ揃えとチャット6種点陣アバターの彩色刷新"
-      },
-      "summary": {
-        "zh": "将关于页头像放大至 210px 与右栏高度齐平彻底消除下方空块，并将聊天室 6 枚点阵头像重绘为月夜池塘专属柔彩微光造型。",
-        "en": "Enlarged the About avatar to 210px to match the right column height cleanly, and redrew all six chatroom dot-matrix avatars in distinct glowing Midnight Pond colors.",
-        "ja": "概要アバターを210pxへ拡大して右欄と高さを揃え下の空きを解消し、チャット用6種の点陣アバターを月夜池の淡彩発光モチーフへ刷新しました。"
       }
     }
   ]

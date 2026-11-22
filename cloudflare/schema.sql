@@ -15738,6 +15738,38 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-welcome-rebuild-notice-en', 'seed-update-2026-11-22-pond-welcome-rebuild-notice', 'en', 'Added Temporary Frontend Redesign Notice Banner to Welcome Modal (zh/en/ja)', 'Added a removable dotted amber notice banner at the top of the Welcome modal in Chinese, English, and Japanese without altering existing sections.', 'This release adds a temporary dotted-border announcement banner at the top of the Welcome modal informing visitors that the frontend is undergoing a redesign and layout/display glitches are being gradually fixed. The banner supports Chinese, English, and Japanese via the site i18n system, preserves the greeting, site status, quick links, and five recent updates intact, and is isolated under TEMP_REBUILD_NOTICE markers for clean one-step removal once the redesign wraps up.', '2026-11-22T21:01:00+08:00', '2026-11-22T21:01:00+08:00') on conflict(translation_id) do nothing;
 insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-welcome-rebuild-notice-ja', 'seed-update-2026-11-22-pond-welcome-rebuild-notice', 'ja', 'ウェルカムウィンドウ上部にフロントエンド再構築のお知らせ枠を追加（3言語対応）', 'ウェルカム窓の最上部に点陣デザインの一時お知らせ枠（中・英・日）を追加し、後で一括撤去しやすい独立構成にしました。', '今回の更新ではウェルカムウィンドウの最上部に一時的なお知らせバナーを追加し、フロントエンド再構築に伴う一部ページの表示崩れや不具合を順次修正中である旨を案内しています。点陣破線のデザイン言語に統一しつつ従来の挨拶・サイト状態・クイック入口・最新更新5件をそのまま維持し、中英日の3言語切替に対応しました。コードは TEMP_REBUILD_NOTICE ブロックとして分離しており、完了後すぐに撤去可能です。', '2026-11-22T21:01:00+08:00', '2026-11-22T21:01:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261122-pond-polish-r34', '2026-11-22T21:01:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-button-spacing-system', '2026-11-22-pond-button-spacing-system', 'site-updates', 'undefined', '', 'published', 0, 0, '2026-11-22T23:41:00+08:00', '2026-11-22T23:41:00+08:00', '2026-11-22T23:41:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-button-spacing-system-zh', 'seed-update-2026-11-22-pond-button-spacing-system', 'zh', '全站按钮尺寸、光学居中与间距体系统一重构', '桌面与手机端全站拉网排查：消除标题栏横线压过关闭键问题，统一按钮最小尺寸、对称内边距与元素间距，并修复游戏展开溢边与移动端触碰。', '# 全站按钮尺寸、光学居中与间距体系统一重构
+
+本次更新对桌面端与手机端全部窗口、弹窗、展开详情区和导航栏的可点击控件进行了系统性拉网排查与样式重构。
+
+## 本次改进重点
+
+- **标题栏与关闭键避让**：清除旧动效样式在标题栏顶部绘制的横线，避免其横穿欢迎窗与视频弹窗右上角关闭键；全站关闭键与视频最大化键统一放大至桌面 36x36、手机 44x44，完整落在标题栏内部并留足上下呼吸边距。
+- **欢迎窗快捷入口样板**：桌面端 4 枚快捷入口统一为等宽四列、38px 等高、10px 统一间距，图标与文字整体光学居中；手机端统一为 2x2 等宽网格与 46px 高度。
+- **全站按钮尺寸与对称内边距**：统一知识库清空/分类/继续加载、工具区打开/开始、游戏区开始/来源、聊天室换昵称/密码房/帮助/发送、账号浮层与关于页 RSS 订阅等按钮的最小宽高、垂直水平居中与左右对称内边距。
+- **溢出与相碰修复**：修复游戏卡展开许可证标签溢出边框及开始按钮压底边、手机端聊天室按钮零间距相碰、手机端关于页 RSS 按钮文字贴顶等细节问题。', '2026-11-22T23:41:00+08:00', '2026-11-22T23:41:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-button-spacing-system-en', 'seed-update-2026-11-22-pond-button-spacing-system', 'en', 'Site-Wide Button Sizing, Optical Centering, and Spacing System', 'Full desktop and mobile audit fixing titlebar close-button line overlap, uneven quick-link alignment, undersized buttons, expanded card overflow, and tight gaps.', '# Site-Wide Button Sizing, Optical Centering, and Spacing System
+
+This release completes a full-site desktop and mobile audit across every window, modal, popover, expanded detail section, and toolbar control.
+
+## Key improvements
+
+- **Titlebar close-button clearance**: Removed the legacy inset top line inherited from motion styles that cut across the close and maximize buttons on modals; unified all close buttons to 36x36 on desktop and 44x44 on mobile with balanced top and bottom clearance.
+- **Welcome quick-entry benchmark**: Aligned the four quick-entry buttons into an equal-width 4-column desktop grid (2x2 on mobile) with uniform height, optically centered icon-plus-label pairs, and even gaps.
+- **Consistent button sizing and padding**: Standardized minimum widths, heights, symmetric horizontal padding, and centered flex alignment across Knowledge, Article Reader, Videos, Video Modal, Tools, Games, Chatroom, About, and Account Popover.
+- **Overflow and collision fixes**: Prevented expanded game license badges from overflowing card borders or pushing Start buttons onto the bottom border, separated touching mobile chatroom buttons, and centered the mobile About RSS button label.', '2026-11-22T23:41:00+08:00', '2026-11-22T23:41:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-22-pond-button-spacing-system-ja', 'seed-update-2026-11-22-pond-button-spacing-system', 'ja', '全サイト共通のボタンサイズ・中央揃え・余白設計の統一', 'デスクトップとモバイル全画面のボタンを総点検し、閉じるボタンと線の重なり、サイズ不足、左右余白の偏り、ゲーム展開枠のはみ出しや要素接触を修正しました。', '# 全サイト共通のボタンサイズ・中央揃え・余白設計の統一
+
+今回の更新では、デスクトップ版とモバイル版のすべてのウィンドウ、モーダル、展開パネル、ツールバーにあるボタンと操作要素を総点検し、サイズと余白の基準を統一しました。
+
+## 主な改善内容
+
+- **タイトルバーと閉じるボタンの余白確保**：旧スタイル由来の横線がモーダルの閉じるボタンや最大化ボタンを横切る不具合を解消し、デスクトップ 36x36・モバイル 44x44 で上下左右に十分な余白を確保しました。
+- **ようこそ窓のクイック入口統一**：デスクトップ 4 列・モバイル 2x2 の均等グリッドで高さと間隔を揃え、アイコンと文字を視覚的に中央配置しました。
+- **全ページの最小サイズと対称パディング**：ナレッジ、記事リーダー、動画モーダル、ツール、ゲーム、チャット、プロフィール、アカウントパネルの各ボタンで最小幅・高さ・中央揃えを統一しました。
+- **はみ出しと接触の解消**：ゲーム詳細展開時のライセンス表示はみ出しや開始ボタンの枠接触、モバイルチャット上部のボタン接触、プロフィール RSS ボタンの文字上寄りを修正しました。', '2026-11-22T23:41:00+08:00', '2026-11-22T23:41:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '2026-11-22-pond-polish-r35', '2026-11-22T23:41:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261122-pond-polish-r34', '2026-11-22T21:01:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('2026-11-22-pond-polish-r35', '2026-11-22T23:41:00+08:00', 'schema') on conflict(version) do nothing;

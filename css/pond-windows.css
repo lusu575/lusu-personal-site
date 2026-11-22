@@ -5420,3 +5420,551 @@ html[data-pond-mode="welcome"] #welcome-modal .xp-window.welcome-window {
   max-height: min(860px, 92vh) !important;
 }
 /* TEMP_REBUILD_NOTICE:END */
+
+/* ============================================================
+   r35: Site-Wide Button Sizing, Optical Centering, Close-Button
+        Clearance & Cohesive Spacing System (Desktop + Mobile)
+   ============================================================ */
+
+/* --- 1. Kill motion-system.css inset horizontal line on ALL titlebars + unified titlebar breathing room --- */
+html[data-pond-mode] .page.active .window-titlebar,
+html[data-pond-mode] .modal:not([hidden]) .window-titlebar,
+html[data-pond-mode] .window-titlebar,
+#welcome-modal .window-titlebar,
+#video-modal .window-titlebar,
+html[data-ui-shell="mobile"] .window-titlebar {
+  box-shadow: none !important;
+}
+
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about) .window-titlebar {
+  min-height: 58px !important;
+  padding: 10px 20px 12px !important;
+  align-items: center !important;
+  gap: 14px !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .window-titlebar,
+#video-modal .window-titlebar {
+  min-height: 54px !important;
+  padding: 8px 2px 14px !important;
+  margin: 0 0 14px !important;
+  align-items: center !important;
+  gap: 14px !important;
+}
+
+/* --- 2. Unified 36x36 Desktop / 44x44 Mobile Dotted Close & Maximize Buttons (Clear of All Lines/Borders) --- */
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal, #video-modal) .window-titlebar .close-button,
+html[data-pond-mode] #account-popover .account-close-button,
+#video-modal .window-titlebar .close-button,
+#video-modal .window-controls .maximize-button,
+#welcome-modal .window-titlebar .close-button,
+#account-popover .account-close-button {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  max-width: 36px !important;
+  max-height: 36px !important;
+  flex: 0 0 36px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background-size: 16px 16px !important;
+}
+
+#video-modal .window-controls {
+  gap: 10px !important;
+}
+
+html[data-ui-shell="mobile"] #welcome-modal .window-titlebar .close-button,
+html[data-ui-shell="mobile"] #video-modal .window-titlebar .close-button,
+html[data-ui-shell="mobile"] #video-modal .window-controls .maximize-button,
+html[data-ui-shell="mobile"] #account-popover .account-close-button {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  max-width: 44px !important;
+  max-height: 44px !important;
+  flex: 0 0 44px !important;
+  background-size: 18px 18px !important;
+}
+
+/* --- 3. Welcome Modal (#welcome-modal) Benchmark: 4 Quick-Entry Buttons + Recent Rows --- */
+html[data-pond-mode="welcome"] #welcome-modal .quick-links {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin: 4px 0 2px !important;
+  align-items: stretch !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .quick-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  min-height: 38px !important;
+  padding: 8px 12px !important;
+  gap: 7px !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  line-height: 1.15 !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .quick-link > span:last-child {
+  display: inline-block !important;
+  flex: 0 0 auto !important;
+  line-height: 1.15 !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates li {
+  padding: 6px 0 !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates a {
+  display: grid !important;
+  padding: 8px 10px !important;
+  margin: 0 !important;
+}
+
+/* --- 4. Account Popover (#account-popover): Header Clearance, Unified Buttons & Dark Autofill --- */
+html[data-pond-mode] #account-popover .account-popover-header,
+#account-popover .account-popover-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 4px 2px 14px !important;
+  margin-bottom: 14px !important;
+}
+
+html[data-pond-mode] #account-popover .account-mode-switch {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  padding: 5px !important;
+}
+
+html[data-pond-mode] #account-popover .account-mode-switch button,
+html[data-pond-mode] #account-popover .xp-button,
+html[data-pond-mode] #account-popover button[type="submit"],
+html[data-pond-mode] #account-popover .account-toggle-password {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 38px !important;
+  min-width: 84px !important;
+  padding: 8px 16px !important;
+  line-height: 1.15 !important;
+  text-align: center !important;
+}
+
+html[data-pond-mode] #account-popover input:-webkit-autofill,
+html[data-pond-mode] #account-popover input:-webkit-autofill:hover,
+html[data-pond-mode] #account-popover input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #eefcf9 !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(8, 28, 34, 0.96) inset !important;
+  caret-color: #eefcf9 !important;
+}
+
+/* --- 5. Knowledge Base (#knowledge) & Article Reader (#article-detail) --- */
+html[data-pond-mode="knowledge"] #knowledge-searchbar {
+  gap: 10px !important;
+  padding: 12px 22px 10px !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-searchbar [data-article-search-clear] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 76px !important;
+  min-height: 38px !important;
+  padding: 0 16px !important;
+  line-height: 1.15 !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-categories {
+  padding: 8px 22px 10px !important;
+  gap: 10px !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-categories .category-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 38px !important;
+  padding: 0 16px !important;
+  gap: 8px !important;
+  line-height: 1.15 !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-list .article-card .card-action,
+html[data-pond-mode="knowledge"] #knowledge-list .article-card .article-card-cta,
+html[data-pond-mode="knowledge"] #knowledge-list .article-card a.xp-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 84px !important;
+  min-height: 36px !important;
+  padding: 0 18px !important;
+  line-height: 1.15 !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-list [data-article-load-more] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 128px !important;
+  min-height: 38px !important;
+  padding: 8px 22px !important;
+  line-height: 1.15 !important;
+}
+
+html[data-pond-mode="article"] #article-detail :is(.article-back-button, .article-top-link, .article-copy-button, .xp-button) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 38px !important;
+  min-width: 96px !important;
+  padding: 8px 16px !important;
+  gap: 8px !important;
+  line-height: 1.15 !important;
+  text-align: center !important;
+}
+
+/* --- 6. Videos (#videos) & Video Modal (#video-modal) --- */
+html[data-pond-mode="videos"] #video-categories {
+  padding: 8px 22px 10px !important;
+  gap: 10px !important;
+}
+
+html[data-pond-mode="videos"] #video-categories button,
+html[data-pond-mode="videos"] #video-list .card-action {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 36px !important;
+  min-width: 84px !important;
+  padding: 0 18px !important;
+  line-height: 1.15 !important;
+}
+
+#video-modal .video-modal-actions {
+  padding: 14px 4px 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+#video-modal .video-modal-actions .xp-button,
+#video-modal #video-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 38px !important;
+  min-width: 116px !important;
+  padding: 8px 20px !important;
+  line-height: 1.15 !important;
+}
+
+/* --- 7. Tools (#resources): Uniform Action Buttons & Clean Expanded Spacing --- */
+html[data-pond-mode="resources"] #resources .card-action,
+html[data-pond-mode="resources"] #resources .xp-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 96px !important;
+  min-height: 38px !important;
+  padding: 8px 20px !important;
+  line-height: 1.15 !important;
+  text-align: center !important;
+}
+
+html[data-pond-mode="resources"] #resources .resource-details > summary {
+  min-height: 34px !important;
+  padding: 6px 2px !important;
+}
+
+html[data-pond-mode="resources"] #resources .resource-card {
+  gap: 12px !important;
+}
+
+/* --- 8. Games (#games): Fix Expanded License Overflow, Bottom-Border Clip & Button Sizing --- */
+html[data-pond-mode="games"] #game-list {
+  align-items: start !important;
+  gap: 14px !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-card {
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 16px 16px 18px !important;
+  gap: 14px !important;
+  overflow: hidden !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-main {
+  min-width: 0 !important;
+  gap: 10px !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-secondary-details {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-secondary-details > summary {
+  min-height: 34px !important;
+  padding: 6px 2px !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-secondary-meta {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-top: 8px !important;
+  max-width: 100% !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-secondary-meta .tag {
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  max-width: 100% !important;
+  line-height: 1.4 !important;
+  padding: 6px 12px !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-secondary-meta .game-source-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 78px !important;
+  min-height: 36px !important;
+  padding: 6px 16px !important;
+  white-space: nowrap !important;
+  line-height: 1.15 !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-card .card-action {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 112px !important;
+  min-height: 38px !important;
+  padding: 8px 20px !important;
+  margin-top: 6px !important;
+  line-height: 1.15 !important;
+  align-self: end !important;
+}
+
+/* --- 9. Chatroom (#chatroom): Uniform Header Buttons & Comfortable Send Button --- */
+html[data-pond-mode="chatroom"] #chatroom .chat-nickname-button,
+html[data-pond-mode="chatroom"] #chatroom .chat-room-toggle {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 36px !important;
+  min-width: 92px !important;
+  padding: 6px 16px !important;
+  line-height: 1.15 !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom .chat-room-help-trigger {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  padding: 0 !important;
+  flex: 0 0 36px !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom .chat-send-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 72px !important;
+  min-height: 42px !important;
+  padding: 0 16px !important;
+  margin: 0 6px 0 4px !important;
+}
+
+/* --- 10. About (#about): Symmetric RSS Button --- */
+html[data-pond-mode="about"] #about .rss-link,
+html[data-pond-mode="about"] #about .xp-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 108px !important;
+  min-height: 38px !important;
+  padding: 8px 18px !important;
+  line-height: 1.15 !important;
+}
+
+/* --- 11. Mobile Shell (390x844 / 375x667 / 359x500 / 844x390): >=44px, Centered, Symmetric, Zero-Touch --- */
+html[data-ui-shell="mobile"] .mobile-home-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 44px !important;
+  padding: 0 12px !important;
+  gap: 8px !important;
+  margin: 4px 0 !important;
+}
+
+html[data-ui-shell="mobile"] .brand-button {
+  padding: 0 12px !important;
+  gap: 8px !important;
+}
+
+html[data-ui-shell="mobile"] .account-button {
+  min-width: 64px !important;
+  min-height: 44px !important;
+  padding: 0 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html[data-ui-shell="mobile"] #knowledge-searchbar [data-article-search-clear] {
+  min-width: 68px !important;
+  min-height: 44px !important;
+  padding: 0 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html[data-ui-shell="mobile"] #knowledge-categories,
+html[data-ui-shell="mobile"] #video-categories {
+  padding: 8px 12px !important;
+  gap: 10px !important;
+}
+
+html[data-ui-shell="mobile"] #welcome-modal .xp-window.welcome-window {
+  background: linear-gradient(180deg, rgba(10, 34, 38, 0.96), rgba(6, 22, 26, 0.98)) !important;
+  color: #f0fefa !important;
+}
+
+html[data-ui-shell="mobile"] #welcome-modal .welcome-main,
+html[data-ui-shell="mobile"] #welcome-modal .recent-panel {
+  background: transparent !important;
+  color: #f0fefa !important;
+  border-color: rgba(182, 236, 230, 0.34) !important;
+}
+
+html[data-ui-shell="mobile"] #welcome-modal .welcome-main h2,
+html[data-ui-shell="mobile"] #welcome-modal .welcome-main h3,
+html[data-ui-shell="mobile"] #welcome-modal .welcome-status-copy strong,
+html[data-ui-shell="mobile"] #welcome-modal .recent-panel h3,
+html[data-ui-shell="mobile"] #welcome-modal #recent-updates a,
+html[data-ui-shell="mobile"] #welcome-modal .recent-update-title {
+  color: #f0fefa !important;
+}
+
+html[data-ui-shell="mobile"] #welcome-modal .welcome-status-copy p,
+html[data-ui-shell="mobile"] #welcome-modal .recent-update-summary,
+html[data-ui-shell="mobile"] #welcome-modal .recent-update-date {
+  color: rgba(214, 244, 240, 0.86) !important;
+}
+
+html[data-ui-shell="mobile"] #welcome-modal .quick-links {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+html[data-ui-shell="mobile"] #welcome-modal .quick-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 46px !important;
+  padding: 8px 12px !important;
+  gap: 8px !important;
+  text-align: center !important;
+  border-radius: 999px !important;
+  border: 1.2px dashed rgba(182, 240, 234, 0.56) !important;
+  background: rgba(8, 28, 34, 0.72) !important;
+  background-image: none !important;
+  color: #f0fefa !important;
+}
+
+html[data-ui-shell="mobile"] #resources .resource-card .card-action {
+  margin-top: 6px !important;
+  margin-bottom: 12px !important;
+}
+
+html[data-ui-shell="mobile"] #games .game-secondary-details {
+  margin-bottom: 12px !important;
+}
+
+html[data-ui-shell="mobile"] #games .game-secondary-meta {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-top: 8px !important;
+}
+
+html[data-ui-shell="mobile"] #games .game-secondary-meta .game-source-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 78px !important;
+  min-height: 44px !important;
+  padding: 0 16px !important;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chat-header,
+html[data-ui-shell="mobile"] #chatroom .chat-toolbar,
+html[data-ui-shell="mobile"] #chatroom .chat-meta-row,
+html[data-ui-shell="mobile"] #chatroom .chat-controls {
+  row-gap: 10px !important;
+  column-gap: 10px !important;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chat-nickname-button,
+html[data-ui-shell="mobile"] #chatroom .chat-room-toggle {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 44px !important;
+  min-width: 96px !important;
+  padding: 0 16px !important;
+  margin: 4px 0 !important;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chat-room-badge {
+  background: rgba(16, 48, 56, 0.84) !important;
+  color: #dffcf8 !important;
+  border: 1px solid rgba(154, 248, 238, 0.56) !important;
+}
+
+html[data-ui-shell="mobile"] #about .about-bio,
+html[data-ui-shell="mobile"] #about .about-intro,
+html[data-ui-shell="mobile"] #about .about-rss-card {
+  background: rgba(8, 28, 34, 0.78) !important;
+  border-color: rgba(164, 236, 228, 0.42) !important;
+  color: #e8fcf9 !important;
+}
+
+html[data-ui-shell="mobile"] #about .about-rss-card .rss-link,
+html[data-ui-shell="mobile"] #about .rss-link,
+html[data-ui-shell="mobile"] #about a.xp-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 44px !important;
+  min-width: 104px !important;
+  padding: 0 18px !important;
+  line-height: 1.15 !important;
+  text-align: center !important;
+}

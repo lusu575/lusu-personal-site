@@ -1,6 +1,34 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-button-spacing-system",
+  "slug": "2026-11-22-pond-button-spacing-system",
+  "category": "site-updates",
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T23:41:00+08:00",
+  "updated_at": "2026-11-22T23:41:00+08:00",
+  "published_at": "2026-11-22T23:41:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "全站按钮尺寸、光学居中与间距体系统一重构",
+    "en": "Site-Wide Button Sizing, Optical Centering, and Spacing System",
+    "ja": "全サイト共通のボタンサイズ・中央揃え・余白設計の統一"
+  },
+  "summary": {
+    "zh": "桌面与手机端全站拉网排查：消除标题栏横线压过关闭键问题，统一按钮最小尺寸、对称内边距与元素间距，并修复游戏展开溢边与移动端触碰。",
+    "en": "Full desktop and mobile audit fixing titlebar close-button line overlap, uneven quick-link alignment, undersized buttons, expanded card overflow, and tight gaps.",
+    "ja": "デスクトップとモバイル全画面のボタンを総点検し、閉じるボタンと線の重なり、サイズ不足、左右余白の偏り、ゲーム展開枠のはみ出しや要素接触を修正しました。"
+  },
+  "content_markdown": {
+    "zh": "# 全站按钮尺寸、光学居中与间距体系统一重构\n\n本次更新对桌面端与手机端全部窗口、弹窗、展开详情区和导航栏的可点击控件进行了系统性拉网排查与样式重构。\n\n## 本次改进重点\n\n- **标题栏与关闭键避让**：清除旧动效样式在标题栏顶部绘制的横线，避免其横穿欢迎窗与视频弹窗右上角关闭键；全站关闭键与视频最大化键统一放大至桌面 36x36、手机 44x44，完整落在标题栏内部并留足上下呼吸边距。\n- **欢迎窗快捷入口样板**：桌面端 4 枚快捷入口统一为等宽四列、38px 等高、10px 统一间距，图标与文字整体光学居中；手机端统一为 2x2 等宽网格与 46px 高度。\n- **全站按钮尺寸与对称内边距**：统一知识库清空/分类/继续加载、工具区打开/开始、游戏区开始/来源、聊天室换昵称/密码房/帮助/发送、账号浮层与关于页 RSS 订阅等按钮的最小宽高、垂直水平居中与左右对称内边距。\n- **溢出与相碰修复**：修复游戏卡展开许可证标签溢出边框及开始按钮压底边、手机端聊天室按钮零间距相碰、手机端关于页 RSS 按钮文字贴顶等细节问题。",
+    "en": "# Site-Wide Button Sizing, Optical Centering, and Spacing System\n\nThis release completes a full-site desktop and mobile audit across every window, modal, popover, expanded detail section, and toolbar control.\n\n## Key improvements\n\n- **Titlebar close-button clearance**: Removed the legacy inset top line inherited from motion styles that cut across the close and maximize buttons on modals; unified all close buttons to 36x36 on desktop and 44x44 on mobile with balanced top and bottom clearance.\n- **Welcome quick-entry benchmark**: Aligned the four quick-entry buttons into an equal-width 4-column desktop grid (2x2 on mobile) with uniform height, optically centered icon-plus-label pairs, and even gaps.\n- **Consistent button sizing and padding**: Standardized minimum widths, heights, symmetric horizontal padding, and centered flex alignment across Knowledge, Article Reader, Videos, Video Modal, Tools, Games, Chatroom, About, and Account Popover.\n- **Overflow and collision fixes**: Prevented expanded game license badges from overflowing card borders or pushing Start buttons onto the bottom border, separated touching mobile chatroom buttons, and centered the mobile About RSS button label.",
+    "ja": "# 全サイト共通のボタンサイズ・中央揃え・余白設計の統一\n\n今回の更新では、デスクトップ版とモバイル版のすべてのウィンドウ、モーダル、展開パネル、ツールバーにあるボタンと操作要素を総点検し、サイズと余白の基準を統一しました。\n\n## 主な改善内容\n\n- **タイトルバーと閉じるボタンの余白確保**：旧スタイル由来の横線がモーダルの閉じるボタンや最大化ボタンを横切る不具合を解消し、デスクトップ 36x36・モバイル 44x44 で上下左右に十分な余白を確保しました。\n- **ようこそ窓のクイック入口統一**：デスクトップ 4 列・モバイル 2x2 の均等グリッドで高さと間隔を揃え、アイコンと文字を視覚的に中央配置しました。\n- **全ページの最小サイズと対称パディング**：ナレッジ、記事リーダー、動画モーダル、ツール、ゲーム、チャット、プロフィール、アカウントパネルの各ボタンで最小幅・高さ・中央揃えを統一しました。\n- **はみ出しと接触の解消**：ゲーム詳細展開時のライセンス表示はみ出しや開始ボタンの枠接触、モバイルチャット上部のボタン接触、プロフィール RSS ボタンの文字上寄りを修正しました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-welcome-rebuild-notice",
   "slug": "2026-11-22-pond-welcome-rebuild-notice",
   "category": "site-updates",
