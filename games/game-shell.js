@@ -2089,35 +2089,54 @@
           div#wrapper {
             position: relative !important;
             margin: auto !important;
-            width: 520px !important;
+            width: 640px !important;
             max-width: calc(100vw - 48px) !important;
-            min-height: 360px !important;
-            padding: 28px 32px 32px 264px !important;
-            box-sizing: content-box !important;
+            min-height: 0 !important;
+            height: auto !important;
+            padding: 28px 32px !important;
+            display: grid !important;
+            grid-template-columns: 210px minmax(0, 1fr) !important;
+            grid-template-rows: auto auto !important;
+            column-gap: 32px !important;
+            align-items: start !important;
+            box-sizing: border-box !important;
             border: 1.4px solid rgba(164, 236, 228, 0.40) !important;
             border-radius: 16px !important;
             background: rgba(8, 28, 34, 0.88) !important;
             box-shadow: 0 0 36px rgba(96, 234, 222, 0.16) !important;
           }
           div#notifications {
-            position: absolute !important;
-            left: 28px !important;
-            top: 28px !important;
-            width: 210px !important;
+            position: static !important;
+            grid-column: 1 !important;
+            grid-row: 1 / span 2 !important;
+            width: auto !important;
+            height: auto !important;
+            max-height: 520px !important;
+            overflow-y: auto !important;
             background: transparent !important;
           }
           div#header {
             position: relative !important;
+            grid-column: 2 !important;
+            grid-row: 1 !important;
             height: auto !important;
-            min-height: 24px !important;
-            padding-bottom: 20px !important;
+            min-height: 0 !important;
+            padding-bottom: 16px !important;
           }
           div#content {
             position: relative !important;
-            min-height: 290px !important;
+            grid-column: 2 !important;
+            grid-row: 2 !important;
+            min-height: 0 !important;
             height: auto !important;
             overflow: visible !important;
             background: transparent !important;
+          }
+          div#outerSlider, div#locationSlider {
+            position: relative !important;
+            left: 0 !important;
+            top: 0 !important;
+            height: auto !important;
           }
           #outerSlider, #main, #locationSlider, #event, .eventPanel {
             background: transparent !important;

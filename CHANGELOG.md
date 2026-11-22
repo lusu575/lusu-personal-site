@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- 小黑屋卡片高度贴合内容（消除卡片内部下方 350px 空白）并保持视口正中对齐（r42）。
+
 - 猫国建设者顶栏防裁与三栏等高对称、小黑屋视口纵向居中收紧与在线画板徽标/匿名栏微调（r41）。
 
 - 紧急修复 `/api/articles` 503 `CONTENT_MIGRATION_NEWER_RELEASE` 故障并加装构建期防呆校验：将 `ARTICLE_SEED_VERSION` 统一规范为 8 位日期 `20261123-pond-polish-r37`，补全 `r34–r37` 历史种子版本至 `KNOWN_PREDECESSOR_SEED_VERSIONS`，并修复日期比较逻辑；在 `scripts/build-check.mjs` 增加种子版本格式与前序迁移可达性校验。
