@@ -1994,10 +1994,21 @@ function recentUpdateElement(item) {
   icon.setAttribute("aria-hidden", "true");
 
   const copy = document.createElement("span");
+  copy.className = "recent-update-copy";
+  const textCol = document.createElement("span");
+  textCol.className = "recent-update-text";
   const title = document.createElement("strong");
   const fullTitle = localText(item.title);
+  const summaryText = localText(item.summary);
   const publishedDate = formatArticleDate(item.published_at || item.created_at || item.date, { includeSeconds: false });
   title.textContent = fullTitle;
+  textCol.appendChild(title);
+  if (summaryText) {
+    const summary = document.createElement("span");
+    summary.className = "recent-update-summary";
+    summary.textContent = summaryText;
+    textCol.appendChild(summary);
+  }
   const detail = document.createElement("small");
   detail.textContent = publishedDate;
 
@@ -2007,13 +2018,30 @@ function recentUpdateElement(item) {
     link.setAttribute("aria-label", accessibleLabel);
   }
 
-  copy.append(title, detail);
+  copy.append(textCol, detail);
   link.append(icon, copy);
   row.appendChild(link);
   return row;
 }
 
 function recentUpdateIconClass(item) {
+  const tags = Array.isArray(item?.tags) ? item.tags.join(" ") : String(item?.tags || "");
+  const haystack = `${item?.category || ""} ${item?.slug || ""} ${tags} ${localText(item?.title) || ""}`.toLowerCase();
+  if (/games|游戏|猫国|kittens|hextris|2048|dark-room|life-restart/.test(haystack)) {
+    return "update-icon-games";
+  }
+  if (/videos|视频/.test(haystack)) {
+    return "update-icon-videos";
+  }
+  if (/resources|tools|工具|互传|画板|whiteboard|transfer|torii/.test(haystack)) {
+    return "update-icon-tools";
+  }
+  if (/chatroom|chat|聊天室/.test(haystack)) {
+    return "update-icon-chat";
+  }
+  if (/knowledge|ai-news|知识库|文章|分页|阅读/.test(haystack)) {
+    return "update-icon-knowledge";
+  }
   return item?.category === siteUpdateCategory || item?.icon === "system"
     ? "update-icon-system"
     : "update-icon-knowledge";

@@ -2,7 +2,29 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
-    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-welcome-v2-singlecol', '2026-11-22-pond-welcome-v2-singlecol', 'site-updates', '["视觉升级","欢迎窗","知识库"]', '', 'published', 0, 0, '2026-11-22T10:35:00.000Z', '2026-11-22T10:35:00.000Z', '2026-11-22T10:35:00.000Z') on conflict(article_id) do nothing`),
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-welcome-icons-summary-tz', '2026-11-22-pond-welcome-icons-summary-tz', 'site-updates', '["视觉升级","欢迎窗"]', '', 'published', 0, 0, '2026-11-22T10:48:00+08:00', '2026-11-22T10:48:00+08:00', '2026-11-22T10:48:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-welcome-icons-summary-tz", {
+  "zh": {
+    "title": "欢迎窗补齐分类点阵图标、第二行摘要并修正四条更新时区",
+    "summary": "修复四条更新记录误写为 UTC 零时区导致的未来时间偏差，为最近更新按分类匹配首页同款点阵图标并补齐第二行一句话摘要。",
+    "content_markdown": "本次针对欢迎窗实机复验提出的三项细节完成修正：一是排查并修正 r17 至 r20 四条更新记录误用 Z 零时区导致的 +8 小时未来时间偏差（同步补齐 D1 幂等更新时间语句，确保线上数据库立即恢复为真实东八区发布时间）；二是按更新所属分类与标签在最近更新列表中复用首页同款发光点阵图标（知识库、视频、工具、游戏、聊天室、系统）；三是把每条更新自带的一句话摘要补齐为第二行展示，呈现与 v2 效果图一致的双行条目节奏。"
+  },
+  "en": {
+    "title": "Welcome Modal Category Dot-Matrix Icons, 2nd-Line Summaries, and Timezone Fix",
+    "summary": "Fixed the +8h UTC offset typo on r17-r20 update timestamps, added homepage-style dot-matrix category icons, and displayed each update's one-line summary.",
+    "content_markdown": "This release resolves three Welcome modal polish items: fixing the accidental UTC Z suffix on four update records (r17 through r20) with idempotent D1 timestamp repair statements so all published times reflect true UTC+8 timestamps; matching each recent update item to its corresponding homepage-style glowing dot-matrix category icon (knowledge, videos, tools, games, chatroom, system); and rendering each update's summary as a clean second line beneath the title to match the v2 layout."
+  },
+  "ja": {
+    "title": "ウェルカムウィンドウのカテゴリ点陣アイコン・2行目要約追加と時刻修正",
+    "summary": "更新4件のUTC指定ミスによる未来時刻を修正し、ホーム共通の点陣カテゴリアイコンと1行要約の2行目表示を追加しました。",
+    "content_markdown": "今回の更新ではウェルカムウィンドウの3点を修正しました。まず r17〜r20 の更新4件で UTC 表記が混入していたタイムスタンプを正しい +08:00 へ修正し、D1 側の既存レコードも冪等更新で即時修復しました。次に最近更新の各項目へホーム画面と同じ発光点陣カテゴリアイコンを割り当て、さらに各更新の一言要約をタイトル下の2行目として表示するように整えています。"
+  }
+}, "2026-11-22T10:48:00+08:00"),
+    env.DB.prepare("update articles set created_at = '2026-11-22T10:35:00+08:00', updated_at = '2026-11-22T10:35:00+08:00', published_at = '2026-11-22T10:35:00+08:00' where article_id = 'seed-update-2026-11-22-pond-welcome-v2-singlecol'"),
+    env.DB.prepare("update articles set created_at = '2026-11-22T05:32:00+08:00', updated_at = '2026-11-22T05:32:00+08:00', published_at = '2026-11-22T05:32:00+08:00' where article_id = 'seed-update-2026-11-22-pond-kittens-id-match'"),
+    env.DB.prepare("update articles set created_at = '2026-11-22T05:27:00+08:00', updated_at = '2026-11-22T05:27:00+08:00', published_at = '2026-11-22T05:27:00+08:00' where article_id = 'seed-update-2026-11-22-pond-kittens-svg-mask-fix'"),
+    env.DB.prepare("update articles set created_at = '2026-11-22T05:22:00+08:00', updated_at = '2026-11-22T05:22:00+08:00', published_at = '2026-11-22T05:22:00+08:00' where article_id = 'seed-update-2026-11-22-pond-kittens-icons-clean'"),
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-welcome-v2-singlecol', '2026-11-22-pond-welcome-v2-singlecol', 'site-updates', '["视觉升级","欢迎窗","知识库"]', '', 'published', 0, 0, '2026-11-22T10:35:00+08:00', '2026-11-22T10:35:00+08:00', '2026-11-22T10:35:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-welcome-v2-singlecol", {
   "zh": {
     "title": "欢迎窗回归窄窗单列五条更新版式与知识库分页对齐",
@@ -19,8 +41,8 @@ export function articleReleaseSeedStatements(env, { articleTranslationsStatement
     "summary": "v2 デザイン案どおりにウェルカムウィンドウを中央の細幅1列構成・最新更新5件直表示へ戻し、知識ベースのさらに読み込むバーを2列横断で整列しました。",
     "content_markdown": "今回の更新では承認済みの v2 デザイン案に合わせ、ウェルカムウィンドウを幅広2カラムから中央配置の細幅1列グラスカードへ刷新しました。挨拶、サイト状態、4つのクイック入口ピル、そして最新更新5件をそのまま縦に並べ、余分なさらに見るボタンを省きつつ全機能を維持しています。あわせて確定した知識ベース2列カード表示のさらに読み込むバーを2列幅で中央揃えにし、固定表示バッジとページ送り動作も確認しました。"
   }
-}, "2026-11-22T10:35:00.000Z"),
-    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-kittens-id-match', '2026-11-22-pond-kittens-id-match', 'site-updates', '["视觉升级","游戏区","猫国建设者"]', '', 'published', 0, 0, '2026-11-22T05:32:00.000Z', '2026-11-22T05:32:00.000Z', '2026-11-22T05:32:00.000Z') on conflict(article_id) do nothing`),
+}, "2026-11-22T10:35:00+08:00"),
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-kittens-id-match', '2026-11-22-pond-kittens-id-match', 'site-updates', '["视觉升级","游戏区","猫国建设者"]', '', 'published', 0, 0, '2026-11-22T05:32:00+08:00', '2026-11-22T05:32:00+08:00', '2026-11-22T05:32:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-kittens-id-match", {
   "zh": {
     "title": "猫国建设者内页暗色主题规则生效修复",
@@ -37,8 +59,8 @@ export function articleReleaseSeedStatements(env, { articleTranslationsStatement
     "summary": "ゲームシェルのダークテーマ判定を game.id 優先へ修正し、焚き火行左右の疑問符残影除去と歯車アイコン明色化を確実に適用しました。",
     "content_markdown": "今回の更新では、ゲームシェルの暗色テーマ注入処理で Kittens Game 専用スタイルが適用されていなかった原因（カタログの識別子フィールドが slug ではなく id であった点）を修正しました。targetGame.id を優先参照することで、月夜池ダークテーマの資源欄コントラスト、シアン色の歯車・矢印マスクアイコン、および焚き火タブ行左右の疑問符アイコンと枠の非表示が確実に有効化されます。ゲーム本体ロジックやクラウドセーブ、AI 制御には影響ありません。"
   }
-}, "2026-11-22T05:32:00.000Z"),
-    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-kittens-svg-mask-fix', '2026-11-22-pond-kittens-svg-mask-fix', 'site-updates', '["视觉升级","游戏区","猫国建设者"]', '', 'published', 0, 0, '2026-11-22T05:27:00.000Z', '2026-11-22T05:27:00.000Z', '2026-11-22T05:27:00.000Z') on conflict(article_id) do nothing`),
+}, "2026-11-22T05:32:00+08:00"),
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-kittens-svg-mask-fix', '2026-11-22-pond-kittens-svg-mask-fix', 'site-updates', '["视觉升级","游戏区","猫国建设者"]', '', 'published', 0, 0, '2026-11-22T05:27:00+08:00', '2026-11-22T05:27:00+08:00', '2026-11-22T05:27:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-kittens-svg-mask-fix", {
   "zh": {
     "title": "猫国建设者暗色主题遮罩图标着色修正",
@@ -55,8 +77,8 @@ export function articleReleaseSeedStatements(env, { articleTranslationsStatement
     "summary": "Kittens Game 資源欄の歯車・矢印マスクアイコンを明色化し、焚き火行左右の疑問符アイコン枠も完全に整理しました。",
     "content_markdown": "今回の更新では Kittens Game のゲーム内ページに適用している純粋な CSS 月夜池ダークテーマのマスク描画アイコンを調整しました。左側資源欄の歯車アイコンおよび折りたたみ矢印のマスク背景色を従来の黒色から暗色背景でも見やすいシアン系へ変更し、あわせて焚き火タブ行の左右に薄く残っていた疑問符アイコンと外側のツールチップ枠を完全に非表示にしています。ゲーム本体のロジック、クラウドセーブ同期、ログイン時ボタン表示、AI 制御機能は一切変更していません。"
   }
-}, "2026-11-22T05:27:00.000Z"),
-    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-kittens-icons-clean', '2026-11-22-pond-kittens-icons-clean', 'site-updates', '["视觉升级","游戏区","猫国建设者","云存档"]', '', 'published', 0, 0, '2026-11-22T05:22:00.000Z', '2026-11-22T05:22:00.000Z', '2026-11-22T05:22:00.000Z') on conflict(article_id) do nothing`),
+}, "2026-11-22T05:27:00+08:00"),
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-kittens-icons-clean', '2026-11-22-pond-kittens-icons-clean', 'site-updates', '["视觉升级","游戏区","猫国建设者","云存档"]', '', 'published', 0, 0, '2026-11-22T05:22:00+08:00', '2026-11-22T05:22:00+08:00', '2026-11-22T05:22:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-kittens-icons-clean", {
   "zh": {
     "title": "猫国建设者暗色主题图标与云存档视觉收尾",
@@ -73,7 +95,7 @@ export function articleReleaseSeedStatements(env, { articleTranslationsStatement
     "summary": "焚き火タブ行左右の暗い疑問符アイコン残影を除去し歯車アイコンの視認性を向上させ、ログイン時クラウド同期表示も確認しました。",
     "content_markdown": "今回の更新では Kittens Game の iframe 内に適用している純粋な CSS 月夜池ダークテーマを細部まで調整し、焚き火タブ行の左右に薄く残っていた暗い疑問符アイコン残影を非表示にするとともに、左側資源欄の歯車アイコンや折りたたみ矢印を反転して暗色背景でもはっきり視認できるようにしました。さらに本番環境でログイン状態のツールバー展開表示を確認し、今すぐ同期ボタン、ログアウトボタン、自動同期ステータスが正常に動作することを検証しています。ゲーム本体ロジックやクラウドセーブ API、AI 制御、知識ベースデータには一切変更を加えていません。"
   }
-}, "2026-11-22T05:22:00.000Z"),
+}, "2026-11-22T05:22:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-kittens-res-contrast', '2026-11-22-pond-kittens-res-contrast', 'site-updates', '["site-update","games","ui"]', '', 'published', 0, 0, '2026-11-22T05:10:00+08:00', '2026-11-22T05:10:00+08:00', '2026-11-22T05:10:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-kittens-res-contrast", {
   "zh": {

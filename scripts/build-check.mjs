@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-welcome-v2-singlecol";
-const finalUpdateSlug = "2026-11-22-pond-welcome-v2-singlecol";
+const finalUpdateId = "seed-update-2026-11-22-pond-welcome-icons-summary-tz";
+const finalUpdateSlug = "2026-11-22-pond-welcome-icons-summary-tz";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Welcome Modal Narrow Single-Column 5-Update Layout and Knowledge Pagination Alignment";
-const finalPublishedAt = "2026-11-22T10:35:00.000Z";
+const finalTitleEn = "Welcome Modal Category Dot-Matrix Icons, 2nd-Line Summaries, and Timezone Fix";
+const finalPublishedAt = "2026-11-22T10:48:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-welcome-v2-singlecol",
   "seed-update-2026-11-22-pond-kittens-id-match",
   "seed-update-2026-11-22-pond-kittens-svg-mask-fix",
   "seed-update-2026-11-22-pond-kittens-icons-clean",

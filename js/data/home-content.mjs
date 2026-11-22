@@ -2,6 +2,33 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-welcome-icons-summary-tz",
+      "slug": "2026-11-22-pond-welcome-icons-summary-tz",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "欢迎窗"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T10:48:00+08:00",
+      "updated_at": "2026-11-22T10:48:00+08:00",
+      "published_at": "2026-11-22T10:48:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "欢迎窗补齐分类点阵图标、第二行摘要并修正四条更新时区",
+        "en": "Welcome Modal Category Dot-Matrix Icons, 2nd-Line Summaries, and Timezone Fix",
+        "ja": "ウェルカムウィンドウのカテゴリ点陣アイコン・2行目要約追加と時刻修正"
+      },
+      "summary": {
+        "zh": "修复四条更新记录误写为 UTC 零时区导致的未来时间偏差，为最近更新按分类匹配首页同款点阵图标并补齐第二行一句话摘要。",
+        "en": "Fixed the +8h UTC offset typo on r17-r20 update timestamps, added homepage-style dot-matrix category icons, and displayed each update's one-line summary.",
+        "ja": "更新4件のUTC指定ミスによる未来時刻を修正し、ホーム共通の点陣カテゴリアイコンと1行要約の2行目表示を追加しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-welcome-v2-singlecol",
       "slug": "2026-11-22-pond-welcome-v2-singlecol",
       "category": "site-updates",
@@ -13,9 +40,9 @@ export const homeContent = Object.freeze({
       "cover_image": "",
       "status": "published",
       "is_pinned": 0,
-      "created_at": "2026-11-22T10:35:00.000Z",
-      "updated_at": "2026-11-22T10:35:00.000Z",
-      "published_at": "2026-11-22T10:35:00.000Z",
+      "created_at": "2026-11-22T10:35:00+08:00",
+      "updated_at": "2026-11-22T10:35:00+08:00",
+      "published_at": "2026-11-22T10:35:00+08:00",
       "fallbackOnly": true,
       "icon": "system",
       "title": {
@@ -41,9 +68,9 @@ export const homeContent = Object.freeze({
       "cover_image": "",
       "status": "published",
       "is_pinned": 0,
-      "created_at": "2026-11-22T05:32:00.000Z",
-      "updated_at": "2026-11-22T05:32:00.000Z",
-      "published_at": "2026-11-22T05:32:00.000Z",
+      "created_at": "2026-11-22T05:32:00+08:00",
+      "updated_at": "2026-11-22T05:32:00+08:00",
+      "published_at": "2026-11-22T05:32:00+08:00",
       "fallbackOnly": true,
       "icon": "system",
       "title": {
@@ -69,9 +96,9 @@ export const homeContent = Object.freeze({
       "cover_image": "",
       "status": "published",
       "is_pinned": 0,
-      "created_at": "2026-11-22T05:27:00.000Z",
-      "updated_at": "2026-11-22T05:27:00.000Z",
-      "published_at": "2026-11-22T05:27:00.000Z",
+      "created_at": "2026-11-22T05:27:00+08:00",
+      "updated_at": "2026-11-22T05:27:00+08:00",
+      "published_at": "2026-11-22T05:27:00+08:00",
       "fallbackOnly": true,
       "icon": "system",
       "title": {
@@ -98,9 +125,9 @@ export const homeContent = Object.freeze({
       "cover_image": "",
       "status": "published",
       "is_pinned": 0,
-      "created_at": "2026-11-22T05:22:00.000Z",
-      "updated_at": "2026-11-22T05:22:00.000Z",
-      "published_at": "2026-11-22T05:22:00.000Z",
+      "created_at": "2026-11-22T05:22:00+08:00",
+      "updated_at": "2026-11-22T05:22:00+08:00",
+      "published_at": "2026-11-22T05:22:00+08:00",
       "fallbackOnly": true,
       "icon": "system",
       "title": {
@@ -112,35 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "清理猫国建设者营火行左右两侧暗色问号残影并提亮齿轮图标，同时完成登录态云存档实拍验收。",
         "en": "Cleared faint dark question-mark icon remnants beside the Bonfire tab row and brightened the resource gear icon while verifying signed-in cloud sync UI.",
         "ja": "焚き火タブ行左右の暗い疑問符アイコン残影を除去し歯車アイコンの視認性を向上させ、ログイン時クラウド同期表示も確認しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-kittens-res-contrast",
-      "slug": "2026-11-22-pond-kittens-res-contrast",
-      "category": "site-updates",
-      "tags": [
-        "site-update",
-        "games",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T05:10:00+08:00",
-      "updated_at": "2026-11-22T05:10:00+08:00",
-      "published_at": "2026-11-22T05:10:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "date": "2026.11.22",
-      "title": {
-        "zh": "提亮猫国建设者暗色主题左栏资源数值与齿轮问号图标对比度",
-        "en": "Boosted Contrast for Kittens Game Dark Resource Column & Header Icons",
-        "ja": "猫国建設者暗色テーマ左欄リソース数値・歯車アイコンの視認性向上"
-      },
-      "summary": {
-        "zh": "为猫国建设者纯 CSS 暗色主题中的左栏资源表、资源名、数值、上限及顶部齿轮与问号图标全面提亮青白高对比度，确保暗底上清晰可读。",
-        "en": "Brightened resource names, counts, caps, and the gear/help icons in the Kittens Game dark inner theme for crisp legibility on dark glass.",
-        "ja": "猫国建設者の暗色テーマにおいて、左欄リソース名・数値・上限および上部歯車／ヘルプアイコンを明るい青白へ引き上げ、暗色背景での可読性を高めました。"
       }
     }
   ]

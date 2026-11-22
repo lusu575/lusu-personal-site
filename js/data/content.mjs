@@ -1,6 +1,38 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-welcome-icons-summary-tz",
+  "slug": "2026-11-22-pond-welcome-icons-summary-tz",
+  "category": "site-updates",
+  "tags": [
+    "视觉升级",
+    "欢迎窗"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T10:48:00+08:00",
+  "updated_at": "2026-11-22T10:48:00+08:00",
+  "published_at": "2026-11-22T10:48:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "欢迎窗补齐分类点阵图标、第二行摘要并修正四条更新时区",
+    "en": "Welcome Modal Category Dot-Matrix Icons, 2nd-Line Summaries, and Timezone Fix",
+    "ja": "ウェルカムウィンドウのカテゴリ点陣アイコン・2行目要約追加と時刻修正"
+  },
+  "summary": {
+    "zh": "修复四条更新记录误写为 UTC 零时区导致的未来时间偏差，为最近更新按分类匹配首页同款点阵图标并补齐第二行一句话摘要。",
+    "en": "Fixed the +8h UTC offset typo on r17-r20 update timestamps, added homepage-style dot-matrix category icons, and displayed each update's one-line summary.",
+    "ja": "更新4件のUTC指定ミスによる未来時刻を修正し、ホーム共通の点陣カテゴリアイコンと1行要約の2行目表示を追加しました。"
+  },
+  "content_markdown": {
+    "zh": "本次针对欢迎窗实机复验提出的三项细节完成修正：一是排查并修正 r17 至 r20 四条更新记录误用 Z 零时区导致的 +8 小时未来时间偏差（同步补齐 D1 幂等更新时间语句，确保线上数据库立即恢复为真实东八区发布时间）；二是按更新所属分类与标签在最近更新列表中复用首页同款发光点阵图标（知识库、视频、工具、游戏、聊天室、系统）；三是把每条更新自带的一句话摘要补齐为第二行展示，呈现与 v2 效果图一致的双行条目节奏。",
+    "en": "This release resolves three Welcome modal polish items: fixing the accidental UTC Z suffix on four update records (r17 through r20) with idempotent D1 timestamp repair statements so all published times reflect true UTC+8 timestamps; matching each recent update item to its corresponding homepage-style glowing dot-matrix category icon (knowledge, videos, tools, games, chatroom, system); and rendering each update's summary as a clean second line beneath the title to match the v2 layout.",
+    "ja": "今回の更新ではウェルカムウィンドウの3点を修正しました。まず r17〜r20 の更新4件で UTC 表記が混入していたタイムスタンプを正しい +08:00 へ修正し、D1 側の既存レコードも冪等更新で即時修復しました。次に最近更新の各項目へホーム画面と同じ発光点陣カテゴリアイコンを割り当て、さらに各更新の一言要約をタイトル下の2行目として表示するように整えています。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-welcome-v2-singlecol",
   "slug": "2026-11-22-pond-welcome-v2-singlecol",
   "category": "site-updates",
@@ -12,9 +44,9 @@ export const content = {
   "cover_image": "",
   "status": "published",
   "is_pinned": 0,
-  "created_at": "2026-11-22T10:35:00.000Z",
-  "updated_at": "2026-11-22T10:35:00.000Z",
-  "published_at": "2026-11-22T10:35:00.000Z",
+  "created_at": "2026-11-22T10:35:00+08:00",
+  "updated_at": "2026-11-22T10:35:00+08:00",
+  "published_at": "2026-11-22T10:35:00+08:00",
   "fallbackOnly": true,
   "icon": "system",
   "title": {
@@ -45,9 +77,9 @@ export const content = {
   "cover_image": "",
   "status": "published",
   "is_pinned": 0,
-  "created_at": "2026-11-22T05:32:00.000Z",
-  "updated_at": "2026-11-22T05:32:00.000Z",
-  "published_at": "2026-11-22T05:32:00.000Z",
+  "created_at": "2026-11-22T05:32:00+08:00",
+  "updated_at": "2026-11-22T05:32:00+08:00",
+  "published_at": "2026-11-22T05:32:00+08:00",
   "fallbackOnly": true,
   "icon": "system",
   "title": {
@@ -78,9 +110,9 @@ export const content = {
   "cover_image": "",
   "status": "published",
   "is_pinned": 0,
-  "created_at": "2026-11-22T05:27:00.000Z",
-  "updated_at": "2026-11-22T05:27:00.000Z",
-  "published_at": "2026-11-22T05:27:00.000Z",
+  "created_at": "2026-11-22T05:27:00+08:00",
+  "updated_at": "2026-11-22T05:27:00+08:00",
+  "published_at": "2026-11-22T05:27:00+08:00",
   "fallbackOnly": true,
   "icon": "system",
   "title": {
@@ -112,9 +144,9 @@ export const content = {
   "cover_image": "",
   "status": "published",
   "is_pinned": 0,
-  "created_at": "2026-11-22T05:22:00.000Z",
-  "updated_at": "2026-11-22T05:22:00.000Z",
-  "published_at": "2026-11-22T05:22:00.000Z",
+  "created_at": "2026-11-22T05:22:00+08:00",
+  "updated_at": "2026-11-22T05:22:00+08:00",
+  "published_at": "2026-11-22T05:22:00+08:00",
   "fallbackOnly": true,
   "icon": "system",
   "title": {
