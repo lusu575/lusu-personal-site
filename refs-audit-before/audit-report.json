@@ -1,0 +1,1554 @@
+[
+  {
+    "label": "desktop-welcome",
+    "total": 10,
+    "issueCount": 5,
+    "issues": [
+      {
+        "tag": "a",
+        "cls": "recent-update-link",
+        "text": "欢迎弹窗顶部新增前端重构临时公告条（三语） 在欢",
+        "w": 620,
+        "h": 79,
+        "p": "6/6/6/6",
+        "flags": [
+          "touch_parent_border:0",
+          "touch_sibY:1"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "recent-update-link",
+        "text": "首页桌面图标悬停与点击完全独立零连带位移 移除首",
+        "w": 620,
+        "h": 79,
+        "p": "6/6/6/6",
+        "flags": [
+          "touch_parent_border:0",
+          "touch_sibY:1"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "recent-update-link",
+        "text": "猫国建设者宽屏居中布局、小按钮暗色化与标签栏防裁",
+        "w": 620,
+        "h": 79,
+        "p": "6/6/6/6",
+        "flags": [
+          "touch_parent_border:0",
+          "touch_sibY:1"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "recent-update-link",
+        "text": "聊天室底栏提示提亮留距与同步状态指示灯补齐 提亮",
+        "w": 620,
+        "h": 79,
+        "p": "6/6/6/6",
+        "flags": [
+          "touch_parent_border:0",
+          "touch_sibY:1"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "recent-update-link",
+        "text": "关于页左右栏等高对齐与聊天室六枚点阵头像重绘提色",
+        "w": 620,
+        "h": 79,
+        "p": "6/6/6/6",
+        "flags": [
+          "touch_sibY:1"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "desktop-account",
+    "total": 6,
+    "issueCount": 1,
+    "issues": [
+      {
+        "tag": "button",
+        "cls": "account-close-button",
+        "text": "×",
+        "w": 30,
+        "h": 30,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:0"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "desktop-knowledge",
+    "total": 9,
+    "issueCount": 8,
+    "issues": [
+      {
+        "tag": "button",
+        "cls": "xp-button",
+        "text": "清空",
+        "w": 50,
+        "h": 34,
+        "p": "0/12/0/12",
+        "flags": [
+          "narrow_w:50"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "active category-button",
+        "text": "全部 107",
+        "w": 86,
+        "h": 38,
+        "p": "0/13/0/13",
+        "flags": [
+          "touch_parent_border:2"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "category-button",
+        "text": "每日 AI 新闻 103",
+        "w": 138,
+        "h": 38,
+        "p": "0/13/0/13",
+        "flags": [
+          "touch_parent_border:2"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "category-button",
+        "text": "工具雷达 2",
+        "w": 96,
+        "h": 38,
+        "p": "0/13/0/13",
+        "flags": [
+          "touch_parent_border:2"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "category-button",
+        "text": "网站使用指南 1",
+        "w": 120,
+        "h": 38,
+        "p": "0/13/0/13",
+        "flags": [
+          "touch_parent_border:2"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "category-button",
+        "text": "AI 1",
+        "w": 62,
+        "h": 38,
+        "p": "0/13/0/13",
+        "flags": [
+          "touch_parent_border:2"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "category-button",
+        "text": "网站更新记录 150",
+        "w": 134,
+        "h": 38,
+        "p": "0/13/0/13",
+        "flags": [
+          "touch_parent_border:2"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "xp-button",
+        "text": "继续加载",
+        "w": 88,
+        "h": 28,
+        "p": "5/18/5/18",
+        "flags": [
+          "short_h:28"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "desktop-article",
+    "error": "no-root",
+    "scopeSelector": "#article"
+  },
+  {
+    "label": "desktop-videos",
+    "total": 1,
+    "issueCount": 0,
+    "issues": []
+  },
+  {
+    "label": "desktop-video-modal",
+    "total": 3,
+    "issueCount": 1,
+    "issues": [
+      {
+        "tag": "a",
+        "cls": "xp-button",
+        "text": "打开原地址",
+        "w": 103,
+        "h": 33,
+        "p": "7/18/7/18",
+        "flags": [
+          "touch_parent_border:0"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "desktop-tools",
+    "total": 7,
+    "issueCount": 3,
+    "issues": [
+      {
+        "tag": "a",
+        "cls": "card-action",
+        "text": "打开",
+        "w": 60,
+        "h": 28,
+        "p": "6/16/6/16",
+        "flags": [
+          "short_h:28"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "card-action",
+        "text": "打开",
+        "w": 60,
+        "h": 28,
+        "p": "6/16/6/16",
+        "flags": [
+          "short_h:28"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "card-action",
+        "text": "开始",
+        "w": 60,
+        "h": 28,
+        "p": "6/16/6/16",
+        "flags": [
+          "short_h:28"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "desktop-games",
+    "total": 16,
+    "issueCount": 10,
+    "issues": [
+      {
+        "tag": "a",
+        "cls": "tag game-source-link",
+        "text": "来源",
+        "w": 54,
+        "h": 29,
+        "p": "5/14/5/14",
+        "flags": [
+          "short_h:29",
+          "narrow_w:54"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "card-action",
+        "text": "开始",
+        "w": 112,
+        "h": 28,
+        "p": "5/14/5/14",
+        "flags": [
+          "short_h:28"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "tag game-source-link",
+        "text": "来源: 小黑屋",
+        "w": 54,
+        "h": 29,
+        "p": "5/14/5/14",
+        "flags": [
+          "short_h:29"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "card-action",
+        "text": "开始",
+        "w": 112,
+        "h": 28,
+        "p": "5/14/5/14",
+        "flags": [
+          "short_h:28"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "tag game-source-link",
+        "text": "来源: 2048",
+        "w": 54,
+        "h": 29,
+        "p": "5/14/5/14",
+        "flags": [
+          "short_h:29"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "card-action",
+        "text": "开始",
+        "w": 112,
+        "h": 28,
+        "p": "5/14/5/14",
+        "flags": [
+          "short_h:28"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "tag game-source-link",
+        "text": "来源: Hextris",
+        "w": 54,
+        "h": 29,
+        "p": "5/14/5/14",
+        "flags": [
+          "short_h:29"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "card-action",
+        "text": "开始",
+        "w": 136,
+        "h": 28,
+        "p": "5/14/5/14",
+        "flags": [
+          "short_h:28"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "tag game-source-link",
+        "text": "来源: 人生重开模拟器",
+        "w": 54,
+        "h": 29,
+        "p": "5/14/5/14",
+        "flags": [
+          "short_h:29"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "card-action",
+        "text": "开始",
+        "w": 136,
+        "h": 28,
+        "p": "5/14/5/14",
+        "flags": [
+          "short_h:28"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "desktop-chatroom",
+    "total": 5,
+    "issueCount": 4,
+    "issues": [
+      {
+        "tag": "button",
+        "cls": "xp-button chat-nickname-button",
+        "text": "换一个名字",
+        "w": 86,
+        "h": 26,
+        "p": "4/12/4/12",
+        "flags": [
+          "short_h:26"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "chat-room-help-trigger",
+        "text": "?",
+        "w": 28,
+        "h": 28,
+        "p": "4/12/4/12",
+        "flags": [
+          "short_h:28"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "xp-button chat-room-toggle",
+        "text": "密码房",
+        "w": 78,
+        "h": 26,
+        "p": "4/12/4/12",
+        "flags": [
+          "short_h:26"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "xp-button chat-send-button",
+        "text": "发送",
+        "w": 52,
+        "h": 44,
+        "p": "5/14/5/14",
+        "flags": [
+          "narrow_w:52"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "desktop-about",
+    "total": 7,
+    "issueCount": 0,
+    "issues": []
+  },
+  {
+    "label": "mobile-home",
+    "total": 22,
+    "issueCount": 13,
+    "issues": [
+      {
+        "tag": "button",
+        "cls": "brand-button",
+        "text": "鲁肃个人站",
+        "w": 131,
+        "h": 44,
+        "p": "4/12/4/5",
+        "flags": [
+          "padLR_asym:5/12"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "wallpaper-time-option",
+        "text": "早上",
+        "w": 44,
+        "h": 44,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_sibX:0"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "wallpaper-time-option",
+        "text": "中午",
+        "w": 44,
+        "h": 44,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_sibX:0"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "wallpaper-time-option",
+        "text": "下午",
+        "w": 44,
+        "h": 44,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_sibX:0"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "wallpaper-time-option",
+        "text": "晚上",
+        "w": 44,
+        "h": 44,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_sibX:0"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "account-button",
+        "text": "登录",
+        "w": 44,
+        "h": 44,
+        "p": "0/9/0/9",
+        "flags": [
+          "narrow_w:44"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "start-button active",
+        "text": "首页",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "知识",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "视频",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "工具",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "游戏",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "聊天",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "mobile-home-indicator",
+        "text": "收起或展开底部导航",
+        "w": 132,
+        "h": 44,
+        "p": "0/0/0/0",
+        "flags": [
+          "overlap:知识"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "mobile-knowledge",
+    "total": 17,
+    "issueCount": 9,
+    "issues": [
+      {
+        "tag": "button",
+        "cls": "mobile-home-button",
+        "text": "首页",
+        "w": 79,
+        "h": 44,
+        "p": "5/10/5/6",
+        "flags": [
+          "padLR_asym:6/10",
+          "touch_parent_border:0"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "xp-button",
+        "text": "清空",
+        "w": 54,
+        "h": 44,
+        "p": "5/12/5/12",
+        "flags": [
+          "narrow_w:54"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "start-button",
+        "text": "首页",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "active",
+        "text": "知识",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "视频",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "工具",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "游戏",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "聊天",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "mobile-home-indicator",
+        "text": "收起或展开底部导航",
+        "w": 132,
+        "h": 44,
+        "p": "0/0/0/0",
+        "flags": [
+          "overlap:知识"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "mobile-videos",
+    "total": 41,
+    "issueCount": 24,
+    "issues": [
+      {
+        "tag": "button",
+        "cls": "mobile-home-button",
+        "text": "首页",
+        "w": 79,
+        "h": 44,
+        "p": "5/10/5/6",
+        "flags": [
+          "padLR_asym:6/10",
+          "touch_parent_border:0"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "active",
+        "text": "全部 14",
+        "w": 90,
+        "h": 44,
+        "p": "7/13/7/13",
+        "flags": [
+          "touch_parent_border:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "video-thumb",
+        "text": "播放视频: 什么是cli？",
+        "w": 338,
+        "h": 190,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "video-thumb",
+        "text": "播放视频: Codex (APP) 保姆级全攻略",
+        "w": 338,
+        "h": 190,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "card-action",
+        "text": "播放",
+        "w": 72,
+        "h": 44,
+        "p": "0/16/0/16",
+        "flags": [
+          "overlap:游戏"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "video-thumb",
+        "text": "播放视频: 现在你可以把自己注册成LLM API",
+        "w": 338,
+        "h": 190,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:1",
+          "overlap:首页"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "video-thumb",
+        "text": "播放视频: AI时代，家长能做些什么？- 复旦 ",
+        "w": 338,
+        "h": 190,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "video-thumb",
+        "text": "播放视频: Kimi创始人「杨植麟」GTC202",
+        "w": 338,
+        "h": 190,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "video-thumb",
+        "text": "播放视频: 终于有人把chatGPT说清楚了——",
+        "w": 338,
+        "h": 190,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "video-thumb",
+        "text": "播放视频: 为什么你应该放弃Ollama，Oll",
+        "w": 338,
+        "h": 190,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "video-thumb",
+        "text": "播放视频: How We Scaled Kimi",
+        "w": 338,
+        "h": 190,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "video-thumb",
+        "text": "播放视频: 浏览器背后的“真身”，为什么总是 C",
+        "w": 338,
+        "h": 190,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "video-thumb",
+        "text": "播放视频: 为什么VPN会让局域网设备瘫痪？",
+        "w": 338,
+        "h": 190,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "video-thumb",
+        "text": "播放视频: 学Vibe coding之前要了解g",
+        "w": 338,
+        "h": 190,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "video-thumb",
+        "text": "播放视频: 大模型 token定价原理 #AI ",
+        "w": 338,
+        "h": 190,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "video-thumb",
+        "text": "播放视频: Agent Skills到底是什么，",
+        "w": 338,
+        "h": 190,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "video-thumb",
+        "text": "播放视频: 中美大模型差距过去一年变大还是缩小？",
+        "w": 338,
+        "h": 190,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_parent_border:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "start-button",
+        "text": "首页",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:video-thumb"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "知识",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:video-thumb"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "active",
+        "text": "视频",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:video-thumb"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "工具",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:video-thumb"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "游戏",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:播放"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "聊天",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:播放"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "mobile-home-indicator",
+        "text": "收起或展开底部导航",
+        "w": 132,
+        "h": 44,
+        "p": "0/0/0/0",
+        "flags": [
+          "overlap:知识"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "mobile-tools",
+    "total": 15,
+    "issueCount": 9,
+    "issues": [
+      {
+        "tag": "button",
+        "cls": "mobile-home-button",
+        "text": "首页",
+        "w": 79,
+        "h": 44,
+        "p": "5/10/5/6",
+        "flags": [
+          "padLR_asym:6/10",
+          "touch_parent_border:0"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "card-action",
+        "text": "打开",
+        "w": 328,
+        "h": 44,
+        "p": "0/16/0/16",
+        "flags": [
+          "touch_sibY:1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "start-button",
+        "text": "首页",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "知识",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "视频",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "active",
+        "text": "工具",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "游戏",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "聊天",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "mobile-home-indicator",
+        "text": "收起或展开底部导航",
+        "w": 132,
+        "h": 44,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_sibY:1"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "mobile-games",
+    "total": 24,
+    "issueCount": 20,
+    "issues": [
+      {
+        "tag": "button",
+        "cls": "mobile-home-button",
+        "text": "首页",
+        "w": 79,
+        "h": 44,
+        "p": "5/10/5/6",
+        "flags": [
+          "padLR_asym:6/10",
+          "touch_parent_border:0"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "tag game-source-link",
+        "text": "来源",
+        "w": 46,
+        "h": 44,
+        "p": "4/10/4/10",
+        "flags": [
+          "narrow_w:46"
+        ]
+      },
+      {
+        "tag": "summary",
+        "cls": "",
+        "text": "许可证、全部语言与来源",
+        "w": 150,
+        "h": 44,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_sibY:0"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "tag game-source-link",
+        "text": "来源: 小黑屋",
+        "w": 46,
+        "h": 44,
+        "p": "4/10/4/10",
+        "flags": [
+          "touch_sibY:0"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "card-action",
+        "text": "开始",
+        "w": 318,
+        "h": 44,
+        "p": "0/16/0/16",
+        "flags": [
+          "overlap:tag game-sourc"
+        ]
+      },
+      {
+        "tag": "summary",
+        "cls": "",
+        "text": "许可证、全部语言与来源",
+        "w": 150,
+        "h": 44,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_sibY:0"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "tag game-source-link",
+        "text": "来源: 2048",
+        "w": 46,
+        "h": 44,
+        "p": "4/10/4/10",
+        "flags": [
+          "touch_sibY:0"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "card-action",
+        "text": "开始",
+        "w": 318,
+        "h": 44,
+        "p": "0/16/0/16",
+        "flags": [
+          "overlap:tag game-sourc"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "tag game-source-link",
+        "text": "来源: Hextris",
+        "w": 46,
+        "h": 44,
+        "p": "4/10/4/10",
+        "flags": [
+          "overlap:开始"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "card-action",
+        "text": "开始",
+        "w": 318,
+        "h": 44,
+        "p": "0/16/0/16",
+        "flags": [
+          "overlap:tag game-sourc"
+        ]
+      },
+      {
+        "tag": "summary",
+        "cls": "",
+        "text": "许可证、全部语言与来源",
+        "w": 150,
+        "h": 44,
+        "p": "0/0/0/0",
+        "flags": [
+          "touch_sibY:0"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "tag game-source-link",
+        "text": "来源: 人生重开模拟器",
+        "w": 46,
+        "h": 44,
+        "p": "4/10/4/10",
+        "flags": [
+          "touch_sibY:0"
+        ]
+      },
+      {
+        "tag": "a",
+        "cls": "card-action",
+        "text": "开始",
+        "w": 318,
+        "h": 44,
+        "p": "0/16/0/16",
+        "flags": [
+          "overlap:tag game-sourc"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "start-button",
+        "text": "首页",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:开始"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "知识",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:开始"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "视频",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "touch_sibX:-1"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "工具",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:tag game-sourc"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "active",
+        "text": "游戏",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:开始"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "聊天",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:开始"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "mobile-home-indicator",
+        "text": "收起或展开底部导航",
+        "w": 132,
+        "h": 44,
+        "p": "0/0/0/0",
+        "flags": [
+          "overlap:许可证、全部语言与来源"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "mobile-chatroom",
+    "total": 13,
+    "issueCount": 10,
+    "issues": [
+      {
+        "tag": "button",
+        "cls": "mobile-home-button",
+        "text": "首页",
+        "w": 79,
+        "h": 44,
+        "p": "5/10/5/6",
+        "flags": [
+          "padLR_asym:6/10",
+          "touch_parent_border:0"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "xp-button chat-nickname-button",
+        "text": "换一个名字",
+        "w": 88,
+        "h": 44,
+        "p": "5/10/5/10",
+        "flags": [
+          "touch_sibY:0"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "xp-button chat-room-toggle",
+        "text": "密码房",
+        "w": 88,
+        "h": 44,
+        "p": "5/10/5/10",
+        "flags": [
+          "touch_sibY:0"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "start-button",
+        "text": "首页",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "知识",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "视频",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "工具",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "游戏",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "active",
+        "text": "聊天",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "mobile-home-indicator",
+        "text": "收起或展开底部导航",
+        "w": 132,
+        "h": 44,
+        "p": "0/0/0/0",
+        "flags": [
+          "overlap:知识"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "mobile-about",
+    "total": 15,
+    "issueCount": 8,
+    "issues": [
+      {
+        "tag": "button",
+        "cls": "mobile-home-button",
+        "text": "首页",
+        "w": 79,
+        "h": 44,
+        "p": "5/10/5/6",
+        "flags": [
+          "padLR_asym:6/10",
+          "touch_parent_border:0"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "start-button",
+        "text": "首页",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "知识",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "视频",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "工具",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "游戏",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48",
+          "overlap:mobile-home-in"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "",
+        "text": "聊天",
+        "w": 48,
+        "h": 60,
+        "p": "3/2/3/2",
+        "flags": [
+          "narrow_w:48"
+        ]
+      },
+      {
+        "tag": "button",
+        "cls": "mobile-home-indicator",
+        "text": "收起或展开底部导航",
+        "w": 132,
+        "h": 44,
+        "p": "0/0/0/0",
+        "flags": [
+          "overlap:知识"
+        ]
+      }
+    ]
+  },
+  {
+    "label": "mobile-welcome",
+    "total": 11,
+    "issueCount": 1,
+    "issues": [
+      {
+        "tag": "button",
+        "cls": "close-button",
+        "text": "×",
+        "w": 30,
+        "h": 30,
+        "p": "0/0/0/0",
+        "flags": [
+          "short_h:30"
+        ]
+      }
+    ]
+  }
+]
