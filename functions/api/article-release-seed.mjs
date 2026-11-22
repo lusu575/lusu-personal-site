@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-kittens-widescreen-fix', '2026-11-22-pond-kittens-widescreen-fix', 'site-updates', '["视觉升级","游戏区","猫国建设者"]', '', 'published', 0, 0, '2026-11-22T12:44:00+08:00', '2026-11-22T12:44:00+08:00', '2026-11-22T12:44:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-kittens-widescreen-fix", {
+  "zh": {
+    "title": "猫国建设者宽屏居中布局、小按钮暗色化与标签栏防裁修复",
+    "summary": "修复猫国建设者宽屏贴左留空问题，将建筑行右侧 sell/+/- 白块暗色化，并让顶部标签栏自动换行完整显示 Stats。",
+    "content_markdown": "本次针对猫国建设者游戏内页的宽屏与暗色适配完成三项核心修复：一是将三栏容器 #gamePageContainer 与 #game 改为最大 1560px 视口居中自适应弹性布局，中栏放宽至 580–840px，彻底消除宽屏下内容挤在左半屏、右侧大片空黑的问题；二是覆写原版 CSS 变量 --page-background-color 并精准暗色化 .linkContent、sell/+/-、弹窗按钮与下拉框，消除建筑行右侧白色块；三是将顶部标签栏 .tabsContainer 由绝对定位改为流式自动换行，确保 Stats 等右侧标签完整可见。游戏逻辑、存档与收起式站点工具栏均保持原样。"
+  },
+  "en": {
+    "title": "Kittens Game Widescreen Centering, Dark Sub-Buttons, and Wrapping Tab Bar",
+    "summary": "Centered Kittens Game's 3-column layout for widescreen displays, dark-themed sell/+/- sub-buttons, and wrapped the top tab bar so Stats is never clipped.",
+    "content_markdown": "This release fixes three Kittens Game presentation issues on widescreen displays: centering #gamePageContainer and #game as a responsive 1560px flex layout so the game no longer hugs the left half of wide monitors; overriding --page-background-color and dark-theming .linkContent, sell/+/-, dialog buttons, and selects to eliminate bright white blocks; and changing .tabsContainer to a wrapping flex row so Stats and all rightmost tabs display completely. All game logic, saves, and collapsible site toolbar remain intact."
+  },
+  "ja": {
+    "title": "Kittens Game ワイド画面中央配置・小ボタン暗色化・タブ折り返し修正",
+    "summary": "ワイド画面での左寄り余白を解消して中央3欄へ広げ、sell/+/-の白ボタンを暗色化し、上部タブ欄を折り返してStatsまで完全表示しました。",
+    "content_markdown": "今回の更新では Kittens Game 内ページのワイド画面・暗色表示を3点修正しました。まず #gamePageContainer と #game を最大1560pxの中央揃えフレックス3欄レイアウトへ変更し、ワイド画面で右半分が大きく空く問題を解消しています。次に --page-background-color と .linkContent・sell/+/- ボタンを暗色化して白い塊をなくし、さらに上部タブ欄 .tabsContainer を折り返し表示へ改めて Stats などの右端タブが切れないようにしました。ゲームロジックやセーブ、折りたたみ式ツールバーは維持しています。"
+  }
+}, "2026-11-22T12:44:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-chat-footer-sync-dot', '2026-11-22-pond-chat-footer-sync-dot', 'site-updates', '["视觉升级","聊天室"]', '', 'published', 0, 0, '2026-11-22T12:21:00+08:00', '2026-11-22T12:21:00+08:00', '2026-11-22T12:21:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-chat-footer-sync-dot", {
   "zh": {

@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-kittens-widescreen-fix",
+      "slug": "2026-11-22-pond-kittens-widescreen-fix",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "游戏区",
+        "猫国建设者"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T12:44:00+08:00",
+      "updated_at": "2026-11-22T12:44:00+08:00",
+      "published_at": "2026-11-22T12:44:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "猫国建设者宽屏居中布局、小按钮暗色化与标签栏防裁修复",
+        "en": "Kittens Game Widescreen Centering, Dark Sub-Buttons, and Wrapping Tab Bar",
+        "ja": "Kittens Game ワイド画面中央配置・小ボタン暗色化・タブ折り返し修正"
+      },
+      "summary": {
+        "zh": "修复猫国建设者宽屏贴左留空问题，将建筑行右侧 sell/+/- 白块暗色化，并让顶部标签栏自动换行完整显示 Stats。",
+        "en": "Centered Kittens Game's 3-column layout for widescreen displays, dark-themed sell/+/- sub-buttons, and wrapped the top tab bar so Stats is never clipped.",
+        "ja": "ワイド画面での左寄り余白を解消して中央3欄へ広げ、sell/+/-の白ボタンを暗色化し、上部タブ欄を折り返してStatsまで完全表示しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-chat-footer-sync-dot",
       "slug": "2026-11-22-pond-chat-footer-sync-dot",
       "category": "site-updates",
@@ -109,33 +137,6 @@ export const homeContent = Object.freeze({
         "zh": "补齐六个主窗口 .window-titlebar .close-button 同级优先级，彻底解决关于、工具等窗口关闭圆圈内叉号被旧规则清空的问题。",
         "en": "Matched .window-titlebar .close-button specificity across all six main windows so every circular close button renders its dotted X crisply.",
         "ja": "主要6ウィンドウの .window-titlebar .close-button 詳細度を揃え、閉じる円ボタン内の点陣×が全画面で確実に表示されるよう仕上げました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-close-id-specificity",
-      "slug": "2026-11-22-pond-close-id-specificity",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "全站图标"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T11:32:00+08:00",
-      "updated_at": "2026-11-22T11:32:00+08:00",
-      "published_at": "2026-11-22T11:32:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "全站九个窗口点阵关闭图标优先级收口",
-        "en": "Unified Dotted Close Button ID-Specificity Fix Across All Windows",
-        "ja": "全9ウィンドウ・モーダルの点陣閉じるアイコン詳細度修正"
-      },
-      "summary": {
-        "zh": "为全站所有窗口与弹窗的点阵关闭按钮补齐 ID 级选择器优先级，确保每个窗口右上角 30px 点阵叉号清晰可见且悬停零偏移。",
-        "en": "Applied ID-level specificity so the unified 30x30 dotted close X renders crisply with zero hover shift in all nine windows and modals.",
-        "ja": "全ウィンドウおよびモーダルにID詳細度で統一30px点陣×アイコンを適用し、確実に視認できホバー時に位置ずれしないよう修正しました。"
       }
     }
   ]

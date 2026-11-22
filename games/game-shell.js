@@ -1885,11 +1885,75 @@
           }
         `;
         const kittensCss = slug === "kittens-game" ? `
+          :root {
+            --page-background-color: #06161b !important;
+            --text-color: #e8fbf7 !important;
+            --button-border-color: rgba(164, 236, 228, 0.44) !important;
+          }
           #topBar, #footerLinks, #gamePageContainer, #game, #leftColumn, #midColumn, #rightColumn,
           #loadingContainer, .panelContainer, .tabsContainer, .tabInner, .dialog, .popup {
             background: #06161b !important;
             color: #e6fbf7 !important;
             border-color: rgba(164, 236, 228, 0.28) !important;
+          }
+          #gamePageContainer {
+            width: 100% !important;
+            max-width: 1560px !important;
+            margin: 0 auto !important;
+            box-sizing: border-box !important;
+          }
+          #game {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+            gap: 16px !important;
+            width: 100% !important;
+            padding: 8px 18px 24px !important;
+            box-sizing: border-box !important;
+          }
+          #leftColumn {
+            flex: 0 1 350px !important;
+            min-width: 280px !important;
+            max-width: 390px !important;
+            width: auto !important;
+            padding-right: 10px !important;
+            box-sizing: border-box !important;
+          }
+          #midColumn {
+            flex: 1 1 740px !important;
+            min-width: 580px !important;
+            max-width: 840px !important;
+            width: auto !important;
+            margin-top: 0 !important;
+            overflow-x: visible !important;
+            box-sizing: border-box !important;
+          }
+          #rightColumn {
+            flex: 0 1 340px !important;
+            min-width: 260px !important;
+            max-width: 380px !important;
+            width: auto !important;
+            top: 0 !important;
+            padding-left: 8px !important;
+            box-sizing: border-box !important;
+          }
+          .tabsContainer {
+            position: relative !important;
+            top: 0 !important;
+            left: 0 !important;
+            display: flex !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+            gap: 4px 10px !important;
+            width: 100% !important;
+            padding: 4px 2px 10px !important;
+            margin: 0 !important;
+            overflow: visible !important;
+            box-sizing: border-box !important;
+          }
+          .tabsContainer a.tab {
+            color: rgba(212, 244, 240, 0.86) !important;
+            white-space: nowrap !important;
           }
           #topBar {
             background: linear-gradient(180deg, rgba(10, 34, 40, 0.96), rgba(6, 22, 26, 0.96)) !important;
@@ -1900,12 +1964,28 @@
             border: 1px solid rgba(164, 236, 228, 0.30) !important;
             border-radius: 10px !important;
           }
-          .btn, .btnContent, button {
+          .btn, .btnContent, button, .dialog input[type="button"] {
             background: rgba(10, 36, 42, 0.84) !important;
+            background-color: rgba(10, 36, 42, 0.84) !important;
             color: #eefcf9 !important;
             border: 1px dashed rgba(176, 240, 234, 0.48) !important;
             border-radius: 8px !important;
             box-shadow: none !important;
+          }
+          .btn .linkContent, .btn.modern .linkContent, .btn a.link, .btn .linkbreak, .btn.modern span.btnTitle,
+          select, select > option, .login-popup {
+            background: rgba(8, 30, 36, 0.92) !important;
+            background-color: rgba(8, 30, 36, 0.92) !important;
+            color: #e8fbf7 !important;
+            border-color: rgba(164, 236, 228, 0.42) !important;
+          }
+          .btn .linkContent a, .btn.modern .linkContent a {
+            color: #9af8ec !important;
+            background: transparent !important;
+          }
+          .btn .linkContent a:hover, .btn.modern .linkContent a:hover {
+            color: #ffffff !important;
+            background: rgba(24, 76, 82, 0.72) !important;
           }
           .btn:hover:not(.disabled), .btnContent:hover, button:hover:not(:disabled) {
             border-style: solid !important;

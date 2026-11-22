@@ -3353,7 +3353,7 @@ const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = homeContentReleaseVersion;
 const currentCssVersion = reviewReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
-const currentGameShellVersion = "20261122-pond-polish-r24";
+const currentGameShellVersion = "20261122-pond-polish-r32";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
 const currentLifeRestartMobileTouchVersion = "20260726-life-mobile-touch-r1";
 
@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-chat-footer-sync-dot";
-const finalUpdateSlug = "2026-11-22-pond-chat-footer-sync-dot";
+const finalUpdateId = "seed-update-2026-11-22-pond-kittens-widescreen-fix";
+const finalUpdateSlug = "2026-11-22-pond-kittens-widescreen-fix";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Chatroom Footer Contrast, Padding, and Sync Status Indicator Dot";
-const finalPublishedAt = "2026-11-22T12:21:00+08:00";
+const finalTitleEn = "Kittens Game Widescreen Centering, Dark Sub-Buttons, and Wrapping Tab Bar";
+const finalPublishedAt = "2026-11-22T12:44:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-chat-footer-sync-dot",
   "seed-update-2026-11-22-pond-about-balance-chat-avatars",
   "seed-update-2026-11-22-pond-about-tight-chat-preload",
   "seed-update-2026-11-22-pond-titlebar-close-final",
