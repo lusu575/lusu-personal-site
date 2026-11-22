@@ -2,6 +2,8 @@
 
 ## undefined
 
+- undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-welcome-dot-polish` / `2026-11-22-pond-welcome-dot-polish`；视觉层缓存 `20261122-pond-polish-r22`。
+
 - undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-welcome-icons-summary-tz` / `2026-11-22-pond-welcome-icons-summary-tz`；视觉层缓存 `20261122-pond-polish-r21`。
 
 - undefined（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-welcome-v2-singlecol` / `2026-11-22-pond-welcome-v2-singlecol`；视觉层缓存 `20261122-pond-polish-r20`。

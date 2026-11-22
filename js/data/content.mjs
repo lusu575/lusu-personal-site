@@ -1,6 +1,38 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-welcome-dot-polish",
+  "slug": "2026-11-22-pond-welcome-dot-polish",
+  "category": "site-updates",
+  "tags": [
+    "视觉升级",
+    "欢迎窗"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T10:58:00+08:00",
+  "updated_at": "2026-11-22T10:58:00+08:00",
+  "published_at": "2026-11-22T10:58:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "欢迎窗摘要完整显示与全窗点阵图标统一提亮",
+    "en": "Welcome Modal Full Wrapped Summaries and Unified Dot-Matrix Icons",
+    "ja": "ウェルカムウィンドウの要約全文表示と点陣アイコン統一・高輝度化"
+  },
+  "summary": {
+    "zh": "放开最近更新摘要换行完整显示不截断，提亮分类点阵图标，并将站长状态与快捷入口图标统一替换为月夜池塘点阵风。",
+    "en": "Allowed update summaries to wrap completely without truncation, brightened category dot-matrix icons, and unified status and quick-link icons to dot-matrix CRT style.",
+    "ja": "最近更新の要約を折り返し全文表示に変更し、カテゴリアイコンを高輝度化するとともに状態・クイック入口アイコンも点陣風へ統一しました。"
+  },
+  "content_markdown": {
+    "zh": "本次针对欢迎窗完成最终视觉统一：一是取消最近更新第二行摘要的单行截断，改为自然换行完整展示，不再出现半句省略号；二是放大并提亮六类更新分类点阵图标的线条粗细与青白发光对比度；三是将站长状态栏原有的蓝色方块笑脸和快捷入口四个彩色像素图标全部替换为全站统一的发光点阵 CRT 图标，问候语、站长状态与快捷入口文案及跳转功能均保持原样不动。",
+    "en": "This release completes the Welcome modal visual unification: removing single-line ellipsis truncation on update summaries so every sentence displays in full, enlarging and brightening all six category dot-matrix icons for crisp contrast, and replacing the legacy blue smiley monitor and colorful quick-entry icons with matching Midnight Pond glowing dot-matrix SVG icons while keeping all greetings, status copy, and navigation links untouched.",
+    "ja": "今回の更新ではウェルカムウィンドウの視覚表現を統一しました。最近更新の2行目要約から1行省略を解除して全文を自然に折り返し表示し、6種類のカテゴリ点陣アイコンを拡大・高輝度化しています。さらにサイト状態の青いモニターやクイック入口4つのカラーアイコンもサイト共通の発光点陣 CRT アイコンへ置き換え、挨拶・状態文・各リンク機能はそのまま維持しています。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-welcome-icons-summary-tz",
   "slug": "2026-11-22-pond-welcome-icons-summary-tz",
   "category": "site-updates",
