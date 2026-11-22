@@ -5090,7 +5090,8 @@ html[data-ui-shell="mobile"] .article-copy-status {
 }
 
 /* --- 3. Unified 30x30 Dotted Close Button (ID-Specific Across ALL 9 Windows & Modals) & Zero-Shift Hover/Active --- */
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal, #video-modal, #account-popover) :is(.close-button, .account-close-button),
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal, #video-modal) .window-titlebar .close-button,
+html[data-pond-mode] #account-popover .account-close-button,
 #video-modal .window-titlebar .close-button,
 #welcome-modal .window-titlebar .close-button,
 #account-popover .account-close-button {
@@ -5113,7 +5114,8 @@ html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #ab
   transition: background-color 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease !important;
 }
 
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal, #video-modal, #account-popover) :is(.close-button, .account-close-button):hover,
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal, #video-modal) .window-titlebar .close-button:hover,
+html[data-pond-mode] #account-popover .account-close-button:hover,
 #video-modal .window-titlebar .close-button:hover,
 #welcome-modal .window-titlebar .close-button:hover,
 #account-popover .account-close-button:hover {

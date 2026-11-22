@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-titlebar-close-final', '2026-11-22-pond-titlebar-close-final', 'site-updates', '["视觉升级","全站图标"]', '', 'published', 0, 0, '2026-11-22T11:40:00+08:00', '2026-11-22T11:40:00+08:00', '2026-11-22T11:40:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-titlebar-close-final", {
+  "zh": {
+    "title": "主窗口标题栏点阵关闭叉号优先级最终补齐",
+    "summary": "补齐六个主窗口 .window-titlebar .close-button 同级优先级，彻底解决关于、工具等窗口关闭圆圈内叉号被旧规则清空的问题。",
+    "content_markdown": "本次针对关于我、工具区、知识库、视频区、游戏区与聊天室六个主窗口补齐 .window-titlebar .close-button 同级选择器优先级，彻底解决此前各主窗口旧规则覆盖背景图导致右上角圆形关闭按钮内点阵叉号不可见的问题。全站所有九处窗口与浮层现均统一展示清晰锐利的 30×30 点阵关闭叉号，且悬停与点击保持零偏移。"
+  },
+  "en": {
+    "title": "Main Window Titlebar Dotted Close X Final Specificity Fix",
+    "summary": "Matched .window-titlebar .close-button specificity across all six main windows so every circular close button renders its dotted X crisply.",
+    "content_markdown": "This release matches .window-titlebar .close-button specificity across Knowledge, Videos, Tools, Games, Chatroom, and About windows so legacy per-window background shorthand rules no longer clear the dotted X SVG. All nine windows and modals across the site now display identical crisp 30x30 dotted close buttons with zero hover or active shift."
+  },
+  "ja": {
+    "title": "主要ウィンドウタイトルバー点陣閉じるボタン最終修正",
+    "summary": "主要6ウィンドウの .window-titlebar .close-button 詳細度を揃え、閉じる円ボタン内の点陣×が全画面で確実に表示されるよう仕上げました。",
+    "content_markdown": "今回の更新では知識ベース・動画・ツール・ゲーム・チャット・概要の主要6ウィンドウに対して .window-titlebar .close-button の詳細度を揃え、旧背景ルールにより点陣×が消えていた現象を完全に解消しました。サイト内全9箇所のウィンドウとモーダルで統一された30×30点陣×ボタンが鮮明に表示されホバー時の位置ずれもゼロになっています。"
+  }
+}, "2026-11-22T11:40:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-close-id-specificity', '2026-11-22-pond-close-id-specificity', 'site-updates', '["视觉升级","全站图标"]', '', 'published', 0, 0, '2026-11-22T11:32:00+08:00', '2026-11-22T11:32:00+08:00', '2026-11-22T11:32:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-close-id-specificity", {
   "zh": {
