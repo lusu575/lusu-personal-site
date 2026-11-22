@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 关于页头像放大至 210px 与右栏等高消除留白，并重绘聊天室 6 枚月夜柔彩点阵头像（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-about-balance-chat-avatars` / `2026-11-22-pond-about-balance-chat-avatars`；视觉层缓存 `20261122-pond-polish-r30`。
+
 - 进一步收紧关于页窗口留白并预加载聊天室 6 枚点阵默认头像（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-about-tight-chat-preload` / `2026-11-22-pond-about-tight-chat-preload`；视觉层缓存 `20261122-pond-polish-r29`。
 
 

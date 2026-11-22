@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-about-balance-chat-avatars",
+      "slug": "2026-11-22-pond-about-balance-chat-avatars",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "关于页",
+        "聊天室"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T12:06:00+08:00",
+      "updated_at": "2026-11-22T12:06:00+08:00",
+      "published_at": "2026-11-22T12:06:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "关于页左右栏等高对齐与聊天室六枚点阵头像重绘提色",
+        "en": "Balanced About Column Height and Vibrant Glowing Dot-Matrix Chat Avatars",
+        "ja": "概要ウィンドウ左右高さ揃えとチャット6種点陣アバターの彩色刷新"
+      },
+      "summary": {
+        "zh": "将关于页头像放大至 210px 与右栏高度齐平彻底消除下方空块，并将聊天室 6 枚点阵头像重绘为月夜池塘专属柔彩微光造型。",
+        "en": "Enlarged the About avatar to 210px to match the right column height cleanly, and redrew all six chatroom dot-matrix avatars in distinct glowing Midnight Pond colors.",
+        "ja": "概要アバターを210pxへ拡大して右欄と高さを揃え下の空きを解消し、チャット用6種の点陣アバターを月夜池の淡彩発光モチーフへ刷新しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-about-tight-chat-preload",
       "slug": "2026-11-22-pond-about-tight-chat-preload",
       "category": "site-updates",
@@ -109,34 +137,6 @@ export const homeContent = Object.freeze({
         "zh": "将视频播放浮层标题栏与打开原地址按钮统一换装为深夜池塘点阵风，并将工具卡和游戏卡展开详情里的白底信息框全部暗色化。",
         "en": "Restyled the video playback modal titlebar and Open Original button in Midnight Pond CRT style and dark-themed expanded tool and game detail badges.",
         "ja": "動画再生モーダルのタイトルバーと元ページボタンを月夜池ダーク点陣風へ刷新し、ツール・ゲーム詳細展開枠の白背景も暗色化しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-account-signedin-states",
-      "slug": "2026-11-22-pond-account-signedin-states",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "云存档",
-        "全站状态"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T11:23:00+08:00",
-      "updated_at": "2026-11-22T11:23:00+08:00",
-      "published_at": "2026-11-22T11:23:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "云存档账号浮层已登录态重做与全站低频状态面暗色统一",
-        "en": "Signed-In Cloud Account Popover Redesign and Low-Frequency Status Surfaces",
-        "ja": "クラウドアカウントログイン済みポップオーバー刷新と低頻度状態面の暗色統一"
-      },
-      "summary": {
-        "zh": "彻底去掉账号浮层已登录态白色底块，重排双列均衡按钮与紧凑留白，并同步暗色化全站空态、错误态、恢复提示与气泡说明。",
-        "en": "Replaced the bright white signed-in account strips with dark CRT panels, balanced 2-column buttons, and unified all empty/error/recovery/popover status surfaces.",
-        "ja": "ログイン済みアカウント浮層の白帯を撤廃し2列均等ボタンへ再配置するとともに、全サイトの空・エラー・復帰通知などの状態面を暗色統一しました。"
       }
     }
   ]

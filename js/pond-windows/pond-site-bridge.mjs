@@ -136,12 +136,12 @@ function applyGamesCoverPresentation() {
 }
 
 const CHAT_AVATARS = [
-  '/assets/pond-windows/svg/avatar-lotus.svg',
-  '/assets/pond-windows/svg/avatar-koi.svg',
-  '/assets/pond-windows/svg/avatar-moon.svg',
-  '/assets/pond-windows/svg/avatar-leaf.svg',
-  '/assets/pond-windows/svg/avatar-ripple.svg',
-  '/assets/pond-windows/svg/avatar-star.svg'
+  '/assets/pond-windows/svg/avatar-lotus.svg?v=20261122-pond-polish-r30',
+  '/assets/pond-windows/svg/avatar-koi.svg?v=20261122-pond-polish-r30',
+  '/assets/pond-windows/svg/avatar-moon.svg?v=20261122-pond-polish-r30',
+  '/assets/pond-windows/svg/avatar-leaf.svg?v=20261122-pond-polish-r30',
+  '/assets/pond-windows/svg/avatar-ripple.svg?v=20261122-pond-polish-r30',
+  '/assets/pond-windows/svg/avatar-star.svg?v=20261122-pond-polish-r30'
 ];
 let chatAvatarsPreloaded = false;
 function preloadChatAvatars() {

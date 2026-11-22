@@ -4612,25 +4612,48 @@ html[data-pond-mode="about"] #about .about-window {
 
 html[data-pond-mode="about"] #about .profile-card {
   flex: 0 1 auto !important;
-  padding: 14px 22px 10px !important;
+  padding: 12px 22px 10px !important;
   align-items: center !important;
   align-content: center !important;
-  gap: 22px !important;
+  gap: 24px !important;
+}
+
+html[data-pond-mode="about"] #about .profile-avatar {
+  width: 210px !important;
+  height: 210px !important;
+  min-width: 210px !important;
+  min-height: 210px !important;
+  margin: 0 !important;
+  align-self: center !important;
+}
+
+html[data-pond-mode="about"] #about .profile-avatar-image {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 html[data-pond-mode="about"] #about .profile-info dl {
-  gap: 6px !important;
+  gap: 5px !important;
   margin: 0 !important;
 }
 
 html[data-pond-mode="about"] #about .about-copy {
-  margin: 10px 0 !important;
-  padding-top: 10px !important;
+  margin: 8px 0 !important;
+  padding-top: 8px !important;
 }
 
 html[data-pond-mode="about"] #about .about-rss-row {
   margin: 0 !important;
-  padding: 8px 14px !important;
+  padding: 7px 14px !important;
+}
+
+html[data-pond-mode="chatroom"] .chat-unread-button,
+html[data-ui-shell="mobile"] .chat-unread-button {
+  background: rgba(10, 40, 46, 0.92) !important;
+  border: 1.2px dashed rgba(154, 248, 238, 0.78) !important;
+  color: #eefcf9 !important;
+  border-radius: 999px !important;
+  box-shadow: 0 0 14px rgba(102, 236, 224, 0.34) !important;
 }
 
 html[data-pond-mode="resources"] .site-shell > main {

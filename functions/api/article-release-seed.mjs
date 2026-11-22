@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-about-balance-chat-avatars', '2026-11-22-pond-about-balance-chat-avatars', 'site-updates', '["视觉升级","关于页","聊天室"]', '', 'published', 0, 0, '2026-11-22T12:06:00+08:00', '2026-11-22T12:06:00+08:00', '2026-11-22T12:06:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-about-balance-chat-avatars", {
+  "zh": {
+    "title": "关于页左右栏等高对齐与聊天室六枚点阵头像重绘提色",
+    "summary": "将关于页头像放大至 210px 与右栏高度齐平彻底消除下方空块，并将聊天室 6 枚点阵头像重绘为月夜池塘专属柔彩微光造型。",
+    "content_markdown": "本次完成两项实拍精修：一是将关于我窗口左列头像放大至 210×210 并微调右列行距，使左列头像与右列信息区上下自然齐平，彻底消除头像下方的空块；二是将聊天室已接入的 6 枚默认点阵头像（莲花、锦鲤、明月、荷叶、水纹、星芒）由原本偏淡的灰白细线圈重绘为月夜池塘专属柔彩点阵微光造型（粉莲、橙鲤、暖月、翠叶、冰纹、紫星），并同步暗色化未读消息跳转胶囊。"
+  },
+  "en": {
+    "title": "Balanced About Column Height and Vibrant Glowing Dot-Matrix Chat Avatars",
+    "summary": "Enlarged the About avatar to 210px to match the right column height cleanly, and redrew all six chatroom dot-matrix avatars in distinct glowing Midnight Pond colors.",
+    "content_markdown": "This release finishes two visual refinements: enlarging the About window avatar to 210x210 so the left and right columns balance cleanly with zero empty space below the avatar; and redrawing all six chatroom default dot-matrix SVG avatars (lotus, koi, moon, leaf, ripple, star) from faint monochrome wireframes into distinct glowing Midnight Pond motifs with matching dark styling for the unread-messages button."
+  },
+  "ja": {
+    "title": "概要ウィンドウ左右高さ揃えとチャット6種点陣アバターの彩色刷新",
+    "summary": "概要アバターを210pxへ拡大して右欄と高さを揃え下の空きを解消し、チャット用6種の点陣アバターを月夜池の淡彩発光モチーフへ刷新しました。",
+    "content_markdown": "今回の更新では2点の仕上げを行いました。概要ウィンドウ左側のアバターを210×210へ拡大して右側情報欄と上下の高さを揃え、アバター下の空きを完全に解消しています。また匿名チャット用の6種の点陣アバター（蓮・錦鯉・月・蓮葉・波紋・星）を薄い単色線から鮮やかな月夜池の淡彩発光モチーフへ描き直し、未読メッセージボタンも暗色点陣スタイルへ統一しました。"
+  }
+}, "2026-11-22T12:06:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-about-tight-chat-preload', '2026-11-22-pond-about-tight-chat-preload', 'site-updates', '["视觉升级","关于页","聊天室"]', '', 'published', 0, 0, '2026-11-22T11:51:00+08:00', '2026-11-22T11:51:00+08:00', '2026-11-22T11:51:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-about-tight-chat-preload", {
   "zh": {
