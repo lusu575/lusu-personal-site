@@ -1958,8 +1958,8 @@ function renderBlog() {
 function renderUpdates() {
   const list = document.getElementById("recent-updates");
   const updateArticles = siteUpdateArticles().length
-    ? siteUpdateArticles().slice(0, 3)
-    : visibleLocalUpdates().slice(0, 3);
+    ? siteUpdateArticles().slice(0, 5)
+    : visibleLocalUpdates().slice(0, 5);
   if (!updateArticles.length) {
     const emptyItem = document.createElement("li");
     const icon = document.createElement("span");

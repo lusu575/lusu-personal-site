@@ -484,6 +484,7 @@ html[data-pond-mode="knowledge"] #knowledge-list .meta-row .article-pinned-badge
 
 /* Pagination ("加载更多") */
 html[data-pond-mode="knowledge"] #knowledge-list .knowledge-list-more {
+  grid-column: 1 / -1 !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3129,16 +3130,6 @@ html[data-pond-mode="about"] #about .xp-window {
   box-sizing: border-box !important;
 }
 
-html[data-pond-mode="welcome"] #welcome-modal .xp-window.welcome-window {
-  width: min(1040px, 78vw) !important;
-  min-width: min(720px, 92vw) !important;
-  height: min(740px, 78vh) !important;
-  max-height: min(740px, 78vh) !important;
-  margin: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-
 html[data-pond-mode="about"] #about .profile-card {
   flex: 1 1 auto !important;
   min-height: 0 !important;
@@ -3590,13 +3581,6 @@ html[data-pond-mode="about"] #about .xp-window {
   min-height: 0 !important;
   max-height: min(702px, 76vh) !important;
   margin: 0 !important;
-}
-
-html[data-pond-mode="welcome"] #welcome-modal .xp-window.welcome-window {
-  width: min(1040px, 78vw) !important;
-  height: min(702px, 76vh) !important;
-  min-height: 0 !important;
-  max-height: min(702px, 76vh) !important;
 }
 
 /* Override all legacy dark-blue text & emoji/sprite icons inside loading/empty/error states */
@@ -4245,4 +4229,265 @@ html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-hero .r
 
 html[data-pond-mode="chatroom"] .pond-chat-avatar {
   filter: brightness(1.30) drop-shadow(0 0 8px rgba(154, 246, 236, 0.65)) !important;
+}
+
+/* ============================================================
+   Welcome Modal v2 Narrow Single-Column Layout (r20)
+   Matches design-assets/windows/welcome.png: narrow centered CRT glass card,
+   single-column greeting + status + 4 quick-entry pills + 5 direct recent updates,
+   no "查看更多更新" button, all interactive features preserved.
+   ============================================================ */
+html[data-pond-mode="welcome"] #welcome-modal .modal-backdrop {
+  background: rgba(2, 10, 12, 0.16) !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .xp-window.welcome-window {
+  width: min(650px, 90vw) !important;
+  min-width: 0 !important;
+  height: auto !important;
+  max-height: min(760px, 84vh) !important;
+  margin: 0 !important;
+  padding: 18px 24px 36px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 18px !important;
+  background: linear-gradient(180deg, rgba(10, 34, 38, 0.80), rgba(6, 22, 26, 0.88)) !important;
+  border: 1.6px solid rgba(202, 252, 244, 0.80) !important;
+  box-shadow: 0 0 34px rgba(114, 244, 232, 0.34), 0 0 58px rgba(212, 138, 248, 0.24) !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .window-titlebar {
+  padding: 0 0 10px !important;
+  margin: 0 0 12px !important;
+  flex: 0 0 auto !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .window-titlebar .welcome-title-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 L14.2 9.8 L21.5 12 L14.2 14.2 L12 21.5 L9.8 14.2 L2.5 12 L9.8 9.8 Z' fill='none' stroke='%239ef8ec' stroke-width='1.7' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-size: 18px 18px !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 0 !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .welcome-content {
+  display: flex !important;
+  flex-direction: column !important;
+  grid-template-columns: none !important;
+  gap: 10px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .welcome-main {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .welcome-main > h2 {
+  margin: 0 !important;
+  font-size: 15px !important;
+  line-height: 1.48 !important;
+  font-weight: 700 !important;
+  color: #f0fefa !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .welcome-note {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin: 0 !important;
+  padding: 9px 12px !important;
+  border: 1px dotted rgba(182, 236, 230, 0.34) !important;
+  border-radius: 10px !important;
+  background: rgba(6, 22, 26, 0.44) !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .welcome-note .monitor-icon {
+  width: 34px !important;
+  height: 34px !important;
+  flex: 0 0 34px !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .welcome-status-copy {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  font-size: 12.2px !important;
+  line-height: 1.45 !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .welcome-status-copy strong {
+  font-size: 13px !important;
+  color: #88fce2 !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .welcome-status-copy p {
+  margin: 0 !important;
+  font-size: 12px !important;
+  line-height: 1.42 !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .dashed-line {
+  display: none !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .welcome-main > h3 {
+  margin: 2px 0 0 !important;
+  font-size: 12.5px !important;
+  letter-spacing: 0.05em !important;
+  color: #9cf8ee !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .quick-links {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  margin: 0 !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .quick-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  min-height: 32px !important;
+  padding: 5px 8px !important;
+  font-size: 12px !important;
+  white-space: nowrap !important;
+  border-radius: 999px !important;
+  border: 1.2px dashed rgba(182, 240, 234, 0.56) !important;
+  background: rgba(8, 28, 34, 0.62) !important;
+  color: #f0fefa !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .quick-link:hover {
+  border-style: solid !important;
+  border-color: rgba(154, 248, 238, 0.92) !important;
+  background: rgba(16, 54, 60, 0.78) !important;
+  box-shadow: 0 0 12px rgba(102, 236, 224, 0.28) !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .quick-link .quick-link-asset {
+  width: 15px !important;
+  height: 15px !important;
+  flex: 0 0 15px !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .recent-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  margin: 2px 0 0 !important;
+  padding: 10px 0 0 !important;
+  border: none !important;
+  border-top: 1px dotted rgba(188, 240, 234, 0.34) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .recent-panel > h3 {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin: 0 0 2px !important;
+  font-size: 13px !important;
+  color: #f0fefa !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .recent-panel > h3 em {
+  font-style: normal !important;
+  font-size: 10px !important;
+  letter-spacing: 0.08em !important;
+  padding: 1px 8px !important;
+  border-radius: 999px !important;
+  background: rgba(120, 244, 232, 0.16) !important;
+  border: 1px solid rgba(154, 248, 238, 0.56) !important;
+  color: #9cf8ee !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates li {
+  margin: 0 !important;
+  padding: 0 !important;
+  border-bottom: 1px dotted rgba(182, 236, 230, 0.28) !important;
+  background: transparent !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates li:last-child {
+  border-bottom: none !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates li a.recent-update-link {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  padding: 7px 6px !important;
+  box-sizing: border-box !important;
+  border-radius: 8px !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates li a.recent-update-link .update-icon {
+  width: 18px !important;
+  height: 18px !important;
+  flex: 0 0 18px !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates li a.recent-update-link > span:not(.update-icon) {
+  display: flex !important;
+  align-items: baseline !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  border-left: 1px dotted rgba(182, 236, 230, 0.34) !important;
+  padding-left: 10px !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates li a.recent-update-link strong {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #f0fefa !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates li a.recent-update-link small {
+  font-size: 11.5px !important;
+  color: rgba(186, 234, 228, 0.78) !important;
+  white-space: nowrap !important;
+  flex: 0 0 auto !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .recent-actions {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  html[data-pond-mode="welcome"] #welcome-modal .quick-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
 }

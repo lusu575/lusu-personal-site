@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-kittens-id-match";
-const finalUpdateSlug = "2026-11-22-pond-kittens-id-match";
+const finalUpdateId = "seed-update-2026-11-22-pond-welcome-v2-singlecol";
+const finalUpdateSlug = "2026-11-22-pond-welcome-v2-singlecol";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Kittens Game Inner Dark Theme Rule Activation Fix";
-const finalPublishedAt = "2026-11-22T05:32:00.000Z";
+const finalTitleEn = "Welcome Modal Narrow Single-Column 5-Update Layout and Knowledge Pagination Alignment";
+const finalPublishedAt = "2026-11-22T10:35:00.000Z";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-kittens-id-match",
   "seed-update-2026-11-22-pond-kittens-svg-mask-fix",
   "seed-update-2026-11-22-pond-kittens-icons-clean",
   "seed-update-2026-11-22-pond-kittens-res-contrast",

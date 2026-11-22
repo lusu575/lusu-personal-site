@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-welcome-v2-singlecol",
+  "slug": "2026-11-22-pond-welcome-v2-singlecol",
+  "category": "site-updates",
+  "tags": [
+    "视觉升级",
+    "欢迎窗",
+    "知识库"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T10:35:00.000Z",
+  "updated_at": "2026-11-22T10:35:00.000Z",
+  "published_at": "2026-11-22T10:35:00.000Z",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "欢迎窗回归窄窗单列五条更新版式与知识库分页对齐",
+    "en": "Welcome Modal Narrow Single-Column 5-Update Layout and Knowledge Pagination Alignment",
+    "ja": "ウェルカムウィンドウを細幅1列・更新5件直表示へ刷新し知識ベースページ送りを整列"
+  },
+  "summary": {
+    "zh": "按 v2 效果图将欢迎窗改为居中窄窗单列排布并直接展示 5 条最近更新，同时确认知识库双列卡片置顶标记与加载更多全宽对齐。",
+    "en": "Reworked the Welcome modal into the v2 narrow single-column layout showing 5 recent updates directly, and aligned Knowledge Base Load More across both columns.",
+    "ja": "v2 デザイン案どおりにウェルカムウィンドウを中央の細幅1列構成・最新更新5件直表示へ戻し、知識ベースのさらに読み込むバーを2列横断で整列しました。"
+  },
+  "content_markdown": {
+    "zh": "本次按站长确认的 v2 效果图对欢迎窗进行版式返工：将此前宽窗双栏结构改回居中窄窗单列排布，依次呈现问候语、站长状态栏、四项单行快捷入口胶囊以及直接展示 5 条最新更新的列表行，去除冗余的查看更多更新按钮，保留全部交互跳转与 Esc 关闭提示。同时对定版的知识库双列卡片视图补齐分页栏跨双列居中对齐，并复核置顶文章标记与加载更多分页功能均按现站原样正常工作。",
+    "en": "This release reworks the Welcome modal to match the approved v2 design: replacing the wide two-column layout with a centered narrow single-column glass card stacking the greeting, site owner status strip, four quick-entry pills, and five recent updates directly without a redundant View More button. We also aligned the Knowledge Base Load More footer across both columns of the finalized two-column card grid while verifying pinned badges and pagination continue working identically.",
+    "ja": "今回の更新では承認済みの v2 デザイン案に合わせ、ウェルカムウィンドウを幅広2カラムから中央配置の細幅1列グラスカードへ刷新しました。挨拶、サイト状態、4つのクイック入口ピル、そして最新更新5件をそのまま縦に並べ、余分なさらに見るボタンを省きつつ全機能を維持しています。あわせて確定した知識ベース2列カード表示のさらに読み込むバーを2列幅で中央揃えにし、固定表示バッジとページ送り動作も確認しました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-kittens-id-match",
   "slug": "2026-11-22-pond-kittens-id-match",
   "category": "site-updates",
