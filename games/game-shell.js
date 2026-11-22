@@ -1908,10 +1908,36 @@
           ::-webkit-scrollbar { width: 8px; height: 8px; }
           ::-webkit-scrollbar-track { background: #06161b; }
           ::-webkit-scrollbar-thumb { background: rgba(136, 252, 226, 0.32); border-radius: 999px; }
+          #topBar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 30 !important;
+            width: 100% !important;
+            min-height: 30px !important;
+            padding: 4px 18px !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            flex-wrap: wrap !important;
+            gap: 6px 14px !important;
+            background: linear-gradient(180deg, rgba(10, 34, 40, 0.98), rgba(6, 22, 26, 0.98)) !important;
+            border-bottom: 1px dotted rgba(176, 238, 232, 0.42) !important;
+          }
+          #topBar > div, #topBar .links-block {
+            position: static !important;
+            float: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            white-space: nowrap !important;
+          }
           #gamePageContainer {
             width: 100% !important;
-            max-width: 1480px !important;
+            max-width: 1460px !important;
             margin: 0 auto !important;
+            padding-top: 44px !important;
             overflow-x: hidden !important;
             box-sizing: border-box !important;
           }
@@ -1923,13 +1949,13 @@
             right: auto !important;
             min-width: 0 !important;
             display: grid !important;
-            grid-template-columns: minmax(220px, 300px) minmax(560px, 760px) minmax(220px, 300px) !important;
+            grid-template-columns: minmax(240px, 310px) minmax(560px, 760px) minmax(240px, 310px) !important;
             justify-content: center !important;
             align-items: start !important;
-            gap: 18px !important;
+            gap: 20px !important;
             width: 100% !important;
             max-width: 1440px !important;
-            margin: 12px auto 28px !important;
+            margin: 0 auto 28px !important;
             padding: 0 18px !important;
             box-sizing: border-box !important;
           }
@@ -1940,15 +1966,16 @@
             min-width: 0 !important;
             max-width: none !important;
             height: auto !important;
-            min-height: 0 !important;
+            min-height: 220px !important;
             margin-top: 0 !important;
-            padding: 12px 14px !important;
-            border: 1px solid rgba(164, 236, 228, 0.24) !important;
+            padding: 14px 16px !important;
+            border: 1px solid rgba(164, 236, 228, 0.28) !important;
             border-radius: 12px !important;
-            background: rgba(8, 28, 34, 0.56) !important;
+            background: rgba(8, 28, 34, 0.62) !important;
             box-sizing: border-box !important;
           }
           #midColumn {
+            min-height: 520px !important;
             overflow-x: visible !important;
           }
           .tabsContainer {
@@ -2042,32 +2069,41 @@
           }
         ` : "";
         const darkRoomCss = slug === "a-dark-room" ? `
-          html, body {
+          html {
+            min-height: 100% !important;
+            height: 100% !important;
+            background: #06161b !important;
+          }
+          body {
             min-height: 100vh !important;
+            height: auto !important;
             margin: 0 !important;
-            padding: 24px 16px 40px !important;
+            padding: 28px 18px 56px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             box-sizing: border-box !important;
             background: #06161b !important;
             overflow-x: hidden !important;
           }
           div#wrapper {
             position: relative !important;
-            margin: 0 auto !important;
-            width: 700px !important;
+            margin: auto !important;
+            width: 520px !important;
             max-width: calc(100vw - 48px) !important;
-            min-height: 640px !important;
-            padding: 24px 28px 28px 256px !important;
+            min-height: 360px !important;
+            padding: 28px 32px 32px 264px !important;
             box-sizing: content-box !important;
-            border: 1.4px solid rgba(164, 236, 228, 0.38) !important;
-            border-radius: 14px !important;
-            background: rgba(8, 28, 34, 0.86) !important;
-            box-shadow: 0 0 32px rgba(96, 234, 222, 0.14) !important;
+            border: 1.4px solid rgba(164, 236, 228, 0.40) !important;
+            border-radius: 16px !important;
+            background: rgba(8, 28, 34, 0.88) !important;
+            box-shadow: 0 0 36px rgba(96, 234, 222, 0.16) !important;
           }
           div#notifications {
             position: absolute !important;
-            left: 24px !important;
-            top: 24px !important;
-            width: 208px !important;
+            left: 28px !important;
+            top: 28px !important;
+            width: 210px !important;
             background: transparent !important;
           }
           div#header {
@@ -2078,9 +2114,9 @@
           }
           div#content {
             position: relative !important;
-            min-height: 560px !important;
-            height: 600px !important;
-            overflow: hidden !important;
+            min-height: 290px !important;
+            height: auto !important;
+            overflow: visible !important;
             background: transparent !important;
           }
           #outerSlider, #main, #locationSlider, #event, .eventPanel {

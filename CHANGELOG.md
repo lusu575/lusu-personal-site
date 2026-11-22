@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- 猫国建设者顶栏防裁与三栏等高对称、小黑屋视口纵向居中收紧与在线画板徽标/匿名栏微调（r41）。
+
 - 紧急修复 `/api/articles` 503 `CONTENT_MIGRATION_NEWER_RELEASE` 故障并加装构建期防呆校验：将 `ARTICLE_SEED_VERSION` 统一规范为 8 位日期 `20261123-pond-polish-r37`，补全 `r34–r37` 历史种子版本至 `KNOWN_PREDECESSOR_SEED_VERSIONS`，并修复日期比较逻辑；在 `scripts/build-check.mjs` 增加种子版本格式与前序迁移可达性校验。
 
 - 全站胶囊标签光学居中、视频卡等高基线对齐与纯图标/图文按钮比例统一（r40）：修正视频卡 Bilibili/YouTube 胶囊偏顶与简介定高对齐播放按钮；将桌面聊天室发送键收紧为 44×44 正圆配 22px 图标并同步校准全站关闭/全屏/帮助/社交/快捷入口按钮图标比例。
