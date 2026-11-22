@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-center-close-games-polish', '2026-11-22-pond-center-close-games-polish', 'site-updates', '["视觉升级","关于页","游戏区"]', '', 'published', 0, 0, '2026-11-22T11:18:00+08:00', '2026-11-22T11:18:00+08:00', '2026-11-22T11:18:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-center-close-games-polish", {
+  "zh": {
+    "title": "内容适配窗口居中对齐、点阵关闭键与游戏暗色细节收口",
+    "summary": "修复关于/工具/游戏收紧窗口居中定位与右上角点阵关闭图标优先级，清除小黑屋白条并还原2048数字方块亮色与Hextris底栏暗色。",
+    "content_markdown": "本次完成实拍复核发现的五处细节收口：一是将改为按内容定尺寸的关于页、工具区与游戏区窗口恢复视口正中定位；二是提升全站右上角点阵虚线关闭键 SVG 的选择器优先级，确保所有窗口与弹窗内清晰可见；三是彻底隐藏小黑屋左侧白色渐变遮罩并将右上角保存提示改为暗色青框；四是仅对 2048 空格底色暗色化以完整保留数字方块亮色对比；五是将 Hextris 底部操作提示条统一改为月夜池塘暗色。"
+  },
+  "en": {
+    "title": "Centered Content-Fit Windows, Dotted Close Icon Priority, and Game Dark-Mode Polish",
+    "summary": "Centered About, Tools, and Games windows, raised dotted close-button SVG specificity, removed A Dark Room white gradient, restored 2048 tile colors, and darkened Hextris hint bar.",
+    "content_markdown": "This release finishes five polish details caught during live screenshot inspection: centering the content-fit About, Tools, and Games windows on the viewport; raising specificity so the dotted × close-button SVG renders crisply in every titlebar; hiding A Dark Room's legacy white notification gradient and theming its save toast; keeping 2048 numbered tiles vivid while darkening empty cells; and darkening Hextris's bottom hint bar."
+  },
+  "ja": {
+    "title": "内容サイズ窓の中央揃え・点陣閉じるボタンとゲーム暗色微調整",
+    "summary": "概要・ツール・ゲーム窓を画面中央へ揃え、点陣閉じるアイコンを全窓で確実に表示し、小黒屋・2048・Hextrisの暗色細部を整えました。",
+    "content_markdown": "今回の更新では実機確認で見つかった5点の細部を仕上げました。内容に合わせて縮小した概要・ツール・ゲーム窓を画面中央へ配置し、全ウィンドウの点陣閉じるアイコンが確実に描画されるよう優先度を調整しました。あわせて A Dark Room の白いグラデーション除去、2048 の数字タイル配色維持、Hextris 下部ヒントバーの暗色統一を完了しています。"
+  }
+}, "2026-11-22T11:18:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-sizing-icons-games', '2026-11-22-pond-sizing-icons-games', 'site-updates', '["视觉升级","全站图标","游戏区","关于页"]', '', 'published', 0, 0, '2026-11-22T11:12:00+08:00', '2026-11-22T11:12:00+08:00', '2026-11-22T11:12:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-sizing-icons-games", {
   "zh": {

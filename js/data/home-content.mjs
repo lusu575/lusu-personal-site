@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-center-close-games-polish",
+      "slug": "2026-11-22-pond-center-close-games-polish",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "关于页",
+        "游戏区"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T11:18:00+08:00",
+      "updated_at": "2026-11-22T11:18:00+08:00",
+      "published_at": "2026-11-22T11:18:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "内容适配窗口居中对齐、点阵关闭键与游戏暗色细节收口",
+        "en": "Centered Content-Fit Windows, Dotted Close Icon Priority, and Game Dark-Mode Polish",
+        "ja": "内容サイズ窓の中央揃え・点陣閉じるボタンとゲーム暗色微調整"
+      },
+      "summary": {
+        "zh": "修复关于/工具/游戏收紧窗口居中定位与右上角点阵关闭图标优先级，清除小黑屋白条并还原2048数字方块亮色与Hextris底栏暗色。",
+        "en": "Centered About, Tools, and Games windows, raised dotted close-button SVG specificity, removed A Dark Room white gradient, restored 2048 tile colors, and darkened Hextris hint bar.",
+        "ja": "概要・ツール・ゲーム窓を画面中央へ揃え、点陣閉じるアイコンを全窓で確実に表示し、小黒屋・2048・Hextrisの暗色細部を整えました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-sizing-icons-games",
       "slug": "2026-11-22-pond-sizing-icons-games",
       "category": "site-updates",
@@ -110,34 +138,6 @@ export const homeContent = Object.freeze({
         "zh": "按 v2 效果图将欢迎窗改为居中窄窗单列排布并直接展示 5 条最近更新，同时确认知识库双列卡片置顶标记与加载更多全宽对齐。",
         "en": "Reworked the Welcome modal into the v2 narrow single-column layout showing 5 recent updates directly, and aligned Knowledge Base Load More across both columns.",
         "ja": "v2 デザイン案どおりにウェルカムウィンドウを中央の細幅1列構成・最新更新5件直表示へ戻し、知識ベースのさらに読み込むバーを2列横断で整列しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-kittens-id-match",
-      "slug": "2026-11-22-pond-kittens-id-match",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "游戏区",
-        "猫国建设者"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T05:32:00+08:00",
-      "updated_at": "2026-11-22T05:32:00+08:00",
-      "published_at": "2026-11-22T05:32:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "猫国建设者内页暗色主题规则生效修复",
-        "en": "Kittens Game Inner Dark Theme Rule Activation Fix",
-        "ja": "Kittens Game 内ページダークテーマ適用条件の修正"
-      },
-      "summary": {
-        "zh": "修正游戏内页暗色主题注入器按 game.id 匹配猫国建设者，彻底隐藏营火行左右问号残影并提亮齿轮图标与资源栏。",
-        "en": "Fixed the game shell dark-theme injector to match catalog game.id so Kittens Game dark styles, cyan gear icons, and question-mark cleanup take effect.",
-        "ja": "ゲームシェルのダークテーマ判定を game.id 優先へ修正し、焚き火行左右の疑問符残影除去と歯車アイコン明色化を確実に適用しました。"
       }
     }
   ]

@@ -3353,7 +3353,7 @@ const currentPreFinalMainVersion = "20260711-japanese-subtext-v102-r2";
 const currentMainVersion = homeContentReleaseVersion;
 const currentCssVersion = reviewReleaseVersion;
 const currentPreFinalTelemetryVersion = "20260802-traffic-budget-r1";
-const currentGameShellVersion = "20261122-pond-polish-r23";
+const currentGameShellVersion = "20261122-pond-polish-r24";
 const currentADarkRoomMobileVersion = "20260726-a-dark-room-mobile-r2";
 const currentLifeRestartMobileTouchVersion = "20260726-life-mobile-touch-r1";
 
@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-sizing-icons-games";
-const finalUpdateSlug = "2026-11-22-pond-sizing-icons-games";
+const finalUpdateId = "seed-update-2026-11-22-pond-center-close-games-polish";
+const finalUpdateSlug = "2026-11-22-pond-center-close-games-polish";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Content-Fit Window Sizing, Site-Wide Dot-Matrix Icon Unification, and Game Dark Theme & Language Fixes";
-const finalPublishedAt = "2026-11-22T11:12:00+08:00";
+const finalTitleEn = "Centered Content-Fit Windows, Dotted Close Icon Priority, and Game Dark-Mode Polish";
+const finalPublishedAt = "2026-11-22T11:18:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-sizing-icons-games",
   "seed-update-2026-11-22-pond-welcome-dot-polish",
   "seed-update-2026-11-22-pond-welcome-icons-summary-tz",
   "seed-update-2026-11-22-pond-welcome-v2-singlecol",

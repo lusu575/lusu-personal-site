@@ -1954,7 +1954,17 @@
             border-color: rgba(164, 236, 228, 0.34) !important;
           }
           #notifyGradient {
-            background: linear-gradient(rgba(6, 22, 27, 0) 0%, rgba(6, 22, 27, 0.96) 90%, #06161b 100%) !important;
+            display: none !important;
+          }
+          #saveNotify {
+            background: rgba(8, 30, 36, 0.92) !important;
+            color: #9af8ec !important;
+            border: 1px solid rgba(154, 248, 238, 0.45) !important;
+            padding: 2px 8px !important;
+            border-radius: 6px !important;
+          }
+          #header, .headerButton, #notifications .notification {
+            color: #eefcf9 !important;
           }
           #menu, #menu span.menuBtn, #menu a {
             color: #9af8ec !important;
@@ -2009,7 +2019,7 @@
             background: rgba(4, 16, 20, 0.92) !important;
             border: 1px solid rgba(164, 236, 228, 0.30) !important;
           }
-          .cell {
+          .cell:empty {
             background: rgba(14, 42, 50, 0.72) !important;
             border-color: rgba(164, 236, 228, 0.18) !important;
           }
@@ -2032,8 +2042,13 @@
             box-shadow: 0 0 22px rgba(96, 234, 222, 0.14) !important;
             color: #eefcf9 !important;
           }
-          .top .eyebrow, .hint {
+          .top .eyebrow {
             color: rgba(196, 240, 234, 0.86) !important;
+          }
+          .hint {
+            background: rgba(8, 30, 36, 0.88) !important;
+            border: 1.4px solid rgba(164, 236, 228, 0.42) !important;
+            color: rgba(206, 244, 238, 0.90) !important;
           }
           .top h1 { color: #f4fffe !important; text-shadow: 0 0 12px rgba(154, 248, 238, 0.35); }
           .score-box {

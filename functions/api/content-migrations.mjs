@@ -1,7 +1,7 @@
 import { normalizeHistoricalArticleTags } from "./article-tags.mjs";
 
 export const HISTORICAL_ARTICLE_BASELINE = "20260902-mobile-blog-retired-r1";
-export const ARTICLE_SEED_VERSION = "20261122-pond-polish-r23";
+export const ARTICLE_SEED_VERSION = "20261122-pond-polish-r24";
 export const ARTICLE_SEED_STATE_KEY = "article_seed_version";
 export const ARTICLE_MIGRATION_LEASE_KEY = `${ARTICLE_SEED_STATE_KEY}:lease`;
 const MIGRATION_LEASE_MS = 60_000;
@@ -50,7 +50,8 @@ const KNOWN_PREDECESSOR_SEED_VERSIONS = Object.freeze(new Set([
   "20261122-pond-polish-r19",
   "20261122-pond-polish-r20",
   "20261122-pond-polish-r21",
-  "20261122-pond-polish-r22"
+  "20261122-pond-polish-r22",
+  "20261122-pond-polish-r23"
 ]));
 
 function assertUpgradeableVersion(value) {

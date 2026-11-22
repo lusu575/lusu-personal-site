@@ -4585,8 +4585,15 @@ html[data-pond-mode="welcome"] #welcome-modal .recent-actions {
       - Welcome modal 6 category icons -> crisp unmistakable silhouettes
    ============================================================ */
 
-/* --- 1. Content-Sized Windows (#about, #resources, #games) --- */
+/* --- 1. Content-Sized Windows (#about, #resources, #games) Centered on Viewport --- */
 html[data-pond-mode="about"] .site-shell > main {
+  position: fixed !important;
+  left: 50% !important;
+  top: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
   width: min(740px, 88vw) !important;
   height: auto !important;
   min-height: 0 !important;
@@ -4611,6 +4618,13 @@ html[data-pond-mode="about"] #about .profile-card {
 }
 
 html[data-pond-mode="resources"] .site-shell > main {
+  position: fixed !important;
+  left: 50% !important;
+  top: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
   width: min(1040px, 84vw) !important;
   height: auto !important;
   min-height: 0 !important;
@@ -4631,6 +4645,13 @@ html[data-pond-mode="resources"] #resource-list {
 }
 
 html[data-pond-mode="games"] .site-shell > main {
+  position: fixed !important;
+  left: 50% !important;
+  top: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
   width: min(1040px, 84vw) !important;
   height: auto !important;
   min-height: 0 !important;
@@ -4766,30 +4787,47 @@ html[data-ui-shell="mobile"] #chat-autoscroll:checked {
 }
 
 /* --- 5. Global Window & Modal Close Button (Dotted × SVG Replacing Character ×) --- */
+html[data-pond-mode] .window-titlebar .close-button,
 html[data-pond-mode] .close-button,
 html[data-pond-mode] .account-popover-close,
+html[data-pond-mode="welcome"] #welcome-modal .window-titlebar .close-button,
+#video-modal .window-titlebar .close-button,
 #video-modal .close-button,
 #welcome-modal .close-button {
   font-size: 0 !important;
   line-height: 0 !important;
   color: transparent !important;
   background-color: rgba(6, 22, 26, 0.56) !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 5.5 L14.5 14.5 M14.5 5.5 L5.5 14.5' fill='none' stroke='%23e8fffc' stroke-width='1.9' stroke-linecap='round' stroke-dasharray='2.4 1.5'/%3E%3C/svg%3E") !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 5.5 L14.5 14.5 M14.5 5.5 L5.5 14.5' fill='none' stroke='%23ecfffd' stroke-width='2' stroke-linecap='round' stroke-dasharray='2.5 1.4'/%3E%3C/svg%3E") !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
   background-size: 16px 16px !important;
-  border: 1.2px dashed rgba(185, 235, 230, 0.52) !important;
+  border: 1.2px dashed rgba(185, 235, 230, 0.56) !important;
   border-radius: 999px !important;
 }
 
+html[data-pond-mode] .window-titlebar .close-button:hover,
 html[data-pond-mode] .close-button:hover,
 html[data-pond-mode] .account-popover-close:hover,
+html[data-pond-mode="welcome"] #welcome-modal .window-titlebar .close-button:hover,
+#video-modal .window-titlebar .close-button:hover,
 #video-modal .close-button:hover,
 #welcome-modal .close-button:hover {
   border-style: solid !important;
   border-color: rgba(154, 248, 238, 0.92) !important;
   background-color: rgba(18, 56, 62, 0.78) !important;
   box-shadow: 0 0 12px rgba(102, 236, 224, 0.34) !important;
+}
+
+/* Loading state folder icon on mobile/desktop knowledge -> dotted book SVG */
+html[data-pond-mode] .content-state .asset-icon-knowledge,
+html[data-ui-shell="mobile"] .content-state .asset-icon-knowledge,
+html[data-ui-shell="mobile"] .content-state .content-state-icon {
+  background-color: transparent !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2.8 5.2c3.1-.8 6.1-.3 9.2 1.4 3.1-1.7 6.1-2.2 9.2-1.4v12.6c-3.1-.8-6.1-.3-9.2 1.4-3.1-1.7-6.1-2.2-9.2-1.4V5.2zM12 6.6v12.6' fill='none' stroke='%23e8fffc' stroke-width='2' stroke-dasharray='2.4 1.4' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 24px 24px !important;
 }
 
 /* --- 6. Article Reader Inline Colorful Pixel Icons -> Dotted SVGs --- */
