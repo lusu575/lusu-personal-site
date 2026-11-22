@@ -1,7 +1,7 @@
 import { normalizeHistoricalArticleTags } from "./article-tags.mjs";
 
 export const HISTORICAL_ARTICLE_BASELINE = "20260902-mobile-blog-retired-r1";
-export const ARTICLE_SEED_VERSION = "2026-11-23-pond-polish-r37";
+export const ARTICLE_SEED_VERSION = "20261123-pond-polish-r37";
 export const ARTICLE_SEED_STATE_KEY = "article_seed_version";
 export const ARTICLE_MIGRATION_LEASE_KEY = `${ARTICLE_SEED_STATE_KEY}:lease`;
 const MIGRATION_LEASE_MS = 60_000;
@@ -18,7 +18,7 @@ export class ContentMigrationError extends Error {
   }
 }
 
-const KNOWN_PREDECESSOR_SEED_VERSIONS = Object.freeze(new Set([
+export const KNOWN_PREDECESSOR_SEED_VERSIONS = Object.freeze(new Set([
   "20261121-pond-home-kb-r1",
   "20261122-pond-article-r1",
   "20261122-pond-videos-r1",
@@ -61,15 +61,27 @@ const KNOWN_PREDECESSOR_SEED_VERSIONS = Object.freeze(new Set([
   "20261122-pond-polish-r30",
   "20261122-pond-polish-r31",
   "20261122-pond-polish-r32",
-  "20261122-pond-polish-r33"
+  "20261122-pond-polish-r33",
+  "20261122-pond-polish-r34",
+  "2026-11-22-pond-polish-r34",
+  "2026-11-22-pond-polish-r35",
+  "20261122-pond-polish-r35",
+  "20261122-pond-polish-r36",
+  "2026-11-23-pond-polish-r37"
 ]));
 
-function assertUpgradeableVersion(value) {
+function extractCanonicalSeedDate(value) {
+  const m = String(value || "").match(/^(\d{4})-?(\d{2})-?(\d{2})-/);
+  return m ? `${m[1]}${m[2]}${m[3]}` : "";
+}
+
+export function assertUpgradeableVersion(value) {
   if (!value || value === ARTICLE_SEED_VERSION || value === HISTORICAL_ARTICLE_BASELINE || KNOWN_PREDECESSOR_SEED_VERSIONS.has(value)) return;
-  const date = value.match(/^(\d{8})-.+$/)?.[1];
+  const date = extractCanonicalSeedDate(value);
+  const targetDate = extractCanonicalSeedDate(ARTICLE_SEED_VERSION);
   // Same-day unfamiliar releases are not ordered by their arbitrary label. Only
   // an explicitly older dated release may enter the compatibility migration.
-  if (!date || date >= ARTICLE_SEED_VERSION.slice(0, 8)) {
+  if (!date || !targetDate || date >= targetDate) {
     throw new ContentMigrationError("CONTENT_MIGRATION_NEWER_RELEASE");
   }
 }
@@ -153,4 +165,3 @@ async function applyArticleDataMigrations(env, helpers) {
       .bind(ARTICLE_MIGRATION_LEASE_KEY, owner).run();
   }
 }
-
