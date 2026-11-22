@@ -4594,10 +4594,10 @@ html[data-pond-mode="about"] .site-shell > main {
   bottom: auto !important;
   transform: translate(-50%, -50%) !important;
   margin: 0 !important;
-  width: min(740px, 88vw) !important;
+  width: min(680px, 88vw) !important;
   height: auto !important;
   min-height: 0 !important;
-  max-height: min(680px, 84vh) !important;
+  max-height: min(600px, 84vh) !important;
 }
 
 html[data-pond-mode="about"] #about.page.active,
@@ -4606,15 +4606,31 @@ html[data-pond-mode="about"] #about .about-window {
   width: 100% !important;
   height: auto !important;
   min-height: 0 !important;
-  max-height: min(680px, 84vh) !important;
+  max-height: min(600px, 84vh) !important;
+  padding-bottom: 16px !important;
 }
 
 html[data-pond-mode="about"] #about .profile-card {
   flex: 0 1 auto !important;
-  padding: 24px 28px 26px !important;
+  padding: 14px 22px 10px !important;
   align-items: center !important;
   align-content: center !important;
-  gap: 28px !important;
+  gap: 22px !important;
+}
+
+html[data-pond-mode="about"] #about .profile-info dl {
+  gap: 6px !important;
+  margin: 0 !important;
+}
+
+html[data-pond-mode="about"] #about .about-copy {
+  margin: 10px 0 !important;
+  padding-top: 10px !important;
+}
+
+html[data-pond-mode="about"] #about .about-rss-row {
+  margin: 0 !important;
+  padding: 8px 14px !important;
 }
 
 html[data-pond-mode="resources"] .site-shell > main {

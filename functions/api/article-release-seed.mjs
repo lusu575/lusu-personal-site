@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-about-tight-chat-preload', '2026-11-22-pond-about-tight-chat-preload', 'site-updates', '["视觉升级","关于页","聊天室"]', '', 'published', 0, 0, '2026-11-22T11:51:00+08:00', '2026-11-22T11:51:00+08:00', '2026-11-22T11:51:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-about-tight-chat-preload", {
+  "zh": {
+    "title": "关于页进一步收紧贴合内容与聊天室点阵头像预加载",
+    "summary": "收紧关于页内边距与行距彻底消除头像下方空块，并在进入聊天室时预加载 6 枚点阵默认头像消除冷加载空圈闪现。",
+    "content_markdown": "本次完成两项实机复审细节收口：一是进一步收紧关于我窗口宽度与内部行距、自介边距及 RSS 条内边距，彻底消除头像下方的明显留白，使窗口紧密贴合内容；二是为聊天室 6 枚点阵默认头像（莲花、锦鲤、明月、荷叶、水纹、星芒）增加即时预加载与同步解码，消除消息刚载入时头像短暂空白圆圈的问题，确保进入聊天室即刻完整显示点阵头像。"
+  },
+  "en": {
+    "title": "Tighter About Window Fit and Chatroom Dot-Matrix Avatar Preloading",
+    "summary": "Tightened About window spacing to eliminate empty space below the avatar, and preloaded all six dot-matrix chat avatars for instant display.",
+    "content_markdown": "This release finishes two live-review details: tightening the About window width, internal row gaps, bio margin, and RSS bar padding to eliminate the empty block beneath the avatar; and preloading all six dot-matrix chatroom avatars (lotus, koi, moon, leaf, ripple, star) with eager sync decoding so chat messages display their avatars immediately without any blank circle flash."
+  },
+  "ja": {
+    "title": "概要ウィンドウの余白圧縮とチャット点陣アバターの事前読込",
+    "summary": "概要ウィンドウの余白をさらに引き締めてアバター下の空きを解消し、チャット用6種の点陣アバターを事前読込して即表示するようにしました。",
+    "content_markdown": "今回の更新では実機レビューで挙がった2点の仕上げを行いました。概要ウィンドウの幅・行間・自己紹介余白・RSSバー内余白をさらに引き締めてアバター下の空きを完全に解消し、内容量にぴったり収まるバランスへ整えています。あわせて匿名チャット用の6種類の点陣アバター（蓮・錦鯉・月・蓮葉・波紋・星）を事前読込と同期デコードで即時表示させ、メッセージ読込直後の空丸表示を完全に防いでいます。"
+  }
+}, "2026-11-22T11:51:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-titlebar-close-final', '2026-11-22-pond-titlebar-close-final', 'site-updates', '["视觉升级","全站图标"]', '', 'published', 0, 0, '2026-11-22T11:40:00+08:00', '2026-11-22T11:40:00+08:00', '2026-11-22T11:40:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-titlebar-close-final", {
   "zh": {

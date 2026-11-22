@@ -143,6 +143,16 @@ const CHAT_AVATARS = [
   '/assets/pond-windows/svg/avatar-ripple.svg',
   '/assets/pond-windows/svg/avatar-star.svg'
 ];
+let chatAvatarsPreloaded = false;
+function preloadChatAvatars() {
+  if (chatAvatarsPreloaded) return;
+  chatAvatarsPreloaded = true;
+  CHAT_AVATARS.forEach((src) => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = src;
+  });
+}
 
 function hashString(str) {
   let h = 0;
@@ -153,6 +163,7 @@ function hashString(str) {
 }
 
 function applyChatAvatarPresentation() {
+  preloadChatAvatars();
   const list = document.getElementById('chat-message-list');
   if (!list) return;
   list.querySelectorAll('.chat-message, .chat-item, article').forEach((msg) => {
@@ -163,6 +174,8 @@ function applyChatAvatarPresentation() {
     const avatarSrc = CHAT_AVATARS[hashString(name) % CHAT_AVATARS.length];
     const avatar = document.createElement('img');
     avatar.className = 'pond-chat-avatar';
+    avatar.loading = 'eager';
+    avatar.decoding = 'sync';
     avatar.src = avatarSrc;
     avatar.alt = '';
     avatar.setAttribute('aria-hidden', 'true');

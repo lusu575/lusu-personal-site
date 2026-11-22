@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 进一步收紧关于页窗口留白并预加载聊天室 6 枚点阵默认头像（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-about-tight-chat-preload` / `2026-11-22-pond-about-tight-chat-preload`；视觉层缓存 `20261122-pond-polish-r29`。
+
 
 - 主窗口标题栏点阵关闭叉号优先级最终补齐（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-titlebar-close-final` / `2026-11-22-pond-titlebar-close-final`；视觉层缓存 `20261122-pond-polish-r28`。
 

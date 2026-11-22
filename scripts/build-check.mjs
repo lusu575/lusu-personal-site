@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-titlebar-close-final";
-const finalUpdateSlug = "2026-11-22-pond-titlebar-close-final";
+const finalUpdateId = "seed-update-2026-11-22-pond-about-tight-chat-preload";
+const finalUpdateSlug = "2026-11-22-pond-about-tight-chat-preload";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Main Window Titlebar Dotted Close X Final Specificity Fix";
-const finalPublishedAt = "2026-11-22T11:40:00+08:00";
+const finalTitleEn = "Tighter About Window Fit and Chatroom Dot-Matrix Avatar Preloading";
+const finalPublishedAt = "2026-11-22T11:51:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-titlebar-close-final",
   "seed-update-2026-11-22-pond-close-id-specificity",
   "seed-update-2026-11-22-pond-video-modal-details",
   "seed-update-2026-11-22-pond-account-signedin-states",

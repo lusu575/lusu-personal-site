@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-about-tight-chat-preload",
+      "slug": "2026-11-22-pond-about-tight-chat-preload",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "关于页",
+        "聊天室"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T11:51:00+08:00",
+      "updated_at": "2026-11-22T11:51:00+08:00",
+      "published_at": "2026-11-22T11:51:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "关于页进一步收紧贴合内容与聊天室点阵头像预加载",
+        "en": "Tighter About Window Fit and Chatroom Dot-Matrix Avatar Preloading",
+        "ja": "概要ウィンドウの余白圧縮とチャット点陣アバターの事前読込"
+      },
+      "summary": {
+        "zh": "收紧关于页内边距与行距彻底消除头像下方空块，并在进入聊天室时预加载 6 枚点阵默认头像消除冷加载空圈闪现。",
+        "en": "Tightened About window spacing to eliminate empty space below the avatar, and preloaded all six dot-matrix chat avatars for instant display.",
+        "ja": "概要ウィンドウの余白をさらに引き締めてアバター下の空きを解消し、チャット用6種の点陣アバターを事前読込して即表示するようにしました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-titlebar-close-final",
       "slug": "2026-11-22-pond-titlebar-close-final",
       "category": "site-updates",
@@ -109,34 +137,6 @@ export const homeContent = Object.freeze({
         "zh": "彻底去掉账号浮层已登录态白色底块，重排双列均衡按钮与紧凑留白，并同步暗色化全站空态、错误态、恢复提示与气泡说明。",
         "en": "Replaced the bright white signed-in account strips with dark CRT panels, balanced 2-column buttons, and unified all empty/error/recovery/popover status surfaces.",
         "ja": "ログイン済みアカウント浮層の白帯を撤廃し2列均等ボタンへ再配置するとともに、全サイトの空・エラー・復帰通知などの状態面を暗色統一しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-center-close-games-polish",
-      "slug": "2026-11-22-pond-center-close-games-polish",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "关于页",
-        "游戏区"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T11:18:00+08:00",
-      "updated_at": "2026-11-22T11:18:00+08:00",
-      "published_at": "2026-11-22T11:18:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "内容适配窗口居中对齐、点阵关闭键与游戏暗色细节收口",
-        "en": "Centered Content-Fit Windows, Dotted Close Icon Priority, and Game Dark-Mode Polish",
-        "ja": "内容サイズ窓の中央揃え・点陣閉じるボタンとゲーム暗色微調整"
-      },
-      "summary": {
-        "zh": "修复关于/工具/游戏收紧窗口居中定位与右上角点阵关闭图标优先级，清除小黑屋白条并还原2048数字方块亮色与Hextris底栏暗色。",
-        "en": "Centered About, Tools, and Games windows, raised dotted close-button SVG specificity, removed A Dark Room white gradient, restored 2048 tile colors, and darkened Hextris hint bar.",
-        "ja": "概要・ツール・ゲーム窓を画面中央へ揃え、点陣閉じるアイコンを全窓で確実に表示し、小黒屋・2048・Hextrisの暗色細部を整えました。"
       }
     }
   ]
