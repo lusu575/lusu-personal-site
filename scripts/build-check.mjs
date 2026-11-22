@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-button-spacing-system";
-const finalUpdateSlug = "2026-11-22-pond-button-spacing-system";
+const finalUpdateId = "seed-update-2026-11-23-pond-full-site-inspection-fixes";
+const finalUpdateSlug = "2026-11-23-pond-full-site-inspection-fixes";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Site-Wide Button Sizing, Optical Centering, and Spacing System";
-const finalPublishedAt = "2026-11-22T23:41:00+08:00";
+const finalTitleEn = "Full-Site Visual Inspection Fixes: Desktop Taskbar, Welcome Triggers, Tool Reskins & Game Layouts";
+const finalPublishedAt = "2026-11-23T00:20:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-button-spacing-system",
   "seed-update-2026-11-22-pond-welcome-rebuild-notice",
   "seed-update-2026-11-22-pond-home-icon-isolation",
   "seed-update-2026-11-22-pond-kittens-widescreen-fix",
@@ -4954,7 +4955,7 @@ const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 
 
 const changelog20260827Section = markdownSection(changelog, "## 2026-08-27");
-const changelog20260928Section = markdownSection(changelog, "## 2026-11-22");
+const changelog20260928Section = markdownSection(changelog, "## 2026-11-23");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {

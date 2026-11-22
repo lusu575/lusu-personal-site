@@ -24,7 +24,7 @@ import {
   SURFACE_OVERLAY_FRAG,
   WATER_BG_FRAG
 } from './shaders.mjs';
-import { PondUIOverlay } from './ui-overlay.mjs?v=20261122-pond-polish-r33';
+import { PondUIOverlay } from './ui-overlay.mjs?v=20261123-pond-polish-r37';
 
 const MAX_RIPPLES = 8;
 
@@ -67,6 +67,7 @@ export class PondCRTEngine {
     this._draggingSlider = false;
     this.onNavigate = options.onNavigate || null;
     this.onAccountClick = options.onAccountClick || null;
+    this.onWelcomeClick = options.onWelcomeClick || null;
     this.onLanguageChange = options.onLanguageChange || null;
     this.onSeasonChange = options.onSeasonChange || null;
     this.onFpsUpdate = options.onFpsUpdate || null;
@@ -278,7 +279,7 @@ export class PondCRTEngine {
         this.uiOverlay.setIconHover(hit.icon.id, true);
         this.uiOverlay.cornerHover = null;
         this.canvas.style.cursor = 'pointer';
-      } else if (hit && hit.type === 'season') {
+      } else if (hit && (hit.type === 'season' || hit.type === 'clock')) {
         this.uiOverlay.setIconHover(null, false);
         this.uiOverlay.cornerHover = null;
         this.canvas.style.cursor = 'pointer';
@@ -312,6 +313,10 @@ export class PondCRTEngine {
         this.uiOverlay.triggerIconClick(hit.icon.id);
         this.spawnRipple(hit.icon.x, 1.0 - hit.icon.y, 1.05);
         if (this.onNavigate) this.onNavigate(hit.icon.route, hit.icon.id);
+        return;
+      }
+      if (hit && hit.type === 'clock') {
+        if (this.onWelcomeClick) this.onWelcomeClick();
         return;
       }
       if (hit && hit.type === 'account') {

@@ -1896,10 +1896,23 @@
             color: #e6fbf7 !important;
             border-color: rgba(164, 236, 228, 0.28) !important;
           }
+          html, body {
+            overflow-x: hidden !important;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(136, 252, 226, 0.34) #06161b;
+          }
+          * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(136, 252, 226, 0.34) #06161b;
+          }
+          ::-webkit-scrollbar { width: 8px; height: 8px; }
+          ::-webkit-scrollbar-track { background: #06161b; }
+          ::-webkit-scrollbar-thumb { background: rgba(136, 252, 226, 0.32); border-radius: 999px; }
           #gamePageContainer {
             width: 100% !important;
-            max-width: 1560px !important;
+            max-width: 1520px !important;
             margin: 0 auto !important;
+            overflow-x: hidden !important;
             box-sizing: border-box !important;
           }
           #game {
@@ -1908,30 +1921,30 @@
             align-items: flex-start !important;
             gap: 16px !important;
             width: 100% !important;
-            padding: 8px 18px 24px !important;
+            padding: 10px 18px 24px !important;
             box-sizing: border-box !important;
           }
           #leftColumn {
-            flex: 0 1 350px !important;
-            min-width: 280px !important;
-            max-width: 390px !important;
+            flex: 0 1 300px !important;
+            min-width: 240px !important;
+            max-width: 340px !important;
             width: auto !important;
             padding-right: 10px !important;
             box-sizing: border-box !important;
           }
           #midColumn {
-            flex: 1 1 740px !important;
-            min-width: 580px !important;
-            max-width: 840px !important;
+            flex: 1 1 700px !important;
+            min-width: 540px !important;
+            max-width: 820px !important;
             width: auto !important;
             margin-top: 0 !important;
             overflow-x: visible !important;
             box-sizing: border-box !important;
           }
           #rightColumn {
-            flex: 0 1 340px !important;
-            min-width: 260px !important;
-            max-width: 380px !important;
+            flex: 0 1 300px !important;
+            min-width: 240px !important;
+            max-width: 340px !important;
             width: auto !important;
             top: 0 !important;
             padding-left: 8px !important;
@@ -2028,8 +2041,27 @@
           }
         ` : "";
         const darkRoomCss = slug === "a-dark-room" ? `
-          #wrapper, #outerSlider, #content, #main, #locationSlider, #notifications, #event, .eventPanel {
+          html, body {
+            min-height: 100vh !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+            padding: 28px 18px 40px !important;
+            box-sizing: border-box !important;
             background: #06161b !important;
+          }
+          #wrapper {
+            position: relative !important;
+            margin: 0 auto !important;
+            padding: 24px 28px !important;
+            min-width: min(740px, 94vw) !important;
+            border: 1.4px solid rgba(164, 236, 228, 0.36) !important;
+            border-radius: 14px !important;
+            background: rgba(8, 28, 34, 0.86) !important;
+            box-shadow: 0 0 32px rgba(96, 234, 222, 0.14) !important;
+          }
+          #outerSlider, #content, #main, #locationSlider, #notifications, #event, .eventPanel {
+            background: transparent !important;
             color: #e8fbf7 !important;
             border-color: rgba(164, 236, 228, 0.34) !important;
           }
@@ -2151,12 +2183,27 @@
             border-color: rgba(154, 248, 238, 0.92) !important;
             background: rgba(20, 64, 70, 0.78) !important;
           }
+          .stage canvas, canvas {
+            background: #07191e !important;
+            border: 1.5px solid rgba(164, 236, 228, 0.44) !important;
+            border-radius: 10px !important;
+          }
           .overlay {
             background: rgba(4, 18, 22, 0.88) !important;
             color: #f4fffe !important;
           }
         ` : "";
-        style.textContent = (slug === "life-restart" ? "" : baseCss) + kittensCss + darkRoomCss + game2048Css + hextrisCss;
+        const lifeRestartCss = slug === "life-restart" ? `
+          html, body {
+            background: #06161b !important;
+            overflow-x: hidden !important;
+          }
+          #main, .main, .container {
+            padding-top: 8px !important;
+            box-sizing: border-box !important;
+          }
+        ` : "";
+        style.textContent = (slug === "life-restart" ? "" : baseCss) + kittensCss + darkRoomCss + game2048Css + hextrisCss + lifeRestartCss;
         doc.head.appendChild(style);
       } catch {
         // Ignore cross-origin or transient iframe access errors

@@ -411,8 +411,8 @@ function draw() {
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.lineTo(end.x, end.y);
-    ctx.strokeStyle = "rgba(24, 80, 173, 0.16)";
-    ctx.lineWidth = 5;
+    ctx.strokeStyle = "rgba(136, 252, 226, 0.28)";
+    ctx.lineWidth = 4;
     ctx.stroke();
   }
   lanes.forEach((stack, lane) => {
@@ -421,8 +421,8 @@ function draw() {
   if (active) {
     drawBlock((active.lane + rotation) % 6, active.distance, active.color);
   }
-  drawHex(cx, cy, 46, "#fff8d7", "#1850ad");
-  ctx.fillStyle = "#1542a0";
+  drawHex(cx, cy, 46, "#0d2f38", "#9ef8ec");
+  ctx.fillStyle = "#ecfffd";
   ctx.font = "900 26px Tahoma";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";

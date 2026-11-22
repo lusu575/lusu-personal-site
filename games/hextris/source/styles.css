@@ -114,9 +114,9 @@ canvas {
   width: 100%;
   max-height: min(620px, 68vh);
   aspect-ratio: 720 / 620;
-  border: 3px inset #6f89c7;
-  border-radius: 8px;
-  background: #f8fbff;
+  border: 1.5px solid rgba(164, 236, 228, 0.44);
+  border-radius: 10px;
+  background: #07191e;
 }
 
 .overlay {

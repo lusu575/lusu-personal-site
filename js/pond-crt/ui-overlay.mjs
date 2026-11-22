@@ -399,6 +399,11 @@ export class PondUIOverlay {
   }
 
   hitTest(nx, ny) {
+    // Top-center clock/date HUD -> opens Welcome & Recent Updates modal
+    if (ny >= 0.01 && ny <= 0.095 && nx >= 0.36 && nx <= 0.64) {
+      return { type: 'clock' };
+    }
+
     const sy = this.sliderRect.y;
     if (Math.abs(ny - sy) < 0.048 && nx >= this.sliderRect.x0 - 0.03 && nx <= this.sliderRect.x1 + 0.03) {
       let bestIdx = 0;

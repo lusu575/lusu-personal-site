@@ -2,7 +2,7 @@
 // Zero business-logic rewrites: all routing, API fetching, filtering, sorting, pinning,
 // search, pagination, account sessions, and language switching stay 100% in existing main.js & routes/*.mjs.
 
-import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261122-pond-polish-r33';
+import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261123-pond-polish-r37';
 import {
   resolveInitialPondSeason,
   saveManualSeasonOverride,
@@ -229,6 +229,32 @@ function bootPondVisualBridge() {
     }, 0);
   }
 
+  function openWelcomeFromPond() {
+    const trigger = document.querySelector('[data-open-welcome]');
+    if (!trigger) return;
+    suppressNextOutsideClickUntil = performance.now() + 320;
+    window.setTimeout(() => {
+      trigger.click();
+    }, 0);
+  }
+
+  function checkWelcomeHash() {
+    if (window.location.hash.toLowerCase() === '#welcome' && !isWelcomeModalOpen()) {
+      openWelcomeFromPond();
+    }
+  }
+
+  canvas.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault();
+    if (engine) engine.stop();
+  });
+  canvas.addEventListener('webglcontextrestored', () => {
+    if (engine && activeMode) {
+      engine.resize();
+      engine.start();
+    }
+  });
+
   function ensureEngine() {
     if (engine) return engine;
     const { season, isPreview } = resolveInitialPondSeason(window.location.search);
@@ -242,6 +268,9 @@ function bootPondVisualBridge() {
       },
       onAccountClick: () => {
         openAccountPopoverFromPond();
+      },
+      onWelcomeClick: () => {
+        openWelcomeFromPond();
       },
       onLanguageChange: (lang) => {
         const langBtn = document.querySelector(`[data-lang="${lang}"]`);
@@ -407,7 +436,25 @@ function bootPondVisualBridge() {
     }
   });
 
-  window.addEventListener('hashchange', syncVisualMode);
+  // Make bottom taskbar clock clickable to open Welcome & Recent Updates
+  const taskbarClock = document.getElementById('local-time');
+  if (taskbarClock) {
+    taskbarClock.setAttribute('role', 'button');
+    taskbarClock.setAttribute('tabindex', '0');
+    taskbarClock.title = '欢迎与最近更新';
+    taskbarClock.addEventListener('click', () => openWelcomeFromPond());
+    taskbarClock.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openWelcomeFromPond();
+      }
+    });
+  }
+
+  window.addEventListener('hashchange', () => {
+    syncVisualMode();
+    checkWelcomeHash();
+  });
   window.addEventListener('popstate', syncVisualMode);
   window.addEventListener('resize', () => {
     syncVisualMode();
@@ -416,10 +463,14 @@ function bootPondVisualBridge() {
 
   window.__pondVisualBridge = {
     syncVisualMode,
+    openWelcomeFromPond,
     getEngine: () => engine
   };
 
-  window.requestAnimationFrame(syncVisualMode);
+  window.requestAnimationFrame(() => {
+    syncVisualMode();
+    checkWelcomeHash();
+  });
 }
 
 if (document.readyState === 'loading') {

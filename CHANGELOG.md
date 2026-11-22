@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2026-11-23
+
+- 全站视觉点检修复：桌面底栏导航、欢迎窗入口、双工具页换装与四款游戏暗色适配（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-full-site-inspection-fixes` / `2026-11-23-pond-full-site-inspection-fixes`；视觉层缓存 `2026-11-23-pond-polish-r37`。
+
 ## 2026-11-22
 
 - 全站按钮尺寸、光学居中与间距体系统一重构，并补齐游戏展开行轨不重叠、视频区播放键 36px 防裁切、聊天室字数避让发送键及手机端欢迎窗/关于页深色可读性（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-button-spacing-system` / `2026-11-22-pond-button-spacing-system`；视觉层缓存 `20261122-pond-polish-r36`。

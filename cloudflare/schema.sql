@@ -15770,6 +15770,39 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **全ページの最小サイズと対称パディング**：ナレッジ、記事リーダー、動画モーダル、ツール、ゲーム、チャット、プロフィール、アカウントパネルの各ボタンで最小幅・高さ・中央揃えを統一しました。
 - **はみ出しと接触の解消**：ゲーム詳細展開時のライセンス表示はみ出しや開始ボタンの枠接触、モバイルチャット上部のボタン接触、プロフィール RSS ボタンの文字上寄りを修正しました。', '2026-11-22T23:41:00+08:00', '2026-11-22T23:41:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '2026-11-22-pond-polish-r35', '2026-11-22T23:41:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-23-pond-full-site-inspection-fixes', '2026-11-23-pond-full-site-inspection-fixes', 'site-updates', 'undefined', '', 'published', 0, 0, '2026-11-23T00:20:00+08:00', '2026-11-23T00:20:00+08:00', '2026-11-23T00:20:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-full-site-inspection-fixes-zh', 'seed-update-2026-11-23-pond-full-site-inspection-fixes', 'zh', '全站视觉点检修复：桌面底栏导航、欢迎窗入口、双工具页换装与四款游戏暗色适配', '恢复桌面端底栏主导航与站点服务在线状态，打通首页顶部与底栏时间点击打开欢迎窗；完成在线画板与日语的言外之意深色点阵换装，并修复 Hextris 白画布、猫国零存档排版与小黑屋居中。', '# 全站视觉点检修复：桌面底栏导航、欢迎窗入口、双工具页换装与四款游戏暗色适配
+
+本次更新针对全站线上视觉点检提出的重项与逐页细节进行了集中修复，全部属于纯视觉与交互入口层调整，不改动原有业务与存档逻辑。
+
+## 核心修复清单
+
+- **桌面底栏主导航与服务状态显形**：在桌面端深夜池塘桌面底部恢复并重绘半透明点阵玻璃任务栏（位于池塘画布之上），完整展示「首页」、六大分区快捷入口、可点击时间与实时「站点服务在线」状态灯。
+- **欢迎窗多入口直达与 WebGL 恢复保护**：点击首页顶部正中时间/日期、点击底栏时间或访问 #welcome / ?welcome=1 均可直接打开欢迎窗；为池塘画布补齐 webglcontextlost/restored 自动恢复监听。
+- **在线画板与日语的言外之意完整暗色换装**：修正共享工具主题表的实际类名映射，替换两页的旧亮蓝顶栏与白底卡片，消除浅字配白底隐形问题，同时保持 Excalidraw 暖纸绘图区不变。
+- **四款游戏内页适配**：Hextris 中央画布改为深池塘暗色并提亮六向辐条；猫国建设者修正新访客零存档宽屏三栏对称并暗色化滚动条；小黑屋居中排版消除右侧大块留白；人生重开统一暗色背景边距。
+- **货架与浮层细节**：修复工具区临时互传展开防溢、提亮游戏货架语言支持标签并拉宽开始按钮、统一登录浮层按钮与输入框边框。', '2026-11-23T00:20:00+08:00', '2026-11-23T00:20:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-full-site-inspection-fixes-en', 'seed-update-2026-11-23-pond-full-site-inspection-fixes', 'en', 'Full-Site Visual Inspection Fixes: Desktop Taskbar, Welcome Triggers, Tool Reskins & Game Layouts', 'Restored the desktop bottom navigation and live service status bar, wired clickable Welcome modal triggers, reskinned Whiteboard & Japanese Subtext in dark CRT style, and fixed Hextris, Kittens, A Dark Room, and Life Restart layouts.', '# Full-Site Visual Inspection Fixes: Desktop Taskbar, Welcome Triggers, Tool Reskins & Game Layouts
+
+This release addresses the priority items found during the full-site live visual inspection across desktop navigation, modals, standalone tools, and embedded games.
+
+## Key improvements
+
+- **Desktop bottom navigation & service status**: Restored and restyled the bottom taskbar above the Midnight Pond canvas as a frosted CRT pill dock displaying Home, all six route shortcuts, a clickable clock, and the live service-online status indicator.
+- **Clickable Welcome modal triggers & WebGL recovery**: Clicking the top-center pond clock, clicking the bottom taskbar clock, or navigating to #welcome now opens the Welcome modal directly; added WebGL context-loss recovery.
+- **Whiteboard & Japanese Subtext dark reskin**: Fixed real class-name selectors in the shared tool theme so both standalone tools render in crisp dark dotted CRT glass with high-contrast headings and subtitles while keeping the Excalidraw warm-paper canvas intact.
+- **Embedded game layouts**: Dark-themed the Hextris center canvas and brightened spokes, balanced Kittens Game zero-save widescreen columns with dark scrollbars, centered A Dark Room in a framed dark panel, and unified Life Restart side bands.', '2026-11-23T00:20:00+08:00', '2026-11-23T00:20:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-full-site-inspection-fixes-ja', 'seed-update-2026-11-23-pond-full-site-inspection-fixes', 'ja', '全サイト視覚点検修正：下部ナビ復元、ようこそ入口追加、ツール暗色化とゲーム調整', 'デスクトップ下部ナビと稼働状態バーを復元し、時計クリックや #welcome でようこそ窓を開けるように改善。お絵かきボードと日本語の行間を暗色化し、Hextris・Kittens・A Dark Room の表示を修正しました。', '# 全サイト視覚点検修正：下部ナビ復元、ようこそ入口追加、ツール暗色化とゲーム調整
+
+今回の更新では、本番サイトの全ページ視覚点検で見つかった重要項目と細部の表示崩れをまとめて修正しました。機能やセーブデータ仕様は一切変更していません。
+
+## 主な修正内容
+
+- **デスクトップ下部ナビと接続状態バーの復元**：池キャンバスの手前に半透明ドットガラス調のボトムバーを配置し、ホーム・主要ナビ・クリック可能な時計・サービス稼働ランプを常時表示しました。
+- **ようこそ窓の入口追加と WebGL 復帰対策**：画面上部の時計、下部バーの時計、および #welcome ハッシュから直接ようこそ窓を開けるようにし、WebGL コンテキストロスト時の自動復帰を追加しました。
+- **お絵かきボード・日本語の行間の暗色統一**：共通テーマのクラス指定を実DOMに合わせて修正し、白背景に淡色文字で読めなかった箇所を解消しました（Excalidraw 描画紙面は維持）。
+- **ゲーム画面の最適化**：Hextris の白い中央キャンバスを暗色化してスポークを見やすくし、Kittens Game の初期状態3列バランスと暗色スクロールバー、A Dark Room の中央配置、Life Restart の背景余白を整えました。', '2026-11-23T00:20:00+08:00', '2026-11-23T00:20:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '2026-11-23-pond-polish-r37', '2026-11-23T00:20:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('2026-11-22-pond-polish-r35', '2026-11-22T23:41:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('2026-11-23-pond-polish-r37', '2026-11-23T00:20:00+08:00', 'schema') on conflict(version) do nothing;

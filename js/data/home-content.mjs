@@ -2,6 +2,29 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-full-site-inspection-fixes",
+      "slug": "2026-11-23-pond-full-site-inspection-fixes",
+      "category": "site-updates",
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T00:20:00+08:00",
+      "updated_at": "2026-11-23T00:20:00+08:00",
+      "published_at": "2026-11-23T00:20:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "全站视觉点检修复：桌面底栏导航、欢迎窗入口、双工具页换装与四款游戏暗色适配",
+        "en": "Full-Site Visual Inspection Fixes: Desktop Taskbar, Welcome Triggers, Tool Reskins & Game Layouts",
+        "ja": "全サイト視覚点検修正：下部ナビ復元、ようこそ入口追加、ツール暗色化とゲーム調整"
+      },
+      "summary": {
+        "zh": "恢复桌面端底栏主导航与站点服务在线状态，打通首页顶部与底栏时间点击打开欢迎窗；完成在线画板与日语的言外之意深色点阵换装，并修复 Hextris 白画布、猫国零存档排版与小黑屋居中。",
+        "en": "Restored the desktop bottom navigation and live service status bar, wired clickable Welcome modal triggers, reskinned Whiteboard & Japanese Subtext in dark CRT style, and fixed Hextris, Kittens, A Dark Room, and Life Restart layouts.",
+        "ja": "デスクトップ下部ナビと稼働状態バーを復元し、時計クリックや #welcome でようこそ窓を開けるように改善。お絵かきボードと日本語の行間を暗色化し、Hextris・Kittens・A Dark Room の表示を修正しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-button-spacing-system",
       "slug": "2026-11-22-pond-button-spacing-system",
       "category": "site-updates",
@@ -105,33 +128,6 @@ export const homeContent = Object.freeze({
         "zh": "修复猫国建设者宽屏贴左留空问题，将建筑行右侧 sell/+/- 白块暗色化，并让顶部标签栏自动换行完整显示 Stats。",
         "en": "Centered Kittens Game's 3-column layout for widescreen displays, dark-themed sell/+/- sub-buttons, and wrapped the top tab bar so Stats is never clipped.",
         "ja": "ワイド画面での左寄り余白を解消して中央3欄へ広げ、sell/+/-の白ボタンを暗色化し、上部タブ欄を折り返してStatsまで完全表示しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-chat-footer-sync-dot",
-      "slug": "2026-11-22-pond-chat-footer-sync-dot",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "聊天室"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T12:21:00+08:00",
-      "updated_at": "2026-11-22T12:21:00+08:00",
-      "published_at": "2026-11-22T12:21:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "聊天室底栏提示提亮留距与同步状态指示灯补齐",
-        "en": "Chatroom Footer Contrast, Padding, and Sync Status Indicator Dot",
-        "ja": "チャット下部ヒントの高コントラスト化・余白調整と同期インジケーター追加"
-      },
-      "summary": {
-        "zh": "提亮聊天室底部冷却提示文字并增加四周呼吸边距防止贴边，同时为右上角同步状态补充在线/离线/重连三态荧光指示灯。",
-        "en": "Brightened the chatroom bottom cooldown hint with balanced padding and added a glowing online/reconnecting/offline status dot beside the sync label.",
-        "ja": "チャット下部のクールダウン案内文字を明るくし余白を確保するとともに、右上の同期表示へ接続状態ランプを追加しました。"
       }
     }
   ]

@@ -6003,3 +6003,225 @@ html[data-ui-shell="mobile"] #about a.xp-button {
   line-height: 1.15 !important;
   text-align: center !important;
 }
+
+/* ============================================================
+   r37: Visible Desktop Midnight Pond CRT Bottom Taskbar (Above Pond Canvas)
+        + Tools Quick-Transfer Overflow + Games Shelf Contrast + Account Polish
+   ============================================================ */
+
+/* --- 1. Desktop Midnight Pond CRT Bottom Taskbar (Fixed to Viewport Edge, z-index 55 > pond 40) --- */
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar {
+  position: fixed !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: 10px !important;
+  transform: translateX(-50%) !important;
+  z-index: 55 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: auto !important;
+  max-width: calc(100vw - 24px) !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  padding: 4px 12px !important;
+  margin: 0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  border-radius: 999px !important;
+  border: 1.2px solid rgba(164, 240, 232, 0.48) !important;
+  background: linear-gradient(180deg, rgba(8, 28, 34, 0.84), rgba(4, 18, 22, 0.92)) !important;
+  background-image: none !important;
+  box-shadow: 0 0 24px rgba(88, 232, 220, 0.22), inset 0 1px 0 rgba(196, 252, 246, 0.16) !important;
+  backdrop-filter: blur(10px) !important;
+  color: #e8fcf9 !important;
+}
+
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .mobile-dock-scroll {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex: 0 1 auto !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .taskbar-tabs {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .start-button,
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .taskbar-tabs button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  height: 34px !important;
+  min-height: 34px !important;
+  padding: 0 12px !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  border: 1px dashed rgba(164, 236, 228, 0.34) !important;
+  background: rgba(10, 34, 40, 0.56) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  color: #dffcf8 !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  text-shadow: none !important;
+}
+
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .start-button:hover,
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .taskbar-tabs button:hover,
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .start-button.active,
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .taskbar-tabs button.active {
+  border-style: solid !important;
+  border-color: rgba(154, 248, 238, 0.88) !important;
+  background: rgba(20, 64, 70, 0.82) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 10px rgba(102, 236, 224, 0.28) !important;
+}
+
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .start-windows-icon,
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .mini-icon,
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .dock-label-short,
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .mobile-dock-selection,
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .mobile-home-indicator {
+  display: none !important;
+}
+
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .status-tray {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 0 4px 0 10px !important;
+  margin-left: 2px !important;
+  border: none !important;
+  border-left: 1px dotted rgba(164, 236, 228, 0.34) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #dffcf8 !important;
+  font-size: 12px !important;
+}
+
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar #local-time {
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 32px !important;
+  padding: 0 10px !important;
+  border-radius: 999px !important;
+  border: 1px dashed rgba(164, 236, 228, 0.36) !important;
+  background: rgba(8, 28, 34, 0.62) !important;
+  color: #eefcf9 !important;
+  font-family: "JetBrains Mono", Consolas, monospace !important;
+  font-size: 11.5px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+}
+
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar #local-time:hover {
+  border-style: solid !important;
+  border-color: rgba(154, 248, 238, 0.88) !important;
+  background: rgba(20, 64, 70, 0.82) !important;
+}
+
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .site-connection-status {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  height: 32px !important;
+  padding: 0 10px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(154, 248, 238, 0.42) !important;
+  background: rgba(8, 30, 36, 0.72) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  color: #d6fcf6 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+}
+
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .site-connection-lamp {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 999px !important;
+  background: #6cfcc8 !important;
+  box-shadow: 0 0 8px rgba(108, 252, 200, 0.90) !important;
+}
+
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .site-connection-status[data-connection-state="offline"] .site-connection-lamp {
+  background: #ff8aa8 !important;
+  box-shadow: 0 0 8px rgba(255, 138, 168, 0.90) !important;
+}
+
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .site-connection-status[data-connection-state="checking"] .site-connection-lamp {
+  background: #ffe07a !important;
+  box-shadow: 0 0 8px rgba(255, 224, 122, 0.90) !important;
+}
+
+/* --- 2. Tools (#resources): Prevent Quick-Transfer Expanded Tags From Overflowing Card Bottom --- */
+html[data-pond-mode="resources"] #resource-list {
+  grid-auto-rows: max-content !important;
+  align-items: stretch !important;
+  overflow-y: auto !important;
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-card {
+  height: auto !important;
+  min-height: max-content !important;
+  padding-bottom: 18px !important;
+  overflow: visible !important;
+}
+
+html[data-pond-mode="resources"] #resources .xp-window {
+  max-height: min(640px, calc(100vh - 140px)) !important;
+}
+
+/* --- 3. Games Shelf (#games): Brighten Language Label Contrast & Align Start Button --- */
+html[data-pond-mode="games"] #game-list .meta-label,
+html[data-pond-mode="games"] #game-list .game-lang-label,
+html[data-pond-mode="games"] #game-list .meta-row > span:first-child {
+  color: rgba(214, 246, 242, 0.90) !important;
+  font-weight: 600 !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-card .card-action {
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+  min-width: 132px !important;
+  justify-self: stretch !important;
+  margin-top: 8px !important;
+}
+
+/* --- 4. Account Popover (#account-popover): Full-Width Centered Buttons & Uniform Input Borders --- */
+html[data-pond-mode] #account-popover input[type="email"],
+html[data-pond-mode] #account-popover input[type="password"],
+html[data-pond-mode] #account-popover input[type="text"] {
+  border: 1.2px solid rgba(164, 236, 228, 0.52) !important;
+  border-radius: 10px !important;
+  background: rgba(6, 22, 26, 0.88) !important;
+  color: #f0fefa !important;
+  padding: 9px 12px !important;
+  min-height: 40px !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode] #account-popover button[type="submit"],
+html[data-pond-mode] #account-popover .account-recheck-button,
+html[data-pond-mode] #account-popover [data-account-recheck] {
+  width: 100% !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
