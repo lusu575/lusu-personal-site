@@ -1910,45 +1910,46 @@
           ::-webkit-scrollbar-thumb { background: rgba(136, 252, 226, 0.32); border-radius: 999px; }
           #gamePageContainer {
             width: 100% !important;
-            max-width: 1520px !important;
+            max-width: 1480px !important;
             margin: 0 auto !important;
             overflow-x: hidden !important;
             box-sizing: border-box !important;
           }
           #game {
-            display: flex !important;
+            position: relative !important;
+            top: 0 !important;
+            bottom: auto !important;
+            left: auto !important;
+            right: auto !important;
+            min-width: 0 !important;
+            display: grid !important;
+            grid-template-columns: minmax(220px, 300px) minmax(560px, 760px) minmax(220px, 300px) !important;
             justify-content: center !important;
-            align-items: flex-start !important;
-            gap: 16px !important;
+            align-items: start !important;
+            gap: 18px !important;
             width: 100% !important;
-            padding: 10px 18px 24px !important;
+            max-width: 1440px !important;
+            margin: 12px auto 28px !important;
+            padding: 0 18px !important;
             box-sizing: border-box !important;
           }
-          #leftColumn {
-            flex: 0 1 300px !important;
-            min-width: 240px !important;
-            max-width: 340px !important;
+          #leftColumn, #midColumn, #rightColumn {
+            position: relative !important;
+            top: 0 !important;
             width: auto !important;
-            padding-right: 10px !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            height: auto !important;
+            min-height: 0 !important;
+            margin-top: 0 !important;
+            padding: 12px 14px !important;
+            border: 1px solid rgba(164, 236, 228, 0.24) !important;
+            border-radius: 12px !important;
+            background: rgba(8, 28, 34, 0.56) !important;
             box-sizing: border-box !important;
           }
           #midColumn {
-            flex: 1 1 700px !important;
-            min-width: 540px !important;
-            max-width: 820px !important;
-            width: auto !important;
-            margin-top: 0 !important;
             overflow-x: visible !important;
-            box-sizing: border-box !important;
-          }
-          #rightColumn {
-            flex: 0 1 300px !important;
-            min-width: 240px !important;
-            max-width: 340px !important;
-            width: auto !important;
-            top: 0 !important;
-            padding-left: 8px !important;
-            box-sizing: border-box !important;
           }
           .tabsContainer {
             position: relative !important;
@@ -2043,24 +2044,46 @@
         const darkRoomCss = slug === "a-dark-room" ? `
           html, body {
             min-height: 100vh !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: flex-start !important;
-            padding: 28px 18px 40px !important;
+            margin: 0 !important;
+            padding: 24px 16px 40px !important;
             box-sizing: border-box !important;
             background: #06161b !important;
+            overflow-x: hidden !important;
           }
-          #wrapper {
+          div#wrapper {
             position: relative !important;
             margin: 0 auto !important;
-            padding: 24px 28px !important;
-            min-width: min(740px, 94vw) !important;
-            border: 1.4px solid rgba(164, 236, 228, 0.36) !important;
+            width: 700px !important;
+            max-width: calc(100vw - 48px) !important;
+            min-height: 640px !important;
+            padding: 24px 28px 28px 256px !important;
+            box-sizing: content-box !important;
+            border: 1.4px solid rgba(164, 236, 228, 0.38) !important;
             border-radius: 14px !important;
             background: rgba(8, 28, 34, 0.86) !important;
             box-shadow: 0 0 32px rgba(96, 234, 222, 0.14) !important;
           }
-          #outerSlider, #content, #main, #locationSlider, #notifications, #event, .eventPanel {
+          div#notifications {
+            position: absolute !important;
+            left: 24px !important;
+            top: 24px !important;
+            width: 208px !important;
+            background: transparent !important;
+          }
+          div#header {
+            position: relative !important;
+            height: auto !important;
+            min-height: 24px !important;
+            padding-bottom: 20px !important;
+          }
+          div#content {
+            position: relative !important;
+            min-height: 560px !important;
+            height: 600px !important;
+            overflow: hidden !important;
+            background: transparent !important;
+          }
+          #outerSlider, #main, #locationSlider, #event, .eventPanel {
             background: transparent !important;
             color: #e8fbf7 !important;
             border-color: rgba(164, 236, 228, 0.34) !important;

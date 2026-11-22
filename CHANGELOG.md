@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- 复验打回三项修复（r39）：在线画板升级至 `1.0.12` 并刷新 `pond-tool-theme.css?v=20261123-pond-tools-r3` 破除浏览器旧缓存；猫国建设者改为绝对对称 3 列网格居中并消除新访客 720px 左栏空白；小黑屋恢复 `#wrapper` 256px 左内边距彻底消除通知文字与标题/生火按钮重叠。
+
 - 全站视觉点检修复：桌面底栏导航、欢迎窗入口、双工具页换装与四款游戏暗色适配，并补齐底栏隐藏项过滤、画板匿名栏与底条暗色化及登录框自动填充暗底（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-full-site-inspection-fixes` / `2026-11-23-pond-full-site-inspection-fixes`；视觉层缓存 `20261123-pond-polish-r38`。
 
 ## 2026-11-22
