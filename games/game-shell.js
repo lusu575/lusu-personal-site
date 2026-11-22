@@ -2132,11 +2132,15 @@
             overflow: visible !important;
             background: transparent !important;
           }
-          div#outerSlider, div#locationSlider {
+          div#outerSlider, div#locationSlider, div#outerSlider > div, div.location, div#main {
             position: relative !important;
             left: 0 !important;
             top: 0 !important;
+            width: 100% !important;
             height: auto !important;
+            min-height: 0 !important;
+            float: none !important;
+            overflow: visible !important;
           }
           #outerSlider, #main, #locationSlider, #event, .eventPanel {
             background: transparent !important;
