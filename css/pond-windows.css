@@ -5646,15 +5646,35 @@ html[data-pond-mode="videos"] #video-categories {
   gap: 10px !important;
 }
 
+html[data-pond-mode="videos"] #video-list {
+  grid-auto-rows: max-content !important;
+  align-items: stretch !important;
+  row-gap: 18px !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-card {
+  height: auto !important;
+  min-height: max-content !important;
+  padding-bottom: 4px !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-body {
+  padding: 12px 14px 14px !important;
+  gap: 8px !important;
+}
+
 html[data-pond-mode="videos"] #video-categories button,
-html[data-pond-mode="videos"] #video-list .card-action {
+html[data-pond-mode="videos"] #video-list .card-action,
+html[data-pond-mode="videos"] #video-list .video-card button:not(.video-thumb),
+html[data-pond-mode="videos"] #video-list .video-card a.xp-button {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   min-height: 36px !important;
   min-width: 84px !important;
-  padding: 0 18px !important;
+  padding: 6px 18px !important;
   line-height: 1.15 !important;
+  margin-top: 6px !important;
 }
 
 #video-modal .video-modal-actions {
@@ -5699,16 +5719,18 @@ html[data-pond-mode="resources"] #resources .resource-card {
 
 /* --- 8. Games (#games): Fix Expanded License Overflow, Bottom-Border Clip & Button Sizing --- */
 html[data-pond-mode="games"] #game-list {
-  align-items: start !important;
-  gap: 14px !important;
+  grid-auto-rows: max-content !important;
+  align-items: stretch !important;
+  align-content: start !important;
+  gap: 16px !important;
 }
 
 html[data-pond-mode="games"] #game-list .game-card {
   height: auto !important;
-  min-height: 0 !important;
+  min-height: max-content !important;
   padding: 16px 16px 18px !important;
   gap: 14px !important;
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
 html[data-pond-mode="games"] #game-list .game-main {
@@ -5794,7 +5816,12 @@ html[data-pond-mode="chatroom"] #chatroom .chat-send-button {
   min-width: 72px !important;
   min-height: 42px !important;
   padding: 0 16px !important;
-  margin: 0 6px 0 4px !important;
+  margin: 0 6px 0 10px !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom .chatroom-counter {
+  margin-right: 12px !important;
+  right: 96px !important;
 }
 
 /* --- 10. About (#about): Symmetric RSS Button --- */
@@ -5854,11 +5881,17 @@ html[data-ui-shell="mobile"] #welcome-modal .xp-window.welcome-window {
   color: #f0fefa !important;
 }
 
+html[data-ui-shell="mobile"] #welcome-modal .welcome-content,
 html[data-ui-shell="mobile"] #welcome-modal .welcome-main,
-html[data-ui-shell="mobile"] #welcome-modal .recent-panel {
+html[data-ui-shell="mobile"] #welcome-modal .welcome-note,
+html[data-ui-shell="mobile"] #welcome-modal .recent-panel,
+html[data-ui-shell="mobile"] #welcome-modal #recent-updates li,
+html[data-ui-shell="mobile"] #welcome-modal #recent-updates a {
   background: transparent !important;
+  background-image: none !important;
   color: #f0fefa !important;
   border-color: rgba(182, 236, 230, 0.34) !important;
+  box-shadow: none !important;
 }
 
 html[data-ui-shell="mobile"] #welcome-modal .welcome-main h2,
@@ -5948,10 +5981,12 @@ html[data-ui-shell="mobile"] #chatroom .chat-room-badge {
   border: 1px solid rgba(154, 248, 238, 0.56) !important;
 }
 
+html[data-ui-shell="mobile"] #about .about-copy,
 html[data-ui-shell="mobile"] #about .about-bio,
 html[data-ui-shell="mobile"] #about .about-intro,
 html[data-ui-shell="mobile"] #about .about-rss-card {
-  background: rgba(8, 28, 34, 0.78) !important;
+  background: rgba(8, 28, 34, 0.84) !important;
+  background-image: none !important;
   border-color: rgba(164, 236, 228, 0.42) !important;
   color: #e8fcf9 !important;
 }
