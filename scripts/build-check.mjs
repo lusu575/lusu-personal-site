@@ -6186,6 +6186,15 @@ try {
   } else if (!String(sitemapResponse.headers.get("Content-Type") || "").includes("application/xml")) {
     fail("functions/sitemap.xml.js did not return XML content type");
   }
+  const migrationsMod = await import(pathToFileURL(resolve(root, "functions/api/content-migrations.mjs")).href);
+  if (!/^\d{8}-[a-z0-9-]+$/i.test(String(migrationsMod.ARTICLE_SEED_VERSION || ""))) {
+    fail(`ARTICLE_SEED_VERSION must match YYYYMMDD-<label> (got "${migrationsMod.ARTICLE_SEED_VERSION}")`);
+  }
+  if (migrationsMod.KNOWN_PREDECESSOR_SEED_VERSIONS && migrationsMod.assertUpgradeableVersion) {
+    for (const prev of migrationsMod.KNOWN_PREDECESSOR_SEED_VERSIONS) {
+      migrationsMod.assertUpgradeableVersion(prev);
+    }
+  }
 } catch (error) {
   fail(`runtime check failed: ${error.message}`);
 }
