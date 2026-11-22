@@ -5143,3 +5143,147 @@ html[data-ui-shell="mobile"] :where(.close-button, .account-close-button, .title
   translate: none !important;
   scale: none !important;
 }
+
+/* ============================================================
+   r26: Expanded Detail Cards (.resource-details / .game-secondary-details)
+        + Video Playback Modal (#video-modal) Dark CRT Theme
+   ============================================================ */
+
+/* --- 1. Tools & Games Expanded Details Dark CRT Adaptation --- */
+html[data-pond-mode] .resource-details .resource-facts,
+html[data-ui-shell="mobile"] .resource-details .resource-facts {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin: 8px 0 6px !important;
+}
+
+html[data-pond-mode] .resource-details .resource-fact,
+html[data-ui-shell="mobile"] .resource-details .resource-fact,
+html[data-pond-mode] .game-secondary-details .game-secondary-meta .tag,
+html[data-ui-shell="mobile"] .game-secondary-details .game-secondary-meta .tag {
+  background: rgba(6, 24, 28, 0.80) !important;
+  border: 1px dashed rgba(164, 236, 228, 0.46) !important;
+  color: #dcf8f4 !important;
+  border-radius: 8px !important;
+  padding: 4px 10px !important;
+  font-size: 12px !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode] .resource-details .resource-details-copy,
+html[data-ui-shell="mobile"] .resource-details .resource-details-copy {
+  color: rgba(206, 242, 236, 0.88) !important;
+  background: transparent !important;
+}
+
+html[data-pond-mode] .game-secondary-details .game-source-link,
+html[data-ui-shell="mobile"] .game-secondary-details .game-source-link {
+  color: #88fce2 !important;
+  text-decoration: none !important;
+}
+
+html[data-pond-mode] .game-secondary-details .game-source-link:hover,
+html[data-ui-shell="mobile"] .game-secondary-details .game-source-link:hover {
+  border-style: solid !important;
+  border-color: rgba(154, 248, 238, 0.90) !important;
+  background: rgba(16, 54, 60, 0.86) !important;
+}
+
+/* --- 2. Video Playback Modal (#video-modal) Midnight Pond CRT Theme --- */
+#video-modal .modal-backdrop {
+  background: rgba(2, 10, 12, 0.54) !important;
+  backdrop-filter: blur(6px);
+}
+
+#video-modal .xp-window.modal-window {
+  background: linear-gradient(180deg, rgba(10, 34, 38, 0.92), rgba(6, 22, 26, 0.96)) !important;
+  border: 1.6px solid rgba(202, 252, 244, 0.80) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 0 36px rgba(114, 244, 232, 0.32), 0 0 60px rgba(212, 138, 248, 0.22) !important;
+  color: #f0fefa !important;
+  padding: 16px 20px 18px !important;
+  overflow: hidden !important;
+}
+
+#video-modal .window-titlebar {
+  background: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  border-bottom: 1px dotted rgba(188, 240, 234, 0.36) !important;
+  padding: 0 0 12px !important;
+  margin: 0 0 14px !important;
+  color: #f0fefa !important;
+  text-shadow: 0 0 10px rgba(154, 244, 234, 0.30) !important;
+}
+
+#video-modal .window-controls {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+#video-modal .window-controls .maximize-button {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  min-height: 30px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  border: 1.2px dashed rgba(185, 235, 230, 0.58) !important;
+  background: rgba(6, 22, 26, 0.56) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#video-modal .window-controls .maximize-button:hover {
+  border-style: solid !important;
+  border-color: rgba(154, 248, 238, 0.94) !important;
+  background: rgba(18, 56, 62, 0.80) !important;
+  box-shadow: 0 0 12px rgba(102, 236, 224, 0.34) !important;
+}
+
+#video-modal .video-frame {
+  margin: 0 0 14px !important;
+  border: 1px solid rgba(164, 236, 228, 0.34) !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+}
+
+#video-modal .video-placeholder {
+  background: rgba(4, 16, 20, 0.92) !important;
+  color: #dcf6f2 !important;
+}
+
+#video-modal .video-modal-actions {
+  margin: 0 !important;
+  padding-top: 12px !important;
+  border-top: 1px dotted rgba(188, 240, 234, 0.30) !important;
+  background: transparent !important;
+}
+
+#video-modal .video-modal-actions .xp-button,
+#video-modal #video-link {
+  border-radius: 999px !important;
+  border: 1.3px dashed rgba(182, 240, 234, 0.58) !important;
+  background: rgba(8, 30, 36, 0.78) !important;
+  background-image: none !important;
+  color: #f0fefa !important;
+  padding: 7px 18px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+
+#video-modal .video-modal-actions .xp-button:hover,
+#video-modal #video-link:hover {
+  border-style: solid !important;
+  border-color: rgba(154, 248, 238, 0.92) !important;
+  background: rgba(18, 56, 62, 0.86) !important;
+  box-shadow: 0 0 12px rgba(102, 236, 224, 0.30) !important;
+}

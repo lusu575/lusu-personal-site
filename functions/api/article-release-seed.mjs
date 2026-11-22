@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-video-modal-details', '2026-11-22-pond-video-modal-details', 'site-updates', '["视觉升级","视频区","工具区"]', '', 'published', 0, 0, '2026-11-22T11:25:00+08:00', '2026-11-22T11:25:00+08:00', '2026-11-22T11:25:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-video-modal-details", {
+  "zh": {
+    "title": "视频播放浮层与工具游戏展开详情暗色点阵换装",
+    "summary": "将视频播放浮层标题栏与打开原地址按钮统一换装为深夜池塘点阵风，并将工具卡和游戏卡展开详情里的白底信息框全部暗色化。",
+    "content_markdown": "本次完成两处残余旧样式的暗色换装：一是将视频点开后的播放浮层整层按月夜池塘 CRT 点阵风重做，替换原有亮蓝标题栏与白蓝打开原地址按钮，统一 30px 点阵最大化与关闭键，同时完全保持视频播放区域与原有播放逻辑不变；二是将工具卡展开版本与使用说明后的类型/版本/更新时间白底信息框以及游戏卡展开详情标签全部改为深青点阵底与高对比亮字。"
+  },
+  "en": {
+    "title": "Video Playback Modal and Expanded Tool/Game Details Dark CRT Theme",
+    "summary": "Restyled the video playback modal titlebar and Open Original button in Midnight Pond CRT style and dark-themed expanded tool and game detail badges.",
+    "content_markdown": "This release restyles the video playback modal (#video-modal) into the Midnight Pond dark CRT theme, replacing the legacy blue XP titlebar and light Open Original button with dark glass, dotted buttons, and unified 30px close/maximize controls while keeping the embedded video area and playback logic untouched. It also dark-themes expanded detail badges inside tool and game cards (.resource-fact and .game-secondary-meta)."
+  },
+  "ja": {
+    "title": "動画再生モーダルとツール・ゲーム展開詳細の暗色点陣テーマ化",
+    "summary": "動画再生モーダルのタイトルバーと元ページボタンを月夜池ダーク点陣風へ刷新し、ツール・ゲーム詳細展開枠の白背景も暗色化しました。",
+    "content_markdown": "今回の更新では動画再生モーダル（#video-modal）の旧青いタイトルバーと白青ボタンを月夜池ダーク CRT 点陣スタイルへ刷新し、再生エリアや既存の再生ロジックには一切触れず視覚表現のみを統一しました。あわせてツールカードのバージョン・説明展開枠やゲームカード詳細展開タグの白背景も暗色点陣スタイルへ統一しています。"
+  }
+}, "2026-11-22T11:25:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-account-signedin-states', '2026-11-22-pond-account-signedin-states', 'site-updates', '["视觉升级","云存档","全站状态"]', '', 'published', 0, 0, '2026-11-22T11:23:00+08:00', '2026-11-22T11:23:00+08:00', '2026-11-22T11:23:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-account-signedin-states", {
   "zh": {

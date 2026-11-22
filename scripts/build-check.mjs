@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-account-signedin-states";
-const finalUpdateSlug = "2026-11-22-pond-account-signedin-states";
+const finalUpdateId = "seed-update-2026-11-22-pond-video-modal-details";
+const finalUpdateSlug = "2026-11-22-pond-video-modal-details";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Signed-In Cloud Account Popover Redesign and Low-Frequency Status Surfaces";
-const finalPublishedAt = "2026-11-22T11:23:00+08:00";
+const finalTitleEn = "Video Playback Modal and Expanded Tool/Game Details Dark CRT Theme";
+const finalPublishedAt = "2026-11-22T11:25:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-account-signedin-states",
   "seed-update-2026-11-22-pond-center-close-games-polish",
   "seed-update-2026-11-22-pond-sizing-icons-games",
   "seed-update-2026-11-22-pond-welcome-dot-polish",

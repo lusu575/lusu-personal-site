@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-video-modal-details",
+      "slug": "2026-11-22-pond-video-modal-details",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "视频区",
+        "工具区"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T11:25:00+08:00",
+      "updated_at": "2026-11-22T11:25:00+08:00",
+      "published_at": "2026-11-22T11:25:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "视频播放浮层与工具游戏展开详情暗色点阵换装",
+        "en": "Video Playback Modal and Expanded Tool/Game Details Dark CRT Theme",
+        "ja": "動画再生モーダルとツール・ゲーム展開詳細の暗色点陣テーマ化"
+      },
+      "summary": {
+        "zh": "将视频播放浮层标题栏与打开原地址按钮统一换装为深夜池塘点阵风，并将工具卡和游戏卡展开详情里的白底信息框全部暗色化。",
+        "en": "Restyled the video playback modal titlebar and Open Original button in Midnight Pond CRT style and dark-themed expanded tool and game detail badges.",
+        "ja": "動画再生モーダルのタイトルバーと元ページボタンを月夜池ダーク点陣風へ刷新し、ツール・ゲーム詳細展開枠の白背景も暗色化しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-account-signedin-states",
       "slug": "2026-11-22-pond-account-signedin-states",
       "category": "site-updates",
@@ -111,33 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "放开最近更新摘要换行完整显示不截断，提亮分类点阵图标，并将站长状态与快捷入口图标统一替换为月夜池塘点阵风。",
         "en": "Allowed update summaries to wrap completely without truncation, brightened category dot-matrix icons, and unified status and quick-link icons to dot-matrix CRT style.",
         "ja": "最近更新の要約を折り返し全文表示に変更し、カテゴリアイコンを高輝度化するとともに状態・クイック入口アイコンも点陣風へ統一しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-welcome-icons-summary-tz",
-      "slug": "2026-11-22-pond-welcome-icons-summary-tz",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "欢迎窗"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T10:48:00+08:00",
-      "updated_at": "2026-11-22T10:48:00+08:00",
-      "published_at": "2026-11-22T10:48:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "欢迎窗补齐分类点阵图标、第二行摘要并修正四条更新时区",
-        "en": "Welcome Modal Category Dot-Matrix Icons, 2nd-Line Summaries, and Timezone Fix",
-        "ja": "ウェルカムウィンドウのカテゴリ点陣アイコン・2行目要約追加と時刻修正"
-      },
-      "summary": {
-        "zh": "修复四条更新记录误写为 UTC 零时区导致的未来时间偏差，为最近更新按分类匹配首页同款点阵图标并补齐第二行一句话摘要。",
-        "en": "Fixed the +8h UTC offset typo on r17-r20 update timestamps, added homepage-style dot-matrix category icons, and displayed each update's one-line summary.",
-        "ja": "更新4件のUTC指定ミスによる未来時刻を修正し、ホーム共通の点陣カテゴリアイコンと1行要約の2行目表示を追加しました。"
       }
     }
   ]
