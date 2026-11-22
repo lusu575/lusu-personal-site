@@ -2,6 +2,33 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-chat-footer-sync-dot",
+      "slug": "2026-11-22-pond-chat-footer-sync-dot",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "聊天室"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T12:21:00+08:00",
+      "updated_at": "2026-11-22T12:21:00+08:00",
+      "published_at": "2026-11-22T12:21:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "聊天室底栏提示提亮留距与同步状态指示灯补齐",
+        "en": "Chatroom Footer Contrast, Padding, and Sync Status Indicator Dot",
+        "ja": "チャット下部ヒントの高コントラスト化・余白調整と同期インジケーター追加"
+      },
+      "summary": {
+        "zh": "提亮聊天室底部冷却提示文字并增加四周呼吸边距防止贴边，同时为右上角同步状态补充在线/离线/重连三态荧光指示灯。",
+        "en": "Brightened the chatroom bottom cooldown hint with balanced padding and added a glowing online/reconnecting/offline status dot beside the sync label.",
+        "ja": "チャット下部のクールダウン案内文字を明るくし余白を確保するとともに、右上の同期表示へ接続状態ランプを追加しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-about-balance-chat-avatars",
       "slug": "2026-11-22-pond-about-balance-chat-avatars",
       "category": "site-updates",
@@ -109,34 +136,6 @@ export const homeContent = Object.freeze({
         "zh": "为全站所有窗口与弹窗的点阵关闭按钮补齐 ID 级选择器优先级，确保每个窗口右上角 30px 点阵叉号清晰可见且悬停零偏移。",
         "en": "Applied ID-level specificity so the unified 30x30 dotted close X renders crisply with zero hover shift in all nine windows and modals.",
         "ja": "全ウィンドウおよびモーダルにID詳細度で統一30px点陣×アイコンを適用し、確実に視認できホバー時に位置ずれしないよう修正しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-video-modal-details",
-      "slug": "2026-11-22-pond-video-modal-details",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "视频区",
-        "工具区"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T11:25:00+08:00",
-      "updated_at": "2026-11-22T11:25:00+08:00",
-      "published_at": "2026-11-22T11:25:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "视频播放浮层与工具游戏展开详情暗色点阵换装",
-        "en": "Video Playback Modal and Expanded Tool/Game Details Dark CRT Theme",
-        "ja": "動画再生モーダルとツール・ゲーム展開詳細の暗色点陣テーマ化"
-      },
-      "summary": {
-        "zh": "将视频播放浮层标题栏与打开原地址按钮统一换装为深夜池塘点阵风，并将工具卡和游戏卡展开详情里的白底信息框全部暗色化。",
-        "en": "Restyled the video playback modal titlebar and Open Original button in Midnight Pond CRT style and dark-themed expanded tool and game detail badges.",
-        "ja": "動画再生モーダルのタイトルバーと元ページボタンを月夜池ダーク点陣風へ刷新し、ツール・ゲーム詳細展開枠の白背景も暗色化しました。"
       }
     }
   ]

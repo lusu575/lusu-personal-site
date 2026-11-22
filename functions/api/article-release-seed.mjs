@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-chat-footer-sync-dot', '2026-11-22-pond-chat-footer-sync-dot', 'site-updates', '["视觉升级","聊天室"]', '', 'published', 0, 0, '2026-11-22T12:21:00+08:00', '2026-11-22T12:21:00+08:00', '2026-11-22T12:21:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-chat-footer-sync-dot", {
+  "zh": {
+    "title": "聊天室底栏提示提亮留距与同步状态指示灯补齐",
+    "summary": "提亮聊天室底部冷却提示文字并增加四周呼吸边距防止贴边，同时为右上角同步状态补充在线/离线/重连三态荧光指示灯。",
+    "content_markdown": "本次针对匿名聊天室最后两处观感细节完成收尾：一是将底部冷却提示行与自动滚动标签的文字对比度提亮至清透青白色并放大上下左右内边距，彻底消除贴近窗口底沿与偏暗难读的观感；二是为右上角既有的同步刷新状态文案补充三态荧光状态指示灯（在线翠绿、重连暖黄、离线玫红），让实时连接与同步状态一眼可辨，同时完整保留现站原有轮询逻辑、状态文案与所有交互行为。"
+  },
+  "en": {
+    "title": "Chatroom Footer Contrast, Padding, and Sync Status Indicator Dot",
+    "summary": "Brightened the chatroom bottom cooldown hint with balanced padding and added a glowing online/reconnecting/offline status dot beside the sync label.",
+    "content_markdown": "This release polishes two final chatroom UI details: brightening the bottom cooldown hint and auto-scroll text with comfortable padding so nothing hugs the window edge, and adding a glowing three-state connection indicator dot (emerald online, amber reconnecting, rose offline) beside the existing sync refresh status label while preserving all live polling behavior and copy."
+  },
+  "ja": {
+    "title": "チャット下部ヒントの高コントラスト化・余白調整と同期インジケーター追加",
+    "summary": "チャット下部のクールダウン案内文字を明るくし余白を確保するとともに、右上の同期表示へ接続状態ランプを追加しました。",
+    "content_markdown": "今回の更新では匿名チャットの最後の細部を仕上げました。下部の送信間隔ヒントと自動スクロール表記の文字色を明るいシアン白へ引き上げて上下左右の余白を確保し、端への張り付きを解消しています。さらに右上の既存同期ステータス横にオンライン・再接続・オフラインを示す発光インジケータードットを追加し、既存の同期ロジックと文言をそのまま分かりやすくしました。"
+  }
+}, "2026-11-22T12:21:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-about-balance-chat-avatars', '2026-11-22-pond-about-balance-chat-avatars', 'site-updates', '["视觉升级","关于页","聊天室"]', '', 'published', 0, 0, '2026-11-22T12:06:00+08:00', '2026-11-22T12:06:00+08:00', '2026-11-22T12:06:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-about-balance-chat-avatars", {
   "zh": {

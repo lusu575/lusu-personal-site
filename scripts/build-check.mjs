@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-about-balance-chat-avatars";
-const finalUpdateSlug = "2026-11-22-pond-about-balance-chat-avatars";
+const finalUpdateId = "seed-update-2026-11-22-pond-chat-footer-sync-dot";
+const finalUpdateSlug = "2026-11-22-pond-chat-footer-sync-dot";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Balanced About Column Height and Vibrant Glowing Dot-Matrix Chat Avatars";
-const finalPublishedAt = "2026-11-22T12:06:00+08:00";
+const finalTitleEn = "Chatroom Footer Contrast, Padding, and Sync Status Indicator Dot";
+const finalPublishedAt = "2026-11-22T12:21:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-about-balance-chat-avatars",
   "seed-update-2026-11-22-pond-about-tight-chat-preload",
   "seed-update-2026-11-22-pond-titlebar-close-final",
   "seed-update-2026-11-22-pond-close-id-specificity",

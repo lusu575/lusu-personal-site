@@ -5315,3 +5315,50 @@ html[data-ui-shell="mobile"] .game-secondary-details .game-source-link:hover {
   background: rgba(18, 56, 62, 0.86) !important;
   box-shadow: 0 0 12px rgba(102, 236, 224, 0.30) !important;
 }
+
+/* --- r31: Chatroom Footer Contrast/Padding & Sync Status Indicator Dot --- */
+html[data-pond-mode="chatroom"] #chatroom .chatroom-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 10px 8px 6px !important;
+  margin-top: 2px !important;
+  background: transparent !important;
+  border: none !important;
+  color: #e4fffc !important;
+  font-size: 12.5px !important;
+  line-height: 1.45 !important;
+}
+
+html[data-pond-mode="chatroom"] #chat-feedback,
+html[data-pond-mode="chatroom"] .chatroom-autoscroll {
+  color: #e4fffc !important;
+}
+
+html[data-pond-mode="chatroom"] #chat-sync-status {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  color: #d6fcf6 !important;
+}
+
+html[data-pond-mode="chatroom"] #chat-sync-status::before {
+  content: "" !important;
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 999px !important;
+  background: #6cfcc8 !important;
+  box-shadow: 0 0 8px rgba(108, 252, 200, 0.85) !important;
+  flex: 0 0 7px !important;
+}
+
+html[data-pond-mode="chatroom"] #chat-sync-status[data-connection-state="offline"]::before {
+  background: #ff8aa8 !important;
+  box-shadow: 0 0 8px rgba(255, 138, 168, 0.85) !important;
+}
+
+html[data-pond-mode="chatroom"] #chat-sync-status[data-connection-state="reconnecting"]::before {
+  background: #ffe07a !important;
+  box-shadow: 0 0 8px rgba(255, 224, 122, 0.85) !important;
+}
