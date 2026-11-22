@@ -84,10 +84,12 @@ body {
 }
 
 .lobby-intro,
+.lobby-identity,
 .lobby-card,
 .public-card,
 .private-card,
 .recent-card,
+.share-note,
 .identity-panel,
 .members-panel,
 .room-help-popover,

@@ -2,7 +2,7 @@
 
 ## 2026-11-23
 
-- 全站视觉点检修复：桌面底栏导航、欢迎窗入口、双工具页换装与四款游戏暗色适配（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-full-site-inspection-fixes` / `2026-11-23-pond-full-site-inspection-fixes`；视觉层缓存 `2026-11-23-pond-polish-r37`。
+- 全站视觉点检修复：桌面底栏导航、欢迎窗入口、双工具页换装与四款游戏暗色适配，并补齐底栏隐藏项过滤、画板匿名栏与底条暗色化及登录框自动填充暗底（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-full-site-inspection-fixes` / `2026-11-23-pond-full-site-inspection-fixes`；视觉层缓存 `20261123-pond-polish-r38`。
 
 ## 2026-11-22
 

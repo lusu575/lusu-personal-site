@@ -6093,6 +6093,11 @@ html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .taskbar-tabs but
   box-shadow: 0 0 10px rgba(102, 236, 224, 0.28) !important;
 }
 
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .taskbar-tabs button[hidden],
+html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar [hidden] {
+  display: none !important;
+}
+
 html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .start-windows-icon,
 html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .mini-icon,
 html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .dock-label-short,
@@ -6206,22 +6211,27 @@ html[data-pond-mode="games"] #game-list .game-card .card-action {
 }
 
 /* --- 4. Account Popover (#account-popover): Full-Width Centered Buttons & Uniform Input Borders --- */
-html[data-pond-mode] #account-popover input[type="email"],
-html[data-pond-mode] #account-popover input[type="password"],
-html[data-pond-mode] #account-popover input[type="text"] {
-  border: 1.2px solid rgba(164, 236, 228, 0.52) !important;
+html[data-pond-mode] #account-popover input,
+html[data-pond-mode] #account-popover .account-field input,
+#account-popover .account-field input {
+  border: 1.2px solid rgba(164, 236, 228, 0.56) !important;
   border-radius: 10px !important;
-  background: rgba(6, 22, 26, 0.88) !important;
+  background: rgba(6, 22, 26, 0.92) !important;
+  background-color: rgba(6, 22, 26, 0.92) !important;
   color: #f0fefa !important;
   padding: 9px 12px !important;
   min-height: 40px !important;
-  box-shadow: none !important;
+  box-shadow: 0 0 0 1000px rgba(6, 22, 26, 0.92) inset !important;
+  -webkit-text-fill-color: #f0fefa !important;
 }
 
+html[data-pond-mode] #account-popover .account-submit,
+html[data-pond-mode] #account-popover .account-retry-button,
 html[data-pond-mode] #account-popover button[type="submit"],
-html[data-pond-mode] #account-popover .account-recheck-button,
+html[data-pond-mode] #account-popover .account-footer button,
 html[data-pond-mode] #account-popover [data-account-recheck] {
   width: 100% !important;
+  max-width: 100% !important;
   justify-content: center !important;
   text-align: center !important;
 }
