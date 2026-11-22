@@ -6235,3 +6235,153 @@ html[data-pond-mode] #account-popover [data-account-recheck] {
   justify-content: center !important;
   text-align: center !important;
 }
+
+/* ============================================================
+   r40: Video Platform Pill Optical Vertical Centering + Uniform Card
+        Row Baseline + Site-Wide Icon-Only & Icon+Text Button Proportions
+   ============================================================ */
+
+/* --- 1. Site-Wide Pill / Badge Optical Vertical & Horizontal Centering --- */
+html[data-pond-mode] :is(.video-platform, .platform, .tag, .article-pinned-badge, .chat-room-badge, .welcome-announcement-badge),
+html[data-ui-shell="mobile"] :is(.video-platform, .platform, .tag, .article-pinned-badge, .chat-room-badge, .welcome-announcement-badge) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  min-height: 24px !important;
+  padding: 4px 11px !important;
+  vertical-align: middle !important;
+  box-sizing: border-box !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-platform,
+html[data-pond-mode="videos"] #video-list .platform,
+html[data-ui-shell="mobile"] #video-list .video-platform,
+html[data-ui-shell="mobile"] #video-list .platform {
+  min-height: 26px !important;
+  padding: 5px 12px !important;
+  line-height: 1 !important;
+  font-size: 12px !important;
+}
+
+/* --- 2. Video Cards: Uniform Clamped Title/Summary Height & Equal-Baseline Play Buttons --- */
+html[data-pond-mode="videos"] #video-list {
+  align-items: stretch !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-card {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-body {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+  padding: 12px 14px 16px !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-body h2 {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  line-height: 1.4 !important;
+  min-height: 2.8em !important;
+  margin: 0 !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-body > p:not(.video-meta):not(.meta-row) {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  line-height: 1.45 !important;
+  min-height: 2.9em !important;
+  margin: 0 !important;
+}
+
+html[data-pond-mode="videos"] #video-list .video-card button:not(.video-thumb),
+html[data-pond-mode="videos"] #video-list .video-card .card-action {
+  margin-top: auto !important;
+  align-self: flex-start !important;
+}
+
+/* --- 3. Chatroom Send Button & Site-Wide Icon-Only Button Proportions --- */
+html[data-pond-mode="chatroom"] #chatroom .chat-send-button {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  max-width: 44px !important;
+  max-height: 44px !important;
+  flex: 0 0 44px !important;
+  padding: 0 !important;
+  margin: 0 6px 0 10px !important;
+  border-radius: 999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom .chat-send-button .send-bubble-icon {
+  width: 22px !important;
+  height: 22px !important;
+  background-size: 20px 20px !important;
+  margin: 0 !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom .chatroom-counter {
+  margin-right: 8px !important;
+  right: 68px !important;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chat-send-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  min-height: 44px !important;
+  padding: 0 18px !important;
+  width: auto !important;
+  max-width: none !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom .chat-room-help-trigger {
+  background-size: 18px 18px !important;
+}
+
+html[data-ui-shell="mobile"] #chatroom .chat-room-help-trigger {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+  background-size: 20px 20px !important;
+}
+
+html[data-pond-mode="about"] #about .social-links a {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .quick-link {
+  gap: 8px !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .quick-link .quick-link-asset {
+  width: 18px !important;
+  height: 18px !important;
+  flex: 0 0 18px !important;
+  background-size: 17px 17px !important;
+}
