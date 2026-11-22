@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-welcome-rebuild-notice",
+      "slug": "2026-11-22-pond-welcome-rebuild-notice",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "欢迎窗",
+        "公告"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T21:01:00+08:00",
+      "updated_at": "2026-11-22T21:01:00+08:00",
+      "published_at": "2026-11-22T21:01:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "欢迎弹窗顶部新增前端重构临时公告条（三语）",
+        "en": "Added Temporary Frontend Redesign Notice Banner to Welcome Modal (zh/en/ja)",
+        "ja": "ウェルカムウィンドウ上部にフロントエンド再構築のお知らせ枠を追加（3言語対応）"
+      },
+      "summary": {
+        "zh": "在欢迎窗最上方加入点阵虚线暖金临时公告条提示前端重构与逐步修复中，配齐中英日三语并保留独立撤除标记。",
+        "en": "Added a removable dotted amber notice banner at the top of the Welcome modal in Chinese, English, and Japanese without altering existing sections.",
+        "ja": "ウェルカム窓の最上部に点陣デザインの一時お知らせ枠（中・英・日）を追加し、後で一括撤去しやすい独立構成にしました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-home-icon-isolation",
       "slug": "2026-11-22-pond-home-icon-isolation",
       "category": "site-updates",
@@ -109,34 +137,6 @@ export const homeContent = Object.freeze({
         "zh": "将关于页头像放大至 210px 与右栏高度齐平彻底消除下方空块，并将聊天室 6 枚点阵头像重绘为月夜池塘专属柔彩微光造型。",
         "en": "Enlarged the About avatar to 210px to match the right column height cleanly, and redrew all six chatroom dot-matrix avatars in distinct glowing Midnight Pond colors.",
         "ja": "概要アバターを210pxへ拡大して右欄と高さを揃え下の空きを解消し、チャット用6種の点陣アバターを月夜池の淡彩発光モチーフへ刷新しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-about-tight-chat-preload",
-      "slug": "2026-11-22-pond-about-tight-chat-preload",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "关于页",
-        "聊天室"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T11:51:00+08:00",
-      "updated_at": "2026-11-22T11:51:00+08:00",
-      "published_at": "2026-11-22T11:51:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "关于页进一步收紧贴合内容与聊天室点阵头像预加载",
-        "en": "Tighter About Window Fit and Chatroom Dot-Matrix Avatar Preloading",
-        "ja": "概要ウィンドウの余白圧縮とチャット点陣アバターの事前読込"
-      },
-      "summary": {
-        "zh": "收紧关于页内边距与行距彻底消除头像下方空块，并在进入聊天室时预加载 6 枚点阵默认头像消除冷加载空圈闪现。",
-        "en": "Tightened About window spacing to eliminate empty space below the avatar, and preloaded all six dot-matrix chat avatars for instant display.",
-        "ja": "概要ウィンドウの余白をさらに引き締めてアバター下の空きを解消し、チャット用6種の点陣アバターを事前読込して即表示するようにしました。"
       }
     }
   ]

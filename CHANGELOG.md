@@ -2,6 +2,8 @@
 
 ## 2026-11-22
 
+- 在欢迎弹窗顶部新增可一键撤除的前端重构临时公告条（中/英/日三语）（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-welcome-rebuild-notice` / `2026-11-22-pond-welcome-rebuild-notice`；视觉层缓存 `20261122-pond-polish-r34`。
+
 - 修复首页悬停或点击单个桌面图标时其余图标跟着跳动移位的问题（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-home-icon-isolation` / `2026-11-22-pond-home-icon-isolation`；视觉层缓存 `20261122-pond-polish-r33`。
 
 - 猫国建设者宽屏居中自适应三栏、sell/+/-小按钮暗色化及顶部标签栏自动换行防裁切（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-22-pond-kittens-widescreen-fix` / `2026-11-22-pond-kittens-widescreen-fix`；视觉层缓存 `20261122-pond-polish-r32`。

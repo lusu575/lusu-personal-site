@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-home-icon-isolation";
-const finalUpdateSlug = "2026-11-22-pond-home-icon-isolation";
+const finalUpdateId = "seed-update-2026-11-22-pond-welcome-rebuild-notice";
+const finalUpdateSlug = "2026-11-22-pond-welcome-rebuild-notice";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Home Desktop Icon Hover & Click Isolation (Zero Sibling Movement)";
-const finalPublishedAt = "2026-11-22T20:49:00+08:00";
+const finalTitleEn = "Added Temporary Frontend Redesign Notice Banner to Welcome Modal (zh/en/ja)";
+const finalPublishedAt = "2026-11-22T21:01:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-home-icon-isolation",
   "seed-update-2026-11-22-pond-kittens-widescreen-fix",
   "seed-update-2026-11-22-pond-chat-footer-sync-dot",
   "seed-update-2026-11-22-pond-about-balance-chat-avatars",

@@ -5362,3 +5362,61 @@ html[data-pond-mode="chatroom"] #chat-sync-status[data-connection-state="reconne
   background: #ffe07a !important;
   box-shadow: 0 0 8px rgba(255, 224, 122, 0.85) !important;
 }
+
+/* TEMP_REBUILD_NOTICE:START — temporary frontend rebuild banner inside #welcome-modal */
+html[data-pond-mode="welcome"] #welcome-modal .welcome-announcement,
+html[data-ui-shell="mobile"] #welcome-modal .welcome-announcement {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  margin: 0 !important;
+  padding: 9px 12px !important;
+  border-radius: 10px !important;
+  border: 1.2px dashed rgba(255, 214, 126, 0.76) !important;
+  background: rgba(44, 30, 10, 0.56) !important;
+  box-shadow: 0 0 14px rgba(255, 198, 96, 0.16) !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .welcome-announcement-badge,
+html[data-ui-shell="mobile"] #welcome-modal .welcome-announcement-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  flex: 0 0 auto !important;
+  padding: 2px 9px !important;
+  border-radius: 999px !important;
+  border: 1px dotted rgba(255, 224, 148, 0.82) !important;
+  background: rgba(255, 198, 88, 0.16) !important;
+  color: #ffe8a8 !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1.4 !important;
+  white-space: nowrap !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .welcome-announcement-badge::before,
+html[data-ui-shell="mobile"] #welcome-modal .welcome-announcement-badge::before {
+  content: "" !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 999px !important;
+  background: #ffd978 !important;
+  box-shadow: 0 0 6px rgba(255, 217, 120, 0.90) !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .welcome-announcement-copy,
+html[data-ui-shell="mobile"] #welcome-modal .welcome-announcement-copy {
+  margin: 0 !important;
+  padding-top: 1px !important;
+  color: #fff6df !important;
+  font-size: 12.2px !important;
+  line-height: 1.48 !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .xp-window.welcome-window {
+  max-height: min(860px, 92vh) !important;
+}
+/* TEMP_REBUILD_NOTICE:END */

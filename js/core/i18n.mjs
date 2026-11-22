@@ -242,6 +242,9 @@ export const translations = {
     statusValue: "持续建设中",
     aboutCopy: "你好，我是鲁肃。这里是我的个人站，用来记录 AI、游戏、工具、素材和一些杂谈。",
     welcomeTitle: "欢迎",
+    // TEMP_REBUILD_NOTICE
+    welcomeNoticeBadge: "公告",
+    welcomeNoticeCopy: "本站前端正在重构中，部分页面可能会出现排版错位、显示不清晰等 BUG，正在逐步修复中，敬请谅解。",
     welcomeHeading: "新头像和移动端整理完成啦！",
     welcomeCopy: "这次换上了新的电视机头像，公告、账号窗口、视频区、工具区和内置游戏也重新适配了手机端。",
     quickEntry: "快捷入口",
@@ -525,6 +528,9 @@ export const translations = {
     statusValue: "Under construction",
     aboutCopy: "Hi, I'm LuSu. This is my personal site for AI notes, games, tools, assets, and random thoughts.",
     welcomeTitle: "Welcome",
+    // TEMP_REBUILD_NOTICE
+    welcomeNoticeBadge: "Notice",
+    welcomeNoticeCopy: "Our frontend is currently undergoing a redesign. Some pages may have layout glitches or display issues while we gradually fix them. Thank you for your patience.",
     welcomeHeading: "New avatar and mobile layout are ready!",
     welcomeCopy: "The site now uses the new TV-head avatar, with refreshed announcements, account popover, Videos and Tools areas, and embedded games tuned for mobile.",
     quickEntry: "Quick Entry",
@@ -808,6 +814,9 @@ export const translations = {
     statusValue: "建設中",
     aboutCopy: "こんにちは、魯粛です。ここはAI、ゲーム、ツール、素材、雑談を記録する個人サイトです。",
     welcomeTitle: "ようこそ",
+    // TEMP_REBUILD_NOTICE
+    welcomeNoticeBadge: "お知らせ",
+    welcomeNoticeCopy: "現在フロントエンドを再構築中です。一部ページでレイアウト崩れや表示不具合が発生する場合がありますが、順次修正しておりますのでご了承ください。",
     welcomeHeading: "新しいアバターとスマホ表示を整えました！",
     welcomeCopy: "新しいテレビ頭のアバターに差し替え、告知、アカウント画面、動画・ツール欄、内蔵ゲームをスマホ向けに調整しました。",
     quickEntry: "クイック入口",

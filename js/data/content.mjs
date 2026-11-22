@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-welcome-rebuild-notice",
+  "slug": "2026-11-22-pond-welcome-rebuild-notice",
+  "category": "site-updates",
+  "tags": [
+    "视觉升级",
+    "欢迎窗",
+    "公告"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T21:01:00+08:00",
+  "updated_at": "2026-11-22T21:01:00+08:00",
+  "published_at": "2026-11-22T21:01:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "欢迎弹窗顶部新增前端重构临时公告条（三语）",
+    "en": "Added Temporary Frontend Redesign Notice Banner to Welcome Modal (zh/en/ja)",
+    "ja": "ウェルカムウィンドウ上部にフロントエンド再構築のお知らせ枠を追加（3言語対応）"
+  },
+  "summary": {
+    "zh": "在欢迎窗最上方加入点阵虚线暖金临时公告条提示前端重构与逐步修复中，配齐中英日三语并保留独立撤除标记。",
+    "en": "Added a removable dotted amber notice banner at the top of the Welcome modal in Chinese, English, and Japanese without altering existing sections.",
+    "ja": "ウェルカム窓の最上部に点陣デザインの一時お知らせ枠（中・英・日）を追加し、後で一括撤去しやすい独立構成にしました。"
+  },
+  "content_markdown": {
+    "zh": "本次按站长要求在欢迎弹窗内容区最上方新增一条临时公告条，提示访客本站前端正在重构中、部分页面可能出现排版错位或显示不清晰等 BUG 并在逐步修复中。公告条采用与欢迎窗一脉相承的点阵虚线暖金视觉语言，完整保留原有问候语、站长状态、快捷入口和最近五条更新，并配齐中/英/日三语切换；代码层面通过独立 TEMP_REBUILD_NOTICE 区块标注，后续重构收尾时可一键整块撤除。",
+    "en": "This release adds a temporary dotted-border announcement banner at the top of the Welcome modal informing visitors that the frontend is undergoing a redesign and layout/display glitches are being gradually fixed. The banner supports Chinese, English, and Japanese via the site i18n system, preserves the greeting, site status, quick links, and five recent updates intact, and is isolated under TEMP_REBUILD_NOTICE markers for clean one-step removal once the redesign wraps up.",
+    "ja": "今回の更新ではウェルカムウィンドウの最上部に一時的なお知らせバナーを追加し、フロントエンド再構築に伴う一部ページの表示崩れや不具合を順次修正中である旨を案内しています。点陣破線のデザイン言語に統一しつつ従来の挨拶・サイト状態・クイック入口・最新更新5件をそのまま維持し、中英日の3言語切替に対応しました。コードは TEMP_REBUILD_NOTICE ブロックとして分離しており、完了後すぐに撤去可能です。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-home-icon-isolation",
   "slug": "2026-11-22-pond-home-icon-isolation",
   "category": "site-updates",
