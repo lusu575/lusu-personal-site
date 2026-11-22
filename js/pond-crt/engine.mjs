@@ -24,7 +24,7 @@ import {
   SURFACE_OVERLAY_FRAG,
   WATER_BG_FRAG
 } from './shaders.mjs';
-import { PondUIOverlay } from './ui-overlay.mjs?v=20261122-pond-polish-r4';
+import { PondUIOverlay } from './ui-overlay.mjs?v=20261122-pond-polish-r33';
 
 const MAX_RIPPLES = 8;
 

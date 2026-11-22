@@ -2,6 +2,33 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-home-icon-isolation",
+      "slug": "2026-11-22-pond-home-icon-isolation",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "首页"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T20:49:00+08:00",
+      "updated_at": "2026-11-22T20:49:00+08:00",
+      "published_at": "2026-11-22T20:49:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "首页桌面图标悬停与点击完全独立零连带位移",
+        "en": "Home Desktop Icon Hover & Click Isolation (Zero Sibling Movement)",
+        "ja": "ホームデスクトップアイコンのホバー・クリック独立化（他アイコンの位置ずれゼロ）"
+      },
+      "summary": {
+        "zh": "移除首页非悬停图标受全局时钟驱动的浮动与闪烁，确保悬停或点击单个图标时仅目标图标响应、其余图标纹丝不动。",
+        "en": "Removed global-time drift from non-hovered home desktop icons so hovering or clicking one icon never moves or flickers any other icon.",
+        "ja": "非ホバー時のグローバル時刻連動の揺れを除去し、1つのアイコンにホバー・クリックしても他のアイコンが一切動かないよう修正しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-kittens-widescreen-fix",
       "slug": "2026-11-22-pond-kittens-widescreen-fix",
       "category": "site-updates",
@@ -110,33 +137,6 @@ export const homeContent = Object.freeze({
         "zh": "收紧关于页内边距与行距彻底消除头像下方空块，并在进入聊天室时预加载 6 枚点阵默认头像消除冷加载空圈闪现。",
         "en": "Tightened About window spacing to eliminate empty space below the avatar, and preloaded all six dot-matrix chat avatars for instant display.",
         "ja": "概要ウィンドウの余白をさらに引き締めてアバター下の空きを解消し、チャット用6種の点陣アバターを事前読込して即表示するようにしました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-titlebar-close-final",
-      "slug": "2026-11-22-pond-titlebar-close-final",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "全站图标"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T11:40:00+08:00",
-      "updated_at": "2026-11-22T11:40:00+08:00",
-      "published_at": "2026-11-22T11:40:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "主窗口标题栏点阵关闭叉号优先级最终补齐",
-        "en": "Main Window Titlebar Dotted Close X Final Specificity Fix",
-        "ja": "主要ウィンドウタイトルバー点陣閉じるボタン最終修正"
-      },
-      "summary": {
-        "zh": "补齐六个主窗口 .window-titlebar .close-button 同级优先级，彻底解决关于、工具等窗口关闭圆圈内叉号被旧规则清空的问题。",
-        "en": "Matched .window-titlebar .close-button specificity across all six main windows so every circular close button renders its dotted X crisply.",
-        "ja": "主要6ウィンドウの .window-titlebar .close-button 詳細度を揃え、閉じる円ボタン内の点陣×が全画面で確実に表示されるよう仕上げました。"
       }
     }
   ]

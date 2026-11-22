@@ -1,6 +1,38 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-home-icon-isolation",
+  "slug": "2026-11-22-pond-home-icon-isolation",
+  "category": "site-updates",
+  "tags": [
+    "视觉升级",
+    "首页"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T20:49:00+08:00",
+  "updated_at": "2026-11-22T20:49:00+08:00",
+  "published_at": "2026-11-22T20:49:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "首页桌面图标悬停与点击完全独立零连带位移",
+    "en": "Home Desktop Icon Hover & Click Isolation (Zero Sibling Movement)",
+    "ja": "ホームデスクトップアイコンのホバー・クリック独立化（他アイコンの位置ずれゼロ）"
+  },
+  "summary": {
+    "zh": "移除首页非悬停图标受全局时钟驱动的浮动与闪烁，确保悬停或点击单个图标时仅目标图标响应、其余图标纹丝不动。",
+    "en": "Removed global-time drift from non-hovered home desktop icons so hovering or clicking one icon never moves or flickers any other icon.",
+    "ja": "非ホバー時のグローバル時刻連動の揺れを除去し、1つのアイコンにホバー・クリックしても他のアイコンが一切動かないよう修正しました。"
+  },
+  "content_markdown": {
+    "zh": "本次修复首页桌面图标悬停或点击时相邻图标跟着移位跳动的根因：由于 UI 覆盖层在空闲时暂停重绘，而图标绘制中的纵向浮动 floatY 与点阵闪烁曾依赖全局时间 t，导致鼠标悬停或点击某个图标触发重绘时，其余五个静止图标因时间跳变而同步位移闪烁。现已彻底移除非悬停图标与全局时间 t 的耦合，仅对当前悬停/点击的目标图标执行独立缩放、微抬与发光反馈，其余五个图标与左下角控件在任何状态下均保持零像素位移。",
+    "en": "This release fixes the root cause behind sibling desktop icons shifting when hovering or clicking a single icon on Home: because the UI overlay pauses idle redraws while icon floatY and dot opacity previously depended on global time t, waking the overlay for one icon caused all five other icons to jump to new sine-wave offsets. Decoupling non-hovered icons from global time ensures only the targeted icon animates while every other icon stays completely still with zero pixel shift.",
+    "ja": "今回の更新では、ホーム画面のデスクトップアイコンにホバー・クリックした際に他のアイコンまで一緒に動く原因を解消しました。UI オーバーレイは待機時に再描画を停止する一方、各アイコンの縦揺れと点滅がグローバル時刻 t に依存していたため、1つのアイコン操作で再描画が起きた瞬間に他の5つも位相が飛んで動いていました。非ホバー時の時刻依存を完全に外し、対象アイコンのみが独立して反応し他は0px不動となるようにしています。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-kittens-widescreen-fix",
   "slug": "2026-11-22-pond-kittens-widescreen-fix",
   "category": "site-updates",

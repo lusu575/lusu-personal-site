@@ -603,7 +603,7 @@ export class PondUIOverlay {
       const hoverScale = 1.0 + 0.085 * animeEaseOutBack(st.hoverAnim);
       const clickBounce = st.clickPulse > 0 ? Math.sin(st.clickPulse * Math.PI * 2.0) * 0.10 * st.clickPulse : 0;
       const scale = hoverScale + clickBounce;
-      const floatY = Math.sin(t * 1.1 + ic.x * 7.0) * 1.2 - st.hoverAnim * 3.0;
+      const floatY = -st.hoverAnim * 3.0;
 
       const cx = ic.x * w;
       const cy = ic.y * h + floatY;
@@ -653,7 +653,7 @@ export class PondUIOverlay {
           const d = dots[i];
           const px = cx + d[0] * baseRadius * scale;
           const py = cy + d[1] * baseRadius * scale;
-          ctx.globalAlpha = Math.min(1.0, 0.84 + 0.14 * Math.sin(t * 2.2 + i * 0.55 + ic.x * 11.0) + st.hoverAnim * 0.15);
+          ctx.globalAlpha = Math.min(1.0, 0.90 + st.hoverAnim * 0.10);
           ctx.drawImage(this.whiteDotSprite, px - sr, py - sr, sr * 2, sr * 2);
         }
       }
@@ -699,10 +699,9 @@ export class PondUIOverlay {
       ctx.fillText(txt, tx, ty);
     };
 
-    const pulse = 0.55 + 0.25 * Math.sin(t * 1.8);
     const accHover = this.cornerHover === 'account';
     const dotR = accHover ? 5.5 : 4.0;
-    ctx.globalAlpha = accHover ? 0.98 : (isWinter ? 0.85 : (0.42 * pulse + 0.16));
+    ctx.globalAlpha = accHover ? 0.98 : (isWinter ? 0.85 : 0.52);
     ctx.drawImage(this.whiteDotSprite, x0 - dotR, y0 - dotR, dotR * 2, dotR * 2);
 
     ctx.globalAlpha = 1.0;

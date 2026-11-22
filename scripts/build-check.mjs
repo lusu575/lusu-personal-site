@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-22-pond-kittens-widescreen-fix";
-const finalUpdateSlug = "2026-11-22-pond-kittens-widescreen-fix";
+const finalUpdateId = "seed-update-2026-11-22-pond-home-icon-isolation";
+const finalUpdateSlug = "2026-11-22-pond-home-icon-isolation";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Kittens Game Widescreen Centering, Dark Sub-Buttons, and Wrapping Tab Bar";
-const finalPublishedAt = "2026-11-22T12:44:00+08:00";
+const finalTitleEn = "Home Desktop Icon Hover & Click Isolation (Zero Sibling Movement)";
+const finalPublishedAt = "2026-11-22T20:49:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-22-pond-kittens-widescreen-fix",
   "seed-update-2026-11-22-pond-chat-footer-sync-dot",
   "seed-update-2026-11-22-pond-about-balance-chat-avatars",
   "seed-update-2026-11-22-pond-about-tight-chat-preload",
