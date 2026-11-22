@@ -1,7 +1,15 @@
 (async function () {
   const slug = window.GAME_SLUG;
   const shellParams = new URLSearchParams(window.location.search);
-  const requestedSiteLang = ["zh", "en", "ja"].includes(shellParams.get("lang")) ? shellParams.get("lang") : "zh";
+  const storedSiteLang = (() => {
+    try {
+      return window.localStorage.getItem("lusu-site-language");
+    } catch {
+      return null;
+    }
+  })();
+  const candidateSiteLang = shellParams.get("lang") || storedSiteLang || "zh";
+  const requestedSiteLang = ["zh", "en", "ja"].includes(candidateSiteLang) ? candidateSiteLang : "zh";
   const frame = document.getElementById("game-frame");
   const title = document.getElementById("game-title");
   const subtitle = document.getElementById("game-subtitle");
@@ -1939,18 +1947,121 @@
             border: 1px solid rgba(176, 238, 232, 0.48) !important;
           }
         ` : "";
-        const genericUiCss = (slug !== "kittens-game" && slug !== "hextris") ? `
-          .container, .wrapper, #wrapper, #outerSlider, #content, #main, .game-container, .heading, .above-game {
-            background-color: transparent !important;
-            color: #e6fbf7 !important;
+        const darkRoomCss = slug === "a-dark-room" ? `
+          #wrapper, #outerSlider, #content, #main, #locationSlider, #notifications, #event, .eventPanel {
+            background: #06161b !important;
+            color: #e8fbf7 !important;
+            border-color: rgba(164, 236, 228, 0.34) !important;
           }
-          button, .button, .btn {
-            background: rgba(10, 36, 42, 0.84) !important;
+          #notifyGradient {
+            background: linear-gradient(rgba(6, 22, 27, 0) 0%, rgba(6, 22, 27, 0.96) 90%, #06161b 100%) !important;
+          }
+          #menu, #menu span.menuBtn, #menu a {
+            color: #9af8ec !important;
+          }
+          #menu span.menuBtn:hover, #menu a:hover {
+            color: #f0fefa !important;
+          }
+          .button, div.button {
+            background: rgba(10, 36, 42, 0.86) !important;
+            color: #f0fefa !important;
+            border: 1px dashed rgba(176, 240, 234, 0.56) !important;
+            border-radius: 6px !important;
+          }
+          .button:hover:not(.disabled), div.button:hover:not(.disabled) {
+            border-style: solid !important;
+            border-color: rgba(154, 248, 238, 0.92) !important;
+            background: rgba(20, 64, 70, 0.78) !important;
+          }
+          .button .cooldown {
+            background: rgba(136, 252, 226, 0.24) !important;
+          }
+          .tooltip {
+            background: rgba(6, 22, 26, 0.96) !important;
             color: #eefcf9 !important;
-            border: 1px dashed rgba(176, 240, 234, 0.48) !important;
+            border: 1px solid rgba(176, 238, 232, 0.52) !important;
+          }
+          .speech-bubble, #menu .icon, svg {
+            stroke: #9af8ec !important;
+            color: #9af8ec !important;
           }
         ` : "";
-        style.textContent = baseCss + kittensCss + genericUiCss;
+        const game2048Css = slug === "2048" ? `
+          body { background: #06161b !important; color: #eefcf9 !important; }
+          .hud, .controls, .board-wrap {
+            background: rgba(8, 30, 36, 0.88) !important;
+            border: 1.4px solid rgba(164, 236, 228, 0.42) !important;
+            box-shadow: 0 0 22px rgba(96, 234, 222, 0.14) !important;
+            color: #eefcf9 !important;
+          }
+          .hud .eyebrow, .controls p {
+            color: rgba(196, 240, 234, 0.86) !important;
+          }
+          .hud h1 { color: #f4fffe !important; text-shadow: 0 0 12px rgba(154, 248, 238, 0.35); }
+          .score-box {
+            background: rgba(4, 18, 22, 0.92) !important;
+            border: 1px dashed rgba(164, 236, 228, 0.52) !important;
+            color: #f4fffe !important;
+          }
+          .score-box span { color: rgba(178, 234, 228, 0.82) !important; }
+          .score-box strong { color: #88fce2 !important; }
+          .board {
+            background: rgba(4, 16, 20, 0.92) !important;
+            border: 1px solid rgba(164, 236, 228, 0.30) !important;
+          }
+          .cell {
+            background: rgba(14, 42, 50, 0.72) !important;
+            border-color: rgba(164, 236, 228, 0.18) !important;
+          }
+          .controls button, .overlay button {
+            background: rgba(10, 36, 42, 0.88) !important;
+            color: #f0fefa !important;
+            border: 1.2px dashed rgba(176, 240, 234, 0.56) !important;
+            border-radius: 999px !important;
+          }
+          .overlay {
+            background: rgba(4, 18, 22, 0.88) !important;
+            color: #f4fffe !important;
+          }
+        ` : "";
+        const hextrisCss = slug === "hextris" ? `
+          body { background: #06161b !important; color: #eefcf9 !important; }
+          .top, .toolbar, .stage {
+            background: rgba(8, 30, 36, 0.88) !important;
+            border: 1.4px solid rgba(164, 236, 228, 0.42) !important;
+            box-shadow: 0 0 22px rgba(96, 234, 222, 0.14) !important;
+            color: #eefcf9 !important;
+          }
+          .top .eyebrow, .hint {
+            color: rgba(196, 240, 234, 0.86) !important;
+          }
+          .top h1 { color: #f4fffe !important; text-shadow: 0 0 12px rgba(154, 248, 238, 0.35); }
+          .score-box {
+            background: rgba(4, 18, 22, 0.92) !important;
+            border: 1px dashed rgba(164, 236, 228, 0.52) !important;
+            color: #f4fffe !important;
+          }
+          .score-box span { color: rgba(178, 234, 228, 0.82) !important; }
+          .score-box strong { color: #88fce2 !important; }
+          .toolbar button, .overlay button {
+            background: rgba(10, 36, 42, 0.88) !important;
+            background-image: none !important;
+            color: #f0fefa !important;
+            border: 1.2px dashed rgba(176, 240, 234, 0.56) !important;
+            border-radius: 999px !important;
+            box-shadow: none !important;
+          }
+          .toolbar button:hover, .overlay button:hover {
+            border-style: solid !important;
+            border-color: rgba(154, 248, 238, 0.92) !important;
+            background: rgba(20, 64, 70, 0.78) !important;
+          }
+          .overlay {
+            background: rgba(4, 18, 22, 0.88) !important;
+            color: #f4fffe !important;
+          }
+        ` : "";
+        style.textContent = (slug === "life-restart" ? "" : baseCss) + kittensCss + darkRoomCss + game2048Css + hextrisCss;
         doc.head.appendChild(style);
       } catch {
         // Ignore cross-origin or transient iframe access errors

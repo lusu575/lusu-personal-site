@@ -152,7 +152,7 @@
       "summaries": {
         "zh": "受 Hextris 启发的六边形颜色消除小游戏，已本地部署到本站并接入本地导入导出与云存档。",
         "en": "A Hextris-inspired hex color puzzle, deployed locally with save import/export and cloud saves.",
-        "ja": "Hextris に着想を得た六角形カラーパズルです。本站に内蔵し、保存の入出力とクラウド保存に対応しました。"
+        "ja": "Hextris に着想を得た六角形カラーパズルです。本サイトに内蔵し、保存の入出力とクラウド保存に対応しました。"
       },
       "cover": "../assets/images/generated-icons/hextris.png?v=20260719-content-experience-fixes-r1",
       "entry": "hextris/",
@@ -198,7 +198,7 @@
       "summaries": {
         "zh": "开源人生模拟文字游戏，本地静态部署到本站，支持中文和 English，并接入本地导入导出与云存档。",
         "en": "An open-source life simulation text game, deployed locally with Chinese and English UI plus save import/export and cloud saves.",
-        "ja": "オープンソースの人生シミュレーションゲームです。本站に内蔵し、中国語と英語UI、保存の入出力とクラウド保存に対応しています。"
+        "ja": "オープンソースの人生シミュレーションゲームです。本サイトに内蔵し、中国語と英語UI、保存の入出力とクラウド保存に対応しています。"
       },
       "cover": "../assets/images/generated-icons/life-restart.png?v=20260719-content-experience-fixes-r1",
       "entry": "life-restart/",

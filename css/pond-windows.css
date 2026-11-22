@@ -4570,3 +4570,286 @@ html[data-pond-mode="welcome"] #welcome-modal .recent-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 }
+
+/* ============================================================
+   r23: Content-Sized Windows + Full-Site Dot-Matrix Icon Unification
+   1. Content-sized windows: #about, #resources, #games shrink cleanly to content;
+      #knowledge, #article, #videos, #chatroom keep large scrollable geometry.
+   2. Legacy icons replaced with unified Midnight Pond dotted SVGs:
+      - Video loading/empty TV icon (.video-empty-icon) & #video-modal icons
+      - Tools/Games <details><summary> native triangle -> dotted chevron
+      - Chatroom ? button, send arrow, native blue auto-scroll checkbox
+      - Global window/modal close button (× character -> dotted × SVG)
+      - Article Reader meta/TOC/tip/copy colorful pixel icons -> dotted SVGs
+      - Mobile Dock colorful XP icons -> dotted SVGs
+      - Welcome modal 6 category icons -> crisp unmistakable silhouettes
+   ============================================================ */
+
+/* --- 1. Content-Sized Windows (#about, #resources, #games) --- */
+html[data-pond-mode="about"] .site-shell > main {
+  width: min(740px, 88vw) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: min(680px, 84vh) !important;
+}
+
+html[data-pond-mode="about"] #about.page.active,
+html[data-pond-mode="about"] #about .xp-window,
+html[data-pond-mode="about"] #about .about-window {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: min(680px, 84vh) !important;
+}
+
+html[data-pond-mode="about"] #about .profile-card {
+  flex: 0 1 auto !important;
+  padding: 24px 28px 26px !important;
+  align-items: center !important;
+  align-content: center !important;
+  gap: 28px !important;
+}
+
+html[data-pond-mode="resources"] .site-shell > main {
+  width: min(1040px, 84vw) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: min(760px, 84vh) !important;
+}
+
+html[data-pond-mode="resources"] #resources.page.active,
+html[data-pond-mode="resources"] #resources .xp-window {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: min(760px, 84vh) !important;
+}
+
+html[data-pond-mode="resources"] #resource-list {
+  flex: 0 1 auto !important;
+  padding: 18px 22px 22px !important;
+}
+
+html[data-pond-mode="games"] .site-shell > main {
+  width: min(1040px, 84vw) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: min(760px, 84vh) !important;
+}
+
+html[data-pond-mode="games"] #games.page.active,
+html[data-pond-mode="games"] #games .xp-window {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: min(760px, 84vh) !important;
+}
+
+html[data-pond-mode="games"] #game-list {
+  flex: 0 1 auto !important;
+  padding: 18px 22px 22px !important;
+}
+
+/* --- 2. Video Loading/Empty State TV Emoji & Video Modal Icons --- */
+html[data-pond-mode] .video-empty-icon,
+html[data-ui-shell="mobile"] .video-empty-icon,
+#video-modal .video-placeholder-asset,
+#video-modal .title-icon-videos {
+  font-size: 0 !important;
+  color: transparent !important;
+  background-color: transparent !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect x='3' y='5.5' width='22' height='17' rx='3.5' fill='rgba(154,248,238,0.08)' stroke='%23e8fffc' stroke-width='2' stroke-dasharray='2.4 1.6'/%3E%3Cpolygon points='11.5,10 19.5,14 11.5,18' fill='%23e8fffc'/%3E%3C/svg%3E") !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  filter: drop-shadow(0 0 7px rgba(154, 252, 242, 0.78)) !important;
+}
+
+html[data-pond-mode] .video-empty-icon::before,
+html[data-pond-mode] .video-empty-icon::after {
+  content: none !important;
+  display: none !important;
+}
+
+#video-modal .maximize-button::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Crect x='3.5' y='3.5' width='13' height='13' rx='2' fill='none' stroke='%23e8fffc' stroke-width='1.8' stroke-dasharray='2.2 1.5'/%3E%3C/svg%3E") !important;
+  background-size: 16px 16px !important;
+  background-position: center !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* --- 3. Tools & Games Collapsible <summary> Dotted Chevron (Replace Native ▶) --- */
+html[data-pond-mode] .resource-details > summary,
+html[data-pond-mode] .game-secondary-details > summary,
+html[data-ui-shell="mobile"] .resource-details > summary,
+html[data-ui-shell="mobile"] .game-secondary-details > summary {
+  list-style: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  cursor: pointer;
+}
+
+html[data-pond-mode] .resource-details > summary::-webkit-details-marker,
+html[data-pond-mode] .game-secondary-details > summary::-webkit-details-marker,
+html[data-ui-shell="mobile"] .resource-details > summary::-webkit-details-marker,
+html[data-ui-shell="mobile"] .game-secondary-details > summary::-webkit-details-marker {
+  display: none !important;
+}
+
+html[data-pond-mode] .resource-details > summary::before,
+html[data-pond-mode] .game-secondary-details > summary::before,
+html[data-ui-shell="mobile"] .resource-details > summary::before,
+html[data-ui-shell="mobile"] .game-secondary-details > summary::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 12px !important;
+  height: 12px !important;
+  flex: 0 0 12px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M4.5 2.5 L9.5 7 L4.5 11.5' fill='none' stroke='%23aafaf0' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' stroke-dasharray='2 1.4'/%3E%3C/svg%3E") center / 12px 12px no-repeat !important;
+  transition: transform 0.16s ease;
+}
+
+html[data-pond-mode] .resource-details[open] > summary::before,
+html[data-pond-mode] .game-secondary-details[open] > summary::before,
+html[data-ui-shell="mobile"] .resource-details[open] > summary::before,
+html[data-ui-shell="mobile"] .game-secondary-details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+/* --- 4. Chatroom Dotted ? Help, Send Arrow & Auto-Scroll Checkbox --- */
+html[data-pond-mode="chatroom"] .chat-room-help-trigger,
+html[data-ui-shell="mobile"] .chat-room-help-trigger {
+  font-size: 0 !important;
+  color: transparent !important;
+  background: rgba(8, 28, 34, 0.72) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M7.4 7.4a2.7 2.7 0 0 1 5.2.9c0 1.6-2.4 2-2.4 3.5' fill='none' stroke='%23e8fffc' stroke-width='1.8' stroke-linecap='round' stroke-dasharray='2 1.2'/%3E%3Ccircle cx='10.2' cy='15' r='1.15' fill='%23e8fffc'/%3E%3C/svg%3E") center / 16px 16px no-repeat !important;
+  border: 1px dashed rgba(182, 240, 234, 0.56) !important;
+}
+
+html[data-pond-mode="chatroom"] .chat-send-button .send-bubble-icon,
+html[data-ui-shell="mobile"] .chat-send-button .send-bubble-icon {
+  display: inline-block !important;
+  width: 20px !important;
+  height: 20px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 11.5 L20 4.5 L15.5 20 L11 13.5 Z' fill='none' stroke='%23e8fffc' stroke-width='1.9' stroke-linejoin='round' stroke-dasharray='2.4 1.4'/%3E%3Cpath d='M11 13.5 L19.2 5.2' stroke='%23e8fffc' stroke-width='1.6' stroke-dasharray='2 1.4'/%3E%3C/svg%3E") center / 18px 18px no-repeat !important;
+  filter: drop-shadow(0 0 6px rgba(154, 252, 242, 0.78)) !important;
+}
+
+html[data-pond-mode="chatroom"] .chat-send-button .send-bubble-icon::before,
+html[data-pond-mode="chatroom"] .chat-send-button .send-bubble-icon::after {
+  content: none !important;
+  display: none !important;
+}
+
+html[data-pond-mode="chatroom"] #chat-autoscroll,
+html[data-ui-shell="mobile"] #chat-autoscroll {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 2px 0 0 !important;
+  border-radius: 4px !important;
+  border: 1.3px dashed rgba(182, 240, 234, 0.62) !important;
+  background: rgba(6, 22, 26, 0.76) !important;
+  cursor: pointer;
+  vertical-align: middle;
+  flex: 0 0 16px;
+}
+
+html[data-pond-mode="chatroom"] #chat-autoscroll:checked,
+html[data-ui-shell="mobile"] #chat-autoscroll:checked {
+  border-style: solid !important;
+  border-color: #9af8ec !important;
+  background: rgba(16, 62, 68, 0.86) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.2 8.2 L6.6 11.4 L12.8 4.6' fill='none' stroke='%23e8fffc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' stroke-dasharray='2.2 1.2'/%3E%3C/svg%3E") center / 13px 13px no-repeat !important;
+  box-shadow: 0 0 8px rgba(136, 252, 226, 0.42) !important;
+}
+
+/* --- 5. Global Window & Modal Close Button (Dotted × SVG Replacing Character ×) --- */
+html[data-pond-mode] .close-button,
+html[data-pond-mode] .account-popover-close,
+#video-modal .close-button,
+#welcome-modal .close-button {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+  background-color: rgba(6, 22, 26, 0.56) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 5.5 L14.5 14.5 M14.5 5.5 L5.5 14.5' fill='none' stroke='%23e8fffc' stroke-width='1.9' stroke-linecap='round' stroke-dasharray='2.4 1.5'/%3E%3C/svg%3E") !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 16px 16px !important;
+  border: 1.2px dashed rgba(185, 235, 230, 0.52) !important;
+  border-radius: 999px !important;
+}
+
+html[data-pond-mode] .close-button:hover,
+html[data-pond-mode] .account-popover-close:hover,
+#video-modal .close-button:hover,
+#welcome-modal .close-button:hover {
+  border-style: solid !important;
+  border-color: rgba(154, 248, 238, 0.92) !important;
+  background-color: rgba(18, 56, 62, 0.78) !important;
+  box-shadow: 0 0 12px rgba(102, 236, 224, 0.34) !important;
+}
+
+/* --- 6. Article Reader Inline Colorful Pixel Icons -> Dotted SVGs --- */
+html[data-pond-mode="article"] .asset-icon-knowledge,
+html[data-ui-shell="mobile"] .asset-icon-knowledge {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M2.5 4.5c2.5-.6 5-.2 7.5 1.1 2.5-1.3 5-1.7 7.5-1.1v10.5c-2.5-.6-5-.2-7.5 1.1-2.5-1.3-5-1.7-7.5-1.1V4.5zM10 5.6v10.5' fill='none' stroke='%23c8fff8' stroke-width='1.6' stroke-dasharray='2 1.3' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-size: 16px 16px !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+html[data-pond-mode="article"] .asset-icon-note,
+html[data-ui-shell="mobile"] .asset-icon-note {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='7.2' fill='none' stroke='%23c8fff8' stroke-width='1.6' stroke-dasharray='2 1.3'/%3E%3Cpath d='M10 6.2v4l2.8 1.6' fill='none' stroke='%23c8fff8' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+  background-size: 16px 16px !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+html[data-pond-mode="article"] .asset-icon-link,
+html[data-ui-shell="mobile"] .asset-icon-link {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M8.5 11.5l3-3M6.8 9.2l-1.5 1.5a2.8 2.8 0 0 0 4 4l1.5-1.5M13.2 10.8l1.5-1.5a2.8 2.8 0 0 0-4-4L9.2 6.8' fill='none' stroke='%23c8fff8' stroke-width='1.7' stroke-linecap='round' stroke-dasharray='2 1.2'/%3E%3C/svg%3E") !important;
+  background-size: 16px 16px !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* --- 7. Mobile Dock Colorful XP Icons -> Unified Dotted SVGs --- */
+html[data-ui-shell="mobile"] .xp-taskbar .taskbar-icon-knowledge {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2.8 5.2c3.1-.8 6.1-.3 9.2 1.4 3.1-1.7 6.1-2.2 9.2-1.4v12.6c-3.1-.8-6.1-.3-9.2 1.4-3.1-1.7-6.1-2.2-9.2-1.4V5.2zM12 6.6v12.6' fill='none' stroke='%23e8fffc' stroke-width='2' stroke-dasharray='2.4 1.4' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+html[data-ui-shell="mobile"] .xp-taskbar .taskbar-icon-videos {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2.5' y='4.5' width='19' height='15' rx='3' fill='none' stroke='%23e8fffc' stroke-width='2' stroke-dasharray='2.4 1.4'/%3E%3Cpolygon points='10,8.5 16.5,12 10,15.5' fill='%23e8fffc'/%3E%3C/svg%3E") !important;
+}
+html[data-ui-shell="mobile"] .xp-taskbar .taskbar-icon-resources {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.2 5.4a4.4 4.4 0 0 0-5.6 5.6L4.2 16.4a2 2 0 1 0 2.8 2.8l5.4-5.4a4.4 4.4 0 0 0 5.6-5.6l-2.6 2.6-2.8-2.8 2.6-2.6z' fill='none' stroke='%23e8fffc' stroke-width='2' stroke-dasharray='2.4 1.4' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+html[data-ui-shell="mobile"] .xp-taskbar .taskbar-icon-games {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.5 8h11a4 4 0 0 1 3.9 4.8l-.8 3.4a2.6 2.6 0 0 1-4.4 1.1L14.5 15.5h-5L7.8 17.3a2.6 2.6 0 0 1-4.4-1.1l-.8-3.4A4 4 0 0 1 6.5 8z' fill='none' stroke='%23e8fffc' stroke-width='2' stroke-dasharray='2.4 1.4' stroke-linejoin='round'/%3E%3Cpath d='M8.5 10.6v3.6M6.7 12.4h3.6' stroke='%23e8fffc' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='15.6' cy='11.6' r='1.1' fill='%23e8fffc'/%3E%3Ccircle cx='17.6' cy='13.4' r='1.1' fill='%23e8fffc'/%3E%3C/svg%3E") !important;
+}
+html[data-ui-shell="mobile"] .xp-taskbar .chat-mini-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4.5 5.5h13a2.5 2.5 0 0 1 2.5 2.5v6a2.5 2.5 0 0 1-2.5 2.5h-6.5l-4 3.2v-3.2H4.5A2.5 2.5 0 0 1 2 14V8a2.5 2.5 0 0 1 2.5-2.5z' fill='none' stroke='%23e8fffc' stroke-width='2' stroke-dasharray='2.4 1.4' stroke-linejoin='round'/%3E%3Ccircle cx='8' cy='11' r='1.2' fill='%23e8fffc'/%3E%3Ccircle cx='11.5' cy='11' r='1.2' fill='%23e8fffc'/%3E%3Ccircle cx='15' cy='11' r='1.2' fill='%23e8fffc'/%3E%3C/svg%3E") !important;
+}
+
+/* --- 8. Welcome Modal 6 Category Icons: High-Distinction Unmistakable Silhouettes --- */
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates .update-icon-knowledge {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M3 6.2c3.8-1 7.4-.4 11 1.6 3.6-2 7.2-2.6 11-1.6v14.8c-3.8-1-7.4-.4-11 1.6-3.6-2-7.2-2.6-11-1.6V6.2zM14 7.8v14.8' fill='rgba(154,248,238,0.10)' stroke='%23ecfffd' stroke-width='2' stroke-dasharray='2.8 1.5' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates .update-icon-videos {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect x='2.5' y='5' width='23' height='18' rx='3.8' fill='rgba(154,248,238,0.10)' stroke='%23ecfffd' stroke-width='2' stroke-dasharray='2.8 1.5'/%3E%3Cpolygon points='11.5,9.5 20,14 11.5,18.5' fill='%23ecfffd'/%3E%3C/svg%3E") !important;
+}
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates .update-icon-games {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M7.5 8.5h13a4.5 4.5 0 0 1 4.4 5.4l-1 4.2a2.8 2.8 0 0 1-4.8 1.2l-2-2.1h-6.2l-2 2.1a2.8 2.8 0 0 1-4.8-1.2l-1-4.2A4.5 4.5 0 0 1 7.5 8.5z' fill='rgba(154,248,238,0.10)' stroke='%23ecfffd' stroke-width='2' stroke-dasharray='2.8 1.4' stroke-linejoin='round'/%3E%3Cpath d='M9.5 11.6v4.6M7.2 13.9h4.6' stroke='%23ecfffd' stroke-width='2.2' stroke-linecap='round'/%3E%3Ccircle cx='18.2' cy='12.8' r='1.35' fill='%23ecfffd'/%3E%3Ccircle cx='20.8' cy='14.9' r='1.35' fill='%23ecfffd'/%3E%3C/svg%3E") !important;
+}
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates .update-icon-tools {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M17.8 5.8a5.2 5.2 0 0 0-6.6 6.6L4.6 19a2.4 2.4 0 1 0 3.4 3.4l6.6-6.6a5.2 5.2 0 0 0 6.6-6.6l-3.2 3.2-3.4-3.4 3.2-3.2z' fill='rgba(154,248,238,0.10)' stroke='%23ecfffd' stroke-width='2' stroke-dasharray='2.8 1.4' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates .update-icon-chat {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M5 6h15.5a3 3 0 0 1 3 3v7.2a3 3 0 0 1-3 3H12.2l-4.7 3.8v-3.8H5a3 3 0 0 1-3-3V9a3 3 0 0 1 3-3z' fill='rgba(154,248,238,0.10)' stroke='%23ecfffd' stroke-width='2' stroke-dasharray='2.8 1.4' stroke-linejoin='round'/%3E%3Ccircle cx='9.5' cy='12.6' r='1.4' fill='%23ecfffd'/%3E%3Ccircle cx='13.5' cy='12.6' r='1.4' fill='%23ecfffd'/%3E%3Ccircle cx='17.5' cy='12.6' r='1.4' fill='%23ecfffd'/%3E%3C/svg%3E") !important;
+}
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates .update-icon-system {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2.8 L16.8 11.2 L25.2 14 L16.8 16.8 L14 25.2 L11.2 16.8 L2.8 14 L11.2 11.2 Z' fill='rgba(154,248,238,0.14)' stroke='%23ecfffd' stroke-width='2' stroke-dasharray='2.8 1.4' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}

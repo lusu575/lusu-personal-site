@@ -1,6 +1,40 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-22-pond-sizing-icons-games",
+  "slug": "2026-11-22-pond-sizing-icons-games",
+  "category": "site-updates",
+  "tags": [
+    "视觉升级",
+    "全站图标",
+    "游戏区",
+    "关于页"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-22T11:12:00+08:00",
+  "updated_at": "2026-11-22T11:12:00+08:00",
+  "published_at": "2026-11-22T11:12:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "按内容定窗尺寸、全站旧图标点阵化与五款游戏暗色和三语修复",
+    "en": "Content-Fit Window Sizing, Site-Wide Dot-Matrix Icon Unification, and Game Dark Theme & Language Fixes",
+    "ja": "内容量ベースの窓サイズ最適化・全サイト点陣アイコン統一・ゲーム暗色と言語修正"
+  },
+  "summary": {
+    "zh": "收紧关于/工具/游戏窗尺寸贴合内容，替换全站残余旧图标与系统控件为点阵虚线风，并修复小黑屋/2048/Hextris暗色对比度及游戏页语言联动。",
+    "en": "Shrank About, Tools, and Games windows to fit content, replaced remaining legacy icons with dot-matrix SVGs, and fixed dark colors and language sync across all 5 games.",
+    "ja": "概要・ツール・ゲーム窓を内容に合わせて引き締め、残存する旧アイコンを点陣SVGへ統一し、全5ゲームの暗色表示と多言語連動を修正しました。"
+  },
+  "content_markdown": {
+    "zh": "本次完成四项全站收尾：一是按内容量收紧关于页、工具区与游戏区窗口高度与宽度，彻底消除下半大片空白，同时保持知识库、文章、视频与聊天室大窗阅读空间；二是全站清扫残余旧图标，将视频加载与空态电视图标、工具/游戏折叠三角、聊天室帮助/发送/复选框、全站右上角关闭键、文章页内联图标、移动端 Dock 图标与欢迎窗分类轮廓全部统一为点阵虚线自有图标（保留平台官方徽标原样）；三是修复小黑屋左栏白色渐变遮罩、2048 与 Hextris 分数白字压浅底等暗色颜色问题；四是补齐游戏内页读取站点持久化语言及日文简介用词修正。",
+    "en": "This release delivers four major polish passes: switching About, Tools, and Games windows to content-fit sizing to eliminate excess whitespace while keeping large scrollable windows for Knowledge, Article, Videos, and Chat; replacing remaining legacy icons across video loading/empty states, collapsible summaries, chatroom controls, global close buttons, article metadata, mobile Dock, and welcome categories with unified dot-matrix SVGs; fixing dark-theme contrast bugs in A Dark Room, 2048, and Hextris; and syncing game shell language fallback with site localStorage.",
+    "ja": "今回の更新では4つの仕上げを行いました。概要・ツール・ゲームの各ウィンドウを内容量に応じたサイズへ収縮して余白を解消し、動画読込アイコン・折りたたみ矢印・チャット操作系・全ウィンドウ閉じるボタン・記事内アイコン・モバイルDock・ウェルカム分類アイコンを統一された点陣SVGへ刷新しました。さらに A Dark Room の白グラデーションや 2048・Hextris のスコア視認性不具合を修正し、ゲーム内ページのサイト言語連動と日本語表記も整えています。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-22-pond-welcome-dot-polish",
   "slug": "2026-11-22-pond-welcome-dot-polish",
   "category": "site-updates",

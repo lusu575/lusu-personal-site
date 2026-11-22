@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-sizing-icons-games",
+      "slug": "2026-11-22-pond-sizing-icons-games",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "全站图标",
+        "游戏区",
+        "关于页"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T11:12:00+08:00",
+      "updated_at": "2026-11-22T11:12:00+08:00",
+      "published_at": "2026-11-22T11:12:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "按内容定窗尺寸、全站旧图标点阵化与五款游戏暗色和三语修复",
+        "en": "Content-Fit Window Sizing, Site-Wide Dot-Matrix Icon Unification, and Game Dark Theme & Language Fixes",
+        "ja": "内容量ベースの窓サイズ最適化・全サイト点陣アイコン統一・ゲーム暗色と言語修正"
+      },
+      "summary": {
+        "zh": "收紧关于/工具/游戏窗尺寸贴合内容，替换全站残余旧图标与系统控件为点阵虚线风，并修复小黑屋/2048/Hextris暗色对比度及游戏页语言联动。",
+        "en": "Shrank About, Tools, and Games windows to fit content, replaced remaining legacy icons with dot-matrix SVGs, and fixed dark colors and language sync across all 5 games.",
+        "ja": "概要・ツール・ゲーム窓を内容に合わせて引き締め、残存する旧アイコンを点陣SVGへ統一し、全5ゲームの暗色表示と多言語連動を修正しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-welcome-dot-polish",
       "slug": "2026-11-22-pond-welcome-dot-polish",
       "category": "site-updates",
@@ -109,34 +138,6 @@ export const homeContent = Object.freeze({
         "zh": "修正游戏内页暗色主题注入器按 game.id 匹配猫国建设者，彻底隐藏营火行左右问号残影并提亮齿轮图标与资源栏。",
         "en": "Fixed the game shell dark-theme injector to match catalog game.id so Kittens Game dark styles, cyan gear icons, and question-mark cleanup take effect.",
         "ja": "ゲームシェルのダークテーマ判定を game.id 優先へ修正し、焚き火行左右の疑問符残影除去と歯車アイコン明色化を確実に適用しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-kittens-svg-mask-fix",
-      "slug": "2026-11-22-pond-kittens-svg-mask-fix",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "游戏区",
-        "猫国建设者"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T05:27:00+08:00",
-      "updated_at": "2026-11-22T05:27:00+08:00",
-      "published_at": "2026-11-22T05:27:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "猫国建设者暗色主题遮罩图标着色修正",
-        "en": "Kittens Game Dark Theme Masked Icon Color Fix",
-        "ja": "Kittens Game ダークテーマのマスクアイコン着色修正"
-      },
-      "summary": {
-        "zh": "修正猫国建设者资源栏齿轮与折叠箭头遮罩图标的暗色着色，并彻底清理营火行左右问号图标容器。",
-        "en": "Fixed CSS-masked gear and chevron icon colors in Kittens Game dark theme and removed question-mark tooltip icon wrappers cleanly.",
-        "ja": "Kittens Game 資源欄の歯車・矢印マスクアイコンを明色化し、焚き火行左右の疑問符アイコン枠も完全に整理しました。"
       }
     }
   ]
