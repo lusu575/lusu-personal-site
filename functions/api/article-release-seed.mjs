@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-account-signedin-states', '2026-11-22-pond-account-signedin-states', 'site-updates', '["视觉升级","云存档","全站状态"]', '', 'published', 0, 0, '2026-11-22T11:23:00+08:00', '2026-11-22T11:23:00+08:00', '2026-11-22T11:23:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-account-signedin-states", {
+  "zh": {
+    "title": "云存档账号浮层已登录态重做与全站低频状态面暗色统一",
+    "summary": "彻底去掉账号浮层已登录态白色底块，重排双列均衡按钮与紧凑留白，并同步暗色化全站空态、错误态、恢复提示与气泡说明。",
+    "content_markdown": "本次重做了左下角云存档账号浮层的已登录态视觉与排版：移除原有纯白邮箱条与浅蓝白状态条，改为深青半透明点阵胶囊与清晰青白文字；将退出账号与重新检查两个按钮重排为等宽双列并拉开间距，整体浮层高度按内容收紧不留多余空白。同时全站自查并统一暗色化了加载态、空态、错误提示条、网络恢复提示条、聊天室密码房气泡说明与复制链接反馈等低频状态面。"
+  },
+  "en": {
+    "title": "Signed-In Cloud Account Popover Redesign and Low-Frequency Status Surfaces",
+    "summary": "Replaced the bright white signed-in account strips with dark CRT panels, balanced 2-column buttons, and unified all empty/error/recovery/popover status surfaces.",
+    "content_markdown": "This release redesigns the signed-in Cloud Save Account popover into a compact dark CRT layout, eliminating the legacy white email bar and pale status block in favor of dark dotted containers with crisp cyan text and balanced two-column action buttons. We also audited and dark-themed all low-frequency status surfaces across the site, including loading, empty, error, recovery notices, chatroom help popovers, and copy-link feedback."
+  },
+  "ja": {
+    "title": "クラウドアカウントログイン済みポップオーバー刷新と低頻度状態面の暗色統一",
+    "summary": "ログイン済みアカウント浮層の白帯を撤廃し2列均等ボタンへ再配置するとともに、全サイトの空・エラー・復帰通知などの状態面を暗色統一しました。",
+    "content_markdown": "今回の更新では左下IDのクラウドセーブアカウント浮層のログイン済み表示を刷新し、従来の白いメール帯と淡い状態枠を廃止して暗色点陣スタイルと2列均等ボタン配置へ整理しました。あわせて読み込み中・空表示・エラー通知・復旧バー・チャット説明ツールチップ・リンクコピー通知などサイト全体の低頻度状態面も月夜池ダークテーマへ統一しています。"
+  }
+}, "2026-11-22T11:23:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-22-pond-center-close-games-polish', '2026-11-22-pond-center-close-games-polish', 'site-updates', '["视觉升级","关于页","游戏区"]', '', 'published', 0, 0, '2026-11-22T11:18:00+08:00', '2026-11-22T11:18:00+08:00', '2026-11-22T11:18:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-22-pond-center-close-games-polish", {
   "zh": {

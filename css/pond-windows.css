@@ -4891,3 +4891,255 @@ html[data-pond-mode="welcome"] #welcome-modal #recent-updates .update-icon-chat 
 html[data-pond-mode="welcome"] #welcome-modal #recent-updates .update-icon-system {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 2.8 L16.8 11.2 L25.2 14 L16.8 16.8 L14 25.2 L11.2 16.8 L2.8 14 L11.2 11.2 Z' fill='rgba(154,248,238,0.14)' stroke='%23ecfffd' stroke-width='2' stroke-dasharray='2.8 1.4' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
 }
+
+/* ============================================================
+   r25: Signed-In Account Popover Redesign + Low-Frequency Status Surfaces
+   Eliminates all remaining legacy white/light strips across:
+   - #account-popover signed-in state (.account-signed-email, .account-status, .account-actions, .account-danger-action)
+   - .content-state (.is-loading, .is-empty, .is-error)
+   - .content-recovery-notice (.is-error)
+   - .chat-room-help-popover & password room dialog
+   - .article-copy-status & .about-social-network-status
+   ============================================================ */
+
+/* --- 1. Account Popover Signed-In & Signed-Out Complete CRT Layout --- */
+html[data-pond-mode] #account-popover:not([hidden]),
+html[data-ui-shell="mobile"] #account-popover:not([hidden]) {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: min(520px, 84vh) !important;
+  width: min(392px, 90vw) !important;
+  padding: 20px 24px 22px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  overflow-y: auto !important;
+}
+
+html[data-pond-mode] #account-popover .account-popover-header,
+html[data-ui-shell="mobile"] #account-popover .account-popover-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin: 0 !important;
+  padding: 0 0 10px !important;
+  border-bottom: 1px dotted rgba(182, 238, 232, 0.34) !important;
+}
+
+html[data-pond-mode] #account-popover .account-popover-header strong,
+html[data-ui-shell="mobile"] #account-popover .account-popover-header strong {
+  color: #f2fffe !important;
+  font-size: 15px !important;
+  letter-spacing: 0.04em !important;
+}
+
+html[data-pond-mode] #account-popover .account-signed-email,
+html[data-ui-shell="mobile"] #account-popover .account-signed-email {
+  margin: 0 !important;
+  padding: 10px 14px !important;
+  border-radius: 10px !important;
+  border: 1px dashed rgba(164, 238, 232, 0.48) !important;
+  background: rgba(4, 18, 22, 0.78) !important;
+  color: #e8fffc !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode] #account-popover .account-note,
+html[data-ui-shell="mobile"] #account-popover .account-note {
+  margin: 0 !important;
+  color: rgba(206, 242, 236, 0.86) !important;
+  font-size: 12.5px !important;
+  line-height: 1.5 !important;
+}
+
+html[data-pond-mode] #account-popover .account-status,
+html[data-ui-shell="mobile"] #account-popover .account-status,
+html[data-pond-mode] #account-popover[data-account-busy]:not([data-account-busy="idle"]) .account-status {
+  margin: 2px 0 0 !important;
+  padding: 8px 12px !important;
+  border-radius: 10px !important;
+  border: 1px dotted rgba(154, 244, 234, 0.42) !important;
+  background: rgba(6, 26, 30, 0.66) !important;
+  color: #aaf8ee !important;
+  font-size: 12.5px !important;
+  line-height: 1.45 !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode] #account-popover .account-status:empty,
+html[data-ui-shell="mobile"] #account-popover .account-status:empty {
+  display: none !important;
+}
+
+html[data-pond-mode] #account-popover .account-status.is-error,
+html[data-pond-mode] #account-popover .account-note.is-error,
+html[data-ui-shell="mobile"] #account-popover .account-status.is-error {
+  border-color: rgba(255, 134, 158, 0.62) !important;
+  background: rgba(58, 14, 26, 0.74) !important;
+  color: #ffd8e2 !important;
+}
+
+html[data-pond-mode] #account-popover .account-actions,
+html[data-ui-shell="mobile"] #account-popover .account-actions {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  margin: 4px 0 0 !important;
+  padding: 0 !important;
+}
+
+html[data-pond-mode] #account-popover .account-actions .xp-button,
+html[data-ui-shell="mobile"] #account-popover .account-actions .xp-button {
+  width: 100% !important;
+  min-height: 38px !important;
+  padding: 8px 14px !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  border: 1.3px dashed rgba(176, 240, 234, 0.56) !important;
+  background: rgba(8, 30, 36, 0.78) !important;
+  background-image: none !important;
+  color: #eefcf9 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+  justify-content: center !important;
+}
+
+html[data-pond-mode] #account-popover .account-actions .xp-button:hover,
+html[data-ui-shell="mobile"] #account-popover .account-actions .xp-button:hover {
+  border-style: solid !important;
+  border-color: rgba(154, 248, 238, 0.92) !important;
+  background: rgba(18, 56, 62, 0.86) !important;
+  box-shadow: 0 0 12px rgba(102, 236, 224, 0.28) !important;
+}
+
+html[data-pond-mode] #account-popover .account-actions .account-danger-action,
+html[data-ui-shell="mobile"] #account-popover .account-actions .account-danger-action {
+  border-color: rgba(255, 134, 166, 0.62) !important;
+  background: rgba(58, 16, 30, 0.72) !important;
+  color: #ffd8e4 !important;
+}
+
+html[data-pond-mode] #account-popover .account-actions .account-danger-action:hover,
+html[data-ui-shell="mobile"] #account-popover .account-actions .account-danger-action:hover {
+  border-style: solid !important;
+  border-color: rgba(255, 152, 180, 0.95) !important;
+  background: rgba(82, 22, 42, 0.84) !important;
+  box-shadow: 0 0 12px rgba(255, 120, 160, 0.28) !important;
+}
+
+/* --- 2. Site-Wide Low-Frequency Status Surfaces (Empty / Error / Loading / Recovery / Popovers) --- */
+html[data-pond-mode] .content-state,
+html[data-ui-shell="mobile"] .content-state {
+  --content-state-edge: rgba(164, 236, 228, 0.44);
+  --content-state-ink: #e8fbf7;
+  --content-state-bg: rgba(6, 22, 26, 0.72);
+  background: var(--content-state-bg) !important;
+  border: 1px dashed var(--content-state-edge) !important;
+  color: var(--content-state-ink) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode] .content-state.is-empty,
+html[data-pond-mode] .content-state[data-state="empty"],
+html[data-ui-shell="mobile"] .content-state.is-empty {
+  --content-state-edge: rgba(176, 236, 230, 0.42);
+  --content-state-ink: #dcf6f2;
+  --content-state-bg: rgba(6, 24, 28, 0.72);
+}
+
+html[data-pond-mode] .content-state.is-error,
+html[data-pond-mode] .content-state[data-state="error"],
+html[data-ui-shell="mobile"] .content-state.is-error {
+  --content-state-edge: rgba(255, 134, 158, 0.62);
+  --content-state-ink: #ffd8e2;
+  --content-state-bg: rgba(56, 14, 24, 0.74);
+}
+
+html[data-pond-mode] .content-recovery-notice,
+html[data-ui-shell="mobile"] .content-recovery-notice {
+  background: rgba(8, 30, 36, 0.84) !important;
+  border: 1px dashed rgba(164, 236, 228, 0.48) !important;
+  color: #e6fbf7 !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode] .content-recovery-notice.is-error,
+html[data-ui-shell="mobile"] .content-recovery-notice.is-error {
+  background: rgba(58, 14, 26, 0.78) !important;
+  border-color: rgba(255, 134, 158, 0.62) !important;
+  color: #ffd8e2 !important;
+}
+
+html[data-pond-mode] .chat-room-help-popover,
+html[data-ui-shell="mobile"] .chat-room-help-popover {
+  background: rgba(6, 24, 28, 0.96) !important;
+  border: 1.2px solid rgba(176, 240, 234, 0.56) !important;
+  color: #eefcf9 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+}
+
+html[data-pond-mode] .article-copy-status,
+html[data-ui-shell="mobile"] .article-copy-status {
+  color: #88fce2 !important;
+}
+
+/* --- 3. Unified 30x30 Dotted Close Button (Including .account-close-button) & Zero-Shift Hover/Active Across All Buttons --- */
+html[data-pond-mode] .window-titlebar .close-button,
+html[data-pond-mode] .close-button,
+html[data-pond-mode] #account-popover .account-close-button,
+html[data-pond-mode] .account-close-button,
+html[data-pond-mode="welcome"] #welcome-modal .window-titlebar .close-button,
+#video-modal .window-titlebar .close-button,
+#video-modal .close-button,
+#welcome-modal .close-button {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  min-height: 30px !important;
+  max-width: 30px !important;
+  max-height: 30px !important;
+  flex: 0 0 30px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+  border-radius: 999px !important;
+  border: 1.2px dashed rgba(185, 235, 230, 0.58) !important;
+  background-color: rgba(6, 22, 26, 0.56) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 5.5 L14.5 14.5 M14.5 5.5 L5.5 14.5' fill='none' stroke='%23ecfffd' stroke-width='2' stroke-linecap='round' stroke-dasharray='2.5 1.4'/%3E%3C/svg%3E") !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 15px 15px !important;
+  transform: none !important;
+  transition: background-color 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease !important;
+}
+
+html[data-pond-mode] .window-titlebar .close-button:hover,
+html[data-pond-mode] .close-button:hover,
+html[data-pond-mode] #account-popover .account-close-button:hover,
+html[data-pond-mode] .account-close-button:hover,
+html[data-pond-mode="welcome"] #welcome-modal .window-titlebar .close-button:hover,
+#video-modal .window-titlebar .close-button:hover,
+#video-modal .close-button:hover,
+#welcome-modal .close-button:hover {
+  border-style: solid !important;
+  border-color: rgba(154, 248, 238, 0.94) !important;
+  background-color: rgba(18, 56, 62, 0.80) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 5.5 L14.5 14.5 M14.5 5.5 L5.5 14.5' fill='none' stroke='%23ffffff' stroke-width='2.1' stroke-linecap='round' stroke-dasharray='2.5 1.4'/%3E%3C/svg%3E") !important;
+  box-shadow: 0 0 12px rgba(102, 236, 224, 0.36) !important;
+  transform: none !important;
+}
+
+html[data-pond-mode] :where(.close-button, .account-close-button, .titlebar-button, .xp-button, .card-action, .quick-link, .category-button, .filter-row button, .chat-room-help-trigger, .chat-send-button, .account-mode-switch button):where(:hover, :active, :focus-visible),
+html[data-ui-shell="mobile"] :where(.close-button, .account-close-button, .titlebar-button, .xp-button, .card-action, .quick-link, .category-button, .filter-row button):where(:hover, :active, :focus-visible) {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+}

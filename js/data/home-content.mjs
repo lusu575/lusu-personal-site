@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-22-pond-account-signedin-states",
+      "slug": "2026-11-22-pond-account-signedin-states",
+      "category": "site-updates",
+      "tags": [
+        "视觉升级",
+        "云存档",
+        "全站状态"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-22T11:23:00+08:00",
+      "updated_at": "2026-11-22T11:23:00+08:00",
+      "published_at": "2026-11-22T11:23:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "云存档账号浮层已登录态重做与全站低频状态面暗色统一",
+        "en": "Signed-In Cloud Account Popover Redesign and Low-Frequency Status Surfaces",
+        "ja": "クラウドアカウントログイン済みポップオーバー刷新と低頻度状態面の暗色統一"
+      },
+      "summary": {
+        "zh": "彻底去掉账号浮层已登录态白色底块，重排双列均衡按钮与紧凑留白，并同步暗色化全站空态、错误态、恢复提示与气泡说明。",
+        "en": "Replaced the bright white signed-in account strips with dark CRT panels, balanced 2-column buttons, and unified all empty/error/recovery/popover status surfaces.",
+        "ja": "ログイン済みアカウント浮層の白帯を撤廃し2列均等ボタンへ再配置するとともに、全サイトの空・エラー・復帰通知などの状態面を暗色統一しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-22-pond-center-close-games-polish",
       "slug": "2026-11-22-pond-center-close-games-polish",
       "category": "site-updates",
@@ -110,34 +138,6 @@ export const homeContent = Object.freeze({
         "zh": "修复四条更新记录误写为 UTC 零时区导致的未来时间偏差，为最近更新按分类匹配首页同款点阵图标并补齐第二行一句话摘要。",
         "en": "Fixed the +8h UTC offset typo on r17-r20 update timestamps, added homepage-style dot-matrix category icons, and displayed each update's one-line summary.",
         "ja": "更新4件のUTC指定ミスによる未来時刻を修正し、ホーム共通の点陣カテゴリアイコンと1行要約の2行目表示を追加しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-welcome-v2-singlecol",
-      "slug": "2026-11-22-pond-welcome-v2-singlecol",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "欢迎窗",
-        "知识库"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T10:35:00+08:00",
-      "updated_at": "2026-11-22T10:35:00+08:00",
-      "published_at": "2026-11-22T10:35:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "欢迎窗回归窄窗单列五条更新版式与知识库分页对齐",
-        "en": "Welcome Modal Narrow Single-Column 5-Update Layout and Knowledge Pagination Alignment",
-        "ja": "ウェルカムウィンドウを細幅1列・更新5件直表示へ刷新し知識ベースページ送りを整列"
-      },
-      "summary": {
-        "zh": "按 v2 效果图将欢迎窗改为居中窄窗单列排布并直接展示 5 条最近更新，同时确认知识库双列卡片置顶标记与加载更多全宽对齐。",
-        "en": "Reworked the Welcome modal into the v2 narrow single-column layout showing 5 recent updates directly, and aligned Knowledge Base Load More across both columns.",
-        "ja": "v2 デザイン案どおりにウェルカムウィンドウを中央の細幅1列構成・最新更新5件直表示へ戻し、知識ベースのさらに読み込むバーを2列横断で整列しました。"
       }
     }
   ]
