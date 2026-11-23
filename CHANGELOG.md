@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- 移除冗余底栏并低调收纳状态/公告角标、修复文章回顶按钮与关于页圆形头像（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-taskbar-removal-article-top-about-avatar` / `2026-11-23-pond-taskbar-removal-article-top-about-avatar`；视觉层缓存 `20261123-pond-polish-r44`。
+
 - 小黑屋清除 `div#outerSlider > div` 的 `700px` 写死高度，让卡片紧贴实际内容高度并在视口正中对齐（r43）。
 
 - 小黑屋卡片高度贴合内容（消除卡片内部下方 350px 空白）并保持视口正中对齐（r42）。

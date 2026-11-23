@@ -15803,6 +15803,38 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **お絵かきボード・日本語の行間の暗色統一**：共通テーマのクラス指定を実DOMに合わせて修正し、白背景に淡色文字で読めなかった箇所を解消しました（Excalidraw 描画紙面は維持）。
 - **ゲーム画面の最適化**：Hextris の白い中央キャンバスを暗色化してスポークを見やすくし、Kittens Game の初期状態3列バランスと暗色スクロールバー、A Dark Room の中央配置、Life Restart の背景余白を整えました。', '2026-11-23T00:20:00+08:00', '2026-11-23T00:20:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '2026-11-23-pond-polish-r37', '2026-11-23T00:20:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-23-pond-taskbar-removal-article-top-about-avatar', '2026-11-23-pond-taskbar-removal-article-top-about-avatar', 'site-updates', 'undefined', '', 'published', 0, 0, '2026-11-23T08:23:00+08:00', '2026-11-23T08:23:00+08:00', '2026-11-23T08:23:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-taskbar-removal-article-top-about-avatar-zh', 'seed-update-2026-11-23-pond-taskbar-removal-article-top-about-avatar', 'zh', '移除冗余底栏并低调收纳状态/公告角标、修复文章回顶按钮与关于页圆形头像', '桌面与手机端移除冗余底部任务栏，在右下角低调保留在线状态与公告入口；修复文章阅读页回到顶部在 0% 时压正文问题并替换元信息彩色图标；关于页去除头像方形底框只留圆本体。', '# 移除冗余底栏并低调收纳状态/公告角标、修复文章回顶按钮与关于页圆形头像
+
+本次更新对全站悬浮控件、底栏导航、文章阅读页细节与关于页头像表现进行了减法清理与规范化。
+
+## 本次改动明细
+
+- **移除底部任务栏并清理旧样式**：桌面端与手机端均彻底隐藏冗余的底部任务栏（桌面六枚池塘图标与手机顶部返回键已满足全部导航），并删除了旧桌面底栏样式块，不留死代码。
+- **右下角低调收纳状态与公告入口**：参照左下角 ID 与语言切换的点阵收纳风格，在右下角放置低调的实时站点在线状态灯（在线/检测中/离线）与点阵「公告」按钮，点击即可打开欢迎与最近更新弹窗（顶部时间点击与 #welcome 哈希同样保留）。
+- **文章阅读页回顶按钮与元信息图标**：修复样式覆盖 hidden 属性导致「回到顶部」在 0% 进度常驻并压住正文首标题的问题，调整为滚动超过约一屏后固定显示在窗口右下角外缘、回到顶部自动隐藏；同步将分类/发布时间前的彩色 emoji 图标替换为点阵 SVG 图标，并全站补齐 [hidden] 安全防线。
+- **关于页纯粹圆形头像**：桌面与手机端均去掉头像外层的方形底板与外框衬底，仅保留干净居中的圆形头像本体。', '2026-11-23T08:23:00+08:00', '2026-11-23T08:23:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-taskbar-removal-article-top-about-avatar-en', 'seed-update-2026-11-23-pond-taskbar-removal-article-top-about-avatar', 'en', 'Remove Bottom Taskbar, Add Low-Key Corner Status/Notice, Fix Article Back-to-Top & About Avatar', 'Removed the redundant bottom taskbar on desktop and mobile while keeping live status and Welcome Notice in a subtle corner dock; fixed article Back-to-Top overlap at 0% scroll, replaced metadata emojis with dotted icons, and removed the square About avatar frame.', '# Remove Bottom Taskbar, Add Low-Key Corner Status/Notice, Fix Article Back-to-Top & About Avatar
+
+This release streamlines floating chrome and cleans up overlapping controls across Home, Knowledge Article Reader, and About.
+
+## Key changes
+
+- **Bottom taskbar removed cleanly**: Removed the redundant bottom taskbar on both desktop and mobile and deleted the legacy desktop taskbar CSS block.
+- **Low-key corner status & notice dock**: Added a subtle dotted bottom-right corner cluster mirroring the bottom-left ID/Language controls, keeping the live service-online lamp and clickable Notice trigger for the Welcome modal.
+- **Article Back-to-Top & dotted metadata icons**: Fixed a CSS override that exposed the Back-to-Top button over the first heading at 0% scroll. It now appears only after scrolling roughly one screen, anchored cleanly to the bottom-right corner outside article text; replaced colorful category/published emojis with dotted SVGs and added a global [hidden] guard.
+- **Clean circular About avatar**: Removed the outer square backdrop and frame around the About avatar on desktop and mobile.', '2026-11-23T08:23:00+08:00', '2026-11-23T08:23:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-taskbar-removal-article-top-about-avatar-ja', 'seed-update-2026-11-23-pond-taskbar-removal-article-top-about-avatar', 'ja', '下部バー削除・控えめな角ステータス/お知らせ配置・記事トップ戻り修正とプロフィール円形アイコン化', 'デスクトップとモバイルの冗長な下部バーを削除し、右下に控えめなオンライン状態とお知らせ入口を配置。記事ページのトップへ戻る重なり修正とドットアイコン化、プロフィール画像の四角枠除去を実施しました。', '# 下部バー削除・控えめな角ステータス/お知らせ配置・記事トップ戻り修正とプロフィール円形アイコン化
+
+今回の更新では、冗長な下部バーの整理と浮遊コントロールの重なり解消を行いました。
+
+## 主な変更点
+
+- **下部バーの削除と旧スタイル整理**：デスクトップ・モバイル双方の下部バーを非表示にし、不要となったデスクトップ下部バー用CSSを削除しました。
+- **右下コーナーへの控えめな集約**：左下のID・言語切替と対になるドット調で、オンライン稼働ランプとお知らせ（ようこそ窓）ボタンを右下に配置しました。
+- **記事リーダーのトップ戻りボタンとドットアイコン化**：0%位置で見出しに重なっていた不具合を修正し、約1画面スクロール後のみ右下枠外に表示されるように改善。カテゴリ・公開日のカラー絵文字もドットSVGへ統一し、全サイト共通の [hidden] 保護を追加しました。
+- **プロフィール画像の円形単体化**：外側の四角い背景枠を取り除き、すっきりとした円形アイコンのみに整えました。', '2026-11-23T08:23:00+08:00', '2026-11-23T08:23:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-polish-r44', '2026-11-23T08:23:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('2026-11-23-pond-polish-r37', '2026-11-23T00:20:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-polish-r44', '2026-11-23T08:23:00+08:00', 'schema') on conflict(version) do nothing;

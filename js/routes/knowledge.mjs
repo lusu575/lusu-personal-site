@@ -1330,7 +1330,8 @@ export function createKnowledgeRoute({
     const bar = document.getElementById("article-read-progress-bar");
     const topButton = document.querySelector("[data-article-scroll-top]");
     const detail = document.getElementById("article-detail");
-    const atArticleTop = !detail || detail.scrollTop <= 2;
+    const scrollThreshold = detail ? Math.min(360, Math.max(220, Math.round(detail.clientHeight * 0.7))) : 280;
+    const atArticleTop = !detail || detail.scrollTop < scrollThreshold;
     if (fill) {
       fill.style.transform = `scaleX(${bounded / 100})`;
     }

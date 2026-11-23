@@ -5628,7 +5628,7 @@ html[data-pond-mode="knowledge"] #knowledge-list [data-article-load-more] {
   line-height: 1.15 !important;
 }
 
-html[data-pond-mode="article"] #article-detail :is(.article-back-button, .article-top-link, .article-copy-button, .xp-button) {
+html[data-pond-mode="article"] #article-detail :is(.article-back-button, .article-top-link, .article-copy-button, .xp-button):not([hidden]) {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -6005,176 +6005,9 @@ html[data-ui-shell="mobile"] #about a.xp-button {
 }
 
 /* ============================================================
-   r37: Visible Desktop Midnight Pond CRT Bottom Taskbar (Above Pond Canvas)
-        + Tools Quick-Transfer Overflow + Games Shelf Contrast + Account Polish
+   r37: Tools Quick-Transfer Overflow + Games Shelf Contrast + Account Polish
+        (Desktop .xp-taskbar styles cleanly removed in r44)
    ============================================================ */
-
-/* --- 1. Desktop Midnight Pond CRT Bottom Taskbar (Fixed to Viewport Edge, z-index 55 > pond 40) --- */
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar {
-  position: fixed !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: 10px !important;
-  transform: translateX(-50%) !important;
-  z-index: 55 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
-  width: auto !important;
-  max-width: calc(100vw - 24px) !important;
-  height: 46px !important;
-  min-height: 46px !important;
-  padding: 4px 12px !important;
-  margin: 0 !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-  border-radius: 999px !important;
-  border: 1.2px solid rgba(164, 240, 232, 0.48) !important;
-  background: linear-gradient(180deg, rgba(8, 28, 34, 0.84), rgba(4, 18, 22, 0.92)) !important;
-  background-image: none !important;
-  box-shadow: 0 0 24px rgba(88, 232, 220, 0.22), inset 0 1px 0 rgba(196, 252, 246, 0.16) !important;
-  backdrop-filter: blur(10px) !important;
-  color: #e8fcf9 !important;
-}
-
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .mobile-dock-scroll {
-  display: flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-  flex: 0 1 auto !important;
-  overflow: visible !important;
-  padding: 0 !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .taskbar-tabs {
-  display: flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .start-button,
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .taskbar-tabs button {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  height: 34px !important;
-  min-height: 34px !important;
-  padding: 0 12px !important;
-  margin: 0 !important;
-  border-radius: 999px !important;
-  border: 1px dashed rgba(164, 236, 228, 0.34) !important;
-  background: rgba(10, 34, 40, 0.56) !important;
-  background-image: none !important;
-  box-shadow: none !important;
-  color: #dffcf8 !important;
-  font-size: 12.5px !important;
-  font-weight: 600 !important;
-  line-height: 1 !important;
-  white-space: nowrap !important;
-  text-shadow: none !important;
-}
-
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .start-button:hover,
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .taskbar-tabs button:hover,
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .start-button.active,
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .taskbar-tabs button.active {
-  border-style: solid !important;
-  border-color: rgba(154, 248, 238, 0.88) !important;
-  background: rgba(20, 64, 70, 0.82) !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 10px rgba(102, 236, 224, 0.28) !important;
-}
-
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .taskbar-tabs button[hidden],
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar [hidden] {
-  display: none !important;
-}
-
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .start-windows-icon,
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .mini-icon,
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .dock-label-short,
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .mobile-dock-selection,
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .mobile-home-indicator {
-  display: none !important;
-}
-
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .status-tray {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  padding: 0 4px 0 10px !important;
-  margin-left: 2px !important;
-  border: none !important;
-  border-left: 1px dotted rgba(164, 236, 228, 0.34) !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: #dffcf8 !important;
-  font-size: 12px !important;
-}
-
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar #local-time {
-  display: inline-flex !important;
-  align-items: center !important;
-  height: 32px !important;
-  padding: 0 10px !important;
-  border-radius: 999px !important;
-  border: 1px dashed rgba(164, 236, 228, 0.36) !important;
-  background: rgba(8, 28, 34, 0.62) !important;
-  color: #eefcf9 !important;
-  font-family: "JetBrains Mono", Consolas, monospace !important;
-  font-size: 11.5px !important;
-  cursor: pointer !important;
-  white-space: nowrap !important;
-}
-
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar #local-time:hover {
-  border-style: solid !important;
-  border-color: rgba(154, 248, 238, 0.88) !important;
-  background: rgba(20, 64, 70, 0.82) !important;
-}
-
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .site-connection-status {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  height: 32px !important;
-  padding: 0 10px !important;
-  border-radius: 999px !important;
-  border: 1px solid rgba(154, 248, 238, 0.42) !important;
-  background: rgba(8, 30, 36, 0.72) !important;
-  background-image: none !important;
-  box-shadow: none !important;
-  color: #d6fcf6 !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  white-space: nowrap !important;
-}
-
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .site-connection-lamp {
-  width: 8px !important;
-  height: 8px !important;
-  border-radius: 999px !important;
-  background: #6cfcc8 !important;
-  box-shadow: 0 0 8px rgba(108, 252, 200, 0.90) !important;
-}
-
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .site-connection-status[data-connection-state="offline"] .site-connection-lamp {
-  background: #ff8aa8 !important;
-  box-shadow: 0 0 8px rgba(255, 138, 168, 0.90) !important;
-}
-
-html[data-pond-mode]:not([data-ui-shell="mobile"]) .xp-taskbar .site-connection-status[data-connection-state="checking"] .site-connection-lamp {
-  background: #ffe07a !important;
-  box-shadow: 0 0 8px rgba(255, 224, 122, 0.90) !important;
-}
 
 /* --- 2. Tools (#resources): Prevent Quick-Transfer Expanded Tags From Overflowing Card Bottom --- */
 html[data-pond-mode="resources"] #resource-list {
@@ -6384,4 +6217,199 @@ html[data-pond-mode="welcome"] #welcome-modal .quick-link .quick-link-asset {
   height: 18px !important;
   flex: 0 0 18px !important;
   background-size: 17px 17px !important;
+}
+
+/* ============================================================
+   r44: Remove Redundant Bottom Taskbar (Desktop + Mobile),
+        Low-Key Corner Status & Welcome Entry,
+        Article Back-to-Top Non-Overlap + Dotted Meta Icons,
+        About Circular Avatar Only (No Square Outer Frame)
+   ============================================================ */
+
+/* --- 1. Global [hidden] Safety Guard (No Floating Button Leaks When Hidden) --- */
+html[data-pond-mode] [hidden],
+html[data-ui-shell="mobile"] [hidden] {
+  display: none !important;
+}
+
+/* --- 2. Remove Bottom Taskbar Completely on Both Desktop & Mobile --- */
+html[data-pond-mode] .xp-taskbar,
+html[data-ui-shell="mobile"] .xp-taskbar,
+html[data-shell="mobile"] .xp-taskbar {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+html[data-ui-shell="mobile"] .site-shell > main,
+html[data-shell="mobile"] .site-shell > main {
+  padding-bottom: max(14px, env(safe-area-inset-bottom)) !important;
+}
+
+/* --- 3. Low-Key Bottom-Right Corner Status & Welcome Entry (Mirrors Bottom-Left ID/Lang) --- */
+#pond-corner-dock {
+  position: fixed;
+  right: 46px;
+  bottom: 24px;
+  z-index: 45;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+  font-family: "JetBrains Mono", "Cascadia Mono", Consolas, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+html[data-pond-mode] #pond-corner-dock {
+  display: inline-flex;
+}
+
+#pond-corner-dock .pond-corner-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px dotted rgba(164, 236, 228, 0.34);
+  background: rgba(6, 22, 26, 0.56);
+  color: rgba(206, 244, 238, 0.84);
+  font-size: 11.5px;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  user-select: none;
+}
+
+#pond-corner-dock .pond-corner-lamp {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #6cfcc8;
+  box-shadow: 0 0 7px rgba(108, 252, 200, 0.90);
+  flex: 0 0 6px;
+}
+
+#pond-corner-dock .pond-corner-status[data-connection-state="offline"] .pond-corner-lamp {
+  background: #ff8aa8;
+  box-shadow: 0 0 7px rgba(255, 138, 168, 0.90);
+}
+
+#pond-corner-dock .pond-corner-status[data-connection-state="checking"] .pond-corner-lamp {
+  background: #ffe07a;
+  box-shadow: 0 0 7px rgba(255, 224, 122, 0.90);
+}
+
+#pond-corner-dock .pond-corner-welcome {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px dashed rgba(176, 240, 234, 0.44);
+  background: rgba(8, 28, 34, 0.64);
+  color: rgba(232, 252, 248, 0.92);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background-color 0.14s ease, box-shadow 0.14s ease;
+}
+
+#pond-corner-dock .pond-corner-welcome:hover {
+  border-style: solid;
+  border-color: rgba(154, 248, 238, 0.92);
+  background: rgba(18, 56, 62, 0.84);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(102, 236, 224, 0.30);
+}
+
+#pond-corner-dock .pond-corner-spark {
+  color: #88fce2;
+  font-size: 11px;
+  line-height: 1;
+}
+
+html[data-ui-shell="mobile"] body[data-route="home"] #pond-corner-dock {
+  display: inline-flex;
+  right: 14px;
+  bottom: max(14px, env(safe-area-inset-bottom));
+}
+
+html[data-ui-shell="mobile"] body[data-route="home"] #pond-corner-dock .pond-corner-welcome {
+  display: none;
+}
+
+/* --- 4. Article Reader: Back-to-Top Fixed Bottom-Right Outside Text + Dotted Meta Icons --- */
+html[data-pond-mode="article"] #article-detail .article-top-link:not([hidden]) {
+  position: fixed !important;
+  left: auto !important;
+  top: auto !important;
+  right: max(24px, calc(50vw - 496px)) !important;
+  bottom: max(74px, calc(50vh - 322px)) !important;
+  z-index: 48 !important;
+  margin: 0 !important;
+  background: rgba(8, 32, 38, 0.92) !important;
+  border: 1.2px dashed rgba(154, 248, 238, 0.78) !important;
+  box-shadow: 0 4px 18px rgba(4, 16, 20, 0.56), 0 0 12px rgba(102, 236, 224, 0.24) !important;
+}
+
+html[data-ui-shell="mobile"] #article-detail .article-top-link:not([hidden]) {
+  position: fixed !important;
+  left: auto !important;
+  top: auto !important;
+  right: 16px !important;
+  bottom: max(18px, env(safe-area-inset-bottom)) !important;
+  z-index: 48 !important;
+}
+
+html[data-pond-mode="article"] .article-meta-category::before,
+html[data-ui-shell="mobile"] .article-meta-category::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 14px !important;
+  height: 14px !important;
+  margin-right: 6px !important;
+  vertical-align: -2px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M2.5 4.5c2.5-.6 5-.2 7.5 1.1 2.5-1.3 5-1.7 7.5-1.1v10.5c-2.5-.6-5-.2-7.5 1.1-2.5-1.3-5-1.7-7.5-1.1V4.5zM10 5.6v10.5' fill='none' stroke='%239af8ec' stroke-width='1.7' stroke-dasharray='2 1.2' stroke-linejoin='round'/%3E%3C/svg%3E") center / 14px 14px no-repeat !important;
+}
+
+html[data-pond-mode="article"] .article-meta-published::before,
+html[data-ui-shell="mobile"] .article-meta-published::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 14px !important;
+  height: 14px !important;
+  margin-right: 6px !important;
+  vertical-align: -2px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='7.2' fill='none' stroke='%239af8ec' stroke-width='1.7' stroke-dasharray='2 1.2'/%3E%3Cpath d='M10 6.2v4l2.8 1.6' fill='none' stroke='%239af8ec' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E") center / 14px 14px no-repeat !important;
+}
+
+/* --- 5. About Page (#about): Clean Circular Avatar Only (Remove Outer Square Backdrop/Frame) --- */
+html[data-pond-mode="about"] #about .profile-avatar,
+html[data-ui-shell="mobile"] #about .profile-avatar {
+  background: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: visible !important;
+}
+
+html[data-pond-mode="about"] #about .profile-avatar-image,
+html[data-ui-shell="mobile"] #about .profile-avatar-image {
+  border-radius: 999px !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  object-fit: cover !important;
+}
+
+html[data-ui-shell="mobile"] #about .profile-avatar {
+  width: 156px !important;
+  height: 156px !important;
+  margin: 4px auto 12px !important;
 }

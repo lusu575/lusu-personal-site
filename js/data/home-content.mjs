@@ -2,6 +2,29 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-taskbar-removal-article-top-about-avatar",
+      "slug": "2026-11-23-pond-taskbar-removal-article-top-about-avatar",
+      "category": "site-updates",
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T08:23:00+08:00",
+      "updated_at": "2026-11-23T08:23:00+08:00",
+      "published_at": "2026-11-23T08:23:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "移除冗余底栏并低调收纳状态/公告角标、修复文章回顶按钮与关于页圆形头像",
+        "en": "Remove Bottom Taskbar, Add Low-Key Corner Status/Notice, Fix Article Back-to-Top & About Avatar",
+        "ja": "下部バー削除・控えめな角ステータス/お知らせ配置・記事トップ戻り修正とプロフィール円形アイコン化"
+      },
+      "summary": {
+        "zh": "桌面与手机端移除冗余底部任务栏，在右下角低调保留在线状态与公告入口；修复文章阅读页回到顶部在 0% 时压正文问题并替换元信息彩色图标；关于页去除头像方形底框只留圆本体。",
+        "en": "Removed the redundant bottom taskbar on desktop and mobile while keeping live status and Welcome Notice in a subtle corner dock; fixed article Back-to-Top overlap at 0% scroll, replaced metadata emojis with dotted icons, and removed the square About avatar frame.",
+        "ja": "デスクトップとモバイルの冗長な下部バーを削除し、右下に控えめなオンライン状態とお知らせ入口を配置。記事ページのトップへ戻る重なり修正とドットアイコン化、プロフィール画像の四角枠除去を実施しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-full-site-inspection-fixes",
       "slug": "2026-11-23-pond-full-site-inspection-fixes",
       "category": "site-updates",
@@ -100,34 +123,6 @@ export const homeContent = Object.freeze({
         "zh": "移除首页非悬停图标受全局时钟驱动的浮动与闪烁，确保悬停或点击单个图标时仅目标图标响应、其余图标纹丝不动。",
         "en": "Removed global-time drift from non-hovered home desktop icons so hovering or clicking one icon never moves or flickers any other icon.",
         "ja": "非ホバー時のグローバル時刻連動の揺れを除去し、1つのアイコンにホバー・クリックしても他のアイコンが一切動かないよう修正しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-kittens-widescreen-fix",
-      "slug": "2026-11-22-pond-kittens-widescreen-fix",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "游戏区",
-        "猫国建设者"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T12:44:00+08:00",
-      "updated_at": "2026-11-22T12:44:00+08:00",
-      "published_at": "2026-11-22T12:44:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "猫国建设者宽屏居中布局、小按钮暗色化与标签栏防裁修复",
-        "en": "Kittens Game Widescreen Centering, Dark Sub-Buttons, and Wrapping Tab Bar",
-        "ja": "Kittens Game ワイド画面中央配置・小ボタン暗色化・タブ折り返し修正"
-      },
-      "summary": {
-        "zh": "修复猫国建设者宽屏贴左留空问题，将建筑行右侧 sell/+/- 白块暗色化，并让顶部标签栏自动换行完整显示 Stats。",
-        "en": "Centered Kittens Game's 3-column layout for widescreen displays, dark-themed sell/+/- sub-buttons, and wrapped the top tab bar so Stats is never clipped.",
-        "ja": "ワイド画面での左寄り余白を解消して中央3欄へ広げ、sell/+/-の白ボタンを暗色化し、上部タブ欄を折り返してStatsまで完全表示しました。"
       }
     }
   ]
