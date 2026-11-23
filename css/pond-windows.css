@@ -357,18 +357,12 @@ html[data-pond-mode="knowledge"] #knowledge-categories .category-button:hover {
 
 html[data-pond-mode="knowledge"] #knowledge-categories .category-button.active {
   border-style: solid !important;
-  border-color: rgba(206, 248, 250, 0.88) !important;
-  background: linear-gradient(
-    95deg,
-    rgba(46, 212, 214, 0.48) 0%,
-    rgba(130, 134, 240, 0.40) 52%,
-    rgba(244, 108, 182, 0.52) 100%
-  ) !important;
+  border-color: #88fce2 !important;
+  background: rgba(18, 86, 90, 0.94) !important;
+  background-image: none !important;
   color: #ffffff !important;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.48);
-  box-shadow:
-    0 0 14px rgba(72, 228, 224, 0.36),
-    0 0 16px rgba(244, 108, 182, 0.32) !important;
+  text-shadow: 0 0 8px rgba(136, 252, 226, 0.36);
+  box-shadow: 0 0 12px rgba(72, 228, 224, 0.32) !important;
 }
 
 html[data-pond-mode="knowledge"] #knowledge-categories .filter-count {
@@ -649,8 +643,9 @@ html[data-pond-mode="article"] #knowledge #article-read-progress-fill {
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #5ef4d8 0%, #6ed4ff 38%, #be8eff 70%, #ff74cc 100%) !important;
-  box-shadow: 0 0 14px rgba(130, 226, 244, 0.65);
+  background: #5ef4d8 !important;
+  background-image: none !important;
+  box-shadow: 0 0 10px rgba(94, 244, 216, 0.55);
 }
 
 /* Hide list-mode category sidebar when reading an article */
@@ -1473,10 +1468,11 @@ html[data-pond-mode="resources"] #resource-categories button {
 html[data-pond-mode="resources"] #resource-categories button.active,
 html[data-pond-mode="resources"] #resource-categories button[aria-pressed="true"] {
   border-style: solid !important;
-  border-color: rgba(184, 248, 242, 0.9) !important;
-  background: linear-gradient(95deg, rgba(46, 212, 214, 0.46), rgba(130, 134, 240, 0.38), rgba(244, 108, 182, 0.46)) !important;
+  border-color: #88fce2 !important;
+  background: rgba(18, 86, 90, 0.94) !important;
+  background-image: none !important;
   color: #ffffff !important;
-  box-shadow: 0 0 12px rgba(96, 234, 224, 0.36) !important;
+  box-shadow: 0 0 12px rgba(96, 234, 224, 0.32) !important;
 }
 
 html[data-pond-mode="resources"] #resource-categories .filter-count {
@@ -2109,9 +2105,10 @@ html[data-pond-mode="chatroom"] #chat-nickname-display {
 html[data-pond-mode="chatroom"] #chat-room-label {
   padding: 3px 12px;
   border-radius: 999px;
-  border: 1.2px solid rgba(170, 248, 238, 0.78);
-  background: linear-gradient(95deg, rgba(46, 212, 214, 0.36), rgba(140, 128, 240, 0.28), rgba(244, 112, 186, 0.36));
-  color: #ffffff;
+  border: 1.2px dashed #88fce2;
+  background: rgba(16, 68, 74, 0.92);
+  background-image: none;
+  color: #eefcf9;
   font-size: 12px;
 }
 
@@ -2598,10 +2595,11 @@ html[data-pond-mode] #account-popover input {
 html[data-pond-mode] #account-popover button[type="submit"],
 html[data-pond-mode] #account-popover .xp-button {
   border-radius: 999px !important;
-  border: 1.3px solid rgba(196, 248, 246, 0.76) !important;
-  background: linear-gradient(95deg, rgba(46, 212, 214, 0.44), rgba(130, 134, 240, 0.36), rgba(244, 108, 182, 0.46)) !important;
+  border: 1.3px solid #88fce2 !important;
+  background: rgba(18, 86, 90, 0.94) !important;
+  background-image: none !important;
   color: #ffffff !important;
-  box-shadow: 0 0 14px rgba(102, 236, 226, 0.30) !important;
+  box-shadow: 0 0 12px rgba(102, 236, 226, 0.26) !important;
 }
 
 html[data-pond-mode] #account-popover label,
@@ -2943,8 +2941,9 @@ html[data-ui-shell="mobile"] .filter-row button.active,
 html[data-shell="mobile"] .category-button.active,
 html[data-shell="mobile"] .filter-row button.active {
   border-style: solid !important;
-  border-color: rgba(196, 248, 244, 0.88) !important;
-  background: linear-gradient(95deg, rgba(46, 212, 214, 0.48), rgba(130, 134, 240, 0.40), rgba(244, 108, 182, 0.50)) !important;
+  border-color: #88fce2 !important;
+  background: rgba(18, 86, 90, 0.94) !important;
+  background-image: none !important;
   color: #ffffff !important;
 }
 
@@ -3070,10 +3069,11 @@ html[data-pond-mode] #account-popover .account-button {
 
 html[data-pond-mode] #account-popover .account-primary-action {
   border-style: solid !important;
-  border-color: rgba(196, 248, 246, 0.84) !important;
-  background: linear-gradient(95deg, rgba(46, 212, 214, 0.48), rgba(130, 134, 240, 0.40), rgba(244, 108, 182, 0.48)) !important;
+  border-color: #88fce2 !important;
+  background: rgba(18, 86, 90, 0.94) !important;
+  background-image: none !important;
   color: #ffffff !important;
-  box-shadow: 0 0 14px rgba(102, 236, 226, 0.32) !important;
+  box-shadow: 0 0 12px rgba(102, 236, 226, 0.28) !important;
 }
 
 /* --- 2. Unified Centered Desktop Window Geometry (Baseline: Article Reader Window) --- */
@@ -3977,7 +3977,9 @@ html[data-pond-mode] #account-popover .account-tab {
 html[data-pond-mode] #account-popover .account-tabs button[aria-selected="true"],
 html[data-pond-mode] #account-popover .account-tabs button.active,
 html[data-pond-mode] #account-popover .account-tab.active {
-  background: linear-gradient(95deg, rgba(46, 212, 214, 0.46), rgba(130, 134, 240, 0.38), rgba(244, 108, 182, 0.46)) !important;
+  background: rgba(18, 86, 90, 0.94) !important;
+  background-image: none !important;
+  border-color: #88fce2 !important;
   color: #ffffff !important;
 }
 
@@ -4532,23 +4534,24 @@ html[data-pond-mode="welcome"] #welcome-modal #recent-updates li a.recent-update
 }
 
 html[data-pond-mode="welcome"] #welcome-modal #recent-updates li a.recent-update-link strong {
+  display: block !important;
   font-size: 13px !important;
-  line-height: 1.35 !important;
+  line-height: 1.38 !important;
   font-weight: 600 !important;
   color: #f4fffe !important;
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal #recent-updates li a.recent-update-link .recent-update-summary {
+  display: block !important;
   font-size: 11.4px !important;
   line-height: 1.42 !important;
-  color: rgba(204, 242, 236, 0.84) !important;
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-  word-break: break-word !important;
+  color: rgba(214, 246, 242, 0.88) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal #recent-updates li a.recent-update-link small {
@@ -6525,11 +6528,21 @@ html[data-pond-mode="welcome"] #welcome-modal #recent-updates a {
 }
 
 html[data-pond-mode="welcome"] #welcome-modal .recent-update-summary {
-  display: -webkit-box !important;
-  -webkit-line-clamp: 1 !important;
-  -webkit-box-orient: vertical !important;
+  display: block !important;
+  white-space: nowrap !important;
   overflow: hidden !important;
-  line-height: 1.38 !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.42 !important;
+}
+
+/* --- Games Shelf: Distinct Dimmed Style for Unsupported Language Pills --- */
+html[data-pond-mode="games"] #games .tag.language-tag.unsupported,
+html[data-ui-shell="mobile"] #games .tag.language-tag.unsupported {
+  background: rgba(12, 22, 26, 0.52) !important;
+  border: 1px dashed rgba(148, 182, 178, 0.36) !important;
+  color: rgba(164, 198, 194, 0.62) !important;
+  opacity: 0.72 !important;
+  box-shadow: none !important;
 }
 
 /* --- Login Popover: Full-Width Buttons, Deduplicate Note & Zero Register Scrollbar --- */
