@@ -147,6 +147,12 @@ body {
   padding: 10px 16px !important;
 }
 
+.identity-panel,
+.lobby-identity .identity-panel {
+  padding: 10px 18px !important;
+  gap: 12px !important;
+}
+
 .lobby-card input,
 .password-field input,
 .whiteboard-page input {
