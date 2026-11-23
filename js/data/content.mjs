@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-23-pond-chat-shift-enter-newline",
+  "slug": "2026-11-23-pond-chat-shift-enter-newline",
+  "category": "site-updates",
+  "tags": [
+    "site-updates",
+    "chatroom",
+    "ux"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-23T20:48:00+08:00",
+  "updated_at": "2026-11-23T20:48:00+08:00",
+  "published_at": "2026-11-23T20:48:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "聊天室 Shift+Enter 换行兜底修复与输入法防误发保持",
+    "en": "Chatroom Shift+Enter Newline Fallback Fix",
+    "ja": "チャット入力欄の Shift+Enter 改行フォールバック修正"
+  },
+  "summary": {
+    "zh": "修复部分浏览器及快捷键环境下聊天室按 Shift+Enter 未插入换行的问题：全程不阻断默认换行，并在宿主未自动插入时补齐单次换行，同时保持普通 Enter 发送与中文输入法防误发。",
+    "en": "Ensured Shift+Enter reliably inserts a single newline across browsers and automated key dispatch without calling preventDefault, while preserving plain Enter send and IME composition safety.",
+    "ja": "一部環境でチャット入力欄の Shift+Enter 改行が反映されない問題を修正しました。既定の改行動作を阻害せず未挿入時のみ1回改行を補完し、通常 Enter 送信と IME 誤送信防止を維持します。"
+  },
+  "content_markdown": {
+    "zh": "# 聊天室 Shift+Enter 换行兜底修复与输入法防误发保持\n\n本次 `r63` 修复聊天室 `Shift+Enter` 换行在部分环境被吞的问题：\n\n- **不阻断原生换行 + 单次补插兜底**：按 `Shift+Enter` 时绝不调用 `preventDefault()`；若浏览器已原生插入换行则不做任何操作，若宿主环境未插入换行则在光标位置补插一次 `\\n` 并同步字数统计，严格遵守 300 字上限且不产生双换行。\n- **其余交互不变**：普通无 Shift 且非中文输入法组合态的 `Enter` 仍直接发送，拼音选词确认绝不误发。",
+    "en": "# Chatroom Shift+Enter Newline Fallback Fix\n\nRelease `r63` fixes cases where `Shift+Enter` did not insert a newline in the chatroom textarea:\n\n- **Non-blocking Native Newline + Fallback**: `Shift+Enter` never calls `preventDefault()`. If the host environment already inserted a newline natively, nothing extra runs; if no newline was inserted, a single `\\n` is inserted at the caret and synced with the 300-character counter.\n- **Unchanged Send & IME Safety**: Plain non-composing `Enter` still submits normally, and CJK IME candidate confirmation remains protected.",
+    "ja": "# チャット入力欄の Shift+Enter 改行フォールバック修正\n\n`r63` ではチャット入力欄で `Shift+Enter` の改行が反映されないケースを修正しました：\n\n- **既定動作優先＋単一改行補完**：`Shift+Enter` で `preventDefault()` を呼ばず、ブラウザが改行を挿入しなかった環境のみカーソル位置へ `\\n` を1回補完し文字数カウントへ同期します。\n- **送信・IME 保護維持**：変換中でない通常 `Enter` での送信と IME 変換確定時の誤送信防止はそのまま維持されます。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-23-pond-chat-enter-send-ime",
   "slug": "2026-11-23-pond-chat-enter-send-ime",
   "category": "site-updates",

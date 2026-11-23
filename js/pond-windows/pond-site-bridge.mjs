@@ -199,17 +199,35 @@ function bindChatEnterToSend() {
 
   input.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
-    // Shift+Enter (or modified Enter) inserts a normal newline
-    if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
-    // Hard IME guard: never submit while composing Chinese/Japanese/Korean candidates
-    if (
+    // Hard IME guard: never submit or alter Enter while composing Chinese/Japanese/Korean candidates
+    const imeActive = Boolean(
       e.isComposing
       || isComposing
       || e.keyCode === 229
       || (lastCompositionEndMs > 0 && performance.now() - lastCompositionEndMs < 80)
-    ) {
+    );
+    if (imeActive) return;
+
+    // Shift+Enter: NEVER preventDefault; allow native newline and fall back only if host swallowed it
+    if (e.shiftKey) {
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      const prevVal = input.value;
+      const start = typeof input.selectionStart === 'number' ? input.selectionStart : prevVal.length;
+      const end = typeof input.selectionEnd === 'number' ? input.selectionEnd : prevVal.length;
+      window.setTimeout(() => {
+        if (document.activeElement !== input) return;
+        if (input.value !== prevVal) return; // Native browser newline already inserted
+        const maxLen = input.maxLength;
+        if (maxLen > 0 && (prevVal.length - (end - start) + 1) > maxLen) return;
+        input.setRangeText('\n', start, end, 'end');
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }, 0);
       return;
     }
+
+    // Other modified Enters (Ctrl/Meta/Alt+Enter): leave untouched
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+
     if (e.repeat) {
       e.preventDefault();
       return;

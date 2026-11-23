@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-chat-shift-enter-newline",
+      "slug": "2026-11-23-pond-chat-shift-enter-newline",
+      "category": "site-updates",
+      "tags": [
+        "site-updates",
+        "chatroom",
+        "ux"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T20:48:00+08:00",
+      "updated_at": "2026-11-23T20:48:00+08:00",
+      "published_at": "2026-11-23T20:48:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "聊天室 Shift+Enter 换行兜底修复与输入法防误发保持",
+        "en": "Chatroom Shift+Enter Newline Fallback Fix",
+        "ja": "チャット入力欄の Shift+Enter 改行フォールバック修正"
+      },
+      "summary": {
+        "zh": "修复部分浏览器及快捷键环境下聊天室按 Shift+Enter 未插入换行的问题：全程不阻断默认换行，并在宿主未自动插入时补齐单次换行，同时保持普通 Enter 发送与中文输入法防误发。",
+        "en": "Ensured Shift+Enter reliably inserts a single newline across browsers and automated key dispatch without calling preventDefault, while preserving plain Enter send and IME composition safety.",
+        "ja": "一部環境でチャット入力欄の Shift+Enter 改行が反映されない問題を修正しました。既定の改行動作を阻害せず未挿入時のみ1回改行を補完し、通常 Enter 送信と IME 誤送信防止を維持します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-chat-enter-send-ime",
       "slug": "2026-11-23-pond-chat-enter-send-ime",
       "category": "site-updates",
@@ -106,29 +134,6 @@ export const homeContent = Object.freeze({
         "zh": "按 CRT 折射玻璃适配方案落地步骤 2–3：建立全站唯一权威玻璃与阻尼弹簧参数表，并在欢迎窗快捷按钮试点接触点高斯凹陷、320ms 非线性释放波与边缘吃光反馈，静默零重绘。",
         "en": "Implemented Steps 2–3 of the CRT Refractive Glass specification: single authoritative optical/spring token table and Welcome modal quick-link button pilot with off-center Gaussian indent, 320ms non-linear release wave, 70ms rim catch, and idle-stop.",
         "ja": "CRT 屈折ガラス仕様のステップ 2–3 を反映：光学・バネ物理の単一パラメータ定義を作成し、ようこそ画面ボタンで接触点ガウス凹み・320ms 非線形リリース波・縁発光をパイロット実装しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-remove-corner-dock",
-      "slug": "2026-11-23-pond-remove-corner-dock",
-      "category": "site-updates",
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T16:12:00+08:00",
-      "updated_at": "2026-11-23T16:12:00+08:00",
-      "published_at": "2026-11-23T16:12:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "下线首页右下角「在线 / 公告」胶囊并清理专属样式",
-        "en": "Removed Bottom-Right Online & Notice Capsules and Dedicated Styles",
-        "ja": "右下「オンライン／お知らせ」カプセルと専用スタイルを完全撤去"
-      },
-      "summary": {
-        "zh": "彻底移除桌面与移动端首页右下角「在线」状态胶囊与「公告」入口按钮及其容器、脚本与全部专属 CSS，画面更纯净；欢迎窗弹窗本体保留不变。",
-        "en": "Completely removed the bottom-right #pond-corner-dock container (Online status pill and Notice button) along with all dedicated scripts and CSS; the Welcome modal itself remains intact.",
-        "ja": "ホーム右下の #pond-corner-dock（オンライン表示・お知らせボタン）と関連スクリプト・専用 CSS をすべて削除し画面をすっきり整理しました。ようこそモーダル本体はそのまま維持しています。"
       }
     }
   ]

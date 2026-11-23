@@ -16169,6 +16169,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **IME 変換中の誤送信防止**：`event.isComposing`、`compositionstart`/`compositionend`、`keyCode === 229`、確定直後の 80ms ガードにより、変換候補の確定時に誤送信されません。
 - **既存ルール維持**：3秒間隔制限・300文字上限・送信後の入力クリアは従来通りです。', '2026-11-23T20:36:00+08:00', '2026-11-23T20:36:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-chat-enter-r62', '2026-11-23T20:36:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-23-pond-chat-shift-enter-newline', '2026-11-23-pond-chat-shift-enter-newline', 'site-updates', '["site-updates","chatroom","ux"]', '', 'published', 0, 0, '2026-11-23T20:48:00+08:00', '2026-11-23T20:48:00+08:00', '2026-11-23T20:48:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-chat-shift-enter-newline-zh', 'seed-update-2026-11-23-pond-chat-shift-enter-newline', 'zh', '聊天室 Shift+Enter 换行兜底修复与输入法防误发保持', '修复部分浏览器及快捷键环境下聊天室按 Shift+Enter 未插入换行的问题：全程不阻断默认换行，并在宿主未自动插入时补齐单次换行，同时保持普通 Enter 发送与中文输入法防误发。', '# 聊天室 Shift+Enter 换行兜底修复与输入法防误发保持
+
+本次 `r63` 修复聊天室 `Shift+Enter` 换行在部分环境被吞的问题：
+
+- **不阻断原生换行 + 单次补插兜底**：按 `Shift+Enter` 时绝不调用 `preventDefault()`；若浏览器已原生插入换行则不做任何操作，若宿主环境未插入换行则在光标位置补插一次 `\n` 并同步字数统计，严格遵守 300 字上限且不产生双换行。
+- **其余交互不变**：普通无 Shift 且非中文输入法组合态的 `Enter` 仍直接发送，拼音选词确认绝不误发。', '2026-11-23T20:48:00+08:00', '2026-11-23T20:48:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-chat-shift-enter-newline-en', 'seed-update-2026-11-23-pond-chat-shift-enter-newline', 'en', 'Chatroom Shift+Enter Newline Fallback Fix', 'Ensured Shift+Enter reliably inserts a single newline across browsers and automated key dispatch without calling preventDefault, while preserving plain Enter send and IME composition safety.', '# Chatroom Shift+Enter Newline Fallback Fix
+
+Release `r63` fixes cases where `Shift+Enter` did not insert a newline in the chatroom textarea:
+
+- **Non-blocking Native Newline + Fallback**: `Shift+Enter` never calls `preventDefault()`. If the host environment already inserted a newline natively, nothing extra runs; if no newline was inserted, a single `\n` is inserted at the caret and synced with the 300-character counter.
+- **Unchanged Send & IME Safety**: Plain non-composing `Enter` still submits normally, and CJK IME candidate confirmation remains protected.', '2026-11-23T20:48:00+08:00', '2026-11-23T20:48:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-chat-shift-enter-newline-ja', 'seed-update-2026-11-23-pond-chat-shift-enter-newline', 'ja', 'チャット入力欄の Shift+Enter 改行フォールバック修正', '一部環境でチャット入力欄の Shift+Enter 改行が反映されない問題を修正しました。既定の改行動作を阻害せず未挿入時のみ1回改行を補完し、通常 Enter 送信と IME 誤送信防止を維持します。', '# チャット入力欄の Shift+Enter 改行フォールバック修正
+
+`r63` ではチャット入力欄で `Shift+Enter` の改行が反映されないケースを修正しました：
+
+- **既定動作優先＋単一改行補完**：`Shift+Enter` で `preventDefault()` を呼ばず、ブラウザが改行を挿入しなかった環境のみカーソル位置へ `\n` を1回補完し文字数カウントへ同期します。
+- **送信・IME 保護維持**：変換中でない通常 `Enter` での送信と IME 変換確定時の誤送信防止はそのまま維持されます。', '2026-11-23T20:48:00+08:00', '2026-11-23T20:48:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-chat-shift-enter-r63', '2026-11-23T20:48:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261123-chat-enter-r62', '2026-11-23T20:36:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261123-chat-shift-enter-r63', '2026-11-23T20:48:00+08:00', 'schema') on conflict(version) do nothing;
