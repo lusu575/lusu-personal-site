@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- 文章阅读进度条与右下角回顶净空、小黑屋排版及画板匿名栏细节修复（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-reader-darkroom-whiteboard-polish` / `2026-11-23-pond-reader-darkroom-whiteboard-polish`；视觉层缓存 `20261123-pond-polish-r48`。
+
 - 修复在线画板「当前匿名名字」内层容器 `.identity-panel` 左内边距贴边问题，补齐对称 `10px 18px` 内边距（r48）。
 
 - 修复文章阅读页「回到顶部」按钮因父窗 `backdrop-filter` 包含块偏至底中问题：改为固定在文章窗右下角 `right: 16px; bottom: 16px;` 并为正文区预留右侧 `126px` 与底部 `76px` 安全净空，确保任意滚动位置与滚到底状态均不压字（r47）。

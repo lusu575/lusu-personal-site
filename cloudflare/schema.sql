@@ -15835,6 +15835,38 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **記事リーダーのトップ戻りボタンとドットアイコン化**：0%位置で見出しに重なっていた不具合を修正し、約1画面スクロール後のみ右下枠外に表示されるように改善。カテゴリ・公開日のカラー絵文字もドットSVGへ統一し、全サイト共通の [hidden] 保護を追加しました。
 - **プロフィール画像の円形単体化**：外側の四角い背景枠を取り除き、すっきりとした円形アイコンのみに整えました。', '2026-11-23T08:23:00+08:00', '2026-11-23T08:23:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-polish-r44', '2026-11-23T08:23:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-23-pond-reader-darkroom-whiteboard-polish', '2026-11-23-pond-reader-darkroom-whiteboard-polish', 'site-updates', 'undefined', '', 'published', 0, 0, '2026-11-23T08:46:00+08:00', '2026-11-23T08:46:00+08:00', '2026-11-23T08:46:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-reader-darkroom-whiteboard-polish-zh', 'seed-update-2026-11-23-pond-reader-darkroom-whiteboard-polish', 'zh', '文章阅读进度条与右下角回顶净空、小黑屋排版及画板匿名栏细节修复', '汇总修复文章阅读进度条随滚动实时更新、回到顶部按钮固定在窗口右下角永不压字、小黑屋消除标题与按钮重叠，以及在线画板匿名名字栏左内边距对称问题。', '# 文章阅读进度条与右下角回顶净空、小黑屋排版及画板匿名栏细节修复
+
+本次更新将连续四项已上线的细节打磨整理同步至站内更新记录（对应 r45–r48）。
+
+## 本次修复明细
+
+- **文章阅读进度条跟随滚动（r45）**：在深夜池塘主题桥接层绑定实际滚动容器 `.article-detail-card`，滚动文章时顶部阅读进度条与百分比实时从 0% 过渡至 50% 直至 100%，点击「回到顶部」可平滑返回文章开头。
+- **小黑屋消除标题与按钮重叠（r46）**：清除小黑屋标题栏 `.headerButton` 的旧浮动塌陷，保持紧贴内容的紧凑居中卡片高度，同时让「小黑屋」标题与「生火 / 添柴」按钮留出清晰行距、按钮文字居中对齐。
+- **文章「回到顶部」固定右下角零压字（r47）**：修正父窗 `backdrop-filter` 包含块导致的底中偏移，将回顶按钮锚定在文章窗右下角（`right: 16px; bottom: 16px`），并为正文区预留右侧 126px 与底部 76px 安全净空，任意滚动位置及滚到底状态均不遮挡正文。
+- **在线画板匿名名字栏对称内边距（r48）**：为内层带边框容器 `.identity-panel` 补齐左右对称的 `18px` 内边距，消除「当前匿名名字」贴靠左边框的问题。', '2026-11-23T08:46:00+08:00', '2026-11-23T08:46:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-reader-darkroom-whiteboard-polish-en', 'seed-update-2026-11-23-pond-reader-darkroom-whiteboard-polish', 'en', 'Article Read-Progress & Corner Back-to-Top, A Dark Room Layout, and Whiteboard Identity Padding', 'Consolidated updates for live article read-progress tracking, non-overlapping bottom-right Back-to-Top button, A Dark Room title/button separation, and symmetric Whiteboard identity bar padding.', '# Article Read-Progress & Corner Back-to-Top, A Dark Room Layout, and Whiteboard Identity Padding
+
+This site update documents four production polish fixes (r45–r48) across the Knowledge reader, A Dark Room, and Online Whiteboard.
+
+## Summary of fixes
+
+- **Live article read-progress tracking (r45)**: Bound scroll progress and the Back-to-Top threshold to the actual scrollable `.article-detail-card` container so progress updates smoothly from 0% to 100% and clicking Back-to-Top scrolls cleanly to the top.
+- **A Dark Room overlap fix (r46)**: Cleared legacy float collapse on `.headerButton` so the room title sits cleanly above the centered action buttons inside the compact centered card.
+- **Non-overlapping article Back-to-Top (r47)**: Anchored the Back-to-Top button to the bottom-right corner of the article window with dedicated right and bottom gutters so it never overlaps text at any scroll position, including 100% bottom scroll.
+- **Whiteboard identity bar padding (r48)**: Added symmetric 18px horizontal padding to `.identity-panel` so the anonymous nickname label no longer touches the left border.', '2026-11-23T08:46:00+08:00', '2026-11-23T08:46:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-reader-darkroom-whiteboard-polish-ja', 'seed-update-2026-11-23-pond-reader-darkroom-whiteboard-polish', 'ja', '記事の読書進捗バーと右下トップ戻り、A Dark Room 重なり解消・画板の余白修正', '記事リーダーの進捗バー連動と右下コーナー固定のトップ戻り、A Dark Room の見出しとボタン重なり解消、オンライン画板の匿名欄パディング対称化を反映しました。', '# 記事の読書進捗バーと右下トップ戻り、A Dark Room 重なり解消・画板の余白修正
+
+本更新では、r45〜r48 で本番反映した4件の細部修正をサイト内更新履歴にまとめました。
+
+## 主な修正内容
+
+- **記事リーダーの進捗バー連動（r45）**：実際にスクロールする `.article-detail-card` に進捗計算を連動させ、0%から100%までリアルタイムに追従し、トップへ戻るボタンも滑らかに機能するよう修正しました。
+- **A Dark Room の重なり解消（r46）**：`.headerButton` の浮動崩れを解消し、コンパクトな中央カード内でタイトルとボタンが重ならないよう整えました。
+- **トップへ戻るボタンの右下固定（r47）**：記事ウィンドウ右下に固定配置し右余白を確保することで、最下部までスクロールしても本文に一切重ならないようにしました。
+- **オンライン画板の匿名欄余白（r48）**：`.identity-panel` に左右対称の `18px` 余白を設定し、左枠との接触を解消しました。', '2026-11-23T08:46:00+08:00', '2026-11-23T08:46:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-polish-r48', '2026-11-23T08:46:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-polish-r44', '2026-11-23T08:23:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-polish-r48', '2026-11-23T08:46:00+08:00', 'schema') on conflict(version) do nothing;

@@ -1,6 +1,34 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-23-pond-reader-darkroom-whiteboard-polish",
+  "slug": "2026-11-23-pond-reader-darkroom-whiteboard-polish",
+  "category": "site-updates",
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-23T08:46:00+08:00",
+  "updated_at": "2026-11-23T08:46:00+08:00",
+  "published_at": "2026-11-23T08:46:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "文章阅读进度条与右下角回顶净空、小黑屋排版及画板匿名栏细节修复",
+    "en": "Article Read-Progress & Corner Back-to-Top, A Dark Room Layout, and Whiteboard Identity Padding",
+    "ja": "記事の読書進捗バーと右下トップ戻り、A Dark Room 重なり解消・画板の余白修正"
+  },
+  "summary": {
+    "zh": "汇总修复文章阅读进度条随滚动实时更新、回到顶部按钮固定在窗口右下角永不压字、小黑屋消除标题与按钮重叠，以及在线画板匿名名字栏左内边距对称问题。",
+    "en": "Consolidated updates for live article read-progress tracking, non-overlapping bottom-right Back-to-Top button, A Dark Room title/button separation, and symmetric Whiteboard identity bar padding.",
+    "ja": "記事リーダーの進捗バー連動と右下コーナー固定のトップ戻り、A Dark Room の見出しとボタン重なり解消、オンライン画板の匿名欄パディング対称化を反映しました。"
+  },
+  "content_markdown": {
+    "zh": "# 文章阅读进度条与右下角回顶净空、小黑屋排版及画板匿名栏细节修复\n\n本次更新将连续四项已上线的细节打磨整理同步至站内更新记录（对应 r45–r48）。\n\n## 本次修复明细\n\n- **文章阅读进度条跟随滚动（r45）**：在深夜池塘主题桥接层绑定实际滚动容器 `.article-detail-card`，滚动文章时顶部阅读进度条与百分比实时从 0% 过渡至 50% 直至 100%，点击「回到顶部」可平滑返回文章开头。\n- **小黑屋消除标题与按钮重叠（r46）**：清除小黑屋标题栏 `.headerButton` 的旧浮动塌陷，保持紧贴内容的紧凑居中卡片高度，同时让「小黑屋」标题与「生火 / 添柴」按钮留出清晰行距、按钮文字居中对齐。\n- **文章「回到顶部」固定右下角零压字（r47）**：修正父窗 `backdrop-filter` 包含块导致的底中偏移，将回顶按钮锚定在文章窗右下角（`right: 16px; bottom: 16px`），并为正文区预留右侧 126px 与底部 76px 安全净空，任意滚动位置及滚到底状态均不遮挡正文。\n- **在线画板匿名名字栏对称内边距（r48）**：为内层带边框容器 `.identity-panel` 补齐左右对称的 `18px` 内边距，消除「当前匿名名字」贴靠左边框的问题。",
+    "en": "# Article Read-Progress & Corner Back-to-Top, A Dark Room Layout, and Whiteboard Identity Padding\n\nThis site update documents four production polish fixes (r45–r48) across the Knowledge reader, A Dark Room, and Online Whiteboard.\n\n## Summary of fixes\n\n- **Live article read-progress tracking (r45)**: Bound scroll progress and the Back-to-Top threshold to the actual scrollable `.article-detail-card` container so progress updates smoothly from 0% to 100% and clicking Back-to-Top scrolls cleanly to the top.\n- **A Dark Room overlap fix (r46)**: Cleared legacy float collapse on `.headerButton` so the room title sits cleanly above the centered action buttons inside the compact centered card.\n- **Non-overlapping article Back-to-Top (r47)**: Anchored the Back-to-Top button to the bottom-right corner of the article window with dedicated right and bottom gutters so it never overlaps text at any scroll position, including 100% bottom scroll.\n- **Whiteboard identity bar padding (r48)**: Added symmetric 18px horizontal padding to `.identity-panel` so the anonymous nickname label no longer touches the left border.",
+    "ja": "# 記事の読書進捗バーと右下トップ戻り、A Dark Room 重なり解消・画板の余白修正\n\n本更新では、r45〜r48 で本番反映した4件の細部修正をサイト内更新履歴にまとめました。\n\n## 主な修正内容\n\n- **記事リーダーの進捗バー連動（r45）**：実際にスクロールする `.article-detail-card` に進捗計算を連動させ、0%から100%までリアルタイムに追従し、トップへ戻るボタンも滑らかに機能するよう修正しました。\n- **A Dark Room の重なり解消（r46）**：`.headerButton` の浮動崩れを解消し、コンパクトな中央カード内でタイトルとボタンが重ならないよう整えました。\n- **トップへ戻るボタンの右下固定（r47）**：記事ウィンドウ右下に固定配置し右余白を確保することで、最下部までスクロールしても本文に一切重ならないようにしました。\n- **オンライン画板の匿名欄余白（r48）**：`.identity-panel` に左右対称の `18px` 余白を設定し、左枠との接触を解消しました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-23-pond-taskbar-removal-article-top-about-avatar",
   "slug": "2026-11-23-pond-taskbar-removal-article-top-about-avatar",
   "category": "site-updates",

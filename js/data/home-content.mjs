@@ -2,6 +2,29 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-reader-darkroom-whiteboard-polish",
+      "slug": "2026-11-23-pond-reader-darkroom-whiteboard-polish",
+      "category": "site-updates",
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T08:46:00+08:00",
+      "updated_at": "2026-11-23T08:46:00+08:00",
+      "published_at": "2026-11-23T08:46:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "文章阅读进度条与右下角回顶净空、小黑屋排版及画板匿名栏细节修复",
+        "en": "Article Read-Progress & Corner Back-to-Top, A Dark Room Layout, and Whiteboard Identity Padding",
+        "ja": "記事の読書進捗バーと右下トップ戻り、A Dark Room 重なり解消・画板の余白修正"
+      },
+      "summary": {
+        "zh": "汇总修复文章阅读进度条随滚动实时更新、回到顶部按钮固定在窗口右下角永不压字、小黑屋消除标题与按钮重叠，以及在线画板匿名名字栏左内边距对称问题。",
+        "en": "Consolidated updates for live article read-progress tracking, non-overlapping bottom-right Back-to-Top button, A Dark Room title/button separation, and symmetric Whiteboard identity bar padding.",
+        "ja": "記事リーダーの進捗バー連動と右下コーナー固定のトップ戻り、A Dark Room の見出しとボタン重なり解消、オンライン画板の匿名欄パディング対称化を反映しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-taskbar-removal-article-top-about-avatar",
       "slug": "2026-11-23-pond-taskbar-removal-article-top-about-avatar",
       "category": "site-updates",
@@ -96,33 +119,6 @@ export const homeContent = Object.freeze({
         "zh": "在欢迎窗最上方加入点阵虚线暖金临时公告条提示前端重构与逐步修复中，配齐中英日三语并保留独立撤除标记。",
         "en": "Added a removable dotted amber notice banner at the top of the Welcome modal in Chinese, English, and Japanese without altering existing sections.",
         "ja": "ウェルカム窓の最上部に点陣デザインの一時お知らせ枠（中・英・日）を追加し、後で一括撤去しやすい独立構成にしました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-home-icon-isolation",
-      "slug": "2026-11-22-pond-home-icon-isolation",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "首页"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T20:49:00+08:00",
-      "updated_at": "2026-11-22T20:49:00+08:00",
-      "published_at": "2026-11-22T20:49:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "首页桌面图标悬停与点击完全独立零连带位移",
-        "en": "Home Desktop Icon Hover & Click Isolation (Zero Sibling Movement)",
-        "ja": "ホームデスクトップアイコンのホバー・クリック独立化（他アイコンの位置ずれゼロ）"
-      },
-      "summary": {
-        "zh": "移除首页非悬停图标受全局时钟驱动的浮动与闪烁，确保悬停或点击单个图标时仅目标图标响应、其余图标纹丝不动。",
-        "en": "Removed global-time drift from non-hovered home desktop icons so hovering or clicking one icon never moves or flickers any other icon.",
-        "ja": "非ホバー時のグローバル時刻連動の揺れを除去し、1つのアイコンにホバー・クリックしても他のアイコンが一切動かないよう修正しました。"
       }
     }
   ]
