@@ -2305,13 +2305,13 @@
         const lifeRestartCss = slug === "life-restart" ? `
           html, body, #layaContainer {
             background:
-              radial-gradient(ellipse 64% 52% at 50% 42%, rgba(18, 78, 76, 0.34), transparent 72%),
-              #06161b !important;
-            background-color: #06161b !important;
+              repeating-linear-gradient(0deg, rgba(136, 252, 226, 0.03) 0px, rgba(136, 252, 226, 0.03) 1px, transparent 1px, transparent 4px),
+              radial-gradient(ellipse 75% 65% at 50% 45%, rgba(24, 118, 112, 0.52), #071e24 72%) !important;
+            background-color: #071e24 !important;
             overflow: hidden !important;
           }
           #layaCanvas {
-            box-shadow: 0 0 36px rgba(24, 110, 106, 0.36), 0 0 0 1px rgba(164, 236, 228, 0.28) !important;
+            box-shadow: 0 0 42px rgba(32, 138, 130, 0.42), 0 0 0 1.5px rgba(164, 236, 228, 0.36) !important;
             border-radius: 10px !important;
           }
           .github-corner, a[href*="github"] > svg, svg.octo-arm {

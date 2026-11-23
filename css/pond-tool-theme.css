@@ -193,13 +193,17 @@ body {
 }
 
 .trainer-shell {
-  min-height: auto !important;
+  min-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
   padding-bottom: 24px !important;
+  box-sizing: border-box !important;
 }
 
 .trainer-frame-card {
   min-height: auto !important;
-  margin-bottom: 18px !important;
+  margin: auto !important;
+  width: min(1160px, calc(100% - 32px)) !important;
 }
 
 .lobby-card input,
