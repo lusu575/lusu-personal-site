@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- 文章目录跳转修复、四季装饰 WebP 提速 34 倍、回归原生光标与关闭键悬停零漂移（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-toc-webp-cursor-close-hover` / `2026-11-23-pond-toc-webp-cursor-close-hover`；视觉层缓存 `20261123-pond-polish-r55`。
+
 - 全站细节收尾汇总（货架许可证/聊天室前缀/画板 1.0.13/日语页居中/互传防断词）（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-final-polish-r52-r54` / `2026-11-23-pond-final-polish-r52-r54`；视觉层缓存 `20261123-pond-polish-r54`。
 
 - 全站源头级视觉与交互收口（游戏壳层/互传/登录/聊天室/文章/画板/日语页）（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-source-level-final-polish` / `2026-11-23-pond-source-level-final-polish`；视觉层缓存 `20261123-pond-polish-r51`。

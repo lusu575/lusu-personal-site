@@ -127,27 +127,47 @@ export class PondCRTEngine {
 
   async _loadAssetManifest() {
     try {
-      const res = await fetch('/assets/pond-assets-manifest.json', { cache: 'no-store' });
+      const res = await fetch('/assets/pond-assets-manifest.json?v=20261123-pond-polish-r55', { cache: 'default' });
       if (!res.ok) return;
       const manifest = await res.json();
 
-      // 1. Load all finalized transparent PNG parts (design-assets/parts/*) in parallel,
-      // then re-bake all 4 resident GPU flora textures cleanly once loaded!
+      // 1. Prioritize active season's WebP parts FIRST so first paint shows flora immediately,
+      // then quietly load remaining seasons in the background.
       if (manifest.parts) {
-        const entries = Object.entries(manifest.parts).filter(([, url]) => Boolean(url));
-        const loaded = await Promise.allSettled(
-          entries.map(([key, url]) => new Promise((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => {
-              this.floraLayer.setPart(key, img);
-              resolve(key);
-            };
-            img.onerror = reject;
-            img.src = url;
-          }))
-        );
-        if (this.gl && loaded.some((r) => r.status === 'fulfilled')) {
+        const seasonPartMap = {
+          spring: ['sakuraBranch', 'lotusLeaf1', 'lotusLeaf2', 'lotusLeaf3'],
+          summer: ['lotusLeaf1', 'lotusLeaf2', 'lotusLeaf3', 'lotusFlower', 'lotusBud'],
+          autumn: ['mapleBranch', 'mapleLeaf1', 'mapleLeaf2', 'mapleLeaf3'],
+          winter: ['winterBranch', 'iceOverlay']
+        };
+        const loadPart = ([key, url]) => new Promise((resolve, reject) => {
+          const img = new Image();
+          img.decoding = 'async';
+          img.onload = () => {
+            this.floraLayer.setPart(key, img);
+            resolve(key);
+          };
+          img.onerror = reject;
+          img.src = url;
+        });
+
+        const allEntries = Object.entries(manifest.parts).filter(([, url]) => Boolean(url));
+        const prioritySet = new Set(seasonPartMap[this.seasonId] || seasonPartMap.summer);
+        const priorityEntries = allEntries.filter(([k]) => prioritySet.has(k));
+        const deferredEntries = allEntries.filter(([k]) => !prioritySet.has(k));
+
+        const primaryLoaded = await Promise.allSettled(priorityEntries.map(loadPart));
+        if (this.gl && primaryLoaded.some((r) => r.status === 'fulfilled')) {
           this._prebakeAllFlora();
+        }
+
+        if (deferredEntries.length) {
+          setTimeout(async () => {
+            const restLoaded = await Promise.allSettled(deferredEntries.map(loadPart));
+            if (this.gl && restLoaded.some((r) => r.status === 'fulfilled')) {
+              this._prebakeAllFlora();
+            }
+          }, 120);
         }
       }
 

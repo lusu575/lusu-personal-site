@@ -2,6 +2,29 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-toc-webp-cursor-close-hover",
+      "slug": "2026-11-23-pond-toc-webp-cursor-close-hover",
+      "category": "site-updates",
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T14:27:00+08:00",
+      "updated_at": "2026-11-23T14:27:00+08:00",
+      "published_at": "2026-11-23T14:27:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "文章目录跳转修复、四季装饰 WebP 提速 34 倍、回归原生光标与关闭键悬停零漂移",
+        "en": "Article TOC Jump Fix, 34.7x Smaller WebP Seasonal Flora, Native Cursor & Zero-Drift Close Hover",
+        "ja": "記事目次ジャンプ修正・季節装飾 WebP 34倍軽量化・標準カーソル復元・閉じるボタンホバー固定"
+      },
+      "summary": {
+        "zh": "修复文章左侧目录点击不跳转；将 12 张四季装饰图从 21.81 MB PNG 压缩为 642.7 KB WebP 并按当前季节优先加载；移除旧自定义光标回归系统原生指针；修复窗口关闭键悬停时叉号偏移问题。",
+        "en": "Fixed Article TOC click scrolling inside .article-detail-card, compressed 21.81 MB seasonal PNGs into 642.7 KB WebP with active-season priority loading, removed legacy custom cursors in favor of native OS cursors, and locked close-button hover optical centering.",
+        "ja": "記事左目次のクリック遷移を修正し、季節装飾12点を 21.81 MB PNG から 642.7 KB WebP へ圧縮・現季節優先読込に変更。旧カスタムカーソルを撤去しシステム標準へ統一、閉じるボタンのホバー時ズレも解消しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-final-polish-r52-r54",
       "slug": "2026-11-23-pond-final-polish-r52-r54",
       "category": "site-updates",
@@ -91,29 +114,6 @@ export const homeContent = Object.freeze({
         "zh": "汇总修复文章阅读进度条随滚动实时更新、回到顶部按钮固定在窗口右下角永不压字、小黑屋消除标题与按钮重叠，以及在线画板匿名名字栏左内边距对称问题。",
         "en": "Consolidated updates for live article read-progress tracking, non-overlapping bottom-right Back-to-Top button, A Dark Room title/button separation, and symmetric Whiteboard identity bar padding.",
         "ja": "記事リーダーの進捗バー連動と右下コーナー固定のトップ戻り、A Dark Room の見出しとボタン重なり解消、オンライン画板の匿名欄パディング対称化を反映しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-taskbar-removal-article-top-about-avatar",
-      "slug": "2026-11-23-pond-taskbar-removal-article-top-about-avatar",
-      "category": "site-updates",
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T08:23:00+08:00",
-      "updated_at": "2026-11-23T08:23:00+08:00",
-      "published_at": "2026-11-23T08:23:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "移除冗余底栏并低调收纳状态/公告角标、修复文章回顶按钮与关于页圆形头像",
-        "en": "Remove Bottom Taskbar, Add Low-Key Corner Status/Notice, Fix Article Back-to-Top & About Avatar",
-        "ja": "下部バー削除・控えめな角ステータス/お知らせ配置・記事トップ戻り修正とプロフィール円形アイコン化"
-      },
-      "summary": {
-        "zh": "桌面与手机端移除冗余底部任务栏，在右下角低调保留在线状态与公告入口；修复文章阅读页回到顶部在 0% 时压正文问题并替换元信息彩色图标；关于页去除头像方形底框只留圆本体。",
-        "en": "Removed the redundant bottom taskbar on desktop and mobile while keeping live status and Welcome Notice in a subtle corner dock; fixed article Back-to-Top overlap at 0% scroll, replaced metadata emojis with dotted icons, and removed the square About avatar frame.",
-        "ja": "デスクトップとモバイルの冗長な下部バーを削除し、右下に控えめなオンライン状態とお知らせ入口を配置。記事ページのトップへ戻る重なり修正とドットアイコン化、プロフィール画像の四角枠除去を実施しました。"
       }
     }
   ]

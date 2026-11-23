@@ -227,7 +227,6 @@ html[data-pond-mode="knowledge"] #knowledge .window-titlebar .close-button {
 }
 
 html[data-pond-mode="knowledge"] #knowledge .window-titlebar .close-button:hover {
-  color: #ffffff !important;
   border-color: rgba(180, 250, 240, 0.85) !important;
   box-shadow: 0 0 10px rgba(120, 236, 225, 0.35) !important;
 }
@@ -5162,9 +5161,16 @@ html[data-pond-mode] #account-popover .account-close-button:hover,
 #video-modal .window-titlebar .close-button:hover,
 #welcome-modal .window-titlebar .close-button:hover,
 #account-popover .account-close-button:hover {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+  padding: 0 !important;
   border-style: solid !important;
   border-color: rgba(154, 248, 238, 0.94) !important;
-  background: rgba(18, 56, 62, 0.82) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 5.5 L14.5 14.5 M14.5 5.5 L5.5 14.5' fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-dasharray='2.5 1.4'/%3E%3C/svg%3E") center / 15px 15px no-repeat !important;
+  background-color: rgba(18, 56, 62, 0.82) !important;
+  background-position: center !important;
+  background-size: 16px 16px !important;
+  background-repeat: no-repeat !important;
   box-shadow: 0 0 12px rgba(102, 236, 224, 0.36) !important;
   transform: none !important;
 }
@@ -6873,4 +6879,50 @@ html[data-pond-mode="chatroom"] #chat-message-list {
 
 #pond-corner-dock > * {
   pointer-events: auto !important;
+}
+
+/* ============================================================
+   r55: Native System Cursor (Remove Legacy XP Custom Cursors)
+        + Zero-Drift Close Button Hover Optical Centering
+   ============================================================ */
+html[data-pond-mode],
+html[data-pond-mode] body,
+html[data-pond-mode] body *:not(#pond-desktop-canvas) {
+  cursor: auto !important;
+}
+
+html[data-pond-mode] :is(a, button, summary, label[for], [role="button"], [tabindex]:not([tabindex="-1"]), select, input[type="checkbox"], input[type="radio"], .article-toc-link, .category-button, .xp-button, .close-button, .account-close-button, .maximize-button):not(:disabled) {
+  cursor: pointer !important;
+}
+
+html[data-pond-mode] :is(input[type="text"], input[type="search"], input[type="email"], input[type="password"], textarea) {
+  cursor: text !important;
+}
+
+html[data-pond-mode] :is(button:disabled, input:disabled, select:disabled, [aria-disabled="true"]) {
+  cursor: not-allowed !important;
+}
+
+html[data-pond-mode] :is(.close-button, .account-close-button):where(:hover, :focus-visible, :active) {
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+  padding: 0 !important;
+  background-color: rgba(18, 56, 62, 0.82) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 5.5 L14.5 14.5 M14.5 5.5 L5.5 14.5' fill='none' stroke='%23ffffff' stroke-width='2.1' stroke-linecap='round' stroke-dasharray='2.5 1.4'/%3E%3C/svg%3E") !important;
+  background-position: center !important;
+  background-size: 16px 16px !important;
+  background-repeat: no-repeat !important;
+  border-style: solid !important;
+  border-color: rgba(154, 248, 238, 0.94) !important;
+  box-shadow: 0 0 12px rgba(102, 236, 224, 0.36) !important;
+  transform: none !important;
+}
+
+html[data-ui-shell="mobile"] :is(.close-button, .account-close-button):where(:hover, :focus-visible, :active) {
+  width: 44px !important;
+  height: 44px !important;
+  background-size: 18px 18px !important;
 }

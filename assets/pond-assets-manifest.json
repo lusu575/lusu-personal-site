@@ -1,18 +1,18 @@
 {
-  "version": "2026-11-21-v2-final-parts",
+  "version": "2026-11-23-v3-webp",
   "parts": {
-    "sakuraBranch": "/assets/pond-parts/part-sakura-branch.png",
-    "mapleBranch": "/assets/pond-parts/part-maple-branch.png",
-    "winterBranch": "/assets/pond-parts/part-winter-branch.png",
-    "lotusLeaf1": "/assets/pond-parts/part-lotus-leaf-1.png",
-    "lotusLeaf2": "/assets/pond-parts/part-lotus-leaf-2.png",
-    "lotusLeaf3": "/assets/pond-parts/part-lotus-leaf-3.png",
-    "lotusFlower": "/assets/pond-parts/part-lotus-flower.png",
-    "lotusBud": "/assets/pond-parts/part-lotus-bud.png",
-    "mapleLeaf1": "/assets/pond-parts/part-maple-leaf-1.png",
-    "mapleLeaf2": "/assets/pond-parts/part-maple-leaf-2.png",
-    "mapleLeaf3": "/assets/pond-parts/part-maple-leaf-3.png",
-    "iceOverlay": "/assets/pond-parts/part-ice-overlay.png"
+    "sakuraBranch": "/assets/pond-parts/part-sakura-branch.webp",
+    "mapleBranch": "/assets/pond-parts/part-maple-branch.webp",
+    "winterBranch": "/assets/pond-parts/part-winter-branch.webp",
+    "lotusLeaf1": "/assets/pond-parts/part-lotus-leaf-1.webp",
+    "lotusLeaf2": "/assets/pond-parts/part-lotus-leaf-2.webp",
+    "lotusLeaf3": "/assets/pond-parts/part-lotus-leaf-3.webp",
+    "lotusFlower": "/assets/pond-parts/part-lotus-flower.webp",
+    "lotusBud": "/assets/pond-parts/part-lotus-bud.webp",
+    "mapleLeaf1": "/assets/pond-parts/part-maple-leaf-1.webp",
+    "mapleLeaf2": "/assets/pond-parts/part-maple-leaf-2.webp",
+    "mapleLeaf3": "/assets/pond-parts/part-maple-leaf-3.webp",
+    "iceOverlay": "/assets/pond-parts/part-ice-overlay.webp"
   },
   "icons": {}
 }

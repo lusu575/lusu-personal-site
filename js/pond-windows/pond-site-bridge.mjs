@@ -2,7 +2,7 @@
 // Zero business-logic rewrites: all routing, API fetching, filtering, sorting, pinning,
 // search, pagination, account sessions, and language switching stay 100% in existing main.js & routes/*.mjs.
 
-import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261123-pond-polish-r51';
+import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261123-pond-polish-r55';
 import {
   resolveInitialPondSeason,
   saveManualSeasonOverride,
@@ -549,11 +549,29 @@ function bootPondVisualBridge() {
     }).observe(articleDetailEl, { attributes: true, attributeFilter: ['hidden'], childList: true, subtree: false });
   }
   document.addEventListener('click', (e) => {
-    if (!e.target?.closest?.('[data-article-scroll-top]')) return;
-    const card = document.querySelector('#article-detail .article-detail-card');
-    if (card && card.scrollTop > 0) {
-      card.scrollTo({ top: 0, behavior: 'smooth' });
+    if (e.target?.closest?.('[data-article-scroll-top]')) {
+      const card = document.querySelector('#article-detail .article-detail-card');
+      if (card && card.scrollTop > 0) {
+        card.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      return;
     }
+    const tocBtn = e.target?.closest?.('.article-toc-link[data-article-heading-target]');
+    if (!tocBtn) return;
+    const targetId = tocBtn.dataset.articleHeadingTarget || tocBtn.getAttribute('aria-controls');
+    if (!targetId) return;
+    const card = document.querySelector('#article-detail .article-detail-card');
+    const heading = document.getElementById(targetId);
+    if (!card || !heading || !card.contains(heading)) return;
+    const targetTop = Math.max(0, card.scrollTop + heading.getBoundingClientRect().top - card.getBoundingClientRect().top - 20);
+    card.scrollTo({ top: targetTop, behavior: 'smooth' });
+    document.querySelectorAll('#article-detail-toc .article-toc-link').forEach((btn) => {
+      const isMatch = btn === tocBtn;
+      btn.classList.toggle('is-active', isMatch);
+      if (isMatch) btn.setAttribute('aria-current', 'location');
+      else btn.removeAttribute('aria-current');
+    });
+    window.requestAnimationFrame(syncPondArticleScrollState);
   });
 
   // Watchdog: if #site-connection-status stays stuck on "checking" for >10s, probe lightweight API to resolve state

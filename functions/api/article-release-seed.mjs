@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-23-pond-toc-webp-cursor-close-hover', '2026-11-23-pond-toc-webp-cursor-close-hover', 'site-updates', 'undefined', '', 'published', 0, 0, '2026-11-23T14:27:00+08:00', '2026-11-23T14:27:00+08:00', '2026-11-23T14:27:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-23-pond-toc-webp-cursor-close-hover", {
+  "zh": {
+    "title": "文章目录跳转修复、四季装饰 WebP 提速 34 倍、回归原生光标与关闭键悬停零漂移",
+    "summary": "修复文章左侧目录点击不跳转；将 12 张四季装饰图从 21.81 MB PNG 压缩为 642.7 KB WebP 并按当前季节优先加载；移除旧自定义光标回归系统原生指针；修复窗口关闭键悬停时叉号偏移问题。",
+    "content_markdown": "# 文章目录跳转修复、四季装饰 WebP 提速 34 倍、回归原生光标与关闭键悬停零漂移\n\n本次 `r55` 针对站长实测反馈的四项体验问题逐一收口：\n\n- **文章目录点击跳转**：将左侧目录项 `.article-toc-link` 的点击平滑滚动绑定到实际滚动容器 `.article-detail-card`，点击任意章节标题即时跳转并同步高亮与阅读进度。\n- **四季装饰图提速 34.7 倍**：将 12 张 `1536×1024` 原始 PNG（总计 `21.81 MB`）按展示尺寸转为透明 WebP（总计 `642.7 KB`），开启 `manifest` 预加载与浏览器缓存，并在渲染引擎中优先加载当前季节部件、后台静默预载其余三季。\n- **移除旧自定义光标**：清除旧版 XP 像素鼠标残留，全站回归清晰锐利的系统原生指针（常规/手型/输入/禁用态完整保留）。\n- **关闭键悬停零漂移**：统一全部窗口与弹窗关闭键常态和悬停态的居中点阵叉号尺寸与定位，消除悬停时叉号缩放偏移或露出旧样式的问题。"
+  },
+  "en": {
+    "title": "Article TOC Jump Fix, 34.7x Smaller WebP Seasonal Flora, Native Cursor & Zero-Drift Close Hover",
+    "summary": "Fixed Article TOC click scrolling inside .article-detail-card, compressed 21.81 MB seasonal PNGs into 642.7 KB WebP with active-season priority loading, removed legacy custom cursors in favor of native OS cursors, and locked close-button hover optical centering.",
+    "content_markdown": "# Article TOC Jump Fix, 34.7x Smaller WebP Seasonal Flora, Native Cursor & Zero-Drift Close Hover\n\nRelease `r55` resolves four owner-reported polish items:\n\n- **Article TOC Click-to-Jump**: Bound `.article-toc-link` clicks to the real `.article-detail-card` scroll container so clicking any heading smoothly scrolls to that section and updates active highlighting.\n- **34.7x Smaller Seasonal Flora**: Converted all 12 seasonal decoration assets from 21.81 MB raw PNGs to 642.7 KB display-sized transparent WebP, added manifest preloading, and prioritized the active season's parts first.\n- **Native System Cursors**: Removed legacy XP pixel cursor overrides in Pond mode so desktop interactions use crisp OS-native cursors.\n- **Zero-Drift Close Button Hover**: Unified normal and hover states of all window/modal close buttons to the exact same 16px centered dotted SVG (`font-size: 0; color: transparent; transform: none`)."
+  },
+  "ja": {
+    "title": "記事目次ジャンプ修正・季節装飾 WebP 34倍軽量化・標準カーソル復元・閉じるボタンホバー固定",
+    "summary": "記事左目次のクリック遷移を修正し、季節装飾12点を 21.81 MB PNG から 642.7 KB WebP へ圧縮・現季節優先読込に変更。旧カスタムカーソルを撤去しシステム標準へ統一、閉じるボタンのホバー時ズレも解消しました。",
+    "content_markdown": "# 記事目次ジャンプ修正・季節装飾 WebP 34倍軽量化・標準カーソル復元・閉じるボタンホバー固定\n\n`r55` にて4点の体験改善を実施しました：\n\n- **記事目次クリック遷移**：実際のスクロール領域 `.article-detail-card` へスムーズスクロールするよう修正しました。\n- **季節装飾の大幅軽量化**：12点の PNG（計 21.81 MB）を WebP（計 642.7 KB）へ最適化し、現在の季節を最優先で読み込むよう改善しました。\n- **システム標準カーソルへ統一**：旧デザインのカスタムカーソルを撤去し、OS 標準のシャープなポインターに統一しました。\n- **閉じるボタンのホバーズレ解消**：通常時とホバー時で全く同じ中央配置ドット×アイコンを維持し、位置ズレをゼロにしました。"
+  }
+}, "2026-11-23T14:27:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-23-pond-final-polish-r52-r54', '2026-11-23-pond-final-polish-r52-r54', 'site-updates', 'undefined', '', 'published', 0, 0, '2026-11-23T10:45:00+08:00', '2026-11-23T10:45:00+08:00', '2026-11-23T10:45:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-23-pond-final-polish-r52-r54", {
   "zh": {
