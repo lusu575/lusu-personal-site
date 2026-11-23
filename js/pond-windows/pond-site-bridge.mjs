@@ -8,6 +8,7 @@ import {
   saveManualSeasonOverride,
   startSeasonTimeSchedule
 } from '../pond-crt/season-schedule.mjs?v=20261122-pond-live-fix-r1';
+import { attachWelcomePilotButtons, getCrtGlassButtonPerfStats } from './crt-glass-button.mjs?v=20261123-pond-glass-r59';
 
 function isMobileShell() {
   return document.documentElement.dataset.shell === 'mobile' || window.innerWidth <= 768;
@@ -576,8 +577,12 @@ function bootPondVisualBridge() {
 
   const welcomeModalObs = document.getElementById('welcome-modal');
   if (welcomeModalObs) {
+    attachWelcomePilotButtons();
     new MutationObserver(() => {
-      if (!welcomeModalObs.hidden) window.requestAnimationFrame(syncRealTimeWelcomeGreeting);
+      if (!welcomeModalObs.hidden) {
+        attachWelcomePilotButtons();
+        window.requestAnimationFrame(syncRealTimeWelcomeGreeting);
+      }
     }).observe(welcomeModalObs, { attributes: true, attributeFilter: ['hidden'] });
   }
 
@@ -600,7 +605,8 @@ function bootPondVisualBridge() {
   window.__pondVisualBridge = {
     syncVisualMode,
     openWelcomeFromPond,
-    getEngine: () => engine
+    getEngine: () => engine,
+    getGlassButtonPerfStats: getCrtGlassButtonPerfStats
   };
 
   window.requestAnimationFrame(() => {

@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-23-pond-remove-corner-dock";
-const finalUpdateSlug = "2026-11-23-pond-remove-corner-dock";
+const finalUpdateId = "seed-update-2026-11-23-pond-crt-glass-pilot";
+const finalUpdateSlug = "2026-11-23-pond-crt-glass-pilot";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Removed Bottom-Right Online & Notice Capsules and Dedicated Styles";
-const finalPublishedAt = "2026-11-23T16:12:00+08:00";
+const finalTitleEn = "CRT Refractive Glass Unified Config & Welcome Modal Button Press Pilot";
+const finalPublishedAt = "2026-11-23T18:15:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-23-pond-remove-corner-dock",
   "seed-update-2026-11-23-pond-crt-boot-preloader",
   "seed-update-2026-11-23-pond-game-covers-webp-zero-flash",
   "seed-update-2026-11-23-pond-toc-webp-cursor-close-hover",

@@ -16083,6 +16083,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **関連コード・専用 CSS の完全整理**：`pond-site-bridge.mjs`、`pond-windows.css`、`index.html` から専用ロジックとスタイルを残さず削除しました。
 - **ようこそ画面は維持**：`#welcome-modal` 本体は変更せず、上部時計クリックまたは `#welcome` から引き続き開けます。', '2026-11-23T16:12:00+08:00', '2026-11-23T16:12:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-polish-r58', '2026-11-23T16:12:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-23-pond-crt-glass-pilot', '2026-11-23-pond-crt-glass-pilot', 'site-updates', 'undefined', '', 'published', 0, 0, '2026-11-23T18:15:00+08:00', '2026-11-23T18:15:00+08:00', '2026-11-23T18:15:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-crt-glass-pilot-zh', 'seed-update-2026-11-23-pond-crt-glass-pilot', 'zh', 'CRT 折射玻璃统一参数表与欢迎窗主按钮按压波纹试点上线', '按 CRT 折射玻璃适配方案落地步骤 2–3：建立全站唯一权威玻璃与阻尼弹簧参数表，并在欢迎窗快捷按钮试点接触点高斯凹陷、320ms 非线性释放波与边缘吃光反馈，静默零重绘。', '# CRT 折射玻璃统一参数表与欢迎窗主按钮按压波纹试点上线
+
+本次 `r59` 按《lusu575.com「液态玻璃」风格化适配方案》完成步骤 2 与步骤 3（试点验收节点）：
+
+- **统一参数表（`crt-glass-config.mjs`）**：集中维护光学折射（`IOR 1.46` / `8px` 肩部 / `2.5px` 最大位移）、二阶阻尼弹簧（`ζ/ω₀` 五场景表）、荧光粉玻璃色板、三级按钮等级与三档性能配置，自动同步 CSS 变量，杜绝魔法数字散落。
+- **欢迎窗按钮试点（`crt-glass-button.mjs`）**：接入 `#welcome-modal .quick-link` 主按钮（100% 保留原生 `<button>` 语义与键盘焦点）：支持非中心接触点高斯凹陷、120ms 阻尼按压下沉 `1.5px`、松手 320ms 非线性释放波、60ms `≤0.35px` 波峰短色散与 70ms 边缘吃光；双击替换旧波、取消仅释放视觉不误触业务、动画结束即零开销停帧，支持 `prefers-reduced-motion` 静态降级。', '2026-11-23T18:15:00+08:00', '2026-11-23T18:15:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-crt-glass-pilot-en', 'seed-update-2026-11-23-pond-crt-glass-pilot', 'en', 'CRT Refractive Glass Unified Config & Welcome Modal Button Press Pilot', 'Implemented Steps 2–3 of the CRT Refractive Glass specification: single authoritative optical/spring token table and Welcome modal quick-link button pilot with off-center Gaussian indent, 320ms non-linear release wave, 70ms rim catch, and idle-stop.', '# CRT Refractive Glass Unified Config & Welcome Modal Button Press Pilot
+
+Release `r59` completes Steps 2 and 3 of the CRT Refractive Glass plan (pilot checkpoint):
+
+- **Single Authoritative Config (`crt-glass-config.mjs`)**: Centralizes optical geometry (`IOR 1.46`, `8px` shoulder, `2.5px` max refraction), unified second-order damped springs, CRT phosphor glass colors, 3 button tiers, and 3 performance tiers synced to CSS variables.
+- **Welcome Modal Pilot (`crt-glass-button.mjs`)**: Bound to `#welcome-modal .quick-link` native `<button>` controls with off-center contact Gaussian indentation, 120ms spring press (`1.5px` / `0.985`), 320ms non-linear release wave, 60ms `<=0.35px` crest dispersion, 70ms rim catch, double-tap wave replacement, safe `pointercancel`, keyboard center contact, `prefers-reduced-motion` fallback, and zero-cost idle-stop.', '2026-11-23T18:15:00+08:00', '2026-11-23T18:15:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-crt-glass-pilot-ja', 'seed-update-2026-11-23-pond-crt-glass-pilot', 'ja', 'CRT 屈折ガラス統一パラメータ表＆ようこそボタン波紋パイロット実装', 'CRT 屈折ガラス仕様のステップ 2–3 を反映：光学・バネ物理の単一パラメータ定義を作成し、ようこそ画面ボタンで接触点ガウス凹み・320ms 非線形リリース波・縁発光をパイロット実装しました。', '# CRT 屈折ガラス統一パラメータ表＆ようこそボタン波紋パイロット実装
+
+`r59` にて CRT 屈折ガラス仕様のステップ 2・3（パイロット検収ポイント）を公開しました：
+
+- **統一パラメータ定義（`crt-glass-config.mjs`）**：光学パラメータ、2次減衰バネ、蛍光カラー、3段階ボタン等級、3段階パフォーマンス設定を一元管理し CSS 変数へ同期。
+- **ようこそボタンパイロット（`crt-glass-button.mjs`）**：ネイティブ `<button>` を保持したまま、偏心クリック接触点でのガウス凹み、120ms バネ押し込み、320ms リリース波、60ms 短色分散、70ms 縁発光、ダブルクリック波置換、キーボード中央起動、reduced-motion 静的フォールバック、終了時完全停止を実装しました。', '2026-11-23T18:15:00+08:00', '2026-11-23T18:15:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-glass-r59', '2026-11-23T18:15:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-polish-r58', '2026-11-23T16:12:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-glass-r59', '2026-11-23T18:15:00+08:00', 'schema') on conflict(version) do nothing;

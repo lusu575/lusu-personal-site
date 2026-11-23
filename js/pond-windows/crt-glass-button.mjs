@@ -1,0 +1,359 @@
+// Reusable CRT Refractive Glass Button Press Layer (Astra Spec V1.0 · Step 3)
+// Pure visual/tactile layer preserving 100% native <button> semantics, focus, keyboard & click count.
+// Implements MengTo shade-glass-button-press: local contact Gaussian indent, second-order spring hold,
+// 320ms non-linear release wave (crest + wake), brief <=0.35px RGB crest split, 70ms rim catch & idle-stop.
+
+import {
+  CRT_GLASS,
+  CRT_GLASS_BUTTON_LEVELS,
+  CRT_GLASS_SPRINGS,
+  syncCrtGlassCssVars
+} from './crt-glass-config.mjs?v=20261123-pond-glass-r59';
+
+const activeControllers = new Set();
+let rafId = 0;
+let lastFrameMs = 0;
+let perfStats = { frames: 0, totalJsMs: 0, maxJsMs: 0 };
+
+function prefersReducedMotion() {
+  return Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+
+function stepSecondOrderSpring(state, target, spring, dtSec) {
+  // Semi-implicit Euler with clamped sub-steps for 60Hz/120Hz identical feel
+  const steps = dtSec > 0.012 ? 2 : 1;
+  const h = dtSec / steps;
+  const w0 = spring.omega0;
+  const c = 2 * spring.zeta * w0;
+  const k = w0 * w0;
+  for (let i = 0; i < steps; i++) {
+    const accel = -k * (state.pos - target) - c * state.vel;
+    state.vel += accel * h;
+    state.pos += state.vel * h;
+  }
+  const settled = Math.abs(state.pos - target) < 0.002 && Math.abs(state.vel) < 0.01;
+  if (settled) {
+    state.pos = target;
+    state.vel = 0;
+  }
+  return settled;
+}
+
+function tickAll(nowMs) {
+  rafId = 0;
+  if (activeControllers.size === 0) return;
+
+  const t0 = performance.now();
+  const dtSec = lastFrameMs ? Math.min(0.033, Math.max(0.001, (nowMs - lastFrameMs) * 0.001)) : 0.0083;
+  lastFrameMs = nowMs;
+
+  for (const ctrl of [...activeControllers]) {
+    const keepRunning = ctrl._step(nowMs, dtSec);
+    if (!keepRunning) {
+      activeControllers.delete(ctrl);
+    }
+  }
+
+  const jsCost = performance.now() - t0;
+  perfStats.frames++;
+  perfStats.totalJsMs += jsCost;
+  if (jsCost > perfStats.maxJsMs) perfStats.maxJsMs = jsCost;
+
+  if (activeControllers.size > 0) {
+    rafId = requestAnimationFrame(tickAll);
+  } else {
+    lastFrameMs = 0;
+  }
+}
+
+function scheduleController(ctrl) {
+  activeControllers.add(ctrl);
+  if (!rafId) {
+    lastFrameMs = performance.now();
+    rafId = requestAnimationFrame(tickAll);
+  }
+}
+
+class CrtGlassButtonController {
+  constructor(el, levelName = 'glass-primary') {
+    this.el = el;
+    this.levelName = levelName;
+    this.level = CRT_GLASS_BUTTON_LEVELS[levelName] || CRT_GLASS_BUTTON_LEVELS['glass-primary'];
+    this.held = false;
+    this.spring = { pos: 0, vel: 0 }; // 0 = rest, 1 = fully pressed
+    this.contactX = 0;
+    this.contactY = 0;
+    this.btnW = 120;
+    this.btnH = 36;
+    this.reach = 120;
+    this.nearestRim = 18;
+    this.waveActive = false;
+    this.waveStartMs = 0;
+    this.rimCatchStartMs = 0;
+    this.activePointerId = null;
+
+    el.classList.add('crt-glass-btn', levelName);
+    el.dataset.crtGlassBound = levelName;
+
+    // Ensure dedicated optical layers exist inside button without disturbing text/icons
+    if (!el.querySelector('.crt-glass-wave-layer')) {
+      const waveLayer = document.createElement('span');
+      waveLayer.className = 'crt-glass-wave-layer';
+      waveLayer.setAttribute('aria-hidden', 'true');
+      el.prepend(waveLayer);
+    }
+
+    this._onPointerDown = this._handlePointerDown.bind(this);
+    this._onPointerUp = this._handlePointerUp.bind(this);
+    this._onPointerCancel = this._handlePointerCancel.bind(this);
+    this._onKeyDown = this._handleKeyDown.bind(this);
+    this._onKeyUp = this._handleKeyUp.bind(this);
+    this._onBlur = this._handleCancelVisual.bind(this);
+
+    el.addEventListener('pointerdown', this._onPointerDown);
+    el.addEventListener('pointerup', this._onPointerUp);
+    el.addEventListener('pointercancel', this._onPointerCancel);
+    el.addEventListener('lostpointercapture', this._onPointerCancel);
+    el.addEventListener('keydown', this._onKeyDown);
+    el.addEventListener('keyup', this._onKeyUp);
+    el.addEventListener('blur', this._onBlur);
+  }
+
+  _measureContact(clientX, clientY, useCenter = false) {
+    // Measure once relative to undeformed button rect
+    const rect = this.el.getBoundingClientRect();
+    this.btnW = Math.max(1, rect.width);
+    this.btnH = Math.max(1, rect.height);
+    if (useCenter || !Number.isFinite(clientX) || !Number.isFinite(clientY)) {
+      this.contactX = this.btnW * 0.5;
+      this.contactY = this.btnH * 0.5;
+    } else {
+      this.contactX = Math.max(0, Math.min(this.btnW, clientX - rect.left));
+      this.contactY = Math.max(0, Math.min(this.btnH, clientY - rect.top));
+    }
+    const maxDx = Math.max(this.contactX, this.btnW - this.contactX);
+    const maxDy = Math.max(this.contactY, this.btnH - this.contactY);
+    this.reach = Math.hypot(maxDx, maxDy);
+    this.nearestRim = Math.min(this.contactX, this.btnW - this.contactX, this.contactY, this.btnH - this.contactY);
+
+    const sigma = Math.max(8, Math.min(this.btnW, this.btnH) * CRT_GLASS.indentSigmaRatio);
+    const s = this.el.style;
+    s.setProperty('--cg-cx', `${this.contactX.toFixed(1)}px`);
+    s.setProperty('--cg-cy', `${this.contactY.toFixed(1)}px`);
+    s.setProperty('--cg-sigma', `${sigma.toFixed(1)}px`);
+  }
+
+  _handlePointerDown(e) {
+    if (this.el.disabled || e.button === 2) return;
+    this._measureContact(e.clientX, e.clientY, false);
+    this.activePointerId = e.pointerId;
+    try {
+      this.el.setPointerCapture(e.pointerId);
+    } catch {
+      // Synthetic events or detached elements may not support capture
+    }
+    this._beginHold();
+  }
+
+  _handlePointerUp(e) {
+    if (this.activePointerId !== null && e.pointerId !== this.activePointerId) return;
+    this._releaseCapture();
+    if (!this.held) return;
+    this._beginRelease(true);
+  }
+
+  _handlePointerCancel() {
+    this._releaseCapture();
+    this._handleCancelVisual();
+  }
+
+  _handleKeyDown(e) {
+    if (this.el.disabled || e.repeat) return;
+    if (e.key !== ' ' && e.key !== 'Enter') return;
+    this._measureContact(NaN, NaN, true);
+    this._beginHold();
+  }
+
+  _handleKeyUp(e) {
+    if (e.key !== ' ' && e.key !== 'Enter') return;
+    if (!this.held) return;
+    this._beginRelease(true);
+  }
+
+  _handleCancelVisual() {
+    if (!this.held && !this.waveActive) return;
+    this.held = false;
+    this.el.classList.remove('is-glass-held');
+    if (prefersReducedMotion()) {
+      this._resetVisual();
+      return;
+    }
+    // Release spring back to rest WITHOUT firing wave or business click
+    scheduleController(this);
+  }
+
+  _releaseCapture() {
+    if (this.activePointerId !== null) {
+      try {
+        if (this.el.hasPointerCapture?.(this.activePointerId)) {
+          this.el.releasePointerCapture(this.activePointerId);
+        }
+      } catch {}
+      this.activePointerId = null;
+    }
+  }
+
+  _beginHold() {
+    this.held = true;
+    // Double-tap replaces any running release wave cleanly (no wave accumulation)
+    this.waveActive = false;
+    this.el.classList.remove('is-glass-waving', 'is-glass-rim-catch');
+    this.el.classList.add('is-glass-held');
+
+    if (prefersReducedMotion()) {
+      this.el.style.setProperty('--cg-hold', '1');
+      return;
+    }
+    scheduleController(this);
+  }
+
+  _beginRelease(triggerWave) {
+    this.held = false;
+    this.el.classList.remove('is-glass-held');
+
+    if (prefersReducedMotion()) {
+      this._resetVisual();
+      return;
+    }
+
+    if (triggerWave && this.level.enableWave) {
+      this.waveActive = true;
+      this.waveStartMs = performance.now();
+      this.rimCatchStartMs = 0;
+      this.el.classList.add('is-glass-waving');
+    } else if (triggerWave && this.level.enableRimCatch) {
+      // glass-close: brief 70ms rim flash, no release wave
+      this.rimCatchStartMs = performance.now();
+      this.el.classList.add('is-glass-rim-catch');
+    }
+    scheduleController(this);
+  }
+
+  _resetVisual() {
+    this.held = false;
+    this.waveActive = false;
+    this.spring.pos = 0;
+    this.spring.vel = 0;
+    this.el.classList.remove('is-glass-held', 'is-glass-waving', 'is-glass-rim-catch');
+    const s = this.el.style;
+    s.removeProperty('--cg-hold');
+    s.removeProperty('--cg-press-y');
+    s.removeProperty('--cg-press-scale');
+    s.removeProperty('--cg-wave-r');
+    s.removeProperty('--cg-wave-band');
+    s.removeProperty('--cg-wave-alpha');
+    s.removeProperty('--cg-disp');
+    s.removeProperty('--cg-rim-catch');
+  }
+
+  _step(nowMs, dtSec) {
+    const s = this.el.style;
+
+    // 1. Step unified second-order damped spring (press vs release)
+    const target = this.held ? 1 : 0;
+    const springCfg = this.held ? CRT_GLASS_SPRINGS.buttonPress : CRT_GLASS_SPRINGS.buttonRelease;
+    const springSettled = stepSecondOrderSpring(this.spring, target, springCfg, dtSec);
+    const holdAmt = Math.max(0, Math.min(1.15, this.spring.pos));
+
+    const pressY = holdAmt * this.level.pressOffsetPx;
+    const pressScale = 1 - holdAmt * (1 - this.level.pressScale);
+    s.setProperty('--cg-hold', holdAmt.toFixed(4));
+    s.setProperty('--cg-press-y', `${pressY.toFixed(2)}px`);
+    s.setProperty('--cg-press-scale', pressScale.toFixed(4));
+
+    // 2. Step MengTo non-linear release wave (travel = (1 - (1 - t)^1.7) * (reach + bandWidth))
+    let waveRunning = false;
+    if (this.waveActive) {
+      const elapsed = nowMs - this.waveStartMs;
+      const dur = this.level.releaseDurationMs;
+      const t = Math.min(1, Math.max(0, elapsed / dur));
+      const bandWidth = this.btnW >= CRT_GLASS.waveWideThresholdPx ? CRT_GLASS.waveBandWidePx : CRT_GLASS.waveBandPx;
+      const travel = (1 - Math.pow(1 - t, CRT_GLASS.releaseWavePower)) * (this.reach + bandWidth);
+      const fade = (1 - t) * Math.min(1, t * 8);
+
+      s.setProperty('--cg-wave-r', `${travel.toFixed(1)}px`);
+      s.setProperty('--cg-wave-band', `${bandWidth.toFixed(1)}px`);
+      s.setProperty('--cg-wave-alpha', fade.toFixed(3));
+
+      // Brief RGB spectral split at wave crest (<= 60ms, <= 0.35px)
+      if (this.level.enableDispersion && elapsed <= CRT_GLASS.dispersionDurationMs) {
+        const dispEnv = Math.sin((elapsed / CRT_GLASS.dispersionDurationMs) * Math.PI);
+        s.setProperty('--cg-disp', `${(CRT_GLASS.dispersionPx * dispEnv).toFixed(3)}px`);
+      } else {
+        s.setProperty('--cg-disp', '0px');
+      }
+
+      // Rim catch glow when wave arrives at nearest button edge (70ms duration)
+      if (this.level.enableRimCatch && !this.rimCatchStartMs && travel >= Math.max(6, this.nearestRim)) {
+        this.rimCatchStartMs = nowMs;
+        this.el.classList.add('is-glass-rim-catch');
+      }
+
+      if (t >= 1) {
+        this.waveActive = false;
+        this.el.classList.remove('is-glass-waving');
+        s.setProperty('--cg-wave-alpha', '0');
+        s.setProperty('--cg-disp', '0px');
+      } else {
+        waveRunning = true;
+      }
+    }
+
+    // 3. Step 70ms rim catch glow
+    let rimRunning = false;
+    if (this.rimCatchStartMs > 0) {
+      const rimElapsed = nowMs - this.rimCatchStartMs;
+      if (rimElapsed < CRT_GLASS.rimCatchDurationMs) {
+        const rimEnv = Math.sin((rimElapsed / CRT_GLASS.rimCatchDurationMs) * Math.PI);
+        s.setProperty('--cg-rim-catch', rimEnv.toFixed(3));
+        rimRunning = true;
+      } else {
+        this.rimCatchStartMs = 0;
+        this.el.classList.remove('is-glass-rim-catch');
+        s.setProperty('--cg-rim-catch', '0');
+      }
+    }
+
+    const stillActive = this.held || !springSettled || waveRunning || rimRunning;
+    if (!stillActive) {
+      this._resetVisual();
+    }
+    return stillActive;
+  }
+}
+
+export function attachCrtGlassButton(el, levelName = 'glass-primary') {
+  if (!el || el.dataset.crtGlassBound) return null;
+  syncCrtGlassCssVars();
+  return new CrtGlassButtonController(el, levelName);
+}
+
+export function attachWelcomePilotButtons() {
+  syncCrtGlassCssVars();
+  const buttons = document.querySelectorAll('#welcome-modal .quick-link');
+  const bound = [];
+  buttons.forEach((btn) => {
+    const ctrl = attachCrtGlassButton(btn, 'glass-primary');
+    if (ctrl) bound.push(ctrl);
+  });
+  return bound;
+}
+
+export function getCrtGlassButtonPerfStats() {
+  return {
+    activeCount: activeControllers.size,
+    frames: perfStats.frames,
+    avgJsMs: perfStats.frames ? +(perfStats.totalJsMs / perfStats.frames).toFixed(4) : 0,
+    maxJsMs: +perfStats.maxJsMs.toFixed(4)
+  };
+}

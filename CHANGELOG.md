@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- CRT 折射玻璃统一参数表与欢迎窗主按钮按压波纹试点上线（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-crt-glass-pilot` / `2026-11-23-pond-crt-glass-pilot`；视觉层缓存 `20261123-pond-glass-r59`。
+
 - 下线首页右下角「在线 / 公告」胶囊并清理专属样式（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-remove-corner-dock` / `2026-11-23-pond-remove-corner-dock`；视觉层缓存 `20261123-pond-polish-r58`。
 
 - 纯代码 CRT 进站启动动画与全站 32 项素材预加载上线（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-crt-boot-preloader` / `2026-11-23-pond-crt-boot-preloader`；视觉层缓存 `20261123-pond-boot-r57`。

@@ -2,6 +2,29 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-crt-glass-pilot",
+      "slug": "2026-11-23-pond-crt-glass-pilot",
+      "category": "site-updates",
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T18:15:00+08:00",
+      "updated_at": "2026-11-23T18:15:00+08:00",
+      "published_at": "2026-11-23T18:15:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "CRT 折射玻璃统一参数表与欢迎窗主按钮按压波纹试点上线",
+        "en": "CRT Refractive Glass Unified Config & Welcome Modal Button Press Pilot",
+        "ja": "CRT 屈折ガラス統一パラメータ表＆ようこそボタン波紋パイロット実装"
+      },
+      "summary": {
+        "zh": "按 CRT 折射玻璃适配方案落地步骤 2–3：建立全站唯一权威玻璃与阻尼弹簧参数表，并在欢迎窗快捷按钮试点接触点高斯凹陷、320ms 非线性释放波与边缘吃光反馈，静默零重绘。",
+        "en": "Implemented Steps 2–3 of the CRT Refractive Glass specification: single authoritative optical/spring token table and Welcome modal quick-link button pilot with off-center Gaussian indent, 320ms non-linear release wave, 70ms rim catch, and idle-stop.",
+        "ja": "CRT 屈折ガラス仕様のステップ 2–3 を反映：光学・バネ物理の単一パラメータ定義を作成し、ようこそ画面ボタンで接触点ガウス凹み・320ms 非線形リリース波・縁発光をパイロット実装しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-remove-corner-dock",
       "slug": "2026-11-23-pond-remove-corner-dock",
       "category": "site-updates",
@@ -91,29 +114,6 @@ export const homeContent = Object.freeze({
         "zh": "修复文章左侧目录点击不跳转；将 12 张四季装饰图从 21.81 MB PNG 压缩为 642.7 KB WebP 并按当前季节优先加载；移除旧自定义光标回归系统原生指针；修复窗口关闭键悬停时叉号偏移问题。",
         "en": "Fixed Article TOC click scrolling inside .article-detail-card, compressed 21.81 MB seasonal PNGs into 642.7 KB WebP with active-season priority loading, removed legacy custom cursors in favor of native OS cursors, and locked close-button hover optical centering.",
         "ja": "記事左目次のクリック遷移を修正し、季節装飾12点を 21.81 MB PNG から 642.7 KB WebP へ圧縮・現季節優先読込に変更。旧カスタムカーソルを撤去しシステム標準へ統一、閉じるボタンのホバー時ズレも解消しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-final-polish-r52-r54",
-      "slug": "2026-11-23-pond-final-polish-r52-r54",
-      "category": "site-updates",
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T10:45:00+08:00",
-      "updated_at": "2026-11-23T10:45:00+08:00",
-      "published_at": "2026-11-23T10:45:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "全站细节收尾汇总（货架许可证/聊天室前缀/画板 1.0.13/日语页居中/互传防断词）",
-        "en": "Final Polish Rollup (r52–r54): Games License, Chat Prefix, Whiteboard 1.0.13, Trainer Centering & Transfer Line Breaks",
-        "ja": "最終細部調整まとめ（r52–r54）：ゲーム表記・チャット同期・画板 1.0.13・日本語中央配置・一時転送改行制御"
-      },
-      "summary": {
-        "zh": "汇总上线 r52–r54 收尾优化：彻底消除游戏货架窄卡「源」字裁切与聊天室同步前缀叠字，画板升版 1.0.13 消除卡片空白与加深画布提示底，日语页垂直居中，提亮知识库底部计数行，并修复临时互传简介「登录后」「24 小时」断行孤字。",
-        "en": "Consolidated r52–r54 polish: eliminated narrow Games card license clipping and Chat sync prefix overlap, bumped Whiteboard to 1.0.13 with balanced cards and dark canvas hint backdrop, centered Japanese Subtext vertically, brightened Knowledge footer count, and bound Transfer description line breaks.",
-        "ja": "r52–r54 の仕上げ調整を統合：ゲーム一覧のライセンス見切れとチャット同期表記の重なりを解消、ホワイトボードを 1.0.13 へ更新し余白とヒント背景を反映、日本語ページを縦中央配置、知識庫下部の件数表示を明るくし、一時転送紹介文の途中改行を防止しました。"
       }
     }
   ]
