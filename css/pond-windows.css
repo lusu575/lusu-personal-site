@@ -6340,12 +6340,16 @@ html[data-ui-shell="mobile"] body[data-route="home"] #pond-corner-dock .pond-cor
 }
 
 /* --- 4. Article Reader: Back-to-Top Fixed Bottom-Right Outside Text + Dotted Meta Icons --- */
+html[data-pond-mode="article"] #article-detail .article-detail-card {
+  padding: 4px 126px 76px 2px !important;
+}
+
 html[data-pond-mode="article"] #article-detail .article-top-link:not([hidden]) {
   position: fixed !important;
   left: auto !important;
   top: auto !important;
-  right: max(24px, calc(50vw - 496px)) !important;
-  bottom: max(74px, calc(50vh - 322px)) !important;
+  right: 16px !important;
+  bottom: 16px !important;
   z-index: 48 !important;
   margin: 0 !important;
   background: rgba(8, 32, 38, 0.92) !important;
