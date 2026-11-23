@@ -1,6 +1,34 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-23-pond-game-covers-webp-zero-flash",
+  "slug": "2026-11-23-pond-game-covers-webp-zero-flash",
+  "category": "site-updates",
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-23T14:37:00+08:00",
+  "updated_at": "2026-11-23T14:37:00+08:00",
+  "published_at": "2026-11-23T14:37:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "游戏封面 WebP 瘦身 93 倍、下架旧彩色图标与全站首帧防闪跳",
+    "en": "93x Smaller WebP/SVG Game Covers, Legacy Icon Removal & Zero-Flash First Paint",
+    "ja": "ゲーム表紙 WebP 93倍軽量化・旧カラーアイコン撤去と初回描画ちらつき解消"
+  },
+  "summary": {
+    "zh": "将游戏区封面从 5.53 MB PNG 压缩为 59.3 KB WebP 与独立 SVG，目录配置直指新版封面并彻底删除 5 张旧彩色 PNG，同时加入首帧同步模式初始化脚本消除页面闪跳。",
+    "en": "Compressed game covers from 5.53 MB PNGs into 59.3 KB WebP and standalone SVGs, updated games/catalog.json directly, removed 5 legacy colorful PNG icons, and added synchronous head mode initialization to prevent first-frame layout flashes.",
+    "ja": "ゲーム表紙を 5.53 MB PNG から 59.3 KB WebP と独立 SVG へ圧縮し、catalog.json を新版へ直結・旧カラー PNG 5枚を完全削除。head 同期初期化で初回フレームのレイアウトちらつきも解消しました。"
+  },
+  "content_markdown": {
+    "zh": "# 游戏封面 WebP 瘦身 93 倍、下架旧彩色图标与全站首帧防闪跳\n\n本次 `r56` 专项根治游戏区封面加载慢与旧版本闪现问题：\n\n- **游戏封面瘦身 93 倍**：`cover-cat`、`cover-darkroom`、`cover-restart` 三张 `1024×1024` 原图（共 `5.53 MB`）压缩为 `280×280` WebP（共 `59.3 KB`），`2048` 与 `Hextris` 落地为独立 `.svg` 文件。\n- **下架旧彩色图标消除闪旧图**：`games/catalog.json` 直接指向新版 WebP/SVG 封面，并从仓库与线上部署彻底删除 5 张旧彩色游戏图标 PNG 及 3 张旧 PNG 封面，进出游戏区不再先闪旧彩图。\n- **首帧直出当前版**：在 `index.html` `<head>` 增加同步 `data-pond-mode` 初始化脚本，首帧直接按目标路由渲染，并同步清空 `css/cursor-system.css` 中的旧 XP 光标残留。",
+    "en": "# 93x Smaller WebP/SVG Game Covers, Legacy Icon Removal & Zero-Flash First Paint\n\nRelease `r56` eliminates game cover loading lag and first-frame legacy flashes:\n\n- **93x Smaller Game Covers**: Converted `cover-cat`, `cover-darkroom`, and `cover-restart` from 5.53 MB raw PNGs into 59.3 KB `280×280` WebP assets, and extracted `2048` and `Hextris` into standalone SVG files.\n- **Legacy Icon Removal**: Pointed `games/catalog.json` directly to the new WebP/SVG covers and deleted the 5 legacy colorful game PNGs plus 3 oversized cover PNGs so old icons never flash on load or return.\n- **Zero-Flash First Paint**: Added a synchronous `<head>` bootstrap script in `index.html` to set `data-pond-mode` before first paint, and cleared legacy XP cursor rules from `css/cursor-system.css`.",
+    "ja": "# ゲーム表紙 WebP 93倍軽量化・旧カラーアイコン撤去と初回描画ちらつき解消\n\n`r56` ではゲーム表紙の読み込み速度と初回描画のちらつきを根本改善しました：\n\n- **ゲーム表紙を 93 倍軽量化**：3枚の 1024×1024 PNG（計 5.53 MB）を 280×280 WebP（計 59.3 KB）へ圧縮し、2048 と Hextris を独立 SVG 化しました。\n- **旧カラーアイコンの完全撤去**：`games/catalog.json` を新版表紙へ直接向け、旧カラー PNG 5枚と未圧縮表紙 PNG 3枚をリポジトリから完全削除しました。\n- **初回フレームのちらつき防止**：`index.html` の `<head>` に同期 `data-pond-mode` 初期化を追加し、`css/cursor-system.css` の旧カーソル定義も整理しました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-23-pond-toc-webp-cursor-close-hover",
   "slug": "2026-11-23-pond-toc-webp-cursor-close-hover",
   "category": "site-updates",

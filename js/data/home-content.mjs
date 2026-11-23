@@ -2,6 +2,29 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-game-covers-webp-zero-flash",
+      "slug": "2026-11-23-pond-game-covers-webp-zero-flash",
+      "category": "site-updates",
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T14:37:00+08:00",
+      "updated_at": "2026-11-23T14:37:00+08:00",
+      "published_at": "2026-11-23T14:37:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "游戏封面 WebP 瘦身 93 倍、下架旧彩色图标与全站首帧防闪跳",
+        "en": "93x Smaller WebP/SVG Game Covers, Legacy Icon Removal & Zero-Flash First Paint",
+        "ja": "ゲーム表紙 WebP 93倍軽量化・旧カラーアイコン撤去と初回描画ちらつき解消"
+      },
+      "summary": {
+        "zh": "将游戏区封面从 5.53 MB PNG 压缩为 59.3 KB WebP 与独立 SVG，目录配置直指新版封面并彻底删除 5 张旧彩色 PNG，同时加入首帧同步模式初始化脚本消除页面闪跳。",
+        "en": "Compressed game covers from 5.53 MB PNGs into 59.3 KB WebP and standalone SVGs, updated games/catalog.json directly, removed 5 legacy colorful PNG icons, and added synchronous head mode initialization to prevent first-frame layout flashes.",
+        "ja": "ゲーム表紙を 5.53 MB PNG から 59.3 KB WebP と独立 SVG へ圧縮し、catalog.json を新版へ直結・旧カラー PNG 5枚を完全削除。head 同期初期化で初回フレームのレイアウトちらつきも解消しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-toc-webp-cursor-close-hover",
       "slug": "2026-11-23-pond-toc-webp-cursor-close-hover",
       "category": "site-updates",
@@ -91,29 +114,6 @@ export const homeContent = Object.freeze({
         "zh": "清除全站 4 处残留渐变色并系统性提亮次要小字对比度；补齐游戏货架云存档状态栏、首页樱花枝避让与状态防卡死、欢迎窗实时问候与 5 条直显、人生重开暗色适配，并恢复关于页「资源」原文。",
         "en": "Replaced all 4 remaining gradient accents with solid Midnight Pond teal, lifted muted text contrast site-wide, added Games cloud-save status banner, fixed Home branch overlap and Welcome greeting timing, polished Life Restart, and restored About copy.",
         "ja": "4箇所のグラデーションを統一し補助文字の視認性を向上。ホーム枝被り回避、ようこそ挨拶時刻修正、ゲームクラウド状態バー追加、人生やり直し調整、プロフィール原文復元を実施しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-reader-darkroom-whiteboard-polish",
-      "slug": "2026-11-23-pond-reader-darkroom-whiteboard-polish",
-      "category": "site-updates",
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T08:46:00+08:00",
-      "updated_at": "2026-11-23T08:46:00+08:00",
-      "published_at": "2026-11-23T08:46:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "文章阅读进度条与右下角回顶净空、小黑屋排版及画板匿名栏细节修复",
-        "en": "Article Read-Progress & Corner Back-to-Top, A Dark Room Layout, and Whiteboard Identity Padding",
-        "ja": "記事の読書進捗バーと右下トップ戻り、A Dark Room 重なり解消・画板の余白修正"
-      },
-      "summary": {
-        "zh": "汇总修复文章阅读进度条随滚动实时更新、回到顶部按钮固定在窗口右下角永不压字、小黑屋消除标题与按钮重叠，以及在线画板匿名名字栏左内边距对称问题。",
-        "en": "Consolidated updates for live article read-progress tracking, non-overlapping bottom-right Back-to-Top button, A Dark Room title/button separation, and symmetric Whiteboard identity bar padding.",
-        "ja": "記事リーダーの進捗バー連動と右下コーナー固定のトップ戻り、A Dark Room の見出しとボタン重なり解消、オンライン画板の匿名欄パディング対称化を反映しました。"
       }
     }
   ]

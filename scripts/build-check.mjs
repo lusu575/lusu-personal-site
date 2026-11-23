@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-23-pond-toc-webp-cursor-close-hover";
-const finalUpdateSlug = "2026-11-23-pond-toc-webp-cursor-close-hover";
+const finalUpdateId = "seed-update-2026-11-23-pond-game-covers-webp-zero-flash";
+const finalUpdateSlug = "2026-11-23-pond-game-covers-webp-zero-flash";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Article TOC Jump Fix, 34.7x Smaller WebP Seasonal Flora, Native Cursor & Zero-Drift Close Hover";
-const finalPublishedAt = "2026-11-23T14:27:00+08:00";
+const finalTitleEn = "93x Smaller WebP/SVG Game Covers, Legacy Icon Removal & Zero-Flash First Paint";
+const finalPublishedAt = "2026-11-23T14:37:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-23-pond-toc-webp-cursor-close-hover",
   "seed-update-2026-11-23-pond-final-polish-r52-r54",
   "seed-update-2026-11-23-pond-source-level-final-polish",
   "seed-update-2026-11-23-pond-systemic-gradient-contrast-polish",
