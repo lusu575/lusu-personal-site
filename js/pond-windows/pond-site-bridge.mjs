@@ -493,6 +493,54 @@ function bootPondVisualBridge() {
   });
   syncCornerDock();
 
+  // Sync article reading progress bar & ~1-screen Back-to-Top visibility with Pond's scrollable .article-detail-card
+  function syncPondArticleScrollState() {
+    if (activeMode !== 'article') return;
+    const card = document.querySelector('#article-detail .article-detail-card');
+    const detail = document.getElementById('article-detail');
+    const scroller = (card && card.scrollHeight > card.clientHeight + 4) ? card : detail;
+    if (!scroller) return;
+    const maxScroll = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+    const pct = maxScroll > 0
+      ? Math.min(100, Math.max(0, Math.round((scroller.scrollTop / maxScroll) * 100)))
+      : 0;
+    const fill = document.getElementById('article-read-progress-fill');
+    const value = document.getElementById('article-read-progress-value');
+    const bar = document.getElementById('article-read-progress-bar');
+    const topBtn = document.querySelector('[data-article-scroll-top]');
+    if (fill) fill.style.transform = `scaleX(${pct / 100})`;
+    if (value) value.textContent = `${pct}%`;
+    if (bar) {
+      bar.setAttribute('aria-valuenow', String(pct));
+      bar.style.setProperty('--article-progress', String(pct));
+    }
+    const threshold = Math.min(360, Math.max(220, Math.round(scroller.clientHeight * 0.7)));
+    const hideTop = scroller.scrollTop < threshold;
+    if (topBtn) {
+      topBtn.classList.toggle('is-at-article-top', hideTop);
+      topBtn.toggleAttribute('hidden', hideTop);
+    }
+  }
+
+  const articleCardEl = document.querySelector('#article-detail .article-detail-card');
+  if (articleCardEl) {
+    articleCardEl.addEventListener('scroll', syncPondArticleScrollState, { passive: true });
+  }
+  const articleDetailEl = document.getElementById('article-detail');
+  if (articleDetailEl) {
+    articleDetailEl.addEventListener('scroll', syncPondArticleScrollState, { passive: true });
+    new MutationObserver(() => {
+      if (activeMode === 'article') window.requestAnimationFrame(syncPondArticleScrollState);
+    }).observe(articleDetailEl, { attributes: true, attributeFilter: ['hidden'], childList: true, subtree: false });
+  }
+  document.addEventListener('click', (e) => {
+    if (!e.target?.closest?.('[data-article-scroll-top]')) return;
+    const card = document.querySelector('#article-detail .article-detail-card');
+    if (card && card.scrollTop > 0) {
+      card.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+
   window.addEventListener('hashchange', () => {
     syncVisualMode();
     checkWelcomeHash();
