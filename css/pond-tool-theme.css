@@ -153,6 +153,39 @@ body {
   gap: 12px !important;
 }
 
+/* r49: Balance Whiteboard Public/Private cards, darken canvas hint & brighten Japanese Subtext */
+.lobby-card {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+.mobile-gesture-hint,
+.canvas-region .notice-banner,
+.board-shell .notice-banner {
+  background: rgba(6, 22, 26, 0.90) !important;
+  color: #eefcf9 !important;
+  border: 1px dashed rgba(164, 236, 228, 0.56) !important;
+  padding: 6px 12px !important;
+  border-radius: 999px !important;
+}
+
+.recent-room-copy,
+.recent-room-copy time,
+.recent-room-copy span {
+  color: rgba(214, 246, 242, 0.90) !important;
+}
+
+.trainer-title-lockup span {
+  color: rgba(218, 248, 244, 0.92) !important;
+  opacity: 1 !important;
+}
+
+.trainer-frame-card {
+  margin-bottom: 18px !important;
+}
+
 .lobby-card input,
 .password-field input,
 .whiteboard-page input {

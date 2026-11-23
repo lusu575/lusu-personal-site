@@ -2300,12 +2300,36 @@
         ` : "";
         const lifeRestartCss = slug === "life-restart" ? `
           html, body {
-            background: #06161b !important;
+            background:
+              radial-gradient(ellipse 64% 52% at 50% 42%, rgba(18, 72, 74, 0.28), transparent 72%),
+              #06161b !important;
             overflow-x: hidden !important;
+          }
+          .github-corner, a[href*="github"] > svg, svg.octo-arm {
+            display: none !important;
           }
           #main, .main, .container {
             padding-top: 8px !important;
             box-sizing: border-box !important;
+          }
+          #restart, .mainbtn, button.mainbtn {
+            border-radius: 999px !important;
+            border: 1.3px dashed rgba(176, 240, 234, 0.64) !important;
+            background: rgba(10, 38, 44, 0.88) !important;
+            color: #eefcf9 !important;
+            transition: border-color 0.14s ease, background-color 0.14s ease !important;
+          }
+          #restart:hover, .mainbtn:hover, button.mainbtn:hover {
+            border-style: solid !important;
+            border-color: #88fce2 !important;
+            background: rgba(18, 76, 82, 0.92) !important;
+            color: #ffffff !important;
+          }
+          .icon-btn, #themeToggleBtn, #rank, #achievement, #specialthanks {
+            border-radius: 999px !important;
+            border: 1px dashed rgba(164, 236, 228, 0.48) !important;
+            background: rgba(8, 28, 34, 0.82) !important;
+            color: #eefcf9 !important;
           }
         ` : "";
         style.textContent = (slug === "life-restart" ? "" : baseCss) + kittensCss + darkRoomCss + game2048Css + hextrisCss + lifeRestartCss;

@@ -15867,6 +15867,48 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **トップへ戻るボタンの右下固定（r47）**：記事ウィンドウ右下に固定配置し右余白を確保することで、最下部までスクロールしても本文に一切重ならないようにしました。
 - **オンライン画板の匿名欄余白（r48）**：`.identity-panel` に左右対称の `18px` 余白を設定し、左枠との接触を解消しました。', '2026-11-23T08:46:00+08:00', '2026-11-23T08:46:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-polish-r48', '2026-11-23T08:46:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-23-pond-systemic-gradient-contrast-polish', '2026-11-23-pond-systemic-gradient-contrast-polish', 'site-updates', 'undefined', '', 'published', 0, 0, '2026-11-23T08:56:00+08:00', '2026-11-23T08:56:00+08:00', '2026-11-23T08:56:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-systemic-gradient-contrast-polish-zh', 'seed-update-2026-11-23-pond-systemic-gradient-contrast-polish', 'zh', '全站渐变强调色清理、次要文字对比度提亮与各页细节收口', '清除全站 4 处残留渐变色并系统性提亮次要小字对比度；补齐游戏货架云存档状态栏、首页樱花枝避让与状态防卡死、欢迎窗实时问候与 5 条直显、人生重开暗色适配，并恢复关于页「资源」原文。', '# 全站渐变强调色清理、次要文字对比度提亮与各页细节收口
+
+本次更新完成全站复查清单中的系统性视觉规范与逐页收尾修复。
+
+## 系统性优化
+
+- **清除渐变强调色残留**：知识库与视频分类选中胶囊、文章阅读进度条、聊天室「普通房间」徽章及登录主按钮全部统一为深夜池塘实心青绿与点阵边框风格。
+- **次要文字对比度提亮**：统一提亮关于页字段标签、欢迎窗更新正文与日期、登录窗标签与占位字、聊天室欢迎行与时间戳、视频筛选计数、画板最近使用时间及日语页版本小字的可读性。
+
+## 逐页修复要点
+
+- **首页与欢迎窗**：微调知识库图标避开春季樱花枝遮挡；为右下角状态角标加入 10 秒接口探测兜底防久留「检测中」；欢迎窗首开按真实本地小时渲染早/中/下午/晚上好，并收紧行距让 5 条最近更新完整直显。
+- **登录、知识库、文章与视频弹窗**：登录主按钮拉通全宽并隐藏重复提示、注册态不现内部滚动条；知识库提亮禁用态清空键并加顶距缓冲；文章目录加宽滚动条与 16px 点阵元信息图标；视频浮层提亮 18px 全屏图标并暗色化失败态按钮。
+- **工具、画板、游戏货架、人生重开、聊天室与关于页**：工具三卡简介定高对齐按钮基线，画板两卡垂直分布对齐并加深画布提示底色；游戏货架顶部补齐云存档总状态条并区分「日文 不支持」标签；人生重开消除两侧纯黑带与左上角标并胶囊化按钮；聊天室同步状态补齐文字前缀并降低背景色带干扰；关于页逐字核对并恢复原文「资源」。', '2026-11-23T08:56:00+08:00', '2026-11-23T08:56:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-systemic-gradient-contrast-polish-en', 'seed-update-2026-11-23-pond-systemic-gradient-contrast-polish', 'en', 'Site-Wide Gradient Cleanup, Contrast Boost, Cloud-Save Banner & Final Page Polish', 'Replaced all 4 remaining gradient accents with solid Midnight Pond teal, lifted muted text contrast site-wide, added Games cloud-save status banner, fixed Home branch overlap and Welcome greeting timing, polished Life Restart, and restored About copy.', '# Site-Wide Gradient Cleanup, Contrast Boost, Cloud-Save Banner & Final Page Polish
+
+This release completes the full-site desktop inspection punch list across systemic tokens and individual pages.
+
+## Systemic improvements
+
+- **Gradient cleanup**: Replaced gradient fills on Knowledge/Video active pills, Article progress bar, Chatroom room badge, and Account submit button with solid Midnight Pond teal and dotted borders.
+- **Secondary text contrast**: Raised muted text contrast across About labels, Welcome summaries/dates, Login labels/placeholders, Chatroom timestamps, Video counts, Whiteboard timestamps, and Japanese Subtext version copy.
+
+## Page highlights
+
+- **Home & Welcome**: Nudged the Knowledge icon clear of the spring sakura branch, added a 10s connection-status fallback probe, fixed first-open Welcome greeting to match local time of day, and fitted all 5 recent updates cleanly.
+- **Knowledge, Article, Video Modal, Tools, Whiteboard, Games, Life Restart & Chatroom**: Aligned tool card button baselines, balanced Whiteboard cards, added a live Games Cloud-Save status banner, styled Life Restart buttons and side bands, added explicit Chatroom sync state prefixes, and verified About copy verbatim.', '2026-11-23T08:56:00+08:00', '2026-11-23T08:56:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-systemic-gradient-contrast-polish-ja', 'seed-update-2026-11-23-pond-systemic-gradient-contrast-polish', 'ja', '全サイトグラデーション整理・コントラスト改善・クラウドセーブ表示と各画面最終調整', '4箇所のグラデーションを統一し補助文字の視認性を向上。ホーム枝被り回避、ようこそ挨拶時刻修正、ゲームクラウド状態バー追加、人生やり直し調整、プロフィール原文復元を実施しました。', '# 全サイトグラデーション整理・コントラスト改善・クラウドセーブ表示と各画面最終調整
+
+今回の更新では、全サイト点検で挙げられた共通ルールと各ページの細部を一括調整しました。
+
+## 共通改善
+
+- **グラデーション整理**：ナレッジ・動画の選択カプセル、記事進捗バー、チャットルームバッジ、ログイン主ボタンを深夜の池テーマの単色ティールとドット枠へ統一しました。
+- **補助文字の視認性向上**：プロフィール項目名、更新日時、ログイン補助文字、チャットタイムスタンプ、各バージョン表記のコントラストを引き上げました。
+
+## 各画面の修正
+
+- **ホーム・ようこそ**：ナレッジアイコンを春の桜枝から離し、ステータス角標に10秒フォールバックを追加。初回表示時の挨拶を現在時刻に合わせ、最近更新5件をすべて見切れず表示しました。
+- **ゲーム・ツール・画板・チャット・プロフィール**：ゲーム一覧上部にクラウドセーブ状態バーを追加し、人生やり直し画面の黒帯・角装飾・ボタンを調整。チャット同期状態に明示ラベルを追加し、プロフィール紹介文の原文を復元しました。', '2026-11-23T08:56:00+08:00', '2026-11-23T08:56:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-polish-r49', '2026-11-23T08:56:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-polish-r48', '2026-11-23T08:46:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-polish-r49', '2026-11-23T08:56:00+08:00', 'schema') on conflict(version) do nothing;

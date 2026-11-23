@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- 全站渐变强调色清理、次要文字对比度提亮与各页细节收口（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-systemic-gradient-contrast-polish` / `2026-11-23-pond-systemic-gradient-contrast-polish`；视觉层缓存 `20261123-pond-polish-r49`。
+
 - 文章阅读进度条与右下角回顶净空、小黑屋排版及画板匿名栏细节修复（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-reader-darkroom-whiteboard-polish` / `2026-11-23-pond-reader-darkroom-whiteboard-polish`；视觉层缓存 `20261123-pond-polish-r48`。
 
 - 修复在线画板「当前匿名名字」内层容器 `.identity-panel` 左内边距贴边问题，补齐对称 `10px 18px` 内边距（r48）。

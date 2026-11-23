@@ -240,7 +240,7 @@ export const translations = {
     dailyAiNewsRssAria: "订阅每日 AI 新闻 RSS",
     statusLabel: "网站状态",
     statusValue: "持续建设中",
-    aboutCopy: "你好，我是鲁肃。这里是我的个人站，用来记录 AI、游戏、工具、素材和一些杂谈。",
+    aboutCopy: "你好，我是鲁肃。这里是我的个人站，用来记录 AI、游戏、工具、资源和一些杂谈。",
     welcomeTitle: "欢迎",
     // TEMP_REBUILD_NOTICE
     welcomeNoticeBadge: "公告",

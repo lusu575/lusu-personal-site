@@ -2,7 +2,7 @@
 // Zero business-logic rewrites: all routing, API fetching, filtering, sorting, pinning,
 // search, pagination, account sessions, and language switching stay 100% in existing main.js & routes/*.mjs.
 
-import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261123-pond-polish-r37';
+import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261123-pond-polish-r49';
 import {
   resolveInitialPondSeason,
   saveManualSeasonOverride,
@@ -229,12 +229,27 @@ function bootPondVisualBridge() {
     }, 0);
   }
 
+  function syncRealTimeWelcomeGreeting() {
+    const line = document.querySelector('#welcome-modal .welcome-greeting-line');
+    if (!line) return;
+    const h = new Date().getHours();
+    const lang = getCurrentSiteLang();
+    const bucket = h >= 5 && h < 11 ? 'morning' : h >= 11 && h < 14 ? 'noon' : h >= 14 && h < 18 ? 'afternoon' : 'evening';
+    const copy = {
+      zh: { morning: '早上好', noon: '中午好', afternoon: '下午好', evening: '晚上好' },
+      en: { morning: 'Good morning', noon: 'Good midday', afternoon: 'Good afternoon', evening: 'Good evening' },
+      ja: { morning: 'おはようございます', noon: 'こんにちは', afternoon: 'こんにちは', evening: 'こんばんは' }
+    };
+    line.textContent = (copy[lang] || copy.zh)[bucket];
+  }
+
   function openWelcomeFromPond() {
     const trigger = document.querySelector('[data-open-welcome]');
     if (!trigger) return;
     suppressNextOutsideClickUntil = performance.now() + 320;
     window.setTimeout(() => {
       trigger.click();
+      window.requestAnimationFrame(syncRealTimeWelcomeGreeting);
     }, 0);
   }
 
@@ -540,6 +555,84 @@ function bootPondVisualBridge() {
       card.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
+
+  // Watchdog: if #site-connection-status stays stuck on "checking" for >10s, probe lightweight API to resolve state
+  window.setTimeout(async () => {
+    if (!cornerStatus || cornerStatus.dataset.connectionState !== 'checking') return;
+    const lang = getCurrentSiteLang();
+    try {
+      const resp = await fetch('/api/articles?limit=1', { cache: 'no-store' });
+      const ok = resp.ok;
+      cornerStatus.dataset.connectionState = ok ? 'online' : 'offline';
+      if (cornerStatusLabel) {
+        cornerStatusLabel.textContent = ok
+          ? (lang === 'en' ? 'Online' : lang === 'ja' ? 'オンライン' : '在线')
+          : (lang === 'en' ? 'Offline' : lang === 'ja' ? 'オフライン' : '离线');
+      }
+    } catch {
+      cornerStatus.dataset.connectionState = 'offline';
+      if (cornerStatusLabel) {
+        cornerStatusLabel.textContent = lang === 'en' ? 'Offline' : lang === 'ja' ? 'オフライン' : '离线';
+      }
+    }
+  }, 10000);
+
+  // Sync Games shelf overall Cloud Save status banner + Chatroom explicit sync state label
+  function syncGamesCloudBanner() {
+    const gamesWin = document.querySelector('#games .xp-window');
+    const gameList = document.getElementById('game-list');
+    if (!gamesWin || !gameList) return;
+    let banner = document.getElementById('pond-games-cloud-banner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'pond-games-cloud-banner';
+      banner.className = 'pond-games-cloud-banner';
+      gameList.parentNode.insertBefore(banner, gameList);
+    }
+    const lang = getCurrentSiteLang();
+    const acctBtn = document.querySelector('#account-widget .account-button, #account-menu-trigger');
+    const signedIn = Boolean(
+      document.body.dataset.accountSignedIn === 'true'
+      || document.querySelector('#account-popover [data-account-logout]:not([hidden])')
+      || (acctBtn && acctBtn.dataset.signedIn === 'true')
+    );
+    banner.dataset.signedIn = signedIn ? '1' : '0';
+    banner.textContent = signedIn
+      ? (lang === 'en' ? '☁ Cloud Saves: Signed in & auto-syncing' : lang === 'ja' ? '☁ クラウドセーブ：ログイン中・自動同期オン' : '☁ 云存档状态：已登录 · 自动同步中')
+      : (lang === 'en' ? '☁ Cloud Saves: Local save mode (Sign in via bottom-left ID to enable cloud sync)' : lang === 'ja' ? '☁ クラウドセーブ：ローカル保存中（左下 ID からログインで同期）' : '☁ 云存档状态：当前为本地存档（点击左下角 ID 登录后开启自动云同步）');
+  }
+
+  function syncChatExplicitState() {
+    const el = document.getElementById('chat-sync-status');
+    if (!el) return;
+    const state = el.getAttribute('data-connection-state') || 'online';
+    const lang = getCurrentSiteLang();
+    const prefix = state === 'offline'
+      ? (lang === 'en' ? 'Offline · ' : lang === 'ja' ? '切断 · ' : '连接断开 · ')
+      : state === 'reconnecting'
+        ? (lang === 'en' ? 'Reconnecting · ' : lang === 'ja' ? '再接続中 · ' : '重连中 · ')
+        : (lang === 'en' ? 'Synced · ' : lang === 'ja' ? '同期済 · ' : '已同步 · ');
+    el.dataset.syncPrefix = prefix;
+  }
+
+  const chatSyncEl = document.getElementById('chat-sync-status');
+  if (chatSyncEl) {
+    new MutationObserver(syncChatExplicitState).observe(chatSyncEl, { attributes: true, attributeFilter: ['data-connection-state'] });
+    syncChatExplicitState();
+  }
+
+  const welcomeModalObs = document.getElementById('welcome-modal');
+  if (welcomeModalObs) {
+    new MutationObserver(() => {
+      if (!welcomeModalObs.hidden) window.requestAnimationFrame(syncRealTimeWelcomeGreeting);
+    }).observe(welcomeModalObs, { attributes: true, attributeFilter: ['hidden'] });
+  }
+
+  new MutationObserver(() => {
+    syncGamesCloudBanner();
+    syncChatExplicitState();
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'data-pond-mode'] });
+  syncGamesCloudBanner();
 
   window.addEventListener('hashchange', () => {
     syncVisualMode();

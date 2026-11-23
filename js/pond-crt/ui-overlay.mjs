@@ -269,7 +269,7 @@ const SEASON_EMBLEMS = {
 };
 
 export const DESKTOP_ICONS = [
-  { id: 'knowledge', route: '#knowledge', x: 0.21, y: 0.225, label: { zh: '知识库', en: 'Knowledge', ja: '知識庫' } },
+  { id: 'knowledge', route: '#knowledge', x: 0.245, y: 0.285, label: { zh: '知识库', en: 'Knowledge', ja: '知識庫' } },
   { id: 'videos',    route: '#videos',    x: 0.65, y: 0.235, label: { zh: '视频',   en: 'Videos',    ja: '動画' } },
   { id: 'resources', route: '#resources', x: 0.88, y: 0.345, label: { zh: '工具',   en: 'Tools',     ja: 'ツール' } },
   { id: 'games',     route: '#games',     x: 0.12, y: 0.495, label: { zh: '游戏',   en: 'Games',     ja: 'ゲーム' } },

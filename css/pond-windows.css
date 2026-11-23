@@ -6417,3 +6417,325 @@ html[data-ui-shell="mobile"] #about .profile-avatar {
   height: 156px !important;
   margin: 4px auto 12px !important;
 }
+
+/* ============================================================
+   r49: Comprehensive Full-Site Visual Polish (S1 Gradients Removed,
+        S2 Contrast Boost, Welcome 5-Item Fit, Login, Knowledge, Article,
+        Video Modal, Tools/Quick-Transfer, Games Shelf, Chatroom)
+   ============================================================ */
+
+/* --- S1: Eliminate ALL 4 Remaining Gradient Accent Pills/Bars -> Crisp Midnight Pond Teal --- */
+html[data-pond-mode] :is(#knowledge-categories, #video-categories) button.active,
+html[data-ui-shell="mobile"] :is(#knowledge-categories, #video-categories) button.active {
+  background: rgba(18, 76, 82, 0.92) !important;
+  background-image: none !important;
+  border: 1.4px solid #88fce2 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(102, 240, 224, 0.30) !important;
+}
+
+html[data-pond-mode="article"] #article-read-progress-fill,
+html[data-ui-shell="mobile"] #article-read-progress-fill {
+  background: #78fae2 !important;
+  background-image: none !important;
+  box-shadow: 0 0 10px rgba(120, 250, 226, 0.55) !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom .chat-room-badge,
+html[data-ui-shell="mobile"] #chatroom .chat-room-badge {
+  background: rgba(16, 62, 68, 0.90) !important;
+  background-image: none !important;
+  border: 1.2px dashed #88fce2 !important;
+  color: #eefcf9 !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode] #account-popover button[type="submit"],
+html[data-pond-mode] #account-popover .account-submit,
+html[data-ui-shell="mobile"] #account-popover button[type="submit"] {
+  background: rgba(18, 86, 90, 0.94) !important;
+  background-image: none !important;
+  border: 1.4px solid #88fce2 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(102, 240, 224, 0.26) !important;
+  width: 100% !important;
+}
+
+html[data-pond-mode] #account-popover button[type="submit"]:hover {
+  background: rgba(24, 108, 112, 0.96) !important;
+}
+
+/* --- S2: Systemic Secondary Text Contrast Boost (>= 4.5:1 Readable) --- */
+html[data-pond-mode="about"] #about dt,
+html[data-ui-shell="mobile"] #about dt {
+  color: #9af8ec !important;
+  font-weight: 600 !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .recent-update-summary,
+html[data-pond-mode="welcome"] #welcome-modal .recent-update-date,
+html[data-pond-mode="welcome"] #welcome-modal p,
+html[data-pond-mode="welcome"] #welcome-modal small {
+  color: rgba(218, 248, 244, 0.90) !important;
+}
+
+html[data-pond-mode] #account-popover label,
+html[data-pond-mode] #account-popover p,
+html[data-pond-mode] #account-popover small {
+  color: rgba(214, 246, 242, 0.92) !important;
+}
+
+html[data-pond-mode] #account-popover input::placeholder {
+  color: rgba(190, 232, 226, 0.72) !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom .chat-timestamp,
+html[data-pond-mode="chatroom"] #chatroom time,
+html[data-pond-mode="chatroom"] #chatroom .chat-welcome-line,
+html[data-pond-mode="chatroom"] #chatroom .chat-system-note {
+  color: rgba(208, 244, 238, 0.88) !important;
+}
+
+html[data-pond-mode="videos"] #video-categories .category-count,
+html[data-pond-mode="videos"] #video-categories span,
+html[data-pond-mode="knowledge"] #knowledge-categories span {
+  color: rgba(224, 250, 246, 0.94) !important;
+}
+
+/* --- Welcome Modal: All 5 Recent Updates Fully Visible Without Clipping --- */
+html[data-pond-mode="welcome"] #welcome-modal .xp-window.welcome-window {
+  max-height: min(920px, 95vh) !important;
+  padding: 12px 24px 30px !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .welcome-content {
+  gap: 7px !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates {
+  gap: 2px !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates li {
+  padding: 3px 0 !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal #recent-updates a {
+  padding: 5px 8px !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .recent-update-summary {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 1 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  line-height: 1.38 !important;
+}
+
+/* --- Login Popover: Full-Width Buttons, Deduplicate Note & Zero Register Scrollbar --- */
+html[data-pond-mode] #account-popover {
+  max-height: min(680px, 92vh) !important;
+  height: auto !important;
+  overflow-y: visible !important;
+}
+
+html[data-pond-mode] #account-popover .account-form-hint,
+html[data-pond-mode] #account-popover .account-helper-copy {
+  display: none !important;
+}
+
+/* --- Knowledge Base: Clean Bottom Row, Brighter Disabled Clear & Top Scroll Buffer --- */
+html[data-pond-mode="knowledge"] #knowledge-searchbar [data-article-search-clear]:disabled {
+  opacity: 0.72 !important;
+  color: #bcece6 !important;
+  border-color: rgba(164, 236, 228, 0.44) !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-list {
+  padding-top: 14px !important;
+  scroll-padding-top: 16px !important;
+}
+
+html[data-pond-mode="knowledge"] #knowledge-list .article-card .meta-row {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 6px 10px !important;
+}
+
+/* --- Article Reader: Wrapped Meta, Brighter 16px Icons, Compact TOC Tip & Wider Scrollbar --- */
+html[data-pond-mode="article"] #article-detail .article-meta {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 6px 14px !important;
+  line-height: 1.5 !important;
+}
+
+html[data-pond-mode="article"] .article-meta-category::before,
+html[data-pond-mode="article"] .article-meta-published::before {
+  width: 16px !important;
+  height: 16px !important;
+  background-size: 16px 16px !important;
+  filter: drop-shadow(0 0 5px rgba(154, 252, 242, 0.65)) !important;
+}
+
+html[data-pond-mode="article"] .article-reader-sidebar {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+html[data-pond-mode="article"] .article-toc {
+  flex: 1 1 auto !important;
+  min-height: 180px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+html[data-pond-mode="article"] #article-detail-toc-list {
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  padding-right: 6px !important;
+  padding-bottom: 12px !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(136, 252, 226, 0.48) rgba(6, 22, 26, 0.5) !important;
+}
+
+html[data-pond-mode="article"] #article-detail-toc-list::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+html[data-pond-mode="article"] #article-detail-toc-list::-webkit-scrollbar-thumb {
+  background: rgba(136, 252, 226, 0.48) !important;
+  border-radius: 999px !important;
+}
+
+html[data-pond-mode="article"] .article-toc-tip {
+  flex: 0 0 auto !important;
+  padding: 8px 10px !important;
+  font-size: 11px !important;
+  line-height: 1.45 !important;
+  text-wrap: balance !important;
+}
+
+/* --- Video Playback Modal: Bright 18px Maximize Icon + Dark Error Fallback Buttons --- */
+#video-modal .maximize-button::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Crect x='3' y='3' width='14' height='14' rx='2.2' fill='none' stroke='%23ecfffd' stroke-width='2.1' stroke-dasharray='2.6 1.5'/%3E%3C/svg%3E") !important;
+  background-size: 18px 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+}
+
+#video-modal .video-fallback,
+#video-modal .video-error,
+#video-modal .video-placeholder {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 14px !important;
+  padding: 28px 24px !important;
+  text-align: center !important;
+  text-wrap: balance !important;
+}
+
+#video-modal .video-frame button,
+#video-modal .video-frame a.xp-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 38px !important;
+  min-width: 112px !important;
+  padding: 8px 18px !important;
+  border-radius: 999px !important;
+  border: 1.3px dashed rgba(182, 240, 234, 0.62) !important;
+  background: rgba(8, 30, 36, 0.84) !important;
+  background-image: none !important;
+  color: #f0fefa !important;
+  box-shadow: none !important;
+}
+
+/* --- Tools (#resources) & Quick Transfer Sub-Panel --- */
+html[data-pond-mode="resources"] #resource-list .resource-card > p {
+  min-height: 4.6em !important;
+  line-height: 1.52 !important;
+  text-wrap: balance !important;
+}
+
+html[data-pond-mode="resources"] #quick-transfer-panel,
+html[data-pond-mode="resources"] .transfer-panel,
+html[data-pond-mode="resources"] .quick-transfer-shell {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(136, 252, 226, 0.44) rgba(6, 22, 26, 0.86) !important;
+}
+
+html[data-pond-mode="resources"] .transfer-version-badge,
+html[data-pond-mode="resources"] .transfer-badge,
+html[data-pond-mode="resources"] [data-transfer-version] {
+  background: rgba(16, 56, 62, 0.64) !important;
+  border: 1px dashed rgba(164, 236, 228, 0.56) !important;
+  color: #88fce2 !important;
+  border-radius: 999px !important;
+}
+
+html[data-pond-mode="resources"] .transfer-status-pill,
+html[data-pond-mode="resources"] .transfer-online-badge {
+  background: rgba(12, 68, 56, 0.88) !important;
+  border: 1px solid rgba(108, 252, 200, 0.68) !important;
+  color: #d6fff2 !important;
+}
+
+/* --- Games Shelf (#games): Cloud Banner, No Orphan Summary, Dimmed Unsupported Tag & Bottom Padding --- */
+html[data-pond-mode="games"] #pond-games-cloud-banner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin: 0 22px 10px !important;
+  padding: 8px 14px !important;
+  border-radius: 10px !important;
+  border: 1px dashed rgba(164, 236, 228, 0.44) !important;
+  background: rgba(8, 30, 36, 0.72) !important;
+  color: #c8f6f0 !important;
+  font-size: 12.5px !important;
+  line-height: 1.4 !important;
+}
+
+html[data-pond-mode="games"] #pond-games-cloud-banner[data-signed-in="1"] {
+  border-color: rgba(108, 252, 200, 0.68) !important;
+  color: #9afce6 !important;
+}
+
+html[data-pond-mode="games"] #game-list {
+  padding: 6px 22px 26px !important;
+}
+
+html[data-pond-mode="games"] #game-list .game-secondary-details > summary {
+  white-space: nowrap !important;
+  font-size: 12px !important;
+}
+
+html[data-pond-mode="games"] #game-list .tag.is-unsupported,
+html[data-pond-mode="games"] #game-list .tag[data-supported="false"] {
+  opacity: 0.56 !important;
+  border-style: dotted !important;
+  color: rgba(188, 212, 210, 0.72) !important;
+  text-decoration: line-through !important;
+}
+
+/* --- Chatroom: Explicit Sync Status Prefix & Cleaner Dark Message List --- */
+html[data-pond-mode="chatroom"] #chat-sync-status::after {
+  content: "" !important;
+}
+
+html[data-pond-mode="chatroom"] #chat-sync-status[data-sync-prefix]::before {
+  margin-right: 2px !important;
+}
+
+html[data-pond-mode="chatroom"] #chat-message-list {
+  background: rgba(5, 20, 25, 0.84) !important;
+  backdrop-filter: blur(4px) !important;
+}

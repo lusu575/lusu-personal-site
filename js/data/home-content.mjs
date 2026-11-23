@@ -2,6 +2,29 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-systemic-gradient-contrast-polish",
+      "slug": "2026-11-23-pond-systemic-gradient-contrast-polish",
+      "category": "site-updates",
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T08:56:00+08:00",
+      "updated_at": "2026-11-23T08:56:00+08:00",
+      "published_at": "2026-11-23T08:56:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "全站渐变强调色清理、次要文字对比度提亮与各页细节收口",
+        "en": "Site-Wide Gradient Cleanup, Contrast Boost, Cloud-Save Banner & Final Page Polish",
+        "ja": "全サイトグラデーション整理・コントラスト改善・クラウドセーブ表示と各画面最終調整"
+      },
+      "summary": {
+        "zh": "清除全站 4 处残留渐变色并系统性提亮次要小字对比度；补齐游戏货架云存档状态栏、首页樱花枝避让与状态防卡死、欢迎窗实时问候与 5 条直显、人生重开暗色适配，并恢复关于页「资源」原文。",
+        "en": "Replaced all 4 remaining gradient accents with solid Midnight Pond teal, lifted muted text contrast site-wide, added Games cloud-save status banner, fixed Home branch overlap and Welcome greeting timing, polished Life Restart, and restored About copy.",
+        "ja": "4箇所のグラデーションを統一し補助文字の視認性を向上。ホーム枝被り回避、ようこそ挨拶時刻修正、ゲームクラウド状態バー追加、人生やり直し調整、プロフィール原文復元を実施しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-reader-darkroom-whiteboard-polish",
       "slug": "2026-11-23-pond-reader-darkroom-whiteboard-polish",
       "category": "site-updates",
@@ -91,34 +114,6 @@ export const homeContent = Object.freeze({
         "zh": "桌面与手机端全站拉网排查：消除标题栏横线压过关闭键问题，统一按钮最小尺寸、对称内边距与元素间距，并修复游戏展开溢边与移动端触碰。",
         "en": "Full desktop and mobile audit fixing titlebar close-button line overlap, uneven quick-link alignment, undersized buttons, expanded card overflow, and tight gaps.",
         "ja": "デスクトップとモバイル全画面のボタンを総点検し、閉じるボタンと線の重なり、サイズ不足、左右余白の偏り、ゲーム展開枠のはみ出しや要素接触を修正しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-welcome-rebuild-notice",
-      "slug": "2026-11-22-pond-welcome-rebuild-notice",
-      "category": "site-updates",
-      "tags": [
-        "视觉升级",
-        "欢迎窗",
-        "公告"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T21:01:00+08:00",
-      "updated_at": "2026-11-22T21:01:00+08:00",
-      "published_at": "2026-11-22T21:01:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "欢迎弹窗顶部新增前端重构临时公告条（三语）",
-        "en": "Added Temporary Frontend Redesign Notice Banner to Welcome Modal (zh/en/ja)",
-        "ja": "ウェルカムウィンドウ上部にフロントエンド再構築のお知らせ枠を追加（3言語対応）"
-      },
-      "summary": {
-        "zh": "在欢迎窗最上方加入点阵虚线暖金临时公告条提示前端重构与逐步修复中，配齐中英日三语并保留独立撤除标记。",
-        "en": "Added a removable dotted amber notice banner at the top of the Welcome modal in Chinese, English, and Japanese without altering existing sections.",
-        "ja": "ウェルカム窓の最上部に点陣デザインの一時お知らせ枠（中・英・日）を追加し、後で一括撤去しやすい独立構成にしました。"
       }
     }
   ]
