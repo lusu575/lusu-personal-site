@@ -15950,6 +15950,44 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - ログイン主ボタンの全幅化・注記整理・登録時スクロールバー解消、記事メタの秒数削除と 17px アイコン強調、知識庫件数の視認性向上を実施しました。
 - 一時転送展開時のカード重なり解消・ダークスクロールバー・高コントラストバッジ、動画エラー再試行ボタン、ホワイトボード余白とヒント背景、日本語ページの縦余白も調整しました。', '2026-11-23T09:32:00+08:00', '2026-11-23T09:32:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-polish-r51', '2026-11-23T09:32:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-23-pond-final-polish-r52-r54', '2026-11-23-pond-final-polish-r52-r54', 'site-updates', 'undefined', '', 'published', 0, 0, '2026-11-23T10:45:00+08:00', '2026-11-23T10:45:00+08:00', '2026-11-23T10:45:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-final-polish-r52-r54-zh', 'seed-update-2026-11-23-pond-final-polish-r52-r54', 'zh', '全站细节收尾汇总（货架许可证/聊天室前缀/画板 1.0.13/日语页居中/互传防断词）', '汇总上线 r52–r54 收尾优化：彻底消除游戏货架窄卡「源」字裁切与聊天室同步前缀叠字，画板升版 1.0.13 消除卡片空白与加深画布提示底，日语页垂直居中，提亮知识库底部计数行，并修复临时互传简介「登录后」「24 小时」断行孤字。', '# 全站细节收尾汇总（r52–r54）
+
+本次合并记录 `r52`、`r53` 与 `r54` 三批线上细节收口：
+
+## 游戏货架与聊天室
+- **货架许可证零裁切**：调整首行窄卡封面列宽至 `88px`，`.game-main` 扩至 `158px`，全部 5 张卡片「许可证、全部语言与来源」完整显示。
+- **聊天室同步状态**：重置 `#chat-sync-status::before` 布局，清晰呈现「已同步 · 约 5 秒刷新」，无叠字。
+
+## 工具区、画板、日语页与知识库
+- **临时互传**：展开「版本与使用说明」限定内部滚动不挤出下方「打开」按钮；简介中为「登录后」与「24 小时」绑定不可拆连接符，消除断词与末行孤字。
+- **在线画板（v1.0.13）**：刷新主题缓存 `pond-tools-r5`，消除公共画板卡中部空白并为 Excalidraw 画布操作提示补齐深色圆角底。
+- **日语的言外之意 & 知识库**：日语页内容卡在视口内垂直居中以收敛底部留白；提亮知识库底部「已显示 X / Y 篇」汇总行对比度。', '2026-11-23T10:45:00+08:00', '2026-11-23T10:45:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-final-polish-r52-r54-en', 'seed-update-2026-11-23-pond-final-polish-r52-r54', 'en', 'Final Polish Rollup (r52–r54): Games License, Chat Prefix, Whiteboard 1.0.13, Trainer Centering & Transfer Line Breaks', 'Consolidated r52–r54 polish: eliminated narrow Games card license clipping and Chat sync prefix overlap, bumped Whiteboard to 1.0.13 with balanced cards and dark canvas hint backdrop, centered Japanese Subtext vertically, brightened Knowledge footer count, and bound Transfer description line breaks.', '# Final Polish Rollup (r52–r54)
+
+This release records the `r52`, `r53`, and `r54` visual polish updates:
+
+## Games Shelf & Chatroom
+- **Games License Summary**: Widened the text column on narrow top-row cards (`88px` cover) so the full license summary renders with zero right-edge clipping across all 5 cards.
+- **Chatroom Sync Prefix**: Fixed `#chat-sync-status::before` inline layout so `Synced ·` sits cleanly before the refresh interval.
+
+## Tools, Whiteboard, Japanese Subtext & Knowledge
+- **Quick Transfer**: Made expanded card details independently scrollable so the Open button stays inside the window, and added non-breaking joiners so `24 小时` and `登录后` never break awkwardly.
+- **Online Whiteboard (v1.0.13)**: Refreshed `pond-tools-r5` cache to remove the public-card middle gap and add a dark backdrop behind Excalidraw''s canvas hint.
+- **Japanese Subtext & Knowledge**: Vertically centered the trainer card in the viewport and brightened the Knowledge list footer count.', '2026-11-23T10:45:00+08:00', '2026-11-23T10:45:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-final-polish-r52-r54-ja', 'seed-update-2026-11-23-pond-final-polish-r52-r54', 'ja', '最終細部調整まとめ（r52–r54）：ゲーム表記・チャット同期・画板 1.0.13・日本語中央配置・一時転送改行制御', 'r52–r54 の仕上げ調整を統合：ゲーム一覧のライセンス見切れとチャット同期表記の重なりを解消、ホワイトボードを 1.0.13 へ更新し余白とヒント背景を反映、日本語ページを縦中央配置、知識庫下部の件数表示を明るくし、一時転送紹介文の途中改行を防止しました。', '# 最終細部調整まとめ（r52–r54）
+
+`r52`〜`r54` の反映内容をまとめました：
+
+## ゲーム一覧・チャット
+- 上段カードの画像列幅を調整し、全5カードでライセンス行が右端で切れないよう修正しました。
+- チャットの「同期済 ·」プレフィックスの重なりを解消しました。
+
+## ツール・ホワイトボード・日本語・知識庫
+- 一時転送の説明展開を内部スクロール化し、紹介文の「24 時間」「ログイン後」が途中で改行されないよう調整しました。
+- オンラインホワイトボード（v1.0.13）のキャッシュを更新し、カード余白とキャンバスヒント背景を反映しました。
+- 日本語ページを画面縦中央に配置し、知識庫下部の表示件数行の視認性を高めました。', '2026-11-23T10:45:00+08:00', '2026-11-23T10:45:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-polish-r54', '2026-11-23T10:45:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-polish-r51', '2026-11-23T09:32:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-polish-r54', '2026-11-23T10:45:00+08:00', 'schema') on conflict(version) do nothing;

@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-23-pond-source-level-final-polish";
-const finalUpdateSlug = "2026-11-23-pond-source-level-final-polish";
+const finalUpdateId = "seed-update-2026-11-23-pond-final-polish-r52-r54";
+const finalUpdateSlug = "2026-11-23-pond-final-polish-r52-r54";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Site-Wide Source-Level Polish (Games, Transfer, Login, Chat, Reader, Whiteboard & Trainer)";
-const finalPublishedAt = "2026-11-23T09:32:00+08:00";
+const finalTitleEn = "Final Polish Rollup (r52–r54): Games License, Chat Prefix, Whiteboard 1.0.13, Trainer Centering & Transfer Line Breaks";
+const finalPublishedAt = "2026-11-23T10:45:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-23-pond-source-level-final-polish",
   "seed-update-2026-11-23-pond-systemic-gradient-contrast-polish",
   "seed-update-2026-11-23-pond-reader-darkroom-whiteboard-polish",
   "seed-update-2026-11-23-pond-taskbar-removal-article-top-about-avatar",

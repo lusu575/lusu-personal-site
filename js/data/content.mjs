@@ -1,6 +1,34 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-23-pond-final-polish-r52-r54",
+  "slug": "2026-11-23-pond-final-polish-r52-r54",
+  "category": "site-updates",
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-23T10:45:00+08:00",
+  "updated_at": "2026-11-23T10:45:00+08:00",
+  "published_at": "2026-11-23T10:45:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "全站细节收尾汇总（货架许可证/聊天室前缀/画板 1.0.13/日语页居中/互传防断词）",
+    "en": "Final Polish Rollup (r52–r54): Games License, Chat Prefix, Whiteboard 1.0.13, Trainer Centering & Transfer Line Breaks",
+    "ja": "最終細部調整まとめ（r52–r54）：ゲーム表記・チャット同期・画板 1.0.13・日本語中央配置・一時転送改行制御"
+  },
+  "summary": {
+    "zh": "汇总上线 r52–r54 收尾优化：彻底消除游戏货架窄卡「源」字裁切与聊天室同步前缀叠字，画板升版 1.0.13 消除卡片空白与加深画布提示底，日语页垂直居中，提亮知识库底部计数行，并修复临时互传简介「登录后」「24 小时」断行孤字。",
+    "en": "Consolidated r52–r54 polish: eliminated narrow Games card license clipping and Chat sync prefix overlap, bumped Whiteboard to 1.0.13 with balanced cards and dark canvas hint backdrop, centered Japanese Subtext vertically, brightened Knowledge footer count, and bound Transfer description line breaks.",
+    "ja": "r52–r54 の仕上げ調整を統合：ゲーム一覧のライセンス見切れとチャット同期表記の重なりを解消、ホワイトボードを 1.0.13 へ更新し余白とヒント背景を反映、日本語ページを縦中央配置、知識庫下部の件数表示を明るくし、一時転送紹介文の途中改行を防止しました。"
+  },
+  "content_markdown": {
+    "zh": "# 全站细节收尾汇总（r52–r54）\n\n本次合并记录 `r52`、`r53` 与 `r54` 三批线上细节收口：\n\n## 游戏货架与聊天室\n- **货架许可证零裁切**：调整首行窄卡封面列宽至 `88px`，`.game-main` 扩至 `158px`，全部 5 张卡片「许可证、全部语言与来源」完整显示。\n- **聊天室同步状态**：重置 `#chat-sync-status::before` 布局，清晰呈现「已同步 · 约 5 秒刷新」，无叠字。\n\n## 工具区、画板、日语页与知识库\n- **临时互传**：展开「版本与使用说明」限定内部滚动不挤出下方「打开」按钮；简介中为「登录后」与「24 小时」绑定不可拆连接符，消除断词与末行孤字。\n- **在线画板（v1.0.13）**：刷新主题缓存 `pond-tools-r5`，消除公共画板卡中部空白并为 Excalidraw 画布操作提示补齐深色圆角底。\n- **日语的言外之意 & 知识库**：日语页内容卡在视口内垂直居中以收敛底部留白；提亮知识库底部「已显示 X / Y 篇」汇总行对比度。",
+    "en": "# Final Polish Rollup (r52–r54)\n\nThis release records the `r52`, `r53`, and `r54` visual polish updates:\n\n## Games Shelf & Chatroom\n- **Games License Summary**: Widened the text column on narrow top-row cards (`88px` cover) so the full license summary renders with zero right-edge clipping across all 5 cards.\n- **Chatroom Sync Prefix**: Fixed `#chat-sync-status::before` inline layout so `Synced ·` sits cleanly before the refresh interval.\n\n## Tools, Whiteboard, Japanese Subtext & Knowledge\n- **Quick Transfer**: Made expanded card details independently scrollable so the Open button stays inside the window, and added non-breaking joiners so `24 小时` and `登录后` never break awkwardly.\n- **Online Whiteboard (v1.0.13)**: Refreshed `pond-tools-r5` cache to remove the public-card middle gap and add a dark backdrop behind Excalidraw's canvas hint.\n- **Japanese Subtext & Knowledge**: Vertically centered the trainer card in the viewport and brightened the Knowledge list footer count.",
+    "ja": "# 最終細部調整まとめ（r52–r54）\n\n`r52`〜`r54` の反映内容をまとめました：\n\n## ゲーム一覧・チャット\n- 上段カードの画像列幅を調整し、全5カードでライセンス行が右端で切れないよう修正しました。\n- チャットの「同期済 ·」プレフィックスの重なりを解消しました。\n\n## ツール・ホワイトボード・日本語・知識庫\n- 一時転送の説明展開を内部スクロール化し、紹介文の「24 時間」「ログイン後」が途中で改行されないよう調整しました。\n- オンラインホワイトボード（v1.0.13）のキャッシュを更新し、カード余白とキャンバスヒント背景を反映しました。\n- 日本語ページを画面縦中央に配置し、知識庫下部の表示件数行の視認性を高めました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-23-pond-source-level-final-polish",
   "slug": "2026-11-23-pond-source-level-final-polish",
   "category": "site-updates",

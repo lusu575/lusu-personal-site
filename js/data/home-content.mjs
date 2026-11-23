@@ -2,6 +2,29 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-final-polish-r52-r54",
+      "slug": "2026-11-23-pond-final-polish-r52-r54",
+      "category": "site-updates",
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T10:45:00+08:00",
+      "updated_at": "2026-11-23T10:45:00+08:00",
+      "published_at": "2026-11-23T10:45:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "全站细节收尾汇总（货架许可证/聊天室前缀/画板 1.0.13/日语页居中/互传防断词）",
+        "en": "Final Polish Rollup (r52–r54): Games License, Chat Prefix, Whiteboard 1.0.13, Trainer Centering & Transfer Line Breaks",
+        "ja": "最終細部調整まとめ（r52–r54）：ゲーム表記・チャット同期・画板 1.0.13・日本語中央配置・一時転送改行制御"
+      },
+      "summary": {
+        "zh": "汇总上线 r52–r54 收尾优化：彻底消除游戏货架窄卡「源」字裁切与聊天室同步前缀叠字，画板升版 1.0.13 消除卡片空白与加深画布提示底，日语页垂直居中，提亮知识库底部计数行，并修复临时互传简介「登录后」「24 小时」断行孤字。",
+        "en": "Consolidated r52–r54 polish: eliminated narrow Games card license clipping and Chat sync prefix overlap, bumped Whiteboard to 1.0.13 with balanced cards and dark canvas hint backdrop, centered Japanese Subtext vertically, brightened Knowledge footer count, and bound Transfer description line breaks.",
+        "ja": "r52–r54 の仕上げ調整を統合：ゲーム一覧のライセンス見切れとチャット同期表記の重なりを解消、ホワイトボードを 1.0.13 へ更新し余白とヒント背景を反映、日本語ページを縦中央配置、知識庫下部の件数表示を明るくし、一時転送紹介文の途中改行を防止しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-source-level-final-polish",
       "slug": "2026-11-23-pond-source-level-final-polish",
       "category": "site-updates",
@@ -91,29 +114,6 @@ export const homeContent = Object.freeze({
         "zh": "桌面与手机端移除冗余底部任务栏，在右下角低调保留在线状态与公告入口；修复文章阅读页回到顶部在 0% 时压正文问题并替换元信息彩色图标；关于页去除头像方形底框只留圆本体。",
         "en": "Removed the redundant bottom taskbar on desktop and mobile while keeping live status and Welcome Notice in a subtle corner dock; fixed article Back-to-Top overlap at 0% scroll, replaced metadata emojis with dotted icons, and removed the square About avatar frame.",
         "ja": "デスクトップとモバイルの冗長な下部バーを削除し、右下に控えめなオンライン状態とお知らせ入口を配置。記事ページのトップへ戻る重なり修正とドットアイコン化、プロフィール画像の四角枠除去を実施しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-full-site-inspection-fixes",
-      "slug": "2026-11-23-pond-full-site-inspection-fixes",
-      "category": "site-updates",
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T00:20:00+08:00",
-      "updated_at": "2026-11-23T00:20:00+08:00",
-      "published_at": "2026-11-23T00:20:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "全站视觉点检修复：桌面底栏导航、欢迎窗入口、双工具页换装与四款游戏暗色适配",
-        "en": "Full-Site Visual Inspection Fixes: Desktop Taskbar, Welcome Triggers, Tool Reskins & Game Layouts",
-        "ja": "全サイト視覚点検修正：下部ナビ復元、ようこそ入口追加、ツール暗色化とゲーム調整"
-      },
-      "summary": {
-        "zh": "恢复桌面端底栏主导航与站点服务在线状态，打通首页顶部与底栏时间点击打开欢迎窗；完成在线画板与日语的言外之意深色点阵换装，并修复 Hextris 白画布、猫国零存档排版与小黑屋居中。",
-        "en": "Restored the desktop bottom navigation and live service status bar, wired clickable Welcome modal triggers, reskinned Whiteboard & Japanese Subtext in dark CRT style, and fixed Hextris, Kittens, A Dark Room, and Life Restart layouts.",
-        "ja": "デスクトップ下部ナビと稼働状態バーを復元し、時計クリックや #welcome でようこそ窓を開けるように改善。お絵かきボードと日本語の行間を暗色化し、Hextris・Kittens・A Dark Room の表示を修正しました。"
       }
     }
   ]

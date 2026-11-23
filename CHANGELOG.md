@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- 全站细节收尾汇总（货架许可证/聊天室前缀/画板 1.0.13/日语页居中/互传防断词）（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-final-polish-r52-r54` / `2026-11-23-pond-final-polish-r52-r54`；视觉层缓存 `20261123-pond-polish-r54`。
+
 - 全站源头级视觉与交互收口（游戏壳层/互传/登录/聊天室/文章/画板/日语页）（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-source-level-final-polish` / `2026-11-23-pond-source-level-final-polish`；视觉层缓存 `20261123-pond-polish-r51`。
 
 - 全站视觉自测收口（`r50`，配套站内更新种子 `seed-update-2026-11-23-pond-systemic-gradient-contrast-polish`）：彻底清除 `pond-windows.css` 中 8 处源头青→紫→粉渐变（知识库分类选中态、阅读进度条、工具分类选中态、聊天室普通房间徽章、登录主钮与 Tab）；修复欢迎窗「最近更新」5 条因 `.recent-update-summary` `overflow: visible` 导致的上下行重叠；将首页「知识库」图标右移至 `(0.395, 0.245)` 彻底避开春季樱花枝；为游戏货架 `.tag.language-tag.unsupported`（「日文 不支持」）补齐暗化虚线区分样式。

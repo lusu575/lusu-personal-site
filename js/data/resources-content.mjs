@@ -115,7 +115,7 @@ export const resourcesContent = Object.freeze({
         "ja": "一時転送"
       },
       "desc": {
-        "zh": "在手机和电脑之间传文字、图片和文件。登录后，用同一口令进入房间；内容发布后保留 24 小时。",
+        "zh": "在手机和电脑之间传文字、图片和文件。\u2060登\u2060录\u2060后\u2060，用同一口令进入房间；内容发布后保留\u00A024\u00A0小时。",
         "en": "Send text, photos, and files between your phone and computer. Sign in and enter the same room password; published items last 24 hours.",
         "ja": "スマホとPCの間でテキスト・写真・ファイルを送れます。ログインして同じ合言葉で入室。送信した内容は24時間で期限切れになります。"
       },
