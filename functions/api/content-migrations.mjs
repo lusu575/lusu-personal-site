@@ -77,7 +77,9 @@ export const KNOWN_PREDECESSOR_SEED_VERSIONS = Object.freeze(new Set([
   "20261123-pond-polish-r55",
   "20261123-pond-polish-r56",
   "20261123-pond-boot-r57",
-  "20261123-pond-polish-r58"
+  "20261123-pond-polish-r58",
+  "20261123-pond-glass-r59",
+  "20261123-pond-polish-r60"
 ]));
 
 function extractCanonicalSeedDate(value) {
