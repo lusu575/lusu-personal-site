@@ -1,6 +1,34 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-23-pond-source-level-final-polish",
+  "slug": "2026-11-23-pond-source-level-final-polish",
+  "category": "site-updates",
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-23T09:32:00+08:00",
+  "updated_at": "2026-11-23T09:32:00+08:00",
+  "published_at": "2026-11-23T09:32:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "全站源头级视觉与交互收口（游戏壳层/互传/登录/聊天室/文章/画板/日语页）",
+    "en": "Site-Wide Source-Level Polish (Games, Transfer, Login, Chat, Reader, Whiteboard & Trainer)",
+    "ja": "全サイト根本修正（ゲーム・一時転送・ログイン・チャット・記事・ホワイトボード・日本語）"
+  },
+  "summary": {
+    "zh": "同步 5 款游戏壳层缓存版本并消除猫国进门 Oops 闪现；修复人生重开两侧黑带、货架许可证裁切、聊天室同步前缀、登录窗全宽与去重、文章元信息去秒提亮、互传展开避让与徽章对比、画板卡片留白与日语页底空。",
+    "en": "Synced game-shell cache across all 5 games, eliminated Kittens Game boot Oops flash, replaced Life Restart black side bands, fixed Games license clipping, Chat sync prefix, Login full-width button, Reader meta without seconds, Transfer panel overlap, Whiteboard card balance & Japanese Trainer spacing.",
+    "ja": "全5ゲームのキャッシュ更新と Kittens Game 起動時 Oops 表示解消、Life Restart 左右黒帯改善、ライセンス見切れ・チャット同期表記・ログイン全幅・記事メタ秒数削除・一時転送重なり・ホワイトボード余白・日本語ページ下余白を一括修正しました。"
+  },
+  "content_markdown": {
+    "zh": "# 全站源头级视觉与交互收口\n\n本次 `r51` 从源头统一收口全站剩余视觉与交互细节：\n\n## 游戏壳层与内嵌游戏\n- **同步全部 5 款游戏壳层缓存版本**：将 `life-restart`、`kittens-game`、`a-dark-room`、`2048`、`hextris` 的 `game-shell.js/css` 统一升级至 `r51`。\n- **猫国建设者消除进门 Oops 闪现**：仅在加载完成、`#game` 脱离 `display:none` 后才启用三栏网格布局，彻底消除进入时约 10 秒的 `Oops! Looks like the game is not working` 闪现。\n- **人生重开模拟器**：为外层 `#layaContainer` 与页面底色补齐深色池塘背景与微光描边，消除两侧纯黑带。\n\n## 主站窗口与工具子页\n- **游戏货架与聊天室**：收缩窄卡许可证行字号避免「源」字被右框裁切；为聊天室同步状态补齐「已同步 · / 重连中 ·」明确文字前缀。\n- **登录窗、知识库与文章页**：登录主按钮与容器统一全宽对齐、去除重复说明并消除注册态内部滚动条；文章元信息源头去除秒数、改为折行排布并放大提亮 17px 点阵图标；提亮知识库筛选计数与「已显示 X / Y 篇」行。\n- **工具互传、画板、日语页与视频弹窗**：互传展开时自动隐藏下方工具卡片避免遮挡，统一深色滚动条、青色虚线版本胶囊与高对比「在线」状态；视频失败态「重试播放器」换深色点阵样式；画板消除公共卡中部空白并为画布提示条加深色底；日语页收紧底部留白并提亮版本小字；首页右下角角标容器不遮挡附近导航区域。",
+    "en": "# Site-Wide Source-Level Polish\n\nRelease `r51` resolves the remaining visual and interaction items at their source:\n\n## Games Shell & Embedded Games\n- **Synced `game-shell` cache (`r51`)** across all 5 embedded games.\n- **Kittens Game**: Prevented `#game` from overriding `display:none` during initial loading, eliminating the 10-second `Oops!` flash.\n- **Life Restart**: Themed the outer LayaAir container with the dark Midnight Pond backdrop and subtle glow frame, removing the pure-black side bands.\n\n## Main Windows & Standalone Tools\n- **Games Shelf & Chatroom**: Prevented right-edge clipping on the license summary line and restored explicit `Synced ·` / `Reconnecting ·` status prefixes.\n- **Login, Knowledge & Article Reader**: Enforced full-width submit buttons, deduplicated helper notes, removed Register-mode scrollbars, removed seconds from Article timestamps at the source, enabled multi-line meta wrapping with brighter 17px icons, and boosted Knowledge status/count contrast.\n- **Quick Transfer, Whiteboard, Japanese Trainer & Video Modal**: Hid tool cards while Quick Transfer is open, applied dark scrollbars, cyan dotted version badges, and high-contrast Online pills; restyled Video retry button; removed Whiteboard middle void and added a dark backdrop to Excalidraw's HintViewer; tightened Japanese Trainer height and brightened its version label.",
+    "ja": "# 全サイト根本修正\n\n`r51` にて各ページの残課題を根本から修正しました。\n\n## ゲームシェル・内蔵ゲーム\n- 全5ゲームの `game-shell` キャッシュを `r51` へ同期しました。\n- Kittens Game 読み込み中に `#game` が先行表示され `Oops!` が点滅する問題を解消しました。\n- Life Restart 外枠の黒帯をダークポンド背景へ統一しました。\n\n## 各画面とツール\n- ゲーム一覧ライセンス行の右端見切れを解消し、チャット同期状態に「同期済 ·」の明示ラベルを追加しました。\n- ログイン主ボタンの全幅化・注記整理・登録時スクロールバー解消、記事メタの秒数削除と 17px アイコン強調、知識庫件数の視認性向上を実施しました。\n- 一時転送展開時のカード重なり解消・ダークスクロールバー・高コントラストバッジ、動画エラー再試行ボタン、ホワイトボード余白とヒント背景、日本語ページの縦余白も調整しました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-23-pond-systemic-gradient-contrast-polish",
   "slug": "2026-11-23-pond-systemic-gradient-contrast-polish",
   "category": "site-updates",

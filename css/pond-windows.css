@@ -366,7 +366,8 @@ html[data-pond-mode="knowledge"] #knowledge-categories .category-button.active {
 }
 
 html[data-pond-mode="knowledge"] #knowledge-categories .filter-count {
-  opacity: 0.84;
+  opacity: 1 !important;
+  color: #d8fdf8 !important;
   font-size: 11px;
   background: transparent !important;
   border: none !important;
@@ -6546,18 +6547,46 @@ html[data-ui-shell="mobile"] #games .tag.language-tag.unsupported {
 }
 
 /* --- Login Popover: Full-Width Buttons, Deduplicate Note & Zero Register Scrollbar --- */
-html[data-pond-mode] #account-popover {
-  max-height: min(680px, 92vh) !important;
+html[data-pond-mode] #account-popover,
+html[data-pond-mode] #account-popover:not([hidden]),
+html[data-pond-mode] #account-popover form {
+  max-height: none !important;
   height: auto !important;
-  overflow-y: visible !important;
+  overflow: visible !important;
+}
+
+html[data-pond-mode] #account-popover .account-form-actions,
+html[data-pond-mode] #account-popover .account-actions {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+}
+
+html[data-pond-mode] #account-popover button[type="submit"],
+html[data-pond-mode] #account-popover .account-primary-action,
+html[data-pond-mode] #account-popover .account-submit {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 html[data-pond-mode] #account-popover .account-form-hint,
-html[data-pond-mode] #account-popover .account-helper-copy {
+html[data-pond-mode] #account-popover .account-helper-copy,
+html[data-pond-mode] #account-popover .account-note {
   display: none !important;
 }
 
-/* --- Knowledge Base: Clean Bottom Row, Brighter Disabled Clear & Top Scroll Buffer --- */
+/* --- Knowledge Base: Brighter Status/Counts, Clean Bottom Row, Brighter Disabled Clear & Top Scroll Buffer --- */
+html[data-pond-mode="knowledge"] #knowledge-search-status {
+  color: #d6fcf6 !important;
+  opacity: 1 !important;
+  font-weight: 500 !important;
+}
+
 html[data-pond-mode="knowledge"] #knowledge-searchbar [data-article-search-clear]:disabled {
   opacity: 0.72 !important;
   color: #bcece6 !important;
@@ -6576,21 +6605,31 @@ html[data-pond-mode="knowledge"] #knowledge-list .article-card .meta-row {
   gap: 6px 10px !important;
 }
 
-/* --- Article Reader: Wrapped Meta, Brighter 16px Icons, Compact TOC Tip & Wider Scrollbar --- */
+/* --- Article Reader: Wrapped Meta (#article-detail-meta), Brighter 17px Icons, Compact TOC Tip & Wider Scrollbar --- */
+html[data-pond-mode="article"] #article-detail #article-detail-meta,
 html[data-pond-mode="article"] #article-detail .article-meta {
   display: flex !important;
   flex-wrap: wrap !important;
   align-items: center !important;
-  gap: 6px 14px !important;
-  line-height: 1.5 !important;
+  row-gap: 8px !important;
+  column-gap: 14px !important;
+  line-height: 1.55 !important;
+}
+
+html[data-pond-mode="article"] #article-detail-meta .article-meta-item {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  color: #cef8f2 !important;
 }
 
 html[data-pond-mode="article"] .article-meta-category::before,
 html[data-pond-mode="article"] .article-meta-published::before {
-  width: 16px !important;
-  height: 16px !important;
-  background-size: 16px 16px !important;
-  filter: drop-shadow(0 0 5px rgba(154, 252, 242, 0.65)) !important;
+  width: 17px !important;
+  height: 17px !important;
+  background-size: 17px 17px !important;
+  opacity: 1 !important;
+  filter: brightness(1.38) drop-shadow(0 0 6px rgba(136, 252, 226, 0.85)) !important;
 }
 
 html[data-pond-mode="article"] .article-reader-sidebar {
@@ -6656,6 +6695,10 @@ html[data-pond-mode="article"] .article-toc-tip {
   text-wrap: balance !important;
 }
 
+html[data-pond-mode] #video-modal [data-video-player-retry],
+html[data-pond-mode] #video-modal .video-fallback .xp-button,
+html[data-pond-mode] #video-modal .video-frame button,
+html[data-pond-mode] #video-modal .video-frame a.xp-button,
 #video-modal .video-frame button,
 #video-modal .video-frame a.xp-button {
   display: inline-flex !important;
@@ -6665,41 +6708,70 @@ html[data-pond-mode="article"] .article-toc-tip {
   min-width: 112px !important;
   padding: 8px 18px !important;
   border-radius: 999px !important;
-  border: 1.3px dashed rgba(182, 240, 234, 0.62) !important;
-  background: rgba(8, 30, 36, 0.84) !important;
+  border: 1.3px dashed #88fce2 !important;
+  background: rgba(10, 38, 44, 0.92) !important;
   background-image: none !important;
   color: #f0fefa !important;
   box-shadow: none !important;
 }
 
-/* --- Tools (#resources) & Quick Transfer Sub-Panel --- */
+/* --- Tools (#resources) & Quick Transfer Sub-Panel (#transfer-app) --- */
 html[data-pond-mode="resources"] #resource-list .resource-card > p {
-  min-height: 4.6em !important;
+  min-height: 4.5em !important;
+  font-size: 12.6px !important;
+  letter-spacing: -0.01em !important;
   line-height: 1.52 !important;
   text-wrap: balance !important;
 }
 
-html[data-pond-mode="resources"] #quick-transfer-panel,
-html[data-pond-mode="resources"] .transfer-panel,
-html[data-pond-mode="resources"] .quick-transfer-shell {
-  scrollbar-width: thin !important;
-  scrollbar-color: rgba(136, 252, 226, 0.44) rgba(6, 22, 26, 0.86) !important;
+html[data-pond-mode="resources"] #resources:has(#transfer-app:not([hidden])) #resource-list,
+html[data-pond-mode="resources"] #resources:has(#transfer-app:not([hidden])) #resource-categories {
+  display: none !important;
 }
 
-html[data-pond-mode="resources"] .transfer-version-badge,
-html[data-pond-mode="resources"] .transfer-badge,
-html[data-pond-mode="resources"] [data-transfer-version] {
-  background: rgba(16, 56, 62, 0.64) !important;
-  border: 1px dashed rgba(164, 236, 228, 0.56) !important;
-  color: #88fce2 !important;
+html[data-pond-mode="resources"] #transfer-app,
+html[data-pond-mode="resources"] #transfer-app * {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(136, 252, 226, 0.44) rgba(6, 22, 26, 0.90) !important;
+}
+
+html[data-pond-mode="resources"] #transfer-app::-webkit-scrollbar,
+html[data-pond-mode="resources"] #transfer-app *::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+
+html[data-pond-mode="resources"] #transfer-app::-webkit-scrollbar-track,
+html[data-pond-mode="resources"] #transfer-app *::-webkit-scrollbar-track {
+  background: rgba(6, 22, 26, 0.90) !important;
+}
+
+html[data-pond-mode="resources"] #transfer-app::-webkit-scrollbar-thumb,
+html[data-pond-mode="resources"] #transfer-app *::-webkit-scrollbar-thumb {
+  background: rgba(136, 252, 226, 0.44) !important;
   border-radius: 999px !important;
 }
 
-html[data-pond-mode="resources"] .transfer-status-pill,
-html[data-pond-mode="resources"] .transfer-online-badge {
-  background: rgba(12, 68, 56, 0.88) !important;
-  border: 1px solid rgba(108, 252, 200, 0.68) !important;
-  color: #d6fff2 !important;
+html[data-pond-mode="resources"] #transfer-app .transfer-project-version,
+html[data-ui-shell="mobile"] #transfer-app .transfer-project-version {
+  background: rgba(16, 56, 62, 0.68) !important;
+  background-image: none !important;
+  border: 1px dashed rgba(164, 236, 228, 0.58) !important;
+  color: #88fce2 !important;
+  border-radius: 999px !important;
+  padding: 2px 10px !important;
+  box-shadow: none !important;
+}
+
+html[data-pond-mode="resources"] #transfer-app #transfer-network-status,
+html[data-pond-mode="resources"] #transfer-app .transfer-network-status,
+html[data-ui-shell="mobile"] #transfer-app .transfer-network-status {
+  background: rgba(10, 62, 52, 0.92) !important;
+  background-image: none !important;
+  border: 1px solid rgba(108, 252, 200, 0.72) !important;
+  color: #dcfff4 !important;
+  border-radius: 999px !important;
+  padding: 3px 12px !important;
 }
 
 /* --- Games Shelf (#games): Cloud Banner, No Orphan Summary, Dimmed Unsupported Tag & Bottom Padding --- */
@@ -6726,9 +6798,19 @@ html[data-pond-mode="games"] #game-list {
   padding: 6px 22px 26px !important;
 }
 
+html[data-pond-mode="games"] #game-list .game-secondary-details {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
 html[data-pond-mode="games"] #game-list .game-secondary-details > summary {
   white-space: nowrap !important;
-  font-size: 12px !important;
+  font-size: 11px !important;
+  letter-spacing: 0 !important;
+  padding-right: 4px !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 html[data-pond-mode="games"] #game-list .tag.is-unsupported,
@@ -6745,10 +6827,22 @@ html[data-pond-mode="chatroom"] #chat-sync-status::after {
 }
 
 html[data-pond-mode="chatroom"] #chat-sync-status[data-sync-prefix]::before {
+  content: attr(data-sync-prefix) !important;
+  color: #7efce0 !important;
+  font-weight: 600 !important;
   margin-right: 2px !important;
 }
 
 html[data-pond-mode="chatroom"] #chat-message-list {
   background: rgba(5, 20, 25, 0.84) !important;
   backdrop-filter: blur(4px) !important;
+}
+
+/* --- Home Corner Dock: Non-Blocking Container Wrapper --- */
+#pond-corner-dock {
+  pointer-events: none !important;
+}
+
+#pond-corner-dock > * {
+  pointer-events: auto !important;
 }

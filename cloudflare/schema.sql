@@ -15909,6 +15909,47 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **ホーム・ようこそ**：ナレッジアイコンを春の桜枝から離し、ステータス角標に10秒フォールバックを追加。初回表示時の挨拶を現在時刻に合わせ、最近更新5件をすべて見切れず表示しました。
 - **ゲーム・ツール・画板・チャット・プロフィール**：ゲーム一覧上部にクラウドセーブ状態バーを追加し、人生やり直し画面の黒帯・角装飾・ボタンを調整。チャット同期状態に明示ラベルを追加し、プロフィール紹介文の原文を復元しました。', '2026-11-23T08:56:00+08:00', '2026-11-23T08:56:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-polish-r49', '2026-11-23T08:56:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-23-pond-source-level-final-polish', '2026-11-23-pond-source-level-final-polish', 'site-updates', 'undefined', '', 'published', 0, 0, '2026-11-23T09:32:00+08:00', '2026-11-23T09:32:00+08:00', '2026-11-23T09:32:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-source-level-final-polish-zh', 'seed-update-2026-11-23-pond-source-level-final-polish', 'zh', '全站源头级视觉与交互收口（游戏壳层/互传/登录/聊天室/文章/画板/日语页）', '同步 5 款游戏壳层缓存版本并消除猫国进门 Oops 闪现；修复人生重开两侧黑带、货架许可证裁切、聊天室同步前缀、登录窗全宽与去重、文章元信息去秒提亮、互传展开避让与徽章对比、画板卡片留白与日语页底空。', '# 全站源头级视觉与交互收口
+
+本次 `r51` 从源头统一收口全站剩余视觉与交互细节：
+
+## 游戏壳层与内嵌游戏
+- **同步全部 5 款游戏壳层缓存版本**：将 `life-restart`、`kittens-game`、`a-dark-room`、`2048`、`hextris` 的 `game-shell.js/css` 统一升级至 `r51`。
+- **猫国建设者消除进门 Oops 闪现**：仅在加载完成、`#game` 脱离 `display:none` 后才启用三栏网格布局，彻底消除进入时约 10 秒的 `Oops! Looks like the game is not working` 闪现。
+- **人生重开模拟器**：为外层 `#layaContainer` 与页面底色补齐深色池塘背景与微光描边，消除两侧纯黑带。
+
+## 主站窗口与工具子页
+- **游戏货架与聊天室**：收缩窄卡许可证行字号避免「源」字被右框裁切；为聊天室同步状态补齐「已同步 · / 重连中 ·」明确文字前缀。
+- **登录窗、知识库与文章页**：登录主按钮与容器统一全宽对齐、去除重复说明并消除注册态内部滚动条；文章元信息源头去除秒数、改为折行排布并放大提亮 17px 点阵图标；提亮知识库筛选计数与「已显示 X / Y 篇」行。
+- **工具互传、画板、日语页与视频弹窗**：互传展开时自动隐藏下方工具卡片避免遮挡，统一深色滚动条、青色虚线版本胶囊与高对比「在线」状态；视频失败态「重试播放器」换深色点阵样式；画板消除公共卡中部空白并为画布提示条加深色底；日语页收紧底部留白并提亮版本小字；首页右下角角标容器不遮挡附近导航区域。', '2026-11-23T09:32:00+08:00', '2026-11-23T09:32:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-source-level-final-polish-en', 'seed-update-2026-11-23-pond-source-level-final-polish', 'en', 'Site-Wide Source-Level Polish (Games, Transfer, Login, Chat, Reader, Whiteboard & Trainer)', 'Synced game-shell cache across all 5 games, eliminated Kittens Game boot Oops flash, replaced Life Restart black side bands, fixed Games license clipping, Chat sync prefix, Login full-width button, Reader meta without seconds, Transfer panel overlap, Whiteboard card balance & Japanese Trainer spacing.', '# Site-Wide Source-Level Polish
+
+Release `r51` resolves the remaining visual and interaction items at their source:
+
+## Games Shell & Embedded Games
+- **Synced `game-shell` cache (`r51`)** across all 5 embedded games.
+- **Kittens Game**: Prevented `#game` from overriding `display:none` during initial loading, eliminating the 10-second `Oops!` flash.
+- **Life Restart**: Themed the outer LayaAir container with the dark Midnight Pond backdrop and subtle glow frame, removing the pure-black side bands.
+
+## Main Windows & Standalone Tools
+- **Games Shelf & Chatroom**: Prevented right-edge clipping on the license summary line and restored explicit `Synced ·` / `Reconnecting ·` status prefixes.
+- **Login, Knowledge & Article Reader**: Enforced full-width submit buttons, deduplicated helper notes, removed Register-mode scrollbars, removed seconds from Article timestamps at the source, enabled multi-line meta wrapping with brighter 17px icons, and boosted Knowledge status/count contrast.
+- **Quick Transfer, Whiteboard, Japanese Trainer & Video Modal**: Hid tool cards while Quick Transfer is open, applied dark scrollbars, cyan dotted version badges, and high-contrast Online pills; restyled Video retry button; removed Whiteboard middle void and added a dark backdrop to Excalidraw''s HintViewer; tightened Japanese Trainer height and brightened its version label.', '2026-11-23T09:32:00+08:00', '2026-11-23T09:32:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-source-level-final-polish-ja', 'seed-update-2026-11-23-pond-source-level-final-polish', 'ja', '全サイト根本修正（ゲーム・一時転送・ログイン・チャット・記事・ホワイトボード・日本語）', '全5ゲームのキャッシュ更新と Kittens Game 起動時 Oops 表示解消、Life Restart 左右黒帯改善、ライセンス見切れ・チャット同期表記・ログイン全幅・記事メタ秒数削除・一時転送重なり・ホワイトボード余白・日本語ページ下余白を一括修正しました。', '# 全サイト根本修正
+
+`r51` にて各ページの残課題を根本から修正しました。
+
+## ゲームシェル・内蔵ゲーム
+- 全5ゲームの `game-shell` キャッシュを `r51` へ同期しました。
+- Kittens Game 読み込み中に `#game` が先行表示され `Oops!` が点滅する問題を解消しました。
+- Life Restart 外枠の黒帯をダークポンド背景へ統一しました。
+
+## 各画面とツール
+- ゲーム一覧ライセンス行の右端見切れを解消し、チャット同期状態に「同期済 ·」の明示ラベルを追加しました。
+- ログイン主ボタンの全幅化・注記整理・登録時スクロールバー解消、記事メタの秒数削除と 17px アイコン強調、知識庫件数の視認性向上を実施しました。
+- 一時転送展開時のカード重なり解消・ダークスクロールバー・高コントラストバッジ、動画エラー再試行ボタン、ホワイトボード余白とヒント背景、日本語ページの縦余白も調整しました。', '2026-11-23T09:32:00+08:00', '2026-11-23T09:32:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-polish-r51', '2026-11-23T09:32:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-polish-r49', '2026-11-23T08:56:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-polish-r51', '2026-11-23T09:32:00+08:00', 'schema') on conflict(version) do nothing;

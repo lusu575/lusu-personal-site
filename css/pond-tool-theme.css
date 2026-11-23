@@ -153,36 +153,52 @@ body {
   gap: 12px !important;
 }
 
-/* r49: Balance Whiteboard Public/Private cards, darken canvas hint & brighten Japanese Subtext */
+/* r51: Balance Whiteboard Public/Private cards (no 100px middle void), dark backdrop on Excalidraw HintViewer, tighten Japanese Subtext height & version contrast */
+.lobby-grid,
+.lobby-cards {
+  align-items: start !important;
+}
+
 .lobby-card {
   display: flex !important;
   flex-direction: column !important;
-  justify-content: space-between !important;
+  justify-content: flex-start !important;
   gap: 12px !important;
+  height: auto !important;
 }
 
 .mobile-gesture-hint,
 .canvas-region .notice-banner,
-.board-shell .notice-banner {
+.board-shell .notice-banner,
+.excalidraw .HintViewer,
+.excalidraw .HintViewer span {
   background: rgba(6, 22, 26, 0.90) !important;
   color: #eefcf9 !important;
   border: 1px dashed rgba(164, 236, 228, 0.56) !important;
-  padding: 6px 12px !important;
+  padding: 5px 12px !important;
   border-radius: 999px !important;
+  opacity: 1 !important;
+}
+
+.excalidraw .HintViewer span {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
 }
 
 .recent-room-copy,
 .recent-room-copy time,
 .recent-room-copy span {
-  color: rgba(214, 246, 242, 0.90) !important;
+  color: rgba(218, 248, 244, 0.92) !important;
 }
 
-.trainer-title-lockup span {
-  color: rgba(218, 248, 244, 0.92) !important;
-  opacity: 1 !important;
+.trainer-shell {
+  min-height: auto !important;
+  padding-bottom: 24px !important;
 }
 
 .trainer-frame-card {
+  min-height: auto !important;
   margin-bottom: 18px !important;
 }
 
@@ -249,7 +265,9 @@ body {
 }
 
 .trainer-title-lockup span {
-  color: var(--pond-muted) !important;
+  color: #c2f6ee !important;
+  opacity: 1 !important;
+  font-weight: 500 !important;
 }
 
 .trainer-frame-card {

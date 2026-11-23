@@ -925,7 +925,7 @@ export function createKnowledgeRoute({
     meta.replaceChildren();
     [
       { text: `${t("articleCategory")}: ${articleCategoryName(article.category || "note")}`, className: "article-meta-item article-meta-category" },
-      { text: `${t("articlePublished")}: ${formatArticleDate(article.published_at || article.created_at)}`, className: "article-meta-item article-meta-published" },
+      { text: `${t("articlePublished")}: ${formatArticleDate(article.published_at || article.created_at, { includeSeconds: false })}`, className: "article-meta-item article-meta-published" },
       ...visibleArticleTags(article, articleTagName, articleCategoryName(article.category)).map((tag) => ({ text: `#${tag}`, className: "tag" })),
       article.lang !== getCurrentLang() ? { text: t("articleFallback"), className: "tag" } : null
     ].filter(Boolean).forEach(({ text, className }) => {

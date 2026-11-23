@@ -2,6 +2,29 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-source-level-final-polish",
+      "slug": "2026-11-23-pond-source-level-final-polish",
+      "category": "site-updates",
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T09:32:00+08:00",
+      "updated_at": "2026-11-23T09:32:00+08:00",
+      "published_at": "2026-11-23T09:32:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "全站源头级视觉与交互收口（游戏壳层/互传/登录/聊天室/文章/画板/日语页）",
+        "en": "Site-Wide Source-Level Polish (Games, Transfer, Login, Chat, Reader, Whiteboard & Trainer)",
+        "ja": "全サイト根本修正（ゲーム・一時転送・ログイン・チャット・記事・ホワイトボード・日本語）"
+      },
+      "summary": {
+        "zh": "同步 5 款游戏壳层缓存版本并消除猫国进门 Oops 闪现；修复人生重开两侧黑带、货架许可证裁切、聊天室同步前缀、登录窗全宽与去重、文章元信息去秒提亮、互传展开避让与徽章对比、画板卡片留白与日语页底空。",
+        "en": "Synced game-shell cache across all 5 games, eliminated Kittens Game boot Oops flash, replaced Life Restart black side bands, fixed Games license clipping, Chat sync prefix, Login full-width button, Reader meta without seconds, Transfer panel overlap, Whiteboard card balance & Japanese Trainer spacing.",
+        "ja": "全5ゲームのキャッシュ更新と Kittens Game 起動時 Oops 表示解消、Life Restart 左右黒帯改善、ライセンス見切れ・チャット同期表記・ログイン全幅・記事メタ秒数削除・一時転送重なり・ホワイトボード余白・日本語ページ下余白を一括修正しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-systemic-gradient-contrast-polish",
       "slug": "2026-11-23-pond-systemic-gradient-contrast-polish",
       "category": "site-updates",
@@ -91,29 +114,6 @@ export const homeContent = Object.freeze({
         "zh": "恢复桌面端底栏主导航与站点服务在线状态，打通首页顶部与底栏时间点击打开欢迎窗；完成在线画板与日语的言外之意深色点阵换装，并修复 Hextris 白画布、猫国零存档排版与小黑屋居中。",
         "en": "Restored the desktop bottom navigation and live service status bar, wired clickable Welcome modal triggers, reskinned Whiteboard & Japanese Subtext in dark CRT style, and fixed Hextris, Kittens, A Dark Room, and Life Restart layouts.",
         "ja": "デスクトップ下部ナビと稼働状態バーを復元し、時計クリックや #welcome でようこそ窓を開けるように改善。お絵かきボードと日本語の行間を暗色化し、Hextris・Kittens・A Dark Room の表示を修正しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-22-pond-button-spacing-system",
-      "slug": "2026-11-22-pond-button-spacing-system",
-      "category": "site-updates",
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-22T23:41:00+08:00",
-      "updated_at": "2026-11-22T23:41:00+08:00",
-      "published_at": "2026-11-22T23:41:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "全站按钮尺寸、光学居中与间距体系统一重构",
-        "en": "Site-Wide Button Sizing, Optical Centering, and Spacing System",
-        "ja": "全サイト共通のボタンサイズ・中央揃え・余白設計の統一"
-      },
-      "summary": {
-        "zh": "桌面与手机端全站拉网排查：消除标题栏横线压过关闭键问题，统一按钮最小尺寸、对称内边距与元素间距，并修复游戏展开溢边与移动端触碰。",
-        "en": "Full desktop and mobile audit fixing titlebar close-button line overlap, uneven quick-link alignment, undersized buttons, expanded card overflow, and tight gaps.",
-        "ja": "デスクトップとモバイル全画面のボタンを総点検し、閉じるボタンと線の重なり、サイズ不足、左右余白の偏り、ゲーム展開枠のはみ出しや要素接触を修正しました。"
       }
     }
   ]

@@ -2,7 +2,7 @@
 // Zero business-logic rewrites: all routing, API fetching, filtering, sorting, pinning,
 // search, pagination, account sessions, and language switching stay 100% in existing main.js & routes/*.mjs.
 
-import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261123-pond-polish-r50';
+import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261123-pond-polish-r51';
 import {
   resolveInitialPondSeason,
   saveManualSeasonOverride,
