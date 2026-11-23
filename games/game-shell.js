@@ -2098,6 +2098,7 @@
             grid-template-columns: 210px minmax(0, 1fr) !important;
             grid-template-rows: auto auto !important;
             column-gap: 32px !important;
+            row-gap: 14px !important;
             align-items: start !important;
             box-sizing: border-box !important;
             border: 1.4px solid rgba(164, 236, 228, 0.40) !important;
@@ -2119,9 +2120,20 @@
             position: relative !important;
             grid-column: 2 !important;
             grid-row: 1 !important;
+            display: flex !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+            gap: 14px !important;
             height: auto !important;
-            min-height: 0 !important;
-            padding-bottom: 16px !important;
+            min-height: 24px !important;
+            padding: 0 0 4px 0 !important;
+            margin: 0 !important;
+          }
+          div#header .headerButton {
+            float: none !important;
+            position: static !important;
+            margin: 0 !important;
+            line-height: 1.3 !important;
           }
           div#content {
             position: relative !important;
@@ -2141,6 +2153,17 @@
             min-height: 0 !important;
             float: none !important;
             overflow: visible !important;
+          }
+          .button, div.button {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 108px !important;
+            min-height: 36px !important;
+            padding: 6px 18px !important;
+            margin: 4px 8px 6px 0 !important;
+            text-align: center !important;
+            line-height: 1.2 !important;
           }
           #outerSlider, #main, #locationSlider, #event, .eventPanel {
             background: transparent !important;
