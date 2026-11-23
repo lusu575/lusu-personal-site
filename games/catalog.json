@@ -15,7 +15,7 @@
         "en": "A long-form resource management and incremental game about a kitten civilization, wired into site language launch and cloud saves.",
         "ja": "子猫の文明を育てる長期型の資源管理・放置ゲームです。サイト言語起動とクラウド保存に対応しています。"
       },
-      "cover": "../assets/images/generated-icons/kittens-game.png?v=20260719-content-experience-fixes-r1",
+      "cover": "../assets/pond-windows/covers/cover-cat.webp?v=20261123-pond-polish-r56",
       "entry": "kittens-game/",
       "sourceEntry": "source/index.html",
       "language": "支持中文 / English / 日本語",
@@ -64,7 +64,7 @@
         "en": "A minimalist text adventure and resource management game, wired into site language launch and cloud saves.",
         "ja": "ミニマルなテキスト冒険・資源管理ゲームです。サイト言語起動とクラウド保存に対応しています。"
       },
-      "cover": "../assets/images/generated-icons/a-dark-room.png?v=20260719-content-experience-fixes-r1",
+      "cover": "../assets/pond-windows/covers/cover-darkroom.webp?v=20261123-pond-polish-r56",
       "entry": "a-dark-room/",
       "sourceEntry": "source/index.html",
       "launchQuery": "ignorebrowser=true",
@@ -108,7 +108,7 @@
         "en": "The classic sliding-number puzzle game, deployed locally with save import/export and cloud saves.",
         "ja": "定番の数字スライドパズルです。本站に内蔵し、保存の入出力とクラウド保存に対応しました。"
       },
-      "cover": "../assets/images/generated-icons/2048.png?v=20260719-content-experience-fixes-r1",
+      "cover": "../assets/pond-windows/covers/cover-2048.svg?v=20261123-pond-polish-r56",
       "entry": "2048/",
       "sourceEntry": "source/index.html",
       "language": "支持中文 / English / 日本語",
@@ -154,7 +154,7 @@
         "en": "A Hextris-inspired hex color puzzle, deployed locally with save import/export and cloud saves.",
         "ja": "Hextris に着想を得た六角形カラーパズルです。本サイトに内蔵し、保存の入出力とクラウド保存に対応しました。"
       },
-      "cover": "../assets/images/generated-icons/hextris.png?v=20260719-content-experience-fixes-r1",
+      "cover": "../assets/pond-windows/covers/cover-hextris.svg?v=20261123-pond-polish-r56",
       "entry": "hextris/",
       "sourceEntry": "source/index.html",
       "language": "支持中文 / English / 日本語",
@@ -200,7 +200,7 @@
         "en": "An open-source life simulation text game, deployed locally with Chinese and English UI plus save import/export and cloud saves.",
         "ja": "オープンソースの人生シミュレーションゲームです。本サイトに内蔵し、中国語と英語UI、保存の入出力とクラウド保存に対応しています。"
       },
-      "cover": "../assets/images/generated-icons/life-restart.png?v=20260719-content-experience-fixes-r1",
+      "cover": "../assets/pond-windows/covers/cover-restart.webp?v=20261123-pond-polish-r56",
       "entry": "life-restart/",
       "sourceEntry": "source/index.html",
       "languageQueryParam": "language",

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#184c56"/>
+      <stop offset="100%" stop-color="#051418"/>
+    </radialGradient>
+  </defs>
+  <rect width="120" height="120" rx="10" fill="url(#g)"/>
+  <polygon points="60,10 103,35 103,85 60,110 17,85 17,35" fill="none" stroke="#5ef4d8" stroke-width="2.2" stroke-dasharray="2 4" opacity="0.75"/>
+  <path d="M60,18 L96,39" stroke="#ff6ec7" stroke-width="6" stroke-linecap="round"/>
+  <path d="M96,39 L96,81" stroke="#68d8ff" stroke-width="6" stroke-linecap="round"/>
+  <path d="M96,81 L60,102" stroke="#ffe66d" stroke-width="6" stroke-linecap="round"/>
+  <path d="M60,102 L24,81" stroke="#5ef4a8" stroke-width="6" stroke-linecap="round"/>
+  <path d="M24,81 L24,39" stroke="#be8eff" stroke-width="6" stroke-linecap="round"/>
+  <path d="M24,39 L60,18" stroke="#ff9e5e" stroke-width="6" stroke-linecap="round"/>
+  <polygon points="60,34 82,47 82,73 60,86 38,73 38,47" fill="rgba(12,42,50,0.82)" stroke="#9ef8ec" stroke-width="2.2"/>
+  <polygon points="60,46 72,53 72,67 60,74 48,67 48,53" fill="rgba(110,248,228,0.28)" stroke="#ffe680" stroke-width="2"/>
+</svg>

@@ -97,19 +97,11 @@ function applyToolsSvgPresentation() {
 }
 
 const GAME_COVER_MAP = [
-  { match: 'kittens-game', src: '/assets/pond-windows/covers/cover-cat.png', kind: 'art' },
-  { match: 'a-dark-room', src: '/assets/pond-windows/covers/cover-darkroom.png', kind: 'art' },
-  {
-    match: '2048',
-    src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect x='8' y='8' width='48' height='48' rx='7' fill='rgba(12,34,40,0.75)' stroke='%239cf6e8' stroke-width='2' stroke-dasharray='1 3'/%3E%3Crect x='64' y='8' width='48' height='48' rx='7' fill='rgba(18,44,48,0.75)' stroke='%239ce2f6' stroke-width='2' stroke-dasharray='1 3'/%3E%3Crect x='8' y='64' width='48' height='48' rx='7' fill='rgba(36,30,48,0.75)' stroke='%23f6b888' stroke-width='2' stroke-dasharray='1 3'/%3E%3Crect x='64' y='64' width='48' height='48' rx='7' fill='rgba(48,26,42,0.75)' stroke='%23ff9898' stroke-width='2' stroke-dasharray='1 3'/%3E%3Ctext x='32' y='40' text-anchor='middle' fill='%23eefcf9' font-family='monospace' font-size='22'%3E2%3C/text%3E%3Ctext x='88' y='40' text-anchor='middle' fill='%23eefcf9' font-family='monospace' font-size='22'%3E4%3C/text%3E%3Ctext x='32' y='96' text-anchor='middle' fill='%23ffddb4' font-family='monospace' font-size='22'%3E8%3C/text%3E%3Ctext x='88' y='96' text-anchor='middle' fill='%23ffb8b8' font-family='monospace' font-size='20'%3E16%3C/text%3E%3C/svg%3E",
-    kind: 'svg'
-  },
-  {
-    match: 'hextris',
-    src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='50%25' r='55%25'%3E%3Cstop offset='0%25' stop-color='%23184c56'/%3E%3Cstop offset='100%25' stop-color='%23051418'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='10' fill='url(%23g)'/%3E%3Cpolygon points='60,10 103,35 103,85 60,110 17,85 17,35' fill='none' stroke='%235ef4d8' stroke-width='2.2' stroke-dasharray='2 4' opacity='0.75'/%3E%3Cpath d='M60,18 L96,39' stroke='%23ff6ec7' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M96,39 L96,81' stroke='%2368d8ff' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M96,81 L60,102' stroke='%23ffe66d' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M60,102 L24,81' stroke='%235ef4a8' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M24,81 L24,39' stroke='%23be8eff' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M24,39 L60,18' stroke='%23ff9e5e' stroke-width='6' stroke-linecap='round'/%3E%3Cpolygon points='60,34 82,47 82,73 60,86 38,73 38,47' fill='rgba(12,42,50,0.82)' stroke='%239ef8ec' stroke-width='2.2'/%3E%3Cpolygon points='60,46 72,53 72,67 60,74 48,67 48,53' fill='rgba(110,248,228,0.28)' stroke='%23ffe680' stroke-width='2'/%3E%3C/svg%3E",
-    kind: 'svg'
-  },
-  { match: 'life-restart', src: '/assets/pond-windows/covers/cover-restart.png', kind: 'art' }
+  { match: 'kittens-game', src: '/assets/pond-windows/covers/cover-cat.webp?v=20261123-pond-polish-r56', kind: 'art' },
+  { match: 'a-dark-room', src: '/assets/pond-windows/covers/cover-darkroom.webp?v=20261123-pond-polish-r56', kind: 'art' },
+  { match: '2048', src: '/assets/pond-windows/covers/cover-2048.svg?v=20261123-pond-polish-r56', kind: 'svg' },
+  { match: 'hextris', src: '/assets/pond-windows/covers/cover-hextris.svg?v=20261123-pond-polish-r56', kind: 'svg' },
+  { match: 'life-restart', src: '/assets/pond-windows/covers/cover-restart.webp?v=20261123-pond-polish-r56', kind: 'art' }
 ];
 
 function applyGamesCoverPresentation() {
