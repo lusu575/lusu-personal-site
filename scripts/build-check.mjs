@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-23-pond-crt-boot-preloader";
-const finalUpdateSlug = "2026-11-23-pond-crt-boot-preloader";
+const finalUpdateId = "seed-update-2026-11-23-pond-remove-corner-dock";
+const finalUpdateSlug = "2026-11-23-pond-remove-corner-dock";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Pure-Code CRT Pond Boot Sequence & 32-Asset Site-Wide Preloader";
-const finalPublishedAt = "2026-11-23T15:00:00+08:00";
+const finalTitleEn = "Removed Bottom-Right Online & Notice Capsules and Dedicated Styles";
+const finalPublishedAt = "2026-11-23T16:12:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-23-pond-crt-boot-preloader",
   "seed-update-2026-11-23-pond-game-covers-webp-zero-flash",
   "seed-update-2026-11-23-pond-toc-webp-cursor-close-hover",
   "seed-update-2026-11-23-pond-final-polish-r52-r54",

@@ -464,63 +464,6 @@ function bootPondVisualBridge() {
     }
   });
 
-  // Low-key corner dock (bottom-right on Desktop mirroring bottom-left ID/Lang; Home-only status on Mobile)
-  const cornerDock = document.createElement('div');
-  cornerDock.id = 'pond-corner-dock';
-  cornerDock.setAttribute('aria-label', '站点状态与公告入口');
-  cornerDock.innerHTML =
-    '<span class="pond-corner-status" id="pond-corner-status" data-connection-state="checking">' +
-    '<span class="pond-corner-lamp" aria-hidden="true"></span>' +
-    '<span class="pond-corner-status-label">检测中</span>' +
-    '</span>' +
-    '<button type="button" class="pond-corner-welcome" id="pond-corner-welcome">' +
-    '<span class="pond-corner-spark" aria-hidden="true">✦</span>' +
-    '<span class="pond-corner-welcome-label">公告</span>' +
-    '</button>';
-  document.body.appendChild(cornerDock);
-
-  const cornerStatus = cornerDock.querySelector('#pond-corner-status');
-  const cornerStatusLabel = cornerDock.querySelector('.pond-corner-status-label');
-  const cornerWelcomeBtn = cornerDock.querySelector('#pond-corner-welcome');
-  const cornerWelcomeLabel = cornerDock.querySelector('.pond-corner-welcome-label');
-
-  function syncCornerDock() {
-    const lang = getCurrentSiteLang();
-    const welcomeText = lang === 'en' ? 'Notice' : lang === 'ja' ? 'お知らせ' : '公告';
-    if (cornerWelcomeLabel) cornerWelcomeLabel.textContent = welcomeText;
-    if (cornerWelcomeBtn) {
-      cornerWelcomeBtn.setAttribute('aria-label', lang === 'en' ? 'Welcome & Updates' : lang === 'ja' ? 'ようこそ・更新履歴' : '欢迎与最近更新');
-    }
-    const srcStatus = document.getElementById('site-connection-status');
-    const srcLabel = document.getElementById('site-connection-label');
-    if (srcStatus && cornerStatus) {
-      cornerStatus.dataset.connectionState = srcStatus.getAttribute('data-connection-state') || 'checking';
-      if (cornerStatusLabel && srcLabel) {
-        cornerStatusLabel.textContent = srcLabel.textContent.trim();
-      }
-    }
-  }
-
-  cornerWelcomeBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    openWelcomeFromPond();
-  });
-
-  const srcStatusEl = document.getElementById('site-connection-status');
-  if (srcStatusEl) {
-    new MutationObserver(syncCornerDock).observe(srcStatusEl, {
-      attributes: true,
-      childList: true,
-      subtree: true,
-      characterData: true
-    });
-  }
-  new MutationObserver(syncCornerDock).observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ['lang']
-  });
-  syncCornerDock();
-
   // Sync article reading progress bar & ~1-screen Back-to-Top visibility with Pond's scrollable .article-detail-card
   function syncPondArticleScrollState() {
     if (activeMode !== 'article') return;
@@ -586,27 +529,6 @@ function bootPondVisualBridge() {
     });
     window.requestAnimationFrame(syncPondArticleScrollState);
   });
-
-  // Watchdog: if #site-connection-status stays stuck on "checking" for >10s, probe lightweight API to resolve state
-  window.setTimeout(async () => {
-    if (!cornerStatus || cornerStatus.dataset.connectionState !== 'checking') return;
-    const lang = getCurrentSiteLang();
-    try {
-      const resp = await fetch('/api/articles?limit=1', { cache: 'no-store' });
-      const ok = resp.ok;
-      cornerStatus.dataset.connectionState = ok ? 'online' : 'offline';
-      if (cornerStatusLabel) {
-        cornerStatusLabel.textContent = ok
-          ? (lang === 'en' ? 'Online' : lang === 'ja' ? 'オンライン' : '在线')
-          : (lang === 'en' ? 'Offline' : lang === 'ja' ? 'オフライン' : '离线');
-      }
-    } catch {
-      cornerStatus.dataset.connectionState = 'offline';
-      if (cornerStatusLabel) {
-        cornerStatusLabel.textContent = lang === 'en' ? 'Offline' : lang === 'ja' ? 'オフライン' : '离线';
-      }
-    }
-  }, 10000);
 
   // Sync Games shelf overall Cloud Save status banner + Chatroom explicit sync state label
   function syncGamesCloudBanner() {

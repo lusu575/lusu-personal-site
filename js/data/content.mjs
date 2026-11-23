@@ -1,6 +1,34 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-23-pond-remove-corner-dock",
+  "slug": "2026-11-23-pond-remove-corner-dock",
+  "category": "site-updates",
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-23T16:12:00+08:00",
+  "updated_at": "2026-11-23T16:12:00+08:00",
+  "published_at": "2026-11-23T16:12:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "下线首页右下角「在线 / 公告」胶囊并清理专属样式",
+    "en": "Removed Bottom-Right Online & Notice Capsules and Dedicated Styles",
+    "ja": "右下「オンライン／お知らせ」カプセルと専用スタイルを完全撤去"
+  },
+  "summary": {
+    "zh": "彻底移除桌面与移动端首页右下角「在线」状态胶囊与「公告」入口按钮及其容器、脚本与全部专属 CSS，画面更纯净；欢迎窗弹窗本体保留不变。",
+    "en": "Completely removed the bottom-right #pond-corner-dock container (Online status pill and Notice button) along with all dedicated scripts and CSS; the Welcome modal itself remains intact.",
+    "ja": "ホーム右下の #pond-corner-dock（オンライン表示・お知らせボタン）と関連スクリプト・専用 CSS をすべて削除し画面をすっきり整理しました。ようこそモーダル本体はそのまま維持しています。"
+  },
+  "content_markdown": {
+    "zh": "# 下线首页右下角「在线 / 公告」胶囊并清理专属样式\n\n本次 `r58` 按站长确认对首页右下角进行减法清理：\n\n- **彻底移除右下角胶囊组**：删除 `#pond-corner-dock` 容器及其内部的「在线」状态灯胶囊与「公告」入口按钮。\n- **同步清零脚本与专属样式**：从 `js/pond-windows/pond-site-bridge.mjs`、`css/pond-windows.css` 与 `index.html` 中一并删净相关创建逻辑、监听与专属 CSS，仓库不留废弃样式。\n- **保留欢迎窗本体**：`#welcome-modal` 弹窗本体未动，桌面端仍可点击顶部时钟或访问 `#welcome` 打开。",
+    "en": "# Removed Bottom-Right Online & Notice Capsules and Dedicated Styles\n\nRelease `r58` removes the bottom-right corner capsule pair for a cleaner pond desktop:\n\n- **Removed Corner Dock**: Deleted `#pond-corner-dock` along with the Online status pill and Notice button.\n- **Zero Orphaned Code/Styles**: Cleaned all creation logic, observers, and dedicated CSS from `pond-site-bridge.mjs`, `pond-windows.css`, and `index.html`.\n- **Welcome Modal Intact**: `#welcome-modal` remains untouched and accessible via the top desktop clock or `#welcome`.",
+    "ja": "# 右下「オンライン／お知らせ」カプセルと専用スタイルを完全撤去\n\n`r58` にてホーム右下のカプセル群を撤去しました：\n\n- **右下ドック削除**：`#pond-corner-dock`（オンライン状態表示・お知らせボタン）を削除しました。\n- **関連コード・専用 CSS の完全整理**：`pond-site-bridge.mjs`、`pond-windows.css`、`index.html` から専用ロジックとスタイルを残さず削除しました。\n- **ようこそ画面は維持**：`#welcome-modal` 本体は変更せず、上部時計クリックまたは `#welcome` から引き続き開けます。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-23-pond-crt-boot-preloader",
   "slug": "2026-11-23-pond-crt-boot-preloader",
   "category": "site-updates",

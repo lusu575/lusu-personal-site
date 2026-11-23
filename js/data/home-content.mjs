@@ -2,6 +2,29 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-remove-corner-dock",
+      "slug": "2026-11-23-pond-remove-corner-dock",
+      "category": "site-updates",
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T16:12:00+08:00",
+      "updated_at": "2026-11-23T16:12:00+08:00",
+      "published_at": "2026-11-23T16:12:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "下线首页右下角「在线 / 公告」胶囊并清理专属样式",
+        "en": "Removed Bottom-Right Online & Notice Capsules and Dedicated Styles",
+        "ja": "右下「オンライン／お知らせ」カプセルと専用スタイルを完全撤去"
+      },
+      "summary": {
+        "zh": "彻底移除桌面与移动端首页右下角「在线」状态胶囊与「公告」入口按钮及其容器、脚本与全部专属 CSS，画面更纯净；欢迎窗弹窗本体保留不变。",
+        "en": "Completely removed the bottom-right #pond-corner-dock container (Online status pill and Notice button) along with all dedicated scripts and CSS; the Welcome modal itself remains intact.",
+        "ja": "ホーム右下の #pond-corner-dock（オンライン表示・お知らせボタン）と関連スクリプト・専用 CSS をすべて削除し画面をすっきり整理しました。ようこそモーダル本体はそのまま維持しています。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-crt-boot-preloader",
       "slug": "2026-11-23-pond-crt-boot-preloader",
       "category": "site-updates",
@@ -91,29 +114,6 @@ export const homeContent = Object.freeze({
         "zh": "汇总上线 r52–r54 收尾优化：彻底消除游戏货架窄卡「源」字裁切与聊天室同步前缀叠字，画板升版 1.0.13 消除卡片空白与加深画布提示底，日语页垂直居中，提亮知识库底部计数行，并修复临时互传简介「登录后」「24 小时」断行孤字。",
         "en": "Consolidated r52–r54 polish: eliminated narrow Games card license clipping and Chat sync prefix overlap, bumped Whiteboard to 1.0.13 with balanced cards and dark canvas hint backdrop, centered Japanese Subtext vertically, brightened Knowledge footer count, and bound Transfer description line breaks.",
         "ja": "r52–r54 の仕上げ調整を統合：ゲーム一覧のライセンス見切れとチャット同期表記の重なりを解消、ホワイトボードを 1.0.13 へ更新し余白とヒント背景を反映、日本語ページを縦中央配置、知識庫下部の件数表示を明るくし、一時転送紹介文の途中改行を防止しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-source-level-final-polish",
-      "slug": "2026-11-23-pond-source-level-final-polish",
-      "category": "site-updates",
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T09:32:00+08:00",
-      "updated_at": "2026-11-23T09:32:00+08:00",
-      "published_at": "2026-11-23T09:32:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "全站源头级视觉与交互收口（游戏壳层/互传/登录/聊天室/文章/画板/日语页）",
-        "en": "Site-Wide Source-Level Polish (Games, Transfer, Login, Chat, Reader, Whiteboard & Trainer)",
-        "ja": "全サイト根本修正（ゲーム・一時転送・ログイン・チャット・記事・ホワイトボード・日本語）"
-      },
-      "summary": {
-        "zh": "同步 5 款游戏壳层缓存版本并消除猫国进门 Oops 闪现；修复人生重开两侧黑带、货架许可证裁切、聊天室同步前缀、登录窗全宽与去重、文章元信息去秒提亮、互传展开避让与徽章对比、画板卡片留白与日语页底空。",
-        "en": "Synced game-shell cache across all 5 games, eliminated Kittens Game boot Oops flash, replaced Life Restart black side bands, fixed Games license clipping, Chat sync prefix, Login full-width button, Reader meta without seconds, Transfer panel overlap, Whiteboard card balance & Japanese Trainer spacing.",
-        "ja": "全5ゲームのキャッシュ更新と Kittens Game 起動時 Oops 表示解消、Life Restart 左右黒帯改善、ライセンス見切れ・チャット同期表記・ログイン全幅・記事メタ秒数削除・一時転送重なり・ホワイトボード余白・日本語ページ下余白を一括修正しました。"
       }
     }
   ]
