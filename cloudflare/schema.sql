@@ -16123,6 +16123,29 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - `#chat-message-input` にサイト統一の 4px 深青蛍光細スクロールバーを適用し、旧式の白い矢印付きスクロールバーを排除しました。未溢れ時は表示されません。
 - 文字数カウンターと丸型送信ボタンを `.chatroom-input-shell` のフレックス配置へ統合し、入力欄のスクロールバーが送信ボタンに重ならないように修正しました。', '2026-11-23T20:20:00+08:00', '2026-11-23T20:20:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-polish-r60', '2026-11-23T20:20:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-23-pond-window-spring-open-close', '2026-11-23-pond-window-spring-open-close', 'site-updates', '["site-updates","animation","ui"]', '', 'published', 0, 0, '2026-11-23T20:24:00+08:00', '2026-11-23T20:24:00+08:00', '2026-11-23T20:24:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-window-spring-open-close-zh', 'seed-update-2026-11-23-pond-window-spring-open-close', 'zh', '全站板块窗口 120 FPS 阻尼弹簧开合动画上线', '点击首页图标、顶部欢迎入口或移动端底部 Dock 图标时，板块窗口从图标原位以二阶阻尼弹簧生长展开，关闭时镜像收回图标；纯合成层驱动稳住 120 FPS 且全程可打断。', '# 全站板块窗口 120 FPS 阻尼弹簧开合动画上线
+
+本次 `r61` 补齐桌面端与移动端所有板块窗口的弹簧开合动效：
+
+- **统一弹簧物理**：严格采用 CRT 折射玻璃方案第二节弹簧参数——打开 `windowOpen`（`ζ=0.78, ω₀=17`，约 `450ms` 快起慢收），关闭 `windowClose`（`ζ=0.90, ω₀=20`，约 `300ms` 镜像收回图标），支持 60Hz/120Hz/240Hz 一致手感。
+- **纯合成层 120 FPS**：动画前仅单次测量目标窗口与图标中心差值，飞行中只更新 `transform: translate3d(...) scale(...)` 与 `opacity`，配合轻微压暗池塘背景层（`#pond-window-scrim`），零 Layout/Paint 抖动。
+- **全路径可打断与无障碍**：支持点击 ×、按 `Esc`、点击池塘空白处镜像收回，中途点击其他图标或再次操作立即从当前位置与速度顺滑接管；`prefers-reduced-motion` 自动降级为 `120ms` 淡入淡出。', '2026-11-23T20:24:00+08:00', '2026-11-23T20:24:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-window-spring-open-close-en', 'seed-update-2026-11-23-pond-window-spring-open-close', 'en', '120 FPS Damped Spring Window Open & Close Animation', 'Section windows now spring open smoothly from their desktop or mobile Dock icon origin and retract symmetrically on close using pure compositor transform/opacity at 120 FPS.', '# 120 FPS Damped Spring Window Open & Close Animation
+
+Release `r61` introduces damped spring open/close transitions for all desktop and mobile section windows:
+
+- **Unified Spring Physics**: Uses `CRT_GLASS_SPRINGS.windowOpen` (`zeta=0.78, omega0=17`, ~450ms) and `windowClose` (`zeta=0.90, omega0=20`, ~300ms) with frame-rate-independent sub-stepping.
+- **120 FPS Compositor-Only**: Measures origin-to-window delta once before flight and animates strictly `transform` and `opacity` with a subtle pond dimming scrim (`#pond-window-scrim`).
+- **Interruptible & Accessible**: Fully interruptible mid-flight across close buttons, `Escape`, backdrop clicks, and icon switches; degrades to a 120ms opacity fade under `prefers-reduced-motion`.', '2026-11-23T20:24:00+08:00', '2026-11-23T20:24:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-window-spring-open-close-ja', 'seed-update-2026-11-23-pond-window-spring-open-close', 'ja', '全セクションウィンドウ 120 FPS 減衰バネ開閉アニメーション実装', 'ホームの各アイコンやモバイル Dock からウィンドウがバネ物理で滑らかに展開し、閉じる際は元のアイコンへ反転収納される 120 FPS 開閉アニメーションを実装しました。', '# 全セクションウィンドウ 120 FPS 減衰バネ開閉アニメーション実装
+
+`r61` ではデスクトップおよびモバイルの全ウィンドウに減衰バネ開閉アニメーションを導入しました：
+
+- **統一バネ物理**：仕様書第2節の `windowOpen`（`ζ=0.78, ω₀=17`, 約450ms）および `windowClose`（`ζ=0.90, ω₀=20`, 約300ms）を採用。
+- **120 FPS コンポジタ専用**：飛行中は `transform` と `opacity` のみを更新し、背景池を控えめに暗転させて視認性を高めます。
+- **割り込み対応・アクセシビリティ**：開閉途中での別アイコンクリックや再操作を滑らかに引き継ぎ、`prefers-reduced-motion` 環境では 120ms のフェードへ自動切替します。', '2026-11-23T20:24:00+08:00', '2026-11-23T20:24:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-spring-r61', '2026-11-23T20:24:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-polish-r60', '2026-11-23T20:20:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-spring-r61', '2026-11-23T20:24:00+08:00', 'schema') on conflict(version) do nothing;

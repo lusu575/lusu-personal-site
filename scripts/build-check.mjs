@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-23-pond-chat-input-scrollbar";
-const finalUpdateSlug = "2026-11-23-pond-chat-input-scrollbar";
+const finalUpdateId = "seed-update-2026-11-23-pond-window-spring-open-close";
+const finalUpdateSlug = "2026-11-23-pond-window-spring-open-close";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Chatroom Input Phosphor Scrollbar & Send Button Overlap Fix";
-const finalPublishedAt = "2026-11-23T20:20:00+08:00";
+const finalTitleEn = "120 FPS Damped Spring Window Open & Close Animation";
+const finalPublishedAt = "2026-11-23T20:24:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-23-pond-chat-input-scrollbar",
   "seed-update-2026-11-23-pond-crt-glass-pilot",
   "seed-update-2026-11-23-pond-remove-corner-dock",
   "seed-update-2026-11-23-pond-crt-boot-preloader",

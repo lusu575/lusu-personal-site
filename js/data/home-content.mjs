@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-window-spring-open-close",
+      "slug": "2026-11-23-pond-window-spring-open-close",
+      "category": "site-updates",
+      "tags": [
+        "site-updates",
+        "animation",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T20:24:00+08:00",
+      "updated_at": "2026-11-23T20:24:00+08:00",
+      "published_at": "2026-11-23T20:24:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "全站板块窗口 120 FPS 阻尼弹簧开合动画上线",
+        "en": "120 FPS Damped Spring Window Open & Close Animation",
+        "ja": "全セクションウィンドウ 120 FPS 減衰バネ開閉アニメーション実装"
+      },
+      "summary": {
+        "zh": "点击首页图标、顶部欢迎入口或移动端底部 Dock 图标时，板块窗口从图标原位以二阶阻尼弹簧生长展开，关闭时镜像收回图标；纯合成层驱动稳住 120 FPS 且全程可打断。",
+        "en": "Section windows now spring open smoothly from their desktop or mobile Dock icon origin and retract symmetrically on close using pure compositor transform/opacity at 120 FPS.",
+        "ja": "ホームの各アイコンやモバイル Dock からウィンドウがバネ物理で滑らかに展開し、閉じる際は元のアイコンへ反転収納される 120 FPS 開閉アニメーションを実装しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-chat-input-scrollbar",
       "slug": "2026-11-23-pond-chat-input-scrollbar",
       "category": "site-updates",
@@ -96,29 +124,6 @@ export const homeContent = Object.freeze({
         "zh": "交互与动画专项第一项上线：纯代码复用池塘自身 WebGL2 CRT 管线绘制无边框荧光亮线展开与分层显影，从冷加载第 0 帧接管画面，启动期间并行预加载并解码全站 32 项素材，结尾无缝交接首页本体。",
         "en": "Animation Phase Item 1: pure-code borderless CRT power-on beam reusing the live WebGL2 Pond pipeline, taking over from Frame 0 on cold load while preloading and decoding all 32 site assets with seamless final-frame handoff.",
         "ja": "アニメーション強化第1弾：動画を使わず池本体の WebGL2 CRT パイプラインで起動演出を生成し、初回ロード0フレーム目から黒画面を防止。全32素材を並列プリロード＆デコードし、最終フレームがそのままホームへシームレス接続します。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-game-covers-webp-zero-flash",
-      "slug": "2026-11-23-pond-game-covers-webp-zero-flash",
-      "category": "site-updates",
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T14:37:00+08:00",
-      "updated_at": "2026-11-23T14:37:00+08:00",
-      "published_at": "2026-11-23T14:37:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "游戏封面 WebP 瘦身 93 倍、下架旧彩色图标与全站首帧防闪跳",
-        "en": "93x Smaller WebP/SVG Game Covers, Legacy Icon Removal & Zero-Flash First Paint",
-        "ja": "ゲーム表紙 WebP 93倍軽量化・旧カラーアイコン撤去と初回描画ちらつき解消"
-      },
-      "summary": {
-        "zh": "将游戏区封面从 5.53 MB PNG 压缩为 59.3 KB WebP 与独立 SVG，目录配置直指新版封面并彻底删除 5 张旧彩色 PNG，同时加入首帧同步模式初始化脚本消除页面闪跳。",
-        "en": "Compressed game covers from 5.53 MB PNGs into 59.3 KB WebP and standalone SVGs, updated games/catalog.json directly, removed 5 legacy colorful PNG icons, and added synchronous head mode initialization to prevent first-frame layout flashes.",
-        "ja": "ゲーム表紙を 5.53 MB PNG から 59.3 KB WebP と独立 SVG へ圧縮し、catalog.json を新版へ直結・旧カラー PNG 5枚を完全削除。head 同期初期化で初回フレームのレイアウトちらつきも解消しました。"
       }
     }
   ]

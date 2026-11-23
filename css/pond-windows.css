@@ -7028,3 +7028,22 @@ html[data-shell="mobile"] #chatroom #chat-message-input {
   scrollbar-width: thin !important;
   scrollbar-color: rgba(136, 252, 226, 0.36) transparent !important;
 }
+
+/* ============================================================
+   r61: 120 FPS Window Spring Open / Close Scrim & Compositor Isolation
+   ============================================================ */
+#pond-window-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: #020a0d;
+  opacity: 0;
+  will-change: opacity;
+}
+
+html[data-pond-mode] .xp-window.is-pond-window-animating,
+html[data-ui-shell="mobile"] .xp-window.is-pond-window-animating,
+html[data-shell="mobile"] .xp-window.is-pond-window-animating {
+  contain: layout style !important;
+}
