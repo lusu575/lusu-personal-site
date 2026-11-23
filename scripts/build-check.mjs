@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-23-pond-crt-glass-pilot";
-const finalUpdateSlug = "2026-11-23-pond-crt-glass-pilot";
+const finalUpdateId = "seed-update-2026-11-23-pond-chat-input-scrollbar";
+const finalUpdateSlug = "2026-11-23-pond-chat-input-scrollbar";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "CRT Refractive Glass Unified Config & Welcome Modal Button Press Pilot";
-const finalPublishedAt = "2026-11-23T18:15:00+08:00";
+const finalTitleEn = "Chatroom Input Phosphor Scrollbar & Send Button Overlap Fix";
+const finalPublishedAt = "2026-11-23T20:20:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-23-pond-crt-glass-pilot",
   "seed-update-2026-11-23-pond-remove-corner-dock",
   "seed-update-2026-11-23-pond-crt-boot-preloader",
   "seed-update-2026-11-23-pond-game-covers-webp-zero-flash",

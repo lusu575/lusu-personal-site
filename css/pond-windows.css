@@ -6931,3 +6931,100 @@ html[data-ui-shell="mobile"] .crt-glass-btn:focus-visible {
     display: none !important;
   }
 }
+
+/* ============================================================
+   r60: Chatroom Composer Flex Isolation & Unified Dark Phosphor Scrollbar
+   Fixes legacy Windows white textarea scrollbar overlapping circular send button.
+   ============================================================ */
+html[data-pond-mode="chatroom"] #chatroom .chatroom-input-shell {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 8px 10px 8px 18px !important;
+  min-height: 60px !important;
+  box-sizing: border-box !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom #chat-message-input {
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  max-height: 84px !important;
+  padding: 10px 8px 10px 0 !important;
+  margin: 0 !important;
+  line-height: 1.45 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  resize: none !important;
+  box-sizing: border-box !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(136, 252, 226, 0.36) transparent !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom .chatroom-counter {
+  position: static !important;
+  right: auto !important;
+  bottom: auto !important;
+  flex: 0 0 auto !important;
+  min-width: auto !important;
+  margin: 0 2px 0 0 !important;
+  padding: 0 !important;
+  align-self: center !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom .chat-send-button {
+  position: static !important;
+  right: auto !important;
+  bottom: auto !important;
+  margin: 0 !important;
+  flex: 0 0 44px !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom #chat-message-input::-webkit-scrollbar,
+html[data-ui-shell="mobile"] #chatroom #chat-message-input::-webkit-scrollbar,
+html[data-shell="mobile"] #chatroom #chat-message-input::-webkit-scrollbar {
+  width: 4px !important;
+  height: 4px !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom #chat-message-input::-webkit-scrollbar-track,
+html[data-ui-shell="mobile"] #chatroom #chat-message-input::-webkit-scrollbar-track,
+html[data-shell="mobile"] #chatroom #chat-message-input::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom #chat-message-input::-webkit-scrollbar-thumb,
+html[data-ui-shell="mobile"] #chatroom #chat-message-input::-webkit-scrollbar-thumb,
+html[data-shell="mobile"] #chatroom #chat-message-input::-webkit-scrollbar-thumb {
+  background: rgba(136, 252, 226, 0.36) !important;
+  border-radius: 999px !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom #chat-message-input::-webkit-scrollbar-thumb:hover,
+html[data-ui-shell="mobile"] #chatroom #chat-message-input::-webkit-scrollbar-thumb:hover,
+html[data-shell="mobile"] #chatroom #chat-message-input::-webkit-scrollbar-thumb:hover {
+  background: rgba(136, 252, 226, 0.62) !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom #chat-message-input::-webkit-scrollbar-button,
+html[data-ui-shell="mobile"] #chatroom #chat-message-input::-webkit-scrollbar-button,
+html[data-shell="mobile"] #chatroom #chat-message-input::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+html[data-pond-mode="chatroom"] #chatroom #chat-message-input::-webkit-scrollbar-corner,
+html[data-ui-shell="mobile"] #chatroom #chat-message-input::-webkit-scrollbar-corner,
+html[data-shell="mobile"] #chatroom #chat-message-input::-webkit-scrollbar-corner {
+  background: transparent !important;
+}
+
+html[data-ui-shell="mobile"] #chatroom #chat-message-input,
+html[data-shell="mobile"] #chatroom #chat-message-input {
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(136, 252, 226, 0.36) transparent !important;
+}

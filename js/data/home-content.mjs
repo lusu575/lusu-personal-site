@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-chat-input-scrollbar",
+      "slug": "2026-11-23-pond-chat-input-scrollbar",
+      "category": "site-updates",
+      "tags": [
+        "site-updates",
+        "chatroom",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T20:20:00+08:00",
+      "updated_at": "2026-11-23T20:20:00+08:00",
+      "published_at": "2026-11-23T20:20:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "聊天室输入框荧光细滚动条统一与发送按钮防重叠修复",
+        "en": "Chatroom Input Phosphor Scrollbar & Send Button Overlap Fix",
+        "ja": "チャット入力欄の蛍光細スクロールバー統一と送信ボタン重なり修正"
+      },
+      "summary": {
+        "zh": "将聊天室输入框滚动条统一为深青荧光细条样式，隔离输入域与右侧字数统计及圆形发送按钮的弹性布局，彻底消除旧版白色滚动条遮挡按钮的问题。",
+        "en": "Unified the chatroom textarea scrollbar with the dark phosphor thin scrollbar style and isolated the input field from the counter and circular send button to prevent overlap.",
+        "ja": "チャット入力欄のスクロールバーをサイト統一の深青蛍光細スタイルへ刷新し、文字数表示と丸型送信ボタンとの重なりを解消しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-crt-glass-pilot",
       "slug": "2026-11-23-pond-crt-glass-pilot",
       "category": "site-updates",
@@ -91,29 +119,6 @@ export const homeContent = Object.freeze({
         "zh": "将游戏区封面从 5.53 MB PNG 压缩为 59.3 KB WebP 与独立 SVG，目录配置直指新版封面并彻底删除 5 张旧彩色 PNG，同时加入首帧同步模式初始化脚本消除页面闪跳。",
         "en": "Compressed game covers from 5.53 MB PNGs into 59.3 KB WebP and standalone SVGs, updated games/catalog.json directly, removed 5 legacy colorful PNG icons, and added synchronous head mode initialization to prevent first-frame layout flashes.",
         "ja": "ゲーム表紙を 5.53 MB PNG から 59.3 KB WebP と独立 SVG へ圧縮し、catalog.json を新版へ直結・旧カラー PNG 5枚を完全削除。head 同期初期化で初回フレームのレイアウトちらつきも解消しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-toc-webp-cursor-close-hover",
-      "slug": "2026-11-23-pond-toc-webp-cursor-close-hover",
-      "category": "site-updates",
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T14:27:00+08:00",
-      "updated_at": "2026-11-23T14:27:00+08:00",
-      "published_at": "2026-11-23T14:27:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "文章目录跳转修复、四季装饰 WebP 提速 34 倍、回归原生光标与关闭键悬停零漂移",
-        "en": "Article TOC Jump Fix, 34.7x Smaller WebP Seasonal Flora, Native Cursor & Zero-Drift Close Hover",
-        "ja": "記事目次ジャンプ修正・季節装飾 WebP 34倍軽量化・標準カーソル復元・閉じるボタンホバー固定"
-      },
-      "summary": {
-        "zh": "修复文章左侧目录点击不跳转；将 12 张四季装饰图从 21.81 MB PNG 压缩为 642.7 KB WebP 并按当前季节优先加载；移除旧自定义光标回归系统原生指针；修复窗口关闭键悬停时叉号偏移问题。",
-        "en": "Fixed Article TOC click scrolling inside .article-detail-card, compressed 21.81 MB seasonal PNGs into 642.7 KB WebP with active-season priority loading, removed legacy custom cursors in favor of native OS cursors, and locked close-button hover optical centering.",
-        "ja": "記事左目次のクリック遷移を修正し、季節装飾12点を 21.81 MB PNG から 642.7 KB WebP へ圧縮・現季節優先読込に変更。旧カスタムカーソルを撤去しシステム標準へ統一、閉じるボタンのホバー時ズレも解消しました。"
       }
     }
   ]

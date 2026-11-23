@@ -16103,6 +16103,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **統一パラメータ定義（`crt-glass-config.mjs`）**：光学パラメータ、2次減衰バネ、蛍光カラー、3段階ボタン等級、3段階パフォーマンス設定を一元管理し CSS 変数へ同期。
 - **ようこそボタンパイロット（`crt-glass-button.mjs`）**：ネイティブ `<button>` を保持したまま、偏心クリック接触点でのガウス凹み、120ms バネ押し込み、320ms リリース波、60ms 短色分散、70ms 縁発光、ダブルクリック波置換、キーボード中央起動、reduced-motion 静的フォールバック、終了時完全停止を実装しました。', '2026-11-23T18:15:00+08:00', '2026-11-23T18:15:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-glass-r59', '2026-11-23T18:15:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-23-pond-chat-input-scrollbar', '2026-11-23-pond-chat-input-scrollbar', 'site-updates', '["site-updates","chatroom","ui"]', '', 'published', 0, 0, '2026-11-23T20:20:00+08:00', '2026-11-23T20:20:00+08:00', '2026-11-23T20:20:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-chat-input-scrollbar-zh', 'seed-update-2026-11-23-pond-chat-input-scrollbar', 'zh', '聊天室输入框荧光细滚动条统一与发送按钮防重叠修复', '将聊天室输入框滚动条统一为深青荧光细条样式，隔离输入域与右侧字数统计及圆形发送按钮的弹性布局，彻底消除旧版白色滚动条遮挡按钮的问题。', '# 聊天室输入框荧光细滚动条统一与发送按钮防重叠修复
+
+本次 `r60` 仅针对聊天室输入区做视觉与布局清理，不改动任何收发逻辑：
+
+- 复用全站统一的深青荧光细滚动条样式（`4px` 细轨、隐藏旧版上下箭头），仅在多行文本溢出时显现，单行或未溢出时不出现多余滚动条。
+- 将字数统计（`.chatroom-counter`）与圆形发送按钮（`.chat-send-button`）纳入 `.chatroom-input-shell` 弹性布局流，彻底隔离 `#chat-message-input` 与按钮区域，避免滚动条再压在发送按钮上。', '2026-11-23T20:20:00+08:00', '2026-11-23T20:20:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-chat-input-scrollbar-en', 'seed-update-2026-11-23-pond-chat-input-scrollbar', 'en', 'Chatroom Input Phosphor Scrollbar & Send Button Overlap Fix', 'Unified the chatroom textarea scrollbar with the dark phosphor thin scrollbar style and isolated the input field from the counter and circular send button to prevent overlap.', '# Chatroom Input Phosphor Scrollbar & Send Button Overlap Fix
+
+Release `r60` applies a pure visual/layout fix to the chatroom composer without touching messaging logic:
+
+- Unified `#chat-message-input` with the site-wide 4px dark phosphor thin scrollbar (hiding legacy Windows scrollbar arrows), appearing only when multiline text overflows.
+- Moved `.chatroom-counter` and `.chat-send-button` into the `.chatroom-input-shell` flex flow so the textarea and its scrollbar never overlap the circular send button.', '2026-11-23T20:20:00+08:00', '2026-11-23T20:20:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-chat-input-scrollbar-ja', 'seed-update-2026-11-23-pond-chat-input-scrollbar', 'ja', 'チャット入力欄の蛍光細スクロールバー統一と送信ボタン重なり修正', 'チャット入力欄のスクロールバーをサイト統一の深青蛍光細スタイルへ刷新し、文字数表示と丸型送信ボタンとの重なりを解消しました。', '# チャット入力欄の蛍光細スクロールバー統一と送信ボタン重なり修正
+
+`r60` ではチャット機能のロジックを変更せず、入力欄の見た目とレイアウトを修正しました：
+
+- `#chat-message-input` にサイト統一の 4px 深青蛍光細スクロールバーを適用し、旧式の白い矢印付きスクロールバーを排除しました。未溢れ時は表示されません。
+- 文字数カウンターと丸型送信ボタンを `.chatroom-input-shell` のフレックス配置へ統合し、入力欄のスクロールバーが送信ボタンに重ならないように修正しました。', '2026-11-23T20:20:00+08:00', '2026-11-23T20:20:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-polish-r60', '2026-11-23T20:20:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-glass-r59', '2026-11-23T18:15:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-polish-r60', '2026-11-23T20:20:00+08:00', 'schema') on conflict(version) do nothing;

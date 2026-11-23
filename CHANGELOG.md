@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- 聊天室输入框荧光细滚动条统一与发送按钮防重叠修复（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-chat-input-scrollbar` / `2026-11-23-pond-chat-input-scrollbar`；视觉层缓存 `20261123-pond-polish-r60`。
+
 - CRT 折射玻璃统一参数表与欢迎窗主按钮按压波纹试点上线（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-crt-glass-pilot` / `2026-11-23-pond-crt-glass-pilot`；视觉层缓存 `20261123-pond-glass-r59`。
 
 - 下线首页右下角「在线 / 公告」胶囊并清理专属样式（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-remove-corner-dock` / `2026-11-23-pond-remove-corner-dock`；视觉层缓存 `20261123-pond-polish-r58`。
