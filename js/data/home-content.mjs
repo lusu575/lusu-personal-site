@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-chat-enter-send-ime",
+      "slug": "2026-11-23-pond-chat-enter-send-ime",
+      "category": "site-updates",
+      "tags": [
+        "site-updates",
+        "chatroom",
+        "ux"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T20:36:00+08:00",
+      "updated_at": "2026-11-23T20:36:00+08:00",
+      "published_at": "2026-11-23T20:36:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "聊天室支持回车直接发送、Shift+Enter 换行与中文输入法防误发",
+        "en": "Chatroom Enter-to-Send, Shift+Enter Newline & IME Composition Guard",
+        "ja": "チャット入力欄の Enter 送信・Shift+Enter 改行と IME 変換誤送信防止"
+      },
+      "summary": {
+        "zh": "聊天室输入框现在按 Enter 即可直接发送消息，按 Shift+Enter 换行；内置四重中文输入法组合态保护，拼音选词按回车确认绝不误发，限速与字数规则不变。",
+        "en": "Pressing Enter in the chatroom input now sends the message while Shift+Enter inserts a newline, with full IME composition protection so confirming CJK candidates never submits prematurely.",
+        "ja": "チャット入力欄で Enter キーによる直接送信と Shift+Enter での改行に対応しました。日本語・中国語 IME 変換確定時の Enter で誤送信しない多重ガードを備えています。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-window-spring-open-close",
       "slug": "2026-11-23-pond-window-spring-open-close",
       "category": "site-updates",
@@ -101,29 +129,6 @@ export const homeContent = Object.freeze({
         "zh": "彻底移除桌面与移动端首页右下角「在线」状态胶囊与「公告」入口按钮及其容器、脚本与全部专属 CSS，画面更纯净；欢迎窗弹窗本体保留不变。",
         "en": "Completely removed the bottom-right #pond-corner-dock container (Online status pill and Notice button) along with all dedicated scripts and CSS; the Welcome modal itself remains intact.",
         "ja": "ホーム右下の #pond-corner-dock（オンライン表示・お知らせボタン）と関連スクリプト・専用 CSS をすべて削除し画面をすっきり整理しました。ようこそモーダル本体はそのまま維持しています。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-crt-boot-preloader",
-      "slug": "2026-11-23-pond-crt-boot-preloader",
-      "category": "site-updates",
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T15:00:00+08:00",
-      "updated_at": "2026-11-23T15:00:00+08:00",
-      "published_at": "2026-11-23T15:00:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "纯代码 CRT 进站启动动画与全站 32 项素材预加载上线",
-        "en": "Pure-Code CRT Pond Boot Sequence & 32-Asset Site-Wide Preloader",
-        "ja": "純コード CRT 起動アニメーションと全サイト 32 素材プリロード実装"
-      },
-      "summary": {
-        "zh": "交互与动画专项第一项上线：纯代码复用池塘自身 WebGL2 CRT 管线绘制无边框荧光亮线展开与分层显影，从冷加载第 0 帧接管画面，启动期间并行预加载并解码全站 32 项素材，结尾无缝交接首页本体。",
-        "en": "Animation Phase Item 1: pure-code borderless CRT power-on beam reusing the live WebGL2 Pond pipeline, taking over from Frame 0 on cold load while preloading and decoding all 32 site assets with seamless final-frame handoff.",
-        "ja": "アニメーション強化第1弾：動画を使わず池本体の WebGL2 CRT パイプラインで起動演出を生成し、初回ロード0フレーム目から黒画面を防止。全32素材を並列プリロード＆デコードし、最終フレームがそのままホームへシームレス接続します。"
       }
     }
   ]

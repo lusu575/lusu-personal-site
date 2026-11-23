@@ -16146,6 +16146,29 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **120 FPS コンポジタ専用**：飛行中は `transform` と `opacity` のみを更新し、背景池を控えめに暗転させて視認性を高めます。
 - **割り込み対応・アクセシビリティ**：開閉途中での別アイコンクリックや再操作を滑らかに引き継ぎ、`prefers-reduced-motion` 環境では 120ms のフェードへ自動切替します。', '2026-11-23T20:24:00+08:00', '2026-11-23T20:24:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-spring-r61', '2026-11-23T20:24:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-23-pond-chat-enter-send-ime', '2026-11-23-pond-chat-enter-send-ime', 'site-updates', '["site-updates","chatroom","ux"]', '', 'published', 0, 0, '2026-11-23T20:36:00+08:00', '2026-11-23T20:36:00+08:00', '2026-11-23T20:36:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-chat-enter-send-ime-zh', 'seed-update-2026-11-23-pond-chat-enter-send-ime', 'zh', '聊天室支持回车直接发送、Shift+Enter 换行与中文输入法防误发', '聊天室输入框现在按 Enter 即可直接发送消息，按 Shift+Enter 换行；内置四重中文输入法组合态保护，拼音选词按回车确认绝不误发，限速与字数规则不变。', '# 聊天室支持回车直接发送、Shift+Enter 换行与中文输入法防误发
+
+本次 `r62` 优化聊天室输入框键盘交互：
+
+- **Enter 发送 / Shift+Enter 换行**：在聊天室输入框中直接按 `Enter` 会调用原生表单提交发送消息，按 `Shift+Enter` 插入换行符。
+- **中文输入法防误发**：结合 `event.isComposing`、`compositionstart` / `compositionend` 状态、`keyCode === 229` 及组合结束 80ms 保护窗，拼音/日文选词按回车上屏时绝不会误触发发送。
+- **原有规则不变**：每 3 秒一条限速、300 字上限与发送成功后自动清空输入框均保持原样。', '2026-11-23T20:36:00+08:00', '2026-11-23T20:36:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-chat-enter-send-ime-en', 'seed-update-2026-11-23-pond-chat-enter-send-ime', 'en', 'Chatroom Enter-to-Send, Shift+Enter Newline & IME Composition Guard', 'Pressing Enter in the chatroom input now sends the message while Shift+Enter inserts a newline, with full IME composition protection so confirming CJK candidates never submits prematurely.', '# Chatroom Enter-to-Send, Shift+Enter Newline & IME Composition Guard
+
+Release `r62` updates chatroom keyboard behavior:
+
+- **Enter to Send / Shift+Enter for Newline**: Pressing plain `Enter` submits `#chat-form` via `requestSubmit()`, while `Shift+Enter` inserts a newline.
+- **Bulletproof IME Guard**: Checks `event.isComposing`, `compositionstart`/`compositionend` state, `keyCode === 229`, and an 80ms post-composition grace window so confirming Pinyin/Japanese IME candidates with Enter never triggers an accidental send.
+- **Unchanged Rules**: The 3-second cooldown, 300-character limit, and automatic draft clear after send remain untouched.', '2026-11-23T20:36:00+08:00', '2026-11-23T20:36:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-chat-enter-send-ime-ja', 'seed-update-2026-11-23-pond-chat-enter-send-ime', 'ja', 'チャット入力欄の Enter 送信・Shift+Enter 改行と IME 変換誤送信防止', 'チャット入力欄で Enter キーによる直接送信と Shift+Enter での改行に対応しました。日本語・中国語 IME 変換確定時の Enter で誤送信しない多重ガードを備えています。', '# チャット入力欄の Enter 送信・Shift+Enter 改行と IME 変換誤送信防止
+
+`r62` ではチャット入力欄のキーボード操作を改善しました：
+
+- **Enter で送信 / Shift+Enter で改行**：通常の `Enter` でフォームを送信し、`Shift+Enter` で改行を挿入します。
+- **IME 変換中の誤送信防止**：`event.isComposing`、`compositionstart`/`compositionend`、`keyCode === 229`、確定直後の 80ms ガードにより、変換候補の確定時に誤送信されません。
+- **既存ルール維持**：3秒間隔制限・300文字上限・送信後の入力クリアは従来通りです。', '2026-11-23T20:36:00+08:00', '2026-11-23T20:36:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-chat-enter-r62', '2026-11-23T20:36:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-spring-r61', '2026-11-23T20:24:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261123-chat-enter-r62', '2026-11-23T20:36:00+08:00', 'schema') on conflict(version) do nothing;

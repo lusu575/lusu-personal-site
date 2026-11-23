@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- 聊天室支持回车直接发送、Shift+Enter 换行与中文输入法防误发（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-chat-enter-send-ime` / `2026-11-23-pond-chat-enter-send-ime`；视觉层缓存 `20261123-chat-enter-r62`。
+
 - 全站板块窗口 120 FPS 阻尼弹簧开合动画上线（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-window-spring-open-close` / `2026-11-23-pond-window-spring-open-close`；视觉层缓存 `20261123-pond-spring-r61`。
 
 - 聊天室输入框荧光细滚动条统一与发送按钮防重叠修复（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-chat-input-scrollbar` / `2026-11-23-pond-chat-input-scrollbar`；视觉层缓存 `20261123-pond-polish-r60`。

@@ -178,8 +178,58 @@ function applyChatAvatarPresentation() {
   });
 }
 
+function bindChatEnterToSend() {
+  const input = document.getElementById('chat-message-input');
+  if (!input || input.dataset.chatEnterBound === '1') return;
+  input.dataset.chatEnterBound = '1';
+
+  let isComposing = false;
+  let lastCompositionEndMs = 0;
+
+  input.addEventListener('compositionstart', () => {
+    isComposing = true;
+  });
+  input.addEventListener('compositionend', () => {
+    isComposing = false;
+    lastCompositionEndMs = performance.now();
+  });
+  input.addEventListener('blur', () => {
+    isComposing = false;
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    // Shift+Enter (or modified Enter) inserts a normal newline
+    if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
+    // Hard IME guard: never submit while composing Chinese/Japanese/Korean candidates
+    if (
+      e.isComposing
+      || isComposing
+      || e.keyCode === 229
+      || (lastCompositionEndMs > 0 && performance.now() - lastCompositionEndMs < 80)
+    ) {
+      return;
+    }
+    if (e.repeat) {
+      e.preventDefault();
+      return;
+    }
+
+    e.preventDefault();
+    const form = document.getElementById('chat-form');
+    if (!form) return;
+    if (typeof form.requestSubmit === 'function') {
+      form.requestSubmit();
+    } else {
+      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    }
+  });
+}
+
 function bootPondVisualBridge() {
   if (window.__pondVisualBridge) return;
+
+  bindChatEnterToSend();
 
   // Root architectural cascade fix:
   // main.js lazily appends /css/routes/*.css and /css/transfer.css to document.head AFTER initial load.
