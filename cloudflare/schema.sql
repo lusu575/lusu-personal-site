@@ -16037,6 +16037,29 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **旧カラーアイコンの完全撤去**：`games/catalog.json` を新版表紙へ直接向け、旧カラー PNG 5枚と未圧縮表紙 PNG 3枚をリポジトリから完全削除しました。
 - **初回フレームのちらつき防止**：`index.html` の `<head>` に同期 `data-pond-mode` 初期化を追加し、`css/cursor-system.css` の旧カーソル定義も整理しました。', '2026-11-23T14:37:00+08:00', '2026-11-23T14:37:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-polish-r56', '2026-11-23T14:37:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-23-pond-crt-boot-preloader', '2026-11-23-pond-crt-boot-preloader', 'site-updates', 'undefined', '', 'published', 0, 0, '2026-11-23T15:00:00+08:00', '2026-11-23T15:00:00+08:00', '2026-11-23T15:00:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-crt-boot-preloader-zh', 'seed-update-2026-11-23-pond-crt-boot-preloader', 'zh', '纯代码 CRT 进站启动动画与全站 32 项素材预加载上线', '交互与动画专项第一项上线：纯代码复用池塘自身 WebGL2 CRT 管线绘制无边框荧光亮线展开与分层显影，从冷加载第 0 帧接管画面，启动期间并行预加载并解码全站 32 项素材，结尾无缝交接首页本体。', '# 纯代码 CRT 进站启动动画与全站 32 项素材预加载上线
+
+交互与动画专项第一项（`r57`）正式上线：
+
+- **冷加载第 0 帧接管**：`index.html` 内联深青绿水平荧光亮线与同步 `<head>` 脚本，冷加载首帧直接进入 CRT 开机仪式，不再出现全黑空白帧与孤立「检测中」角标。
+- **纯代码复用池塘管线**：零视频文件、无实体电视机边框，在池塘自身 WebGL2 着色器内完成「水平亮线 → 满屏无边框管面展开 → 水面先亮 → 荷叶/季节装饰/锦鲤依次成形 → 顶部点阵字 `LUSU575` 渐隐 → 6 颗图标与状态角标淡入」，最后一帧即首页本体，零切屏零闪烁。
+- **真实预加载与重访策略**：新增 `boot-preloader.mjs` 并发预加载并 `decode()` 全站 32 项素材（12 张四季 WebP 装饰、5 张游戏封面、6 张聊天室头像、6 张工具图标、关于页头像、2 份目录 JSON），进度条与真实加载严格绑定；首访封顶 2.6 秒、点击或 `Esc/Space` 可随时跳过，重访/缓存命中自动压缩为开机亮线一闪而过。', '2026-11-23T15:00:00+08:00', '2026-11-23T15:00:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-crt-boot-preloader-en', 'seed-update-2026-11-23-pond-crt-boot-preloader', 'en', 'Pure-Code CRT Pond Boot Sequence & 32-Asset Site-Wide Preloader', 'Animation Phase Item 1: pure-code borderless CRT power-on beam reusing the live WebGL2 Pond pipeline, taking over from Frame 0 on cold load while preloading and decoding all 32 site assets with seamless final-frame handoff.', '# Pure-Code CRT Pond Boot Sequence & 32-Asset Site-Wide Preloader
+
+Animation Phase Item 1 (`r57`) is live:
+
+- **Frame-0 Cold-Load Takeover**: Inline critical CRT beam markup and synchronous `<head>` state prevent cold-load blank black frames and hide the corner status badge until boot completes.
+- **100% Live WebGL2 Pond Pipeline**: Zero video files and zero TV bezel—horizontal deep-teal phosphor beam unfolds into the borderless full-screen CRT tube, revealing water first, then lotus leaves, seasonal decor, and live koi, with dot-matrix `LUSU575` title and seamless final-frame handoff.
+- **Real Preload Progress & Repeat-Visit Compression**: `boot-preloader.mjs` preloads and decodes all 32 site assets (12 seasonal WebPs, 5 game covers, 6 chat avatars, 6 tool SVGs, About avatar, 2 JSON catalogs). Capped at 2.6s on first visit, skippable via click/Esc/Space, and compressed into a brief beam flash on repeat visits.', '2026-11-23T15:00:00+08:00', '2026-11-23T15:00:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-23-pond-crt-boot-preloader-ja', 'seed-update-2026-11-23-pond-crt-boot-preloader', 'ja', '純コード CRT 起動アニメーションと全サイト 32 素材プリロード実装', 'アニメーション強化第1弾：動画を使わず池本体の WebGL2 CRT パイプラインで起動演出を生成し、初回ロード0フレーム目から黒画面を防止。全32素材を並列プリロード＆デコードし、最終フレームがそのままホームへシームレス接続します。', '# 純コード CRT 起動アニメーションと全サイト 32 素材プリロード実装
+
+アニメーション強化第1弾（`r57`）を公開しました：
+
+- **コールドロード第0フレーム制御**：`index.html` に初期走査線と同期スクリプトをインライン配置し、初回読み込み時の無地黒画面を解消しました。
+- **池本体の WebGL2 パイプライン再利用**：動画やテレビ枠を使わず、水平蛍光ラインから全面 CRT へ展開し、水面→蓮葉・季節装飾・錦鯉の順に実読み込み進捗と連動して立ち上がり、最終フレームがそのままホーム画面へ途切れなく接続します。
+- **全32素材の並列プリロードと再訪短縮**：季節 WebP 12点・ゲーム表紙 5点・チャットアバター 6点・ツールアイコン 6点・プロフィール画像・カタログ JSON 2点を事前デコード。初回は最大 2.6 秒（クリック／Esc でスキップ可）、再訪時は一瞬のフラッシュ展開へ短縮されます。', '2026-11-23T15:00:00+08:00', '2026-11-23T15:00:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-pond-boot-r57', '2026-11-23T15:00:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-polish-r56', '2026-11-23T14:37:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261123-pond-boot-r57', '2026-11-23T15:00:00+08:00', 'schema') on conflict(version) do nothing;

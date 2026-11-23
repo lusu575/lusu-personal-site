@@ -330,6 +330,8 @@ export class PondUIOverlay {
     this.toStopIdx = this.currentSeasonIdx;
     this.morphStartTime = -10;
     this.morphDuration = 0.92;
+    this.bootActive = false;
+    this.bootProgress = 1;
 
     this.particleSeeds = Array.from({ length: EMBLEM_PARTICLE_COUNT }, (_, i) => {
       const a = (i * 2.399963) % (Math.PI * 2);
@@ -356,6 +358,16 @@ export class PondUIOverlay {
   setIconAsset(id, img) {
     if (this.iconStates[id]) {
       this.iconAssets[id] = img;
+      this.dirty = true;
+    }
+  }
+
+  setBootState(active, progress = 1) {
+    const nextActive = Boolean(active);
+    const nextProg = Math.max(0, Math.min(1, progress));
+    if (this.bootActive !== nextActive || Math.abs(this.bootProgress - nextProg) > 0.003) {
+      this.bootActive = nextActive;
+      this.bootProgress = nextProg;
       this.dirty = true;
     }
   }
@@ -482,7 +494,7 @@ export class PondUIOverlay {
     const clockNow = this._formatClock();
     const clockChanged = clockNow !== this.lastClockText;
 
-    if (!this.dirty && !morphing && !iconAnimating && !clockChanged) {
+    if (!this.dirty && !morphing && !iconAnimating && !clockChanged && !this.bootActive) {
       return { canvas: this.canvas, updated: false };
     }
 
@@ -493,12 +505,61 @@ export class PondUIOverlay {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, w, h);
 
+    if (this.bootActive && this.bootProgress < 0.995) {
+      // Smoothly cross-fade normal UI in during the final 24% of boot (0.76 -> 1.0)
+      const uiAlpha = Math.max(0, Math.min(1, (this.bootProgress - 0.74) / 0.26));
+      if (uiAlpha > 0.01) {
+        ctx.save();
+        ctx.globalAlpha = uiAlpha;
+        this._drawClock(ctx, w, h);
+        this._drawSeasonSlider(ctx, w, h, t);
+        this._drawDesktopIcons(ctx, w, h, t, dt);
+        this._drawDiscreetCorner(ctx, w, h, t);
+        ctx.restore();
+      }
+      this._drawBootTitle(ctx, w, h, this.bootProgress);
+      return { canvas: this.canvas, updated: true };
+    }
+
     this._drawClock(ctx, w, h);
     this._drawSeasonSlider(ctx, w, h, t);
     this._drawDesktopIcons(ctx, w, h, t, dt);
     this._drawDiscreetCorner(ctx, w, h, t);
 
     return { canvas: this.canvas, updated: true };
+  }
+
+  _drawBootTitle(ctx, w, h, progress) {
+    const fadeIn = Math.max(0, Math.min(1, (progress - 0.16) / 0.22));
+    const fadeOut = 1 - Math.max(0, Math.min(1, (progress - 0.80) / 0.16));
+    const alpha = fadeIn * fadeOut;
+    if (alpha <= 0.01) return;
+
+    const titleSize = Math.max(18, Math.round(Math.min(w, h * 1.4) * 0.028));
+    const y = h * 0.085;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.font = `600 ${titleSize}px "JetBrains Mono", "Cascadia Mono", Consolas, monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const label = 'L U S U 5 7 5';
+    ctx.fillStyle = 'rgba(104, 240, 224, 0.28)';
+    ctx.fillText(label, w * 0.5, y + 1);
+    ctx.fillStyle = 'rgba(222, 252, 248, 0.94)';
+    ctx.fillText(label, w * 0.5, y);
+
+    // Restrained dotted real-progress bar directly underneath site title
+    const barW = Math.min(220, w * 0.22);
+    const barX = (w - barW) * 0.5;
+    const barY = y + titleSize * 0.92;
+    const dots = 24;
+    const filled = Math.round(progress * dots);
+    for (let i = 0; i < dots; i++) {
+      const dx = barX + (i / (dots - 1)) * barW;
+      ctx.fillStyle = i < filled ? 'rgba(126, 252, 224, 0.92)' : 'rgba(126, 252, 224, 0.22)';
+      ctx.fillRect(dx - 1.5, barY - 1.5, 3, 3);
+    }
+    ctx.restore();
   }
 
   _drawClock(ctx, w, h) {

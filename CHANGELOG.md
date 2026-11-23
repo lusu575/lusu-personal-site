@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- 纯代码 CRT 进站启动动画与全站 32 项素材预加载上线（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-crt-boot-preloader` / `2026-11-23-pond-crt-boot-preloader`；视觉层缓存 `20261123-pond-boot-r57`。
+
 - 游戏封面 WebP 瘦身 93 倍、下架旧彩色图标与全站首帧防闪跳（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-game-covers-webp-zero-flash` / `2026-11-23-pond-game-covers-webp-zero-flash`；视觉层缓存 `20261123-pond-polish-r56`。
 
 - 文章目录跳转修复、四季装饰 WebP 提速 34 倍、回归原生光标与关闭键悬停零漂移（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-toc-webp-cursor-close-hover` / `2026-11-23-pond-toc-webp-cursor-close-hover`；视觉层缓存 `20261123-pond-polish-r55`。

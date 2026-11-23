@@ -123,6 +123,7 @@ uniform vec3 uCausticTint;
 uniform vec3 uSpecularTint;
 uniform vec4 uRipples[8];
 uniform int uRippleCount;
+uniform float uBootFloraAlpha;
 
 float hash21(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
@@ -223,7 +224,8 @@ void main() {
     floraPremul += tW.rgb * (tW.a * w.w);
     floraAlpha += tW.a * w.w;
   }
-  floraAlpha = clamp(floraAlpha, 0.0, 1.0);
+  floraAlpha = clamp(floraAlpha * uBootFloraAlpha, 0.0, 1.0);
+  floraPremul *= uBootFloraAlpha;
 
   // Ripples & seasonal shimmer glow are purely additive light (alpha = 0 contribution to darkening!)
   vec3 additiveLight = mix(uCausticTint, uSpecularTint, 0.52) * rip.z * 0.65 + sweepGlow;
@@ -288,6 +290,8 @@ uniform float uDotPitchPx;
 uniform float uScanlineCount;
 uniform float uBloomIntensity;
 uniform float uChromaticEdge;
+uniform float uBootReveal;
+uniform vec3 uBootBeamTint;
 
 float hash21(vec2 p) {
   p = fract(p * vec2(234.34, 435.345));
@@ -383,6 +387,33 @@ void main() {
   // Filmic highlight roll-off
   col = col / (1.0 + col * 0.18);
   col = pow(max(col, 0.0), vec3(0.96));
+
+  // Pure-code CRT Power-On Beam & Full-Screen Tube Unfold (no TV bezel, deep teal phosphor)
+  if (uBootReveal < 0.999) {
+    float p = clamp(uBootReveal, 0.0, 1.0);
+    float beamSweep = smoothstep(0.0, 0.20, p);
+    float tubeUnfold = smoothstep(0.14, 0.52, p);
+    float waterGlow = smoothstep(0.18, 0.64, p);
+
+    float halfW = mix(0.02, 0.56, beamSweep);
+    float halfH = mix(0.0038, 0.56, pow(tubeUnfold, 1.35));
+
+    float dx = abs(warpedUv.x - 0.5);
+    float dy = abs(warpedUv.y - 0.5);
+    float insideX = 1.0 - smoothstep(halfW - 0.025, halfW + 0.025, dx);
+    float insideY = 1.0 - smoothstep(halfH - 0.018, halfH + 0.018, dy);
+    float tubeMask = insideX * insideY;
+
+    // Crisp horizontal phosphor beam line that fades cleanly as tube opens
+    float beamFade = (1.0 - smoothstep(0.18, 0.58, p)) * smoothstep(0.0, 0.04, p);
+    float centerBeam = exp(-pow(dy / 0.0065, 2.0)) * insideX * beamFade;
+    float edgeGlow = exp(-pow((dy - halfH) / 0.014, 2.0)) * insideX * (1.0 - smoothstep(0.45, 0.72, p)) * smoothstep(0.14, 0.26, p);
+
+    // Pond water & dot-matrix materialize first, then full scene & UI seamlessly take over
+    vec3 bootScene = col * mix(0.0, 1.0, waterGlow) * tubeMask;
+    vec3 phosphor = uBootBeamTint * (centerBeam * 1.45 + edgeGlow * 0.55);
+    col = mix(bootScene + phosphor, col, smoothstep(0.84, 1.0, p));
+  }
 
   col *= glassMask;
   fragColor = vec4(col, 1.0);

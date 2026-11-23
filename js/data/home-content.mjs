@@ -2,6 +2,29 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-23-pond-crt-boot-preloader",
+      "slug": "2026-11-23-pond-crt-boot-preloader",
+      "category": "site-updates",
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-23T15:00:00+08:00",
+      "updated_at": "2026-11-23T15:00:00+08:00",
+      "published_at": "2026-11-23T15:00:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "纯代码 CRT 进站启动动画与全站 32 项素材预加载上线",
+        "en": "Pure-Code CRT Pond Boot Sequence & 32-Asset Site-Wide Preloader",
+        "ja": "純コード CRT 起動アニメーションと全サイト 32 素材プリロード実装"
+      },
+      "summary": {
+        "zh": "交互与动画专项第一项上线：纯代码复用池塘自身 WebGL2 CRT 管线绘制无边框荧光亮线展开与分层显影，从冷加载第 0 帧接管画面，启动期间并行预加载并解码全站 32 项素材，结尾无缝交接首页本体。",
+        "en": "Animation Phase Item 1: pure-code borderless CRT power-on beam reusing the live WebGL2 Pond pipeline, taking over from Frame 0 on cold load while preloading and decoding all 32 site assets with seamless final-frame handoff.",
+        "ja": "アニメーション強化第1弾：動画を使わず池本体の WebGL2 CRT パイプラインで起動演出を生成し、初回ロード0フレーム目から黒画面を防止。全32素材を並列プリロード＆デコードし、最終フレームがそのままホームへシームレス接続します。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-game-covers-webp-zero-flash",
       "slug": "2026-11-23-pond-game-covers-webp-zero-flash",
       "category": "site-updates",
@@ -91,29 +114,6 @@ export const homeContent = Object.freeze({
         "zh": "同步 5 款游戏壳层缓存版本并消除猫国进门 Oops 闪现；修复人生重开两侧黑带、货架许可证裁切、聊天室同步前缀、登录窗全宽与去重、文章元信息去秒提亮、互传展开避让与徽章对比、画板卡片留白与日语页底空。",
         "en": "Synced game-shell cache across all 5 games, eliminated Kittens Game boot Oops flash, replaced Life Restart black side bands, fixed Games license clipping, Chat sync prefix, Login full-width button, Reader meta without seconds, Transfer panel overlap, Whiteboard card balance & Japanese Trainer spacing.",
         "ja": "全5ゲームのキャッシュ更新と Kittens Game 起動時 Oops 表示解消、Life Restart 左右黒帯改善、ライセンス見切れ・チャット同期表記・ログイン全幅・記事メタ秒数削除・一時転送重なり・ホワイトボード余白・日本語ページ下余白を一括修正しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-systemic-gradient-contrast-polish",
-      "slug": "2026-11-23-pond-systemic-gradient-contrast-polish",
-      "category": "site-updates",
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T08:56:00+08:00",
-      "updated_at": "2026-11-23T08:56:00+08:00",
-      "published_at": "2026-11-23T08:56:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "全站渐变强调色清理、次要文字对比度提亮与各页细节收口",
-        "en": "Site-Wide Gradient Cleanup, Contrast Boost, Cloud-Save Banner & Final Page Polish",
-        "ja": "全サイトグラデーション整理・コントラスト改善・クラウドセーブ表示と各画面最終調整"
-      },
-      "summary": {
-        "zh": "清除全站 4 处残留渐变色并系统性提亮次要小字对比度；补齐游戏货架云存档状态栏、首页樱花枝避让与状态防卡死、欢迎窗实时问候与 5 条直显、人生重开暗色适配，并恢复关于页「资源」原文。",
-        "en": "Replaced all 4 remaining gradient accents with solid Midnight Pond teal, lifted muted text contrast site-wide, added Games cloud-save status banner, fixed Home branch overlap and Welcome greeting timing, polished Life Restart, and restored About copy.",
-        "ja": "4箇所のグラデーションを統一し補助文字の視認性を向上。ホーム枝被り回避、ようこそ挨拶時刻修正、ゲームクラウド状態バー追加、人生やり直し調整、プロフィール原文復元を実施しました。"
       }
     }
   ]

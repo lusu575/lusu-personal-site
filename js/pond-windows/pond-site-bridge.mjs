@@ -2,7 +2,7 @@
 // Zero business-logic rewrites: all routing, API fetching, filtering, sorting, pinning,
 // search, pagination, account sessions, and language switching stay 100% in existing main.js & routes/*.mjs.
 
-import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261123-pond-polish-r55';
+import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261123-pond-boot-r57';
 import {
   resolveInitialPondSeason,
   saveManualSeasonOverride,
@@ -265,11 +265,25 @@ function bootPondVisualBridge() {
   function ensureEngine() {
     if (engine) return engine;
     const { season, isPreview } = resolveInitialPondSeason(window.location.search);
+    const initialRoute = document.body.dataset.route || 'home';
+    const shouldSkipBoot = initialRoute !== 'home' || isMobileShell();
+    if (shouldSkipBoot) {
+      document.documentElement.dataset.pondBoot = 'done';
+      document.documentElement.dataset.pondBootWebgl = 'ready';
+    }
     engine = new PondCRTEngine(canvas, {
       season,
       lang: getCurrentSiteLang(),
+      skipBoot: shouldSkipBoot,
       demoClock: new URLSearchParams(window.location.search).get('demoClock') === '1',
       preserveDrawingBuffer: new URLSearchParams(window.location.search).get('capture') === '1',
+      onBootFirstFrame: () => {
+        document.documentElement.dataset.pondBootWebgl = 'ready';
+      },
+      onBootComplete: () => {
+        document.documentElement.dataset.pondBoot = 'done';
+        document.documentElement.dataset.pondBootWebgl = 'ready';
+      },
       onNavigate: (route, id) => {
         triggerSiteRoute(id || String(route || '').replace(/^#/, '') || 'home');
       },
@@ -292,6 +306,13 @@ function bootPondVisualBridge() {
       onAutoSeasonChange: (nextSeason) => {
         if (engine) engine.setSeason(nextSeason, 0.86, 0.072, { manual: false });
       }
+    });
+    const skipActiveBoot = () => {
+      if (engine && engine.bootActive) engine.skipBoot();
+    };
+    window.addEventListener('pointerdown', skipActiveBoot, { passive: true });
+    window.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape' || ev.key === ' ') skipActiveBoot();
     });
     return engine;
   }

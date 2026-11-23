@@ -23,8 +23,9 @@ import {
   FULLSCREEN_VERT,
   SURFACE_OVERLAY_FRAG,
   WATER_BG_FRAG
-} from './shaders.mjs';
-import { PondUIOverlay } from './ui-overlay.mjs?v=20261123-pond-polish-r51';
+} from './shaders.mjs?v=20261123-pond-boot-r57';
+import { PondUIOverlay } from './ui-overlay.mjs?v=20261123-pond-boot-r57';
+import { detectBootMode, runPondBootPreload } from './boot-preloader.mjs?v=20261123-pond-boot-r57';
 
 const MAX_RIPPLES = 8;
 
@@ -71,6 +72,16 @@ export class PondCRTEngine {
     this.onLanguageChange = options.onLanguageChange || null;
     this.onSeasonChange = options.onSeasonChange || null;
     this.onFpsUpdate = options.onFpsUpdate || null;
+    this.onBootFirstFrame = options.onBootFirstFrame || null;
+    this.onBootComplete = options.onBootComplete || null;
+    this.bootMode = options.skipBoot ? 'instant' : detectBootMode();
+    this.bootActive = this.bootMode !== 'instant';
+    this.bootVisual = this.bootActive ? 0.03 : 1.0;
+    this.bootTarget = this.bootActive ? (this.bootMode === 'quick' ? 1.0 : 0.12) : 1.0;
+    this.bootStartMs = performance.now();
+    this.bootHardTimeoutMs = this.bootMode === 'quick' ? 340 : 2600;
+    this._bootSkipped = false;
+    this._bootFirstFrameFired = false;
     this.startTime = performance.now();
     this.lastFrameTime = 0;
     this.elapsed = 0;
@@ -125,62 +136,41 @@ export class PondCRTEngine {
     this._bindInteractions();
   }
 
+  skipBoot() {
+    if (!this.bootActive) return;
+    this._bootSkipped = true;
+    this.bootTarget = 1.0;
+  }
+
   async _loadAssetManifest() {
     try {
-      const res = await fetch('/assets/pond-assets-manifest.json?v=20261123-pond-polish-r55', { cache: 'default' });
-      if (!res.ok) return;
-      const manifest = await res.json();
-
-      // 1. Prioritize active season's WebP parts FIRST so first paint shows flora immediately,
-      // then quietly load remaining seasons in the background.
-      if (manifest.parts) {
-        const seasonPartMap = {
-          spring: ['sakuraBranch', 'lotusLeaf1', 'lotusLeaf2', 'lotusLeaf3'],
-          summer: ['lotusLeaf1', 'lotusLeaf2', 'lotusLeaf3', 'lotusFlower', 'lotusBud'],
-          autumn: ['mapleBranch', 'mapleLeaf1', 'mapleLeaf2', 'mapleLeaf3'],
-          winter: ['winterBranch', 'iceOverlay']
-        };
-        const loadPart = ([key, url]) => new Promise((resolve, reject) => {
-          const img = new Image();
-          img.decoding = 'async';
-          img.onload = () => {
-            this.floraLayer.setPart(key, img);
-            resolve(key);
-          };
-          img.onerror = reject;
-          img.src = url;
-        });
-
-        const allEntries = Object.entries(manifest.parts).filter(([, url]) => Boolean(url));
-        const prioritySet = new Set(seasonPartMap[this.seasonId] || seasonPartMap.summer);
-        const priorityEntries = allEntries.filter(([k]) => prioritySet.has(k));
-        const deferredEntries = allEntries.filter(([k]) => !prioritySet.has(k));
-
-        const primaryLoaded = await Promise.allSettled(priorityEntries.map(loadPart));
-        if (this.gl && primaryLoaded.some((r) => r.status === 'fulfilled')) {
-          this._prebakeAllFlora();
-        }
-
-        if (deferredEntries.length) {
-          setTimeout(async () => {
-            const restLoaded = await Promise.allSettled(deferredEntries.map(loadPart));
-            if (this.gl && restLoaded.some((r) => r.status === 'fulfilled')) {
-              this._prebakeAllFlora();
-            }
-          }, 120);
-        }
-      }
-
-      // 2. Desktop icon transparent PNG slots (knowledge, videos, resources, games, chatroom, about)
-      if (manifest.icons) {
-        for (const [iconId, url] of Object.entries(manifest.icons)) {
-          if (url) {
-            this.loadIconAsset(iconId, url).catch(() => {});
+      const res = await runPondBootPreload({
+        seasonId: this.seasonId,
+        onFloraPart: (key, img) => {
+          this.floraLayer.setPart(key, img);
+        },
+        onPrimaryFloraDone: () => {
+          if (this.gl) this._prebakeAllFlora();
+        },
+        onProgress: (realProg) => {
+          if (this.bootActive && this.bootMode === 'full' && !this._bootSkipped) {
+            this.bootTarget = Math.max(this.bootTarget, 0.10 + realProg * 0.90);
           }
+        },
+        onComplete: () => {
+          if (this.gl) this._prebakeAllFlora();
+          if (this.bootActive) this.bootTarget = 1.0;
+        }
+      });
+
+      // Optional desktop icon overrides if present in manifest
+      if (res?.manifest?.icons) {
+        for (const [iconId, url] of Object.entries(res.manifest.icons)) {
+          if (url) this.loadIconAsset(iconId, url).catch(() => {});
         }
       }
     } catch {
-      // Manifest optional
+      if (this.bootActive) this.bootTarget = 1.0;
     }
   }
 
@@ -591,6 +581,27 @@ export class PondCRTEngine {
       if (this.onFpsUpdate) this.onFpsUpdate(this.currentFps);
     }
 
+    // Step pure-code CRT Boot Sequence (strictly driven by real preload progress; quick flash on repeat visits)
+    let bootFloraAlpha = 1.0;
+    if (this.bootActive) {
+      const elapsedBootMs = nowMs - this.bootStartMs;
+      if (elapsedBootMs >= this.bootHardTimeoutMs) {
+        this.bootTarget = 1.0;
+      }
+      const speed = this._bootSkipped ? 7.5 : (this.bootMode === 'quick' ? 4.4 : 2.8);
+      const diff = this.bootTarget - this.bootVisual;
+      this.bootVisual = diff <= 0.002 ? this.bootTarget : this.bootVisual + Math.min(diff, Math.max(dt * 0.45, diff * Math.min(1, dt * speed)));
+      this.uiOverlay.setBootState(true, this.bootVisual);
+      bootFloraAlpha = Math.max(0, Math.min(1, (this.bootVisual - 0.36) / 0.44));
+      if (this.bootVisual >= 0.996 && this.bootTarget >= 0.999) {
+        this.bootActive = false;
+        this.bootVisual = 1.0;
+        bootFloraAlpha = 1.0;
+        this.uiOverlay.setBootState(false, 1.0);
+        if (this.onBootComplete) this.onBootComplete();
+      }
+    }
+
     const { palette: season, revealSweepP, inTransition } = this._stepContinuousSeason(t);
     const rippleCount = this._updateRipples(t);
     const sw = this.fbos.scene.width;
@@ -650,6 +661,7 @@ export class PondCRTEngine {
     gl.uniform3fv(su.uSpecularTint, season.specularTint);
     gl.uniform4fv(su.uRipples, this.rippleUniformData);
     gl.uniform1i(su.uRippleCount, rippleCount);
+    if (su.uBootFloraAlpha) gl.uniform1f(su.uBootFloraAlpha, bootFloraAlpha);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     gl.disable(gl.BLEND);
 
@@ -714,9 +726,26 @@ export class PondCRTEngine {
     gl.uniform1f(cu.uScanlineCount, Math.max(160, this.cssHeight / this.crtConfig.scanlinePitchCssPx));
     gl.uniform1f(cu.uBloomIntensity, this.crtConfig.bloomIntensity);
     gl.uniform1f(cu.uChromaticEdge, this.crtConfig.chromaticEdge);
+    if (cu.uBootReveal) gl.uniform1f(cu.uBootReveal, this.bootVisual);
+    if (cu.uBootBeamTint) {
+      // Restrained deep teal-cyan phosphor gently tinted by active season (never neon lime!)
+      const bt = this.seasonId === 'spring'
+        ? [0.46, 0.94, 0.88]
+        : this.seasonId === 'autumn'
+          ? [0.54, 0.90, 0.82]
+          : this.seasonId === 'winter'
+            ? [0.56, 0.92, 1.0]
+            : [0.38, 0.96, 0.86];
+      gl.uniform3fv(cu.uBootBeamTint, bt);
+    }
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
     gl.bindVertexArray(null);
+
+    if (!this._bootFirstFrameFired) {
+      this._bootFirstFrameFired = true;
+      if (this.onBootFirstFrame) this.onBootFirstFrame();
+    }
   }
 
   start() {
