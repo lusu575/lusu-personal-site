@@ -16458,6 +16458,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 1. **CSS transition 干渉の除去**：`.crt-glass-btn` で旧 `transform` 遷移を無効化し、第0フレームからバネを直接駆動。
 2. **動的な液状屈折**：ホバー追従の斜め光沢・押下中の呼吸屈折リング・440ms 拡散波と 160ms 縁発光を追加しました。', '2026-11-24T19:00:00+08:00', '2026-11-24T19:00:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-glass-dynamic-r76', '2026-11-24T19:00:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77', 'whiteboard-1-0-14-localized-main-menu-r77', 'site-updates', '["在线画板","视觉更新","本地化"]', '', 'published', 0, 0, '2026-11-24T20:16:00+08:00', '2026-11-24T20:16:00+08:00', '2026-11-24T20:16:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77-zh', 'seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77', 'zh', '在线画板 1.0.14：主菜单搜索项中文化并移除第三方外链（r77）', '在线画板独立版本升至 1.0.14，通过 Excalidraw 官方自定义 MainMenu 将画布查找项中文化为「在画布中查找 Ctrl+F」，并移除 Excalidraw links 及 GitHub / Follow us / Discord 外链。', '# 在线画板 1.0.14：主菜单中文化与精简（r77）
+
+本次按在线画板子项目规范升版至 `1.0.14`，协作同步与数据协议保持不变：
+
+1. **画布搜索中文化**：保留「画布查找（Ctrl+F）」完整功能，主菜单文案按站点语言显示为「在画布中查找 / Find on canvas / キャンバス内を検索」。
+2. **移除第三方外链分组**：通过 `<MainMenu>` 移除上游 `Excalidraw links` 分组标题及 GitHub / Follow us / Discord chat 外链，主菜单只保留站内实用项。', '2026-11-24T20:16:00+08:00', '2026-11-24T20:16:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77-en', 'seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77', 'en', 'Online Whiteboard 1.0.14: Localized Main Menu & Removed External Links (r77)', 'Bumped Online Whiteboard to 1.0.14 with a custom Excalidraw MainMenu that localizes Find on canvas (Ctrl+F) and removes upstream Excalidraw external links.', '# Online Whiteboard 1.0.14: Localized Main Menu (r77)
+
+Bumped the Online Whiteboard subproject to `1.0.14` without altering collaboration sync or room protocols:
+
+1. **Localized Canvas Search**: Keeps full `Ctrl+F` canvas search under trilingual labels.
+2. **Clean Menu**: Uses Excalidraw''s official `<MainMenu>` to remove the upstream `Excalidraw links` group (GitHub, Follow us, Discord chat).', '2026-11-24T20:16:00+08:00', '2026-11-24T20:16:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77-ja', 'seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77', 'ja', 'オンラインホワイトボード 1.0.14：メインメニューの多言語化と外部リンク撤去（r77）', 'ホワイトボードを 1.0.14 へ更新し、公式 MainMenu カスタマイズで「キャンバス内を検索 Ctrl+F」を多言語化、Excalidraw 外部リンク群を撤去しました。', '# オンラインホワイトボード 1.0.14（r77）
+
+同期プロトコルやデータ構造を変えず、メインメニューのみを整理しました：
+
+1. **キャンバス検索の多言語化**：`Ctrl+F` 検索機能を維持しつつ日本語・中国語・英語へ対応しました。
+2. **外部リンクの撤去**：上流の `Excalidraw links`（GitHub / Follow us / Discord chat）を正式な `<MainMenu>` 指定で削除しました。', '2026-11-24T20:16:00+08:00', '2026-11-24T20:16:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-whiteboard-menu-r77', '2026-11-24T20:16:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261124-glass-dynamic-r76', '2026-11-24T19:00:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261124-whiteboard-menu-r77', '2026-11-24T20:16:00+08:00', 'schema') on conflict(version) do nothing;

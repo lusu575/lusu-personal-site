@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-24-glass-dynamic-pilot-r76";
-const finalUpdateSlug = "crt-glass-pilot-dynamic-hover-and-expanding-wave-r76";
+const finalUpdateId = "seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77";
+const finalUpdateSlug = "whiteboard-1-0-14-localized-main-menu-r77";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Visual Polish: Dynamic Liquid Glass Pilot for Welcome Buttons (r76)";
-const finalPublishedAt = "2026-11-24T19:00:00+08:00";
+const finalTitleEn = "Online Whiteboard 1.0.14: Localized Main Menu & Removed External Links (r77)";
+const finalPublishedAt = "2026-11-24T20:16:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-24-glass-dynamic-pilot-r76",
   "seed-update-2026-11-24-wind-water-and-shift-enter-r75",
   "seed-update-2026-11-24-glass-pilot-visibility-r74",
   "seed-update-2026-11-24-welcome-lock-and-scrollbar-r73",

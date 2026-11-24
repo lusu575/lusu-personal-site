@@ -10,6 +10,7 @@ import { createRoot } from "react-dom/client";
 import { fullWhiteboardSnapshot } from "./private-snapshot.mjs";
 import {
   Excalidraw,
+  MainMenu,
   exportToBlob,
   exportToSvg,
 } from "@excalidraw/excalidraw";
@@ -40,7 +41,23 @@ import {
 import { roomHelpState } from "./room-help-state.js";
 
 const RECENT_ROOM_KEY = "lusu-whiteboard-recent-room-v1";
-const WHITEBOARD_VERSION = "1.0.13";
+const WHITEBOARD_VERSION = "1.0.14";
+const SEARCH_MENU_ICON = (
+  <svg
+    aria-hidden="true"
+    fill="none"
+    height="16"
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="1.75"
+    viewBox="0 0 24 24"
+    width="16"
+  >
+    <circle cx="11" cy="11" r="7" />
+    <path d="M20 20l-3.5-3.5" />
+  </svg>
+);
 const NAME_COOLDOWN_MS = 30_000;
 const PASSWORD_MIN_LENGTH = 4;
 const PASSWORD_MAX_LENGTH = 128;
@@ -859,7 +876,23 @@ function WhiteboardRoom({
             },
           }}
           viewModeEnabled={locked || leaving}
-        />
+        >
+          <MainMenu>
+            <MainMenu.Item
+              data-testid="search-menu-button"
+              icon={SEARCH_MENU_ICON}
+              onSelect={() => {
+                apiRef.current?.toggleSidebar({ name: "default", tab: "search", force: true });
+              }}
+              shortcut="Ctrl+F"
+            >
+              {t("findOnCanvas")}
+            </MainMenu.Item>
+            <MainMenu.DefaultItems.Help />
+            <MainMenu.Separator />
+            <MainMenu.DefaultItems.ChangeCanvasBackground />
+          </MainMenu>
+        </Excalidraw>
       </section>
 
       {membersOpen && (

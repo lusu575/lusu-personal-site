@@ -2,6 +2,10 @@
 
 本日志只记录在线画板子项目。根项目发布历史仍写入仓库根 `CHANGELOG.md`。
 
+## 1.0.14 - 2026-11-24
+
+- 在 `tools/whiteboard/src/main.jsx` 通过 Excalidraw 官方 `<MainMenu>` 自定义主菜单：保留并三语本地化画布搜索入口（`在画布中查找 Ctrl+F` / `Find on canvas Ctrl+F` / `キャンバス内を検索 Ctrl+F`），彻底移除上游 `Excalidraw links` 分组与 GitHub / Follow us / Discord 外链；协作协议、Yjs 同步、图片资源与 24 小时生命周期不变。
+
 ## 1.0.13 - 2026-11-23
 
 - 同步升级共享深色点阵主题缓存（`pond-tool-theme.css?v=20261123-pond-tools-r5`），确保大厅公共/密码房双卡顶对齐去空白与画布提示条深色底在线上立即生效。

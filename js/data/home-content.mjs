@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77",
+      "slug": "whiteboard-1-0-14-localized-main-menu-r77",
+      "category": "site-updates",
+      "tags": [
+        "在线画板",
+        "视觉更新",
+        "本地化"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T20:16:00+08:00",
+      "updated_at": "2026-11-24T20:16:00+08:00",
+      "published_at": "2026-11-24T20:16:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "在线画板 1.0.14：主菜单搜索项中文化并移除第三方外链（r77）",
+        "en": "Online Whiteboard 1.0.14: Localized Main Menu & Removed External Links (r77)",
+        "ja": "オンラインホワイトボード 1.0.14：メインメニューの多言語化と外部リンク撤去（r77）"
+      },
+      "summary": {
+        "zh": "在线画板独立版本升至 1.0.14，通过 Excalidraw 官方自定义 MainMenu 将画布查找项中文化为「在画布中查找 Ctrl+F」，并移除 Excalidraw links 及 GitHub / Follow us / Discord 外链。",
+        "en": "Bumped Online Whiteboard to 1.0.14 with a custom Excalidraw MainMenu that localizes Find on canvas (Ctrl+F) and removes upstream Excalidraw external links.",
+        "ja": "ホワイトボードを 1.0.14 へ更新し、公式 MainMenu カスタマイズで「キャンバス内を検索 Ctrl+F」を多言語化、Excalidraw 外部リンク群を撤去しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-glass-dynamic-pilot-r76",
       "slug": "crt-glass-pilot-dynamic-hover-and-expanding-wave-r76",
       "category": "site-updates",
@@ -113,34 +141,6 @@ export const homeContent = Object.freeze({
         "zh": "同步拦截并取消触发欢迎窗时挂载的旧版 WAAPI 弹窗动画，同时彻底隐藏关于窗及所有窗口缩放过程中的老版原生滚动条闪现。",
         "en": "Synchronously cancels the legacy WAAPI modal animation that hijacked the Welcome window zoom and eliminates the 15px native scrollbar flash during About and window open animations.",
         "ja": "ようこそ画面の開閉を妨げていた旧 WAAPI モーダルアニメーションを即時キャンセルし、概要ウィンドウ開閉時のネイティブスクロールバー瞬間表示を完全に解消しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-window-zero-jitter-settle",
-      "slug": "2026-11-24-window-zero-jitter-settle",
-      "category": "site-updates",
-      "tags": [
-        "site-updates",
-        "ui",
-        "performance"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T15:29:00+08:00",
-      "updated_at": "2026-11-24T15:29:00+08:00",
-      "published_at": "2026-11-24T15:29:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "消除窗口定格末帧抖动与「关于」高度跳变",
-        "en": "Eliminate Window Settle Jitter & About Height Shift",
-        "ja": "ウィンドウ定格時の微振動および「概要」高さジャンプ解消"
-      },
-      "summary": {
-        "zh": "移除窗口打开结束时的 1 帧毛玻璃切换跳变，防止底层水光透过毛玻璃引起静止窗口微颤，并锁定「关于」窗口定高消除异步加载跳位。",
-        "en": "Removed the end-of-open 1-frame backdrop-filter toggle snap, stabilized window surface against moving pond light underneath, and locked About window height to eliminate post-open vertical jumps.",
-        "ja": "開閉終了時の 1 フレーム backdrop-filter 切替によるブレを廃止し、「概要」ウィンドウの高さを固定して非同期読み込み後の縦ズレを解消しました。"
       }
     }
   ]
