@@ -9,7 +9,7 @@ import {
   startSeasonTimeSchedule
 } from '../pond-crt/season-schedule.mjs?v=20261122-pond-live-fix-r1';
 import { attachWelcomePilotButtons, getCrtGlassButtonPerfStats } from './crt-glass-button.mjs?v=20261123-pond-glass-r59';
-import { CrtWindowSpringController } from './crt-window-spring.mjs?v=20261123-pond-spring-r61';
+import { PondWindowMorphStep2 } from './crt-window-morph-step2.mjs?v=20261124-window-morph-step2-r64';
 
 function isMobileShell() {
   return document.documentElement.dataset.shell === 'mobile' || window.innerWidth <= 768;
@@ -278,26 +278,15 @@ function bootPondVisualBridge() {
   let engine = null;
   let stopSchedule = null;
   let activeMode = '';
-  let lastMobileRoute = '';
   let suppressNextOutsideClickUntil = 0;
-  let bypassCloseIntercept = false;
-  const windowSpring = new CrtWindowSpringController();
+  const morphStep2 = new PondWindowMorphStep2();
 
-  function closeWindowAnimated(mode, finishFn) {
-    if (!mode || mode === 'home') {
-      if (typeof finishFn === 'function') finishFn();
-      return;
-    }
-    if (windowSpring.isClosingMode(mode)) return;
-    windowSpring.animateClose(mode, () => {
-      bypassCloseIntercept = true;
-      try {
-        if (typeof finishFn === 'function') finishFn();
-      } finally {
-        bypassCloseIntercept = false;
-      }
-    });
-  }
+  // Expose Step 2 hard-gate verification handle (pure-color rounded rect, 1000ms linear)
+  window.__pondMorphDebug = {
+    playFromIcon: (iconId) => morphStep2.playFromIcon(iconId),
+    dismiss: () => morphStep2.dismiss(),
+    getState: () => morphStep2.getState()
+  };
 
   function openAccountPopoverFromPond() {
     const trigger = document.querySelector('#account-widget [data-account-toggle], #account-widget .account-button, #account-menu-trigger');
@@ -374,8 +363,14 @@ function bootPondVisualBridge() {
         document.documentElement.dataset.pondBootWebgl = 'ready';
       },
       onNavigate: (route, id) => {
-        windowSpring.cancel();
-        triggerSiteRoute(id || String(route || '').replace(/^#/, '') || 'home');
+        const iconId = id || String(route || '').replace(/^#/, '') || 'home';
+        if (iconId !== 'home' && !isMobileShell()) {
+          // Step 2 Hard Gate: pure dark rounded rectangle from actual icon rect -> target window rect (1000ms linear, no business content)
+          suppressNextOutsideClickUntil = performance.now() + 320;
+          morphStep2.playFromIcon(iconId);
+          return;
+        }
+        triggerSiteRoute(iconId);
       },
       onAccountClick: () => {
         openAccountPopoverFromPond();
@@ -460,33 +455,11 @@ function bootPondVisualBridge() {
         });
       }
       activeMode = nextMode;
-      const isInnerKnowledgeSwap = (prevMode === 'knowledge' && nextMode === 'article')
-        || (prevMode === 'article' && nextMode === 'knowledge');
-      if (prevMode && prevMode !== nextMode) {
-        if (nextMode === 'home') {
-          windowSpring.syncScrimImmediate(false);
-        } else if (!isInnerKnowledgeSwap) {
-          windowSpring.animateOpen(nextMode);
-        }
-      } else if (!prevMode) {
-        windowSpring.syncScrimImmediate(nextMode !== 'home');
-      }
     } else if (activeMode) {
       delete document.documentElement.dataset.pondMode;
-      windowSpring.cancel();
-      windowSpring.syncScrimImmediate(false);
+      morphStep2.dismiss();
       if (engine) engine.stop();
       activeMode = '';
-    }
-
-    if (isMobileShell()) {
-      const prevMobile = lastMobileRoute;
-      lastMobileRoute = route;
-      if (prevMobile && prevMobile !== route && route !== 'home') {
-        windowSpring.animateOpen(route);
-      }
-    } else {
-      lastMobileRoute = '';
     }
   }
 
@@ -528,31 +501,14 @@ function bootPondVisualBridge() {
     }
   }, true);
 
-  // Intercept window close button & welcome close clicks so mirror-reverse spring plays before hiding DOM
-  document.addEventListener('click', (e) => {
-    if (bypassCloseIntercept) return;
-    const closeWelcomeBtn = e.target?.closest?.('#welcome-modal [data-close-welcome]');
-    if (closeWelcomeBtn && isWelcomeModalOpen()) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      closeWindowAnimated('welcome', () => closeWelcomeBtn.click());
-      return;
-    }
-    const closeWinBtn = e.target?.closest?.('.xp-window .close-button[data-route="home"]');
-    if (closeWinBtn) {
-      const modeToClose = isMobileShell() ? (document.body.dataset.route || 'home') : activeMode;
-      if (modeToClose && modeToClose !== 'home' && modeToClose !== 'article') {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        closeWindowAnimated(modeToClose, () => triggerSiteRoute('home'));
-      }
-    }
-  }, true);
-
-  // Clicking outside the skinned window returns to parent view
+  // Clicking outside the skinned window returns to parent view (or dismisses Step 2 pure-rect debug shell)
   document.addEventListener('click', (e) => {
     if (e.target !== canvas && e.target !== backdrop) return;
     if (performance.now() < suppressNextOutsideClickUntil) return;
+    if (morphStep2.isActive() && activeMode === 'home') {
+      morphStep2.dismiss();
+      return;
+    }
     const acctPop = document.getElementById('account-popover');
     if (acctPop && !acctPop.hidden) return;
     if (activeMode === 'article') {
@@ -562,19 +518,14 @@ function bootPondVisualBridge() {
       return;
     }
     if (activeMode === 'knowledge' || activeMode === 'videos' || activeMode === 'resources' || activeMode === 'games' || activeMode === 'chatroom' || activeMode === 'about') {
-      closeWindowAnimated(activeMode, () => triggerSiteRoute('home'));
+      triggerSiteRoute('home');
     }
   });
 
   window.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
-    if (activeMode === 'welcome' && isWelcomeModalOpen()) {
-      const closeBtn = document.querySelector('#welcome-modal .close-button[data-close-welcome]');
-      if (closeBtn) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        closeWindowAnimated('welcome', () => closeBtn.click());
-      }
+    if (morphStep2.isActive()) {
+      morphStep2.dismiss();
       return;
     }
     if (activeMode === 'article') {
@@ -586,27 +537,27 @@ function bootPondVisualBridge() {
     if (activeMode === 'videos') {
       const modal = document.getElementById('video-modal');
       if (modal && !modal.hidden) return;
-      closeWindowAnimated(activeMode, () => triggerSiteRoute('home'));
+      triggerSiteRoute('home');
       return;
     }
     if (activeMode === 'resources') {
       const qtModal = document.getElementById('quick-transfer-modal');
       if (qtModal && !qtModal.hidden) return;
-      closeWindowAnimated(activeMode, () => triggerSiteRoute('home'));
+      triggerSiteRoute('home');
       return;
     }
     if (activeMode === 'games' || activeMode === 'chatroom' || activeMode === 'about') {
       const privForm = document.getElementById('chat-private-room-form');
       if (activeMode === 'chatroom' && privForm && !privForm.hidden) return;
-      closeWindowAnimated(activeMode, () => triggerSiteRoute('home'));
+      triggerSiteRoute('home');
       return;
     }
     if (activeMode === 'knowledge') {
       const searchInput = document.getElementById('knowledge-search-input');
       if (document.activeElement === searchInput && searchInput.value) return;
-      closeWindowAnimated(activeMode, () => triggerSiteRoute('home'));
+      triggerSiteRoute('home');
     }
-  }, true);
+  });
 
   // Sync article reading progress bar & ~1-screen Back-to-Top visibility with Pond's scrollable .article-detail-card
   function syncPondArticleScrollState() {
@@ -750,7 +701,7 @@ function bootPondVisualBridge() {
     openWelcomeFromPond,
     getEngine: () => engine,
     getGlassButtonPerfStats: getCrtGlassButtonPerfStats,
-    getWindowSpringPerfStats: () => windowSpring.getPerfStats()
+    getMorphStep2State: () => morphStep2.getState()
   };
 
   window.requestAnimationFrame(() => {

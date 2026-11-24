@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-window-morph-step2-gate",
+      "slug": "2026-11-24-window-morph-step2-gate",
+      "category": "site-updates",
+      "tags": [
+        "site-updates",
+        "animation",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T10:28:00+08:00",
+      "updated_at": "2026-11-24T10:28:00+08:00",
+      "published_at": "2026-11-24T10:28:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "窗口打开动画重构：纯色矩形几何扩张最小验证门槛上线",
+        "en": "Window Animation Rebuild: Step 2 Pure-Rectangle Geometry Gate",
+        "ja": "ウィンドウ開閉アニメーション再構築：ステップ2 純色矩形検証ゲート公開"
+      },
+      "summary": {
+        "zh": "按 Matched Geometry Shell Transition 技术方案启动窗口动画重构：完成 r61 冲突基线诊断，上线独立过渡层的纯深色圆角矩形 1000ms 线性几何验证门槛，待验收后进入后续阶段。",
+        "en": "Started the Matched Geometry Shell Transition rebuild: completed r61 WAAPI/CSS conflict diagnosis and deployed the Step 2 independent pure dark rounded-rectangle 1000ms linear expansion gate.",
+        "ja": "Matched Geometry Shell Transition 方針に基づき r61 の競合診断を完了し、独立オーバーレイ層でアイコン矩形からウィンドウ矩形へ 1000ms 線形拡張するステップ2 検証ゲートを公開しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-23-pond-chat-shift-enter-newline",
       "slug": "2026-11-23-pond-chat-shift-enter-newline",
       "category": "site-updates",
@@ -111,29 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "将聊天室输入框滚动条统一为深青荧光细条样式，隔离输入域与右侧字数统计及圆形发送按钮的弹性布局，彻底消除旧版白色滚动条遮挡按钮的问题。",
         "en": "Unified the chatroom textarea scrollbar with the dark phosphor thin scrollbar style and isolated the input field from the counter and circular send button to prevent overlap.",
         "ja": "チャット入力欄のスクロールバーをサイト統一の深青蛍光細スタイルへ刷新し、文字数表示と丸型送信ボタンとの重なりを解消しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-crt-glass-pilot",
-      "slug": "2026-11-23-pond-crt-glass-pilot",
-      "category": "site-updates",
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T18:15:00+08:00",
-      "updated_at": "2026-11-23T18:15:00+08:00",
-      "published_at": "2026-11-23T18:15:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "CRT 折射玻璃统一参数表与欢迎窗主按钮按压波纹试点上线",
-        "en": "CRT Refractive Glass Unified Config & Welcome Modal Button Press Pilot",
-        "ja": "CRT 屈折ガラス統一パラメータ表＆ようこそボタン波紋パイロット実装"
-      },
-      "summary": {
-        "zh": "按 CRT 折射玻璃适配方案落地步骤 2–3：建立全站唯一权威玻璃与阻尼弹簧参数表，并在欢迎窗快捷按钮试点接触点高斯凹陷、320ms 非线性释放波与边缘吃光反馈，静默零重绘。",
-        "en": "Implemented Steps 2–3 of the CRT Refractive Glass specification: single authoritative optical/spring token table and Welcome modal quick-link button pilot with off-center Gaussian indent, 320ms non-linear release wave, 70ms rim catch, and idle-stop.",
-        "ja": "CRT 屈折ガラス仕様のステップ 2–3 を反映：光学・バネ物理の単一パラメータ定義を作成し、ようこそ画面ボタンで接触点ガウス凹み・320ms 非線形リリース波・縁発光をパイロット実装しました。"
       }
     }
   ]

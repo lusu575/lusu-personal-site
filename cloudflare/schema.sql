@@ -16189,6 +16189,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **既定動作優先＋単一改行補完**：`Shift+Enter` で `preventDefault()` を呼ばず、ブラウザが改行を挿入しなかった環境のみカーソル位置へ `\n` を1回補完し文字数カウントへ同期します。
 - **送信・IME 保護維持**：変換中でない通常 `Enter` での送信と IME 変換確定時の誤送信防止はそのまま維持されます。', '2026-11-23T20:48:00+08:00', '2026-11-23T20:48:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261123-chat-shift-enter-r63', '2026-11-23T20:48:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-window-morph-step2-gate', '2026-11-24-window-morph-step2-gate', 'site-updates', '["site-updates","animation","ui"]', '', 'published', 0, 0, '2026-11-24T10:28:00+08:00', '2026-11-24T10:28:00+08:00', '2026-11-24T10:28:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-window-morph-step2-gate-zh', 'seed-update-2026-11-24-window-morph-step2-gate', 'zh', '窗口打开动画重构：纯色矩形几何扩张最小验证门槛上线', '按 Matched Geometry Shell Transition 技术方案启动窗口动画重构：完成 r61 冲突基线诊断，上线独立过渡层的纯深色圆角矩形 1000ms 线性几何验证门槛，待验收后进入后续阶段。', '# 窗口打开动画重构：纯色矩形几何扩张最小验证门槛上线
+
+本次 `r64` 执行窗口打开动画重构第一步与第二步（硬门槛验证）：
+
+- **第一步基线诊断**：确认原 `r61` 因 `.xp-window` 同时存在 `ui-motion.js` WAAPI 动画与 CSS `transition: transform 0.2s`，导致内联 `transform` 被覆盖，表现为窗口直接出现并轻微抖动。
+- **第二步纯色矩形验证**：建立独立固定过渡层 `#pond-window-morph-layer`（`crt-window-morph-step2.mjs`），点击首页六枚桌面图标时用纯深色圆角矩形从实际图标矩形向目标窗口矩形执行 `1000ms` 线性几何扩张（不加载窗口内容，点空白或按 `Esc` 收起，池塘持续正常运行），等待第二步验收通过后推进第三至第八步。', '2026-11-24T10:28:00+08:00', '2026-11-24T10:28:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-window-morph-step2-gate-en', 'seed-update-2026-11-24-window-morph-step2-gate', 'en', 'Window Animation Rebuild: Step 2 Pure-Rectangle Geometry Gate', 'Started the Matched Geometry Shell Transition rebuild: completed r61 WAAPI/CSS conflict diagnosis and deployed the Step 2 independent pure dark rounded-rectangle 1000ms linear expansion gate.', '# Window Animation Rebuild: Step 2 Pure-Rectangle Geometry Gate
+
+Release `r64` completes Steps 1 and 2 (hard gate) of the window animation rebuild:
+
+- **Step 1 Diagnosis**: Confirmed `r61` was overridden by `ui-motion.js` WAAPI animations and `.xp-window` CSS `transition: transform 0.2s`.
+- **Step 2 Pure-Rectangle Gate**: Added an independent `#pond-window-morph-layer` overlay (`crt-window-morph-step2.mjs`) expanding a pure dark rounded rectangle linearly over 1000ms from the actual clicked icon rect to the target window rect without triggering business content while the pond runs uninterrupted.', '2026-11-24T10:28:00+08:00', '2026-11-24T10:28:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-window-morph-step2-gate-ja', 'seed-update-2026-11-24-window-morph-step2-gate', 'ja', 'ウィンドウ開閉アニメーション再構築：ステップ2 純色矩形検証ゲート公開', 'Matched Geometry Shell Transition 方針に基づき r61 の競合診断を完了し、独立オーバーレイ層でアイコン矩形からウィンドウ矩形へ 1000ms 線形拡張するステップ2 検証ゲートを公開しました。', '# ウィンドウ開閉アニメーション再構築：ステップ2 純色矩形検証ゲート公開
+
+`r64` ではウィンドウアニメーション再構築のステップ1・ステップ2（検証ゲート）を実施しました：
+
+- **ステップ1 診断**：`r61` が `ui-motion.js` の WAAPI と `.xp-window` の CSS `transition` と競合し、`transform` が上書きされていた原因を特定しました。
+- **ステップ2 純色矩形ゲート**：独立オーバーレイ `#pond-window-morph-layer`（`crt-window-morph-step2.mjs`）を追加し、アイコン矩形から目標ウィンドウ矩形へ 1000ms 線形拡張する最小検証を公開しています。', '2026-11-24T10:28:00+08:00', '2026-11-24T10:28:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-window-morph-step2-r64', '2026-11-24T10:28:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261123-chat-shift-enter-r63', '2026-11-23T20:48:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261124-window-morph-step2-r64', '2026-11-24T10:28:00+08:00', 'schema') on conflict(version) do nothing;

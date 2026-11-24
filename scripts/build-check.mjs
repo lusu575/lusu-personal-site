@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-23-pond-chat-shift-enter-newline";
-const finalUpdateSlug = "2026-11-23-pond-chat-shift-enter-newline";
+const finalUpdateId = "seed-update-2026-11-24-window-morph-step2-gate";
+const finalUpdateSlug = "2026-11-24-window-morph-step2-gate";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Chatroom Shift+Enter Newline Fallback Fix";
-const finalPublishedAt = "2026-11-23T20:48:00+08:00";
+const finalTitleEn = "Window Animation Rebuild: Step 2 Pure-Rectangle Geometry Gate";
+const finalPublishedAt = "2026-11-24T10:28:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-23-pond-chat-shift-enter-newline",
   "seed-update-2026-11-23-pond-chat-enter-send-ime",
   "seed-update-2026-11-23-pond-window-spring-open-close",
   "seed-update-2026-11-23-pond-chat-input-scrollbar",
@@ -4969,7 +4970,7 @@ const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 
 
 const changelog20260827Section = markdownSection(changelog, "## 2026-08-27");
-const changelog20260928Section = markdownSection(changelog, "## 2026-11-23");
+const changelog20260928Section = markdownSection(changelog, "## 2026-11-24");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {

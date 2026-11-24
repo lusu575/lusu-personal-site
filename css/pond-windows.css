@@ -7047,3 +7047,35 @@ html[data-ui-shell="mobile"] .xp-window.is-pond-window-animating,
 html[data-shell="mobile"] .xp-window.is-pond-window-animating {
   contain: layout style !important;
 }
+
+/* ============================================================
+   r64: Matched Geometry Shell Transition — Step 2 Hard Gate
+   Independent fixed overlay layer: pure dark CRT rounded rectangle (zero content, zero transition/WAAPI)
+   ============================================================ */
+#pond-window-morph-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  display: none;
+  contain: layout style;
+}
+
+#pond-window-morph-layer.is-active {
+  display: block;
+}
+
+#pond-window-morph-layer .pond-morph-shell {
+  position: fixed;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  background: #06181c;
+  border: 1.5px solid rgba(114, 201, 195, 0.72);
+  border-radius: 18px;
+  box-shadow: 0 0 26px rgba(96, 232, 220, 0.24);
+  box-sizing: border-box;
+  transition: none !important;
+  animation: none !important;
+  opacity: 0;
+}

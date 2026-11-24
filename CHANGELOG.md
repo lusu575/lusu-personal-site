@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2026-11-24
+
+- 窗口打开动画重构：纯色矩形几何扩张最小验证门槛上线（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-window-morph-step2-gate` / `2026-11-24-window-morph-step2-gate`；视觉层缓存 `20261124-window-morph-step2-r64`。
+
 ## 2026-11-23
 
 - 聊天室 Shift+Enter 换行兜底修复与输入法防误发保持（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-23-pond-chat-shift-enter-newline` / `2026-11-23-pond-chat-shift-enter-newline`；视觉层缓存 `20261123-chat-shift-enter-r63`。
