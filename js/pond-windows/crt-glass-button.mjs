@@ -8,7 +8,7 @@ import {
   CRT_GLASS_BUTTON_LEVELS,
   CRT_GLASS_SPRINGS,
   syncCrtGlassCssVars
-} from './crt-glass-config.mjs?v=20261123-pond-glass-r59';
+} from './crt-glass-config.mjs?v=20261124-glass-pilot-r74';
 
 const activeControllers = new Set();
 let rafId = 0;
@@ -214,6 +214,14 @@ class CrtGlassButtonController {
       this.el.style.setProperty('--cg-hold', '1');
       return;
     }
+    // Synchronous Frame-0 tactile onset so even fast clicks visibly depress & refract immediately
+    this.spring.pos = Math.max(this.spring.pos, 0.42);
+    const s = this.el.style;
+    const initY = this.spring.pos * this.level.pressOffsetPx;
+    const initScale = 1 - this.spring.pos * (1 - this.level.pressScale);
+    s.setProperty('--cg-hold', this.spring.pos.toFixed(4));
+    s.setProperty('--cg-press-y', `${initY.toFixed(2)}px`);
+    s.setProperty('--cg-press-scale', initScale.toFixed(4));
     scheduleController(this);
   }
 

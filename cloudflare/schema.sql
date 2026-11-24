@@ -16395,6 +16395,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 1. **ようこそ画面のガタつき解消**：`#welcome-modal` を開いた直後に付与される旧 `ui-motion.js` の WAAPI アニメーションを同期的にキャンセルし、不透明なダークサーフェスへ統一しました。
 2. **旧スクロールバー瞬間表示の完全防止**：`#about` の高さを `460px` に固定して `.profile-card` のネイティブスクロールバー出現を防止し、全ウィンドウで拡大縮小中はスクロールバーを非表示、定着後は統一された 5px ダーク細スクロールバーを適用しました。', '2026-11-24T15:55:00+08:00', '2026-11-24T15:55:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-welcome-scrollbar-r73', '2026-11-24T15:55:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-glass-pilot-visibility-r74', 'crt-glass-pilot-button-refraction-and-specificity-r74', 'site-updates', '["视觉更新","液态玻璃试点","按钮动效"]', '', 'published', 0, 0, '2026-11-24T16:25:00+08:00', '2026-11-24T16:25:00+08:00', '2026-11-24T16:25:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-glass-pilot-visibility-r74-zh', 'seed-update-2026-11-24-glass-pilot-visibility-r74', 'zh', '视觉优化：修复欢迎窗液态玻璃按钮试点优先级覆盖并提升按压折光可见度（r74）', '修复 #welcome-modal .quick-link:hover 覆盖液态玻璃边缘亮边规则的问题，补齐按下第 0 帧同步下压与局部折光反馈，保持深色点阵克制质感。', '# 视觉优化：欢迎窗液态玻璃按钮试点可见度修复（r74）
+
+本次仅调整欢迎窗第 3 步试点（`#welcome-modal .quick-link`）纯视觉与按压反馈层，不推进步骤 4–8，不改动任何跳转与业务逻辑：
+
+1. **修复 CSS 选择器优先级覆盖**：将 `.is-glass-held` 与 `.is-glass-rim-catch` 优先级提升至 `(1,4,1)`，不再被 `#welcome-modal .quick-link:hover` `(1,3,1)` 压掉边框与发光反馈。
+2. **第 0 帧即时按压下陷与折光**：`pointerdown` 当帧同步写入初始缩放/位移与接触点局部折光环，同时在 CRT Glass Lite 范围内把波纹带宽调至 `10px`、色散 `0.55px`、边缘亮边 `90ms`，克制清晰、肉眼可辨。', '2026-11-24T16:25:00+08:00', '2026-11-24T16:25:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-glass-pilot-visibility-r74-en', 'seed-update-2026-11-24-glass-pilot-visibility-r74', 'en', 'Visual Polish: Fix Welcome CRT Glass Pilot Specificity & Press Refraction (r74)', 'Fixes CSS specificity where :hover overrode the CRT glass rim-catch glow on #welcome-modal .quick-link and adds synchronous Frame-0 press refraction.', '# Visual Polish: Welcome CRT Glass Button Pilot Fix (r74)
+
+Scoped strictly to the Step 3 pilot (`#welcome-modal .quick-link`) with zero functional changes:
+
+1. **Specificity Fix**: Raised `.is-glass-held` and `.is-glass-rim-catch` to `(1,4,1)` so `#welcome-modal .quick-link:hover` `(1,3,1)` no longer suppresses the rim glow.
+2. **Perceptible Frame-0 Tactile Press**: Applies immediate Frame-0 scale/offset depression (`0.965` / `2.0px`) and localized contact refraction on `pointerdown`, with a `10px` release wave and `90ms` rim catch.', '2026-11-24T16:25:00+08:00', '2026-11-24T16:25:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-glass-pilot-visibility-r74-ja', 'seed-update-2026-11-24-glass-pilot-visibility-r74', 'ja', 'ビジュアル調整：ようこそ画面ガラス試作ボタンの優先度上書きと押下屈折の視認性を修正（r74）', 'ようこそ画面クイックボタンのホバー規則がガラス縁発光を上書きしていた不具合を修正し、押下第0フレームからの沈み込みと局所屈折を視認可能に調整しました。', '# ビジュアル調整：ようこそ画面ガラス試作ボタン修正（r74）
+
+ステップ3試作範囲（`#welcome-modal .quick-link`）のみの純粋な視覚調整です：
+
+1. **CSS 詳細度の修正**：`.is-glass-held` / `.is-glass-rim-catch` を `(1,4,1)` へ引き上げ、`:hover` による上書きを解消しました。
+2. **第0フレーム押下フィードバック**：`pointerdown` 即座に沈み込み・局所屈折リングを反映し、リリース波幅 `10px`・縁発光 `90ms` へ控えめに調整しました。', '2026-11-24T16:25:00+08:00', '2026-11-24T16:25:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-glass-pilot-r74', '2026-11-24T16:25:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261124-welcome-scrollbar-r73', '2026-11-24T15:55:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261124-glass-pilot-r74', '2026-11-24T16:25:00+08:00', 'schema') on conflict(version) do nothing;

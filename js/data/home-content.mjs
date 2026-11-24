@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-glass-pilot-visibility-r74",
+      "slug": "crt-glass-pilot-button-refraction-and-specificity-r74",
+      "category": "site-updates",
+      "tags": [
+        "视觉更新",
+        "液态玻璃试点",
+        "按钮动效"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T16:25:00+08:00",
+      "updated_at": "2026-11-24T16:25:00+08:00",
+      "published_at": "2026-11-24T16:25:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "视觉优化：修复欢迎窗液态玻璃按钮试点优先级覆盖并提升按压折光可见度（r74）",
+        "en": "Visual Polish: Fix Welcome CRT Glass Pilot Specificity & Press Refraction (r74)",
+        "ja": "ビジュアル調整：ようこそ画面ガラス試作ボタンの優先度上書きと押下屈折の視認性を修正（r74）"
+      },
+      "summary": {
+        "zh": "修复 #welcome-modal .quick-link:hover 覆盖液态玻璃边缘亮边规则的问题，补齐按下第 0 帧同步下压与局部折光反馈，保持深色点阵克制质感。",
+        "en": "Fixes CSS specificity where :hover overrode the CRT glass rim-catch glow on #welcome-modal .quick-link and adds synchronous Frame-0 press refraction.",
+        "ja": "ようこそ画面クイックボタンのホバー規則がガラス縁発光を上書きしていた不具合を修正し、押下第0フレームからの沈み込みと局所屈折を視認可能に調整しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-welcome-lock-and-scrollbar-r73",
       "slug": "welcome-modal-zero-jitter-and-zero-legacy-scrollbar-r73",
       "category": "site-updates",
@@ -113,34 +141,6 @@ export const homeContent = Object.freeze({
         "zh": "改为单层 GPU 整窗同步缩放路线：打开时窗口边框、图标与全部内容从第 0 帧即随窗口一起从图标处连续放大长出，关闭时一起缩回原图标，无外壳/内容脱节、无边框残影、保持 120 FPS 合成。",
         "en": "Switched window open/close transitions to unified single-layer GPU scaling so window borders, icons, and content grow and shrink together from Frame 0 with zero shell/content disconnect, zero border ghosting, and 120 FPS compositor performance.",
         "ja": "別枠フェードを廃止し、ウィンドウ枠と内部のアイコン・テキストを単一 GPU レイヤーとして 0 フレームからアイコン位置より一体で拡大展開・縮小収納する方式へ刷新しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-autumn-lotus-withered-yellow",
-      "slug": "2026-11-24-autumn-lotus-withered-yellow",
-      "category": "site-updates",
-      "tags": [
-        "site-updates",
-        "pond",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T14:47:00+08:00",
-      "updated_at": "2026-11-24T14:47:00+08:00",
-      "published_at": "2026-11-24T14:47:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "秋季池塘荷叶枯黄变色与卷边质感实装",
-        "en": "Autumn Pond Withered Yellow & Curled Lotus Pads",
-        "ja": "秋の池・蓮葉の黄変と縁カール質感を追加"
-      },
-      "summary": {
-        "zh": "将秋季终态荷叶由暗绿实装为枯黄/赭金色，并叠加干枯微卷叶缘细节，单次烘焙进静态纹理保持 120 FPS 零额外开销。",
-        "en": "Updated settled autumn lotus pads from dark green to warm withered golden-ochre with subtle curled rim highlights, baked once into the static GPU texture at zero per-frame cost.",
-        "ja": "秋の蓮葉を暗緑色から枯れ黄色・黄土色へ刷新し、乾燥してわずかに反り返った縁の質感を追加しました。起動時に一度だけベイクするためフレーム負荷はゼロです。"
       }
     }
   ]
