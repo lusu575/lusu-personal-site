@@ -16438,6 +16438,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 2. **風吹き式季節切替**：発光リングを完全撤去し、不可視の風前線と 36 粒の当季粒子が横切る 1.0 秒の風演出で 120 FPS を維持。
 3. **チャット Shift+Enter 同期改行**：`beforeinput` / `keyup` 同期処理へ切替え、IME 80ms 猶予を単体 Enter 送信のみに限定しました。', '2026-11-24T18:05:00+08:00', '2026-11-24T18:05:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-wind-water-r75', '2026-11-24T18:05:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-glass-dynamic-pilot-r76', 'crt-glass-pilot-dynamic-hover-and-expanding-wave-r76', 'site-updates', '["视觉更新","液态玻璃试点","按钮动效"]', '', 'published', 0, 0, '2026-11-24T19:00:00+08:00', '2026-11-24T19:00:00+08:00', '2026-11-24T19:00:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-glass-dynamic-pilot-r76-zh', 'seed-update-2026-11-24-glass-dynamic-pilot-r76', 'zh', '视觉优化：欢迎窗液态玻璃按钮试点动态化升级（r76）', '清除旧版 transition 对弹簧形变的阻尼干扰，新增随指针流动的液态玻璃高光、按住呼吸扩散折光环与清晰的 440ms 释放扩散波，严格限定在第 3 步试点范围。', '# 视觉优化：欢迎窗液态玻璃按钮试点动态化升级（r76）
+
+仅调整欢迎窗第 3 步试点（`#welcome-modal .quick-link`）纯视觉与动效层，步骤 4–8 保持冻结：
+
+1. **消除旧版 CSS `transition` 抢占**：为 `.crt-glass-btn` 禁用 `motion-system.css` 的 140ms `transform` 过渡，让 120 FPS JS 弹簧从第 0 帧直接驱动下压与回弹。
+2. **真正动态的液态玻璃质感**：悬停时高光与斜向边棱随鼠标实时流动；按住时接触点形成持续脉动扩散的同心折光环；松开瞬间从第 0 帧向外扩散 14px 冷白＋微色散释放波并点亮 160ms 边缘折光。', '2026-11-24T19:00:00+08:00', '2026-11-24T19:00:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-glass-dynamic-pilot-r76-en', 'seed-update-2026-11-24-glass-dynamic-pilot-r76', 'en', 'Visual Polish: Dynamic Liquid Glass Pilot for Welcome Buttons (r76)', 'Removes legacy CSS transition lag on the Step-3 pilot buttons and adds live pointer-tracking liquid sheen, breathing hold refraction, and a 440ms expanding release wave.', '# Visual Polish: Dynamic Liquid Glass Pilot for Welcome Buttons (r76)
+
+Scoped strictly to the Step-3 pilot (`#welcome-modal .quick-link`); Steps 4–8 remain frozen:
+
+1. **Zero Transition Lag**: Disables `motion-system.css` transform transition on `.crt-glass-btn` so the 120 FPS spring responds on Frame 0.
+2. **Living Dynamic Refraction**: Adds pointer-tracking liquid specular sheen on hover, a breathing concentric refraction ring while held, and an immediate 440ms expanding release wave + 160ms rim catch.', '2026-11-24T19:00:00+08:00', '2026-11-24T19:00:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-glass-dynamic-pilot-r76-ja', 'seed-update-2026-11-24-glass-dynamic-pilot-r76', 'ja', 'ビジュアル調整：ようこそ画面ガラス試作ボタンの動的屈折強化（r76）', '旧 CSS transition 干渉を除去し、ポインタ追従の液状ハイライト・押下中の呼吸屈折リング・440ms 拡散リリース波をステップ3試作範囲のみに実装しました。', '# ビジュアル調整：ようこそ画面ガラス試作ボタン動的強化（r76）
+
+ステップ3試作範囲（`#welcome-modal .quick-link`）のみの調整です（ステップ4–8は凍結維持）：
+
+1. **CSS transition 干渉の除去**：`.crt-glass-btn` で旧 `transform` 遷移を無効化し、第0フレームからバネを直接駆動。
+2. **動的な液状屈折**：ホバー追従の斜め光沢・押下中の呼吸屈折リング・440ms 拡散波と 160ms 縁発光を追加しました。', '2026-11-24T19:00:00+08:00', '2026-11-24T19:00:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-glass-dynamic-r76', '2026-11-24T19:00:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261124-wind-water-r75', '2026-11-24T18:05:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261124-glass-dynamic-r76', '2026-11-24T19:00:00+08:00', 'schema') on conflict(version) do nothing;

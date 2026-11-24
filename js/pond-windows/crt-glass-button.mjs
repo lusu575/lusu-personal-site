@@ -8,7 +8,7 @@ import {
   CRT_GLASS_BUTTON_LEVELS,
   CRT_GLASS_SPRINGS,
   syncCrtGlassCssVars
-} from './crt-glass-config.mjs?v=20261124-glass-pilot-r74';
+} from './crt-glass-config.mjs?v=20261124-glass-dynamic-r76';
 
 const activeControllers = new Set();
 let rafId = 0;
@@ -80,6 +80,8 @@ class CrtGlassButtonController {
     this.levelName = levelName;
     this.level = CRT_GLASS_BUTTON_LEVELS[levelName] || CRT_GLASS_BUTTON_LEVELS['glass-primary'];
     this.held = false;
+    this.hovered = false;
+    this.holdStartMs = 0;
     this.spring = { pos: 0, vel: 0 }; // 0 = rest, 1 = fully pressed
     this.contactX = 0;
     this.contactY = 0;
@@ -102,7 +104,16 @@ class CrtGlassButtonController {
       waveLayer.setAttribute('aria-hidden', 'true');
       el.prepend(waveLayer);
     }
+    if (!el.querySelector('.crt-glass-sheen-layer')) {
+      const sheenLayer = document.createElement('span');
+      sheenLayer.className = 'crt-glass-sheen-layer';
+      sheenLayer.setAttribute('aria-hidden', 'true');
+      el.prepend(sheenLayer);
+    }
 
+    this._onPointerEnter = this._handlePointerEnter.bind(this);
+    this._onPointerMove = this._handlePointerMove.bind(this);
+    this._onPointerLeave = this._handlePointerLeave.bind(this);
     this._onPointerDown = this._handlePointerDown.bind(this);
     this._onPointerUp = this._handlePointerUp.bind(this);
     this._onPointerCancel = this._handlePointerCancel.bind(this);
@@ -110,6 +121,9 @@ class CrtGlassButtonController {
     this._onKeyUp = this._handleKeyUp.bind(this);
     this._onBlur = this._handleCancelVisual.bind(this);
 
+    el.addEventListener('pointerenter', this._onPointerEnter);
+    el.addEventListener('pointermove', this._onPointerMove);
+    el.addEventListener('pointerleave', this._onPointerLeave);
     el.addEventListener('pointerdown', this._onPointerDown);
     el.addEventListener('pointerup', this._onPointerUp);
     el.addEventListener('pointercancel', this._onPointerCancel);
@@ -117,6 +131,40 @@ class CrtGlassButtonController {
     el.addEventListener('keydown', this._onKeyDown);
     el.addEventListener('keyup', this._onKeyUp);
     el.addEventListener('blur', this._onBlur);
+  }
+
+  _updateHoverLiquid(clientX, clientY) {
+    const rect = this.el.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return;
+    const hx = Math.max(0, Math.min(rect.width, clientX - rect.left));
+    const hy = Math.max(0, Math.min(rect.height, clientY - rect.top));
+    const normX = (hx / rect.width) * 2 - 1; // -1..1
+    const angleDeg = 108 + normX * 36;
+    const s = this.el.style;
+    s.setProperty('--cg-hx', `${hx.toFixed(1)}px`);
+    s.setProperty('--cg-hy', `${hy.toFixed(1)}px`);
+    s.setProperty('--cg-sheen-ang', `${angleDeg.toFixed(1)}deg`);
+  }
+
+  _handlePointerEnter(e) {
+    if (this.el.disabled) return;
+    this.hovered = true;
+    this.el.classList.add('is-glass-hovered');
+    this._updateHoverLiquid(e.clientX, e.clientY);
+  }
+
+  _handlePointerMove(e) {
+    if (this.el.disabled) return;
+    if (!this.hovered) {
+      this.hovered = true;
+      this.el.classList.add('is-glass-hovered');
+    }
+    this._updateHoverLiquid(e.clientX, e.clientY);
+  }
+
+  _handlePointerLeave() {
+    this.hovered = false;
+    this.el.classList.remove('is-glass-hovered');
   }
 
   _measureContact(clientX, clientY, useCenter = false) {
@@ -205,6 +253,7 @@ class CrtGlassButtonController {
 
   _beginHold() {
     this.held = true;
+    this.holdStartMs = performance.now();
     // Double-tap replaces any running release wave cleanly (no wave accumulation)
     this.waveActive = false;
     this.el.classList.remove('is-glass-waving', 'is-glass-rim-catch');
@@ -215,13 +264,14 @@ class CrtGlassButtonController {
       return;
     }
     // Synchronous Frame-0 tactile onset so even fast clicks visibly depress & refract immediately
-    this.spring.pos = Math.max(this.spring.pos, 0.42);
+    this.spring.pos = Math.max(this.spring.pos, 0.52);
     const s = this.el.style;
     const initY = this.spring.pos * this.level.pressOffsetPx;
     const initScale = 1 - this.spring.pos * (1 - this.level.pressScale);
     s.setProperty('--cg-hold', this.spring.pos.toFixed(4));
     s.setProperty('--cg-press-y', `${initY.toFixed(2)}px`);
     s.setProperty('--cg-press-scale', initScale.toFixed(4));
+    s.setProperty('--cg-hold-r', '18px');
     scheduleController(this);
   }
 
@@ -239,10 +289,18 @@ class CrtGlassButtonController {
       this.waveStartMs = performance.now();
       this.rimCatchStartMs = 0;
       this.el.classList.add('is-glass-waving');
+      // Synchronous Frame-0 wave onset so release ring is visibly expanding from the very first frame
+      const bandWidth = this.btnW >= CRT_GLASS.waveWideThresholdPx ? CRT_GLASS.waveBandWidePx : CRT_GLASS.waveBandPx;
+      const s = this.el.style;
+      s.setProperty('--cg-wave-r', '10.0px');
+      s.setProperty('--cg-wave-band', `${bandWidth.toFixed(1)}px`);
+      s.setProperty('--cg-wave-alpha', '0.96');
+      s.setProperty('--cg-disp', `${CRT_GLASS.dispersionPx.toFixed(3)}px`);
     } else if (triggerWave && this.level.enableRimCatch) {
-      // glass-close: brief 70ms rim flash, no release wave
+      // glass-close: brief rim flash, no release wave
       this.rimCatchStartMs = performance.now();
       this.el.classList.add('is-glass-rim-catch');
+      this.el.style.setProperty('--cg-rim-catch', '1');
     }
     scheduleController(this);
   }
@@ -279,19 +337,26 @@ class CrtGlassButtonController {
     s.setProperty('--cg-press-y', `${pressY.toFixed(2)}px`);
     s.setProperty('--cg-press-scale', pressScale.toFixed(4));
 
-    // 2. Step MengTo non-linear release wave (travel = (1 - (1 - t)^1.7) * (reach + bandWidth))
+    // Dynamic living refraction pulse while held (so hold is visibly alive, never a frozen static circle)
+    if (this.held) {
+      const holdSec = Math.max(0, (nowMs - this.holdStartMs) * 0.001);
+      const pulseR = 20 + 26 * (1 - Math.exp(-holdSec * 4.2)) + Math.sin(holdSec * 6.2) * 5.5;
+      s.setProperty('--cg-hold-r', `${pulseR.toFixed(1)}px`);
+    }
+
+    // 2. Step MengTo non-linear release wave (travel = (1 - (1 - t)^1.55) * (reach + bandWidth))
     let waveRunning = false;
     if (this.waveActive) {
       const elapsed = nowMs - this.waveStartMs;
       const dur = this.level.releaseDurationMs;
       const t = Math.min(1, Math.max(0, elapsed / dur));
       const bandWidth = this.btnW >= CRT_GLASS.waveWideThresholdPx ? CRT_GLASS.waveBandWidePx : CRT_GLASS.waveBandPx;
-      const travel = (1 - Math.pow(1 - t, CRT_GLASS.releaseWavePower)) * (this.reach + bandWidth);
-      const fade = (1 - t) * Math.min(1, t * 8);
+      const travel = 8 + (1 - Math.pow(1 - t, CRT_GLASS.releaseWavePower)) * (this.reach + bandWidth * 1.2);
+      const fade = Math.pow(1 - t, 0.85) * Math.min(1, t * 14 + 0.35);
 
       s.setProperty('--cg-wave-r', `${travel.toFixed(1)}px`);
       s.setProperty('--cg-wave-band', `${bandWidth.toFixed(1)}px`);
-      s.setProperty('--cg-wave-alpha', fade.toFixed(3));
+      s.setProperty('--cg-wave-alpha', Math.min(1, fade).toFixed(3));
 
       // Brief RGB spectral split at wave crest (<= 60ms, <= 0.35px)
       if (this.level.enableDispersion && elapsed <= CRT_GLASS.dispersionDurationMs) {

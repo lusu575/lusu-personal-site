@@ -21,23 +21,23 @@ export const CRT_GLASS = Object.freeze({
 
   // Button Press & Release Wave (MengTo shade-glass-button-press transmuted for CRT)
   pressDurationMs: 120,
-  pressScale: 0.965,
-  pressOffsetPx: 2.0,
-  indentPx: 1.5,
-  indentSigmaRatio: 0.34,
+  pressScale: 0.945,
+  pressOffsetPx: 2.5,
+  indentPx: 2.0,
+  indentSigmaRatio: 0.38,
 
-  releaseDurationMs: 320,
-  releaseWavePower: 1.7,
-  waveBandPx: 10.0,
-  waveBandWidePx: 12.0,
+  releaseDurationMs: 440,
+  releaseWavePower: 1.55,
+  waveBandPx: 14.0,
+  waveBandWidePx: 16.0,
   waveWideThresholdPx: 200,
-  waveCrestPx: 1.4,
-  waveWakePx: 0.55,
+  waveCrestPx: 1.8,
+  waveWakePx: 0.65,
 
-  dispersionPx: 0.55,
+  dispersionPx: 0.6,
   dispersionMaxPx: 0.6,
-  dispersionDurationMs: 70,
-  rimCatchDurationMs: 90,
+  dispersionDurationMs: 110,
+  rimCatchDurationMs: 160,
 
   // Drag Shear Constraints
   maxDragShearDeg: 0.8,

@@ -2,6 +2,8 @@
 
 ## 2026-11-24
 
+- 欢迎窗液态玻璃按钮试点动态化升级：移除旧版 transition 干扰、增加随指针流动高光、按住呼吸折光环与 440ms 释放扩散波（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-glass-dynamic-pilot-r76` / `crt-glass-pilot-dynamic-hover-and-expanding-wave-r76`；视觉层缓存 `20261124-glass-dynamic-r76`。
+
 - 重做池塘水面低频柔和霓虹水光与连续相位、撤掉切季光波改为一阵风吹过过渡，并修复聊天室 Shift+Enter 连续输入同步换行（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-wind-water-and-shift-enter-r75` / `pond-wind-sweep-water-caustics-and-shift-enter-r75`；视觉层缓存 `20261124-wind-water-r75`。
 
 - 修复欢迎窗液态玻璃按钮试点优先级覆盖并提升按压折光与释放波可见度（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-glass-pilot-visibility-r74` / `crt-glass-pilot-button-refraction-and-specificity-r74`；视觉层缓存 `20261124-glass-pilot-r74`。

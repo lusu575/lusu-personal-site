@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-glass-dynamic-pilot-r76",
+      "slug": "crt-glass-pilot-dynamic-hover-and-expanding-wave-r76",
+      "category": "site-updates",
+      "tags": [
+        "视觉更新",
+        "液态玻璃试点",
+        "按钮动效"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T19:00:00+08:00",
+      "updated_at": "2026-11-24T19:00:00+08:00",
+      "published_at": "2026-11-24T19:00:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "视觉优化：欢迎窗液态玻璃按钮试点动态化升级（r76）",
+        "en": "Visual Polish: Dynamic Liquid Glass Pilot for Welcome Buttons (r76)",
+        "ja": "ビジュアル調整：ようこそ画面ガラス試作ボタンの動的屈折強化（r76）"
+      },
+      "summary": {
+        "zh": "清除旧版 transition 对弹簧形变的阻尼干扰，新增随指针流动的液态玻璃高光、按住呼吸扩散折光环与清晰的 440ms 释放扩散波，严格限定在第 3 步试点范围。",
+        "en": "Removes legacy CSS transition lag on the Step-3 pilot buttons and adds live pointer-tracking liquid sheen, breathing hold refraction, and a 440ms expanding release wave.",
+        "ja": "旧 CSS transition 干渉を除去し、ポインタ追従の液状ハイライト・押下中の呼吸屈折リング・440ms 拡散リリース波をステップ3試作範囲のみに実装しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-wind-water-and-shift-enter-r75",
       "slug": "pond-wind-sweep-water-caustics-and-shift-enter-r75",
       "category": "site-updates",
@@ -113,34 +141,6 @@ export const homeContent = Object.freeze({
         "zh": "移除窗口打开结束时的 1 帧毛玻璃切换跳变，防止底层水光透过毛玻璃引起静止窗口微颤，并锁定「关于」窗口定高消除异步加载跳位。",
         "en": "Removed the end-of-open 1-frame backdrop-filter toggle snap, stabilized window surface against moving pond light underneath, and locked About window height to eliminate post-open vertical jumps.",
         "ja": "開閉終了時の 1 フレーム backdrop-filter 切替によるブレを廃止し、「概要」ウィンドウの高さを固定して非同期読み込み後の縦ズレを解消しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-window-crisp-native-dpr",
-      "slug": "2026-11-24-window-crisp-native-dpr",
-      "category": "site-updates",
-      "tags": [
-        "site-updates",
-        "ui",
-        "performance"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T15:19:00+08:00",
-      "updated_at": "2026-11-24T15:19:00+08:00",
-      "published_at": "2026-11-24T15:19:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "修复知识库及全站窗口打开后文字图标发糊问题",
-        "en": "Fix Blurry Window Text & Icons After Unified Zoom (1:1 Native DPR Reset)",
-        "ja": "ウィンドウ拡大後の文字・アイコンぼやけ修正（1:1 ネイティブ解像度再描画）"
-      },
-      "summary": {
-        "zh": "移除初帧极小缩放时的 will-change: transform 并在动画结束执行两帧原生像素层重置，确保知识库及全部板块窗口定格后严格按 1:1 原生分辨率锐利重绘，同时保持 120 FPS 一体缩放。",
-        "en": "Removed will-change: transform during initial tiny-scale frames and added a two-frame native-DPI layer reset on settle so Knowledge and all section windows crisp up at exact 1:1 native resolution.",
-        "ja": "縮小開始時の will-change: transform を外し、アニメーション終了時に2フレームのネイティブ解像度リセットを行うことで、知識庫を含む全ウィンドウの文字・アイコンを鮮明に定格させました。"
       }
     }
   ]
