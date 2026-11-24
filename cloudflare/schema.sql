@@ -16295,6 +16295,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **開閉双方の枠残像を解消**：`.is-morph-content-entering` / `.is-morph-content-leaving` の詳細度を ID 付き `(1,4,1)` へ引き上げ、擬似要素も含め L3 外枠を一時完全透明化しました。
 - **「概要」一時拡大と「ゲーム」高さ変動の修正**：未マウント時の退避サイズをセクション別（概要 `720×469` など）へ精細化し、ゲーム画面の高さを最終値 `min(760px, 78vh)` に固定しました。', '2026-11-24T14:40:00+08:00', '2026-11-24T14:40:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-window-morph-fix-r68', '2026-11-24T14:40:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-autumn-lotus-withered-yellow', '2026-11-24-autumn-lotus-withered-yellow', 'site-updates', '["site-updates","pond","ui"]', '', 'published', 0, 0, '2026-11-24T14:47:00+08:00', '2026-11-24T14:47:00+08:00', '2026-11-24T14:47:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-autumn-lotus-withered-yellow-zh', 'seed-update-2026-11-24-autumn-lotus-withered-yellow', 'zh', '秋季池塘荷叶枯黄变色与卷边质感实装', '将秋季终态荷叶由暗绿实装为枯黄/赭金色，并叠加干枯微卷叶缘细节，单次烘焙进静态纹理保持 120 FPS 零额外开销。', '# 秋季池塘荷叶枯黄变色与卷边质感实装
+
+本次 `r69` 补齐秋季池塘荷叶的枯黄与卷边视觉表现：
+
+- **原位转枯黄**：在 `flora.mjs` 中为秋季荷叶应用枯黄赭金滤镜并提高清晰度（`alpha 0.78–0.86`），切入秋季后一眼可见明显转黄，不再残留深暗绿色。
+- **微卷干枯叶缘**：叠加收紧纵向压扁比与干金卷边弧线，所有处理均在启动时单次烘焙为静态 GPU 纹理，运行期零额外每帧开销。', '2026-11-24T14:47:00+08:00', '2026-11-24T14:47:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-autumn-lotus-withered-yellow-en', 'seed-update-2026-11-24-autumn-lotus-withered-yellow', 'en', 'Autumn Pond Withered Yellow & Curled Lotus Pads', 'Updated settled autumn lotus pads from dark green to warm withered golden-ochre with subtle curled rim highlights, baked once into the static GPU texture at zero per-frame cost.', '# Autumn Pond Withered Yellow & Curled Lotus Pads
+
+Release `r69` updates the autumn pond lotus leaves to match the in-place evolution spec:
+
+- **Withered Golden-Ochre**: Replaced dimmed dark-green autumn pads with a warm sepia-ochre yellowing filter and clearer visibility (`alpha 0.78–0.86`).
+- **Curled Rim Detail**: Added upturned dry-amber rim highlights and inner crease shading baked once at startup for zero runtime frame cost.', '2026-11-24T14:47:00+08:00', '2026-11-24T14:47:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-autumn-lotus-withered-yellow-ja', 'seed-update-2026-11-24-autumn-lotus-withered-yellow', 'ja', '秋の池・蓮葉の黄変と縁カール質感を追加', '秋の蓮葉を暗緑色から枯れ黄色・黄土色へ刷新し、乾燥してわずかに反り返った縁の質感を追加しました。起動時に一度だけベイクするためフレーム負荷はゼロです。', '# 秋の池・蓮葉の黄変と縁カール質感を追加
+
+`r69` では秋の池の蓮葉を仕様通り枯れ黄色へ仕上げました：
+
+- **枯れ黄色の再現**：セピア＋黄土色フィルタと視認性向上（`alpha 0.78〜0.86`）で、秋へ切り替えた際に明確に黄変した蓮葉を表示します。
+- **縁カールの表現**：乾いた琥珀色の縁ハイライトと内側の陰影を静的テクスチャに一括ベイクし、120 FPS 性能を維持しています。', '2026-11-24T14:47:00+08:00', '2026-11-24T14:47:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-autumn-lotus-r69', '2026-11-24T14:47:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261124-window-morph-fix-r68', '2026-11-24T14:40:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261124-autumn-lotus-r69', '2026-11-24T14:47:00+08:00', 'schema') on conflict(version) do nothing;

@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-24-autumn-lotus-withered-yellow",
+  "slug": "2026-11-24-autumn-lotus-withered-yellow",
+  "category": "site-updates",
+  "tags": [
+    "site-updates",
+    "pond",
+    "ui"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-24T14:47:00+08:00",
+  "updated_at": "2026-11-24T14:47:00+08:00",
+  "published_at": "2026-11-24T14:47:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "秋季池塘荷叶枯黄变色与卷边质感实装",
+    "en": "Autumn Pond Withered Yellow & Curled Lotus Pads",
+    "ja": "秋の池・蓮葉の黄変と縁カール質感を追加"
+  },
+  "summary": {
+    "zh": "将秋季终态荷叶由暗绿实装为枯黄/赭金色，并叠加干枯微卷叶缘细节，单次烘焙进静态纹理保持 120 FPS 零额外开销。",
+    "en": "Updated settled autumn lotus pads from dark green to warm withered golden-ochre with subtle curled rim highlights, baked once into the static GPU texture at zero per-frame cost.",
+    "ja": "秋の蓮葉を暗緑色から枯れ黄色・黄土色へ刷新し、乾燥してわずかに反り返った縁の質感を追加しました。起動時に一度だけベイクするためフレーム負荷はゼロです。"
+  },
+  "content_markdown": {
+    "zh": "# 秋季池塘荷叶枯黄变色与卷边质感实装\n\n本次 `r69` 补齐秋季池塘荷叶的枯黄与卷边视觉表现：\n\n- **原位转枯黄**：在 `flora.mjs` 中为秋季荷叶应用枯黄赭金滤镜并提高清晰度（`alpha 0.78–0.86`），切入秋季后一眼可见明显转黄，不再残留深暗绿色。\n- **微卷干枯叶缘**：叠加收紧纵向压扁比与干金卷边弧线，所有处理均在启动时单次烘焙为静态 GPU 纹理，运行期零额外每帧开销。",
+    "en": "# Autumn Pond Withered Yellow & Curled Lotus Pads\n\nRelease `r69` updates the autumn pond lotus leaves to match the in-place evolution spec:\n\n- **Withered Golden-Ochre**: Replaced dimmed dark-green autumn pads with a warm sepia-ochre yellowing filter and clearer visibility (`alpha 0.78–0.86`).\n- **Curled Rim Detail**: Added upturned dry-amber rim highlights and inner crease shading baked once at startup for zero runtime frame cost.",
+    "ja": "# 秋の池・蓮葉の黄変と縁カール質感を追加\n\n`r69` では秋の池の蓮葉を仕様通り枯れ黄色へ仕上げました：\n\n- **枯れ黄色の再現**：セピア＋黄土色フィルタと視認性向上（`alpha 0.78〜0.86`）で、秋へ切り替えた際に明確に黄変した蓮葉を表示します。\n- **縁カールの表現**：乾いた琥珀色の縁ハイライトと内側の陰影を静的テクスチャに一括ベイクし、120 FPS 性能を維持しています。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-24-window-morph-border-and-about-size",
   "slug": "2026-11-24-window-morph-border-and-about-size",
   "category": "site-updates",

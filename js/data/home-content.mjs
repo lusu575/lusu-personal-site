@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-autumn-lotus-withered-yellow",
+      "slug": "2026-11-24-autumn-lotus-withered-yellow",
+      "category": "site-updates",
+      "tags": [
+        "site-updates",
+        "pond",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T14:47:00+08:00",
+      "updated_at": "2026-11-24T14:47:00+08:00",
+      "published_at": "2026-11-24T14:47:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "秋季池塘荷叶枯黄变色与卷边质感实装",
+        "en": "Autumn Pond Withered Yellow & Curled Lotus Pads",
+        "ja": "秋の池・蓮葉の黄変と縁カール質感を追加"
+      },
+      "summary": {
+        "zh": "将秋季终态荷叶由暗绿实装为枯黄/赭金色，并叠加干枯微卷叶缘细节，单次烘焙进静态纹理保持 120 FPS 零额外开销。",
+        "en": "Updated settled autumn lotus pads from dark green to warm withered golden-ochre with subtle curled rim highlights, baked once into the static GPU texture at zero per-frame cost.",
+        "ja": "秋の蓮葉を暗緑色から枯れ黄色・黄土色へ刷新し、乾燥してわずかに反り返った縁の質感を追加しました。起動時に一度だけベイクするためフレーム負荷はゼロです。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-window-morph-border-and-about-size",
       "slug": "2026-11-24-window-morph-border-and-about-size",
       "category": "site-updates",
@@ -113,34 +141,6 @@ export const homeContent = Object.freeze({
         "zh": "完成窗口开合动画第三至第八步重构：独立外壳层按解析二阶阻尼弹簧（开 480ms / 关 400ms）在六枚图标与真实窗口间连续形变，外壳与内容分层交接无闪烁，支持随时打断与 120 FPS 合成。",
         "en": "Completed the full Matched Geometry Shell window transition: independent L2 morph shell driven by analytic damped springs (open 480ms / close 400ms), 1:1 L3 content handoff, live icon re-measurement on close, and 120 FPS compositor discipline.",
         "ja": "ウィンドウ開閉アニメーションの第3〜第8ステップを完了しました。解析2次減衰バネ（開 480ms／閉 400ms）による独立シェル層と 1:1 実コンテンツ層の滑らかな引き継ぎ、割り込み対応、120 FPS 最適化を実現しています。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-window-morph-step2-gate",
-      "slug": "2026-11-24-window-morph-step2-gate",
-      "category": "site-updates",
-      "tags": [
-        "site-updates",
-        "animation",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T10:28:00+08:00",
-      "updated_at": "2026-11-24T10:28:00+08:00",
-      "published_at": "2026-11-24T10:28:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "窗口打开动画重构：纯色矩形几何扩张最小验证门槛上线",
-        "en": "Window Animation Rebuild: Step 2 Pure-Rectangle Geometry Gate",
-        "ja": "ウィンドウ開閉アニメーション再構築：ステップ2 純色矩形検証ゲート公開"
-      },
-      "summary": {
-        "zh": "按 Matched Geometry Shell Transition 技术方案启动窗口动画重构：完成 r61 冲突基线诊断，上线独立过渡层的纯深色圆角矩形 1000ms 线性几何验证门槛，待验收后进入后续阶段。",
-        "en": "Started the Matched Geometry Shell Transition rebuild: completed r61 WAAPI/CSS conflict diagnosis and deployed the Step 2 independent pure dark rounded-rectangle 1000ms linear expansion gate.",
-        "ja": "Matched Geometry Shell Transition 方針に基づき r61 の競合診断を完了し、独立オーバーレイ層でアイコン矩形からウィンドウ矩形へ 1000ms 線形拡張するステップ2 検証ゲートを公開しました。"
       }
     }
   ]

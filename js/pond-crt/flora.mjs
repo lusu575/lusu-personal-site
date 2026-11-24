@@ -45,10 +45,30 @@ function drawPartCentered(ctx, img, w, h, cfg) {
   if (cfg.alpha !== undefined) ctx.globalAlpha = cfg.alpha;
   const b = cfg.brightness ?? 1.0;
   const s = cfg.saturate ?? 1.0;
-  if (Math.abs(b - 1.0) > 0.01 || Math.abs(s - 1.0) > 0.01) {
+  if (cfg.customFilter) {
+    ctx.filter = cfg.customFilter;
+  } else if (Math.abs(b - 1.0) > 0.01 || Math.abs(s - 1.0) > 0.01) {
     ctx.filter = `brightness(${b.toFixed(2)}) saturate(${s.toFixed(2)})`;
   }
   ctx.drawImage(img, -drawW * 0.5, -drawH * 0.5, drawW, drawH);
+
+  // Autumn withered curled rim: dry amber upturned edge highlight + subtle inner crease shadow
+  if (cfg.curledRim) {
+    ctx.filter = 'none';
+    const rx = drawW * (cfg.part === 'lotusLeaf3' ? 0.21 : 0.41);
+    const ry = drawH * (cfg.part === 'lotusLeaf3' ? 0.21 : 0.41);
+    ctx.strokeStyle = 'rgba(232, 178, 78, 0.52)';
+    ctx.lineWidth = Math.max(1.4, drawW * 0.011);
+    ctx.beginPath();
+    ctx.ellipse(0, -ry * 0.06, rx * 0.96, ry * 0.92, 0, Math.PI * 0.08, Math.PI * 0.88);
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(128, 68, 22, 0.55)';
+    ctx.lineWidth = Math.max(1.2, drawW * 0.009);
+    ctx.beginPath();
+    ctx.ellipse(0, ry * 0.05, rx * 0.84, ry * 0.80, 0, Math.PI * 1.12, Math.PI * 1.88);
+    ctx.stroke();
+  }
   ctx.restore();
 }
 
@@ -157,11 +177,12 @@ const SUMMER_PADS = [
   { part: 'lotusLeaf1', x: 0.65, y: 0.69, size: 0.22, squashY: 0.76, alpha: 0.98, brightness: 1.40, saturate: 1.15, rot: -0.20 }
 ];
 
+const AUTUMN_WITHER_FILTER = 'sepia(0.96) hue-rotate(-14deg) saturate(1.95) brightness(0.96) contrast(1.08)';
 const AUTUMN_FADING_PADS = [
-  { part: 'lotusLeaf3', x: 0.07, y: 0.63, size: 0.30, squashY: 0.70, alpha: 0.32, brightness: 0.58, rot: -0.3 },
-  { part: 'lotusLeaf3', x: 0.16, y: 0.77, size: 0.34, squashY: 0.72, alpha: 0.36, brightness: 0.62, rot: 0.4 },
-  { part: 'lotusLeaf3', x: 0.76, y: 0.87, size: 0.38, squashY: 0.72, alpha: 0.40, brightness: 0.66, rot: -0.5 },
-  { part: 'lotusLeaf3', x: 0.91, y: 0.82, size: 0.34, squashY: 0.70, alpha: 0.34, brightness: 0.60, rot: 0.8 }
+  { part: 'lotusLeaf1', x: 0.08, y: 0.65, size: 0.145, squashY: 0.62, alpha: 0.78, customFilter: AUTUMN_WITHER_FILTER, curledRim: true, rot: -0.25 },
+  { part: 'lotusLeaf2', x: 0.17, y: 0.79, size: 0.175, squashY: 0.64, alpha: 0.84, customFilter: AUTUMN_WITHER_FILTER, curledRim: true, rot: 0.35 },
+  { part: 'lotusLeaf1', x: 0.75, y: 0.87, size: 0.185, squashY: 0.64, alpha: 0.86, customFilter: AUTUMN_WITHER_FILTER, curledRim: true, rot: -0.45 },
+  { part: 'lotusLeaf2', x: 0.90, y: 0.81, size: 0.155, squashY: 0.62, alpha: 0.80, customFilter: AUTUMN_WITHER_FILTER, curledRim: true, rot: 0.65, flipX: true }
 ];
 
 // Individual floating maple leaves placed freely using part-maple-leaf-1/2/3 (NOT grouped!)

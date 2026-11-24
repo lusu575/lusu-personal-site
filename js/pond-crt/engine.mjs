@@ -11,7 +11,7 @@
 //   * Pass 3: 1.0x FUSED CRT + Phosphor-Dot + UI + Scanlines (ONE fullscreen pass!)
 // - preserveDrawingBuffer: false by default (zero backbuffer copy!)
 
-import { FloraLayer } from './flora.mjs';
+import { FloraLayer } from './flora.mjs?v=20261124-autumn-lotus-r69';
 import { createFBO, createFullscreenVAO, createProgram } from './gl-utils.mjs';
 import { KoiGLRenderer } from './koi-gl.mjs?v=20261124-season-wavefront-r67';
 import { ParticlesGLRenderer } from './particles-gl.mjs?v=20261124-season-wavefront-r67';

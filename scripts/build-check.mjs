@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-24-window-morph-border-and-about-size";
-const finalUpdateSlug = "2026-11-24-window-morph-border-and-about-size";
+const finalUpdateId = "seed-update-2026-11-24-autumn-lotus-withered-yellow";
+const finalUpdateSlug = "2026-11-24-autumn-lotus-withered-yellow";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Window Morph Zero-Ghosting Border Fix & Exact About/Games Sizing";
-const finalPublishedAt = "2026-11-24T14:40:00+08:00";
+const finalTitleEn = "Autumn Pond Withered Yellow & Curled Lotus Pads";
+const finalPublishedAt = "2026-11-24T14:47:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-24-window-morph-border-and-about-size",
   "seed-update-2026-11-24-season-wavefront-in-place",
   "seed-update-2026-11-24-window-morph-single-shell-polish",
   "seed-update-2026-11-24-window-morph-steps3-8",
