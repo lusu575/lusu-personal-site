@@ -1935,11 +1935,14 @@
           }
           #gamePageContainer {
             width: 100% !important;
-            max-width: 1460px !important;
-            margin: 0 auto !important;
-            padding-top: 44px !important;
+            max-width: none !important;
+            min-height: 100vh !important;
+            margin: 0 !important;
+            padding: 44px 16px 14px !important;
             overflow-x: hidden !important;
             box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: column !important;
           }
           #game[style*="display: none"],
           #game[style*="display:none"] {
@@ -1952,15 +1955,17 @@
             left: auto !important;
             right: auto !important;
             min-width: 0 !important;
+            flex: 1 1 auto !important;
             display: grid !important;
-            grid-template-columns: minmax(240px, 310px) minmax(560px, 760px) minmax(240px, 310px) !important;
-            justify-content: center !important;
-            align-items: start !important;
-            gap: 20px !important;
+            grid-template-columns: minmax(290px, 23%) minmax(0, 1fr) minmax(270px, 21%) !important;
+            justify-content: stretch !important;
+            align-items: stretch !important;
+            gap: 16px !important;
             width: 100% !important;
-            max-width: 1440px !important;
-            margin: 0 auto 28px !important;
-            padding: 0 18px !important;
+            max-width: none !important;
+            min-height: calc(100vh - 60px) !important;
+            margin: 0 !important;
+            padding: 0 !important;
             box-sizing: border-box !important;
           }
           #leftColumn, #midColumn, #rightColumn {
@@ -1970,16 +1975,15 @@
             min-width: 0 !important;
             max-width: none !important;
             height: auto !important;
-            min-height: 220px !important;
+            min-height: calc(100vh - 62px) !important;
             margin-top: 0 !important;
             padding: 14px 16px !important;
-            border: 1px solid rgba(164, 236, 228, 0.28) !important;
+            border: 1px solid rgba(164, 236, 228, 0.34) !important;
             border-radius: 12px !important;
-            background: rgba(8, 28, 34, 0.62) !important;
+            background: rgba(9, 30, 36, 0.88) !important;
             box-sizing: border-box !important;
           }
           #midColumn {
-            min-height: 520px !important;
             overflow-x: visible !important;
           }
           .tabsContainer {
@@ -1989,31 +1993,72 @@
             display: flex !important;
             flex-wrap: wrap !important;
             align-items: center !important;
-            gap: 4px 10px !important;
+            gap: 6px 8px !important;
             width: 100% !important;
-            padding: 4px 2px 10px !important;
-            margin: 0 !important;
+            padding: 6px 4px 12px !important;
+            margin: 0 0 8px !important;
             overflow: visible !important;
             box-sizing: border-box !important;
           }
           .tabsContainer a.tab {
-            color: rgba(212, 244, 240, 0.86) !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            padding: 4px 10px !important;
+            border-radius: 6px !important;
+            border: 1px solid transparent !important;
+            color: rgba(206, 238, 234, 0.82) !important;
+            background: rgba(8, 26, 32, 0.55) !important;
+            text-decoration: none !important;
             white-space: nowrap !important;
+          }
+          .tabsContainer a.tab:hover {
+            color: #ffffff !important;
+            background: rgba(20, 62, 68, 0.72) !important;
+          }
+          .tabsContainer a.tab.activeTab,
+          .tab.activeTab {
+            color: #96fff0 !important;
+            font-weight: 700 !important;
+            background: rgba(136, 252, 226, 0.16) !important;
+            border: 1px solid rgba(136, 252, 226, 0.58) !important;
+            border-bottom: 2px solid #88fce2 !important;
+          }
+          /* Mid-column filter links (全部 / 可建造 / 可使用 / 可切换 / 食物产出) clear active state */
+          #midColumn .tabInner a.active,
+          #midColumn .tabInner a.activeTab,
+          #midColumn .tabInner a.activeLink,
+          #midColumn .tabInner .btnFilter.active,
+          #midColumn .tabInner .link.active,
+          #midColumn .tabInner .filter-btn.active,
+          #midColumn a[style*="font-weight"],
+          #midColumn a.selected {
+            color: #96fff0 !important;
+            font-weight: 700 !important;
+            background: rgba(136, 252, 226, 0.18) !important;
+            border-bottom: 2px solid #88fce2 !important;
+            padding: 2px 8px !important;
+            border-radius: 5px !important;
+            text-decoration: none !important;
+          }
+          #midColumn .tabInner a:not(.active):not(.activeTab):not(.selected) {
+            color: rgba(188, 226, 222, 0.82) !important;
+            padding: 2px 6px !important;
+            border-radius: 5px !important;
           }
           #topBar {
             background: linear-gradient(180deg, rgba(10, 34, 40, 0.96), rgba(6, 22, 26, 0.96)) !important;
             border-bottom: 1px dotted rgba(176, 238, 232, 0.36) !important;
           }
           .tabInner, .panelContainer, .dialog {
-            background: rgba(8, 28, 34, 0.78) !important;
-            border: 1px solid rgba(164, 236, 228, 0.30) !important;
+            background: rgba(8, 28, 34, 0.82) !important;
+            border: 1px solid rgba(164, 236, 228, 0.32) !important;
             border-radius: 10px !important;
           }
           .btn, .btnContent, button, .dialog input[type="button"] {
-            background: rgba(10, 36, 42, 0.84) !important;
-            background-color: rgba(10, 36, 42, 0.84) !important;
+            background: rgba(12, 42, 48, 0.88) !important;
+            background-color: rgba(12, 42, 48, 0.88) !important;
             color: #eefcf9 !important;
-            border: 1px dashed rgba(176, 240, 234, 0.48) !important;
+            border: 1px dashed rgba(176, 240, 234, 0.54) !important;
             border-radius: 8px !important;
             box-shadow: none !important;
           }
@@ -2037,13 +2082,17 @@
             border-color: rgba(154, 248, 238, 0.88) !important;
             background: rgba(20, 64, 70, 0.76) !important;
           }
-          .btn.disabled, .disabled {
-            opacity: 0.45 !important;
-            color: rgba(182, 218, 214, 0.56) !important;
+          /* WCAG AA+ (>= 7.5:1) disabled button legibility: zero double opacity crushing! */
+          .btn.disabled, .btn.disabled .btnContent, .btn.disabled span.btnTitle, .disabled {
+            opacity: 1 !important;
+            background: rgba(10, 26, 32, 0.74) !important;
+            background-color: rgba(10, 26, 32, 0.74) !important;
+            border-color: rgba(148, 206, 202, 0.34) !important;
+            color: #a8ccc9 !important;
           }
-          .tab.activeTab {
-            color: #88fce2 !important;
-            border-bottom-color: #88fce2 !important;
+          .btn.disabled .btnTitle, .btn.disabled a, .btn.disabled span {
+            color: #a8ccc9 !important;
+            opacity: 1 !important;
           }
           .msg, .res-row, .res-table, .res-table td, .res-cell, .resource-name, .resAmount, .maxRes, .resLimitNotice {
             color: #e8fbf7 !important;
@@ -2052,18 +2101,32 @@
             color: #e8fbf7 !important;
           }
           #leftColumn .maxRes {
-            color: rgba(182, 232, 226, 0.78) !important;
+            color: rgba(196, 238, 232, 0.86) !important;
           }
           #leftColumn a, #leftColumn .icon, #leftColumn .link, #midColumn .help {
             color: #9af8ec !important;
-            opacity: 0.92 !important;
+            opacity: 0.96 !important;
           }
           .svg-icon.question-mark, .tooltip-block .svg-icon.question-mark, .tooltip-block:has(.svg-icon.question-mark) {
             display: none !important;
           }
+          /* Enlarged & brightened left-column collapse/expand arrows & gear (16px clearly clickable) */
           .svg-icon.gear, .svg-icon.down, .svg-icon.right, .svg-icon.left {
-            background-color: #9af8ec !important;
-            opacity: 0.82 !important;
+            width: 16px !important;
+            height: 16px !important;
+            min-width: 16px !important;
+            min-height: 16px !important;
+            background-color: #a6fff2 !important;
+            opacity: 1 !important;
+            vertical-align: middle !important;
+          }
+          #leftColumn .collapse-all-btn, #leftColumn .expand-all-btn, #leftColumn .res-toolbar a, #leftColumn .res-toolbar span {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 24px !important;
+            min-height: 24px !important;
+            cursor: pointer !important;
           }
           .resPerTick { color: #88fce2 !important; }
           .tooltip-inner, .tooltip-block {

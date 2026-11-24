@@ -16512,6 +16512,32 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 2. **角丸切り欠きの解消**：`#layaCanvas` の `border-radius: 10px` を撤去しました。
 3. **左上角バッジの非表示**：ブリッジ経由で `btnGithub` ノードを非表示にしました。', '2026-11-24T22:20:00+08:00', '2026-11-24T22:20:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-life-restart-r79', '2026-11-24T22:20:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-kittens-layout-and-contrast-r80', 'kittens-game-full-width-layout-and-contrast-r80', 'site-updates', '["视觉更新","游戏区","猫国建设者"]', '', 'published', 0, 0, '2026-11-24T23:36:00+08:00', '2026-11-24T23:36:00+08:00', '2026-11-24T23:36:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-kittens-layout-and-contrast-r80-zh', 'seed-update-2026-11-24-kittens-layout-and-contrast-r80', 'zh', '视觉优化：猫国建设者铺满视口、禁用文字高对比、标签选中态与折叠控件放大（r80）', '消除猫国建设者两侧黑边与三栏下方大片黑空，将禁用态文字提亮至对比度 7.5:1 以上，补齐主标签与筛选标签选中态高光下划线，并放大提亮左栏折叠箭头。', '# 视觉优化：猫国建设者界面布局与对比度重整（r80）
+
+本次仅调整 `games/game-shell.js` 中的猫国视觉层，不触碰游戏逻辑与存档数据：
+
+1. **铺满视口消除黑空**：移除 `1440px` 宽限与 `220px` 矮栏，三栏按 `23% / 1fr / 21%` 铺满窗口宽度并纵向拉满视口高度，消灭两侧黑边与栏下黑空。
+2. **禁用态高对比可读**：取消双重降透明度压灰，改用 `#a8ccc9` 浅青灰配 `#0a1a20` 深底（对比度 > 7.5:1，远超 AA 标准）。
+3. **明确标签选中态**：为主标签与中栏筛选标签补齐高亮底色、加粗与 2px 荧光下划线，多标签解锁后自动换行不裁切。
+4. **放大左栏折叠控件**：折叠/展开箭头与齿轮放大至 `16px` 并提亮至 `#a6fff2`。', '2026-11-24T23:36:00+08:00', '2026-11-24T23:36:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-kittens-layout-and-contrast-r80-en', 'seed-update-2026-11-24-kittens-layout-and-contrast-r80', 'en', 'Visual Polish: Kittens Game Full-Viewport Layout, AA+ Contrast & Clear Tabs (r80)', 'Expands Kittens Game to fill viewport width and height, boosts disabled text above 7.5:1 contrast, highlights active tabs and filters, and enlarges left-column collapse arrows.', '# Visual Polish: Kittens Game Layout & Contrast Overhaul (r80)
+
+Pure visual-layer refinement in `games/game-shell.js` with zero game-logic changes:
+
+1. **Full-Viewport Three-Column Grid**: Removes the 1440px cap and short column heights so all three panels fill the viewport cleanly.
+2. **AA+ Disabled Text**: Eliminates double opacity dimming and raises disabled text to `#a8ccc9` on `#0a1a20` (> 7.5:1).
+3. **Clear Active Tabs & Filters**: Adds luminous fill, bold weight, and a 2px mint underline for active tabs and filters.
+4. **Larger Controls**: Enlarges collapse/expand arrows and gear icons to 16px in bright `#a6fff2`.', '2026-11-24T23:36:00+08:00', '2026-11-24T23:36:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-kittens-layout-and-contrast-r80-ja', 'seed-update-2026-11-24-kittens-layout-and-contrast-r80', 'ja', 'ビジュアル調整：Kittens Game の全幅レイアウト・無効文字の視認性向上・タブ選択明示（r80）', '左右の黒余白と下部空白を解消して全幅・全高表示にし、無効ボタン文字を AA+ へ改善、選択中タブの下線強調と左欄矢印の拡大を行いました。', '# ビジュアル調整：Kittens Game レイアウト＆コントラスト改善（r80）
+
+ゲーム本体のロジックには触れず `games/game-shell.js` の視覚層のみを改善しました：
+
+1. **全幅・全高レイアウト**：1440px 制限と低パネル高を撤廃し、3 カラムで画面をすっきり埋めます。
+2. **無効文字のコントラスト改善**：二重透過を廃止し、`#a8ccc9` で視認性を確保しました。
+3. **タブ・フィルタ選択態の明示**：選択中タブに背景強調と 2px 下線を付与しました。
+4. **左欄矢印の拡大**：折りたたみ矢印・歯車を 16px・高輝度へ拡大しました。', '2026-11-24T23:36:00+08:00', '2026-11-24T23:36:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-kittens-ui-r80', '2026-11-24T23:36:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261124-life-restart-r79', '2026-11-24T22:20:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261124-kittens-ui-r80', '2026-11-24T23:36:00+08:00', 'schema') on conflict(version) do nothing;

@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-kittens-layout-and-contrast-r80",
+      "slug": "kittens-game-full-width-layout-and-contrast-r80",
+      "category": "site-updates",
+      "tags": [
+        "视觉更新",
+        "游戏区",
+        "猫国建设者"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T23:36:00+08:00",
+      "updated_at": "2026-11-24T23:36:00+08:00",
+      "published_at": "2026-11-24T23:36:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "视觉优化：猫国建设者铺满视口、禁用文字高对比、标签选中态与折叠控件放大（r80）",
+        "en": "Visual Polish: Kittens Game Full-Viewport Layout, AA+ Contrast & Clear Tabs (r80)",
+        "ja": "ビジュアル調整：Kittens Game の全幅レイアウト・無効文字の視認性向上・タブ選択明示（r80）"
+      },
+      "summary": {
+        "zh": "消除猫国建设者两侧黑边与三栏下方大片黑空，将禁用态文字提亮至对比度 7.5:1 以上，补齐主标签与筛选标签选中态高光下划线，并放大提亮左栏折叠箭头。",
+        "en": "Expands Kittens Game to fill viewport width and height, boosts disabled text above 7.5:1 contrast, highlights active tabs and filters, and enlarges left-column collapse arrows.",
+        "ja": "左右の黒余白と下部空白を解消して全幅・全高表示にし、無効ボタン文字を AA+ へ改善、選択中タブの下線強調と左欄矢印の拡大を行いました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-life-restart-visual-cleanup-r79",
       "slug": "life-restart-sidebands-and-github-corner-cleanup-r79",
       "category": "site-updates",
@@ -110,35 +138,6 @@ export const homeContent = Object.freeze({
         "zh": "清除旧版 transition 对弹簧形变的阻尼干扰，新增随指针流动的液态玻璃高光、按住呼吸扩散折光环与清晰的 440ms 释放扩散波，严格限定在第 3 步试点范围。",
         "en": "Removes legacy CSS transition lag on the Step-3 pilot buttons and adds live pointer-tracking liquid sheen, breathing hold refraction, and a 440ms expanding release wave.",
         "ja": "旧 CSS transition 干渉を除去し、ポインタ追従の液状ハイライト・押下中の呼吸屈折リング・440ms 拡散リリース波をステップ3試作範囲のみに実装しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-wind-water-and-shift-enter-r75",
-      "slug": "pond-wind-sweep-water-caustics-and-shift-enter-r75",
-      "category": "site-updates",
-      "tags": [
-        "视觉更新",
-        "水面水光",
-        "季节风吹过渡",
-        "聊天室"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T18:05:00+08:00",
-      "updated_at": "2026-11-24T18:05:00+08:00",
-      "published_at": "2026-11-24T18:05:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "视觉与交互优化：水面水光质感重做、季节风吹式过渡与聊天室 Shift+Enter 同步换行（r75）",
-        "en": "Visual & UX Polish: Silk Pond Caustics, Wind-Sweep Seasons & Synchronous Shift+Enter (r75)",
-        "ja": "ビジュアル＆操作改善：水面光の刷新・風吹き季節切替・チャット Shift+Enter 同期改行（r75）"
-      },
-      "summary": {
-        "zh": "重做池塘低频柔和霓虹水光并改用连续相位消除切季抽动；撤掉发光光波，改为一阵风携带当季碎屑横向吹过、景物原地换季；修复聊天室连打 Shift+Enter 丢换行。",
-        "en": "Replaces aliased water stripes with soft low-frequency cross-caustics and continuous phase integration, swaps the season glow ring for a 1.0s wind gust carrying seasonal debris, and fixes rapid Shift+Enter newlines in Chat.",
-        "ja": "水面光を低周波の滑らかな光と連続位相へ刷新し、季節切替の発光リングを撤去して当季の粒子を運ぶ一陣の風へ変更、さらにチャット連続入力時の Shift+Enter 改行落ちを修正しました。"
       }
     }
   ]

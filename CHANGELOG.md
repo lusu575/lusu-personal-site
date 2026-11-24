@@ -2,6 +2,8 @@
 
 ## 2026-11-24
 
+- 优化猫国建设者界面布局与对比度：三栏铺满视口宽高消除大片黑空、禁用按钮文字提亮至 AA+（>= 7.5:1）、补齐主标签与筛选标签选中态高光下划线、放大并提亮左栏折叠箭头与设置图标（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-kittens-layout-and-contrast-r80` / `kittens-game-full-width-layout-and-contrast-r80`；视觉层缓存 `20261124-kittens-ui-r80`。
+
 - 人生重开视觉收口：去掉两侧宽带横纹改纯暗底衔接、移除 `#layaCanvas` `10px` 二次圆角裁切，并在自有桥接脚本 `lusu-agent-bridge.js` 中隐藏左上角 `btnGithub` 白猫角标（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-life-restart-visual-cleanup-r79` / `life-restart-sidebands-and-github-corner-cleanup-r79`；视觉层缓存 `20261124-life-restart-r79`。
 
 - 在线画板升至 `1.0.15`：将画布搜索侧栏输入框占位文案三语本地化为「在画布中查找文字…」（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78` / `whiteboard-1-0-15-search-placeholder-r78`；视觉层缓存 `20261124-whiteboard-placeholder-r78`。
