@@ -2,6 +2,8 @@
 
 ## 2026-11-24
 
+- 修复欢迎窗口开合旧版 WAAPI 动画抢占抖动与关于窗/全窗口老版原生滚动条闪现（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-welcome-lock-and-scrollbar-r73` / `welcome-modal-zero-jitter-and-zero-legacy-scrollbar-r73`；视觉层缓存 `20261124-welcome-scrollbar-r73`。
+
 - 消除窗口定格末帧抖动与「关于」高度跳变（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-window-zero-jitter-settle` / `2026-11-24-window-zero-jitter-settle`；视觉层缓存 `20261124-window-rock-solid-r72`。
 
 - 修复知识库及全站窗口打开后文字图标发糊问题（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-window-crisp-native-dpr` / `2026-11-24-window-crisp-native-dpr`；视觉层缓存 `20261124-window-crisp-r71`。

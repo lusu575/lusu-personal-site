@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-24-window-zero-jitter-settle";
-const finalUpdateSlug = "2026-11-24-window-zero-jitter-settle";
+const finalUpdateId = "seed-update-2026-11-24-welcome-lock-and-scrollbar-r73";
+const finalUpdateSlug = "welcome-modal-zero-jitter-and-zero-legacy-scrollbar-r73";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Eliminate Window Settle Jitter & About Height Shift";
-const finalPublishedAt = "2026-11-24T15:29:00+08:00";
+const finalTitleEn = "Visual Polish: Fix Welcome Modal Jitter & Legacy Scrollbar Flash (r73)";
+const finalPublishedAt = "2026-11-24T15:55:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-24-window-zero-jitter-settle",
   "seed-update-2026-11-24-window-crisp-native-dpr",
   "seed-update-2026-11-24-window-unified-content-zoom",
   "seed-update-2026-11-24-autumn-lotus-withered-yellow",

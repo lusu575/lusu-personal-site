@@ -9,7 +9,7 @@ import {
   startSeasonTimeSchedule
 } from '../pond-crt/season-schedule.mjs?v=20261122-pond-live-fix-r1';
 import { attachWelcomePilotButtons, getCrtGlassButtonPerfStats } from './crt-glass-button.mjs?v=20261123-pond-glass-r59';
-import { PondWindowMorphController } from './crt-window-morph.mjs?v=20261124-window-rock-solid-r72';
+import { PondWindowMorphController } from './crt-window-morph.mjs?v=20261124-welcome-scrollbar-r73';
 
 function isMobileShell() {
   return document.documentElement.dataset.shell === 'mobile' || window.innerWidth <= 768;
@@ -336,7 +336,12 @@ function bootPondVisualBridge() {
     window.setTimeout(() => {
       windowMorph.prepareOpenMount('welcome');
       trigger.click();
-      window.requestAnimationFrame(syncRealTimeWelcomeGreeting);
+      // Synchronously cancel legacy ui-motion.js WAAPI modal animation attached by trigger.click()
+      windowMorph.cancelCompetingOn('welcome');
+      window.requestAnimationFrame(() => {
+        windowMorph.cancelCompetingOn('welcome');
+        syncRealTimeWelcomeGreeting();
+      });
     }, 0);
   }
 

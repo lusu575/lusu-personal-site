@@ -215,6 +215,19 @@ export class PondWindowMorphController {
     return Boolean(this.active && this.active.kind === 'close' && (!mode || this.active.mode === mode));
   }
 
+  cancelCompetingOn(mode) {
+    const winEl = resolveWindowElement(mode);
+    if (winEl) cancelCompetingAnimations(winEl);
+    if (mode === 'welcome') {
+      const modal = document.getElementById('welcome-modal');
+      if (modal) {
+        cancelCompetingAnimations(modal);
+        const bd = modal.querySelector('.modal-backdrop');
+        if (bd) cancelCompetingAnimations(bd);
+      }
+    }
+  }
+
   // Synchronously hide target window before layout paint so Frame 0 NEVER flashes at full 1.0 scale
   prepareOpenMount(mode) {
     const winEl = resolveWindowElement(mode);
@@ -232,7 +245,7 @@ export class PondWindowMorphController {
 
     const winEl = resolveWindowElement(mode);
     if (!winEl) return false;
-    cancelCompetingAnimations(winEl);
+    this.cancelCompetingOn(mode);
 
     const icon = measureLiveIconCenter(mode);
     const winRect = measureWindowRectSafe(winEl, mode);
@@ -413,6 +426,10 @@ export class PondWindowMorphController {
 
     const elapsed = Math.max(0, nowMs - anim.startMs);
     const done = elapsed >= anim.durationMs;
+    // Guard against legacy ui-motion.js WAAPI animations attached synchronously or asynchronously after startOpen()
+    if (elapsed < 120) {
+      cancelCompetingAnimations(anim.winEl);
+    }
 
     if (anim.reduced) {
       const t = Math.min(1, elapsed / anim.durationMs);

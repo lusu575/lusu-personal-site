@@ -7101,6 +7101,86 @@ html[data-pond-mode="resources"] #resources .xp-window {
 }
 
 html[data-pond-mode="about"] #about .xp-window {
-  min-height: 440px !important;
-  height: 440px !important;
+  min-height: 460px !important;
+  height: 460px !important;
+}
+
+/* ============================================================
+   r73: Welcome Modal WAAPI/Surface Lock + Zero Legacy Scrollbar Flash Across All Windows
+   - Removes semi-transparent gradient override on #welcome-modal / #about so settled surfaces stay 100% solid
+   - Prevents #about .profile-card from flashing a 15px native vertical scrollbar during open (sh=332 > ch=318)
+   - Unifies dark phosphor 5px thin scrollbar across all pond windows from Frame 0 (zero native/XP blue flash)
+   ============================================================ */
+html[data-pond-mode="welcome"] #welcome-modal,
+html[data-pond-mode="welcome"] #welcome-modal .modal-backdrop,
+html[data-pond-mode="welcome"] #welcome-modal .xp-window.welcome-window {
+  transition: none !important;
+  animation: none !important;
+}
+
+html[data-pond-mode="welcome"] #welcome-modal .xp-window.welcome-window,
+html[data-pond-mode="about"] #about .xp-window {
+  background: rgba(6, 20, 24, 0.94) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html[data-pond-mode="about"] #about .profile-card {
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+}
+
+html[data-pond-mode="about"] #about .profile-card::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Unified Midnight Pond dark phosphor 5px scrollbar for all settled scrollable surfaces */
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window,
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(136, 252, 226, 0.34) transparent;
+}
+
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window::-webkit-scrollbar,
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window *::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window::-webkit-scrollbar-track,
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window::-webkit-scrollbar-thumb,
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window *::-webkit-scrollbar-thumb {
+  background: rgba(136, 252, 226, 0.34);
+  border-radius: 999px;
+}
+
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window::-webkit-scrollbar-button,
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window *::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Hide scrollbars during active window zoom flight so zero scrollbar can ever flash mid-animation */
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying,
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying *,
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-measuring,
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-measuring * {
+  scrollbar-width: none !important;
+}
+
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying::-webkit-scrollbar,
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying *::-webkit-scrollbar,
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-measuring::-webkit-scrollbar,
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-measuring *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }

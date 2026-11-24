@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-welcome-lock-and-scrollbar-r73",
+      "slug": "welcome-modal-zero-jitter-and-zero-legacy-scrollbar-r73",
+      "category": "site-updates",
+      "tags": [
+        "视觉更新",
+        "窗口动效",
+        "滚动条",
+        "性能"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T15:55:00+08:00",
+      "updated_at": "2026-11-24T15:55:00+08:00",
+      "published_at": "2026-11-24T15:55:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "视觉优化：修复欢迎窗开合抖动与关于窗老版滚动条闪现（r73）",
+        "en": "Visual Polish: Fix Welcome Modal Jitter & Legacy Scrollbar Flash (r73)",
+        "ja": "ビジュアル調整：ようこそ画面のガタつきと旧スクロールバー瞬間表示を修正（r73）"
+      },
+      "summary": {
+        "zh": "同步拦截并取消触发欢迎窗时挂载的旧版 WAAPI 弹窗动画，同时彻底隐藏关于窗及所有窗口缩放过程中的老版原生滚动条闪现。",
+        "en": "Synchronously cancels the legacy WAAPI modal animation that hijacked the Welcome window zoom and eliminates the 15px native scrollbar flash during About and window open animations.",
+        "ja": "ようこそ画面の開閉を妨げていた旧 WAAPI モーダルアニメーションを即時キャンセルし、概要ウィンドウ開閉時のネイティブスクロールバー瞬間表示を完全に解消しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-window-zero-jitter-settle",
       "slug": "2026-11-24-window-zero-jitter-settle",
       "category": "site-updates",
@@ -112,34 +141,6 @@ export const homeContent = Object.freeze({
         "zh": "将秋季终态荷叶由暗绿实装为枯黄/赭金色，并叠加干枯微卷叶缘细节，单次烘焙进静态纹理保持 120 FPS 零额外开销。",
         "en": "Updated settled autumn lotus pads from dark green to warm withered golden-ochre with subtle curled rim highlights, baked once into the static GPU texture at zero per-frame cost.",
         "ja": "秋の蓮葉を暗緑色から枯れ黄色・黄土色へ刷新し、乾燥してわずかに反り返った縁の質感を追加しました。起動時に一度だけベイクするためフレーム負荷はゼロです。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-window-morph-border-and-about-size",
-      "slug": "2026-11-24-window-morph-border-and-about-size",
-      "category": "site-updates",
-      "tags": [
-        "site-updates",
-        "animation",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T14:40:00+08:00",
-      "updated_at": "2026-11-24T14:40:00+08:00",
-      "published_at": "2026-11-24T14:40:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "窗口开合动画双向无残影修复与「关于 / 游戏」精准定尺",
-        "en": "Window Morph Zero-Ghosting Border Fix & Exact About/Games Sizing",
-        "ja": "ウィンドウ開閉の枠残像解消と「概要／ゲーム」サイズ安定化"
-      },
-      "summary": {
-        "zh": "修复开合动画期间窗口本体外框优先级穿透导致的双向边框残影，以及「关于」窗口冷开误用通用大图退路引起的先大后缩问题，并对齐游戏区终态定高。",
-        "en": "Fixed CSS specificity leakage that caused outer border ghosting during open and close transitions, and added exact per-section fallback sizing so the About and Games windows never pop larger or jump height.",
-        "ja": "開閉アニメーション中の外枠 CSS 詳細度競合による残像を解消し、「概要」ウィンドウの一時的な拡大および「ゲーム」画面の高さジャンプを修正しました。"
       }
     }
   ]

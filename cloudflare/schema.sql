@@ -16375,6 +16375,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **定格ブレの完全解消**：開閉中と定格後の表面質感を統一し、終了フレームでの `backdrop-filter` 切替と背景水光の透過揺らぎをなくしました。
 - **「概要」高さ固定**：`#about .xp-window` を `440px` に固定し、非同期チェック後の縦ズレを防止しました。', '2026-11-24T15:29:00+08:00', '2026-11-24T15:29:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-window-rock-solid-r72', '2026-11-24T15:29:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-welcome-lock-and-scrollbar-r73', 'welcome-modal-zero-jitter-and-zero-legacy-scrollbar-r73', 'site-updates', '["视觉更新","窗口动效","滚动条","性能"]', '', 'published', 0, 0, '2026-11-24T15:55:00+08:00', '2026-11-24T15:55:00+08:00', '2026-11-24T15:55:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-welcome-lock-and-scrollbar-r73-zh', 'seed-update-2026-11-24-welcome-lock-and-scrollbar-r73', 'zh', '视觉优化：修复欢迎窗开合抖动与关于窗老版滚动条闪现（r73）', '同步拦截并取消触发欢迎窗时挂载的旧版 WAAPI 弹窗动画，同时彻底隐藏关于窗及所有窗口缩放过程中的老版原生滚动条闪现。', '# 视觉优化：欢迎窗零抖动与全窗口无老版滚动条闪现（r73）
+
+本次仅调整纯视觉与交互表现层，不改变任何业务功能与数据逻辑：
+
+1. **欢迎窗口零抖动**：拦截并即时取消 `ui-motion.js` 在欢迎窗打开后补挂的旧版 WAAPI 缩放位移动画，并将欢迎窗与关于窗表面统一为不透明深色终端底面，消除开合跳变与底光透颤。
+2. **关于窗与全窗口零老版滚动条闪现**：锁定 `#about` 窗口高度至 `460px` 并隐藏 `.profile-card` 溢出滚动条，同时在全部池塘窗口缩放飞行期间隐藏滚动条、定格后统一使用 5px 深色荧光细滚动条，杜绝开场帧露出原生 15px 灰白滚动条。', '2026-11-24T15:55:00+08:00', '2026-11-24T15:55:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-welcome-lock-and-scrollbar-r73-en', 'seed-update-2026-11-24-welcome-lock-and-scrollbar-r73', 'en', 'Visual Polish: Fix Welcome Modal Jitter & Legacy Scrollbar Flash (r73)', 'Synchronously cancels the legacy WAAPI modal animation that hijacked the Welcome window zoom and eliminates the 15px native scrollbar flash during About and window open animations.', '# Visual Polish: Zero Welcome Modal Jitter & Zero Legacy Scrollbar Flash (r73)
+
+Pure visual and interaction layer update with zero functional or data changes:
+
+1. **Welcome Window Stability**: Cancels the legacy `ui-motion.js` WAAPI transform animation attached after opening `#welcome-modal`, and unifies `#welcome-modal` and `#about` onto a solid dark terminal surface.
+2. **Zero Legacy Scrollbar Flash**: Locks `#about` height to `460px` with `.profile-card` overflow hidden, suppresses scrollbars during active window zoom flight across all windows, and applies a unified 5px dark phosphor thin scrollbar once settled.', '2026-11-24T15:55:00+08:00', '2026-11-24T15:55:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-welcome-lock-and-scrollbar-r73-ja', 'seed-update-2026-11-24-welcome-lock-and-scrollbar-r73', 'ja', 'ビジュアル調整：ようこそ画面のガタつきと旧スクロールバー瞬間表示を修正（r73）', 'ようこそ画面の開閉を妨げていた旧 WAAPI モーダルアニメーションを即時キャンセルし、概要ウィンドウ開閉時のネイティブスクロールバー瞬間表示を完全に解消しました。', '# ビジュアル調整：ようこそ画面の安定化と旧スクロールバー閃きの解消（r73）
+
+機能・データロジックには一切触れず、純粋な視覚・モーション層のみを調整しました：
+
+1. **ようこそ画面のガタつき解消**：`#welcome-modal` を開いた直後に付与される旧 `ui-motion.js` の WAAPI アニメーションを同期的にキャンセルし、不透明なダークサーフェスへ統一しました。
+2. **旧スクロールバー瞬間表示の完全防止**：`#about` の高さを `460px` に固定して `.profile-card` のネイティブスクロールバー出現を防止し、全ウィンドウで拡大縮小中はスクロールバーを非表示、定着後は統一された 5px ダーク細スクロールバーを適用しました。', '2026-11-24T15:55:00+08:00', '2026-11-24T15:55:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-welcome-scrollbar-r73', '2026-11-24T15:55:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261124-window-rock-solid-r72', '2026-11-24T15:29:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261124-welcome-scrollbar-r73', '2026-11-24T15:55:00+08:00', 'schema') on conflict(version) do nothing;

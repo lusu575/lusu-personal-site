@@ -1,6 +1,40 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-24-welcome-lock-and-scrollbar-r73",
+  "slug": "welcome-modal-zero-jitter-and-zero-legacy-scrollbar-r73",
+  "category": "site-updates",
+  "tags": [
+    "视觉更新",
+    "窗口动效",
+    "滚动条",
+    "性能"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-24T15:55:00+08:00",
+  "updated_at": "2026-11-24T15:55:00+08:00",
+  "published_at": "2026-11-24T15:55:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "视觉优化：修复欢迎窗开合抖动与关于窗老版滚动条闪现（r73）",
+    "en": "Visual Polish: Fix Welcome Modal Jitter & Legacy Scrollbar Flash (r73)",
+    "ja": "ビジュアル調整：ようこそ画面のガタつきと旧スクロールバー瞬間表示を修正（r73）"
+  },
+  "summary": {
+    "zh": "同步拦截并取消触发欢迎窗时挂载的旧版 WAAPI 弹窗动画，同时彻底隐藏关于窗及所有窗口缩放过程中的老版原生滚动条闪现。",
+    "en": "Synchronously cancels the legacy WAAPI modal animation that hijacked the Welcome window zoom and eliminates the 15px native scrollbar flash during About and window open animations.",
+    "ja": "ようこそ画面の開閉を妨げていた旧 WAAPI モーダルアニメーションを即時キャンセルし、概要ウィンドウ開閉時のネイティブスクロールバー瞬間表示を完全に解消しました。"
+  },
+  "content_markdown": {
+    "zh": "# 视觉优化：欢迎窗零抖动与全窗口无老版滚动条闪现（r73）\n\n本次仅调整纯视觉与交互表现层，不改变任何业务功能与数据逻辑：\n\n1. **欢迎窗口零抖动**：拦截并即时取消 `ui-motion.js` 在欢迎窗打开后补挂的旧版 WAAPI 缩放位移动画，并将欢迎窗与关于窗表面统一为不透明深色终端底面，消除开合跳变与底光透颤。\n2. **关于窗与全窗口零老版滚动条闪现**：锁定 `#about` 窗口高度至 `460px` 并隐藏 `.profile-card` 溢出滚动条，同时在全部池塘窗口缩放飞行期间隐藏滚动条、定格后统一使用 5px 深色荧光细滚动条，杜绝开场帧露出原生 15px 灰白滚动条。",
+    "en": "# Visual Polish: Zero Welcome Modal Jitter & Zero Legacy Scrollbar Flash (r73)\n\nPure visual and interaction layer update with zero functional or data changes:\n\n1. **Welcome Window Stability**: Cancels the legacy `ui-motion.js` WAAPI transform animation attached after opening `#welcome-modal`, and unifies `#welcome-modal` and `#about` onto a solid dark terminal surface.\n2. **Zero Legacy Scrollbar Flash**: Locks `#about` height to `460px` with `.profile-card` overflow hidden, suppresses scrollbars during active window zoom flight across all windows, and applies a unified 5px dark phosphor thin scrollbar once settled.",
+    "ja": "# ビジュアル調整：ようこそ画面の安定化と旧スクロールバー閃きの解消（r73）\n\n機能・データロジックには一切触れず、純粋な視覚・モーション層のみを調整しました：\n\n1. **ようこそ画面のガタつき解消**：`#welcome-modal` を開いた直後に付与される旧 `ui-motion.js` の WAAPI アニメーションを同期的にキャンセルし、不透明なダークサーフェスへ統一しました。\n2. **旧スクロールバー瞬間表示の完全防止**：`#about` の高さを `460px` に固定して `.profile-card` のネイティブスクロールバー出現を防止し、全ウィンドウで拡大縮小中はスクロールバーを非表示、定着後は統一された 5px ダーク細スクロールバーを適用しました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-24-window-zero-jitter-settle",
   "slug": "2026-11-24-window-zero-jitter-settle",
   "category": "site-updates",
