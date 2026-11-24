@@ -2,6 +2,8 @@
 
 ## 2026-11-24
 
+- 窗口开合动画双向无残影修复与「关于 / 游戏」精准定尺（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-window-morph-border-and-about-size` / `2026-11-24-window-morph-border-and-about-size`；视觉层缓存 `20261124-window-morph-fix-r68`。
+
 - 首页池塘季节切换「就地演变」波前与粒子重做上线（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-season-wavefront-in-place` / `2026-11-24-season-wavefront-in-place`；视觉层缓存 `20261124-season-wavefront-r67`。
 
 - 窗口开合动画单外壳无重影交接与定高优化（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-window-morph-single-shell-polish` / `2026-11-24-window-morph-single-shell-polish`；视觉层缓存 `20261124-window-morph-r66`。

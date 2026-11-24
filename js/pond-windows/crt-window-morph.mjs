@@ -135,7 +135,7 @@ function measureLiveIconRect(mode) {
   return { x: (vw - fw) * 0.5, y: (vh - fh) * 0.5, w: fw, h: fh, radius: ICON_RADIUS_PX };
 }
 
-function measureWindowRectSafe(el) {
+function measureWindowRectSafe(el, mode = '') {
   const vw = window.innerWidth || 1280;
   const vh = window.innerHeight || 720;
   if (el) {
@@ -147,8 +147,19 @@ function measureWindowRectSafe(el) {
       return { x: r.left, y: r.top, w: r.width, h: r.height, radius: WINDOW_RADIUS_PX };
     }
   }
+  // Per-mode accurate fallback if section is still mounting (prevents About popping to 1040x720!)
+  if (mode === 'about') {
+    const w = Math.min(720, Math.round(vw * 0.88));
+    const h = Math.min(469, Math.round(vh * 0.72));
+    return { x: Math.round((vw - w) * 0.5), y: Math.round((vh - h) * 0.5), w, h, radius: WINDOW_RADIUS_PX };
+  }
+  if (mode === 'welcome') {
+    const w = Math.min(700, Math.round(vw * 0.88));
+    const h = Math.min(720, Math.round(vh * 0.82));
+    return { x: Math.round((vw - w) * 0.5), y: Math.round((vh - h) * 0.5), w, h, radius: WINDOW_RADIUS_PX };
+  }
   const w = Math.min(1040, Math.round(vw * 0.76));
-  const h = Math.min(720, Math.round(vh * 0.74));
+  const h = Math.min(702, Math.round(vh * 0.76));
   return { x: Math.round((vw - w) * 0.5), y: Math.round((vh - h) * 0.5), w, h, radius: WINDOW_RADIUS_PX };
 }
 
@@ -291,7 +302,7 @@ export class PondWindowMorphController {
     winEl.style.visibility = 'hidden';
     winEl.style.opacity = '0';
     winEl.style.pointerEvents = 'none';
-    const toRect = measureWindowRectSafe(winEl);
+    const toRect = measureWindowRectSafe(winEl, mode);
 
     const reduced = prefersReducedMotion();
     if (reduced) {
@@ -377,7 +388,7 @@ export class PondWindowMorphController {
       this.active = null;
     }
     if (!fromRect) {
-      fromRect = measureWindowRectSafe(winEl);
+      fromRect = measureWindowRectSafe(winEl, mode);
     }
 
     if (winEl) cancelCompetingAnimations(winEl);
@@ -503,20 +514,20 @@ export class PondWindowMorphController {
       anim.currentRadius = rad;
       anim.progress = s;
 
-      // L2 shell always visible (opacity 1.0) during growth; hands off cleanly at 430->480ms when L2 == B
-      const shellFadeOut = elapsed > 430 ? Math.max(0, 1 - (elapsed - 430) / 50) : 1;
+      // L2 shell always visible (opacity 1.0) during growth; hands off cleanly at 450->480ms when L2 == B
+      const shellFadeOut = elapsed > 450 ? Math.max(0, 1 - (elapsed - 450) / 30) : 1;
       this._applyShellRect(rect, anim.baseW, anim.baseH, rad, shellFadeOut);
       this._setScrim(Math.min(1, s));
 
       // Step 5: L3 real content laid out at 1:1 final size; fades in 220ms -> 420ms with subtle 5px lift.
-      // Keep .is-morph-content-entering (transparent outer frame) until 420ms so ZERO double-border ever appears!
+      // Keep .is-morph-content-entering (transparent outer frame) until 450ms (s >= 0.992) so ZERO double-border ever appears!
       if (anim.winEl) {
         if (elapsed >= 220) {
           const ct = Math.min(1, (elapsed - 220) / 200);
           const easeOut = 1 - Math.pow(1 - ct, 2.2);
           const liftPx = (1 - easeOut) * 5;
           anim.winEl.classList.remove('is-morph-measuring');
-          if (elapsed < 420) {
+          if (elapsed < 450) {
             anim.winEl.classList.add('is-morph-content-entering');
           } else {
             anim.winEl.classList.remove('is-morph-content-entering');

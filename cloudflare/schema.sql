@@ -16275,6 +16275,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **パーティクルの刷新**：旧来の 320 粒中央渦を完全削除し、波面に沿う 42 粒の低彩度 `1.5〜3.2px` 微塵と控えめな常駐季節粒へ統一しました。
 - **錦鯉の反応**：波面が通過した瞬間に自然な加速泳ぎと小さな波紋が発生します。', '2026-11-24T14:33:00+08:00', '2026-11-24T14:33:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-season-wavefront-r67', '2026-11-24T14:33:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-window-morph-border-and-about-size', '2026-11-24-window-morph-border-and-about-size', 'site-updates', '["site-updates","animation","ui"]', '', 'published', 0, 0, '2026-11-24T14:40:00+08:00', '2026-11-24T14:40:00+08:00', '2026-11-24T14:40:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-window-morph-border-and-about-size-zh', 'seed-update-2026-11-24-window-morph-border-and-about-size', 'zh', '窗口开合动画双向无残影修复与「关于 / 游戏」精准定尺', '修复开合动画期间窗口本体外框优先级穿透导致的双向边框残影，以及「关于」窗口冷开误用通用大图退路引起的先大后缩问题，并对齐游戏区终态定高。', '# 窗口开合动画双向无残影修复与「关于 / 游戏」精准定尺
+
+本次 `r68` 针对站长实机目视反馈的两处问题完成根因定位与修复：
+
+- **彻底消除开合双向边框残影**：将 `.is-morph-content-entering` 与 `.is-morph-content-leaving` 提升至含板块 `#id` 的 `(1,4,1)` 高优先级并同步隐藏 `::before` / `::after` 伪元素，使 L3 窗口本体的 `border`、`box-shadow` 与点阵层在交接前完全透明，全程仅呈现唯一一条 L2 外壳轮廓。
+- **修复「关于」先大后缩与游戏区跳高**：为 `measureWindowRectSafe` 增加按板块精准退路（关于 `720×469`、欢迎窗 `700×720`，不再回退至 `1040×720`），并将游戏区窗口定高锁定为 `min(760px, 78vh)` 与终态完全一致。', '2026-11-24T14:40:00+08:00', '2026-11-24T14:40:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-window-morph-border-and-about-size-en', 'seed-update-2026-11-24-window-morph-border-and-about-size', 'en', 'Window Morph Zero-Ghosting Border Fix & Exact About/Games Sizing', 'Fixed CSS specificity leakage that caused outer border ghosting during open and close transitions, and added exact per-section fallback sizing so the About and Games windows never pop larger or jump height.', '# Window Morph Zero-Ghosting Border Fix & Exact About/Games Sizing
+
+Release `r68` resolves two live visual issues reported on the production window morph:
+
+- **Zero Border Ghosting (Open & Close)**: Elevated `.is-morph-content-entering` / `.is-morph-content-leaving` to ID-matched `(1,4,1)` specificity and suppressed `::before`/`::after` overlays so L3''s outer border and box-shadow never bleed over the L2 morph shell.
+- **Exact About & Games Sizing**: Added per-section fallback dimensions (`about: 720×469`, `welcome: 700×720`) instead of `1040×720`, and locked Games height to `min(760px, 78vh)` to eliminate cold-open height jumps.', '2026-11-24T14:40:00+08:00', '2026-11-24T14:40:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-window-morph-border-and-about-size-ja', 'seed-update-2026-11-24-window-morph-border-and-about-size', 'ja', 'ウィンドウ開閉の枠残像解消と「概要／ゲーム」サイズ安定化', '開閉アニメーション中の外枠 CSS 詳細度競合による残像を解消し、「概要」ウィンドウの一時的な拡大および「ゲーム」画面の高さジャンプを修正しました。', '# ウィンドウ開閉の枠残像解消と「概要／ゲーム」サイズ安定化
+
+`r68` では実機目視フィードバックの 2 点を修正しました：
+
+- **開閉双方の枠残像を解消**：`.is-morph-content-entering` / `.is-morph-content-leaving` の詳細度を ID 付き `(1,4,1)` へ引き上げ、擬似要素も含め L3 外枠を一時完全透明化しました。
+- **「概要」一時拡大と「ゲーム」高さ変動の修正**：未マウント時の退避サイズをセクション別（概要 `720×469` など）へ精細化し、ゲーム画面の高さを最終値 `min(760px, 78vh)` に固定しました。', '2026-11-24T14:40:00+08:00', '2026-11-24T14:40:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-window-morph-fix-r68', '2026-11-24T14:40:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261124-season-wavefront-r67', '2026-11-24T14:33:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261124-window-morph-fix-r68', '2026-11-24T14:40:00+08:00', 'schema') on conflict(version) do nothing;

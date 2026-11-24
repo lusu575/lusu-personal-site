@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-window-morph-border-and-about-size",
+      "slug": "2026-11-24-window-morph-border-and-about-size",
+      "category": "site-updates",
+      "tags": [
+        "site-updates",
+        "animation",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T14:40:00+08:00",
+      "updated_at": "2026-11-24T14:40:00+08:00",
+      "published_at": "2026-11-24T14:40:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "窗口开合动画双向无残影修复与「关于 / 游戏」精准定尺",
+        "en": "Window Morph Zero-Ghosting Border Fix & Exact About/Games Sizing",
+        "ja": "ウィンドウ開閉の枠残像解消と「概要／ゲーム」サイズ安定化"
+      },
+      "summary": {
+        "zh": "修复开合动画期间窗口本体外框优先级穿透导致的双向边框残影，以及「关于」窗口冷开误用通用大图退路引起的先大后缩问题，并对齐游戏区终态定高。",
+        "en": "Fixed CSS specificity leakage that caused outer border ghosting during open and close transitions, and added exact per-section fallback sizing so the About and Games windows never pop larger or jump height.",
+        "ja": "開閉アニメーション中の外枠 CSS 詳細度競合による残像を解消し、「概要」ウィンドウの一時的な拡大および「ゲーム」画面の高さジャンプを修正しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-season-wavefront-in-place",
       "slug": "2026-11-24-season-wavefront-in-place",
       "category": "site-updates",
@@ -113,34 +141,6 @@ export const homeContent = Object.freeze({
         "zh": "按 Matched Geometry Shell Transition 技术方案启动窗口动画重构：完成 r61 冲突基线诊断，上线独立过渡层的纯深色圆角矩形 1000ms 线性几何验证门槛，待验收后进入后续阶段。",
         "en": "Started the Matched Geometry Shell Transition rebuild: completed r61 WAAPI/CSS conflict diagnosis and deployed the Step 2 independent pure dark rounded-rectangle 1000ms linear expansion gate.",
         "ja": "Matched Geometry Shell Transition 方針に基づき r61 の競合診断を完了し、独立オーバーレイ層でアイコン矩形からウィンドウ矩形へ 1000ms 線形拡張するステップ2 検証ゲートを公開しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-chat-shift-enter-newline",
-      "slug": "2026-11-23-pond-chat-shift-enter-newline",
-      "category": "site-updates",
-      "tags": [
-        "site-updates",
-        "chatroom",
-        "ux"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T20:48:00+08:00",
-      "updated_at": "2026-11-23T20:48:00+08:00",
-      "published_at": "2026-11-23T20:48:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "聊天室 Shift+Enter 换行兜底修复与输入法防误发保持",
-        "en": "Chatroom Shift+Enter Newline Fallback Fix",
-        "ja": "チャット入力欄の Shift+Enter 改行フォールバック修正"
-      },
-      "summary": {
-        "zh": "修复部分浏览器及快捷键环境下聊天室按 Shift+Enter 未插入换行的问题：全程不阻断默认换行，并在宿主未自动插入时补齐单次换行，同时保持普通 Enter 发送与中文输入法防误发。",
-        "en": "Ensured Shift+Enter reliably inserts a single newline across browsers and automated key dispatch without calling preventDefault, while preserving plain Enter send and IME composition safety.",
-        "ja": "一部環境でチャット入力欄の Shift+Enter 改行が反映されない問題を修正しました。既定の改行動作を阻害せず未挿入時のみ1回改行を補完し、通常 Enter 送信と IME 誤送信防止を維持します。"
       }
     }
   ]

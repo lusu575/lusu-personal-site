@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-24-season-wavefront-in-place";
-const finalUpdateSlug = "2026-11-24-season-wavefront-in-place";
+const finalUpdateId = "seed-update-2026-11-24-window-morph-border-and-about-size";
+const finalUpdateSlug = "2026-11-24-window-morph-border-and-about-size";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Pond Season Switch In-Place Wavefront Evolution & Particle Redesign";
-const finalPublishedAt = "2026-11-24T14:33:00+08:00";
+const finalTitleEn = "Window Morph Zero-Ghosting Border Fix & Exact About/Games Sizing";
+const finalPublishedAt = "2026-11-24T14:40:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-24-season-wavefront-in-place",
   "seed-update-2026-11-24-window-morph-single-shell-polish",
   "seed-update-2026-11-24-window-morph-steps3-8",
   "seed-update-2026-11-24-window-morph-step2-gate",

@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-24-window-morph-border-and-about-size",
+  "slug": "2026-11-24-window-morph-border-and-about-size",
+  "category": "site-updates",
+  "tags": [
+    "site-updates",
+    "animation",
+    "ui"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-24T14:40:00+08:00",
+  "updated_at": "2026-11-24T14:40:00+08:00",
+  "published_at": "2026-11-24T14:40:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "窗口开合动画双向无残影修复与「关于 / 游戏」精准定尺",
+    "en": "Window Morph Zero-Ghosting Border Fix & Exact About/Games Sizing",
+    "ja": "ウィンドウ開閉の枠残像解消と「概要／ゲーム」サイズ安定化"
+  },
+  "summary": {
+    "zh": "修复开合动画期间窗口本体外框优先级穿透导致的双向边框残影，以及「关于」窗口冷开误用通用大图退路引起的先大后缩问题，并对齐游戏区终态定高。",
+    "en": "Fixed CSS specificity leakage that caused outer border ghosting during open and close transitions, and added exact per-section fallback sizing so the About and Games windows never pop larger or jump height.",
+    "ja": "開閉アニメーション中の外枠 CSS 詳細度競合による残像を解消し、「概要」ウィンドウの一時的な拡大および「ゲーム」画面の高さジャンプを修正しました。"
+  },
+  "content_markdown": {
+    "zh": "# 窗口开合动画双向无残影修复与「关于 / 游戏」精准定尺\n\n本次 `r68` 针对站长实机目视反馈的两处问题完成根因定位与修复：\n\n- **彻底消除开合双向边框残影**：将 `.is-morph-content-entering` 与 `.is-morph-content-leaving` 提升至含板块 `#id` 的 `(1,4,1)` 高优先级并同步隐藏 `::before` / `::after` 伪元素，使 L3 窗口本体的 `border`、`box-shadow` 与点阵层在交接前完全透明，全程仅呈现唯一一条 L2 外壳轮廓。\n- **修复「关于」先大后缩与游戏区跳高**：为 `measureWindowRectSafe` 增加按板块精准退路（关于 `720×469`、欢迎窗 `700×720`，不再回退至 `1040×720`），并将游戏区窗口定高锁定为 `min(760px, 78vh)` 与终态完全一致。",
+    "en": "# Window Morph Zero-Ghosting Border Fix & Exact About/Games Sizing\n\nRelease `r68` resolves two live visual issues reported on the production window morph:\n\n- **Zero Border Ghosting (Open & Close)**: Elevated `.is-morph-content-entering` / `.is-morph-content-leaving` to ID-matched `(1,4,1)` specificity and suppressed `::before`/`::after` overlays so L3's outer border and box-shadow never bleed over the L2 morph shell.\n- **Exact About & Games Sizing**: Added per-section fallback dimensions (`about: 720×469`, `welcome: 700×720`) instead of `1040×720`, and locked Games height to `min(760px, 78vh)` to eliminate cold-open height jumps.",
+    "ja": "# ウィンドウ開閉の枠残像解消と「概要／ゲーム」サイズ安定化\n\n`r68` では実機目視フィードバックの 2 点を修正しました：\n\n- **開閉双方の枠残像を解消**：`.is-morph-content-entering` / `.is-morph-content-leaving` の詳細度を ID 付き `(1,4,1)` へ引き上げ、擬似要素も含め L3 外枠を一時完全透明化しました。\n- **「概要」一時拡大と「ゲーム」高さ変動の修正**：未マウント時の退避サイズをセクション別（概要 `720×469` など）へ精細化し、ゲーム画面の高さを最終値 `min(760px, 78vh)` に固定しました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-24-season-wavefront-in-place",
   "slug": "2026-11-24-season-wavefront-in-place",
   "category": "site-updates",
