@@ -1,6 +1,38 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78",
+  "slug": "whiteboard-1-0-15-search-placeholder-r78",
+  "category": "site-updates",
+  "tags": [
+    "在线画板",
+    "本地化"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-24T20:26:00+08:00",
+  "updated_at": "2026-11-24T20:26:00+08:00",
+  "published_at": "2026-11-24T20:26:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "在线画板 1.0.15：补齐画布搜索输入框中文占位提示（r78）",
+    "en": "Online Whiteboard 1.0.15: Localized Canvas Search Placeholder (r78)",
+    "ja": "オンラインホワイトボード 1.0.15：検索入力欄のプレースホルダーを多言語化（r78）"
+  },
+  "summary": {
+    "zh": "在线画板独立版本升至 1.0.15，将右侧画布搜索栏输入框占位文案由英文 Find text on canvas... 三语本地化为「在画布中查找文字…」。",
+    "en": "Bumped Online Whiteboard to 1.0.15 and localized the canvas search sidebar input placeholder across zh/en/ja.",
+    "ja": "ホワイトボードを 1.0.15 へ更新し、検索パネル入力欄の英語プレースホルダーを日本語・中国語・英語へ対応しました。"
+  },
+  "content_markdown": {
+    "zh": "# 在线画板 1.0.15：补齐搜索框占位提示本地化（r78）\n\n本次按在线画板子项目治理规矩升版至 `1.0.15`，将画布查找侧栏输入框的占位提示由 `Find text on canvas...` 补齐为三语本地化文案（中文「在画布中查找文字…」／英文 `Find text on canvas…`／日文「キャンバス内の文字を検索…」），协作与存储协议保持不变。",
+    "en": "# Online Whiteboard 1.0.15: Localized Search Placeholder (r78)\n\nLocalized the Excalidraw search sidebar placeholder across Chinese, English, and Japanese while keeping all collaboration and storage behavior unchanged.",
+    "ja": "# オンラインホワイトボード 1.0.15：検索入力欄の多言語化（r78）\n\nオンラインホワイトボードのサブプロジェクト規約に従ってバージョンを `1.0.15` へ更新し、キャンバス検索サイドバー内の入力欄プレースホルダーを英語 `Find text on canvas...` から日本語・中国語・英語へ多言語化しました。同期プロトコルや保存仕様は変更していません。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77",
   "slug": "whiteboard-1-0-14-localized-main-menu-r77",
   "category": "site-updates",

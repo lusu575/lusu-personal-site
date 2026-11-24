@@ -2,6 +2,33 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78",
+      "slug": "whiteboard-1-0-15-search-placeholder-r78",
+      "category": "site-updates",
+      "tags": [
+        "在线画板",
+        "本地化"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T20:26:00+08:00",
+      "updated_at": "2026-11-24T20:26:00+08:00",
+      "published_at": "2026-11-24T20:26:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "在线画板 1.0.15：补齐画布搜索输入框中文占位提示（r78）",
+        "en": "Online Whiteboard 1.0.15: Localized Canvas Search Placeholder (r78)",
+        "ja": "オンラインホワイトボード 1.0.15：検索入力欄のプレースホルダーを多言語化（r78）"
+      },
+      "summary": {
+        "zh": "在线画板独立版本升至 1.0.15，将右侧画布搜索栏输入框占位文案由英文 Find text on canvas... 三语本地化为「在画布中查找文字…」。",
+        "en": "Bumped Online Whiteboard to 1.0.15 and localized the canvas search sidebar input placeholder across zh/en/ja.",
+        "ja": "ホワイトボードを 1.0.15 へ更新し、検索パネル入力欄の英語プレースホルダーを日本語・中国語・英語へ対応しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77",
       "slug": "whiteboard-1-0-14-localized-main-menu-r77",
       "category": "site-updates",
@@ -112,35 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "修复 #welcome-modal .quick-link:hover 覆盖液态玻璃边缘亮边规则的问题，补齐按下第 0 帧同步下压与局部折光反馈，保持深色点阵克制质感。",
         "en": "Fixes CSS specificity where :hover overrode the CRT glass rim-catch glow on #welcome-modal .quick-link and adds synchronous Frame-0 press refraction.",
         "ja": "ようこそ画面クイックボタンのホバー規則がガラス縁発光を上書きしていた不具合を修正し、押下第0フレームからの沈み込みと局所屈折を視認可能に調整しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-welcome-lock-and-scrollbar-r73",
-      "slug": "welcome-modal-zero-jitter-and-zero-legacy-scrollbar-r73",
-      "category": "site-updates",
-      "tags": [
-        "视觉更新",
-        "窗口动效",
-        "滚动条",
-        "性能"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T15:55:00+08:00",
-      "updated_at": "2026-11-24T15:55:00+08:00",
-      "published_at": "2026-11-24T15:55:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "视觉优化：修复欢迎窗开合抖动与关于窗老版滚动条闪现（r73）",
-        "en": "Visual Polish: Fix Welcome Modal Jitter & Legacy Scrollbar Flash (r73)",
-        "ja": "ビジュアル調整：ようこそ画面のガタつきと旧スクロールバー瞬間表示を修正（r73）"
-      },
-      "summary": {
-        "zh": "同步拦截并取消触发欢迎窗时挂载的旧版 WAAPI 弹窗动画，同时彻底隐藏关于窗及所有窗口缩放过程中的老版原生滚动条闪现。",
-        "en": "Synchronously cancels the legacy WAAPI modal animation that hijacked the Welcome window zoom and eliminates the 15px native scrollbar flash during About and window open animations.",
-        "ja": "ようこそ画面の開閉を妨げていた旧 WAAPI モーダルアニメーションを即時キャンセルし、概要ウィンドウ開閉時のネイティブスクロールバー瞬間表示を完全に解消しました。"
       }
     }
   ]

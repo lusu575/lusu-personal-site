@@ -41,7 +41,7 @@ import {
 import { roomHelpState } from "./room-help-state.js";
 
 const RECENT_ROOM_KEY = "lusu-whiteboard-recent-room-v1";
-const WHITEBOARD_VERSION = "1.0.14";
+const WHITEBOARD_VERSION = "1.0.15";
 const SEARCH_MENU_ICON = (
   <svg
     aria-hidden="true"
@@ -609,6 +609,24 @@ function WhiteboardRoom({
     window.lusuPrivateWhiteboardSnapshot = snapshot;
     return () => { if (window.lusuPrivateWhiteboardSnapshot === snapshot) delete window.lusuPrivateWhiteboardSnapshot; };
   }, []);
+
+  useEffect(() => {
+    const region = canvasRegionRef.current;
+    if (!region) return undefined;
+    const localizedPlaceholder = t("findOnCanvasPlaceholder");
+    const syncSearchPlaceholder = () => {
+      const input = region.querySelector(
+        '.excalidraw-search-wrapper input, .sidebar input[placeholder*="Find text on canvas"]',
+      );
+      if (input && input.getAttribute("placeholder") !== localizedPlaceholder) {
+        input.setAttribute("placeholder", localizedPlaceholder);
+      }
+    };
+    syncSearchPlaceholder();
+    const observer = new MutationObserver(syncSearchPlaceholder);
+    observer.observe(region, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [t]);
 
   const bindApi = useCallback((api) => {
     apiRef.current = api;

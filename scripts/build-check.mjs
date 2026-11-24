@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77";
-const finalUpdateSlug = "whiteboard-1-0-14-localized-main-menu-r77";
+const finalUpdateId = "seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78";
+const finalUpdateSlug = "whiteboard-1-0-15-search-placeholder-r78";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Online Whiteboard 1.0.14: Localized Main Menu & Removed External Links (r77)";
-const finalPublishedAt = "2026-11-24T20:16:00+08:00";
+const finalTitleEn = "Online Whiteboard 1.0.15: Localized Canvas Search Placeholder (r78)";
+const finalPublishedAt = "2026-11-24T20:26:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77",
   "seed-update-2026-11-24-glass-dynamic-pilot-r76",
   "seed-update-2026-11-24-wind-water-and-shift-enter-r75",
   "seed-update-2026-11-24-glass-pilot-visibility-r74",

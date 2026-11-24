@@ -79,6 +79,7 @@ const COPY = {
     nameChanged: "匿名名字已更新，并会用于匿名互动功能。",
     roomNameAdjusted: "为避免重名，房间已为你分配临时名字：{name}",
     findOnCanvas: "在画布中查找",
+    findOnCanvasPlaceholder: "在画布中查找文字…",
   },
   en: {
     pageTitle: "Online Whiteboard | Lusu",
@@ -158,6 +159,7 @@ const COPY = {
     nameChanged: "Your anonymous name is updated for anonymous interactions.",
     roomNameAdjusted: "To avoid a duplicate, this room assigned you the temporary name {name}.",
     findOnCanvas: "Find on canvas",
+    findOnCanvasPlaceholder: "Find text on canvas…",
   },
   ja: {
     pageTitle: "オンラインホワイトボード｜魯粛の個人サイト",
@@ -237,6 +239,7 @@ const COPY = {
     nameChanged: "匿名名を更新しました。匿名機能で共通して使用されます。",
     roomNameAdjusted: "重複を避けるため、このルームでは一時名「{name}」が割り当てられました。",
     findOnCanvas: "キャンバス内を検索",
+    findOnCanvasPlaceholder: "キャンバス内の文字を検索…",
   },
 };
 

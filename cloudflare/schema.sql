@@ -16478,6 +16478,17 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 1. **キャンバス検索の多言語化**：`Ctrl+F` 検索機能を維持しつつ日本語・中国語・英語へ対応しました。
 2. **外部リンクの撤去**：上流の `Excalidraw links`（GitHub / Follow us / Discord chat）を正式な `<MainMenu>` 指定で削除しました。', '2026-11-24T20:16:00+08:00', '2026-11-24T20:16:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-whiteboard-menu-r77', '2026-11-24T20:16:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78', 'whiteboard-1-0-15-search-placeholder-r78', 'site-updates', '["在线画板","本地化"]', '', 'published', 0, 0, '2026-11-24T20:26:00+08:00', '2026-11-24T20:26:00+08:00', '2026-11-24T20:26:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78-zh', 'seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78', 'zh', '在线画板 1.0.15：补齐画布搜索输入框中文占位提示（r78）', '在线画板独立版本升至 1.0.15，将右侧画布搜索栏输入框占位文案由英文 Find text on canvas... 三语本地化为「在画布中查找文字…」。', '# 在线画板 1.0.15：补齐搜索框占位提示本地化（r78）
+
+本次按在线画板子项目治理规矩升版至 `1.0.15`，将画布查找侧栏输入框的占位提示由 `Find text on canvas...` 补齐为三语本地化文案（中文「在画布中查找文字…」／英文 `Find text on canvas…`／日文「キャンバス内の文字を検索…」），协作与存储协议保持不变。', '2026-11-24T20:26:00+08:00', '2026-11-24T20:26:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78-en', 'seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78', 'en', 'Online Whiteboard 1.0.15: Localized Canvas Search Placeholder (r78)', 'Bumped Online Whiteboard to 1.0.15 and localized the canvas search sidebar input placeholder across zh/en/ja.', '# Online Whiteboard 1.0.15: Localized Search Placeholder (r78)
+
+Localized the Excalidraw search sidebar placeholder across Chinese, English, and Japanese while keeping all collaboration and storage behavior unchanged.', '2026-11-24T20:26:00+08:00', '2026-11-24T20:26:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78-ja', 'seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78', 'ja', 'オンラインホワイトボード 1.0.15：検索入力欄のプレースホルダーを多言語化（r78）', 'ホワイトボードを 1.0.15 へ更新し、検索パネル入力欄の英語プレースホルダーを日本語・中国語・英語へ対応しました。', '# オンラインホワイトボード 1.0.15：検索入力欄の多言語化（r78）
+
+オンラインホワイトボードのサブプロジェクト規約に従ってバージョンを `1.0.15` へ更新し、キャンバス検索サイドバー内の入力欄プレースホルダーを英語 `Find text on canvas...` から日本語・中国語・英語へ多言語化しました。同期プロトコルや保存仕様は変更していません。', '2026-11-24T20:26:00+08:00', '2026-11-24T20:26:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-whiteboard-placeholder-r78', '2026-11-24T20:26:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261124-whiteboard-menu-r77', '2026-11-24T20:16:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261124-whiteboard-placeholder-r78', '2026-11-24T20:26:00+08:00', 'schema') on conflict(version) do nothing;
