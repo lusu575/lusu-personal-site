@@ -16252,6 +16252,29 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **二重枠の解消**：コンテンツ表示／非表示フェード中は L3 側の外枠・背景を一時的に透明化し、常に L2 シェルの単一輪郭のみを表示します。
 - **高さジャンプ防止**：ゲーム・ツール画面に `min-height: min(680px, 72vh)` を指定し、初回展開時の高さ変動をなくしました。', '2026-11-24T10:58:00+08:00', '2026-11-24T10:58:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-window-morph-r66', '2026-11-24T10:58:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-season-wavefront-in-place', '2026-11-24-season-wavefront-in-place', 'site-updates', '["site-updates","animation","pond","ui"]', '', 'published', 0, 0, '2026-11-24T14:33:00+08:00', '2026-11-24T14:33:00+08:00', '2026-11-24T14:33:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-season-wavefront-in-place-zh', 'seed-update-2026-11-24-season-wavefront-in-place', 'zh', '首页池塘季节切换「就地演变」波前与粒子重做上线', '彻底废弃旧版中心聚拢星尘漩涡，改用 1.0 秒风纹波前扫过池面：荷叶、花瓣、霜纹与水色全部钉在原位渐变枯荣，波前经过锦鲤触发轻微受惊加速，过渡微粒精简至 42 颗克制点阵微尘且可随时反向打断。', '# 首页池塘季节切换「就地演变」波前与粒子重做上线
+
+本次 `r67` 按定版「就地演变」方案完整重构首页池塘季节切换与粒子表现：
+
+- **1.0 秒风纹波前就地演变**：切季时波前从点击处平滑扫过整个池面（过渡带 `0.16`，不新增 FBO/Pass 稳住 120 FPS）。入秋时荷叶在原位转黄微卷，入冬时薄霜从水面四周边缘向内爬行，入春花瓣从枝头原位松脱；中途再次切季立即冻结当前混合态并反向再扫一遍。
+- **粒子全面克制重做**：彻底删除 320 颗中心聚拢星尘与强加法漩涡；切季仅伴随 `42` 颗 `1.5–3.2px` 低饱和点阵微尘在波前经过处原地生出、顺风短距漂移并按指数轻柔沉隐；常态樱瓣（`16` 瓣 `10–16px`）、枫叶（`11` 叶 `16–24px`）、微雪（`38` 粒 `1.5–3px`）与夏萤（`8` 粒）同步瘦身降密。
+- **锦鲤受惊小反应**：锦鲤全程照常游动不瞬移，波前扫过锦鲤所在位置时自然甩尾加速游开一段再恢复巡游。', '2026-11-24T14:33:00+08:00', '2026-11-24T14:33:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-season-wavefront-in-place-en', 'seed-update-2026-11-24-season-wavefront-in-place', 'en', 'Pond Season Switch In-Place Wavefront Evolution & Particle Redesign', 'Replaced the center-gather stardust vortex with a 1.0s interruptible breeze wavefront: flora, lotus pads, frost edges, and water colors evolve strictly in-place with 42 restrained wavefront motes and natural koi startle reactions.', '# Pond Season Switch In-Place Wavefront Evolution & Particle Redesign
+
+Release `r67` replaces the legacy center-vortex season transition with the approved In-Place Wavefront Evolution:
+
+- **1.0s Interruptible Wavefront**: Sweeps across the pond in-place without extra FBOs or passes (autumn lotus yellowing & edge curl, winter frost creeping inward from pond edges, spring blossom release). Interrupting mid-switch freezes the live state and reverses smoothly.
+- **Restrained Particles**: Removed all 320 center-gather additive vortex sparks; replaced with 42 low-saturation `1.5–3.2px` dot-matrix breeze motes spawning in-place behind the wavefront with `exp(-3.2*age)` dissipation, plus scaled-down ambient seasonal particles.
+- **Koi Startle Impulse**: Koi keep swimming continuously and briefly dart forward with a gentle wake ripple as the wavefront crosses their position.', '2026-11-24T14:33:00+08:00', '2026-11-24T14:33:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-season-wavefront-in-place-ja', 'seed-update-2026-11-24-season-wavefront-in-place', 'ja', '池の季節切替「その場変化」波面エフェクト＆パーティクル刷新', '中央収束の星屑渦を廃止し、1.0 秒の風波面で池の景物がその場で変化する演出へ刷新しました。42 粒の控えめなドット微塵、四季ごとのその場変化、波面通過時の錦鯉の驚き加速に対応しています。', '# 池の季節切替「その場変化」波面エフェクト＆パーティクル刷新
+
+`r67` では承認済みの「その場変化」仕様に沿って季節切替とパーティクルを全面刷新しました：
+
+- **1.0 秒・割り込み可能な波面変化**：蓮葉の黄変と縁カール（秋）、池の縁から内側へ這う薄霜（冬）、枝元からの花びら離脱（春）をすべてその場座標で滑らかに遷移させます。
+- **パーティクルの刷新**：旧来の 320 粒中央渦を完全削除し、波面に沿う 42 粒の低彩度 `1.5〜3.2px` 微塵と控えめな常駐季節粒へ統一しました。
+- **錦鯉の反応**：波面が通過した瞬間に自然な加速泳ぎと小さな波紋が発生します。', '2026-11-24T14:33:00+08:00', '2026-11-24T14:33:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-season-wavefront-r67', '2026-11-24T14:33:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261124-window-morph-r66', '2026-11-24T10:58:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261124-season-wavefront-r67', '2026-11-24T14:33:00+08:00', 'schema') on conflict(version) do nothing;

@@ -116,6 +116,9 @@ uniform sampler2D uFloraSummer;
 uniform sampler2D uFloraAutumn;
 uniform sampler2D uFloraWinter;
 uniform vec4 uSeasonWeights;
+uniform vec4 uFromWeights;
+uniform vec4 uToWeights;
+uniform vec4 uWaveParams; // xy = origin UV, z = progress [0..1], w = active (0 or 1)
 uniform vec2 uResolution;
 uniform float uTime;
 uniform float uSeasonSweep;
@@ -186,18 +189,47 @@ void main() {
   vec2 floraUv = clamp(vec2(uv.x, 1.0 - uv.y) + sway + rip.xy * 0.50, 0.001, 0.999);
   vec4 w = uSeasonWeights;
   vec3 sweepGlow = vec3(0.0);
+  float autumnCurl = 0.0;
+  float winterFrostCreep = 0.0;
 
-  // Subtle pure-additive expanding seasonal shimmer ring from pond center (NEVER causes hard snaps!)
-  if (uSeasonSweep < 0.999) {
-    float radialPhase = clamp((uSeasonSweep - 0.18) / 0.82, 0.0, 1.0);
-    float n = noise(uv * 5.0);
-    vec2 fromCenter = (uv - vec2(0.50, 0.48)) * vec2(aspect, 1.65);
-    float sweepDist = length(fromCenter) + (n - 0.5) * 0.10;
-    float sweepFront = radialPhase * 1.85;
-    float env = sin(radialPhase * 3.14159);
-    float ring = exp(-pow((sweepDist - sweepFront) * 16.0, 2.0)) * 0.30
-               + exp(-pow((sweepDist - (sweepFront - 0.14)) * 22.0, 2.0)) * 0.16;
-    sweepGlow = uCausticTint * ring * env;
+  // In-place 1.0s Wavefront Evolution: each pixel evolves in-place as the breeze front sweeps past!
+  if (uWaveParams.w > 0.5) {
+    float waveP = clamp(uWaveParams.z, 0.0, 1.0);
+    vec2 origin = uWaveParams.xy;
+    float n = noise(uv * 4.6 + vec2(uTime * 0.18, -uTime * 0.14));
+
+    // Max aspect-corrected reach from origin to farthest pond corner
+    float d00 = length((vec2(0.0, 0.0) - origin) * vec2(aspect, 1.0));
+    float d10 = length((vec2(1.0, 0.0) - origin) * vec2(aspect, 1.0));
+    float d01 = length((vec2(0.0, 1.0) - origin) * vec2(aspect, 1.0));
+    float d11 = length((vec2(1.0, 1.0) - origin) * vec2(aspect, 1.0));
+    float maxReach = max(max(d00, d10), max(d01, d11)) + 0.18;
+
+    float pxDist = length((uv - origin) * vec2(aspect, 1.0)) + (n - 0.5) * 0.11;
+    float frontDist = waveP * maxReach;
+    float band = 0.16 * aspect;
+    float localW = 1.0 - smoothstep(frontDist - band, frontDist + band, pxDist);
+
+    // Winter edge-creep: ice/frost creeps inward from pond edges as the wavefront arrives
+    if (uToWeights.w > 0.5) {
+      float distFromEdge = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
+      float edgeWave = 1.0 - smoothstep(waveP * 0.58 - 0.14, waveP * 0.58 + 0.10, distFromEdge + (n - 0.5) * 0.06);
+      float frostMask = clamp(max(localW * 0.72, edgeWave), 0.0, 1.0);
+      localW = mix(localW, frostMask, 0.55);
+      winterFrostCreep = edgeWave * (1.0 - smoothstep(0.0, 0.28, distFromEdge)) * sin(waveP * 3.14159);
+    }
+
+    // Autumn in-place lotus yellowing & subtle edge curl right as the wavefront passes
+    if (uToWeights.z > 0.5) {
+      autumnCurl = sin(clamp(localW, 0.0, 1.0) * 3.14159);
+    }
+
+    w = mix(uFromWeights, uToWeights, localW);
+
+    // Subtle restrained breeze shimmer line along the advancing wavefront (never garish)
+    float env = sin(waveP * 3.14159);
+    float crest = exp(-pow((pxDist - frontDist) / max(0.035, band * 0.32), 2.0));
+    sweepGlow = uCausticTint * (crest * 0.16 * env + winterFrostCreep * 0.18);
   }
 
   // True premultiplied-alpha accumulation (paired with gl.blendFunc(ONE, ONE_MINUS_SRC_ALPHA))
@@ -210,8 +242,14 @@ void main() {
     floraAlpha += tS.a * w.x;
   }
   if (w.y > 0.002) {
-    vec4 tU = texture(uFloraSummer, floraUv);
-    floraPremul += tU.rgb * (tU.a * w.y);
+    vec2 padUv = autumnCurl > 0.01
+      ? clamp(floraUv + (floraUv - 0.5) * (autumnCurl * 0.0055), 0.001, 0.999)
+      : floraUv;
+    vec4 tU = texture(uFloraSummer, padUv);
+    vec3 summerRgb = autumnCurl > 0.01
+      ? mix(tU.rgb, tU.rgb * vec3(1.18, 0.92, 0.48), autumnCurl * 0.72)
+      : tU.rgb;
+    floraPremul += summerRgb * (tU.a * w.y);
     floraAlpha += tU.a * w.y;
   }
   if (w.z > 0.002) {

@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-season-wavefront-in-place",
+      "slug": "2026-11-24-season-wavefront-in-place",
+      "category": "site-updates",
+      "tags": [
+        "site-updates",
+        "animation",
+        "pond",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T14:33:00+08:00",
+      "updated_at": "2026-11-24T14:33:00+08:00",
+      "published_at": "2026-11-24T14:33:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "首页池塘季节切换「就地演变」波前与粒子重做上线",
+        "en": "Pond Season Switch In-Place Wavefront Evolution & Particle Redesign",
+        "ja": "池の季節切替「その場変化」波面エフェクト＆パーティクル刷新"
+      },
+      "summary": {
+        "zh": "彻底废弃旧版中心聚拢星尘漩涡，改用 1.0 秒风纹波前扫过池面：荷叶、花瓣、霜纹与水色全部钉在原位渐变枯荣，波前经过锦鲤触发轻微受惊加速，过渡微粒精简至 42 颗克制点阵微尘且可随时反向打断。",
+        "en": "Replaced the center-gather stardust vortex with a 1.0s interruptible breeze wavefront: flora, lotus pads, frost edges, and water colors evolve strictly in-place with 42 restrained wavefront motes and natural koi startle reactions.",
+        "ja": "中央収束の星屑渦を廃止し、1.0 秒の風波面で池の景物がその場で変化する演出へ刷新しました。42 粒の控えめなドット微塵、四季ごとのその場変化、波面通過時の錦鯉の驚き加速に対応しています。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-window-morph-single-shell-polish",
       "slug": "2026-11-24-window-morph-single-shell-polish",
       "category": "site-updates",
@@ -112,34 +141,6 @@ export const homeContent = Object.freeze({
         "zh": "修复部分浏览器及快捷键环境下聊天室按 Shift+Enter 未插入换行的问题：全程不阻断默认换行，并在宿主未自动插入时补齐单次换行，同时保持普通 Enter 发送与中文输入法防误发。",
         "en": "Ensured Shift+Enter reliably inserts a single newline across browsers and automated key dispatch without calling preventDefault, while preserving plain Enter send and IME composition safety.",
         "ja": "一部環境でチャット入力欄の Shift+Enter 改行が反映されない問題を修正しました。既定の改行動作を阻害せず未挿入時のみ1回改行を補完し、通常 Enter 送信と IME 誤送信防止を維持します。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-chat-enter-send-ime",
-      "slug": "2026-11-23-pond-chat-enter-send-ime",
-      "category": "site-updates",
-      "tags": [
-        "site-updates",
-        "chatroom",
-        "ux"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T20:36:00+08:00",
-      "updated_at": "2026-11-23T20:36:00+08:00",
-      "published_at": "2026-11-23T20:36:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "聊天室支持回车直接发送、Shift+Enter 换行与中文输入法防误发",
-        "en": "Chatroom Enter-to-Send, Shift+Enter Newline & IME Composition Guard",
-        "ja": "チャット入力欄の Enter 送信・Shift+Enter 改行と IME 変換誤送信防止"
-      },
-      "summary": {
-        "zh": "聊天室输入框现在按 Enter 即可直接发送消息，按 Shift+Enter 换行；内置四重中文输入法组合态保护，拼音选词按回车确认绝不误发，限速与字数规则不变。",
-        "en": "Pressing Enter in the chatroom input now sends the message while Shift+Enter inserts a newline, with full IME composition protection so confirming CJK candidates never submits prematurely.",
-        "ja": "チャット入力欄で Enter キーによる直接送信と Shift+Enter での改行に対応しました。日本語・中国語 IME 変換確定時の Enter で誤送信しない多重ガードを備えています。"
       }
     }
   ]

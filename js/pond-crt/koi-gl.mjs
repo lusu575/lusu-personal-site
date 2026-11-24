@@ -169,6 +169,10 @@ class KoiAgent {
     Object.assign(this, cfg);
     this.fishIndex = fishIndex;
     this.lastRippleTime = cfg.initialRippleOffset ?? -2.0;
+    this.swimTime = 0;
+    this.startleBoost = 0;
+    this.uvX = cfg.cx;
+    this.uvY = cfg.cy;
     this.spine = [];
   }
 
@@ -205,7 +209,8 @@ class KoiAgent {
 
       const desiredBack = Math.atan2(target.y - prev.y, target.x * aspect - prev.x);
       const prevBack = prev.heading + Math.PI;
-      const swimSway = Math.sin(t * this.swimFreq - frac * 4.2 + this.phase) * 0.050 * Math.pow(frac, 1.35);
+      const swayAmp = 0.050 * (1.0 + this.startleBoost * 0.85);
+      const swimSway = Math.sin(t * this.swimFreq - frac * 4.2 + this.phase) * swayAmp * Math.pow(frac, 1.35);
 
       const rawDelta = wrapAngle(desiredBack - prevBack);
       const clampedDelta = Math.max(-MAX_SEG_BEND, Math.min(MAX_SEG_BEND, rawDelta)) + swimSway;
@@ -235,6 +240,8 @@ class KoiAgent {
     });
 
     const thrust = this.spine[12];
+    this.uvX = this.spine[0].x / aspect;
+    this.uvY = this.spine[0].y;
     return {
       uvX: thrust.x / aspect,
       uvY: thrust.y,
@@ -430,16 +437,32 @@ export class KoiGLRenderer {
     }
   }
 
+  triggerWaveStartle(fishIndex) {
+    const f = this.fish[fishIndex];
+    if (!f) return null;
+    f.startleBoost = 1.0;
+    return { uvX: f.uvX, uvY: f.uvY };
+  }
+
+  getFishUvPositions() {
+    return this.fish.map((f) => ({ uvX: f.uvX, uvY: f.uvY }));
+  }
+
   render(t, dt, aspect, season, seasonId, onWakeRipple) {
     const gl = this.gl;
-    // Smoothly modulate speed by continuous winterMode [0..1] and integrate swimTime -> NEVER teleports!
+    // Smoothly modulate speed by continuous winterMode [0..1] + per-koi wavefront startle -> NEVER teleports!
     const winterBlend = Number.isFinite(season.winterMode) ? season.winterMode : (seasonId === 'winter' ? 1.0 : 0.0);
-    const speedMult = 1.0 - 0.48 * winterBlend;
-    this.swimTime += dt * speedMult;
-    const st = this.swimTime;
+    const baseSpeedMult = 1.0 - 0.48 * winterBlend;
+    this.swimTime += dt * baseSpeedMult;
     this.vertCount = 0;
 
     for (const f of this.fish) {
+      if (f.startleBoost > 0.001) {
+        f.startleBoost *= Math.exp(-dt * 2.6);
+        if (f.startleBoost < 0.005) f.startleBoost = 0;
+      }
+      f.swimTime += dt * baseSpeedMult * (1.0 + f.startleBoost * 1.45);
+      const st = f.swimTime;
       const info = f.update(st, aspect);
       this._buildFishMesh(f, st, aspect);
       if (info.shouldEmitRipple && onWakeRipple) {

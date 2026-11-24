@@ -13,8 +13,8 @@
 
 import { FloraLayer } from './flora.mjs';
 import { createFBO, createFullscreenVAO, createProgram } from './gl-utils.mjs';
-import { KoiGLRenderer } from './koi-gl.mjs';
-import { ParticlesGLRenderer } from './particles-gl.mjs?v=20261122-pond-polish-r1';
+import { KoiGLRenderer } from './koi-gl.mjs?v=20261124-season-wavefront-r67';
+import { ParticlesGLRenderer } from './particles-gl.mjs?v=20261124-season-wavefront-r67';
 import { lerpNum, lerpVec3, SEASON_ORDER, SEASONS } from './seasons.mjs';
 import {
   BLOOM_EXTRACT_FRAG,
@@ -23,7 +23,7 @@ import {
   FULLSCREEN_VERT,
   SURFACE_OVERLAY_FRAG,
   WATER_BG_FRAG
-} from './shaders.mjs?v=20261123-pond-boot-r57';
+} from './shaders.mjs?v=20261124-season-wavefront-r67';
 import { PondUIOverlay } from './ui-overlay.mjs?v=20261123-pond-boot-r57';
 import { detectBootMode, runPondBootPreload } from './boot-preloader.mjs?v=20261123-pond-boot-r57';
 
@@ -50,21 +50,20 @@ export class PondCRTEngine {
     this.fromSeasonId = this.seasonId;
     this.visualSeasonId = this.seasonId;
     this.seasonTransitionStart = -10;
-    this.seasonGatherDuration = 0.55;
-    this.seasonRevealDuration = 1.35;
-    this.seasonTransitionDuration = 1.90;
-    this.transitionPhase = 'idle'; // 'idle' | 'gather' | 'reveal'
-    this._revealRippleFired = false;
-    // Two-stage interruptible live state:
-    // Stage 1 (gather): particles stream & converge first while current scene holds steady.
-    // Stage 2 (reveal): vortex blooms outward and scene smoothly eases from exact live snapshot to target.
-    // Interrupting mid-transition snapshots current live frame -> ZERO snap, ZERO flash, ZERO queue!
+    this.seasonWaveDuration = 1.0; // Approved 1.0s In-Place Wavefront Evolution
+    this.transitionPhase = 'idle'; // 'idle' | 'wave'
+    this.waveOriginX = 0.86;
+    this.waveOriginY = 0.92;
+    this._waveToggleCorner = false;
+    this._koiWaveStartled = [false, false];
+    // Continuous interruptible live state:
+    // Mid-wave interruption freezes current live weights/palette and sweeps a fresh wavefront
+    // from the opposite/click origin with zero snap, zero flash, and zero queue!
     this.livePalette = this._cloneSeasonPalette(this.seasonId);
     this.revealStartPalette = this._cloneSeasonPalette(this.seasonId);
     this.liveWeights = this._seasonToWeights(this.seasonId);
     this.revealStartWeights = this._seasonToWeights(this.seasonId);
     this.targetWeights = this._seasonToWeights(this.seasonId);
-    this._pendingAmbientSeason = null;
     this._draggingSlider = false;
     this.onNavigate = options.onNavigate || null;
     this.onAccountClick = options.onAccountClick || null;
@@ -466,31 +465,36 @@ export class PondCRTEngine {
       this.fromSeasonId = prev;
       this.seasonId = seasonId;
 
-      // Snapshot the EXACT current live visual state so interruption NEVER snaps, blinks, or rewinds!
+      // Snapshot EXACT current live visual state so interruption NEVER snaps, blinks, or rewinds!
       this.revealStartPalette = this._copyPalette(this.livePalette);
       this.revealStartWeights = [...this.liveWeights];
       this.targetWeights = this._seasonToWeights(seasonId);
 
-      // Stage 1 (gather): particles converge first while scene holds steady; shorter when interrupting for snappy feel
-      this.seasonGatherDuration = wasInTransition ? 0.36 : 0.55;
-      this.seasonRevealDuration = 1.35;
-      this.seasonTransitionDuration = this.seasonGatherDuration + this.seasonRevealDuration;
-      this.seasonTransitionStart = this.elapsed;
-      this.transitionPhase = 'gather';
-      this._revealRippleFired = false;
+      // When interrupting mid-wave, sweep back from opposite pond corner for clear reversible wavefront feel
+      if (wasInTransition) {
+        this._waveToggleCorner = !this._waveToggleCorner;
+        this.waveOriginX = this._waveToggleCorner ? 0.10 : 0.90;
+        this.waveOriginY = this._waveToggleCorner ? 0.14 : 0.88;
+      } else {
+        this.waveOriginX = Math.max(0.02, Math.min(0.98, originNx));
+        this.waveOriginY = Math.max(0.02, Math.min(0.98, 1.0 - originNy));
+      }
 
-      // Smoothly fade old ambient particles (zero pop!) & launch luminous interruptible stardust ribbon
-      this.particlesGL.fadeOutAmbient();
-      this._pendingAmbientSeason = seasonId;
+      this.seasonWaveDuration = 1.0;
+      this.seasonTransitionStart = this.elapsed;
+      this.transitionPhase = 'wave';
+      this._koiWaveStartled = [false, false];
+
+      // Subtle origin water ripple to launch the breeze wavefront
+      this.spawnRipple(this.waveOriginX, this.waveOriginY, 0.72);
       this.uiOverlay.setSeason(seasonId, this.elapsed);
-      this.particlesGL.triggerSeasonTransitionFX(
+      this.particlesGL.triggerWavefrontTransition(
         prev,
         seasonId,
-        originNx,
-        1.0 - originNy,
+        this.waveOriginX,
+        this.waveOriginY,
         this.elapsed,
-        this.seasonGatherDuration,
-        this.seasonRevealDuration
+        this.seasonWaveDuration
       );
       if (typeof this.onSeasonChange === 'function') {
         this.onSeasonChange(seasonId, { manual });
@@ -504,29 +508,16 @@ export class PondCRTEngine {
     }
   }
 
-  _stepContinuousSeason(t) {
+  _stepContinuousSeason(t, aspect) {
     if (this.transitionPhase === 'idle') {
-      return { palette: this.livePalette, revealSweepP: 1.0, inTransition: false };
+      return {
+        palette: this.livePalette,
+        waveState: { active: false, progress: 1.0, ox: this.waveOriginX, oy: this.waveOriginY, frontDist: 99.0, aspect }
+      };
     }
 
     const elapsed = Math.max(0, t - this.seasonTransitionStart);
-    const gatherDur = this.seasonGatherDuration;
-    const revealDur = this.seasonRevealDuration;
-
-    // Stage 1: Particle ribbon streams & converges to pond center — hold current scene steady (NO early jump!)
-    if (elapsed < gatherDur) {
-      this.transitionPhase = 'gather';
-      return { palette: this.livePalette, revealSweepP: 0.0, inTransition: true };
-    }
-
-    // Stage 2: Particles arrived -> fire pond-center ripple & smoothly reveal target season from exact snapshot!
-    this.transitionPhase = 'reveal';
-    if (!this._revealRippleFired) {
-      this._revealRippleFired = true;
-      this.spawnRipple(0.50, 0.48, 1.25);
-    }
-
-    const u = Math.min(1.0, (elapsed - gatherDur) / Math.max(0.01, revealDur));
+    const u = Math.min(1.0, elapsed / Math.max(0.01, this.seasonWaveDuration));
     const e = u * u * (3.0 - 2.0 * u); // C1 smoothstep easing
     const startP = this.revealStartPalette;
     const targetP = this._cloneSeasonPalette(this.seasonId);
@@ -548,6 +539,30 @@ export class PondCRTEngine {
       this.liveWeights[i] = this.revealStartWeights[i] + (this.targetWeights[i] - this.revealStartWeights[i]) * e;
     }
 
+    // Compute exact wavefront distance matching SURFACE_OVERLAY_FRAG
+    const ox = this.waveOriginX;
+    const oy = this.waveOriginY;
+    const d00 = Math.hypot((0 - ox) * aspect, 0 - oy);
+    const d10 = Math.hypot((1 - ox) * aspect, 0 - oy);
+    const d01 = Math.hypot((0 - ox) * aspect, 1 - oy);
+    const d11 = Math.hypot((1 - ox) * aspect, 1 - oy);
+    const maxReach = Math.max(d00, d10, d01, d11) + 0.18;
+    const frontDist = u * maxReach;
+
+    // Trigger natural startled dart on each koi right when the wavefront sweeps across its coordinates!
+    const fishPositions = this.koiGL.getFishUvPositions();
+    for (let i = 0; i < fishPositions.length; i++) {
+      if (!this._koiWaveStartled[i]) {
+        const fp = fishPositions[i];
+        const fishDist = Math.hypot((fp.uvX - ox) * aspect, fp.uvY - oy);
+        if (frontDist >= fishDist) {
+          this._koiWaveStartled[i] = true;
+          const pos = this.koiGL.triggerWaveStartle(i);
+          if (pos) this.spawnRipple(pos.uvX, pos.uvY, 0.55);
+        }
+      }
+    }
+
     if (u >= 0.45) {
       this.visualSeasonId = this.seasonId;
     }
@@ -555,14 +570,16 @@ export class PondCRTEngine {
     if (u >= 1.0) {
       this.transitionPhase = 'idle';
       this.visualSeasonId = this.seasonId;
-      if (this._pendingAmbientSeason) {
-        this.particlesGL.startNewSeasonAmbient(this._pendingAmbientSeason);
-        this._pendingAmbientSeason = null;
-      }
-      return { palette: p, revealSweepP: 1.0, inTransition: false };
+      return {
+        palette: p,
+        waveState: { active: false, progress: 1.0, ox, oy, frontDist: 99.0, aspect }
+      };
     }
 
-    return { palette: p, revealSweepP: u, inTransition: true };
+    return {
+      palette: p,
+      waveState: { active: true, progress: u, ox, oy, frontDist, aspect }
+    };
   }
 
   render(timeSec) {
@@ -602,11 +619,11 @@ export class PondCRTEngine {
       }
     }
 
-    const { palette: season, revealSweepP, inTransition } = this._stepContinuousSeason(t);
-    const rippleCount = this._updateRipples(t);
     const sw = this.fbos.scene.width;
     const sh = this.fbos.scene.height;
     const aspect = sw / Math.max(1, sh);
+    const { palette: season, waveState } = this._stepContinuousSeason(t, aspect);
+    const rippleCount = this._updateRipples(t);
 
     // --- PASS 1: Scene FBO (0.50x res) ---
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbos.scene.fbo);
@@ -654,9 +671,14 @@ export class PondCRTEngine {
     gl.bindTexture(gl.TEXTURE_2D, this.floraTextures.winter);
     gl.uniform1i(su.uFloraWinter, 3);
     gl.uniform4fv(su.uSeasonWeights, this.liveWeights);
+    if (su.uFromWeights) gl.uniform4fv(su.uFromWeights, this.revealStartWeights);
+    if (su.uToWeights) gl.uniform4fv(su.uToWeights, this.targetWeights);
+    if (su.uWaveParams) {
+      gl.uniform4f(su.uWaveParams, waveState.ox, waveState.oy, waveState.progress, waveState.active ? 1.0 : 0.0);
+    }
     gl.uniform2f(su.uResolution, sw, sh);
     gl.uniform1f(su.uTime, t);
-    gl.uniform1f(su.uSeasonSweep, revealSweepP);
+    if (su.uSeasonSweep) gl.uniform1f(su.uSeasonSweep, waveState.progress);
     gl.uniform3fv(su.uCausticTint, season.causticTint);
     gl.uniform3fv(su.uSpecularTint, season.specularTint);
     gl.uniform4fv(su.uRipples, this.rippleUniformData);
@@ -665,8 +687,8 @@ export class PondCRTEngine {
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     gl.disable(gl.BLEND);
 
-    // 1d. Pure GPU Botanical Falling Petals / Maple Leaves / Snow + Interruptible Stardust Vortex
-    this.particlesGL.render(t, dt, sw, this.seasonId, inTransition, (rx, ry, str) => {
+    // 1d. Pure GPU In-Place Wavefront Breeze Motes & Restrained Seasonal Ambient Particles
+    this.particlesGL.render(t, dt, sw, this.seasonId, waveState, (rx, ry, str) => {
       this.spawnRipple(rx, ry, str);
     });
 
