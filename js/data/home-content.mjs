@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-window-unified-content-zoom",
+      "slug": "2026-11-24-window-unified-content-zoom",
+      "category": "site-updates",
+      "tags": [
+        "site-updates",
+        "animation",
+        "ui",
+        "performance"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T14:55:00+08:00",
+      "updated_at": "2026-11-24T14:55:00+08:00",
+      "published_at": "2026-11-24T14:55:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "窗口外壳与内容一体化同步缩放开合动画上线",
+        "en": "Unified Single-Layer GPU Window & Content Zoom Animation",
+        "ja": "ウィンドウ枠・コンテンツ一体型 120 FPS 同期ズーム開閉実装"
+      },
+      "summary": {
+        "zh": "改为单层 GPU 整窗同步缩放路线：打开时窗口边框、图标与全部内容从第 0 帧即随窗口一起从图标处连续放大长出，关闭时一起缩回原图标，无外壳/内容脱节、无边框残影、保持 120 FPS 合成。",
+        "en": "Switched window open/close transitions to unified single-layer GPU scaling so window borders, icons, and content grow and shrink together from Frame 0 with zero shell/content disconnect, zero border ghosting, and 120 FPS compositor performance.",
+        "ja": "別枠フェードを廃止し、ウィンドウ枠と内部のアイコン・テキストを単一 GPU レイヤーとして 0 フレームからアイコン位置より一体で拡大展開・縮小収納する方式へ刷新しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-autumn-lotus-withered-yellow",
       "slug": "2026-11-24-autumn-lotus-withered-yellow",
       "category": "site-updates",
@@ -112,35 +141,6 @@ export const homeContent = Object.freeze({
         "zh": "消除窗口展开中段外壳与内容层的双边框重影，并为游戏区与工具区补充定高约束，确保冷打开全程几何稳定不跳高。",
         "en": "Eliminated double-border ghosting during L2-to-L3 content handoff and added fixed min-height constraints for Games and Tools windows to prevent cold-load height jumps.",
         "ja": "L2 シェルと L3 コンテンツ切り替え時の二重枠を解消し、ゲーム・ツール画面の初回読み込み時の高さジャンプを防止しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-window-morph-steps3-8",
-      "slug": "2026-11-24-window-morph-steps3-8",
-      "category": "site-updates",
-      "tags": [
-        "site-updates",
-        "animation",
-        "ui",
-        "performance"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T10:52:00+08:00",
-      "updated_at": "2026-11-24T10:52:00+08:00",
-      "published_at": "2026-11-24T10:52:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "全站板块窗口 Matched Geometry Shell 开合动画正式上线",
-        "en": "Matched Geometry Shell Window Open & Close Animation (Steps 3–8)",
-        "ja": "全ウィンドウ Matched Geometry Shell 開閉アニメーション正式公開"
-      },
-      "summary": {
-        "zh": "完成窗口开合动画第三至第八步重构：独立外壳层按解析二阶阻尼弹簧（开 480ms / 关 400ms）在六枚图标与真实窗口间连续形变，外壳与内容分层交接无闪烁，支持随时打断与 120 FPS 合成。",
-        "en": "Completed the full Matched Geometry Shell window transition: independent L2 morph shell driven by analytic damped springs (open 480ms / close 400ms), 1:1 L3 content handoff, live icon re-measurement on close, and 120 FPS compositor discipline.",
-        "ja": "ウィンドウ開閉アニメーションの第3〜第8ステップを完了しました。解析2次減衰バネ（開 480ms／閉 400ms）による独立シェル層と 1:1 実コンテンツ層の滑らかな引き継ぎ、割り込み対応、120 FPS 最適化を実現しています。"
       }
     }
   ]

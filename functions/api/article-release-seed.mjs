@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-window-unified-content-zoom', '2026-11-24-window-unified-content-zoom', 'site-updates', '["site-updates","animation","ui","performance"]', '', 'published', 0, 0, '2026-11-24T14:55:00+08:00', '2026-11-24T14:55:00+08:00', '2026-11-24T14:55:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-24-window-unified-content-zoom", {
+  "zh": {
+    "title": "窗口外壳与内容一体化同步缩放开合动画上线",
+    "summary": "改为单层 GPU 整窗同步缩放路线：打开时窗口边框、图标与全部内容从第 0 帧即随窗口一起从图标处连续放大长出，关闭时一起缩回原图标，无外壳/内容脱节、无边框残影、保持 120 FPS 合成。",
+    "content_markdown": "# 窗口外壳与内容一体化同步缩放开合动画上线\n\n本次 `r70` 按站长新要求将窗口开合改为「外壳＋内容一体化同步缩放」：\n\n- **单层 GPU 整窗合成路线**：直接对目标 `.xp-window`（含内部所有图标、标题、卡片与文字）启用单层 GPU 合成，仅驱动 `translate3d`、`等比 scale` 与 `opacity`。打开第 0 帧起内容就在窗口内同步位移放大，关闭时连同内容一起缩回实时重测的原图标位置，彻底消除“外壳先长、内容瞬移到位”的脱节感与一切双边框残影。\n- **120 FPS 保障**：继续屏蔽旧版 `ui-motion.js` WAAPI 与 CSS `transition`，飞行期（400–480ms）临时关闭 `backdrop-filter` 避免逐帧模糊重采样，让 GPU 单次光栅化整窗贴图后纯矩阵变换；采用解析 4ms 阻尼弹簧查表（开 `480ms` / 关 `400ms`），支持随时打断与 `prefers-reduced-motion` `100ms` 降级。"
+  },
+  "en": {
+    "title": "Unified Single-Layer GPU Window & Content Zoom Animation",
+    "summary": "Switched window open/close transitions to unified single-layer GPU scaling so window borders, icons, and content grow and shrink together from Frame 0 with zero shell/content disconnect, zero border ghosting, and 120 FPS compositor performance.",
+    "content_markdown": "# Unified Single-Layer GPU Window & Content Zoom Animation\n\nRelease `r70` unifies window frame and content motion into a single GPU-composited transform:\n\n- **Single-Layer Unified Zoom**: Removed the separate L2 shell and delayed content fade-in. The real `.xp-window` (including all icons, titles, and cards) scales uniformly and translates together from Frame 0 out of the clicked icon and shrinks back into the re-measured icon on close.\n- **120 FPS Discipline**: Keeps legacy WAAPI/CSS transitions suppressed, temporarily disables `backdrop-filter` during the 400–480ms flight so the GPU transforms a single pre-rasterized layer with zero per-frame text reflow or blur thrash, and uses 4ms analytic spring LUTs (`open: 480ms`, `close: 400ms`)."
+  },
+  "ja": {
+    "title": "ウィンドウ枠・コンテンツ一体型 120 FPS 同期ズーム開閉実装",
+    "summary": "別枠フェードを廃止し、ウィンドウ枠と内部のアイコン・テキストを単一 GPU レイヤーとして 0 フレームからアイコン位置より一体で拡大展開・縮小収納する方式へ刷新しました。",
+    "content_markdown": "# ウィンドウ枠・コンテンツ一体型 120 FPS 同期ズーム開閉実装\n\n`r70` ではウィンドウ外枠と内部コンテンツが完全に同期して拡大・縮小する一体型アニメーションへ移行しました：\n\n- **単一 GPU レイヤー同期ズーム**：L2 別枠と遅延フェードを撤去し、`.xp-window` 全体を 0 フレームからアイコン座標より `translate3d`＋等比 `scale` で一体展開・一体収納します。\n- **120 FPS 最適化**：移動中のみ `backdrop-filter` を一時停止して GPU テクスチャを単一変換で滑らかに描画し、二重枠残像も構造上完全に排除しました。"
+  }
+}, "2026-11-24T14:55:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-autumn-lotus-withered-yellow', '2026-11-24-autumn-lotus-withered-yellow', 'site-updates', '["site-updates","pond","ui"]', '', 'published', 0, 0, '2026-11-24T14:47:00+08:00', '2026-11-24T14:47:00+08:00', '2026-11-24T14:47:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-24-autumn-lotus-withered-yellow", {
   "zh": {

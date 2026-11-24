@@ -7072,22 +7072,14 @@ html[data-shell="mobile"] .xp-window.is-morph-measuring {
   pointer-events: none !important;
 }
 
-/* During 220->450ms open content fade-in & 0->160ms close fade-out, match ID specificity (1,4,1)
-   so L3's duplicate outer border, box-shadow, backdrop & ::after dot-matrix NEVER ghost over L2 shell! */
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window:is(.is-morph-content-entering, .is-morph-content-leaving),
-html[data-ui-shell="mobile"] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window:is(.is-morph-content-entering, .is-morph-content-leaving),
-html[data-shell="mobile"] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window:is(.is-morph-content-entering, .is-morph-content-leaving) {
-  background: transparent !important;
-  background-color: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
+/* r70: Unified Single-Layer GPU Window Zoom — disable backdrop-filter ONLY during the 400-480ms flight
+   so GPU scales one single pre-rasterized window texture at 120 FPS with zero blur re-sampling or double borders */
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying,
+html[data-ui-shell="mobile"] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying,
+html[data-shell="mobile"] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying {
+  contain: layout style !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-}
-
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window:is(.is-morph-content-entering, .is-morph-content-leaving)::before,
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window:is(.is-morph-content-entering, .is-morph-content-leaving)::after {
-  opacity: 0 !important;
 }
 
 /* Step 3 fixed height constraint: match settled Games/Resources heights so deltaH === 0 on cold open */
@@ -7098,32 +7090,4 @@ html[data-pond-mode="games"] #games .xp-window {
 
 html[data-pond-mode="resources"] #resources .xp-window {
   min-height: min(680px, 72vh) !important;
-}
-
-#pond-window-morph-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 18;
-  pointer-events: none;
-  display: none;
-  contain: layout style;
-}
-
-#pond-window-morph-layer.is-active {
-  display: block;
-}
-
-#pond-window-morph-layer .pond-morph-shell {
-  position: fixed;
-  left: 0;
-  top: 0;
-  transform-origin: 0 0;
-  background: rgba(6, 22, 26, 0.92);
-  border: 1.4px solid rgba(154, 232, 224, 0.62);
-  border-radius: 18px;
-  box-shadow: 0 0 26px rgba(96, 232, 220, 0.22);
-  box-sizing: border-box;
-  transition: none !important;
-  animation: none !important;
-  opacity: 0;
 }

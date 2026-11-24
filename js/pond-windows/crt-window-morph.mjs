@@ -1,14 +1,12 @@
-// Matched Geometry Shell Transition — Steps 3–8 Production Implementation
-// Spec: 《窗口打开动画技术调研报告》 §4.1–§4.6
-// - L1: Live Desktop Icon / Mobile Dock origin (measured live on open AND re-measured live on close)
-// - L2: Independent fixed morph shell (#pond-window-morph-layer .pond-morph-shell), visible from Frame 0
-//       using analytic second-order spring lookup tables (4ms interval, normalized to exact endpoints):
-//       * Open:  zeta = 0.88, omega0 = 10, 480ms (< 0.5% overshoot, zero second bounce)
-//       * Close: zeta = 0.95, omega0 = 12, 400ms (zero terminal oscillation)
-// - L3: Real target .xp-window laid out at 1:1 final size (measured via visibility:hidden, NEVER display:none,
-//       NEVER scaled down to icon size): fades in 200ms->400ms on open; fades out 0->160ms on close.
-// - Continuous corner radius interpolation with non-uniform scale compensation; zero second CRT scanlines;
-//   fully interruptible from live visual rect; reduced-motion 100ms opacity fallback; zero DOM reads in rAF.
+// Unified Single-Layer GPU Window Zoom Controller (r70)
+// Direction approved by site owner: window frame AND content scale together seamlessly from/to icon origin
+// Route: Single promoted GPU compositor layer on .xp-window (translate3d + uniform scale + opacity ONLY)
+// - Browser rasterizes .xp-window ONCE into a GPU texture and transforms it at 120 FPS with ZERO text reflow,
+//   ZERO per-frame border-radius paint, ZERO separate L2 shell, and ZERO double-border ghosting!
+// - Analytic 4ms spring LUTs from CRT_GLASS_SPRINGS:
+//   * Open:  zeta = 0.88, omega0 = 10, 480ms
+//   * Close: zeta = 0.95, omega0 = 12, 400ms (re-measures live icon origin before close)
+// - Fully interruptible from live (tx, ty, sc) visual state; prefers-reduced-motion 100ms opacity fallback.
 
 import { CRT_GLASS_SPRINGS } from './crt-glass-config.mjs?v=20261124-window-morph-r65';
 
@@ -24,8 +22,6 @@ const DESKTOP_ICON_COORDS = {
 };
 
 const ICON_BOX_PX = 76;
-const ICON_RADIUS_PX = 14;
-const WINDOW_RADIUS_PX = 18;
 const SAMPLE_STEP_MS = 4;
 
 function prefersReducedMotion() {
@@ -38,8 +34,6 @@ function isMobileViewport() {
     || window.innerWidth <= 768;
 }
 
-// Analytic normalized second-order underdamped spring (§4.3):
-// s(t) = 1 - e^(-zeta*w0*t) * (cos(wd*t) + (zeta*w0/wd)*sin(wd*t)), wd = w0*sqrt(1 - zeta^2)
 function buildSpringLut(zeta, omega0, durationMs) {
   const count = Math.max(2, Math.ceil(durationMs / SAMPLE_STEP_MS) + 1);
   const lut = new Float32Array(count);
@@ -96,7 +90,7 @@ function cancelCompetingAnimations(el) {
   } catch {}
 }
 
-function measureLiveIconRect(mode) {
+function measureLiveIconCenter(mode) {
   const vw = window.innerWidth || 1280;
   const vh = window.innerHeight || 720;
 
@@ -108,11 +102,10 @@ function measureLiveIconRect(mode) {
     if (dockBtn) {
       const r = dockBtn.getBoundingClientRect();
       if (r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < vh) {
-        return { x: r.left, y: r.top, w: r.width, h: r.height, radius: 14 };
+        return { cx: r.left + r.width * 0.5, cy: r.top + r.height * 0.5 };
       }
     }
-    // Visible fallback on mobile: bottom-center dock anchor
-    return { x: vw * 0.5 - 28, y: vh - 68, w: 56, h: 56, radius: 14 };
+    return { cx: vw * 0.5, cy: vh - 40 };
   }
 
   const norm = DESKTOP_ICON_COORDS[mode];
@@ -122,17 +115,12 @@ function measureLiveIconRect(mode) {
     if (cr.width > 0 && cr.height > 0) {
       const cx = cr.left + norm.x * cr.width;
       const cy = cr.top + norm.y * cr.height;
-      const half = ICON_BOX_PX * 0.5;
       if (cx >= 0 && cx <= vw && cy >= 0 && cy <= vh) {
-        return { x: cx - half, y: cy - half, w: ICON_BOX_PX, h: ICON_BOX_PX, radius: ICON_RADIUS_PX };
+        return { cx, cy };
       }
     }
   }
-
-  // Visible fallback if source icon is offscreen/hidden (§4.5): compact centered anchor
-  const fw = 120;
-  const fh = 84;
-  return { x: (vw - fw) * 0.5, y: (vh - fh) * 0.5, w: fw, h: fh, radius: ICON_RADIUS_PX };
+  return { cx: vw * 0.5, cy: vh * 0.5 };
 }
 
 function measureWindowRectSafe(el, mode = '') {
@@ -144,29 +132,26 @@ function measureWindowRectSafe(el, mode = '') {
     const r = el.getBoundingClientRect();
     el.style.transform = prevTransform;
     if (r.width >= 120 && r.height >= 120) {
-      return { x: r.left, y: r.top, w: r.width, h: r.height, radius: WINDOW_RADIUS_PX };
+      return { x: r.left, y: r.top, w: r.width, h: r.height };
     }
   }
-  // Per-mode accurate fallback if section is still mounting (prevents About popping to 1040x720!)
   if (mode === 'about') {
     const w = Math.min(720, Math.round(vw * 0.88));
     const h = Math.min(469, Math.round(vh * 0.72));
-    return { x: Math.round((vw - w) * 0.5), y: Math.round((vh - h) * 0.5), w, h, radius: WINDOW_RADIUS_PX };
+    return { x: Math.round((vw - w) * 0.5), y: Math.round((vh - h) * 0.5), w, h };
   }
   if (mode === 'welcome') {
     const w = Math.min(700, Math.round(vw * 0.88));
     const h = Math.min(720, Math.round(vh * 0.82));
-    return { x: Math.round((vw - w) * 0.5), y: Math.round((vh - h) * 0.5), w, h, radius: WINDOW_RADIUS_PX };
+    return { x: Math.round((vw - w) * 0.5), y: Math.round((vh - h) * 0.5), w, h };
   }
   const w = Math.min(1040, Math.round(vw * 0.76));
   const h = Math.min(702, Math.round(vh * 0.76));
-  return { x: Math.round((vw - w) * 0.5), y: Math.round((vh - h) * 0.5), w, h, radius: WINDOW_RADIUS_PX };
+  return { x: Math.round((vw - w) * 0.5), y: Math.round((vh - h) * 0.5), w, h };
 }
 
 export class PondWindowMorphController {
   constructor() {
-    this.layerEl = null;
-    this.shellEl = null;
     this.scrimEl = null;
     this.rafId = 0;
     this.active = null;
@@ -182,39 +167,21 @@ export class PondWindowMorphController {
     this._tick = this._tick.bind(this);
   }
 
-  _ensureDom() {
-    if (!this.layerEl || !this.layerEl.isConnected) {
-      let layer = document.getElementById('pond-window-morph-layer');
-      if (!layer) {
-        layer = document.createElement('div');
-        layer.id = 'pond-window-morph-layer';
-        layer.setAttribute('aria-hidden', 'true');
-        document.body.appendChild(layer);
+  _ensureScrim() {
+    if (this.scrimEl && this.scrimEl.isConnected) return;
+    let scrim = document.getElementById('pond-window-scrim');
+    if (!scrim) {
+      scrim = document.createElement('div');
+      scrim.id = 'pond-window-scrim';
+      scrim.setAttribute('aria-hidden', 'true');
+      const backdrop = document.getElementById('pond-visual-backdrop');
+      if (backdrop && backdrop.parentNode) {
+        backdrop.parentNode.insertBefore(scrim, backdrop.nextSibling);
+      } else {
+        document.body.prepend(scrim);
       }
-      let shell = layer.querySelector('.pond-morph-shell');
-      if (!shell) {
-        shell = document.createElement('div');
-        shell.className = 'pond-morph-shell';
-        layer.appendChild(shell);
-      }
-      this.layerEl = layer;
-      this.shellEl = shell;
     }
-    if (!this.scrimEl || !this.scrimEl.isConnected) {
-      let scrim = document.getElementById('pond-window-scrim');
-      if (!scrim) {
-        scrim = document.createElement('div');
-        scrim.id = 'pond-window-scrim';
-        scrim.setAttribute('aria-hidden', 'true');
-        const backdrop = document.getElementById('pond-visual-backdrop');
-        if (backdrop && backdrop.parentNode) {
-          backdrop.parentNode.insertBefore(scrim, backdrop.nextSibling);
-        } else {
-          document.body.prepend(scrim);
-        }
-      }
-      this.scrimEl = scrim;
-    }
+    this.scrimEl = scrim;
   }
 
   _setScrim(p) {
@@ -225,33 +192,19 @@ export class PondWindowMorphController {
 
   _clearWindowVisuals(winEl) {
     if (!winEl) return;
-    winEl.classList.remove('is-morph-measuring', 'is-morph-content-entering', 'is-morph-content-leaving');
+    winEl.classList.remove('is-morph-measuring', 'is-morph-flying');
     winEl.style.visibility = '';
     winEl.style.opacity = '';
     winEl.style.transform = '';
+    winEl.style.transformOrigin = '';
     winEl.style.willChange = '';
     winEl.style.pointerEvents = '';
   }
 
-  _hideShell() {
-    if (this.layerEl) this.layerEl.classList.remove('is-active');
-    if (this.shellEl) {
-      this.shellEl.style.opacity = '0';
-      this.shellEl.style.willChange = '';
-      this.shellEl.style.transform = '';
-      this.shellEl.style.borderRadius = '';
-    }
-  }
-
-  _applyShellRect(rect, baseW, baseH, visualRadius, opacity = 1) {
-    const sx = Math.max(0.03, rect.w / baseW);
-    const sy = Math.max(0.03, rect.h / baseH);
-    const rx = Math.min(baseW * 0.5, visualRadius / sx);
-    const ry = Math.min(baseH * 0.5, visualRadius / sy);
-    const s = this.shellEl.style;
-    s.transform = `translate3d(${rect.x.toFixed(2)}px, ${rect.y.toFixed(2)}px, 0) scale(${sx.toFixed(5)}, ${sy.toFixed(5)})`;
-    s.borderRadius = `${rx.toFixed(1)}px / ${ry.toFixed(1)}px`;
-    s.opacity = opacity.toFixed(3);
+  _applyWindowPose(winEl, tx, ty, sc, op) {
+    const s = winEl.style;
+    s.transform = `translate3d(${tx.toFixed(2)}px, ${ty.toFixed(2)}px, 0) scale(${sc.toFixed(5)})`;
+    s.opacity = op.toFixed(3);
   }
 
   isOpeningMode(mode) {
@@ -262,7 +215,7 @@ export class PondWindowMorphController {
     return Boolean(this.active && this.active.kind === 'close' && (!mode || this.active.mode === mode));
   }
 
-  // Synchronously hide target window before layout paint so Frame 0 NEVER flashes full content
+  // Synchronously hide target window before layout paint so Frame 0 NEVER flashes at full 1.0 scale
   prepareOpenMount(mode) {
     const winEl = resolveWindowElement(mode);
     if (!winEl) return;
@@ -274,91 +227,72 @@ export class PondWindowMorphController {
   }
 
   startOpen(mode) {
-    if (this.isOpeningMode(mode)) return false; // Prevent duplicate launch on repeated click
-    this._ensureDom();
+    if (this.isOpeningMode(mode)) return false;
+    this._ensureScrim();
 
     const winEl = resolveWindowElement(mode);
     if (!winEl) return false;
     cancelCompetingAnimations(winEl);
 
-    // Interruptibility: if another animation is in-flight, capture its live visual rect if same mode
-    let fromRect = measureLiveIconRect(mode);
+    const icon = measureLiveIconCenter(mode);
+    const winRect = measureWindowRectSafe(winEl, mode);
+    const winCx = winRect.x + winRect.w * 0.5;
+    const winCy = winRect.y + winRect.h * 0.5;
+    const iconScale = Math.max(0.10, Math.min(0.18, ICON_BOX_PX / Math.max(winRect.w, winRect.h)));
+
+    let startTx = icon.cx - winCx;
+    let startTy = icon.cy - winCy;
+    let startSc = iconScale;
+    let startOp = 0.22;
+
+    // Seamless interruption handoff from live pose if re-opening mid-close
     if (this.active) {
       const prev = this.active;
       if (this.rafId) {
         cancelAnimationFrame(this.rafId);
         this.rafId = 0;
       }
-      if (prev.mode === mode && prev.currentRect) {
-        fromRect = { ...prev.currentRect, radius: prev.currentRadius || ICON_RADIUS_PX };
+      if (prev.mode === mode && prev.pose) {
+        startTx = prev.pose.tx;
+        startTy = prev.pose.ty;
+        startSc = prev.pose.sc;
+        startOp = prev.pose.op;
       } else if (prev.winEl && prev.winEl !== winEl) {
         this._clearWindowVisuals(prev.winEl);
       }
       this.active = null;
     }
 
-    // Step 3: Window is mounted with visibility:hidden (participating in layout, NOT display:none)
-    winEl.classList.add('is-morph-measuring');
-    winEl.style.visibility = 'hidden';
-    winEl.style.opacity = '0';
-    winEl.style.pointerEvents = 'none';
-    const toRect = measureWindowRectSafe(winEl, mode);
-
     const reduced = prefersReducedMotion();
-    if (reduced) {
-      this._hideShell();
-      winEl.classList.remove('is-morph-measuring');
-      winEl.style.visibility = 'visible';
-      winEl.style.opacity = '0';
-      winEl.style.willChange = 'opacity';
-      this.active = {
-        kind: 'open',
-        mode,
-        winEl,
-        reduced: true,
-        durationMs: 100,
-        startMs: performance.now(),
-        lastRafMs: 0,
-        progress: 0,
-        from: fromRect,
-        to: toRect,
-        currentRect: { ...toRect },
-        currentRadius: WINDOW_RADIUS_PX,
-        onComplete: null
-      };
-      this._schedule();
-      return true;
-    }
-
-    // Configure L2 shell at fixed target dimensions (baseW x baseH)
-    this.layerEl.classList.add('is-active');
-    const ss = this.shellEl.style;
-    ss.width = `${toRect.w.toFixed(1)}px`;
-    ss.height = `${toRect.h.toFixed(1)}px`;
-    ss.willChange = 'transform, opacity';
-
-    winEl.style.willChange = 'opacity, transform';
+    winEl.classList.remove('is-morph-measuring');
+    winEl.classList.add('is-morph-flying');
+    winEl.style.visibility = 'visible';
+    winEl.style.pointerEvents = 'none';
+    winEl.style.transformOrigin = '50% 50%';
+    winEl.style.willChange = reduced ? 'opacity' : 'transform, opacity';
 
     this.active = {
       kind: 'open',
       mode,
       winEl,
-      reduced: false,
-      durationMs: OPEN_LUT.durationMs,
+      reduced,
+      durationMs: reduced ? 100 : OPEN_LUT.durationMs,
       startMs: performance.now(),
       lastRafMs: 0,
       progress: 0,
-      from: fromRect,
-      to: toRect,
-      baseW: toRect.w,
-      baseH: toRect.h,
-      currentRect: { ...fromRect },
-      currentRadius: fromRect.radius || ICON_RADIUS_PX,
+      winRect,
+      startPose: { tx: startTx, ty: startTy, sc: startSc, op: startOp },
+      endPose: { tx: 0, ty: 0, sc: 1, op: 1 },
+      pose: { tx: startTx, ty: startTy, sc: startSc, op: reduced ? 0 : startOp },
       onComplete: null
     };
 
-    // Frame 0 synchronously at exact icon rect A (opacity 1.0, zero content yet)
-    this._applyShellRect(fromRect, toRect.w, toRect.h, fromRect.radius || ICON_RADIUS_PX, 1);
+    if (reduced) {
+      winEl.style.transform = '';
+      winEl.style.opacity = '0';
+    } else {
+      this._applyWindowPose(winEl, startTx, startTy, startSc, startOp);
+    }
     this._setScrim(0);
     this.perf.frameDeltasMs = [];
     this._schedule();
@@ -367,90 +301,72 @@ export class PondWindowMorphController {
 
   startClose(mode, onComplete) {
     if (this.isClosingMode(mode)) return false;
-    this._ensureDom();
+    this._ensureScrim();
 
     const winEl = resolveWindowElement(mode);
-    // Step 7: Re-measure live target icon rect right before close starts (NEVER stale open coords)
-    const toIconRect = measureLiveIconRect(mode);
+    if (!winEl) {
+      this._setScrim(0);
+      if (typeof onComplete === 'function') onComplete();
+      return false;
+    }
+    cancelCompetingAnimations(winEl);
 
-    let fromRect = null;
-    let startRadius = WINDOW_RADIUS_PX;
+    // Re-measure live target icon center right before close starts (NEVER stale open coords)
+    const icon = measureLiveIconCenter(mode);
+    const winRect = measureWindowRectSafe(winEl, mode);
+    const winCx = winRect.x + winRect.w * 0.5;
+    const winCy = winRect.y + winRect.h * 0.5;
+    const endTx = icon.cx - winCx;
+    const endTy = icon.cy - winCy;
+    const endSc = Math.max(0.10, Math.min(0.18, ICON_BOX_PX / Math.max(winRect.w, winRect.h)));
+
+    let startTx = 0;
+    let startTy = 0;
+    let startSc = 1;
+    let startOp = 1;
+
     if (this.active) {
       const prev = this.active;
       if (this.rafId) {
         cancelAnimationFrame(this.rafId);
         this.rafId = 0;
       }
-      if (prev.mode === mode && prev.currentRect) {
-        fromRect = { ...prev.currentRect, radius: prev.currentRadius || WINDOW_RADIUS_PX };
-        startRadius = prev.currentRadius || WINDOW_RADIUS_PX;
+      if (prev.mode === mode && prev.pose) {
+        startTx = prev.pose.tx;
+        startTy = prev.pose.ty;
+        startSc = prev.pose.sc;
+        startOp = prev.pose.op;
       }
       this.active = null;
     }
-    if (!fromRect) {
-      fromRect = measureWindowRectSafe(winEl, mode);
-    }
-
-    if (winEl) cancelCompetingAnimations(winEl);
 
     const reduced = prefersReducedMotion();
-    if (reduced) {
-      this._hideShell();
-      if (winEl) {
-        winEl.style.willChange = 'opacity';
-        winEl.style.pointerEvents = 'none';
-      }
-      this.active = {
-        kind: 'close',
-        mode,
-        winEl,
-        reduced: true,
-        durationMs: 100,
-        startMs: performance.now(),
-        lastRafMs: 0,
-        progress: 0,
-        from: fromRect,
-        to: toIconRect,
-        currentRect: { ...fromRect },
-        currentRadius: startRadius,
-        onComplete: typeof onComplete === 'function' ? onComplete : null
-      };
-      this._schedule();
-      return true;
-    }
-
-    // L2 shell inherits real-time window rect seamlessly at opacity 1
-    this.layerEl.classList.add('is-active');
-    const ss = this.shellEl.style;
-    ss.width = `${fromRect.w.toFixed(1)}px`;
-    ss.height = `${fromRect.h.toFixed(1)}px`;
-    ss.willChange = 'transform, opacity';
-
-    if (winEl) {
-      winEl.classList.add('is-morph-content-leaving');
-      winEl.style.willChange = 'opacity';
-      winEl.style.pointerEvents = 'none';
-    }
+    winEl.classList.remove('is-morph-measuring');
+    winEl.classList.add('is-morph-flying');
+    winEl.style.visibility = 'visible';
+    winEl.style.pointerEvents = 'none';
+    winEl.style.transformOrigin = '50% 50%';
+    winEl.style.willChange = reduced ? 'opacity' : 'transform, opacity';
 
     this.active = {
       kind: 'close',
       mode,
       winEl,
-      reduced: false,
-      durationMs: CLOSE_LUT.durationMs,
+      reduced,
+      durationMs: reduced ? 100 : CLOSE_LUT.durationMs,
       startMs: performance.now(),
       lastRafMs: 0,
       progress: 0,
-      from: fromRect,
-      to: toIconRect,
-      baseW: fromRect.w,
-      baseH: fromRect.h,
-      currentRect: { ...fromRect },
-      currentRadius: startRadius,
+      winRect,
+      startPose: { tx: startTx, ty: startTy, sc: startSc, op: startOp },
+      endPose: { tx: endTx, ty: endTy, sc: endSc, op: 0 },
+      pose: { tx: startTx, ty: startTy, sc: startSc, op: startOp },
       onComplete: typeof onComplete === 'function' ? onComplete : null
     };
 
-    this._applyShellRect(fromRect, fromRect.w, fromRect.h, startRadius, 1);
+    if (!reduced) {
+      this._applyWindowPose(winEl, startTx, startTy, startSc, startOp);
+    }
     this.perf.frameDeltasMs = [];
     this._schedule();
     return true;
@@ -465,12 +381,11 @@ export class PondWindowMorphController {
       this._clearWindowVisuals(this.active.winEl);
       this.active = null;
     }
-    this._hideShell();
   }
 
   syncScrimImmediate(isOpen) {
     if (this.active) return;
-    this._ensureDom();
+    this._ensureScrim();
     this._setScrim(isOpen ? 1 : 0);
   }
 
@@ -498,68 +413,38 @@ export class PondWindowMorphController {
     if (anim.reduced) {
       const t = Math.min(1, elapsed / anim.durationMs);
       const op = anim.kind === 'open' ? t : (1 - t);
-      if (anim.winEl) anim.winEl.style.opacity = op.toFixed(3);
+      anim.winEl.style.opacity = op.toFixed(3);
       this._setScrim(op);
       anim.progress = t;
+      anim.pose.op = op;
     } else if (anim.kind === 'open') {
       const s = sampleLut(OPEN_LUT, elapsed);
-      const rect = {
-        x: anim.from.x + (anim.to.x - anim.from.x) * s,
-        y: anim.from.y + (anim.to.y - anim.from.y) * s,
-        w: anim.from.w + (anim.to.w - anim.from.w) * s,
-        h: anim.from.h + (anim.to.h - anim.from.h) * s
-      };
-      const rad = (anim.from.radius || ICON_RADIUS_PX) + (WINDOW_RADIUS_PX - (anim.from.radius || ICON_RADIUS_PX)) * Math.min(1, Math.max(0, s));
-      anim.currentRect = rect;
-      anim.currentRadius = rad;
+      const tx = anim.startPose.tx + (anim.endPose.tx - anim.startPose.tx) * s;
+      const ty = anim.startPose.ty + (anim.endPose.ty - anim.startPose.ty) * s;
+      const sc = anim.startPose.sc + (anim.endPose.sc - anim.startPose.sc) * s;
+      // Fast, smooth opacity ramp (0->120ms) so content is clearly visible growing out of the icon from Frame 0
+      const opT = Math.min(1, elapsed / 120);
+      const op = anim.startPose.op + (1 - anim.startPose.op) * (1 - Math.pow(1 - opT, 2));
+
       anim.progress = s;
-
-      // L2 shell always visible (opacity 1.0) during growth; hands off cleanly at 450->480ms when L2 == B
-      const shellFadeOut = elapsed > 450 ? Math.max(0, 1 - (elapsed - 450) / 30) : 1;
-      this._applyShellRect(rect, anim.baseW, anim.baseH, rad, shellFadeOut);
+      anim.pose = { tx, ty, sc, op };
+      this._applyWindowPose(anim.winEl, tx, ty, sc, op);
       this._setScrim(Math.min(1, s));
-
-      // Step 5: L3 real content laid out at 1:1 final size; fades in 220ms -> 420ms with subtle 5px lift.
-      // Keep .is-morph-content-entering (transparent outer frame) until 450ms (s >= 0.992) so ZERO double-border ever appears!
-      if (anim.winEl) {
-        if (elapsed >= 220) {
-          const ct = Math.min(1, (elapsed - 220) / 200);
-          const easeOut = 1 - Math.pow(1 - ct, 2.2);
-          const liftPx = (1 - easeOut) * 5;
-          anim.winEl.classList.remove('is-morph-measuring');
-          if (elapsed < 450) {
-            anim.winEl.classList.add('is-morph-content-entering');
-          } else {
-            anim.winEl.classList.remove('is-morph-content-entering');
-          }
-          anim.winEl.style.visibility = 'visible';
-          anim.winEl.style.opacity = easeOut.toFixed(3);
-          anim.winEl.style.transform = liftPx > 0.05 ? `translate3d(0, ${liftPx.toFixed(2)}px, 0)` : '';
-        }
-      }
       this.perf.openFrames += 1;
     } else {
-      // Close: content fades out first (0 -> 160ms), shell contracts along 400ms spring to re-measured icon
       const s = sampleLut(CLOSE_LUT, elapsed);
-      const rect = {
-        x: anim.from.x + (anim.to.x - anim.from.x) * s,
-        y: anim.from.y + (anim.to.y - anim.from.y) * s,
-        w: anim.from.w + (anim.to.w - anim.from.w) * s,
-        h: anim.from.h + (anim.to.h - anim.from.h) * s
-      };
-      const rad = anim.from.radius + ((anim.to.radius || ICON_RADIUS_PX) - anim.from.radius) * Math.min(1, Math.max(0, s));
-      anim.currentRect = rect;
-      anim.currentRadius = rad;
+      const tx = anim.startPose.tx + (anim.endPose.tx - anim.startPose.tx) * s;
+      const ty = anim.startPose.ty + (anim.endPose.ty - anim.startPose.ty) * s;
+      const sc = anim.startPose.sc + (anim.endPose.sc - anim.startPose.sc) * s;
+      // Keep window + content clearly visible while shrinking, fading cleanly in the final 130ms into the icon
+      const fadeStart = anim.durationMs - 130;
+      const op = elapsed <= fadeStart
+        ? anim.startPose.op
+        : anim.startPose.op * Math.max(0, 1 - (elapsed - fadeStart) / 130);
+
       anim.progress = s;
-
-      if (anim.winEl) {
-        const contentOp = Math.max(0, 1 - elapsed / 160);
-        anim.winEl.style.opacity = contentOp.toFixed(3);
-        if (contentOp <= 0.01) anim.winEl.style.visibility = 'hidden';
-      }
-
-      const shellOp = elapsed > 330 ? Math.max(0, 1 - (elapsed - 330) / 70) : 1;
-      this._applyShellRect(rect, anim.baseW, anim.baseH, rad, shellOp);
+      anim.pose = { tx, ty, sc, op };
+      this._applyWindowPose(anim.winEl, tx, ty, sc, op);
       this._setScrim(1 - Math.min(1, s));
       this.perf.closeFrames += 1;
     }
@@ -580,7 +465,6 @@ export class PondWindowMorphController {
       const kind = anim.kind;
       this.active = null;
 
-      this._hideShell();
       if (kind === 'open') {
         this._clearWindowVisuals(winEl);
         this._setScrim(1);
@@ -599,17 +483,13 @@ export class PondWindowMorphController {
       kind: this.active.kind,
       mode: this.active.mode,
       progress: +this.active.progress.toFixed(4),
-      from: this.active.from,
-      to: this.active.to,
-      currentRect: {
-        x: Math.round(this.active.currentRect.x),
-        y: Math.round(this.active.currentRect.y),
-        w: Math.round(this.active.currentRect.w),
-        h: Math.round(this.active.currentRect.h)
+      pose: {
+        tx: +this.active.pose.tx.toFixed(1),
+        ty: +this.active.pose.ty.toFixed(1),
+        sc: +this.active.pose.sc.toFixed(4),
+        op: +this.active.pose.op.toFixed(3)
       },
-      shellTransform: this.shellEl?.style.transform || '',
-      shellRadius: this.shellEl?.style.borderRadius || '',
-      contentOpacity: this.active.winEl?.style.opacity || ''
+      winRect: this.active.winRect
     };
   }
 
