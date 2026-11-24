@@ -2,6 +2,8 @@
 
 ## 2026-11-24
 
+- 全站板块窗口 Matched Geometry Shell 开合动画正式上线（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-window-morph-steps3-8` / `2026-11-24-window-morph-steps3-8`；视觉层缓存 `20261124-window-morph-r65`。
+
 - 窗口打开动画重构：纯色矩形几何扩张最小验证门槛上线（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-window-morph-step2-gate` / `2026-11-24-window-morph-step2-gate`；视觉层缓存 `20261124-window-morph-step2-r64`。
 
 ## 2026-11-23

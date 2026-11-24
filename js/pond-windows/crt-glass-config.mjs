@@ -46,11 +46,12 @@ export const CRT_GLASS = Object.freeze({
 
 // Unified Second-Order Damped Spring Language: x'' + 2*zeta*omega0*x' + omega0^2*(x - target) = 0
 export const CRT_GLASS_SPRINGS = Object.freeze({
-  windowOpen: Object.freeze({ zeta: 0.78, omega0: 17, targetMs: 450 }),
-  windowClose: Object.freeze({ zeta: 0.90, omega0: 20, targetMs: 300 }),
-  buttonPress: Object.freeze({ zeta: 1.00, omega0: 50, targetMs: 120 }),
-  buttonRelease: Object.freeze({ zeta: 0.82, omega0: 32, targetMs: 180 }),
-  dragLag: Object.freeze({ zeta: 0.86, omega0: 25, targetMs: 200 })
+  // Aligned with 《窗口打开动画技术调研报告》 §4.3 & §4.5 (execution order precedence)
+  windowOpen: Object.freeze({ zeta: 0.88, omega0: 10, targetMs: 480, durationMs: 480 }),
+  windowClose: Object.freeze({ zeta: 0.95, omega0: 12, targetMs: 400, durationMs: 400 }),
+  buttonPress: Object.freeze({ zeta: 1.00, omega0: 50, targetMs: 120, durationMs: 120 }),
+  buttonRelease: Object.freeze({ zeta: 0.82, omega0: 32, targetMs: 180, durationMs: 180 }),
+  dragLag: Object.freeze({ zeta: 0.86, omega0: 25, targetMs: 200, durationMs: 200 })
 });
 
 // Glass-Specific Phosphor Palette (does not replace global site palette)

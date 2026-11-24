@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-window-morph-steps3-8",
+      "slug": "2026-11-24-window-morph-steps3-8",
+      "category": "site-updates",
+      "tags": [
+        "site-updates",
+        "animation",
+        "ui",
+        "performance"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T10:52:00+08:00",
+      "updated_at": "2026-11-24T10:52:00+08:00",
+      "published_at": "2026-11-24T10:52:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "全站板块窗口 Matched Geometry Shell 开合动画正式上线",
+        "en": "Matched Geometry Shell Window Open & Close Animation (Steps 3–8)",
+        "ja": "全ウィンドウ Matched Geometry Shell 開閉アニメーション正式公開"
+      },
+      "summary": {
+        "zh": "完成窗口开合动画第三至第八步重构：独立外壳层按解析二阶阻尼弹簧（开 480ms / 关 400ms）在六枚图标与真实窗口间连续形变，外壳与内容分层交接无闪烁，支持随时打断与 120 FPS 合成。",
+        "en": "Completed the full Matched Geometry Shell window transition: independent L2 morph shell driven by analytic damped springs (open 480ms / close 400ms), 1:1 L3 content handoff, live icon re-measurement on close, and 120 FPS compositor discipline.",
+        "ja": "ウィンドウ開閉アニメーションの第3〜第8ステップを完了しました。解析2次減衰バネ（開 480ms／閉 400ms）による独立シェル層と 1:1 実コンテンツ層の滑らかな引き継ぎ、割り込み対応、120 FPS 最適化を実現しています。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-window-morph-step2-gate",
       "slug": "2026-11-24-window-morph-step2-gate",
       "category": "site-updates",
@@ -111,34 +140,6 @@ export const homeContent = Object.freeze({
         "zh": "点击首页图标、顶部欢迎入口或移动端底部 Dock 图标时，板块窗口从图标原位以二阶阻尼弹簧生长展开，关闭时镜像收回图标；纯合成层驱动稳住 120 FPS 且全程可打断。",
         "en": "Section windows now spring open smoothly from their desktop or mobile Dock icon origin and retract symmetrically on close using pure compositor transform/opacity at 120 FPS.",
         "ja": "ホームの各アイコンやモバイル Dock からウィンドウがバネ物理で滑らかに展開し、閉じる際は元のアイコンへ反転収納される 120 FPS 開閉アニメーションを実装しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-chat-input-scrollbar",
-      "slug": "2026-11-23-pond-chat-input-scrollbar",
-      "category": "site-updates",
-      "tags": [
-        "site-updates",
-        "chatroom",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T20:20:00+08:00",
-      "updated_at": "2026-11-23T20:20:00+08:00",
-      "published_at": "2026-11-23T20:20:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "聊天室输入框荧光细滚动条统一与发送按钮防重叠修复",
-        "en": "Chatroom Input Phosphor Scrollbar & Send Button Overlap Fix",
-        "ja": "チャット入力欄の蛍光細スクロールバー統一と送信ボタン重なり修正"
-      },
-      "summary": {
-        "zh": "将聊天室输入框滚动条统一为深青荧光细条样式，隔离输入域与右侧字数统计及圆形发送按钮的弹性布局，彻底消除旧版白色滚动条遮挡按钮的问题。",
-        "en": "Unified the chatroom textarea scrollbar with the dark phosphor thin scrollbar style and isolated the input field from the counter and circular send button to prevent overlap.",
-        "ja": "チャット入力欄のスクロールバーをサイト統一の深青蛍光細スタイルへ刷新し、文字数表示と丸型送信ボタンとの重なりを解消しました。"
       }
     }
   ]

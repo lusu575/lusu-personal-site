@@ -16209,6 +16209,29 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **ステップ1 診断**：`r61` が `ui-motion.js` の WAAPI と `.xp-window` の CSS `transition` と競合し、`transform` が上書きされていた原因を特定しました。
 - **ステップ2 純色矩形ゲート**：独立オーバーレイ `#pond-window-morph-layer`（`crt-window-morph-step2.mjs`）を追加し、アイコン矩形から目標ウィンドウ矩形へ 1000ms 線形拡張する最小検証を公開しています。', '2026-11-24T10:28:00+08:00', '2026-11-24T10:28:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-window-morph-step2-r64', '2026-11-24T10:28:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-window-morph-steps3-8', '2026-11-24-window-morph-steps3-8', 'site-updates', '["site-updates","animation","ui","performance"]', '', 'published', 0, 0, '2026-11-24T10:52:00+08:00', '2026-11-24T10:52:00+08:00', '2026-11-24T10:52:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-window-morph-steps3-8-zh', 'seed-update-2026-11-24-window-morph-steps3-8', 'zh', '全站板块窗口 Matched Geometry Shell 开合动画正式上线', '完成窗口开合动画第三至第八步重构：独立外壳层按解析二阶阻尼弹簧（开 480ms / 关 400ms）在六枚图标与真实窗口间连续形变，外壳与内容分层交接无闪烁，支持随时打断与 120 FPS 合成。', '# 全站板块窗口 Matched Geometry Shell 开合动画正式上线
+
+本次 `r65` 按技术调研报告完成第三至第八步全量落地：
+
+- **真实尺寸测量与零冲突（步骤 3–4）**：通过 `visibility: hidden` 挂载测量真实目标窗口矩形，彻底屏蔽旧版 `ui-motion.js` WAAPI 与 CSS `transition` 竞争；采用解析二阶弹簧 4ms 查表曲线（打开 `ζ=0.88, ω₀=10, 480ms`；关闭 `ζ=0.95, ω₀=12, 400ms`），60Hz/120Hz 时长一致且末端无二次弹跳。
+- **外壳与内容分层 + 圆角补偿（步骤 5–6）**：L2 独立外壳第 0 帧即可见并做非均匀缩放圆角逆向补偿；L3 真实内容始终按 1:1 最终尺寸布局，打开时 `200–400ms` 渐显归位、无微缩文字噪声，交接零闪烁且不叠画第二层 CRT 扫描线。
+- **关闭重测、中断衔接与性能优化（步骤 7–8）**：关闭前实时重测原图标位置，内容先在 `160ms` 内淡出、外壳再沿 `400ms` 弹簧收束回图标；快速连点开关从当前视觉矩形无缝衔接；`prefers-reduced-motion` 自动降级 `100ms` 淡入淡出；飞行中零 DOM 几何读取，仅在过渡期启用 `will-change`。', '2026-11-24T10:52:00+08:00', '2026-11-24T10:52:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-window-morph-steps3-8-en', 'seed-update-2026-11-24-window-morph-steps3-8', 'en', 'Matched Geometry Shell Window Open & Close Animation (Steps 3–8)', 'Completed the full Matched Geometry Shell window transition: independent L2 morph shell driven by analytic damped springs (open 480ms / close 400ms), 1:1 L3 content handoff, live icon re-measurement on close, and 120 FPS compositor discipline.', '# Matched Geometry Shell Window Open & Close Animation (Steps 3–8)
+
+Release `r65` completes Steps 3–8 of the window animation rebuild:
+
+- **Real Target Measurement & Analytic Springs (Steps 3–4)**: Measures real target window bounds via `visibility: hidden`, suppresses competing WAAPI/CSS transitions, and uses 4ms normalized analytic spring LUTs (`open: zeta=0.88, omega0=10, 480ms`; `close: zeta=0.95, omega0=12, 400ms`).
+- **L2 Shell / L3 Content Split & Radius Compensation (Steps 5–6)**: L2 shell is visible from Frame 0 with inverse non-uniform corner radius compensation; L3 real content renders at 1:1 final layout and fades in at `200–400ms` with zero flash.
+- **Close Re-Measurement, Interruption & 120 FPS Discipline (Steps 7–8)**: Re-measures live icon rect on close, fades content out in `160ms` before contracting over `400ms`, supports mid-flight interruption from live visual rect, degrades to `100ms` fade under `prefers-reduced-motion`, and performs zero DOM reads during `rAF`.', '2026-11-24T10:52:00+08:00', '2026-11-24T10:52:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-window-morph-steps3-8-ja', 'seed-update-2026-11-24-window-morph-steps3-8', 'ja', '全ウィンドウ Matched Geometry Shell 開閉アニメーション正式公開', 'ウィンドウ開閉アニメーションの第3〜第8ステップを完了しました。解析2次減衰バネ（開 480ms／閉 400ms）による独立シェル層と 1:1 実コンテンツ層の滑らかな引き継ぎ、割り込み対応、120 FPS 最適化を実現しています。', '# 全ウィンドウ Matched Geometry Shell 開閉アニメーション正式公開
+
+`r65` にて第3〜第8ステップを完了しました：
+
+- **実サイズ計測＆解析バネ曲線（第3・4歩）**：`visibility: hidden` で実ウィンドウ矩形を計測し、競合する WAAPI/CSS トランジションを排除。4ms 間隔の解析バネ LUT（開 `ζ=0.88, ω₀=10, 480ms`／閉 `ζ=0.95, ω₀=12, 400ms`）で 60Hz/120Hz 一致の伸縮を実現。
+- **シェル／コンテンツ分離＆角丸補正（第5・6歩）**：L2 シェルは 0 フレームから表示し非均一スケール角丸を逆補正、L3 コンテンツは最終 1:1 サイズのまま `200〜400ms` で滑らかに表示。
+- **閉じる再計測・割り込み・120 FPS 最適化（第7・8歩）**：閉じる直前にアイコン位置を再計測し、コンテンツを `160ms` でフェードアウト後シェルを収束。連打割り込みや `prefers-reduced-motion`（100ms フェード）にも対応。', '2026-11-24T10:52:00+08:00', '2026-11-24T10:52:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-window-morph-r65', '2026-11-24T10:52:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261124-window-morph-step2-r64', '2026-11-24T10:28:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261124-window-morph-r65', '2026-11-24T10:52:00+08:00', 'schema') on conflict(version) do nothing;

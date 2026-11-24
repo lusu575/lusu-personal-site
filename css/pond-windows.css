@@ -7049,13 +7049,33 @@ html[data-shell="mobile"] .xp-window.is-pond-window-animating {
 }
 
 /* ============================================================
-   r64: Matched Geometry Shell Transition — Step 2 Hard Gate
-   Independent fixed overlay layer: pure dark CRT rounded rectangle (zero content, zero transition/WAAPI)
+   r65: Matched Geometry Shell Transition — Steps 3–8 Production
+   - Suppresses legacy motion-system.css transition/animation on .xp-window so zero WAAPI/CSS conflict occurs
+   - Independent fixed L2 shell layer (#pond-window-morph-layer) below L3 real content handoff (z-index: 15)
    ============================================================ */
+html[data-pond-mode] .xp-window,
+html[data-pond-mode] .page.is-ui-entering .xp-window,
+html[data-pond-mode] .xp-window.is-ui-entering,
+html[data-pond-mode] .xp-window.is-ui-leaving,
+html[data-pond-mode] .xp-window.is-ui-minimizing,
+html[data-ui-shell="mobile"] .xp-window,
+html[data-shell="mobile"] .xp-window {
+  transition: none !important;
+  animation: none !important;
+}
+
+html[data-pond-mode] .xp-window.is-morph-measuring,
+html[data-ui-shell="mobile"] .xp-window.is-morph-measuring,
+html[data-shell="mobile"] .xp-window.is-morph-measuring {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 #pond-window-morph-layer {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: 18;
   pointer-events: none;
   display: none;
   contain: layout style;
@@ -7070,10 +7090,10 @@ html[data-shell="mobile"] .xp-window.is-pond-window-animating {
   left: 0;
   top: 0;
   transform-origin: 0 0;
-  background: #06181c;
-  border: 1.5px solid rgba(114, 201, 195, 0.72);
+  background: rgba(6, 22, 26, 0.92);
+  border: 1.4px solid rgba(154, 232, 224, 0.62);
   border-radius: 18px;
-  box-shadow: 0 0 26px rgba(96, 232, 220, 0.24);
+  box-shadow: 0 0 26px rgba(96, 232, 220, 0.22);
   box-sizing: border-box;
   transition: none !important;
   animation: none !important;
