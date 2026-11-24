@@ -16232,6 +16232,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **シェル／コンテンツ分離＆角丸補正（第5・6歩）**：L2 シェルは 0 フレームから表示し非均一スケール角丸を逆補正、L3 コンテンツは最終 1:1 サイズのまま `200〜400ms` で滑らかに表示。
 - **閉じる再計測・割り込み・120 FPS 最適化（第7・8歩）**：閉じる直前にアイコン位置を再計測し、コンテンツを `160ms` でフェードアウト後シェルを収束。連打割り込みや `prefers-reduced-motion`（100ms フェード）にも対応。', '2026-11-24T10:52:00+08:00', '2026-11-24T10:52:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-window-morph-r65', '2026-11-24T10:52:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-window-morph-single-shell-polish', '2026-11-24-window-morph-single-shell-polish', 'site-updates', '["site-updates","animation","ui"]', '', 'published', 0, 0, '2026-11-24T10:58:00+08:00', '2026-11-24T10:58:00+08:00', '2026-11-24T10:58:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-window-morph-single-shell-polish-zh', 'seed-update-2026-11-24-window-morph-single-shell-polish', 'zh', '窗口开合动画单外壳无重影交接与定高优化', '消除窗口展开中段外壳与内容层的双边框重影，并为游戏区与工具区补充定高约束，确保冷打开全程几何稳定不跳高。', '# 窗口开合动画单外壳无重影交接与定高优化
+
+本次 `r66` 基于 `r65` 线上帧查验结果完成两项收口优化：
+
+- **单外壳无重影交接**：打开 `220–420ms` 内容渐显及关闭 `0–160ms` 内容淡出阶段，临时透明化 L3 外框背景与边框，全程只呈现唯一一条 L2 连续外壳轮廓，落位后再与真实外框无缝合拢。
+- **冷打开定高不跳变**：为游戏区与工具区窗口设置 `min-height: min(680px, 72vh)`，消除首次冷开异步加载导致的窗口高度跳变。', '2026-11-24T10:58:00+08:00', '2026-11-24T10:58:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-window-morph-single-shell-polish-en', 'seed-update-2026-11-24-window-morph-single-shell-polish', 'en', 'Window Morph Single-Shell Handoff & Fixed Height Polish', 'Eliminated double-border ghosting during L2-to-L3 content handoff and added fixed min-height constraints for Games and Tools windows to prevent cold-load height jumps.', '# Window Morph Single-Shell Handoff & Fixed Height Polish
+
+Release `r66` polishes two visual details caught during live frame inspection of `r65`:
+
+- **Single-Shell Handoff**: Suppresses duplicate L3 outer border/background during content fade-in (`220–420ms`) and fade-out (`0–160ms`) so only one continuous L2 shell outline is ever visible.
+- **Cold-Load Height Stability**: Added `min-height: min(680px, 72vh)` to Games and Tools windows to prevent height jumps while async content loads.', '2026-11-24T10:58:00+08:00', '2026-11-24T10:58:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-window-morph-single-shell-polish-ja', 'seed-update-2026-11-24-window-morph-single-shell-polish', 'ja', 'ウィンドウ開閉の単一シェル引き継ぎ＆高さ固定調整', 'L2 シェルと L3 コンテンツ切り替え時の二重枠を解消し、ゲーム・ツール画面の初回読み込み時の高さジャンプを防止しました。', '# ウィンドウ開閉の単一シェル引き継ぎ＆高さ固定調整
+
+`r66` では `r65` の実機フレーム検証で見つかった 2 点を改善しました：
+
+- **二重枠の解消**：コンテンツ表示／非表示フェード中は L3 側の外枠・背景を一時的に透明化し、常に L2 シェルの単一輪郭のみを表示します。
+- **高さジャンプ防止**：ゲーム・ツール画面に `min-height: min(680px, 72vh)` を指定し、初回展開時の高さ変動をなくしました。', '2026-11-24T10:58:00+08:00', '2026-11-24T10:58:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-window-morph-r66', '2026-11-24T10:58:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261124-window-morph-r65', '2026-11-24T10:52:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261124-window-morph-r66', '2026-11-24T10:58:00+08:00', 'schema') on conflict(version) do nothing;

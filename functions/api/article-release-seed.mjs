@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-window-morph-single-shell-polish', '2026-11-24-window-morph-single-shell-polish', 'site-updates', '["site-updates","animation","ui"]', '', 'published', 0, 0, '2026-11-24T10:58:00+08:00', '2026-11-24T10:58:00+08:00', '2026-11-24T10:58:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-24-window-morph-single-shell-polish", {
+  "zh": {
+    "title": "窗口开合动画单外壳无重影交接与定高优化",
+    "summary": "消除窗口展开中段外壳与内容层的双边框重影，并为游戏区与工具区补充定高约束，确保冷打开全程几何稳定不跳高。",
+    "content_markdown": "# 窗口开合动画单外壳无重影交接与定高优化\n\n本次 `r66` 基于 `r65` 线上帧查验结果完成两项收口优化：\n\n- **单外壳无重影交接**：打开 `220–420ms` 内容渐显及关闭 `0–160ms` 内容淡出阶段，临时透明化 L3 外框背景与边框，全程只呈现唯一一条 L2 连续外壳轮廓，落位后再与真实外框无缝合拢。\n- **冷打开定高不跳变**：为游戏区与工具区窗口设置 `min-height: min(680px, 72vh)`，消除首次冷开异步加载导致的窗口高度跳变。"
+  },
+  "en": {
+    "title": "Window Morph Single-Shell Handoff & Fixed Height Polish",
+    "summary": "Eliminated double-border ghosting during L2-to-L3 content handoff and added fixed min-height constraints for Games and Tools windows to prevent cold-load height jumps.",
+    "content_markdown": "# Window Morph Single-Shell Handoff & Fixed Height Polish\n\nRelease `r66` polishes two visual details caught during live frame inspection of `r65`:\n\n- **Single-Shell Handoff**: Suppresses duplicate L3 outer border/background during content fade-in (`220–420ms`) and fade-out (`0–160ms`) so only one continuous L2 shell outline is ever visible.\n- **Cold-Load Height Stability**: Added `min-height: min(680px, 72vh)` to Games and Tools windows to prevent height jumps while async content loads."
+  },
+  "ja": {
+    "title": "ウィンドウ開閉の単一シェル引き継ぎ＆高さ固定調整",
+    "summary": "L2 シェルと L3 コンテンツ切り替え時の二重枠を解消し、ゲーム・ツール画面の初回読み込み時の高さジャンプを防止しました。",
+    "content_markdown": "# ウィンドウ開閉の単一シェル引き継ぎ＆高さ固定調整\n\n`r66` では `r65` の実機フレーム検証で見つかった 2 点を改善しました：\n\n- **二重枠の解消**：コンテンツ表示／非表示フェード中は L3 側の外枠・背景を一時的に透明化し、常に L2 シェルの単一輪郭のみを表示します。\n- **高さジャンプ防止**：ゲーム・ツール画面に `min-height: min(680px, 72vh)` を指定し、初回展開時の高さ変動をなくしました。"
+  }
+}, "2026-11-24T10:58:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-window-morph-steps3-8', '2026-11-24-window-morph-steps3-8', 'site-updates', '["site-updates","animation","ui","performance"]', '', 'published', 0, 0, '2026-11-24T10:52:00+08:00', '2026-11-24T10:52:00+08:00', '2026-11-24T10:52:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-24-window-morph-steps3-8", {
   "zh": {

@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-window-morph-single-shell-polish",
+      "slug": "2026-11-24-window-morph-single-shell-polish",
+      "category": "site-updates",
+      "tags": [
+        "site-updates",
+        "animation",
+        "ui"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T10:58:00+08:00",
+      "updated_at": "2026-11-24T10:58:00+08:00",
+      "published_at": "2026-11-24T10:58:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "窗口开合动画单外壳无重影交接与定高优化",
+        "en": "Window Morph Single-Shell Handoff & Fixed Height Polish",
+        "ja": "ウィンドウ開閉の単一シェル引き継ぎ＆高さ固定調整"
+      },
+      "summary": {
+        "zh": "消除窗口展开中段外壳与内容层的双边框重影，并为游戏区与工具区补充定高约束，确保冷打开全程几何稳定不跳高。",
+        "en": "Eliminated double-border ghosting during L2-to-L3 content handoff and added fixed min-height constraints for Games and Tools windows to prevent cold-load height jumps.",
+        "ja": "L2 シェルと L3 コンテンツ切り替え時の二重枠を解消し、ゲーム・ツール画面の初回読み込み時の高さジャンプを防止しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-window-morph-steps3-8",
       "slug": "2026-11-24-window-morph-steps3-8",
       "category": "site-updates",
@@ -112,34 +140,6 @@ export const homeContent = Object.freeze({
         "zh": "聊天室输入框现在按 Enter 即可直接发送消息，按 Shift+Enter 换行；内置四重中文输入法组合态保护，拼音选词按回车确认绝不误发，限速与字数规则不变。",
         "en": "Pressing Enter in the chatroom input now sends the message while Shift+Enter inserts a newline, with full IME composition protection so confirming CJK candidates never submits prematurely.",
         "ja": "チャット入力欄で Enter キーによる直接送信と Shift+Enter での改行に対応しました。日本語・中国語 IME 変換確定時の Enter で誤送信しない多重ガードを備えています。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-23-pond-window-spring-open-close",
-      "slug": "2026-11-23-pond-window-spring-open-close",
-      "category": "site-updates",
-      "tags": [
-        "site-updates",
-        "animation",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-23T20:24:00+08:00",
-      "updated_at": "2026-11-23T20:24:00+08:00",
-      "published_at": "2026-11-23T20:24:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "全站板块窗口 120 FPS 阻尼弹簧开合动画上线",
-        "en": "120 FPS Damped Spring Window Open & Close Animation",
-        "ja": "全セクションウィンドウ 120 FPS 減衰バネ開閉アニメーション実装"
-      },
-      "summary": {
-        "zh": "点击首页图标、顶部欢迎入口或移动端底部 Dock 图标时，板块窗口从图标原位以二阶阻尼弹簧生长展开，关闭时镜像收回图标；纯合成层驱动稳住 120 FPS 且全程可打断。",
-        "en": "Section windows now spring open smoothly from their desktop or mobile Dock icon origin and retract symmetrically on close using pure compositor transform/opacity at 120 FPS.",
-        "ja": "ホームの各アイコンやモバイル Dock からウィンドウがバネ物理で滑らかに展開し、閉じる際は元のアイコンへ反転収納される 120 FPS 開閉アニメーションを実装しました。"
       }
     }
   ]

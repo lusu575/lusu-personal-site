@@ -7072,6 +7072,22 @@ html[data-shell="mobile"] .xp-window.is-morph-measuring {
   pointer-events: none !important;
 }
 
+/* During 220->420ms content fade-in, suppress duplicate outer window border/bg so only L2 morph shell shows */
+html[data-pond-mode] .xp-window.is-morph-content-entering,
+html[data-pond-mode] .xp-window.is-morph-content-leaving {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Step 3 fixed height constraint: prevent Games/Resources cold-load height jump during morph */
+html[data-pond-mode="games"] #games .xp-window,
+html[data-pond-mode="resources"] #resources .xp-window {
+  min-height: min(680px, 72vh) !important;
+}
+
 #pond-window-morph-layer {
   position: fixed;
   inset: 0;

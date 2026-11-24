@@ -503,18 +503,24 @@ export class PondWindowMorphController {
       anim.currentRadius = rad;
       anim.progress = s;
 
-      // L2 shell always visible (opacity 1.0) during growth, hands off cleanly at end
-      const shellFadeOut = elapsed > 400 ? Math.max(0, 1 - (elapsed - 400) / 80) : 1;
+      // L2 shell always visible (opacity 1.0) during growth; hands off cleanly at 430->480ms when L2 == B
+      const shellFadeOut = elapsed > 430 ? Math.max(0, 1 - (elapsed - 430) / 50) : 1;
       this._applyShellRect(rect, anim.baseW, anim.baseH, rad, shellFadeOut);
       this._setScrim(Math.min(1, s));
 
-      // Step 5: L3 real content laid out at 1:1 final size; fades in 200ms -> 400ms with subtle 5px lift
+      // Step 5: L3 real content laid out at 1:1 final size; fades in 220ms -> 420ms with subtle 5px lift.
+      // Keep .is-morph-content-entering (transparent outer frame) until 420ms so ZERO double-border ever appears!
       if (anim.winEl) {
-        if (elapsed >= 200) {
-          const ct = Math.min(1, (elapsed - 200) / 200);
+        if (elapsed >= 220) {
+          const ct = Math.min(1, (elapsed - 220) / 200);
           const easeOut = 1 - Math.pow(1 - ct, 2.2);
           const liftPx = (1 - easeOut) * 5;
           anim.winEl.classList.remove('is-morph-measuring');
+          if (elapsed < 420) {
+            anim.winEl.classList.add('is-morph-content-entering');
+          } else {
+            anim.winEl.classList.remove('is-morph-content-entering');
+          }
           anim.winEl.style.visibility = 'visible';
           anim.winEl.style.opacity = easeOut.toFixed(3);
           anim.winEl.style.transform = liftPx > 0.05 ? `translate3d(0, ${liftPx.toFixed(2)}px, 0)` : '';

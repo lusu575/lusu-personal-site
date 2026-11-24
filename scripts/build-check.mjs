@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-24-window-morph-steps3-8";
-const finalUpdateSlug = "2026-11-24-window-morph-steps3-8";
+const finalUpdateId = "seed-update-2026-11-24-window-morph-single-shell-polish";
+const finalUpdateSlug = "2026-11-24-window-morph-single-shell-polish";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Matched Geometry Shell Window Open & Close Animation (Steps 3–8)";
-const finalPublishedAt = "2026-11-24T10:52:00+08:00";
+const finalTitleEn = "Window Morph Single-Shell Handoff & Fixed Height Polish";
+const finalPublishedAt = "2026-11-24T10:58:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-24-window-morph-steps3-8",
   "seed-update-2026-11-24-window-morph-step2-gate",
   "seed-update-2026-11-23-pond-chat-shift-enter-newline",
   "seed-update-2026-11-23-pond-chat-enter-send-ime",
