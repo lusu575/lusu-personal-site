@@ -2,6 +2,8 @@
 
 ## 2026-11-24
 
+- 人生重开视觉收口：去掉两侧宽带横纹改纯暗底衔接、移除 `#layaCanvas` `10px` 二次圆角裁切，并在自有桥接脚本 `lusu-agent-bridge.js` 中隐藏左上角 `btnGithub` 白猫角标（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-life-restart-visual-cleanup-r79` / `life-restart-sidebands-and-github-corner-cleanup-r79`；视觉层缓存 `20261124-life-restart-r79`。
+
 - 在线画板升至 `1.0.15`：将画布搜索侧栏输入框占位文案三语本地化为「在画布中查找文字…」（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78` / `whiteboard-1-0-15-search-placeholder-r78`；视觉层缓存 `20261124-whiteboard-placeholder-r78`。
 
 - 在线画板子项目升至 `1.0.14`：通过自定义 `<MainMenu>` 中文化主菜单「在画布中查找 Ctrl+F」并移除 Excalidraw 官方外链分组（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77` / `whiteboard-1-0-14-localized-main-menu-r77`；视觉层缓存 `20261124-whiteboard-menu-r77`。

@@ -2304,15 +2304,14 @@
         ` : "";
         const lifeRestartCss = slug === "life-restart" ? `
           html, body, #layaContainer {
-            background:
-              repeating-linear-gradient(0deg, rgba(136, 252, 226, 0.03) 0px, rgba(136, 252, 226, 0.03) 1px, transparent 1px, transparent 4px),
-              radial-gradient(ellipse 75% 65% at 50% 45%, rgba(24, 118, 112, 0.52), #071e24 72%) !important;
-            background-color: #071e24 !important;
+            background: #1a1f27 !important;
+            background-image: none !important;
+            background-color: #1a1f27 !important;
             overflow: hidden !important;
           }
           #layaCanvas {
-            box-shadow: 0 0 42px rgba(32, 138, 130, 0.42), 0 0 0 1.5px rgba(164, 236, 228, 0.36) !important;
-            border-radius: 10px !important;
+            box-shadow: 0 0 28px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(164, 236, 228, 0.18) !important;
+            border-radius: 0 !important;
           }
           .github-corner, a[href*="github"] > svg, svg.octo-arm {
             display: none !important;

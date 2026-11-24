@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-life-restart-visual-cleanup-r79",
+      "slug": "life-restart-sidebands-and-github-corner-cleanup-r79",
+      "category": "site-updates",
+      "tags": [
+        "视觉更新",
+        "游戏区",
+        "人生重开"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T22:20:00+08:00",
+      "updated_at": "2026-11-24T22:20:00+08:00",
+      "published_at": "2026-11-24T22:20:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "视觉优化：人生重开去两侧横纹、去画布切角并隐藏左上角白猫角标（r79）",
+        "en": "Visual Polish: Clean Life Restart Sidebands, Square Canvas & Hidden Corner Badge (r79)",
+        "ja": "ビジュアル調整：人生リスタートの左右縞撤去・角丸切欠き解消・左上角バッジ非表示（r79）"
+      },
+      "summary": {
+        "zh": "将人生重开两侧宽带改为与画布底色柔和衔接的纯暗底，去掉画布 10px 圆角二次裁切，并通过自有桥接脚本隐藏左上角 GitHub 白猫角标。",
+        "en": "Replaces striped sidebands with a seamless matte dark backdrop, removes 10px canvas corner clipping, and hides the top-left GitHub corner badge via our bridge script.",
+        "ja": "左右の縞背景をキャンバスになじむ暗色単色へ変更し、10px 角丸による切り欠きを撤去、独自ブリッジ経由で左上の GitHub 角バッジを非表示にしました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78",
       "slug": "whiteboard-1-0-15-search-placeholder-r78",
       "category": "site-updates",
@@ -111,34 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "重做池塘低频柔和霓虹水光并改用连续相位消除切季抽动；撤掉发光光波，改为一阵风携带当季碎屑横向吹过、景物原地换季；修复聊天室连打 Shift+Enter 丢换行。",
         "en": "Replaces aliased water stripes with soft low-frequency cross-caustics and continuous phase integration, swaps the season glow ring for a 1.0s wind gust carrying seasonal debris, and fixes rapid Shift+Enter newlines in Chat.",
         "ja": "水面光を低周波の滑らかな光と連続位相へ刷新し、季節切替の発光リングを撤去して当季の粒子を運ぶ一陣の風へ変更、さらにチャット連続入力時の Shift+Enter 改行落ちを修正しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-glass-pilot-visibility-r74",
-      "slug": "crt-glass-pilot-button-refraction-and-specificity-r74",
-      "category": "site-updates",
-      "tags": [
-        "视觉更新",
-        "液态玻璃试点",
-        "按钮动效"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T16:25:00+08:00",
-      "updated_at": "2026-11-24T16:25:00+08:00",
-      "published_at": "2026-11-24T16:25:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "视觉优化：修复欢迎窗液态玻璃按钮试点优先级覆盖并提升按压折光可见度（r74）",
-        "en": "Visual Polish: Fix Welcome CRT Glass Pilot Specificity & Press Refraction (r74)",
-        "ja": "ビジュアル調整：ようこそ画面ガラス試作ボタンの優先度上書きと押下屈折の視認性を修正（r74）"
-      },
-      "summary": {
-        "zh": "修复 #welcome-modal .quick-link:hover 覆盖液态玻璃边缘亮边规则的问题，补齐按下第 0 帧同步下压与局部折光反馈，保持深色点阵克制质感。",
-        "en": "Fixes CSS specificity where :hover overrode the CRT glass rim-catch glow on #welcome-modal .quick-link and adds synchronous Frame-0 press refraction.",
-        "ja": "ようこそ画面クイックボタンのホバー規則がガラス縁発光を上書きしていた不具合を修正し、押下第0フレームからの沈み込みと局所屈折を視認可能に調整しました。"
       }
     }
   ]

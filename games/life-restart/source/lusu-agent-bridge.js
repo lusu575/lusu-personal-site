@@ -10,10 +10,33 @@
   let actionCatalog = null;
   const receipts = [];
 
+  function hideGithubCornerBadge() {
+    const view = globalThis.$ui?.currentView;
+    const btn = view?.btnGithub;
+    if (btn && !btn.destroyed) {
+      btn.visible = false;
+      btn.mouseEnabled = false;
+    }
+  }
+
   function install() {
     if (!globalThis.Laya || !globalThis.core || !globalThis.$ui?.currentView) {
       window.setTimeout(install, 100);
       return;
+    }
+    hideGithubCornerBadge();
+    if (typeof globalThis.$ui.switchView === "function" && !globalThis.$ui.__lusuGithubHideHooked) {
+      const origSwitchView = globalThis.$ui.switchView.bind(globalThis.$ui);
+      globalThis.$ui.__lusuGithubHideHooked = true;
+      globalThis.$ui.switchView = function wrappedSwitchView(...args) {
+        const res = origSwitchView(...args);
+        if (res && typeof res.then === "function") {
+          res.then(hideGithubCornerBadge, () => {});
+        } else {
+          hideGithubCornerBadge();
+        }
+        return res;
+      };
     }
     const agent = Object.freeze({
       protocolVersion: PROTOCOL_VERSION,

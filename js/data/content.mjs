@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-24-life-restart-visual-cleanup-r79",
+  "slug": "life-restart-sidebands-and-github-corner-cleanup-r79",
+  "category": "site-updates",
+  "tags": [
+    "视觉更新",
+    "游戏区",
+    "人生重开"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-24T22:20:00+08:00",
+  "updated_at": "2026-11-24T22:20:00+08:00",
+  "published_at": "2026-11-24T22:20:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "视觉优化：人生重开去两侧横纹、去画布切角并隐藏左上角白猫角标（r79）",
+    "en": "Visual Polish: Clean Life Restart Sidebands, Square Canvas & Hidden Corner Badge (r79)",
+    "ja": "ビジュアル調整：人生リスタートの左右縞撤去・角丸切欠き解消・左上角バッジ非表示（r79）"
+  },
+  "summary": {
+    "zh": "将人生重开两侧宽带改为与画布底色柔和衔接的纯暗底，去掉画布 10px 圆角二次裁切，并通过自有桥接脚本隐藏左上角 GitHub 白猫角标。",
+    "en": "Replaces striped sidebands with a seamless matte dark backdrop, removes 10px canvas corner clipping, and hides the top-left GitHub corner badge via our bridge script.",
+    "ja": "左右の縞背景をキャンバスになじむ暗色単色へ変更し、10px 角丸による切り欠きを撤去、独自ブリッジ経由で左上の GitHub 角バッジを非表示にしました。"
+  },
+  "content_markdown": {
+    "zh": "# 视觉优化：人生重开三项视觉收口（r79）\n\n本次仅调整外层样式与自有桥接脚本，不动原游戏本体与资源包：\n\n1. **两侧宽带纯暗底衔接**：移除 `game-shell.js` 注入的深青黑扫描线横纹，改为 `#1a1f27` 纯暗底，与画布内底 `#222831` 自然衔接。\n2. **去掉画布二次切角**：移除 `#layaCanvas` 的 `border-radius: 10px`，消除画布四角裁切。\n3. **隐藏左上角白猫角标**：在自有桥接脚本 `games/life-restart/source/lusu-agent-bridge.js` 中将 Laya 舞台节点 `btnGithub` 设为不可见并禁用点击，视图切换后保持隐藏。",
+    "en": "# Visual Polish: Life Restart Visual Cleanup (r79)\n\nScoped strictly to `game-shell.js` and our own `lusu-agent-bridge.js` without modifying upstream game assets:\n\n1. **Seamless Matte Sidebands**: Replaced the striped scanline background with matte `#1a1f27` matching the `#222831` canvas.\n2. **Zero Corner Clipping**: Removed `border-radius: 10px` on `#layaCanvas`.\n3. **Hidden Corner Badge**: Hid the top-left `btnGithub` Laya stage node in `lusu-agent-bridge.js`.",
+    "ja": "# ビジュアル調整：人生リスタート 3 点整理（r79）\n\nゲーム本体のアセットには触れず、`game-shell.js` と独自ブリッジ `lusu-agent-bridge.js` のみを調整しました：\n\n1. **左右の暗色単色化**：走査線縞を廃し、`#1a1f27` でキャンバス背景となじませました。\n2. **角丸切り欠きの解消**：`#layaCanvas` の `border-radius: 10px` を撤去しました。\n3. **左上角バッジの非表示**：ブリッジ経由で `btnGithub` ノードを非表示にしました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78",
   "slug": "whiteboard-1-0-15-search-placeholder-r78",
   "category": "site-updates",

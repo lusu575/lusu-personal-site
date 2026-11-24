@@ -16489,6 +16489,29 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 
 オンラインホワイトボードのサブプロジェクト規約に従ってバージョンを `1.0.15` へ更新し、キャンバス検索サイドバー内の入力欄プレースホルダーを英語 `Find text on canvas...` から日本語・中国語・英語へ多言語化しました。同期プロトコルや保存仕様は変更していません。', '2026-11-24T20:26:00+08:00', '2026-11-24T20:26:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-whiteboard-placeholder-r78', '2026-11-24T20:26:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-life-restart-visual-cleanup-r79', 'life-restart-sidebands-and-github-corner-cleanup-r79', 'site-updates', '["视觉更新","游戏区","人生重开"]', '', 'published', 0, 0, '2026-11-24T22:20:00+08:00', '2026-11-24T22:20:00+08:00', '2026-11-24T22:20:00+08:00') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-life-restart-visual-cleanup-r79-zh', 'seed-update-2026-11-24-life-restart-visual-cleanup-r79', 'zh', '视觉优化：人生重开去两侧横纹、去画布切角并隐藏左上角白猫角标（r79）', '将人生重开两侧宽带改为与画布底色柔和衔接的纯暗底，去掉画布 10px 圆角二次裁切，并通过自有桥接脚本隐藏左上角 GitHub 白猫角标。', '# 视觉优化：人生重开三项视觉收口（r79）
+
+本次仅调整外层样式与自有桥接脚本，不动原游戏本体与资源包：
+
+1. **两侧宽带纯暗底衔接**：移除 `game-shell.js` 注入的深青黑扫描线横纹，改为 `#1a1f27` 纯暗底，与画布内底 `#222831` 自然衔接。
+2. **去掉画布二次切角**：移除 `#layaCanvas` 的 `border-radius: 10px`，消除画布四角裁切。
+3. **隐藏左上角白猫角标**：在自有桥接脚本 `games/life-restart/source/lusu-agent-bridge.js` 中将 Laya 舞台节点 `btnGithub` 设为不可见并禁用点击，视图切换后保持隐藏。', '2026-11-24T22:20:00+08:00', '2026-11-24T22:20:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-life-restart-visual-cleanup-r79-en', 'seed-update-2026-11-24-life-restart-visual-cleanup-r79', 'en', 'Visual Polish: Clean Life Restart Sidebands, Square Canvas & Hidden Corner Badge (r79)', 'Replaces striped sidebands with a seamless matte dark backdrop, removes 10px canvas corner clipping, and hides the top-left GitHub corner badge via our bridge script.', '# Visual Polish: Life Restart Visual Cleanup (r79)
+
+Scoped strictly to `game-shell.js` and our own `lusu-agent-bridge.js` without modifying upstream game assets:
+
+1. **Seamless Matte Sidebands**: Replaced the striped scanline background with matte `#1a1f27` matching the `#222831` canvas.
+2. **Zero Corner Clipping**: Removed `border-radius: 10px` on `#layaCanvas`.
+3. **Hidden Corner Badge**: Hid the top-left `btnGithub` Laya stage node in `lusu-agent-bridge.js`.', '2026-11-24T22:20:00+08:00', '2026-11-24T22:20:00+08:00') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-24-life-restart-visual-cleanup-r79-ja', 'seed-update-2026-11-24-life-restart-visual-cleanup-r79', 'ja', 'ビジュアル調整：人生リスタートの左右縞撤去・角丸切欠き解消・左上角バッジ非表示（r79）', '左右の縞背景をキャンバスになじむ暗色単色へ変更し、10px 角丸による切り欠きを撤去、独自ブリッジ経由で左上の GitHub 角バッジを非表示にしました。', '# ビジュアル調整：人生リスタート 3 点整理（r79）
+
+ゲーム本体のアセットには触れず、`game-shell.js` と独自ブリッジ `lusu-agent-bridge.js` のみを調整しました：
+
+1. **左右の暗色単色化**：走査線縞を廃し、`#1a1f27` でキャンバス背景となじませました。
+2. **角丸切り欠きの解消**：`#layaCanvas` の `border-radius: 10px` を撤去しました。
+3. **左上角バッジの非表示**：ブリッジ経由で `btnGithub` ノードを非表示にしました。', '2026-11-24T22:20:00+08:00', '2026-11-24T22:20:00+08:00') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-life-restart-r79', '2026-11-24T22:20:00+08:00')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261124-whiteboard-placeholder-r78', '2026-11-24T20:26:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261124-life-restart-r79', '2026-11-24T22:20:00+08:00', 'schema') on conflict(version) do nothing;
