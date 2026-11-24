@@ -14,7 +14,7 @@
 import { FloraLayer } from './flora.mjs?v=20261124-autumn-lotus-r69';
 import { createFBO, createFullscreenVAO, createProgram } from './gl-utils.mjs';
 import { KoiGLRenderer } from './koi-gl.mjs?v=20261124-season-wavefront-r67';
-import { ParticlesGLRenderer } from './particles-gl.mjs?v=20261124-season-wavefront-r67';
+import { ParticlesGLRenderer } from './particles-gl.mjs?v=20261124-wind-water-r75';
 import { lerpNum, lerpVec3, SEASON_ORDER, SEASONS } from './seasons.mjs';
 import {
   BLOOM_EXTRACT_FRAG,
@@ -23,7 +23,7 @@ import {
   FULLSCREEN_VERT,
   SURFACE_OVERLAY_FRAG,
   WATER_BG_FRAG
-} from './shaders.mjs?v=20261124-season-wavefront-r67';
+} from './shaders.mjs?v=20261124-wind-water-r75';
 import { PondUIOverlay } from './ui-overlay.mjs?v=20261123-pond-boot-r57';
 import { detectBootMode, runPondBootPreload } from './boot-preloader.mjs?v=20261123-pond-boot-r57';
 
@@ -50,10 +50,11 @@ export class PondCRTEngine {
     this.fromSeasonId = this.seasonId;
     this.visualSeasonId = this.seasonId;
     this.seasonTransitionStart = -10;
-    this.seasonWaveDuration = 1.0; // Approved 1.0s In-Place Wavefront Evolution
+    this.seasonWaveDuration = 1.0; // Approved 1.0s Wind-Sweep Season Transition
     this.transitionPhase = 'idle'; // 'idle' | 'wave'
-    this.waveOriginX = 0.86;
-    this.waveOriginY = 0.92;
+    this.windDirX = 0.951; // ~18 deg top-left -> bottom-right diagonal gust
+    this.windDirY = -0.309;
+    this.waterPhase = 0; // Monotonically integrated water shimmer phase (ZERO season-switch twitch!)
     this._waveToggleCorner = false;
     this._koiWaveStartled = [false, false];
     // Continuous interruptible live state:
@@ -470,14 +471,15 @@ export class PondCRTEngine {
       this.revealStartWeights = [...this.liveWeights];
       this.targetWeights = this._seasonToWeights(seasonId);
 
-      // When interrupting mid-wave, sweep back from opposite pond corner for clear reversible wavefront feel
+      // Gentle slanted gust (~18 deg top-left -> bottom-right); alternates slight angle when interrupted mid-gust
       if (wasInTransition) {
         this._waveToggleCorner = !this._waveToggleCorner;
-        this.waveOriginX = this._waveToggleCorner ? 0.10 : 0.90;
-        this.waveOriginY = this._waveToggleCorner ? 0.14 : 0.88;
+        const ang = this._waveToggleCorner ? -0.44 : -0.22; // -25deg / -12.5deg subtle gust shift
+        this.windDirX = Math.cos(ang);
+        this.windDirY = Math.sin(ang);
       } else {
-        this.waveOriginX = Math.max(0.02, Math.min(0.98, originNx));
-        this.waveOriginY = Math.max(0.02, Math.min(0.98, 1.0 - originNy));
+        this.windDirX = 0.951; // ~18 deg
+        this.windDirY = -0.309;
       }
 
       this.seasonWaveDuration = 1.0;
@@ -485,14 +487,12 @@ export class PondCRTEngine {
       this.transitionPhase = 'wave';
       this._koiWaveStartled = [false, false];
 
-      // Subtle origin water ripple to launch the breeze wavefront
-      this.spawnRipple(this.waveOriginX, this.waveOriginY, 0.72);
       this.uiOverlay.setSeason(seasonId, this.elapsed);
       this.particlesGL.triggerWavefrontTransition(
         prev,
         seasonId,
-        this.waveOriginX,
-        this.waveOriginY,
+        this.windDirX,
+        this.windDirY,
         this.elapsed,
         this.seasonWaveDuration
       );
@@ -512,13 +512,13 @@ export class PondCRTEngine {
     if (this.transitionPhase === 'idle') {
       return {
         palette: this.livePalette,
-        waveState: { active: false, progress: 1.0, ox: this.waveOriginX, oy: this.waveOriginY, frontDist: 99.0, aspect }
+        waveState: { active: false, progress: 1.0, wdx: this.windDirX, wdy: this.windDirY, frontPos: 99.0, aspect }
       };
     }
 
     const elapsed = Math.max(0, t - this.seasonTransitionStart);
     const u = Math.min(1.0, elapsed / Math.max(0.01, this.seasonWaveDuration));
-    const e = u * u * (3.0 - 2.0 * u); // C1 smoothstep easing
+    const e = u * u * (3.0 - 2.0 * u); // C1 smoothstep gust curve
     const startP = this.revealStartPalette;
     const targetP = this._cloneSeasonPalette(this.seasonId);
     const p = this.livePalette;
@@ -539,26 +539,21 @@ export class PondCRTEngine {
       this.liveWeights[i] = this.revealStartWeights[i] + (this.targetWeights[i] - this.revealStartWeights[i]) * e;
     }
 
-    // Compute exact wavefront distance matching SURFACE_OVERLAY_FRAG
-    const ox = this.waveOriginX;
-    const oy = this.waveOriginY;
-    const d00 = Math.hypot((0 - ox) * aspect, 0 - oy);
-    const d10 = Math.hypot((1 - ox) * aspect, 0 - oy);
-    const d01 = Math.hypot((0 - ox) * aspect, 1 - oy);
-    const d11 = Math.hypot((1 - ox) * aspect, 1 - oy);
-    const maxReach = Math.max(d00, d10, d01, d11) + 0.18;
-    const frontDist = u * maxReach;
+    // Invisible slanted wind front position matching SURFACE_OVERLAY_FRAG & ParticlesGLRenderer
+    const wdx = this.windDirX;
+    const wdy = this.windDirY;
+    const frontPos = -0.22 + e * 1.72;
 
-    // Trigger natural startled dart on each koi right when the wavefront sweeps across its coordinates!
+    // Trigger natural startled dart on each koi right when the invisible gust sweeps across its coordinates!
     const fishPositions = this.koiGL.getFishUvPositions();
     for (let i = 0; i < fishPositions.length; i++) {
       if (!this._koiWaveStartled[i]) {
         const fp = fishPositions[i];
-        const fishDist = Math.hypot((fp.uvX - ox) * aspect, fp.uvY - oy);
-        if (frontDist >= fishDist) {
+        const fishProj = (fp.uvX - 0.5) * wdx + (fp.uvY - 0.5) * wdy + 0.65;
+        if (frontPos >= fishProj) {
           this._koiWaveStartled[i] = true;
           const pos = this.koiGL.triggerWaveStartle(i);
-          if (pos) this.spawnRipple(pos.uvX, pos.uvY, 0.55);
+          if (pos) this.spawnRipple(pos.uvX, pos.uvY, 0.45);
         }
       }
     }
@@ -572,13 +567,13 @@ export class PondCRTEngine {
       this.visualSeasonId = this.seasonId;
       return {
         palette: p,
-        waveState: { active: false, progress: 1.0, ox, oy, frontDist: 99.0, aspect }
+        waveState: { active: false, progress: 1.0, wdx, wdy, frontPos: 99.0, aspect }
       };
     }
 
     return {
       palette: p,
-      waveState: { active: true, progress: u, ox, oy, frontDist, aspect }
+      waveState: { active: true, progress: e, wdx, wdy, frontPos, aspect }
     };
   }
 
@@ -629,12 +624,14 @@ export class PondCRTEngine {
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbos.scene.fbo);
     gl.viewport(0, 0, sw, sh);
 
-    // 1a. Pond Water Light Field
+    // 1a. Pond Water Light Field (CPU-integrated waterPhase guarantees zero twitch on season switch)
+    this.waterPhase += dt * Math.max(0.15, season.shimmerSpeed || 0.7);
     gl.bindVertexArray(this.vao);
     gl.useProgram(this.programs.waterBg.program);
     const wu = this.programs.waterBg.uniforms;
     gl.uniform2f(wu.uResolution, sw, sh);
     gl.uniform1f(wu.uTime, t);
+    if (wu.uWaterPhase) gl.uniform1f(wu.uWaterPhase, this.waterPhase);
     gl.uniform3fv(wu.uWaterDeep, season.waterDeep);
     gl.uniform3fv(wu.uWaterMid, season.waterMid);
     gl.uniform3fv(wu.uWaterAccent, season.waterAccent);
@@ -674,7 +671,7 @@ export class PondCRTEngine {
     if (su.uFromWeights) gl.uniform4fv(su.uFromWeights, this.revealStartWeights);
     if (su.uToWeights) gl.uniform4fv(su.uToWeights, this.targetWeights);
     if (su.uWaveParams) {
-      gl.uniform4f(su.uWaveParams, waveState.ox, waveState.oy, waveState.progress, waveState.active ? 1.0 : 0.0);
+      gl.uniform4f(su.uWaveParams, waveState.wdx, waveState.wdy, waveState.progress, waveState.active ? 1.0 : 0.0);
     }
     gl.uniform2f(su.uResolution, sw, sh);
     gl.uniform1f(su.uTime, t);

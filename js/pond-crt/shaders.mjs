@@ -25,6 +25,7 @@ out vec4 fragColor;
 
 uniform vec2 uResolution;
 uniform float uTime;
+uniform float uWaterPhase;
 uniform vec3 uWaterDeep;
 uniform vec3 uWaterMid;
 uniform vec3 uWaterAccent;
@@ -64,40 +65,44 @@ float fbm2(vec2 p) {
 void main() {
   vec2 uv = vUv;
   float aspect = uResolution.x / max(1.0, uResolution.y);
-  float t = uTime * uShimmerSpeed;
+  // Continuous CPU-integrated phase (eliminates uTime * uShimmerSpeed phase-whiplash twitch on season switch)
+  float t = uWaterPhase;
   vec2 centered = (uv - 0.5) * vec2(aspect, 1.0);
 
   float radialDist = length(centered * vec2(0.80, 1.02));
   float basinLight = 1.0 - smoothstep(0.18, 0.94, radialDist);
 
-  float depthNoise = fbm2(uv * vec2(3.1, 2.3) + vec2(t * 0.035, -t * 0.025));
-  float depthNoise2 = noise(uv * vec2(6.2, 4.8) - vec2(t * 0.04, t * 0.025));
-  float depthMix = clamp(basinLight * 0.85 + (depthNoise - 0.45) * 0.40, 0.0, 1.0);
+  float depthNoise = fbm2(uv * vec2(3.1, 2.3) + vec2(t * 0.030, -t * 0.022));
+  float depthNoise2 = noise(uv * vec2(5.6, 4.4) - vec2(t * 0.032, t * 0.020));
+  float depthMix = clamp(basinLight * 0.80 + (depthNoise - 0.45) * 0.36, 0.0, 1.0);
 
-  vec3 col = mix(uWaterDeep, uWaterMid, smoothstep(0.05, 0.72, depthMix));
-  float accentPatch = smoothstep(0.32, 0.82, depthNoise2) * smoothstep(0.88, 0.15, radialDist);
-  col = mix(col, uWaterAccent, accentPatch * 0.50);
+  vec3 col = mix(uWaterDeep, uWaterMid, smoothstep(0.06, 0.76, depthMix));
+  float accentPatch = smoothstep(0.36, 0.84, depthNoise2) * smoothstep(0.88, 0.16, radialDist);
+  col = mix(col, uWaterAccent, accentPatch * 0.38);
 
-  float colWarp = (depthNoise - 0.5) * 0.13 + sin(uv.y * 4.8 + t * 0.35) * 0.020;
-  float dx = (uv.x - (uGlowColumnX + colWarp)) / max(0.08, uGlowColumnWidth);
-  float lightColumn = exp(-dx * dx * 1.35);
-  float vertProfile = 0.52 + 0.48 * sin(uv.y * 3.14159);
+  float colWarp = (depthNoise - 0.5) * 0.12 + sin(uv.y * 4.2 + t * 0.28) * 0.018;
+  float dx = (uv.x - (uGlowColumnX + colWarp)) / max(0.09, uGlowColumnWidth);
+  float lightColumn = exp(-dx * dx * 1.30);
+  float vertProfile = 0.50 + 0.50 * sin(uv.y * 3.14159);
   float columnMask = lightColumn * vertProfile;
 
-  // In Winter, reflections are softer vertical moonlight columns (matching final2-winter.png)
-  vec2 streakScale = mix(vec2(4.2, 26.0), vec2(7.5, 11.0), uWinterMode);
-  float drift1 = fbm2(uv * streakScale + vec2(t * 0.18, -t * 0.11));
-  float band = smoothstep(0.35, 0.82, drift1);
-  float fine = noise(vec2(uv.x * 16.0 + drift1 * 1.4, uv.y * mix(82.0, 32.0, uWinterMode) - t * 0.48));
-  float streaks = band * 0.60 + pow(smoothstep(0.56, 0.94, fine * drift1 * 1.30), 2.4) * 0.88;
+  // Dual-layer low-frequency diagonal cross-caustics (freq 6.5..13.5, zero half-res Nyquist aliasing)
+  float winterSoft = mix(1.0, 0.62, uWinterMode);
+  vec2 caustUv1 = vec2(uv.x * 6.8 + uv.y * 2.2, uv.y * 10.6 - uv.x * 1.6) * winterSoft + vec2(t * 0.13, -t * 0.08);
+  vec2 caustUv2 = vec2(uv.x * 9.8 - uv.y * 2.8, uv.y * 13.2 + uv.x * 2.1) * winterSoft + vec2(-t * 0.10, t * 0.07);
+  float c1 = fbm2(caustUv1);
+  float c2 = noise(caustUv2 + vec2(c1 * 1.10, -c1 * 0.80));
+  float causticNet = smoothstep(0.40, 0.84, c1 * 0.56 + c2 * 0.54);
+  float softVeil = smoothstep(0.30, 0.78, c1) * 0.46 + pow(causticNet, 1.85) * 0.54;
 
-  col += uCausticTint * columnMask * (0.20 + 0.34 * streaks) * uCausticStrength;
-  float shimmerWeight = (columnMask * 0.86 + basinLight * 0.22) * uCausticStrength;
-  float highlight = pow(clamp(streaks, 0.0, 1.0), 1.45) * shimmerWeight;
-  col += mix(uCausticTint, uSpecularTint, smoothstep(0.22, 0.78, highlight)) * highlight * mix(0.98, 0.22, uWinterMode);
+  // Restrained deep-pond neon-cyan silk caustics, highlight strictly capped at 0.36..0.40 (zero Bloom blowout)
+  col += uCausticTint * columnMask * (0.12 + 0.22 * softVeil) * uCausticStrength;
+  float shimmerWeight = (columnMask * 0.74 + basinLight * 0.18) * uCausticStrength;
+  float highlight = clamp(pow(softVeil, 1.55) * shimmerWeight, 0.0, 0.38);
+  col += mix(uCausticTint, uSpecularTint, smoothstep(0.14, 0.38, highlight)) * highlight * mix(0.40, 0.18, uWinterMode);
 
-  float edgeDark = 1.0 - smoothstep(0.58, 1.08, radialDist);
-  col *= mix(0.28, 1.0, edgeDark);
+  float edgeDark = 1.0 - smoothstep(0.56, 1.08, radialDist);
+  col *= mix(0.24, 1.0, edgeDark);
 
   fragColor = vec4(max(col, 0.0), 1.0);
 }
@@ -192,44 +197,34 @@ void main() {
   float autumnCurl = 0.0;
   float winterFrostCreep = 0.0;
 
-  // In-place 1.0s Wavefront Evolution: each pixel evolves in-place as the breeze front sweeps past!
+  // Invisible 1.0s Wind-Sweep Transition (r75): ZERO glowing light ring/band!
+  // Scenery evolves strictly in-place behind an invisible slanted wind front sweeping across the pond.
   if (uWaveParams.w > 0.5) {
     float waveP = clamp(uWaveParams.z, 0.0, 1.0);
-    vec2 origin = uWaveParams.xy;
-    float n = noise(uv * 4.6 + vec2(uTime * 0.18, -uTime * 0.14));
+    vec2 windDir = normalize(uWaveParams.xy);
+    float n = noise(uv * 4.2 + vec2(uTime * 0.15, -uTime * 0.10));
 
-    // Max aspect-corrected reach from origin to farthest pond corner
-    float d00 = length((vec2(0.0, 0.0) - origin) * vec2(aspect, 1.0));
-    float d10 = length((vec2(1.0, 0.0) - origin) * vec2(aspect, 1.0));
-    float d01 = length((vec2(0.0, 1.0) - origin) * vec2(aspect, 1.0));
-    float d11 = length((vec2(1.0, 1.0) - origin) * vec2(aspect, 1.0));
-    float maxReach = max(max(d00, d10), max(d01, d11)) + 0.18;
+    // Normalized projection [~0..1.3] along the slanted wind axis
+    float proj = dot(uv - 0.5, windDir) + 0.65 + (n - 0.5) * 0.08;
+    float frontPos = -0.22 + waveP * 1.72;
+    float band = 0.22; // ~20% viewport soft invisible blend band
+    float localW = 1.0 - smoothstep(frontPos - band, frontPos + band, proj);
 
-    float pxDist = length((uv - origin) * vec2(aspect, 1.0)) + (n - 0.5) * 0.11;
-    float frontDist = waveP * maxReach;
-    float band = 0.16 * aspect;
-    float localW = 1.0 - smoothstep(frontDist - band, frontDist + band, pxDist);
-
-    // Winter edge-creep: ice/frost creeps inward from pond edges as the wavefront arrives
+    // Winter edge-creep: thin frost still creeps softly inward from pond edges without any glowing line
     if (uToWeights.w > 0.5) {
       float distFromEdge = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
       float edgeWave = 1.0 - smoothstep(waveP * 0.58 - 0.14, waveP * 0.58 + 0.10, distFromEdge + (n - 0.5) * 0.06);
-      float frostMask = clamp(max(localW * 0.72, edgeWave), 0.0, 1.0);
-      localW = mix(localW, frostMask, 0.55);
-      winterFrostCreep = edgeWave * (1.0 - smoothstep(0.0, 0.28, distFromEdge)) * sin(waveP * 3.14159);
+      float frostMask = clamp(max(localW * 0.76, edgeWave), 0.0, 1.0);
+      localW = mix(localW, frostMask, 0.45);
     }
 
-    // Autumn in-place lotus yellowing & subtle edge curl right as the wavefront passes
+    // Autumn in-place lotus yellowing & subtle edge curl as the invisible wind passes
     if (uToWeights.z > 0.5) {
       autumnCurl = sin(clamp(localW, 0.0, 1.0) * 3.14159);
     }
 
     w = mix(uFromWeights, uToWeights, localW);
-
-    // Subtle restrained breeze shimmer line along the advancing wavefront (never garish)
-    float env = sin(waveP * 3.14159);
-    float crest = exp(-pow((pxDist - frontDist) / max(0.035, band * 0.32), 2.0));
-    sweepGlow = uCausticTint * (crest * 0.16 * env + winterFrostCreep * 0.18);
+    sweepGlow = vec3(0.0); // Strictly ZERO glowing wavefront band
   }
 
   // True premultiplied-alpha accumulation (paired with gl.blendFunc(ONE, ONE_MINUS_SRC_ALPHA))

@@ -333,9 +333,9 @@ export class ParticlesGLRenderer {
     return out;
   }
 
-  // Triggered on 1.0s In-Place Wavefront Season Switch (interruptible, zero center gather!)
-  triggerWavefrontTransition(fromSeason, toSeason, originX, originYUp, nowSec, durationSec = 1.0) {
-    // Move currently active ambient particles into outgoingAmbient so each fades IN-PLACE when wavefront passes!
+  // Triggered on 1.0s Wind-Sweep Season Switch (r75: strictly lateral/diagonal gust, ZERO center gather, ZERO vortex!)
+  triggerWavefrontTransition(fromSeason, toSeason, windDirX, windDirY, nowSec, durationSec = 1.0) {
+    // Move currently active ambient particles into outgoingAmbient so each fades IN-PLACE when wind front passes!
     for (const p of this.ambient) {
       if (p.born && p.birthFade > 0.05) {
         this.outgoingAmbient.push({
@@ -349,51 +349,86 @@ export class ParticlesGLRenderer {
       this.outgoingAmbient.splice(0, this.outgoingAmbient.length - 64);
     }
 
-    // Prepare new season's ambient particles to emerge IN-PLACE behind the advancing wavefront
+    // Prepare new season's ambient particles to emerge IN-PLACE behind the invisible wind front
     this.seasonId = toSeason;
     this.ambient = this._buildSeasonAmbient(toSeason, true);
 
-    // Approved: 42 sparse wavefront micro-particles (36-48 range), 1.5-3.2px, spawned in-place along the sweep
+    // Approved: 36 seasonal gust debris particles (28-42 range) carried laterally/diagonally by the wind
     const rand = makeRng(Math.floor(nowSec * 1000) + 31);
-    const toRgb = SEASON_MOTE_RGB[toSeason] || SEASON_MOTE_RGB.autumn;
+    const len = Math.hypot(windDirX, windDirY) || 1;
+    const wdx = windDirX / len;
+    const wdy = windDirY / len;
     const newMotes = [];
-    const moteCount = 42;
-    for (let i = 0; i < moteCount; i++) {
-      const ax = 0.06 + rand() * 0.88;
-      const ay = 0.08 + rand() * 0.84;
-      const dx = ax - originX;
-      const dy = ay - originYUp;
-      const dist = Math.hypot(dx, dy);
-      const nx = dist > 0.001 ? dx / dist : (rand() - 0.5);
-      const ny = dist > 0.001 ? dy / dist : (rand() - 0.5);
-      const driftDist = 0.04 + rand() * 0.08; // Approved: 0.04-0.12 screen width gentle breeze drift
+    const gustCount = 36;
+    for (let i = 0; i < gustCount; i++) {
+      // Distributed across the pond along the wind sweep; spawn right as the invisible wind front crosses
+      const ax = -0.06 + rand() * 0.92;
+      const ay = 0.08 + rand() * 0.86;
+      const proj = (ax - 0.5) * wdx + (ay - 0.5) * wdy + 0.65;
+
+      let cell = 0;
+      let size = 2.4;
+      let rgb = SEASON_MOTE_RGB[toSeason] || SEASON_MOTE_RGB.summer;
+      let baseAlpha = 0.55;
+      let rot = rand() * Math.PI * 2;
+      let vRot = (rand() - 0.5) * 3.8;
+
+      if (toSeason === 'spring') {
+        cell = 1; // Soft pink sakura petals (3-5px visual after scale)
+        size = 5.0 + rand() * 2.8;
+        rgb = [0.96, 0.86, 0.92];
+        baseAlpha = 0.66 + rand() * 0.22;
+      } else if (toSeason === 'autumn') {
+        cell = rand() > 0.45 ? 2 : 3; // Withered gold & crimson maple leaves (4-6px visual)
+        size = 6.2 + rand() * 3.2;
+        rgb = [0.95, 0.84, 0.72];
+        baseAlpha = 0.68 + rand() * 0.22;
+      } else if (toSeason === 'winter') {
+        cell = 0; // Crisp white snow specks (2-3.5px)
+        size = 2.2 + rand() * 1.6;
+        rgb = [0.88, 0.94, 1.0];
+        baseAlpha = 0.46 + rand() * 0.34;
+        vRot = 0;
+      } else {
+        cell = 0; // Summer ultra-fine cyan-white dust / sparse firefly motes (1.5-2.5px)
+        size = 1.6 + rand() * 1.2;
+        rgb = [0.68, 0.94, 0.86];
+        baseAlpha = 0.34 + rand() * 0.26;
+        vRot = 0;
+      }
+
+      // Lateral gust speed ~0.88..1.14 viewport widths/sec, strictly along wind direction (NEVER center-gathering!)
+      const gustSpeed = 0.88 + rand() * 0.26;
       newMotes.push({
         ax,
         ay,
+        proj,
         x: ax,
         y: ay,
-        dirX: nx + (rand() - 0.5) * 0.35,
-        dirY: ny + (rand() - 0.5) * 0.35,
-        driftDist,
-        size: 1.5 + rand() * 1.7, // Approved: 1.5-3.2px
-        rgb: toRgb,
-        baseAlpha: 0.36 + rand() * 0.30,
+        vx: wdx * gustSpeed + (rand() - 0.5) * 0.08,
+        vy: wdy * gustSpeed + (rand() - 0.5) * 0.06,
+        cell,
+        size,
+        rgb,
+        rot,
+        vRot,
+        baseAlpha,
         activated: false,
         age: 0,
         phase: rand() * Math.PI * 2
       });
     }
 
-    // If interrupting an active wave, existing activated motes decay in-place naturally (zero stack/pop)
-    this.waveMotes = this.waveMotes.filter((m) => m.activated && m.age < 0.75);
+    // If interrupting an active gust, existing activated particles decay naturally (zero stack/pop)
+    this.waveMotes = this.waveMotes.filter((m) => m.activated && m.age < 0.85);
     this.waveMotes.push(...newMotes);
     if (this.waveMotes.length > 72) {
       this.waveMotes.splice(0, this.waveMotes.length - 72);
     }
 
     this.waveInfo = {
-      ox: originX,
-      oy: originYUp,
+      wdx,
+      wdy,
       start: nowSec,
       duration: durationSec
     };
@@ -474,23 +509,22 @@ export class ParticlesGLRenderer {
       this.ambient = this._buildSeasonAmbient(activeSeasonId, false);
     }
 
-    const aspect = waveState?.aspect || 1.77;
     const waveActive = Boolean(waveState && waveState.active);
-    const waveOx = waveActive ? waveState.ox : 0.86;
-    const waveOy = waveActive ? waveState.oy : 0.92;
-    const frontDist = waveActive ? waveState.frontDist : 99.0;
+    const wdx = waveActive ? waveState.wdx : 0.951;
+    const wdy = waveActive ? waveState.wdy : -0.309;
+    const frontPos = waveActive ? waveState.frontPos : 99.0;
 
     // Restrained 0.85x scale factor so motes & botanicals never overpower desktop icons or koi
     const sizeScale = (sceneW / 640) * 0.85;
     this.count = 0;
 
-    // 1. Outgoing season particles: decelerate & fade out IN-PLACE over ~0.35s when wavefront passes
+    // 1. Outgoing season particles: decelerate & fade out IN-PLACE over ~0.35s when invisible wind front passes
     if (this.outgoingAmbient.length > 0) {
       const nextOut = [];
       for (const p of this.outgoingAmbient) {
         if (!p.fading) {
-          const d = Math.hypot((p.x - waveOx) * aspect, p.y - waveOy);
-          if (!waveActive || d <= frontDist) {
+          const proj = (p.x - 0.5) * wdx + (p.y - 0.5) * wdy + 0.65;
+          if (!waveActive || proj <= frontPos) {
             p.fading = true;
           }
         }
@@ -507,11 +541,11 @@ export class ParticlesGLRenderer {
       this.outgoingAmbient = nextOut;
     }
 
-    // 2. Current season ambient particles: emerge IN-PLACE behind the advancing wavefront
+    // 2. Current season ambient particles: emerge IN-PLACE behind the invisible wind front
     for (const p of this.ambient) {
       if (!p.born) {
-        const d = Math.hypot((p.x - waveOx) * aspect, p.y - waveOy);
-        if (!waveActive || d <= frontDist) {
+        const proj = (p.x - 0.5) * wdx + (p.y - 0.5) * wdy + 0.65;
+        if (!waveActive || proj <= frontPos) {
           p.born = true;
         }
       }
@@ -523,27 +557,29 @@ export class ParticlesGLRenderer {
       }
     }
 
-    // 3. Wavefront breeze micro-particles (42 sparse 1.5-3.2px motes, exp(-3.2*age) dissipation)
+    // 3. Wind-swept seasonal debris particles: ride laterally across viewport, decelerate & settle softly
     if (this.waveMotes.length > 0) {
       const nextMotes = [];
       for (const m of this.waveMotes) {
         if (!m.activated && waveActive) {
-          const d = Math.hypot((m.ax - waveOx) * aspect, m.ay - waveOy);
-          if (d <= frontDist) {
+          if (m.proj <= frontPos) {
             m.activated = true;
             m.age = 0;
           }
         }
         if (m.activated) {
           m.age += dt;
-          const decay = Math.exp(-3.2 * m.age); // Approved exp(-3.2 * age) smooth dissipation
-          if (decay > 0.02) {
-            const travel = (1.0 - Math.exp(-3.8 * m.age)) * m.driftDist;
-            const px = m.ax + m.dirX * travel;
-            const py = m.ay + m.dirY * travel + Math.sin(m.age * 5.0 + m.phase) * 0.008;
-            const rise = Math.min(1.0, m.age * 14.0);
+          const decay = Math.exp(-1.95 * m.age);
+          if (decay > 0.02 && m.x > -0.15 && m.x < 1.15 && m.y > -0.15 && m.y < 1.15) {
+            // Gust push decays exponentially after front passes; particles drift gently downward & fade out
+            const windCarry = Math.exp(-2.6 * m.age);
+            m.x += m.vx * windCarry * dt;
+            m.y += (m.vy * windCarry - 0.022 + Math.sin(m.age * 4.5 + m.phase) * 0.018) * dt;
+            m.rot += m.vRot * (0.35 + 0.65 * windCarry) * dt;
+            const rise = Math.min(1.0, m.age * 10.0);
             const alpha = m.baseAlpha * rise * decay;
-            this._push(px, py, m.rgb[0], m.rgb[1], m.rgb[2], alpha, m.size * sizeScale, 0, 0, 1.0);
+            const tumble = m.cell > 0 ? (0.48 + 0.52 * Math.abs(Math.cos(m.age * 3.2 + m.phase))) : 1.0;
+            this._push(m.x, m.y, m.rgb[0], m.rgb[1], m.rgb[2], alpha, m.size * sizeScale, m.cell, m.rot, tumble);
             nextMotes.push(m);
           }
         } else if (waveActive) {

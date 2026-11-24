@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-wind-water-and-shift-enter-r75', 'pond-wind-sweep-water-caustics-and-shift-enter-r75', 'site-updates', '["视觉更新","水面水光","季节风吹过渡","聊天室"]', '', 'published', 0, 0, '2026-11-24T18:05:00+08:00', '2026-11-24T18:05:00+08:00', '2026-11-24T18:05:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-24-wind-water-and-shift-enter-r75", {
+  "zh": {
+    "title": "视觉与交互优化：水面水光质感重做、季节风吹式过渡与聊天室 Shift+Enter 同步换行（r75）",
+    "summary": "重做池塘低频柔和霓虹水光并改用连续相位消除切季抽动；撤掉发光光波，改为一阵风携带当季碎屑横向吹过、景物原地换季；修复聊天室连打 Shift+Enter 丢换行。",
+    "content_markdown": "# 视觉与交互优化：水面水光重做、季节风吹式过渡与聊天室 Shift+Enter 同步换行（r75）\n\n本次纯视觉与交互表现层更新，不改动任何业务功能与数据逻辑：\n\n1. **水面水光质感重做**：移除半分辨率高频条纹混叠，改为双层低频斜向交错柔焦散并压低高光上限至 0.38；由 CPU 逐帧连续积分相位 `uWaterPhase`，彻底根治切季期间的水光抽动与跳变。\n2. **季节切换改风吹式过渡**：彻底撤掉发光光波与光圈；切季时由一阵 1.0 秒斜向阵风携带 36 颗当季碎屑（春花瓣、夏微尘/萤点、秋枫叶、冬雪粒）横向穿过画面，景物随不可见风锋经过原地换季，风过后粒子自然飘落消散，全程稳守 120 FPS。\n3. **聊天室 Shift+Enter 同步换行**：改用同步 `beforeinput` / `keyup` 标记补换行（移除 `setTimeout(0)` 竞态），并将 80ms 输入法防误发宽限窗仅限用于裸 Enter 发送，确保连打与中文上屏后紧跟 Shift+Enter 绝不丢行。"
+  },
+  "en": {
+    "title": "Visual & UX Polish: Silk Pond Caustics, Wind-Sweep Seasons & Synchronous Shift+Enter (r75)",
+    "summary": "Replaces aliased water stripes with soft low-frequency cross-caustics and continuous phase integration, swaps the season glow ring for a 1.0s wind gust carrying seasonal debris, and fixes rapid Shift+Enter newlines in Chat.",
+    "content_markdown": "# Visual & UX Polish: Silk Pond Caustics, Wind-Sweep Seasons & Synchronous Shift+Enter (r75)\n\nPure visual and interaction update with zero business-logic changes:\n\n1. **Water Light Redesign**: Replaces high-frequency aliased water stripes with dual-layer low-frequency diagonal cross-caustics capped at 0.38 highlight and CPU-integrated `uWaterPhase` to eliminate season-switch water twitch.\n2. **Wind-Sweep Season Transition**: Removes the glowing wavefront ring completely; an invisible 1.0s diagonal gust carries 36 lateral seasonal debris particles across the pond while scenery evolves in place at 120 FPS.\n3. **Chatroom Synchronous Shift+Enter**: Replaces the racy `setTimeout(0)` fallback with synchronous `beforeinput`/`keyup` handling and scopes the 80ms IME grace window strictly to bare Enter submission."
+  },
+  "ja": {
+    "title": "ビジュアル＆操作改善：水面光の刷新・風吹き季節切替・チャット Shift+Enter 同期改行（r75）",
+    "summary": "水面光を低周波の滑らかな光と連続位相へ刷新し、季節切替の発光リングを撤去して当季の粒子を運ぶ一陣の風へ変更、さらにチャット連続入力時の Shift+Enter 改行落ちを修正しました。",
+    "content_markdown": "# ビジュアル＆操作改善（r75）\n\n機能・データロジックには触れず、視覚・入力表現層のみを改善しました：\n\n1. **水面光のリデザイン**：高周波エイリアシング縞を廃し、低周波クロスコースティクスと連続位相 `uWaterPhase` により切替時のちらつきを解消。\n2. **風吹き式季節切替**：発光リングを完全撤去し、不可視の風前線と 36 粒の当季粒子が横切る 1.0 秒の風演出で 120 FPS を維持。\n3. **チャット Shift+Enter 同期改行**：`beforeinput` / `keyup` 同期処理へ切替え、IME 80ms 猶予を単体 Enter 送信のみに限定しました。"
+  }
+}, "2026-11-24T18:05:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-glass-pilot-visibility-r74', 'crt-glass-pilot-button-refraction-and-specificity-r74', 'site-updates', '["视觉更新","液态玻璃试点","按钮动效"]', '', 'published', 0, 0, '2026-11-24T16:25:00+08:00', '2026-11-24T16:25:00+08:00', '2026-11-24T16:25:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-24-glass-pilot-visibility-r74", {
   "zh": {

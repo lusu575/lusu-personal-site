@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-wind-water-and-shift-enter-r75",
+      "slug": "pond-wind-sweep-water-caustics-and-shift-enter-r75",
+      "category": "site-updates",
+      "tags": [
+        "视觉更新",
+        "水面水光",
+        "季节风吹过渡",
+        "聊天室"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T18:05:00+08:00",
+      "updated_at": "2026-11-24T18:05:00+08:00",
+      "published_at": "2026-11-24T18:05:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "视觉与交互优化：水面水光质感重做、季节风吹式过渡与聊天室 Shift+Enter 同步换行（r75）",
+        "en": "Visual & UX Polish: Silk Pond Caustics, Wind-Sweep Seasons & Synchronous Shift+Enter (r75)",
+        "ja": "ビジュアル＆操作改善：水面光の刷新・風吹き季節切替・チャット Shift+Enter 同期改行（r75）"
+      },
+      "summary": {
+        "zh": "重做池塘低频柔和霓虹水光并改用连续相位消除切季抽动；撤掉发光光波，改为一阵风携带当季碎屑横向吹过、景物原地换季；修复聊天室连打 Shift+Enter 丢换行。",
+        "en": "Replaces aliased water stripes with soft low-frequency cross-caustics and continuous phase integration, swaps the season glow ring for a 1.0s wind gust carrying seasonal debris, and fixes rapid Shift+Enter newlines in Chat.",
+        "ja": "水面光を低周波の滑らかな光と連続位相へ刷新し、季節切替の発光リングを撤去して当季の粒子を運ぶ一陣の風へ変更、さらにチャット連続入力時の Shift+Enter 改行落ちを修正しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-glass-pilot-visibility-r74",
       "slug": "crt-glass-pilot-button-refraction-and-specificity-r74",
       "category": "site-updates",
@@ -112,35 +141,6 @@ export const homeContent = Object.freeze({
         "zh": "移除初帧极小缩放时的 will-change: transform 并在动画结束执行两帧原生像素层重置，确保知识库及全部板块窗口定格后严格按 1:1 原生分辨率锐利重绘，同时保持 120 FPS 一体缩放。",
         "en": "Removed will-change: transform during initial tiny-scale frames and added a two-frame native-DPI layer reset on settle so Knowledge and all section windows crisp up at exact 1:1 native resolution.",
         "ja": "縮小開始時の will-change: transform を外し、アニメーション終了時に2フレームのネイティブ解像度リセットを行うことで、知識庫を含む全ウィンドウの文字・アイコンを鮮明に定格させました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-window-unified-content-zoom",
-      "slug": "2026-11-24-window-unified-content-zoom",
-      "category": "site-updates",
-      "tags": [
-        "site-updates",
-        "animation",
-        "ui",
-        "performance"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T14:55:00+08:00",
-      "updated_at": "2026-11-24T14:55:00+08:00",
-      "published_at": "2026-11-24T14:55:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "窗口外壳与内容一体化同步缩放开合动画上线",
-        "en": "Unified Single-Layer GPU Window & Content Zoom Animation",
-        "ja": "ウィンドウ枠・コンテンツ一体型 120 FPS 同期ズーム開閉実装"
-      },
-      "summary": {
-        "zh": "改为单层 GPU 整窗同步缩放路线：打开时窗口边框、图标与全部内容从第 0 帧即随窗口一起从图标处连续放大长出，关闭时一起缩回原图标，无外壳/内容脱节、无边框残影、保持 120 FPS 合成。",
-        "en": "Switched window open/close transitions to unified single-layer GPU scaling so window borders, icons, and content grow and shrink together from Frame 0 with zero shell/content disconnect, zero border ghosting, and 120 FPS compositor performance.",
-        "ja": "別枠フェードを廃止し、ウィンドウ枠と内部のアイコン・テキストを単一 GPU レイヤーとして 0 フレームからアイコン位置より一体で拡大展開・縮小収納する方式へ刷新しました。"
       }
     }
   ]

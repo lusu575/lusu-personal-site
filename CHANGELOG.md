@@ -2,6 +2,8 @@
 
 ## 2026-11-24
 
+- 重做池塘水面低频柔和霓虹水光与连续相位、撤掉切季光波改为一阵风吹过过渡，并修复聊天室 Shift+Enter 连续输入同步换行（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-wind-water-and-shift-enter-r75` / `pond-wind-sweep-water-caustics-and-shift-enter-r75`；视觉层缓存 `20261124-wind-water-r75`。
+
 - 修复欢迎窗液态玻璃按钮试点优先级覆盖并提升按压折光与释放波可见度（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-glass-pilot-visibility-r74` / `crt-glass-pilot-button-refraction-and-specificity-r74`；视觉层缓存 `20261124-glass-pilot-r74`。
 
 - 修复欢迎窗口开合旧版 WAAPI 动画抢占抖动与关于窗/全窗口老版原生滚动条闪现（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-welcome-lock-and-scrollbar-r73` / `welcome-modal-zero-jitter-and-zero-legacy-scrollbar-r73`；视觉层缓存 `20261124-welcome-scrollbar-r73`。

@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-24-glass-pilot-visibility-r74";
-const finalUpdateSlug = "crt-glass-pilot-button-refraction-and-specificity-r74";
+const finalUpdateId = "seed-update-2026-11-24-wind-water-and-shift-enter-r75";
+const finalUpdateSlug = "pond-wind-sweep-water-caustics-and-shift-enter-r75";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Visual Polish: Fix Welcome CRT Glass Pilot Specificity & Press Refraction (r74)";
-const finalPublishedAt = "2026-11-24T16:25:00+08:00";
+const finalTitleEn = "Visual & UX Polish: Silk Pond Caustics, Wind-Sweep Seasons & Synchronous Shift+Enter (r75)";
+const finalPublishedAt = "2026-11-24T18:05:00+08:00";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-24-glass-pilot-visibility-r74",
   "seed-update-2026-11-24-welcome-lock-and-scrollbar-r73",
   "seed-update-2026-11-24-window-zero-jitter-settle",
   "seed-update-2026-11-24-window-crisp-native-dpr",

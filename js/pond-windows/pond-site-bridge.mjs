@@ -2,7 +2,7 @@
 // Zero business-logic rewrites: all routing, API fetching, filtering, sorting, pinning,
 // search, pagination, account sessions, and language switching stay 100% in existing main.js & routes/*.mjs.
 
-import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261124-autumn-lotus-r69';
+import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261124-wind-water-r75';
 import {
   resolveInitialPondSeason,
   saveManualSeasonOverride,
@@ -185,9 +185,22 @@ function bindChatEnterToSend() {
 
   let isComposing = false;
   let lastCompositionEndMs = 0;
+  let pendingShiftNewline = null;
+
+  const flushPendingShiftNewline = () => {
+    const pending = pendingShiftNewline;
+    pendingShiftNewline = null;
+    if (!pending || document.activeElement !== input) return;
+    if (input.value !== pending.prevVal) return; // Native browser newline already inserted
+    const maxLen = input.maxLength;
+    if (maxLen > 0 && (pending.prevVal.length - (pending.end - pending.start) + 1) > maxLen) return;
+    input.setRangeText('\n', pending.start, pending.end, 'end');
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  };
 
   input.addEventListener('compositionstart', () => {
     isComposing = true;
+    flushPendingShiftNewline();
   });
   input.addEventListener('compositionend', () => {
     isComposing = false;
@@ -195,35 +208,46 @@ function bindChatEnterToSend() {
   });
   input.addEventListener('blur', () => {
     isComposing = false;
+    pendingShiftNewline = null;
+  });
+
+  // Synchronous beforeinput guard: if host swallowed Shift+Enter and user already typed next char,
+  // insert the newline synchronously BEFORE the next character so rapid typing NEVER drops '\n'!
+  input.addEventListener('beforeinput', (e) => {
+    if (!pendingShiftNewline) return;
+    if (e.inputType === 'insertLineBreak' || e.inputType === 'insertParagraph') {
+      pendingShiftNewline = null;
+      return;
+    }
+    flushPendingShiftNewline();
+  });
+
+  input.addEventListener('keyup', (e) => {
+    if (e.key === 'Enter' && pendingShiftNewline) {
+      flushPendingShiftNewline();
+    }
   });
 
   input.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
-    // Hard IME guard: never submit or alter Enter while composing Chinese/Japanese/Korean candidates
-    const imeActive = Boolean(
-      e.isComposing
-      || isComposing
-      || e.keyCode === 229
-      || (lastCompositionEndMs > 0 && performance.now() - lastCompositionEndMs < 80)
-    );
-    if (imeActive) return;
+    const activelyComposing = Boolean(e.isComposing || isComposing || e.keyCode === 229);
+    if (activelyComposing) return;
 
-    // Shift+Enter: NEVER preventDefault; allow native newline and fall back only if host swallowed it
+    // Shift+Enter: NEVER blocked by 80ms post-composition grace window; synchronous beforeinput/keyup fallback
     if (e.shiftKey) {
       if (e.altKey || e.ctrlKey || e.metaKey) return;
+      if (pendingShiftNewline) {
+        flushPendingShiftNewline();
+      }
       const prevVal = input.value;
       const start = typeof input.selectionStart === 'number' ? input.selectionStart : prevVal.length;
       const end = typeof input.selectionEnd === 'number' ? input.selectionEnd : prevVal.length;
-      window.setTimeout(() => {
-        if (document.activeElement !== input) return;
-        if (input.value !== prevVal) return; // Native browser newline already inserted
-        const maxLen = input.maxLength;
-        if (maxLen > 0 && (prevVal.length - (end - start) + 1) > maxLen) return;
-        input.setRangeText('\n', start, end, 'end');
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-      }, 0);
+      pendingShiftNewline = { prevVal, start, end };
       return;
     }
+
+    // 80ms post-composition grace window applies ONLY to bare Enter submit (prevents IME commit accidental send)
+    if (lastCompositionEndMs > 0 && performance.now() - lastCompositionEndMs < 80) return;
 
     // Other modified Enters (Ctrl/Meta/Alt+Enter): leave untouched
     if (e.altKey || e.ctrlKey || e.metaKey) return;
