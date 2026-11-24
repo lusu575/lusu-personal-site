@@ -9,7 +9,7 @@ import {
   startSeasonTimeSchedule
 } from '../pond-crt/season-schedule.mjs?v=20261122-pond-live-fix-r1';
 import { attachWelcomePilotButtons, getCrtGlassButtonPerfStats } from './crt-glass-button.mjs?v=20261123-pond-glass-r59';
-import { PondWindowMorphController } from './crt-window-morph.mjs?v=20261124-window-unified-zoom-r70';
+import { PondWindowMorphController } from './crt-window-morph.mjs?v=20261124-window-crisp-r71';
 
 function isMobileShell() {
   return document.documentElement.dataset.shell === 'mobile' || window.innerWidth <= 768;

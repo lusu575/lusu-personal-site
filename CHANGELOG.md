@@ -2,6 +2,8 @@
 
 ## 2026-11-24
 
+- 修复知识库及全站窗口打开后文字图标发糊问题（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-window-crisp-native-dpr` / `2026-11-24-window-crisp-native-dpr`；视觉层缓存 `20261124-window-crisp-r71`。
+
 - 窗口外壳与内容一体化同步缩放开合动画上线（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-window-unified-content-zoom` / `2026-11-24-window-unified-content-zoom`；视觉层缓存 `20261124-window-unified-zoom-r70`。
 
 - 秋季池塘荷叶枯黄变色与卷边质感实装（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-autumn-lotus-withered-yellow` / `2026-11-24-autumn-lotus-withered-yellow`；视觉层缓存 `20261124-autumn-lotus-r69`。

@@ -269,7 +269,9 @@ export class PondWindowMorphController {
     winEl.style.visibility = 'visible';
     winEl.style.pointerEvents = 'none';
     winEl.style.transformOrigin = '50% 50%';
-    winEl.style.willChange = reduced ? 'opacity' : 'transform, opacity';
+    // IMPORTANT (r71): Do NOT set will-change: transform at scale(0.10), which locks Chromium's
+    // cc::PictureLayerImpl raster scale to 0.10x (blurry text/icons even after settling to 1.0!).
+    winEl.style.willChange = reduced ? 'opacity' : 'auto';
 
     this.active = {
       kind: 'open',
@@ -346,7 +348,9 @@ export class PondWindowMorphController {
     winEl.style.visibility = 'visible';
     winEl.style.pointerEvents = 'none';
     winEl.style.transformOrigin = '50% 50%';
-    winEl.style.willChange = reduced ? 'opacity' : 'transform, opacity';
+    // IMPORTANT (r71): Do NOT set will-change: transform at scale(0.10), which locks Chromium's
+    // cc::PictureLayerImpl raster scale to 0.10x (blurry text/icons even after settling to 1.0!).
+    winEl.style.willChange = reduced ? 'opacity' : 'auto';
 
     this.active = {
       kind: 'close',
@@ -466,7 +470,24 @@ export class PondWindowMorphController {
       this.active = null;
 
       if (kind === 'open') {
-        this._clearWindowVisuals(winEl);
+        // Two-frame native-DPI layer reset:
+        // Frame A: clear transform/opacity/willChange while .is-morph-flying keeps backdrop-filter off
+        //          so Chromium tears down the temporary transform layer & repaints text at 1:1 native DPR.
+        // Frame B (next rAF): remove .is-morph-flying to restore backdrop-filter over crisp 1:1 text.
+        if (winEl) {
+          winEl.classList.remove('is-morph-measuring');
+          winEl.style.visibility = '';
+          winEl.style.opacity = '';
+          winEl.style.transform = '';
+          winEl.style.transformOrigin = '';
+          winEl.style.willChange = '';
+          winEl.style.pointerEvents = '';
+          requestAnimationFrame(() => {
+            if (!this.active || this.active.winEl !== winEl) {
+              winEl.classList.remove('is-morph-flying');
+            }
+          });
+        }
         this._setScrim(1);
       } else {
         this._setScrim(0);

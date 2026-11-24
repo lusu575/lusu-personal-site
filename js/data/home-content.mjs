@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-window-crisp-native-dpr",
+      "slug": "2026-11-24-window-crisp-native-dpr",
+      "category": "site-updates",
+      "tags": [
+        "site-updates",
+        "ui",
+        "performance"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T15:19:00+08:00",
+      "updated_at": "2026-11-24T15:19:00+08:00",
+      "published_at": "2026-11-24T15:19:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "修复知识库及全站窗口打开后文字图标发糊问题",
+        "en": "Fix Blurry Window Text & Icons After Unified Zoom (1:1 Native DPR Reset)",
+        "ja": "ウィンドウ拡大後の文字・アイコンぼやけ修正（1:1 ネイティブ解像度再描画）"
+      },
+      "summary": {
+        "zh": "移除初帧极小缩放时的 will-change: transform 并在动画结束执行两帧原生像素层重置，确保知识库及全部板块窗口定格后严格按 1:1 原生分辨率锐利重绘，同时保持 120 FPS 一体缩放。",
+        "en": "Removed will-change: transform during initial tiny-scale frames and added a two-frame native-DPI layer reset on settle so Knowledge and all section windows crisp up at exact 1:1 native resolution.",
+        "ja": "縮小開始時の will-change: transform を外し、アニメーション終了時に2フレームのネイティブ解像度リセットを行うことで、知識庫を含む全ウィンドウの文字・アイコンを鮮明に定格させました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-window-unified-content-zoom",
       "slug": "2026-11-24-window-unified-content-zoom",
       "category": "site-updates",
@@ -113,34 +141,6 @@ export const homeContent = Object.freeze({
         "zh": "彻底废弃旧版中心聚拢星尘漩涡，改用 1.0 秒风纹波前扫过池面：荷叶、花瓣、霜纹与水色全部钉在原位渐变枯荣，波前经过锦鲤触发轻微受惊加速，过渡微粒精简至 42 颗克制点阵微尘且可随时反向打断。",
         "en": "Replaced the center-gather stardust vortex with a 1.0s interruptible breeze wavefront: flora, lotus pads, frost edges, and water colors evolve strictly in-place with 42 restrained wavefront motes and natural koi startle reactions.",
         "ja": "中央収束の星屑渦を廃止し、1.0 秒の風波面で池の景物がその場で変化する演出へ刷新しました。42 粒の控えめなドット微塵、四季ごとのその場変化、波面通過時の錦鯉の驚き加速に対応しています。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-window-morph-single-shell-polish",
-      "slug": "2026-11-24-window-morph-single-shell-polish",
-      "category": "site-updates",
-      "tags": [
-        "site-updates",
-        "animation",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T10:58:00+08:00",
-      "updated_at": "2026-11-24T10:58:00+08:00",
-      "published_at": "2026-11-24T10:58:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "窗口开合动画单外壳无重影交接与定高优化",
-        "en": "Window Morph Single-Shell Handoff & Fixed Height Polish",
-        "ja": "ウィンドウ開閉の単一シェル引き継ぎ＆高さ固定調整"
-      },
-      "summary": {
-        "zh": "消除窗口展开中段外壳与内容层的双边框重影，并为游戏区与工具区补充定高约束，确保冷打开全程几何稳定不跳高。",
-        "en": "Eliminated double-border ghosting during L2-to-L3 content handoff and added fixed min-height constraints for Games and Tools windows to prevent cold-load height jumps.",
-        "ja": "L2 シェルと L3 コンテンツ切り替え時の二重枠を解消し、ゲーム・ツール画面の初回読み込み時の高さジャンプを防止しました。"
       }
     }
   ]

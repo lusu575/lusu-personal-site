@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-24-window-crisp-native-dpr",
+  "slug": "2026-11-24-window-crisp-native-dpr",
+  "category": "site-updates",
+  "tags": [
+    "site-updates",
+    "ui",
+    "performance"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-24T15:19:00+08:00",
+  "updated_at": "2026-11-24T15:19:00+08:00",
+  "published_at": "2026-11-24T15:19:00+08:00",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "修复知识库及全站窗口打开后文字图标发糊问题",
+    "en": "Fix Blurry Window Text & Icons After Unified Zoom (1:1 Native DPR Reset)",
+    "ja": "ウィンドウ拡大後の文字・アイコンぼやけ修正（1:1 ネイティブ解像度再描画）"
+  },
+  "summary": {
+    "zh": "移除初帧极小缩放时的 will-change: transform 并在动画结束执行两帧原生像素层重置，确保知识库及全部板块窗口定格后严格按 1:1 原生分辨率锐利重绘，同时保持 120 FPS 一体缩放。",
+    "en": "Removed will-change: transform during initial tiny-scale frames and added a two-frame native-DPI layer reset on settle so Knowledge and all section windows crisp up at exact 1:1 native resolution.",
+    "ja": "縮小開始時の will-change: transform を外し、アニメーション終了時に2フレームのネイティブ解像度リセットを行うことで、知識庫を含む全ウィンドウの文字・アイコンを鮮明に定格させました。"
+  },
+  "content_markdown": {
+    "zh": "# 修复知识库及全站窗口打开后文字图标发糊问题\n\n本次 `r71` 针对 `r70` 单层整窗缩放在高分屏 Chromium GPU 上出现的文字/图标发糊完成根治：\n\n- **解除低倍率纹理锁死**：移除 `scale(0.10–0.18)` 起始帧的 `will-change: transform`，防止 Chromium 合成器将窗口贴图锁死在低倍率瓦片上。\n- **两帧原生 DPR 重绘定格**：动画结束首帧先清空 `transform` 与 `opacity`（暂缓恢复 `backdrop-filter` 1 帧）促使浏览器卸载临时缩放层并以 `1:1` 原生设备像素比重绘全部图标与文案，下一帧再恢复毛玻璃，兼顾 120 FPS 与终态锐利度。",
+    "en": "# Fix Blurry Window Text & Icons After Unified Zoom (1:1 Native DPR Reset)\n\nRelease `r71` resolves the Chromium GPU low-resolution tile blur introduced by `r70`:\n\n- **No 0.10× Raster Lock**: Removed `will-change: transform` during initial tiny-scale frames so Chromium no longer locks raster tiles at low scale.\n- **Two-Frame 1:1 Native DPR Reset**: Clears `transform`/`opacity` one frame before restoring `backdrop-filter`, forcing Chromium to tear down the temporary transform layer and repaint all text and icons sharply at native `1:1` DPR.",
+    "ja": "# ウィンドウ拡大後の文字・アイコンぼやけ修正（1:1 ネイティブ解像度再描画）\n\n`r71` では `r70` の単一レイヤー拡大後に高DPI環境で文字やアイコンがぼやける問題を修正しました：\n\n- **低解像度ラスタ固定の解消**：開始時の極小スケールに対する `will-change: transform` を撤去。\n- **2フレーム 1:1 ネイティブ再描画**：終了時に1フレーム先行して `transform` を解除し、ネイティブ DPR で鮮明に再描画してから `backdrop-filter` を復帰させます。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-24-window-unified-content-zoom",
   "slug": "2026-11-24-window-unified-content-zoom",
   "category": "site-updates",
