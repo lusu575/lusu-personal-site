@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-24-window-zero-jitter-settle",
+      "slug": "2026-11-24-window-zero-jitter-settle",
+      "category": "site-updates",
+      "tags": [
+        "site-updates",
+        "ui",
+        "performance"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-24T15:29:00+08:00",
+      "updated_at": "2026-11-24T15:29:00+08:00",
+      "published_at": "2026-11-24T15:29:00+08:00",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "消除窗口定格末帧抖动与「关于」高度跳变",
+        "en": "Eliminate Window Settle Jitter & About Height Shift",
+        "ja": "ウィンドウ定格時の微振動および「概要」高さジャンプ解消"
+      },
+      "summary": {
+        "zh": "移除窗口打开结束时的 1 帧毛玻璃切换跳变，防止底层水光透过毛玻璃引起静止窗口微颤，并锁定「关于」窗口定高消除异步加载跳位。",
+        "en": "Removed the end-of-open 1-frame backdrop-filter toggle snap, stabilized window surface against moving pond light underneath, and locked About window height to eliminate post-open vertical jumps.",
+        "ja": "開閉終了時の 1 フレーム backdrop-filter 切替によるブレを廃止し、「概要」ウィンドウの高さを固定して非同期読み込み後の縦ズレを解消しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-window-crisp-native-dpr",
       "slug": "2026-11-24-window-crisp-native-dpr",
       "category": "site-updates",
@@ -112,35 +140,6 @@ export const homeContent = Object.freeze({
         "zh": "修复开合动画期间窗口本体外框优先级穿透导致的双向边框残影，以及「关于」窗口冷开误用通用大图退路引起的先大后缩问题，并对齐游戏区终态定高。",
         "en": "Fixed CSS specificity leakage that caused outer border ghosting during open and close transitions, and added exact per-section fallback sizing so the About and Games windows never pop larger or jump height.",
         "ja": "開閉アニメーション中の外枠 CSS 詳細度競合による残像を解消し、「概要」ウィンドウの一時的な拡大および「ゲーム」画面の高さジャンプを修正しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-season-wavefront-in-place",
-      "slug": "2026-11-24-season-wavefront-in-place",
-      "category": "site-updates",
-      "tags": [
-        "site-updates",
-        "animation",
-        "pond",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T14:33:00+08:00",
-      "updated_at": "2026-11-24T14:33:00+08:00",
-      "published_at": "2026-11-24T14:33:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "首页池塘季节切换「就地演变」波前与粒子重做上线",
-        "en": "Pond Season Switch In-Place Wavefront Evolution & Particle Redesign",
-        "ja": "池の季節切替「その場変化」波面エフェクト＆パーティクル刷新"
-      },
-      "summary": {
-        "zh": "彻底废弃旧版中心聚拢星尘漩涡，改用 1.0 秒风纹波前扫过池面：荷叶、花瓣、霜纹与水色全部钉在原位渐变枯荣，波前经过锦鲤触发轻微受惊加速，过渡微粒精简至 42 颗克制点阵微尘且可随时反向打断。",
-        "en": "Replaced the center-gather stardust vortex with a 1.0s interruptible breeze wavefront: flora, lotus pads, frost edges, and water colors evolve strictly in-place with 42 restrained wavefront motes and natural koi startle reactions.",
-        "ja": "中央収束の星屑渦を廃止し、1.0 秒の風波面で池の景物がその場で変化する演出へ刷新しました。42 粒の控えめなドット微塵、四季ごとのその場変化、波面通過時の錦鯉の驚き加速に対応しています。"
       }
     }
   ]

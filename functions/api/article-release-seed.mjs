@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-window-zero-jitter-settle', '2026-11-24-window-zero-jitter-settle', 'site-updates', '["site-updates","ui","performance"]', '', 'published', 0, 0, '2026-11-24T15:29:00+08:00', '2026-11-24T15:29:00+08:00', '2026-11-24T15:29:00+08:00') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-24-window-zero-jitter-settle", {
+  "zh": {
+    "title": "消除窗口定格末帧抖动与「关于」高度跳变",
+    "summary": "移除窗口打开结束时的 1 帧毛玻璃切换跳变，防止底层水光透过毛玻璃引起静止窗口微颤，并锁定「关于」窗口定高消除异步加载跳位。",
+    "content_markdown": "# 消除窗口定格末帧抖动与「关于」高度跳变\n\n本次 `r72` 解决窗口打开定格阶段的视觉微颤与跳动问题：\n\n- **消除末帧开关跳变与水光微颤**：统一窗口飞行期与定格期表面质感（`rgba(6, 20, 24, 0.93)` 静态深青终端底），去掉结束时 1 帧 `backdrop-filter` 开关跳变，同时避免底层动态水光在静止窗口后方产生视觉颤动。\n- **锁定「关于」窗口高度**：将 `#about .xp-window` 锁定为 `440px`，消除社交链接异步检查完成后窗口高度由 `469px` 突缩至 `403px` 造成的纵向跳动。"
+  },
+  "en": {
+    "title": "Eliminate Window Settle Jitter & About Height Shift",
+    "summary": "Removed the end-of-open 1-frame backdrop-filter toggle snap, stabilized window surface against moving pond light underneath, and locked About window height to eliminate post-open vertical jumps.",
+    "content_markdown": "# Eliminate Window Settle Jitter & About Height Shift\n\nRelease `r72` eliminates post-open window jitter and height shifts:\n\n- **Zero Settle Snap**: Unified flying and settled window surfaces (`rgba(6, 20, 24, 0.93)`) without toggling `backdrop-filter` on the final frame, keeping settled windows completely rock-solid.\n- **Locked About Height**: Fixed `#about .xp-window` at `440px` so async social-link checks never shift the window vertically after landing."
+  },
+  "ja": {
+    "title": "ウィンドウ定格時の微振動および「概要」高さジャンプ解消",
+    "summary": "開閉終了時の 1 フレーム backdrop-filter 切替によるブレを廃止し、「概要」ウィンドウの高さを固定して非同期読み込み後の縦ズレを解消しました。",
+    "content_markdown": "# ウィンドウ定格時の微振動および「概要」高さジャンプ解消\n\n`r72` ではウィンドウ定格時のブレと高さ変動を解消しました：\n\n- **定格ブレの完全解消**：開閉中と定格後の表面質感を統一し、終了フレームでの `backdrop-filter` 切替と背景水光の透過揺らぎをなくしました。\n- **「概要」高さ固定**：`#about .xp-window` を `440px` に固定し、非同期チェック後の縦ズレを防止しました。"
+  }
+}, "2026-11-24T15:29:00+08:00"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-24-window-crisp-native-dpr', '2026-11-24-window-crisp-native-dpr', 'site-updates', '["site-updates","ui","performance"]', '', 'published', 0, 0, '2026-11-24T15:19:00+08:00', '2026-11-24T15:19:00+08:00', '2026-11-24T15:19:00+08:00') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-24-window-crisp-native-dpr", {
   "zh": {

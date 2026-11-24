@@ -7072,17 +7072,25 @@ html[data-shell="mobile"] .xp-window.is-morph-measuring {
   pointer-events: none !important;
 }
 
-/* r70: Unified Single-Layer GPU Window Zoom — disable backdrop-filter ONLY during the 400-480ms flight
-   so GPU scales one single pre-rasterized window texture at 120 FPS with zero blur re-sampling or double borders */
+/* r72: Rock-Solid Static Window Surface + Zero End-of-Open Snap
+   - Locks #about min-height to 440px so async social-link check never jumps height (469->403px)
+   - Removes jarring 1-frame backdrop-filter toggle snap at end of open and prevents moving pond caustics
+     from shimmering/vibrating through settled window text */
+html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window,
+html[data-ui-shell="mobile"] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window,
+html[data-shell="mobile"] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: rgba(6, 20, 24, 0.93) !important;
+}
+
 html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying,
 html[data-ui-shell="mobile"] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying,
 html[data-shell="mobile"] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying {
   contain: layout style !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
 }
 
-/* Step 3 fixed height constraint: match settled Games/Resources heights so deltaH === 0 on cold open */
+/* Lock settled heights across dynamic sections so deltaH === 0 after open */
 html[data-pond-mode="games"] #games .xp-window {
   min-height: min(760px, 78vh) !important;
   height: min(760px, 78vh) !important;
@@ -7090,4 +7098,9 @@ html[data-pond-mode="games"] #games .xp-window {
 
 html[data-pond-mode="resources"] #resources .xp-window {
   min-height: min(680px, 72vh) !important;
+}
+
+html[data-pond-mode="about"] #about .xp-window {
+  min-height: 440px !important;
+  height: 440px !important;
 }

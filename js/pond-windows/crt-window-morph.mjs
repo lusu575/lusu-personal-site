@@ -470,24 +470,8 @@ export class PondWindowMorphController {
       this.active = null;
 
       if (kind === 'open') {
-        // Two-frame native-DPI layer reset:
-        // Frame A: clear transform/opacity/willChange while .is-morph-flying keeps backdrop-filter off
-        //          so Chromium tears down the temporary transform layer & repaints text at 1:1 native DPR.
-        // Frame B (next rAF): remove .is-morph-flying to restore backdrop-filter over crisp 1:1 text.
-        if (winEl) {
-          winEl.classList.remove('is-morph-measuring');
-          winEl.style.visibility = '';
-          winEl.style.opacity = '';
-          winEl.style.transform = '';
-          winEl.style.transformOrigin = '';
-          winEl.style.willChange = '';
-          winEl.style.pointerEvents = '';
-          requestAnimationFrame(() => {
-            if (!this.active || this.active.winEl !== winEl) {
-              winEl.classList.remove('is-morph-flying');
-            }
-          });
-        }
+        // Clear transform/opacity cleanly so settled window sits at exact 1:1 native DPR with ZERO frame snap
+        this._clearWindowVisuals(winEl);
         this._setScrim(1);
       } else {
         this._setScrim(0);
