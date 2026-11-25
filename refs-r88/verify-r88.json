@@ -1,0 +1,135 @@
+{
+  "source": "https://lusu575.com/",
+  "auditAfter": {
+    "totalBound": 69,
+    "counts": {
+      "glass-primary": 49,
+      "glass-icon": 10,
+      "glass-close": 10,
+      "glass-card": 0
+    },
+    "unboundCount": 6,
+    "unboundSamples": [
+      "summary.",
+      "a.recent-update-link",
+      "a.recent-update-link",
+      "a.recent-update-link",
+      "a.recent-update-link",
+      "a.recent-update-link"
+    ],
+    "excludedLeaks": 0,
+    "autoDelegationActive": true,
+    "tier": "normal",
+    "reducedMotion": false
+  },
+  "checks": {
+    "kbReadCta": {
+      "sel": "#knowledge-list .article-card .article-card-cta",
+      "missing": true
+    },
+    "kbCardRow": {
+      "sel": "#knowledge-list .article-card",
+      "missing": true
+    },
+    "kbCategory": {
+      "sel": "#knowledge-categories .category-button",
+      "text": "全部0",
+      "bound": "glass-primary",
+      "isHeld": true,
+      "cgHold": "0.9504",
+      "cgPressY": "2.38px"
+    },
+    "gameStart": {
+      "sel": "#game-list .card-action",
+      "text": "开始",
+      "bound": "glass-primary",
+      "isHeld": true,
+      "cgHold": "0.9928",
+      "cgPressY": "2.48px"
+    },
+    "gameDetails": {
+      "sel": "#game-list summary",
+      "text": "许可证、全部语言与来源",
+      "bound": "glass-primary",
+      "isHeld": true,
+      "cgHold": "0.9891",
+      "cgPressY": "2.47px"
+    },
+    "toolOpen": {
+      "sel": "#resource-list .card-action",
+      "text": "打开",
+      "bound": "glass-primary",
+      "isHeld": true,
+      "cgHold": "0.5200",
+      "cgPressY": "1.30px"
+    },
+    "toolSummary": {
+      "sel": "#resource-list summary",
+      "text": "版本与使用说明",
+      "bound": "glass-primary",
+      "isHeld": true,
+      "cgHold": "0.5200",
+      "cgPressY": "1.30px"
+    },
+    "welcomeMore": {
+      "sel": "#welcome-modal .more-button",
+      "missing": true
+    },
+    "welcomeUpdateLink": {
+      "sel": "#recent-updates .recent-update-link",
+      "text": "液态玻璃全站动态自动绑定根治：补齐知识库",
+      "bound": "glass-primary",
+      "isHeld": false,
+      "cgHold": "",
+      "cgPressY": ""
+    },
+    "chatHelp": {
+      "sel": "#chatroom .chat-room-help-trigger",
+      "text": "?",
+      "bound": "glass-icon",
+      "isHeld": false,
+      "cgHold": "",
+      "cgPressY": ""
+    },
+    "chatNickname": {
+      "sel": "#chat-edit-nickname",
+      "text": "换一个名字",
+      "bound": "glass-primary",
+      "isHeld": false,
+      "cgHold": "",
+      "cgPressY": ""
+    },
+    "aboutSocial": {
+      "sel": "#about .about-social-link",
+      "text": "",
+      "bound": "glass-icon",
+      "isHeld": false,
+      "cgHold": "",
+      "cgPressY": ""
+    },
+    "aboutRss": {
+      "sel": "#daily-ai-news-rss-button",
+      "text": "RSS 订阅",
+      "bound": "glass-primary",
+      "isHeld": false,
+      "cgHold": "",
+      "cgPressY": ""
+    },
+    "accountPwToggle": {
+      "sel": "#account-popover .account-password-toggle",
+      "text": "显示密码",
+      "bound": "glass-icon",
+      "isHeld": false,
+      "cgHold": "",
+      "cgPressY": ""
+    },
+    "accountMode": {
+      "sel": "#account-popover .account-mode-button",
+      "text": "登录",
+      "bound": "glass-primary",
+      "isHeld": false,
+      "cgHold": "",
+      "cgPressY": ""
+    }
+  }
+}
