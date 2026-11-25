@@ -1,0 +1,70 @@
+{
+  "url": "https://lusu575.com/",
+  "cssVer": "/css/pond-windows.css?v=20261125-unclipped-halo-r93",
+  "scenarios": {
+    "cardGamesStart": {
+      "text": "开始",
+      "hoverProxy": {
+        "state": "hover",
+        "boxShadow": "rgba(102, 236, 224, 0.32) 0px 0px 14px 0px",
+        "borderRadius": "999px",
+        "left": "288px",
+        "top": "489.5px"
+      },
+      "holdProxy": {
+        "state": "hold",
+        "proxyBoxShadow": "rgba(114, 232, 224, 0.56) 0px 0px 20px 0px",
+        "btnBoxShadow": "rgba(220, 252, 252, 0.42) 0px 2px 12px 0px inset, rgba(3, 12, 16, 0.78) 0px -2px 8px 0px inset",
+        "btnBorderColor": "rgba(204, 255, 250, 0.98)",
+        "proxyInBody": true
+      },
+      "idleCount": 1
+    },
+    "scrollGamesStart": {
+      "text": "开始",
+      "hoverProxy": {
+        "state": "hover",
+        "boxShadow": "rgba(102, 236, 224, 0.32) 0px 0px 14px 0px",
+        "borderRadius": "999px",
+        "left": "288px",
+        "top": "489.5px"
+      },
+      "holdProxy": {
+        "state": "hold",
+        "proxyBoxShadow": "rgba(114, 232, 224, 0.56) 0px 0px 20px 0px",
+        "btnBoxShadow": "rgba(220, 252, 252, 0.42) 0px 2px 12px 0px inset, rgba(3, 12, 16, 0.78) 0px -2px 8px 0px inset",
+        "btnBorderColor": "rgba(204, 255, 250, 0.98)",
+        "proxyInBody": true
+      },
+      "idleCount": 1
+    },
+    "cardToolsOpen": {
+      "text": "打开",
+      "hoverProxy": {
+        "state": "hover",
+        "boxShadow": "rgba(102, 236, 224, 0.32) 0px 0px 14px 0px",
+        "borderRadius": "999px",
+        "left": "294px",
+        "top": "606.52px"
+      },
+      "holdProxy": {
+        "state": "hold",
+        "proxyBoxShadow": "rgba(114, 232, 224, 0.56) 0px 0px 20px 0px",
+        "btnBoxShadow": "rgba(220, 252, 252, 0.42) 0px 2px 12px 0px inset, rgba(3, 12, 16, 0.78) 0px -2px 8px 0px inset",
+        "btnBorderColor": "rgba(204, 255, 250, 0.98)",
+        "proxyInBody": true
+      },
+      "idleCount": 1
+    },
+    "scrollKnowledgeRead": {
+      "error": "not found"
+    }
+  },
+  "toolsIconAfter": {
+    "imgBorderRadius": "0px",
+    "imgOverflow": "visible",
+    "h2Overflow": "visible",
+    "h2PaddingTop": "14px",
+    "cardOverflow": "visible"
+  }
+}

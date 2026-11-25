@@ -1,0 +1,599 @@
+{
+  "timestamp": "2026-11-25T09:10:38.496Z",
+  "url": "https://lusu575.com/",
+  "windows": {
+    "welcome": {
+      "changes": [],
+      "firstFrame": {
+        "tMs": 43,
+        "present": true,
+        "flying": false,
+        "winRect": {
+          "top": 0,
+          "left": 0,
+          "w": 0,
+          "h": 0
+        },
+        "opacity": 1,
+        "textLen": 1535,
+        "childCards": 5,
+        "listTopRel": 0,
+        "listH": 0,
+        "hasScrollbar": false,
+        "scrollH": 0,
+        "clientH": 0,
+        "imgsTotal": 0,
+        "imgsDecoded": 0,
+        "imgs": [],
+        "loaderInfo": null,
+        "fontsLoaded": 0
+      },
+      "settledFrame": {
+        "tMs": 2000,
+        "present": true,
+        "flying": false,
+        "winRect": {
+          "top": 0,
+          "left": 0,
+          "w": 0,
+          "h": 0
+        },
+        "opacity": 1,
+        "textLen": 1535,
+        "childCards": 5,
+        "listTopRel": 0,
+        "listH": 0,
+        "hasScrollbar": false,
+        "scrollH": 0,
+        "clientH": 0,
+        "imgsTotal": 0,
+        "imgsDecoded": 0,
+        "imgs": [],
+        "loaderInfo": null,
+        "fontsLoaded": 0
+      }
+    },
+    "knowledge": {
+      "changes": [
+        {
+          "tMs": 389,
+          "childCards": "0 -> 6",
+          "textLen": "1013 -> 1039"
+        },
+        {
+          "tMs": 600,
+          "flying": "true -> false"
+        },
+        {
+          "tMs": 1417,
+          "childCards": "6 -> 12",
+          "textLen": "1039 -> 2604"
+        }
+      ],
+      "firstFrame": {
+        "tMs": 41,
+        "present": true,
+        "flying": true,
+        "winRect": {
+          "top": 186,
+          "left": 517,
+          "w": 104,
+          "h": 69
+        },
+        "opacity": 0.24,
+        "textLen": 1013,
+        "childCards": 0,
+        "listTopRel": 18,
+        "listH": 49,
+        "hasScrollbar": false,
+        "scrollH": 682,
+        "clientH": 682,
+        "imgsTotal": 0,
+        "imgsDecoded": 0,
+        "imgs": [],
+        "loaderInfo": {
+          "cls": "content-state route-module-status is-loading",
+          "display": "none",
+          "opacity": "0",
+          "text": "正在打开应用模块..."
+        },
+        "fontsLoaded": 0
+      },
+      "settledFrame": {
+        "tMs": 2002,
+        "present": true,
+        "flying": false,
+        "winRect": {
+          "top": 129,
+          "left": 200,
+          "w": 1040,
+          "h": 684
+        },
+        "opacity": 1,
+        "textLen": 2604,
+        "childCards": 12,
+        "listTopRel": 226,
+        "listH": 439,
+        "hasScrollbar": false,
+        "scrollH": 682,
+        "clientH": 682,
+        "imgsTotal": 0,
+        "imgsDecoded": 0,
+        "imgs": [],
+        "loaderInfo": null,
+        "fontsLoaded": 0
+      }
+    },
+    "videos": {
+      "changes": [
+        {
+          "tMs": 600,
+          "flying": "true -> false"
+        }
+      ],
+      "firstFrame": {
+        "tMs": 41,
+        "present": true,
+        "flying": true,
+        "winRect": {
+          "top": 177,
+          "left": 877,
+          "w": 113,
+          "h": 74
+        },
+        "opacity": 0.39,
+        "textLen": 61,
+        "childCards": 0,
+        "listTopRel": 12,
+        "listH": 60,
+        "hasScrollbar": false,
+        "scrollH": 682,
+        "clientH": 682,
+        "imgsTotal": 0,
+        "imgsDecoded": 0,
+        "imgs": [],
+        "loaderInfo": {
+          "cls": "content-state route-module-status is-loading",
+          "display": "none",
+          "opacity": "0",
+          "text": "正在打开应用模块..."
+        },
+        "fontsLoaded": 0
+      },
+      "settledFrame": {
+        "tMs": 2344,
+        "present": true,
+        "flying": false,
+        "winRect": {
+          "top": 129,
+          "left": 200,
+          "w": 1040,
+          "h": 684
+        },
+        "opacity": 1,
+        "textLen": 59,
+        "childCards": 0,
+        "listTopRel": 114,
+        "listH": 549,
+        "hasScrollbar": false,
+        "scrollH": 682,
+        "clientH": 682,
+        "imgsTotal": 0,
+        "imgsDecoded": 0,
+        "imgs": [],
+        "loaderInfo": null,
+        "fontsLoaded": 0
+      }
+    },
+    "resources": {
+      "changes": [],
+      "firstFrame": {
+        "tMs": 819,
+        "present": true,
+        "flying": false,
+        "winRect": {
+          "top": 50,
+          "left": 240,
+          "w": 960,
+          "h": 721
+        },
+        "opacity": 1,
+        "textLen": 518,
+        "childCards": 3,
+        "listTopRel": 61,
+        "listH": 657,
+        "hasScrollbar": false,
+        "scrollH": 715,
+        "clientH": 715,
+        "imgsTotal": 3,
+        "imgsDecoded": 0,
+        "imgs": [
+          {
+            "cls": "resource-icon-image",
+            "src": "whiteboard.png",
+            "complete": false,
+            "natW": 0,
+            "w": 42,
+            "h": 42
+          },
+          {
+            "cls": "resource-icon-image",
+            "src": "quick-transfer.png",
+            "complete": false,
+            "natW": 0,
+            "w": 42,
+            "h": 42
+          },
+          {
+            "cls": "resource-icon-image",
+            "src": "tool-icon-64.webp",
+            "complete": false,
+            "natW": 0,
+            "w": 42,
+            "h": 42
+          }
+        ],
+        "loaderInfo": null,
+        "fontsLoaded": 0
+      },
+      "settledFrame": {
+        "tMs": 2825,
+        "present": true,
+        "flying": false,
+        "winRect": {
+          "top": 50,
+          "left": 240,
+          "w": 960,
+          "h": 721
+        },
+        "opacity": 1,
+        "textLen": 518,
+        "childCards": 3,
+        "listTopRel": 61,
+        "listH": 657,
+        "hasScrollbar": false,
+        "scrollH": 715,
+        "clientH": 715,
+        "imgsTotal": 3,
+        "imgsDecoded": 0,
+        "imgs": [
+          {
+            "cls": "resource-icon-image",
+            "src": "whiteboard.png",
+            "complete": false,
+            "natW": 0,
+            "w": 42,
+            "h": 42
+          },
+          {
+            "cls": "resource-icon-image",
+            "src": "quick-transfer.png",
+            "complete": false,
+            "natW": 0,
+            "w": 42,
+            "h": 42
+          },
+          {
+            "cls": "resource-icon-image",
+            "src": "tool-icon-64.webp",
+            "complete": false,
+            "natW": 0,
+            "w": 42,
+            "h": 42
+          }
+        ],
+        "loaderInfo": null,
+        "fontsLoaded": 0
+      }
+    },
+    "games": {
+      "changes": [
+        {
+          "tMs": 1807,
+          "childCards": "0 -> 5",
+          "textLen": "50 -> 523",
+          "imgs": "0/0 -> 0/5",
+          "listTopRel": "61 -> 87"
+        }
+      ],
+      "firstFrame": {
+        "tMs": 810,
+        "present": true,
+        "flying": false,
+        "winRect": {
+          "top": 50,
+          "left": 240,
+          "w": 960,
+          "h": 734
+        },
+        "opacity": 1,
+        "textLen": 50,
+        "childCards": 0,
+        "listTopRel": 61,
+        "listH": 670,
+        "hasScrollbar": false,
+        "scrollH": 728,
+        "clientH": 728,
+        "imgsTotal": 0,
+        "imgsDecoded": 0,
+        "imgs": [],
+        "loaderInfo": {
+          "cls": "content-state route-module-status is-loading",
+          "display": "none",
+          "opacity": "0",
+          "text": "正在打开应用模块..."
+        },
+        "fontsLoaded": 0
+      },
+      "settledFrame": {
+        "tMs": 2818,
+        "present": true,
+        "flying": false,
+        "winRect": {
+          "top": 50,
+          "left": 240,
+          "w": 960,
+          "h": 734
+        },
+        "opacity": 1,
+        "textLen": 523,
+        "childCards": 5,
+        "listTopRel": 87,
+        "listH": 644,
+        "hasScrollbar": false,
+        "scrollH": 728,
+        "clientH": 728,
+        "imgsTotal": 5,
+        "imgsDecoded": 0,
+        "imgs": [
+          {
+            "cls": "game-cover",
+            "src": "icon-games.png",
+            "complete": false,
+            "natW": 0,
+            "w": 64,
+            "h": 64
+          },
+          {
+            "cls": "game-cover",
+            "src": "icon-games.png",
+            "complete": false,
+            "natW": 0,
+            "w": 64,
+            "h": 64
+          },
+          {
+            "cls": "game-cover",
+            "src": "icon-games.png",
+            "complete": false,
+            "natW": 0,
+            "w": 64,
+            "h": 64
+          },
+          {
+            "cls": "game-cover",
+            "src": "icon-games.png",
+            "complete": false,
+            "natW": 0,
+            "w": 64,
+            "h": 64
+          },
+          {
+            "cls": "game-cover",
+            "src": "icon-games.png",
+            "complete": false,
+            "natW": 0,
+            "w": 64,
+            "h": 64
+          }
+        ],
+        "loaderInfo": null,
+        "fontsLoaded": 0
+      }
+    },
+    "chatroom": {
+      "changes": [
+        {
+          "tMs": 1812,
+          "imgs": "0/1 -> 1/1"
+        }
+      ],
+      "firstFrame": {
+        "tMs": 801,
+        "present": true,
+        "flying": false,
+        "winRect": {
+          "top": 50,
+          "left": 349,
+          "w": 742,
+          "h": 680
+        },
+        "opacity": 1,
+        "textLen": 837,
+        "childCards": 0,
+        "listTopRel": null,
+        "listH": null,
+        "hasScrollbar": false,
+        "scrollH": 674,
+        "clientH": 674,
+        "imgsTotal": 1,
+        "imgsDecoded": 0,
+        "imgs": [
+          {
+            "cls": "chatroom-avatar",
+            "src": "icon-chatroom.png",
+            "complete": false,
+            "natW": 96,
+            "w": 54,
+            "h": 54
+          }
+        ],
+        "loaderInfo": {
+          "cls": "content-state route-module-status is-loading",
+          "display": "none",
+          "opacity": "0",
+          "text": "正在打开应用模块..."
+        },
+        "fontsLoaded": 0
+      },
+      "settledFrame": {
+        "tMs": 2797,
+        "present": true,
+        "flying": false,
+        "winRect": {
+          "top": 50,
+          "left": 349,
+          "w": 742,
+          "h": 680
+        },
+        "opacity": 1,
+        "textLen": 837,
+        "childCards": 0,
+        "listTopRel": null,
+        "listH": null,
+        "hasScrollbar": false,
+        "scrollH": 674,
+        "clientH": 674,
+        "imgsTotal": 1,
+        "imgsDecoded": 1,
+        "imgs": [
+          {
+            "cls": "chatroom-avatar",
+            "src": "icon-chatroom.png",
+            "complete": true,
+            "natW": 96,
+            "w": 54,
+            "h": 54
+          }
+        ],
+        "loaderInfo": null,
+        "fontsLoaded": 0
+      }
+    },
+    "about": {
+      "changes": [
+        {
+          "tMs": 1830,
+          "imgs": "0/1 -> 1/1"
+        }
+      ],
+      "firstFrame": {
+        "tMs": 836,
+        "present": true,
+        "flying": false,
+        "winRect": {
+          "top": 50,
+          "left": 310,
+          "w": 820,
+          "h": 369
+        },
+        "opacity": 1,
+        "textLen": 907,
+        "childCards": 0,
+        "listTopRel": 61,
+        "listH": 305,
+        "hasScrollbar": false,
+        "scrollH": 363,
+        "clientH": 363,
+        "imgsTotal": 1,
+        "imgsDecoded": 0,
+        "imgs": [
+          {
+            "cls": "profile-avatar-image",
+            "src": "lusu-about-avatar-256.png",
+            "complete": false,
+            "natW": 0,
+            "w": 164,
+            "h": 256
+          }
+        ],
+        "loaderInfo": null,
+        "fontsLoaded": 0
+      },
+      "settledFrame": {
+        "tMs": 2831,
+        "present": true,
+        "flying": false,
+        "winRect": {
+          "top": 50,
+          "left": 310,
+          "w": 820,
+          "h": 369
+        },
+        "opacity": 1,
+        "textLen": 907,
+        "childCards": 0,
+        "listTopRel": 61,
+        "listH": 305,
+        "hasScrollbar": false,
+        "scrollH": 363,
+        "clientH": 363,
+        "imgsTotal": 1,
+        "imgsDecoded": 1,
+        "imgs": [
+          {
+            "cls": "profile-avatar-image",
+            "src": "lusu-about-avatar-256.png",
+            "complete": true,
+            "natW": 256,
+            "w": 164,
+            "h": 256
+          }
+        ],
+        "loaderInfo": null,
+        "fontsLoaded": 0
+      }
+    },
+    "account": {
+      "changes": [],
+      "firstFrame": {
+        "tMs": 831,
+        "present": true,
+        "flying": false,
+        "winRect": {
+          "top": 0,
+          "left": 0,
+          "w": 0,
+          "h": 0
+        },
+        "opacity": 1,
+        "textLen": 82,
+        "childCards": 0,
+        "listTopRel": null,
+        "listH": null,
+        "hasScrollbar": false,
+        "scrollH": 0,
+        "clientH": 0,
+        "imgsTotal": 0,
+        "imgsDecoded": 0,
+        "imgs": [],
+        "loaderInfo": null,
+        "fontsLoaded": 0
+      },
+      "settledFrame": {
+        "tMs": 2838,
+        "present": true,
+        "flying": false,
+        "winRect": {
+          "top": 0,
+          "left": 0,
+          "w": 0,
+          "h": 0
+        },
+        "opacity": 1,
+        "textLen": 82,
+        "childCards": 0,
+        "listTopRel": null,
+        "listH": null,
+        "hasScrollbar": false,
+        "scrollH": 0,
+        "clientH": 0,
+        "imgsTotal": 0,
+        "imgsDecoded": 0,
+        "imgs": [],
+        "loaderInfo": null,
+        "fontsLoaded": 0
+      }
+    }
+  }
+}
