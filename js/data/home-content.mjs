@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-25-glass-auto-binding-r88",
+      "slug": "2026-11-25-glass-auto-binding-r88",
+      "category": "site-updates",
+      "tags": [
+        "ui",
+        "glass",
+        "pond"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": "2026-11-25",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "液态玻璃全站动态自动绑定根治：补齐知识库列表、游戏开始与全窗动态按钮（r88）",
+        "en": "Site-Wide Automatic CRT Glass Binding: Knowledge List, Game Start & All Dynamic Controls (r88)",
+        "ja": "CRT 液態ガラスの動的自動バインド根治：知識庫一覧・ゲーム開始・全動的ボタン網羅（r88）"
+      },
+      "summary": {
+        "zh": "根治旧版静态白名单导致的液态玻璃漏绑问题：补齐知识库文章卡片与「阅读」按钮、游戏区「开始」与「来源」按钮、工具区「打开」按钮、欢迎窗「查看更多更新」与最近更新条目、视频/工具筛选按钮、聊天室帮助键、关于页社交图标与账号「显示密码」键，并升级为统一语义规则＋捕获期事件委托＋全局 MutationObserver 双重自动绑定机制。",
+        "en": "Replaced the brittle static selector whitelist with unified semantic glass rules, capturing lazy event delegation, and a rAF-debounced MutationObserver so dynamically rendered controls (Knowledge article cards & Read CTA, Game Start & Source buttons, Tool Open buttons, Welcome More/Updates, Video/Tool filters, Chat help, About social links, Account password toggles) always bind automatically with zero leaks.",
+        "ja": "従来の静的ホワイトリストによる漏れを根治し、統一セマンティック規則＋キャプチャ委譲＋MutationObserver の二重自動バインドへ刷新。知識庫記事カードと「読む」、ゲーム「開始」、ツール「開く」、ようこそ画面の更新項目・動画フィルタ・チャットヘルプ・SNS・パスワード表示ボタンまで完全網羅しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-25-persepolis-warm-boot-r87",
       "slug": "2026-11-25-persepolis-warm-boot-r87",
       "category": "site-updates",
@@ -109,35 +137,6 @@ export const homeContent = Object.freeze({
         "zh": "彻底下线 r57 旧版 CRT 开机壳，在池塘 WebGL2 本体管线内实现 2.2–2.6 秒「点亮池塘」显影：深青微光起手、点阵荧光涟漪由中心扩散依次点亮水面、当季景物、点阵汇聚锦鲤、气泡浮起桌面图标与顶部时钟，扫描光束扫过直接交接为活池塘。",
         "en": "Replaced the legacy r57 boot shell with a unified WebGL2 pond emergence: 0.3s phosphor ignition over a luminous teal base, radial dot-matrix ripple revealing water, active-season flora, coalescing koi, bubble-rising desktop icons, and clock, finishing with a scan beam into the live pond.",
         "ja": "旧 r57 起動画面シェルを完全撤去し、池 WebGL2 本体内で 0.3 秒の蛍光点火から波紋拡散による水面・四季景物・光点収束の錦鯉・泡のように浮上するアイコン・時計点灯までを一気通貫で描画し、走査光でそのまま生きた池へ引き継ぎます。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-25-glass-v1-complete-r83",
-      "slug": "2026-11-25-glass-v1-complete-r83",
-      "category": "site-updates",
-      "tags": [
-        "ui",
-        "glass",
-        "pond",
-        "performance"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-25",
-      "updated_at": "2026-11-25",
-      "published_at": "2026-11-25",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "液态玻璃 CRT Glass Lite V1.0 全量收口：窗口薄壳高光边与动态按钮全覆盖（r83）",
-        "en": "CRT Glass Lite V1.0 Completion: Thin-Shell Window Rims & Dynamic Button Coverage (r83)",
-        "ja": "CRT Glass Lite V1.0 全ステップ完了：ウィンドウ薄殻リム光と動的ボタン自動適用（r83）"
-      },
-      "summary": {
-        "zh": "完成液态玻璃方案 V1.0 剩余步骤 5 与步骤 8：为桌面池塘窗口与账号弹窗补齐零 backdrop-filter 的 1.25px 荧光薄壳高光边与聚焦微虹彩，补全知识库/视频分类按钮、账号弹窗与快传动态按钮的自动绑定与性能分层闭环。",
-        "en": "Completed remaining V1.0 Steps 5 and 8: added zero-backdrop-filter 1.25px thin-shell CRT glass window rims with subtle focus iridescence, auto-bound dynamic category/account/transfer buttons, and finalized low-tier & audit gates.",
-        "ja": "V1.0 残ステップ 5・8 を完了。backdrop-filter を使わない 1.25px 蛍光薄殻リムとフォーカス微虹彩をウィンドウ・アカウント枠へ追加し、知識庫／動画のカテゴリボタンやアカウント／転送の動的ボタンも完全カバーしました。"
       }
     }
   ]

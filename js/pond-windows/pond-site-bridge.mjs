@@ -8,7 +8,7 @@ import {
   saveManualSeasonOverride,
   startSeasonTimeSchedule
 } from '../pond-crt/season-schedule.mjs?v=20261122-pond-live-fix-r1';
-import { attachSiteGlassButtons, attachWelcomePilotButtons, getCrtGlassAudit, getCrtGlassButtonPerfStats } from './crt-glass-button.mjs?v=20261125-glass-complete-r83';
+import { attachSiteGlassButtons, attachWelcomePilotButtons, getCrtGlassAudit, getCrtGlassButtonPerfStats, installAutoGlassBinding } from './crt-glass-button.mjs?v=20261125-glass-auto-r88';
 import { PondWindowMorphController } from './crt-window-morph.mjs?v=20261124-welcome-scrollbar-r73';
 
 function isMobileShell() {
@@ -828,7 +828,7 @@ function bootPondVisualBridge() {
     scheduleSiteGlassBind();
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'data-pond-mode'] });
   syncGamesCloudBanner();
-  attachSiteGlassButtons();
+  installAutoGlassBinding();
   lockImagesNonDraggable();
 
   window.addEventListener('hashchange', () => {

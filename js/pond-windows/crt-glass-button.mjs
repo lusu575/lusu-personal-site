@@ -9,7 +9,7 @@ import {
   CRT_GLASS_SPRINGS,
   CRT_GLASS_TIERS,
   syncCrtGlassCssVars
-} from './crt-glass-config.mjs?v=20261124-glass-dynamic-r76';
+} from './crt-glass-config.mjs?v=20261125-glass-auto-r88';
 
 function getActivePerfTier() {
   const tierName = document.documentElement.dataset.performanceTier || 'high';
@@ -199,6 +199,11 @@ class CrtGlassButtonController {
 
   _handlePointerDown(e) {
     if (this.el.disabled || e.button === 2) return;
+    // Prevent double-fire when pressing an inner glass control (e.g. .article-card-cta inside .article-card)
+    if (this.levelName === 'glass-card' && e.target instanceof Element) {
+      const inner = e.target.closest('[data-crt-glass-bound]');
+      if (inner && inner !== this.el && this.el.contains(inner)) return;
+    }
     this._measureContact(e.clientX, e.clientY, false);
     this.activePointerId = e.pointerId;
     try {
@@ -412,66 +417,158 @@ class CrtGlassButtonController {
   }
 }
 
+const controllerByElement = new WeakMap();
+
 export function attachCrtGlassButton(el, levelName = 'glass-primary') {
-  if (!el || el.dataset.crtGlassBound) return null;
+  if (!el || !(el instanceof Element)) return null;
+  if (el.dataset.crtGlassBound) return controllerByElement.get(el) || null;
   syncCrtGlassCssVars();
-  return new CrtGlassButtonController(el, levelName);
+  const ctrl = new CrtGlassButtonController(el, levelName);
+  controllerByElement.set(el, ctrl);
+  return ctrl;
 }
 
-// V1.0 Authoritative 3-Tier Button Selectors (Steps 4, 6 & 8; excludes cards, inputs, prose links & iframes)
-const SITE_GLASS_SELECTORS = Object.freeze({
-  'glass-primary': [
-    '#welcome-modal .quick-link',
-    '#welcome-modal .welcome-footer .xp-button',
-    '#account-popover .xp-button',
-    '#account-popover button[type="submit"]',
-    '#account-popover .account-primary-action',
-    '#account-popover .account-danger-action',
-    '#account-popover .account-retry-action',
-    '#account-popover .account-mode-button',
-    '#chatroom #chat-send',
-    '#chatroom .chat-send-button',
-    '#chatroom #chat-scroll-bottom',
-    '#chatroom .xp-button',
-    '#knowledge .xp-button',
-    '#knowledge .category-button',
-    '#knowledge .filter-button',
-    '#article-detail .xp-button',
-    '#videos .xp-button',
-    '#videos .category-button',
-    '#videos .filter-button',
-    '#video-modal .xp-button',
-    '#resources .xp-button',
-    '#transfer-app .xp-button',
-    '#games .xp-button',
-    '#about .xp-button'
-  ].join(', '),
-  'glass-icon': [
-    '#video-window-maximize',
-    '[data-article-scroll-top]',
-    '#chatroom .chat-tool-button',
-    '#chatroom [data-chat-help]'
-  ].join(', '),
-  'glass-close': [
-    '.xp-window .close-button',
-    '#account-popover .account-close-button'
-  ].join(', ')
-});
+// r88 Unified Semantic Glass Binding Rules (covers ALL static & dynamically rendered controls
+// across every window while strictly excluding prose links, inputs, textareas, selects & iframes)
+const GLASS_SCOPE_SELECTOR = '.xp-window, #account-popover, #welcome-modal, #video-modal, #transfer-app, .game-shell';
+const GLASS_EXCLUDE_ANCESTOR = '#article-detail-body, iframe, .excalidraw, [data-no-glass]';
+const GLASS_CLOSE_MATCH = '.close-button, .account-close-button';
+const GLASS_ICON_MATCH = '#video-window-maximize, [data-article-scroll-top], .chat-tool-button, .chat-room-help-trigger, .about-social-link, .account-password-toggle, .transfer-pending-remove';
+const GLASS_CARD_MATCH = '.article-card';
+const GLASS_PRIMARY_MATCH = [
+  'button',
+  '.xp-button',
+  '.quick-link',
+  '.card-action',
+  '.article-card-cta',
+  '.category-button',
+  '.filter-button',
+  '[data-filter-type]',
+  '.recent-update-link',
+  '.article-toc-link',
+  '.transfer-file-picker',
+  '.game-source-link',
+  '.back-link',
+  '.tool-button',
+  '.file-button',
+  'summary'
+].join(', ');
+const GLASS_CANDIDATE_SELECTOR = `${GLASS_CLOSE_MATCH}, ${GLASS_ICON_MATCH}, ${GLASS_PRIMARY_MATCH}, ${GLASS_CARD_MATCH}`;
+
+export function resolveGlassLevel(el) {
+  if (!(el instanceof Element)) return null;
+  if (!el.closest(GLASS_SCOPE_SELECTOR)) return null;
+  if (el.closest(GLASS_EXCLUDE_ANCESTOR)) return null;
+  const tag = el.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'OPTION') return null;
+  if (el.matches(GLASS_CLOSE_MATCH)) return 'glass-close';
+  if (el.matches(GLASS_ICON_MATCH)) return 'glass-icon';
+  if (el.matches(GLASS_CARD_MATCH)) return 'glass-card';
+  if (el.matches(GLASS_PRIMARY_MATCH)) return 'glass-primary';
+  return null;
+}
+
+let autoGlassInstalled = false;
+let pendingRoots = new Set();
+let autoBindRaf = 0;
+
+function flushAutoBindQueue() {
+  autoBindRaf = 0;
+  const roots = [...pendingRoots];
+  pendingRoots.clear();
+  for (const root of roots) {
+    if (root && root.isConnected) {
+      attachSiteGlassButtons(root);
+    }
+  }
+}
+
+function queueAutoBind(node) {
+  if (!(node instanceof Element)) return;
+  if (node.classList.contains('crt-glass-sheen-layer') || node.classList.contains('crt-glass-wave-layer')) return;
+  pendingRoots.add(node);
+  if (!autoBindRaf) {
+    autoBindRaf = requestAnimationFrame(flushAutoBindQueue);
+  }
+}
+
+function findNearestGlassCandidate(target) {
+  if (!(target instanceof Element)) return null;
+  const match = target.closest(GLASS_CANDIDATE_SELECTOR);
+  if (!match) return null;
+  const level = resolveGlassLevel(match);
+  return level ? { el: match, level } : null;
+}
+
+export function installAutoGlassBinding() {
+  if (autoGlassInstalled) return;
+  autoGlassInstalled = true;
+  syncCrtGlassCssVars();
+
+  // 1. Document-level capturing lazy delegation: even an element inserted 0.1ms ago gets
+  // immediate live glass hover/press on its very first interaction!
+  document.addEventListener('pointerover', (e) => {
+    const found = findNearestGlassCandidate(e.target);
+    if (!found || found.el.dataset.crtGlassBound) return;
+    const ctrl = attachCrtGlassButton(found.el, found.level);
+    if (ctrl) ctrl._handlePointerEnter(e);
+  }, true);
+
+  document.addEventListener('pointerdown', (e) => {
+    const found = findNearestGlassCandidate(e.target);
+    if (!found || found.el.dataset.crtGlassBound) return;
+    const ctrl = attachCrtGlassButton(found.el, found.level);
+    if (ctrl) ctrl._handlePointerDown(e);
+  }, true);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== ' ' && e.key !== 'Enter') return;
+    const found = findNearestGlassCandidate(e.target);
+    if (!found || found.el.dataset.crtGlassBound) return;
+    const ctrl = attachCrtGlassButton(found.el, found.level);
+    if (ctrl) ctrl._handleKeyDown(e);
+  }, true);
+
+  // 2. Single lightweight body MutationObserver (rAF-debounced, ignores own optical layers)
+  // so every dynamically rendered button/card receives .crt-glass-btn immediately upon mount.
+  if (document.body && typeof MutationObserver === 'function') {
+    const obs = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type !== 'childList' || !m.addedNodes.length) continue;
+        for (const node of m.addedNodes) {
+          if (node instanceof Element) queueAutoBind(node);
+        }
+      }
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+  }
+
+  attachSiteGlassButtons(document);
+}
 
 export function getCrtGlassAudit() {
   const all = [...document.querySelectorAll('[data-crt-glass-bound]')];
-  const counts = { 'glass-primary': 0, 'glass-icon': 0, 'glass-close': 0 };
+  const counts = { 'glass-primary': 0, 'glass-icon': 0, 'glass-close': 0, 'glass-card': 0 };
   for (const el of all) {
     const k = el.dataset.crtGlassBound;
     counts[k] = (counts[k] || 0) + 1;
   }
+  const unbound = [];
+  document.querySelectorAll(GLASS_CANDIDATE_SELECTOR).forEach((el) => {
+    if (!el.dataset.crtGlassBound && resolveGlassLevel(el)) {
+      unbound.push(`${el.tagName.toLowerCase()}.${[...el.classList].join('.')}`);
+    }
+  });
   const excludedLeaks = document.querySelectorAll(
-    '.article-card[data-crt-glass-bound], .video-card[data-crt-glass-bound], .game-card[data-crt-glass-bound], .resource-card[data-crt-glass-bound], input[data-crt-glass-bound], textarea[data-crt-glass-bound], #article-detail-body a[data-crt-glass-bound]'
+    'input[data-crt-glass-bound], textarea[data-crt-glass-bound], select[data-crt-glass-bound], #article-detail-body a[data-crt-glass-bound]'
   ).length;
   return {
     totalBound: all.length,
     counts,
+    unboundCount: unbound.length,
+    unboundSamples: unbound.slice(0, 10),
     excludedLeaks,
+    autoDelegationActive: autoGlassInstalled,
     tier: document.documentElement.dataset.performanceTier || 'high',
     reducedMotion: prefersReducedMotion()
   };
@@ -491,13 +588,21 @@ export function attachWelcomePilotButtons() {
 export function attachSiteGlassButtons(root = document) {
   syncCrtGlassCssVars();
   const bound = [];
-  for (const [levelName, selector] of Object.entries(SITE_GLASS_SELECTORS)) {
-    root.querySelectorAll(selector).forEach((el) => {
-      if (el.dataset.crtGlassBound) return;
-      const ctrl = attachCrtGlassButton(el, levelName);
+  if (root instanceof Element) {
+    const selfLevel = resolveGlassLevel(root);
+    if (selfLevel && !root.dataset.crtGlassBound) {
+      const ctrl = attachCrtGlassButton(root, selfLevel);
       if (ctrl) bound.push(ctrl);
-    });
+    }
   }
+  if (!root || !root.querySelectorAll) return bound;
+  root.querySelectorAll(GLASS_CANDIDATE_SELECTOR).forEach((el) => {
+    if (el.dataset.crtGlassBound) return;
+    const level = resolveGlassLevel(el);
+    if (!level) return;
+    const ctrl = attachCrtGlassButton(el, level);
+    if (ctrl) bound.push(ctrl);
+  });
   return bound;
 }
 

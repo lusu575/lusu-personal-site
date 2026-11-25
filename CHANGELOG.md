@@ -2,6 +2,8 @@
 
 ## 2026-11-25
 
+- `r88` 液态玻璃全站动态自动绑定根治：查明并根治旧版静态白名单导致的漏绑（知识库文章卡片 `.article-card` 与「阅读」`.article-card-cta`、游戏区「开始」`.card-action` 与「来源」、工具区「打开」`.card-action`、欢迎窗「查看更多更新」与最近更新条目、视频/工具动态筛选按钮、聊天室 `?` 帮助键、关于页社交图标、账号「显示密码」键等）；重构 `crt-glass-button.mjs` 为统一语义选择器＋捕获期事件委托懒绑定＋`document.body` rAF 节流 `MutationObserver` 双重保障，任何动态渲染按钮均自动生效且零误绑正文链接与输入框；升级 `getGlassAudit()` 输出 `unboundCount` 自检闭环（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-glass-auto-binding-r88` / `2026-11-25-glass-auto-binding-r88`；视觉层缓存 `20261125-glass-auto-r88`。
+
 - `r87` 启动动画重做（Persepolis 式同场景由暗到亮 `uWarm` 0→1）：整段删除 `r84` 亮线点火、径向光波与扫描光束代码；改为由单个全局 `uWarm` 驱动现有 CRT 后处理 Pass 的亮度（`0.10→1.0`，`1-exp(-3t)`）、对比度（`0.20→1.0`，`1-exp(-4.2t)`）、饱和度（`0.30→1.05→1.0`）、RGB 收敛偏移（`2.5px→0` 指数衰减）、Bloom 阈值（`0.66→0.30`）与暗角（`0.62→0.34`）；真实关键加载进度与 `0.9–1.6s` 时间封顶共同驱动，配独立 2.5s 墙钟硬兜底与脱离主循环的点击/任意键即时直达终态；同会话仅播一次、重访与 `prefers-reduced-motion` 直出终态，弱 GPU 同曲线仅降 bloom（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-persepolis-warm-boot-r87` / `2026-11-25-persepolis-warm-boot-r87`；视觉层缓存 `20261125-persepolis-warm-r87`。
 
 - `r86` 全站图片与图标禁止原生拖拽（去拖影）：通过 `-webkit-user-drag: none`、动态补齐 `draggable="false"` 与捕获期 `dragstart` 拦截，统一禁止游戏封面、关于页头像、视频封面、知识库卡片图、聊天头像、桌面图标及卡片/社交图标链接被按住拖出半透明拖影；严格保留窗口标题栏移动、画板绘图、滑块与临时互传外部文件拖放等功能性交互（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-disable-image-drag-r86` / `2026-11-25-disable-image-drag-r86`；视觉层缓存 `20261125-no-img-drag-r86`。

@@ -90,6 +90,14 @@ export const CRT_GLASS_BUTTON_LEVELS = Object.freeze({
     enableWave: false,
     enableDispersion: false,
     enableRimCatch: true
+  }),
+  'glass-card': Object.freeze({
+    pressOffsetPx: 1.5,
+    pressScale: 0.992,
+    releaseDurationMs: CRT_GLASS.releaseDurationMs,
+    enableWave: true,
+    enableDispersion: true,
+    enableRimCatch: true
   })
 });
 

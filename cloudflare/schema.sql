@@ -16696,6 +16696,28 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **単一 uniform `uWarm`（0→1）による CRT ポスト処理駆動**：独立シェルや遮蔽マスク、光波・移動走査線は一切なし。輝度（`0.10→1.0`、`1-exp(-3t)`）・コントラスト（`0.20→1.0`）・彩度（`0.30→1.05→1.0`）・RGB 収束（`2.5px→0` 指数減衰）・Bloom 閾値（`0.66→0.30`）・ビネット（`0.62→0.34`）が池本体を暗状態からそのまま通常状態へ立ち上げます。
 - **フリーズ防止と制約遵守**：重要素材＋シェーダー完了のみに連動し 0.9–1.6 秒で完了。RAF から独立した 2.5 秒ウォールクロック保証とクリック／任意キー即時スキップを搭載し、同一セッション 1 回のみ再生・再訪／`prefers-reduced-motion` は即時終端表示とします。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-persepolis-warm-r87', '2026-11-25')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-glass-auto-binding-r88', '2026-11-25-glass-auto-binding-r88', 'site-updates', '["ui","glass","pond"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-glass-auto-binding-r88-zh', 'seed-update-2026-11-25-glass-auto-binding-r88', 'zh', '液态玻璃全站动态自动绑定根治：补齐知识库列表、游戏开始与全窗动态按钮（r88）', '根治旧版静态白名单导致的液态玻璃漏绑问题：补齐知识库文章卡片与「阅读」按钮、游戏区「开始」与「来源」按钮、工具区「打开」按钮、欢迎窗「查看更多更新」与最近更新条目、视频/工具筛选按钮、聊天室帮助键、关于页社交图标与账号「显示密码」键，并升级为统一语义规则＋捕获期事件委托＋全局 MutationObserver 双重自动绑定机制。', '# 液态玻璃全站动态自动绑定根治：补齐知识库列表、游戏开始与全窗动态按钮（r88）
+
+本次排查并彻底根治了知识库文章列表、游戏区「开始」按钮等位置缺少液态玻璃交互反馈的问题：
+
+- **漏绑根因**：此前 `SITE_GLASS_SELECTORS` 采用手工白名单，导致不带 `.xp-button` 的动态按钮（如知识库 `.article-card` / `.article-card-cta`「阅读」、游戏区与工具区 `<a class="card-action">`「开始」/「打开」、视频区 `#video-categories button`、欢迎窗 `.more-button` 与 `.recent-update-link`、聊天室 `.chat-room-help-trigger`、关于页 `.about-social-link`、账号弹窗 `.account-password-toggle`）全部漏绑。
+- **根治机制**：在 `crt-glass-button.mjs` 中重构为**统一语义选择器 + 捕获期事件委托懒绑定 + `document.body` rAF 节流 `MutationObserver`** 双重机制，后续任何动态渲染出来的按钮与文章卡片都会自动获得完整液态玻璃按压与释放波反馈，同时严格排除正文链接、输入框、下拉框与 `iframe`。
+- **自检闭环**：升级 `getGlassAudit()` 增加 `unboundCount` 与 `autoDelegationActive` 字段，全站逐窗核验零漏绑、零越界。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-glass-auto-binding-r88-en', 'seed-update-2026-11-25-glass-auto-binding-r88', 'en', 'Site-Wide Automatic CRT Glass Binding: Knowledge List, Game Start & All Dynamic Controls (r88)', 'Replaced the brittle static selector whitelist with unified semantic glass rules, capturing lazy event delegation, and a rAF-debounced MutationObserver so dynamically rendered controls (Knowledge article cards & Read CTA, Game Start & Source buttons, Tool Open buttons, Welcome More/Updates, Video/Tool filters, Chat help, About social links, Account password toggles) always bind automatically with zero leaks.', '# Site-Wide Automatic CRT Glass Binding: Knowledge List, Game Start & All Dynamic Controls (r88)
+
+This release resolves missing liquid-glass feedback on Knowledge article cards/Read buttons, Game Start buttons, and other dynamically rendered controls across all site windows:
+
+- **Root Cause**: The prior `SITE_GLASS_SELECTORS` relied on a manual class whitelist, missing dynamic controls that did not carry `.xp-button` (`.article-card`, `.article-card-cta`, `.card-action` in Games & Tools, `#video-categories button`, Welcome `.more-button` & `.recent-update-link`, `.chat-room-help-trigger`, `.about-social-link`, and `.account-password-toggle`).
+- **Permanent Fix**: Replaced the whitelist in `crt-glass-button.mjs` with unified semantic scope/exclusion rules backed by capturing document-level lazy delegation and a rAF-debounced `document.body` `MutationObserver`. Newly rendered controls bind automatically on mount or first interaction while strictly excluding prose links, inputs, selects, and iframes.
+- **Audit Closure**: Extended `getGlassAudit()` with `unboundCount` and `autoDelegationActive` to guarantee zero unbound controls and zero excluded leaks.', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-glass-auto-binding-r88-ja', 'seed-update-2026-11-25-glass-auto-binding-r88', 'ja', 'CRT 液態ガラスの動的自動バインド根治：知識庫一覧・ゲーム開始・全動的ボタン網羅（r88）', '従来の静的ホワイトリストによる漏れを根治し、統一セマンティック規則＋キャプチャ委譲＋MutationObserver の二重自動バインドへ刷新。知識庫記事カードと「読む」、ゲーム「開始」、ツール「開く」、ようこそ画面の更新項目・動画フィルタ・チャットヘルプ・SNS・パスワード表示ボタンまで完全網羅しました。', '# CRT 液態ガラスの動的自動バインド根治：知識庫一覧・ゲーム開始・全動的ボタン網羅（r88）
+
+知識庫の記事一覧やゲームの「開始」ボタン等で液態ガラス演出が効いていなかった原因を特定し、仕組みごと根治しました：
+
+- **原因**：旧 `SITE_GLASS_SELECTORS` が手動ホワイトリスト方式だったため、`.xp-button` を持たない動的ボタン（`.article-card`・`.article-card-cta`、ゲーム／ツールの `.card-action`、動画フィルタボタン、ようこそ画面の「もっと見る」・更新リンク、チャット `?`、About の SNS、パスワード表示トグル等）が漏れていました。
+- **恒久対策**：統一セマンティック規則＋ドキュメント階層のキャプチャ委譲（初回操作時即時バインド）＋`document.body` の rAF 節流 `MutationObserver` の二重構成へ刷新し、今後追加される動的要素も自動適用されます（本文リンク・入力欄・iframe は厳格除外）。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-glass-auto-r88', '2026-11-25')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261125-persepolis-warm-r87', '2026-11-25', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261125-glass-auto-r88', '2026-11-25', 'schema') on conflict(version) do nothing;

@@ -7097,9 +7097,12 @@ html[data-pond-mode] .crt-glass-btn.is-glass-hovered .crt-glass-sheen-layer {
 }
 
 /* Hold: Perceptible CRT glass indentation + dynamic breathing refraction ring around (--cg-cx, --cg-cy)
-   Specificity (1,4,1) explicitly overrides #welcome-modal .quick-link:hover (1,3,1) */
+   High-specificity ID scope explicitly overrides #welcome-modal / #knowledge-list / #game-list / #resource-list :hover rules */
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-held,
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-held:hover,
+html[data-pond-mode] :is(#knowledge-list, #game-list, #resource-list, #video-list, #welcome-modal, #chatroom, #about, #account-popover) .crt-glass-btn.is-glass-held,
+html[data-pond-mode] :is(#knowledge-list, #game-list, #resource-list, #video-list, #welcome-modal, #chatroom, #about, #account-popover) .crt-glass-btn.is-glass-held:hover,
+html[data-pond-mode] #knowledge-list .article-card:hover .article-card-cta.crt-glass-btn.is-glass-held,
 html[data-pond-mode] .crt-glass-btn.is-glass-held,
 html[data-ui-shell="mobile"] .crt-glass-btn.is-glass-held {
   border-style: solid !important;
