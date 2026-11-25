@@ -144,8 +144,8 @@ function syncHaloProxy(ctrl) {
     return;
   }
   const el = ctrl.el;
-  const state = ctrl.rimCatchStartMs > 0 ? 'rim' : (ctrl.held ? 'hold' : (ctrl.hovered ? 'hover' : ''));
-  if (!state || !el || !el.isConnected) {
+  const active = ctrl.hovered || ctrl.held || ctrl.waveActive || (ctrl.rimEnv || 0) > 0.002 || ctrl.spring.pos > 0.01;
+  if (!active || !el || !el.isConnected) {
     removeHaloProxy(ctrl);
     return;
   }
@@ -181,12 +181,16 @@ function syncHaloProxy(ctrl) {
   ps.width = `${rect.width.toFixed(2)}px`;
   ps.height = `${rect.height.toFixed(2)}px`;
   ps.borderRadius = cs.borderRadius;
-  proxy.dataset.haloState = state;
-  if (state === 'rim') {
-    ps.setProperty('--cg-rim-catch', el.style.getPropertyValue('--cg-rim-catch') || '0');
-  } else {
-    ps.removeProperty('--cg-rim-catch');
-  }
+
+  // r96: 100% continuous halo radius & alpha driven by smooth spring + raised-cosine rim shimmer (ZERO discrete flashes!)
+  const holdNorm = Math.max(0, Math.min(1, ctrl.spring ? ctrl.spring.pos : 0));
+  const rimNorm = Math.max(0, Math.min(1, ctrl.rimEnv || 0));
+  const hoverBase = ctrl.hovered ? 1 : 0;
+  const blur = hoverBase * 14 + (1 - hoverBase) * Math.max(holdNorm, rimNorm) * 14 + holdNorm * 6 + rimNorm * 3.5;
+  const alpha = Math.min(0.58, hoverBase * 0.32 + (1 - hoverBase) * Math.max(holdNorm, rimNorm) * 0.28 + holdNorm * 0.22 + rimNorm * 0.08);
+  proxy.dataset.haloState = ctrl.held ? 'hold' : (rimNorm > 0.01 ? 'rim' : 'hover');
+  ps.setProperty('--cg-halo-blur', `${blur.toFixed(1)}px`);
+  ps.setProperty('--cg-halo-alpha', alpha.toFixed(3));
 }
 
 // MengTo shade-glass-button-press + refract-liquid-glass (r92 rework)
@@ -215,6 +219,8 @@ class CrtGlassButtonController {
     this.waveActive = false;
     this.waveStartMs = 0;
     this.rimCatchStartMs = 0;
+    this.rimCatchFired = false;
+    this.rimEnv = 0;
     this.activePointerId = null;
 
     el.classList.add('crt-glass-btn', levelName);
@@ -400,6 +406,9 @@ class CrtGlassButtonController {
     this.holdStartMs = performance.now();
     // Double-tap replaces any running release wave cleanly (no wave accumulation)
     this.waveActive = false;
+    this.rimCatchStartMs = 0;
+    this.rimCatchFired = false;
+    this.rimEnv = 0;
     this.el.classList.remove('is-glass-waving', 'is-glass-rim-catch');
     this.el.classList.add('is-glass-held');
 
@@ -407,8 +416,8 @@ class CrtGlassButtonController {
       this.el.style.setProperty('--cg-hold', '1');
       return;
     }
-    // Synchronous Frame-0 tactile onset (MengTo shade-glass-button-press: quick spring into held pose + Gaussian face indent)
-    this.spring.pos = Math.max(this.spring.pos, 0.42);
+    // Smooth continuous spring onset from current pos (zero harsh brightness jump on Frame 0)
+    this.spring.pos = Math.max(this.spring.pos, 0.22);
     const s = this.el.style;
     const pressOffset = this.isLiquidPilot ? 1.6 : this.level.pressOffsetPx;
     const pressTargetScale = this.isLiquidPilot ? 0.972 : this.level.pressScale;
@@ -437,19 +446,22 @@ class CrtGlassButtonController {
       this.waveActive = true;
       this.waveStartMs = performance.now();
       this.rimCatchStartMs = 0;
+      this.rimCatchFired = false;
+      this.rimEnv = 0;
       this.el.classList.add('is-glass-waving');
-      // Synchronous Frame-0 wave onset so release ring is visibly expanding from the very first frame
+      // r96: Start wave alpha smoothly at 0 so the concave dimple unfurls continuously without a 1-frame flash
       const bandWidth = this.btnW >= CRT_GLASS.waveWideThresholdPx ? CRT_GLASS.waveBandWidePx : CRT_GLASS.waveBandPx;
       const s = this.el.style;
-      s.setProperty('--cg-wave-r', '10.0px');
+      s.setProperty('--cg-wave-r', '6.0px');
       s.setProperty('--cg-wave-band', `${bandWidth.toFixed(1)}px`);
-      s.setProperty('--cg-wave-alpha', '0.96');
-      s.setProperty('--cg-disp', `${CRT_GLASS.dispersionPx.toFixed(3)}px`);
+      s.setProperty('--cg-wave-alpha', '0');
+      s.setProperty('--cg-disp', '0px');
     } else if (triggerWave && this.level.enableRimCatch) {
-      // glass-close: brief rim flash, no release wave
+      // glass-close: single smooth rim shimmer, no release wave
       this.rimCatchStartMs = performance.now();
+      this.rimCatchFired = true;
       this.el.classList.add('is-glass-rim-catch');
-      this.el.style.setProperty('--cg-rim-catch', '1');
+      this.el.style.setProperty('--cg-rim-catch', '0');
     }
     syncHaloProxy(this);
     scheduleController(this);
@@ -458,6 +470,9 @@ class CrtGlassButtonController {
   _resetVisual() {
     this.held = false;
     this.waveActive = false;
+    this.rimCatchStartMs = 0;
+    this.rimCatchFired = false;
+    this.rimEnv = 0;
     this.spring.pos = 0;
     this.spring.vel = 0;
     this.el.classList.remove('is-glass-held', 'is-glass-waving', 'is-glass-rim-catch');
@@ -511,7 +526,10 @@ class CrtGlassButtonController {
       const t = Math.min(1, Math.max(0, elapsed / dur));
       const bandWidth = this.btnW >= CRT_GLASS.waveWideThresholdPx ? CRT_GLASS.waveBandWidePx : CRT_GLASS.waveBandPx;
       const travel = (1 - Math.pow(1 - t, power)) * (this.reach + bandWidth);
-      const fade = Math.pow(1 - t, 1.15) * Math.min(1, t * 18 + 0.35);
+      // r96: Smoothstep onset (0 -> 1 over first 9% of wave) so brightness rises & decays continuously with ZERO 1-frame snap!
+      const onset = Math.min(1, t / 0.09);
+      const smoothOnset = onset * onset * (3 - 2 * onset);
+      const fade = Math.pow(1 - t, 1.25) * smoothOnset;
 
       s.setProperty('--cg-wave-r', `${travel.toFixed(1)}px`);
       s.setProperty('--cg-wave-band', `${bandWidth.toFixed(1)}px`);
@@ -526,8 +544,9 @@ class CrtGlassButtonController {
         s.setProperty('--cg-disp', '0px');
       }
 
-      // Rim catch glow when wave arrives at nearest button edge (70ms duration)
-      if (this.level.enableRimCatch && !this.rimCatchStartMs && travel >= Math.max(6, this.nearestRim)) {
+      // r96: One-shot rim shimmer (rimCatchFired guards against re-triggering 3-4x during the 750ms wave!)
+      if (this.level.enableRimCatch && !this.rimCatchFired && travel >= Math.max(6, this.nearestRim)) {
+        this.rimCatchFired = true;
         this.rimCatchStartMs = nowMs;
         this.el.classList.add('is-glass-rim-catch');
       }
@@ -542,16 +561,20 @@ class CrtGlassButtonController {
       }
     }
 
-    // 3. Step 70ms rim catch glow
+    // 3. Step single smooth raised-cosine rim shimmer (320ms, zero sharp flash!)
     let rimRunning = false;
     if (this.rimCatchStartMs > 0) {
+      const rimDur = 320;
       const rimElapsed = nowMs - this.rimCatchStartMs;
-      if (rimElapsed < CRT_GLASS.rimCatchDurationMs) {
-        const rimEnv = Math.sin((rimElapsed / CRT_GLASS.rimCatchDurationMs) * Math.PI);
+      if (rimElapsed < rimDur) {
+        const u = Math.min(1, Math.max(0, rimElapsed / rimDur));
+        const rimEnv = 0.5 - 0.5 * Math.cos(u * Math.PI * 2);
+        this.rimEnv = rimEnv;
         s.setProperty('--cg-rim-catch', rimEnv.toFixed(3));
         rimRunning = true;
       } else {
         this.rimCatchStartMs = 0;
+        this.rimEnv = 0;
         this.el.classList.remove('is-glass-rim-catch');
         s.setProperty('--cg-rim-catch', '0');
       }

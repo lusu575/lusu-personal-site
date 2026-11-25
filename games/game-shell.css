@@ -1112,18 +1112,7 @@ body {
   border: none !important;
   box-sizing: border-box !important;
   will-change: left, top, width, height;
-}
-
-#crt-glass-halo-layer .crt-glass-halo-proxy[data-halo-state="hover"] {
-  box-shadow: 0 0 14px rgba(102, 236, 224, 0.32) !important;
-}
-
-#crt-glass-halo-layer .crt-glass-halo-proxy[data-halo-state="hold"] {
-  box-shadow: 0 0 20px rgba(114, 232, 224, 0.56) !important;
-}
-
-#crt-glass-halo-layer .crt-glass-halo-proxy[data-halo-state="rim"] {
-  box-shadow: 0 0 22px rgba(114, 232, 224, calc(0.76 * var(--cg-rim-catch, 0))) !important;
+  box-shadow: 0 0 var(--cg-halo-blur, 14px) rgba(114, 232, 224, var(--cg-halo-alpha, 0.32)) !important;
 }
 
 html[data-crt-glass-ready="1"] .crt-glass-btn {

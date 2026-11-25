@@ -16867,6 +16867,28 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **MengTo 液態ガラスの全サイト＆独立サブページ統一展開**：ようこそ画面で承認された仕様と `r93` の最上位非クリップ光彩層を全ボタンおよび独立サブページ（画板・日本語の言外之意・全 5 ゲーム）へ展開し、未バインド 0 を達成しました。
 - **起動顕像前の当季デスクトップ貼図事前確定**：`engine.mjs` で当季貼図のデコード＆GPU ベイク完了（`primaryFloraReady`）まで `uWarm = 0` を維持し、顕像途中の貼図遅延ポップインを根治しました。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-mengto-rollout-r95', '2026-11-25')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-continuous-glass-curve-r96', '2026-11-25-continuous-glass-curve-r96', 'site-updates', '["ui","glass","pond"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-continuous-glass-curve-r96-zh', 'seed-update-2026-11-25-continuous-glass-curve-r96', 'zh', '消除按钮点击频闪与亮度跳变：单波单次触发＋全程连续液态亮度曲线（r96）', '定位并根治 r95 铺开后点击按钮「闪 3–4 下」的代码根因（750ms 释放波期间 160ms rimCatch 归零后被下一帧重复触发），新增单波一次性锁 rimCatchFired 压回严格 1 次；同时彻底消除分档开关式亮度跳变，将外光晕半径/透明度改为由弹簧与 320ms 升余弦连续驱动，释放波改由 smoothstep 零起点柔和展开，全程丝滑无闪。', '# 消除按钮点击频闪与亮度跳变：单波单次触发＋全程连续液态亮度曲线（r96）
+
+本次彻底定位并根治「点一下按钮闪 3 下」及一切开关式亮度跳变问题：
+
+- **定位精确根因（单次点击触发 4 次频闪）**：在 `crt-glass-button.mjs` 中，当 `750ms` 释放波到达边缘触发 `160ms` 的 `rimCatch` 后，结束分支将 `this.rimCatchStartMs` 重置为 `0`；而此时 `750ms` 释放波仍在运行且 `travel >= nearestRim` 持续为真，导致下一帧立刻重新触发 `rimCatch`，一次点击被循环触发 3–4 次频闪。现新增单波一次性标记 `rimCatchFired`，严格保证一次点击只触发 1 次。
+- **消除一切亮度跳变，改为全程连续液态曲线**：
+  - 外光晕代理 `#crt-glass-halo-layer` 不再在 `hover/hold/rim` 三档间瞬时跳变，改为每帧由平滑弹簧 `spring.pos` 与 `320ms` 升余弦 `0.5 - 0.5*cos(2πu)` 连续插值输出 `--cg-halo-blur` 与 `--cg-halo-alpha`。
+  - 松开释放波起点由 `0.96` 改为 `0` 并按 `smoothstep(0, 0.09, t)` 柔和展开，按住凹陷无缝舒展为 750ms 释放波，全程无任何一帧亮度突跳。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-continuous-glass-curve-r96-en', 'seed-update-2026-11-25-continuous-glass-curve-r96', 'en', 'Eliminate Button Click Strobe & Brightness Jumps: One-Shot Wave + Continuous Liquid Luminance (r96)', 'Fixed the 3-4x click strobe bug caused by rimCatch resetting to 0 mid-wave during the 750ms MengTo release wave (added one-shot rimCatchFired guard), and replaced all discrete halo/border/wave brightness jumps with continuous spring + 320ms raised-cosine luminance curves and smoothstep wave onset.', '# Eliminate Button Click Strobe & Brightness Jumps: One-Shot Wave + Continuous Liquid Luminance (r96)
+
+Eliminated the 3–4x click strobe and all discrete brightness jumps across every glass button:
+
+- **Root Cause (4x Re-Trigger per Click)**: Resetting `this.rimCatchStartMs = 0` when the 160ms rim-catch ended while the 750ms release wave was still active (`travel >= nearestRim`) caused `is-glass-rim-catch` to re-trigger 3–4 times per click. Added a per-wave one-shot `rimCatchFired` guard so it fires strictly once.
+- **Continuous Liquid Luminance**: Replaced discrete `hover/hold/rim` halo box-shadow snaps with continuous `--cg-halo-blur` / `--cg-halo-alpha` driven by `spring.pos` + a smooth 320ms raised-cosine shimmer, and changed release wave onset from `0.96` to `0` with `smoothstep` unfurling so zero frames exhibit step-function flashes.', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-continuous-glass-curve-r96-ja', 'seed-update-2026-11-25-continuous-glass-curve-r96', 'ja', 'ボタンクリック点滅と輝度段差を根治：単発波ロック＋連続液態輝度カーブ（r96）', '750ms 放出波中に 160ms の rimCatch がリセットされて 3–4 回連続再発火していた不具合を単発ロック rimCatchFired で根治。さらに外光・枠・放出波の段階的輝度ジャンプをすべて廃止し、スプリング＋320ms コサイン曲線と smoothstep 起動による連続的な液態輝度遷移へ統一しました。', '# ボタンクリック点滅と輝度段差を根治：単発波ロック＋連続液態輝度カーブ（r96）
+
+ボタンクリック時の 3–4 回点滅と輝度段差を根治しました：
+
+- **原因の特定と修正**：750ms の放出波継続中に 160ms の `rimCatch` 終了で `rimCatchStartMs = 0` に戻していたため次フレームで再発火を繰り返していました。`rimCatchFired` 単発ロックを導入し 1 クリック 1 回へ厳格化しました。
+- **全工程の連続輝度化**：外光・枠・放出波の段階切替を廃止し、スプリング＋320ms 升余弦と `smoothstep` により最初から最後まで滑らかな液態遷移へ統一しました。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-continuous-glass-r96', '2026-11-25')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261125-mengto-rollout-r95', '2026-11-25', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261125-continuous-glass-r96', '2026-11-25', 'schema') on conflict(version) do nothing;

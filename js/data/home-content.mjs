@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-25-continuous-glass-curve-r96",
+      "slug": "2026-11-25-continuous-glass-curve-r96",
+      "category": "site-updates",
+      "tags": [
+        "ui",
+        "glass",
+        "pond"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": "2026-11-25",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "消除按钮点击频闪与亮度跳变：单波单次触发＋全程连续液态亮度曲线（r96）",
+        "en": "Eliminate Button Click Strobe & Brightness Jumps: One-Shot Wave + Continuous Liquid Luminance (r96)",
+        "ja": "ボタンクリック点滅と輝度段差を根治：単発波ロック＋連続液態輝度カーブ（r96）"
+      },
+      "summary": {
+        "zh": "定位并根治 r95 铺开后点击按钮「闪 3–4 下」的代码根因（750ms 释放波期间 160ms rimCatch 归零后被下一帧重复触发），新增单波一次性锁 rimCatchFired 压回严格 1 次；同时彻底消除分档开关式亮度跳变，将外光晕半径/透明度改为由弹簧与 320ms 升余弦连续驱动，释放波改由 smoothstep 零起点柔和展开，全程丝滑无闪。",
+        "en": "Fixed the 3-4x click strobe bug caused by rimCatch resetting to 0 mid-wave during the 750ms MengTo release wave (added one-shot rimCatchFired guard), and replaced all discrete halo/border/wave brightness jumps with continuous spring + 320ms raised-cosine luminance curves and smoothstep wave onset.",
+        "ja": "750ms 放出波中に 160ms の rimCatch がリセットされて 3–4 回連続再発火していた不具合を単発ロック rimCatchFired で根治。さらに外光・枠・放出波の段階的輝度ジャンプをすべて廃止し、スプリング＋320ms コサイン曲線と smoothstep 起動による連続的な液態輝度遷移へ統一しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-25-mengto-site-rollout-r95",
       "slug": "2026-11-25-mengto-site-rollout-r95",
       "category": "site-updates",
@@ -111,33 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "严格按 MengTo 原规格重做欢迎窗 4 颗快捷按钮试点（透明中心玻璃面、外唇掠射边缘反射、按住平滑高斯凹陷、750ms 半透明波峰与尾迹释放波，彻底移除造成直线切框的 SVG 滤镜与横切渐变）；收紧全站共享玻璃外阴影消除父容器裁剪直线切边；冷开期彻底隐藏 .route-module-status.is-loading 并锁定游戏/工具/关于窗口桌面 min-height，消除全新配置禁用缓存下的冷开跳位。",
         "en": "Rebuilt the 4 Welcome quick-link pilot buttons strictly to MengTo's liquid-glass spec (clear flat center, grazing perimeter rim reflection, smooth Gaussian hold dimple, 750ms translucent crest + wake release wave; removed clipped SVG displacement & horizontal seam), tightened shared outer glass glow radii site-wide to eliminate straight-line parent clipping, and locked cold-open window heights while hiding .route-module-status.is-loading in Pond mode.",
         "ja": "ようこそ画面 4 ボタンを MengTo 原仕様準拠（透明な中心面・外縁かすめ反射・押下ガウス凹み・750ms 波峰＋尾引きリリース波）へ刷新し直線切れの原因だった SVG フィルタと横段差を撤去。全サイト共通のガラス外光半径を最適化して親要素クリッピングによる直線切れを解消し、冷起動時のモジュール読込枠非表示とゲーム／ツール／About 最小高さ固定で初回跳ねを根治しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-25-refresh-boot-warm-r91",
-      "slug": "2026-11-25-refresh-boot-warm-r91",
-      "category": "site-updates",
-      "tags": [
-        "pond",
-        "ui"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-25",
-      "updated_at": "2026-11-25",
-      "published_at": "2026-11-25",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "启动动画补齐刷新触发：首次打开、F5 刷新与硬刷新均完整显影（r91）",
-        "en": "Play Persepolis CRT Warm-Up on Every Full Page Load & Refresh (r91)",
-        "ja": "リロード時も起動顕像を再生：初回・F5・ハードリロードすべて対応（r91）"
-      },
-      "summary": {
-        "zh": "移除同会话 sessionStorage 仅播一次拦截，改为每次完整页面加载（首次打开、F5 刷新、硬刷新）均播放 r87 Persepolis 式由暗到亮显影；仅浏览器前进/后退缓存恢复与 prefers-reduced-motion 直达终态，其余参数与 2.5s 墙钟兜底、点击/任意键跳过保持不变。",
-        "en": "Removed the once-per-session sessionStorage gate so every full page load (initial open, F5 refresh, hard refresh) plays the r87 Persepolis dark-to-bright CRT warm-up while back/forward cache restores and prefers-reduced-motion remain instant.",
-        "ja": "sessionStorage による 1 セッション 1 回制限を解除し、初回表示・F5 リロード・ハードリロードのすべてで r87 の暗転から点灯するウォームアップ演出を再生するようにしました（戻る／進むキャッシュ復元と prefers-reduced-motion のみ即時終端表示）。"
       }
     }
   ]
