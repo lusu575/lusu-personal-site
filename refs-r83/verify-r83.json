@@ -1,0 +1,88 @@
+{
+  "knowledgeStep5And6": {
+    "backdropFilter": "none",
+    "hasSpecularRim": false,
+    "categoryButtonsTotal": 4,
+    "categoryButtonsGlassBound": 4,
+    "audit": {
+      "totalBound": 38,
+      "counts": {
+        "glass-primary": 27,
+        "glass-icon": 1,
+        "glass-close": 10
+      },
+      "excludedLeaks": 0,
+      "tier": "normal",
+      "reducedMotion": false
+    },
+    "catLive": {
+      "target": "全部0",
+      "held": {
+        "held": true,
+        "pressY": "2.43px",
+        "pressScale": "0.9466",
+        "holdR": "36.8px"
+      },
+      "wave": {
+        "waving": false,
+        "waveR": "",
+        "waveAlpha": "",
+        "disp": ""
+      }
+    }
+  },
+  "accountPopover": {
+    "visible": true,
+    "backdropFilter": "blur(14px) saturate(1.18)",
+    "hasRimShadow": false,
+    "boundInsidePopover": [
+      {
+        "cls": "account-close-button crt-glass-btn glass-close",
+        "tier": "glass-close"
+      },
+      {
+        "cls": "account-mode-button is-active crt-glass-btn glass-primary",
+        "tier": "glass-primary"
+      },
+      {
+        "cls": "account-mode-button crt-glass-btn glass-primary",
+        "tier": "glass-primary"
+      },
+      {
+        "cls": "account-button account-primary-action crt-glass-btn glass-primary",
+        "tier": "glass-primary"
+      },
+      {
+        "cls": "account-button account-danger-action crt-glass-btn glass-primary",
+        "tier": "glass-primary"
+      },
+      {
+        "cls": "account-button account-retry-action crt-glass-btn glass-primary",
+        "tier": "glass-primary"
+      }
+    ]
+  },
+  "step8FinalAudit": {
+    "audit": {
+      "totalBound": 39,
+      "counts": {
+        "glass-primary": 28,
+        "glass-icon": 1,
+        "glass-close": 10
+      },
+      "excludedLeaks": 0,
+      "tier": "normal",
+      "reducedMotion": false
+    },
+    "perf": {
+      "activeCount": 0,
+      "frames": 72,
+      "avgJsMs": 0.0486,
+      "maxJsMs": 0.2
+    },
+    "lowTierCheck": {
+      "waveLayerDisplay": "none",
+      "lowTierWinShadow": "rgba(255, 255, 255, 0.24) 0px 0px 0px 1px inset, rgba(114, 244, 232, 0.34) 0px 0px 34px 0px, rgba(206, 138, 248, 0.18) 0px 0px 60px 0px, rgba(12, 46, 48, 0.45) 0px 0px 32px 0px inset"
+    }
+  }
+}
