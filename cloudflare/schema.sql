@@ -16633,6 +16633,29 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **走査光フィナーレとゼロ段差**：仕上げの上下走査ビームが通過するとそのまま操作可能な池本体へ直結し、静止後の追加負荷はゼロです。
 - **実プリロード連動・スキップ・再訪短縮**：実際の素材読み込み進捗に厳密連動し、クリック／`Esc`／`Space` で即時スキップ、再訪問時は 1 秒未満に短縮され、`r81` の性能成果もそのまま維持します。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-pond-lightup-r84', '2026-11-25')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-ui-text-select-cursor-r85', '2026-11-25-ui-text-select-cursor-r85', 'site-updates', '["ui","pond"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-ui-text-select-cursor-r85-zh', 'seed-update-2026-11-25-ui-text-select-cursor-r85', 'zh', '交互手感收口：UI 外壳文字禁选去 I 型光标、内容阅读区保留可选（r85）', '消除全站 UI 外壳文字悬停出现 I 型输入光标与误拖选的问题：桌面图标/时钟/ID、欢迎窗、窗口标题栏与按钮/筛选/分页、各区卡片 UI 文字及聊天室元信息统一禁选并保持默认/手型光标；文章与更新记录正文/摘要/代码块、聊天消息正文、关于自介与联系方式、临时互传口令与内容及日语工具内容保持可拖选复制，输入区维持原生。', '# 交互手感收口：UI 外壳文字禁选去 I 型光标、内容阅读区保留可选（r85）
+
+本次更新按站长确认的分区域清单收口全站文字选择与鼠标光标表现，让桌面与窗口外壳更具应用手感，同时不影响阅读与复制：
+
+- **禁选＋默认/手型光标（UI 外壳）**：首页桌面图标文字、顶部时钟日期、左下角 ID；欢迎窗全部文字；各窗口标题栏、关闭键、按钮、筛选/分类标签与分页控件；知识库/视频/工具/游戏卡片 UI 文字与云存档状态条；聊天室昵称、时间、系统提示与未读胶囊；关于页兴趣标签与社交链接。
+- **保留可选可复制（内容区）**：文章阅读页与更新记录正文、摘要、代码块（目录与标题栏禁选）；聊天室消息正文；关于页自介正文与联系方式；工具子页临时互传显示的口令与传输内容、日语的言外之意内容文本。
+- **原生不受影响**：所有输入框、文本域、`contenteditable` 区域及内嵌游戏画面保持原生交互。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-ui-text-select-cursor-r85-en', 'seed-update-2026-11-25-ui-text-select-cursor-r85', 'en', 'App-Like Interaction Polish: Non-Selectable UI Chrome & Selectable Reading Areas (r85)', 'Removed stray I-beam cursors and accidental text selection across UI chrome (desktop icons/clock/ID, Welcome modal, titlebars, buttons, filters, card labels, chat metadata) while preserving full text selection for article/update bodies, summaries, code blocks, chat message bubbles, About bio/contact info, Quick Transfer room/content, and native inputs.', '# App-Like Interaction Polish: Non-Selectable UI Chrome & Selectable Reading Areas (r85)
+
+This release refines text selection and hover cursors across the site so the desktop and windows feel like a real application while keeping reading and copy workflows intact:
+
+- **Non-Selectable UI Chrome (Default / Pointer Cursor)**: Desktop icons, top clock/date, bottom-left ID; all Welcome modal copy; window titlebars, close buttons, action buttons, filter/category chips, pagination; Knowledge/Video/Tool/Game card chrome and cloud-save banner; Chatroom nicknames, timestamps, system notices, and unread pill; About interest tags and social links.
+- **Selectable Content Regions**: Article and update-log bodies, summaries, and code blocks (TOC and titlebar remain non-selectable); Chatroom message bubbles; About bio and contact details; Quick Transfer room codes/content and Japanese Subtext Trainer content.
+- **Native Inputs & Embedded Games Untouched**: All inputs, textareas, `contenteditable` elements, and embedded game iframes keep native behavior.', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-ui-text-select-cursor-r85-ja', 'seed-update-2026-11-25-ui-text-select-cursor-r85', 'ja', 'UI 操作感の調整：UI 外殻テキストの選択禁止と本文エリアの選択維持（r85）', 'デスクトップアイコン・時計・ID、ようこそ画面、ウィンドウ見出し、ボタン・フィルタ、各カード UI 文字やチャット付帯情報での誤選択と I 型カーソルを解消しつつ、記事・更新履歴本文・要約・コードブロック、チャット本文、自己紹介、クイック転送の内容、入力欄は選択・コピー可能なまま維持しました。', '# UI 操作感の調整：UI 外殻テキストの選択禁止と本文エリアの選択維持（r85）
+
+確定したエリア区分に沿ってテキスト選択とカーソル表示を調整し、アプリらしい操作感と本文コピーの両立を実現しました：
+
+- **選択禁止＋標準／ポインターカーソル（UI 外殻）**：デスクトップアイコン文字・上部時計日付・左下 ID、ようこそ画面全般、各ウィンドウのタイトルバー・閉じる・ボタン・絞り込み・ページ送り、知識庫／動画／ツール／ゲームのカード UI 文字とクラウドセーブ帯、チャットのニックネーム・時刻・システム通知・未読ピル、About の興味タグと SNS リンク。
+- **選択・コピー維持（本文エリア）**：記事・更新履歴の本文・要約・コードブロック（目次とタイトルバーは選択禁止）、チャットメッセージ本文、About の自己紹介と連絡先、クイック転送の合言葉・転送内容、日本語サブテキスト練習ツールの本文。
+- **ネイティブ維持**：入力欄・テキストエリア・`contenteditable` およびゲーム iframe 内はそのまま維持しています。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-ui-select-r85', '2026-11-25')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261125-pond-lightup-r84', '2026-11-25', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261125-ui-select-r85', '2026-11-25', 'schema') on conflict(version) do nothing;

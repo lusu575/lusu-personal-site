@@ -1,6 +1,38 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-25-ui-text-select-cursor-r85",
+  "slug": "2026-11-25-ui-text-select-cursor-r85",
+  "category": "site-updates",
+  "tags": [
+    "ui",
+    "pond"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-25",
+  "updated_at": "2026-11-25",
+  "published_at": "2026-11-25",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "交互手感收口：UI 外壳文字禁选去 I 型光标、内容阅读区保留可选（r85）",
+    "en": "App-Like Interaction Polish: Non-Selectable UI Chrome & Selectable Reading Areas (r85)",
+    "ja": "UI 操作感の調整：UI 外殻テキストの選択禁止と本文エリアの選択維持（r85）"
+  },
+  "summary": {
+    "zh": "消除全站 UI 外壳文字悬停出现 I 型输入光标与误拖选的问题：桌面图标/时钟/ID、欢迎窗、窗口标题栏与按钮/筛选/分页、各区卡片 UI 文字及聊天室元信息统一禁选并保持默认/手型光标；文章与更新记录正文/摘要/代码块、聊天消息正文、关于自介与联系方式、临时互传口令与内容及日语工具内容保持可拖选复制，输入区维持原生。",
+    "en": "Removed stray I-beam cursors and accidental text selection across UI chrome (desktop icons/clock/ID, Welcome modal, titlebars, buttons, filters, card labels, chat metadata) while preserving full text selection for article/update bodies, summaries, code blocks, chat message bubbles, About bio/contact info, Quick Transfer room/content, and native inputs.",
+    "ja": "デスクトップアイコン・時計・ID、ようこそ画面、ウィンドウ見出し、ボタン・フィルタ、各カード UI 文字やチャット付帯情報での誤選択と I 型カーソルを解消しつつ、記事・更新履歴本文・要約・コードブロック、チャット本文、自己紹介、クイック転送の内容、入力欄は選択・コピー可能なまま維持しました。"
+  },
+  "content_markdown": {
+    "zh": "# 交互手感收口：UI 外壳文字禁选去 I 型光标、内容阅读区保留可选（r85）\n\n本次更新按站长确认的分区域清单收口全站文字选择与鼠标光标表现，让桌面与窗口外壳更具应用手感，同时不影响阅读与复制：\n\n- **禁选＋默认/手型光标（UI 外壳）**：首页桌面图标文字、顶部时钟日期、左下角 ID；欢迎窗全部文字；各窗口标题栏、关闭键、按钮、筛选/分类标签与分页控件；知识库/视频/工具/游戏卡片 UI 文字与云存档状态条；聊天室昵称、时间、系统提示与未读胶囊；关于页兴趣标签与社交链接。\n- **保留可选可复制（内容区）**：文章阅读页与更新记录正文、摘要、代码块（目录与标题栏禁选）；聊天室消息正文；关于页自介正文与联系方式；工具子页临时互传显示的口令与传输内容、日语的言外之意内容文本。\n- **原生不受影响**：所有输入框、文本域、`contenteditable` 区域及内嵌游戏画面保持原生交互。",
+    "en": "# App-Like Interaction Polish: Non-Selectable UI Chrome & Selectable Reading Areas (r85)\n\nThis release refines text selection and hover cursors across the site so the desktop and windows feel like a real application while keeping reading and copy workflows intact:\n\n- **Non-Selectable UI Chrome (Default / Pointer Cursor)**: Desktop icons, top clock/date, bottom-left ID; all Welcome modal copy; window titlebars, close buttons, action buttons, filter/category chips, pagination; Knowledge/Video/Tool/Game card chrome and cloud-save banner; Chatroom nicknames, timestamps, system notices, and unread pill; About interest tags and social links.\n- **Selectable Content Regions**: Article and update-log bodies, summaries, and code blocks (TOC and titlebar remain non-selectable); Chatroom message bubbles; About bio and contact details; Quick Transfer room codes/content and Japanese Subtext Trainer content.\n- **Native Inputs & Embedded Games Untouched**: All inputs, textareas, `contenteditable` elements, and embedded game iframes keep native behavior.",
+    "ja": "# UI 操作感の調整：UI 外殻テキストの選択禁止と本文エリアの選択維持（r85）\n\n確定したエリア区分に沿ってテキスト選択とカーソル表示を調整し、アプリらしい操作感と本文コピーの両立を実現しました：\n\n- **選択禁止＋標準／ポインターカーソル（UI 外殻）**：デスクトップアイコン文字・上部時計日付・左下 ID、ようこそ画面全般、各ウィンドウのタイトルバー・閉じる・ボタン・絞り込み・ページ送り、知識庫／動画／ツール／ゲームのカード UI 文字とクラウドセーブ帯、チャットのニックネーム・時刻・システム通知・未読ピル、About の興味タグと SNS リンク。\n- **選択・コピー維持（本文エリア）**：記事・更新履歴の本文・要約・コードブロック（目次とタイトルバーは選択禁止）、チャットメッセージ本文、About の自己紹介と連絡先、クイック転送の合言葉・転送内容、日本語サブテキスト練習ツールの本文。\n- **ネイティブ維持**：入力欄・テキストエリア・`contenteditable` およびゲーム iframe 内はそのまま維持しています。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-25-pond-lightup-boot-r84",
   "slug": "2026-11-25-pond-lightup-boot-r84",
   "category": "site-updates",

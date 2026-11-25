@@ -6743,20 +6743,170 @@ html[data-pond-mode="chatroom"] #chat-message-list {
 }
 
 /* ============================================================
-   r55: Native System Cursor (Remove Legacy XP Custom Cursors)
-        + Zero-Drift Close Button Hover Optical Centering
+   r55 / r85: Native System Cursor + Scoped UI Non-Selectable Rules
+              + Zero-Drift Close Button Hover Optical Centering
    ============================================================ */
 html[data-pond-mode],
 html[data-pond-mode] body,
-html[data-pond-mode] body *:not(#pond-desktop-canvas) {
+html[data-pond-mode] body :where(*:not(#pond-desktop-canvas)) {
+  cursor: default !important;
+}
+
+html[data-pond-mode] #pond-desktop-canvas {
+  cursor: default;
+}
+
+/* r85: UI chrome & card surfaces are non-selectable (app-like feel) */
+html[data-pond-mode] #pond-visual-backdrop,
+html[data-pond-mode] #pond-desktop-canvas,
+.xp-topbar,
+.xp-topbar *,
+.xp-taskbar,
+.xp-taskbar *,
+.desktop-icons,
+.desktop-icons *,
+.window-titlebar,
+.window-titlebar *,
+.window-controls,
+.window-controls *,
+.knowledge-window-controls,
+.knowledge-window-controls *,
+.article-read-progress,
+.article-read-progress *,
+.article-reader-sidebar,
+.article-reader-sidebar *,
+.article-detail-actions,
+.article-detail-actions *,
+#article-detail-meta,
+#article-detail-meta *,
+#article-summary-toggle,
+.article-top-link,
+.filter-row,
+.filter-row *,
+.category-panel,
+.category-panel *,
+#knowledge-searchbar > label,
+#knowledge-search-status,
+#knowledge-list,
+#knowledge-list *,
+#welcome-modal,
+#welcome-modal *,
+#video-list,
+#video-list *,
+#video-modal .video-modal-actions,
+#video-modal .video-modal-actions *,
+#video-modal .video-placeholder,
+#video-modal .video-placeholder *,
+#resource-categories,
+#resource-categories *,
+#resource-list,
+#resource-list *,
+.transfer-app-header,
+.transfer-app-header *,
+.transfer-login-gate,
+.transfer-login-gate *,
+.transfer-room-entry :not(input):not(textarea):not([contenteditable]),
+.transfer-toolbar-actions,
+.transfer-toolbar-actions *,
+.transfer-item-actions,
+.transfer-item-actions *,
+.transfer-expiry,
+.transfer-quota-card,
+.transfer-quota-card *,
+.transfer-upload-zone,
+.transfer-upload-zone *,
+.transfer-tasks,
+.transfer-tasks *,
+#games .xp-window,
+#games .xp-window *,
+#chatroom .chatroom-header,
+#chatroom .chatroom-header *,
+#chatroom .chatroom-footer,
+#chatroom .chatroom-footer *,
+#chatroom .chat-unread-button,
+#chatroom .chatroom-counter,
+#chatroom .chat-private-room-panel :not(input):not(textarea):not([contenteditable]),
+#chat-message-list .chat-message-meta,
+#chat-message-list .chat-message-meta *,
+#chat-message-list .chat-system-message,
+#chat-message-list .chat-empty,
+#about .profile-info dt,
+#about .profile-info dl > div:nth-child(2) dd,
+#about .about-social-links,
+#about .about-social-links *,
+#about .about-rss-button,
+#account-popover :not(input):not(textarea):not([contenteditable]),
+button,
+.xp-button,
+.quick-link,
+.category-button,
+.close-button,
+.account-close-button,
+.maximize-button,
+.tag,
+.pagination,
+.pagination * {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+/* r85: Content reading & copyable regions MUST stay selectable with natural text cursor */
+html[data-pond-mode] #article-detail-title,
+html[data-pond-mode] #article-detail-summary,
+html[data-pond-mode] #article-detail-body,
+html[data-pond-mode] #article-detail-body *,
+html[data-pond-mode] #chat-message-list .chat-bubble,
+html[data-pond-mode] #about .about-copy,
+html[data-pond-mode] #about .about-contact-row dd:not(.profile-contact-links),
+html[data-pond-mode] #about .profile-info dl > div:nth-child(1) dd,
+html[data-pond-mode] #about .profile-info dl > div:nth-child(4) dd,
+html[data-pond-mode] #about .about-rss-copy,
+html[data-pond-mode] #about .about-rss-copy *,
+html[data-pond-mode] .transfer-item-body,
+html[data-pond-mode] .transfer-item-body *,
+html[data-pond-mode] .transfer-filename,
+html[data-pond-mode] #transfer-room-mode,
+html[data-pond-mode] #transfer-room-mode *,
+html[data-pond-mode] .transfer-room-toolbar > div:first-child,
+html[data-pond-mode] .transfer-room-toolbar > div:first-child *,
+#article-detail-title,
+#article-detail-summary,
+#article-detail-body,
+#article-detail-body *,
+#chat-message-list .chat-bubble,
+#about .about-copy,
+#about .about-rss-copy,
+#about .about-rss-copy *,
+.transfer-item-body,
+.transfer-item-body *,
+.transfer-filename,
+#transfer-room-mode,
+#transfer-room-mode *,
+.transfer-room-toolbar > div:first-child,
+.transfer-room-toolbar > div:first-child * {
+  -webkit-user-select: text !important;
+  user-select: text !important;
   cursor: auto !important;
 }
 
-html[data-pond-mode] :is(a, button, summary, label[for], [role="button"], [tabindex]:not([tabindex="-1"]), select, input[type="checkbox"], input[type="radio"], .article-toc-link, .category-button, .xp-button, .close-button, .account-close-button, .maximize-button):not(:disabled) {
+/* Interactive controls always show pointer cursor */
+html[data-pond-mode] :is(a, button, summary, label[for], [role="button"], [tabindex]:not([tabindex="-1"]), select, input[type="checkbox"], input[type="radio"], .article-toc-link, .category-button, .xp-button, .close-button, .account-close-button, .maximize-button, .desktop-icon, .quick-link, .video-thumb, .card-action, .article-card-cta, .transfer-file-picker, .about-social-link):not(:disabled) {
   cursor: pointer !important;
 }
 
-html[data-pond-mode] :is(input[type="text"], input[type="search"], input[type="email"], input[type="password"], textarea) {
+/* Keep prose links clickable inside selectable content regions */
+html[data-pond-mode] #article-detail-body a,
+html[data-pond-mode] #article-detail-body a * {
+  cursor: pointer !important;
+}
+
+/* Native text inputs, textareas, and contenteditable stay 100% native */
+html[data-pond-mode] :is(input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), textarea, [contenteditable]:not([contenteditable="false"])),
+input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+textarea,
+[contenteditable]:not([contenteditable="false"]) {
+  -webkit-user-select: text !important;
+  user-select: text !important;
   cursor: text !important;
 }
 

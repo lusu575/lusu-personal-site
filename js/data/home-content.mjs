@@ -2,6 +2,33 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-25-ui-text-select-cursor-r85",
+      "slug": "2026-11-25-ui-text-select-cursor-r85",
+      "category": "site-updates",
+      "tags": [
+        "ui",
+        "pond"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": "2026-11-25",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "交互手感收口：UI 外壳文字禁选去 I 型光标、内容阅读区保留可选（r85）",
+        "en": "App-Like Interaction Polish: Non-Selectable UI Chrome & Selectable Reading Areas (r85)",
+        "ja": "UI 操作感の調整：UI 外殻テキストの選択禁止と本文エリアの選択維持（r85）"
+      },
+      "summary": {
+        "zh": "消除全站 UI 外壳文字悬停出现 I 型输入光标与误拖选的问题：桌面图标/时钟/ID、欢迎窗、窗口标题栏与按钮/筛选/分页、各区卡片 UI 文字及聊天室元信息统一禁选并保持默认/手型光标；文章与更新记录正文/摘要/代码块、聊天消息正文、关于自介与联系方式、临时互传口令与内容及日语工具内容保持可拖选复制，输入区维持原生。",
+        "en": "Removed stray I-beam cursors and accidental text selection across UI chrome (desktop icons/clock/ID, Welcome modal, titlebars, buttons, filters, card labels, chat metadata) while preserving full text selection for article/update bodies, summaries, code blocks, chat message bubbles, About bio/contact info, Quick Transfer room/content, and native inputs.",
+        "ja": "デスクトップアイコン・時計・ID、ようこそ画面、ウィンドウ見出し、ボタン・フィルタ、各カード UI 文字やチャット付帯情報での誤選択と I 型カーソルを解消しつつ、記事・更新履歴本文・要約・コードブロック、チャット本文、自己紹介、クイック転送の内容、入力欄は選択・コピー可能なまま維持しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-25-pond-lightup-boot-r84",
       "slug": "2026-11-25-pond-lightup-boot-r84",
       "category": "site-updates",
@@ -114,34 +141,6 @@ export const homeContent = Object.freeze({
         "zh": "桌面池塘停止加载后台旧壁纸视频与隐藏星光动画、荷叶纹理改为按帧增量烘焙、开窗样式不再整表重排，并同步修复猫国语言同步与白按钮深色化、欢迎窗图标区分度与移除临时公告横条、视频失败态按钮与游戏云存档提示文案。",
         "en": "Eliminated hidden legacy wallpaper video/star overhead on desktop Pond, switched flora baking to incremental idle slices, stopped stylesheet detachment during window opens, darkened Kittens sell buttons, upgraded Welcome icons, removed the temporary notice banner, and tightened Knowledge/Video fallbacks.",
         "ja": "デスクトップ池モードで背面の旧壁紙動画と星アニメーションを停止し、季節植生の段階ベイクとスタイルシート非再挿入化を実施。さらに猫国の言語同期と白ボタン暗色化、ようこそ画面のアイコン改善と仮お知らせ削除、動画再試行ボタンと知識庫の再試行耐性を修正しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-kittens-layout-and-contrast-r80",
-      "slug": "kittens-game-full-width-layout-and-contrast-r80",
-      "category": "site-updates",
-      "tags": [
-        "视觉更新",
-        "游戏区",
-        "猫国建设者"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T23:36:00+08:00",
-      "updated_at": "2026-11-24T23:36:00+08:00",
-      "published_at": "2026-11-24T23:36:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "视觉优化：猫国建设者铺满视口、禁用文字高对比、标签选中态与折叠控件放大（r80）",
-        "en": "Visual Polish: Kittens Game Full-Viewport Layout, AA+ Contrast & Clear Tabs (r80)",
-        "ja": "ビジュアル調整：Kittens Game の全幅レイアウト・無効文字の視認性向上・タブ選択明示（r80）"
-      },
-      "summary": {
-        "zh": "消除猫国建设者两侧黑边与三栏下方大片黑空，将禁用态文字提亮至对比度 7.5:1 以上，补齐主标签与筛选标签选中态高光下划线，并放大提亮左栏折叠箭头。",
-        "en": "Expands Kittens Game to fill viewport width and height, boosts disabled text above 7.5:1 contrast, highlights active tabs and filters, and enlarges left-column collapse arrows.",
-        "ja": "左右の黒余白と下部空白を解消して全幅・全高表示にし、無効ボタン文字を AA+ へ改善、選択中タブの下線強調と左欄矢印の拡大を行いました。"
       }
     }
   ]
