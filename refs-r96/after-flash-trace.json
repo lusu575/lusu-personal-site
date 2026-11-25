@@ -1,0 +1,440 @@
+{
+  "beforeRimTriggerCounts": {
+    "chatRename": 4,
+    "chatPwd": 4,
+    "toolsOpen": 4
+  },
+  "after": {
+    "chatRename": {
+      "label": "chat-rename",
+      "text": "换一个名字",
+      "waveStarts": 0,
+      "rimStarts": 0,
+      "maxAlphaStepPerFrame": 0,
+      "maxBlurStepPerFrame": 0,
+      "sampleFrames": [
+        {
+          "t": 99,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 0,
+          "alpha": 0,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(164, 234, 230, 0.36)"
+        },
+        {
+          "t": 277,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 0,
+          "alpha": 0,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(164, 234, 230, 0.36)"
+        },
+        {
+          "t": 429,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 0,
+          "alpha": 0,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(164, 234, 230, 0.36)"
+        },
+        {
+          "t": 511,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 0,
+          "alpha": 0,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(164, 234, 230, 0.36)"
+        },
+        {
+          "t": 578,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 0,
+          "alpha": 0,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(164, 234, 230, 0.36)"
+        },
+        {
+          "t": 645,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 0,
+          "alpha": 0,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(164, 234, 230, 0.36)"
+        },
+        {
+          "t": 711,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 0,
+          "alpha": 0,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(164, 234, 230, 0.36)"
+        },
+        {
+          "t": 778,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 0,
+          "alpha": 0,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(164, 234, 230, 0.36)"
+        },
+        {
+          "t": 845,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 0,
+          "alpha": 0,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(164, 234, 230, 0.36)"
+        },
+        {
+          "t": 912,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 0,
+          "alpha": 0,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(164, 234, 230, 0.36)"
+        },
+        {
+          "t": 978,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 0,
+          "alpha": 0,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(164, 234, 230, 0.36)"
+        },
+        {
+          "t": 1045,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 0,
+          "alpha": 0,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(164, 234, 230, 0.36)"
+        },
+        {
+          "t": 1112,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 0,
+          "alpha": 0,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(164, 234, 230, 0.36)"
+        }
+      ]
+    },
+    "chatPwd": {
+      "label": "chat-pwd",
+      "text": "密码房",
+      "waveStarts": 1,
+      "rimStarts": 1,
+      "maxAlphaStepPerFrame": 0.097,
+      "maxBlurStepPerFrame": 2.6,
+      "sampleFrames": [
+        {
+          "t": 13,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 14,
+          "alpha": 0.32,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        },
+        {
+          "t": 93,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 14,
+          "alpha": 0.32,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        },
+        {
+          "t": 160,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 17,
+          "alpha": 0.429,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(198, 250, 246, 0.88)"
+        },
+        {
+          "t": 227,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 19.6,
+          "alpha": 0.525,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(198, 250, 246, 0.88)"
+        },
+        {
+          "t": 311,
+          "hasRim": false,
+          "hasWave": true,
+          "blur": 16.2,
+          "alpha": 0.4,
+          "waveA": 0.682,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        },
+        {
+          "t": 378,
+          "hasRim": false,
+          "hasWave": true,
+          "blur": 14.2,
+          "alpha": 0.328,
+          "waveA": 0.817,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        },
+        {
+          "t": 444,
+          "hasRim": true,
+          "hasWave": true,
+          "blur": 14.4,
+          "alpha": 0.329,
+          "waveA": 0.712,
+          "rimC": 0.104,
+          "border": "rgba(196, 252, 248, 0.85)"
+        },
+        {
+          "t": 511,
+          "hasRim": true,
+          "hasWave": true,
+          "blur": 16.4,
+          "alpha": 0.375,
+          "waveA": 0.61,
+          "rimC": 0.693,
+          "border": "rgba(196, 252, 248, 0.92)"
+        },
+        {
+          "t": 578,
+          "hasRim": true,
+          "hasWave": true,
+          "blur": 17.5,
+          "alpha": 0.4,
+          "waveA": 0.511,
+          "rimC": 0.995,
+          "border": "rgba(196, 252, 248, 0.96)"
+        },
+        {
+          "t": 644,
+          "hasRim": true,
+          "hasWave": true,
+          "blur": 16,
+          "alpha": 0.365,
+          "waveA": 0.415,
+          "rimC": 0.561,
+          "border": "rgba(196, 252, 248, 0.906)"
+        },
+        {
+          "t": 711,
+          "hasRim": true,
+          "hasWave": true,
+          "blur": 14.1,
+          "alpha": 0.323,
+          "waveA": 0.324,
+          "rimC": 0.036,
+          "border": "rgba(196, 252, 248, 0.843)"
+        },
+        {
+          "t": 778,
+          "hasRim": false,
+          "hasWave": true,
+          "blur": 14,
+          "alpha": 0.32,
+          "waveA": 0.238,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        },
+        {
+          "t": 845,
+          "hasRim": false,
+          "hasWave": true,
+          "blur": 14,
+          "alpha": 0.32,
+          "waveA": 0.157,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        },
+        {
+          "t": 912,
+          "hasRim": false,
+          "hasWave": true,
+          "blur": 14,
+          "alpha": 0.32,
+          "waveA": 0.085,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        },
+        {
+          "t": 979,
+          "hasRim": false,
+          "hasWave": true,
+          "blur": 14,
+          "alpha": 0.32,
+          "waveA": 0.023,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        },
+        {
+          "t": 1045,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 14,
+          "alpha": 0.32,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        },
+        {
+          "t": 1112,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 14,
+          "alpha": 0.32,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        }
+      ]
+    },
+    "toolsOpen": {
+      "label": "tools-open",
+      "text": "打开",
+      "waveStarts": 1,
+      "rimStarts": 1,
+      "maxAlphaStepPerFrame": 0.072,
+      "maxBlurStepPerFrame": 2.4,
+      "sampleFrames": [
+        {
+          "t": 15,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 14,
+          "alpha": 0.32,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        },
+        {
+          "t": 129,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 14,
+          "alpha": 0.32,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        },
+        {
+          "t": 195,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 14,
+          "alpha": 0.32,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        },
+        {
+          "t": 369,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 17,
+          "alpha": 0.429,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(198, 250, 246, 0.88)"
+        },
+        {
+          "t": 563,
+          "hasRim": false,
+          "hasWave": false,
+          "blur": 19.8,
+          "alpha": 0.533,
+          "waveA": 0,
+          "rimC": 0,
+          "border": "rgba(198, 250, 246, 0.88)"
+        },
+        {
+          "t": 730,
+          "hasRim": false,
+          "hasWave": true,
+          "blur": 17.5,
+          "alpha": 0.448,
+          "waveA": 0.274,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        },
+        {
+          "t": 797,
+          "hasRim": true,
+          "hasWave": true,
+          "blur": 15.1,
+          "alpha": 0.348,
+          "waveA": 0.693,
+          "rimC": 0.223,
+          "border": "rgba(196, 252, 248, 0.867)"
+        },
+        {
+          "t": 863,
+          "hasRim": true,
+          "hasWave": true,
+          "blur": 16.9,
+          "alpha": 0.387,
+          "waveA": 0.591,
+          "rimC": 0.831,
+          "border": "rgba(196, 252, 248, 0.94)"
+        },
+        {
+          "t": 1047,
+          "hasRim": true,
+          "hasWave": true,
+          "blur": 14.1,
+          "alpha": 0.323,
+          "waveA": 0.33,
+          "rimC": 0.036,
+          "border": "rgba(196, 252, 248, 0.843)"
+        },
+        {
+          "t": 1114,
+          "hasRim": false,
+          "hasWave": true,
+          "blur": 14,
+          "alpha": 0.32,
+          "waveA": 0.243,
+          "rimC": 0,
+          "border": "rgba(168, 250, 242, 0.88)"
+        }
+      ]
+    }
+  },
+  "cssVer": "/css/pond-windows.css?v=20261125-continuous-glass-r96"
+}

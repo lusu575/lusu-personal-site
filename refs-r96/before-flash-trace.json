@@ -1,0 +1,1537 @@
+{
+  "chatRename": {
+    "label": "chatRename",
+    "text": "×",
+    "events": [],
+    "transitions": [
+      {
+        "t": 24,
+        "clsFlags": "",
+        "haloState": "none",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(185, 235, 230, 0.58)",
+        "waveR": "",
+        "rimCatch": "",
+        "animNames": ""
+      }
+    ],
+    "anims": []
+  },
+  "chatBtns": [
+    {
+      "id": "",
+      "cls": "close-button crt-glass-btn glass-close",
+      "text": "×"
+    },
+    {
+      "id": "chat-edit-nickname",
+      "cls": "xp-button chat-nickname-button crt-glass-btn glass-primary crt-glass-liquid-pilot",
+      "text": "换一个名字"
+    },
+    {
+      "id": "",
+      "cls": "chat-room-help-trigger crt-glass-btn glass-icon crt-glass-liquid-pilot",
+      "text": "?"
+    },
+    {
+      "id": "chat-room-toggle",
+      "cls": "xp-button chat-room-toggle crt-glass-btn glass-primary crt-glass-liquid-pilot",
+      "text": "密码房"
+    },
+    {
+      "id": "chat-private-room-submit",
+      "cls": "xp-button crt-glass-btn glass-primary crt-glass-liquid-pilot",
+      "text": "进入"
+    },
+    {
+      "id": "chat-private-room-cancel",
+      "cls": "xp-button crt-glass-btn glass-primary crt-glass-liquid-pilot",
+      "text": "取消"
+    },
+    {
+      "id": "chat-unread-button",
+      "cls": "xp-button chat-unread-button crt-glass-btn glass-primary crt-glass-liquid-pilot",
+      "text": ""
+    },
+    {
+      "id": "",
+      "cls": "xp-button chat-send-button crt-glass-btn glass-primary crt-glass-liquid-pilot",
+      "text": "发送"
+    },
+    {
+      "id": "chat-retry-button",
+      "cls": "xp-button chat-retry-button crt-glass-btn glass-primary crt-glass-liquid-pilot",
+      "text": "重试"
+    }
+  ],
+  "chatRenameExact": {
+    "label": "chatRenameExact",
+    "text": "换一个名字",
+    "events": [
+      {
+        "t": 110,
+        "evt": "pointerdown"
+      },
+      {
+        "t": 111,
+        "evt": "focus"
+      },
+      {
+        "t": 203,
+        "evt": "pointerup"
+      },
+      {
+        "t": 204,
+        "evt": "lostpointercapture"
+      },
+      {
+        "t": 205,
+        "evt": "click"
+      }
+    ],
+    "transitions": [
+      {
+        "t": 7,
+        "clsFlags": "is-glass-hovered",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "",
+        "rimCatch": "",
+        "animNames": ""
+      },
+      {
+        "t": 123,
+        "clsFlags": "is-glass-hovered,is-glass-held,is-ui-pressed",
+        "haloState": "hold",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(198, 250, 246, 0.88)",
+        "waveR": "",
+        "rimCatch": "",
+        "animNames": ""
+      },
+      {
+        "t": 206,
+        "clsFlags": "is-glass-hovered,is-glass-waving",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "10.0px",
+        "rimCatch": "",
+        "animNames": ""
+      },
+      {
+        "t": 356,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.72)",
+        "waveR": "18.6px",
+        "rimCatch": "0.000",
+        "animNames": ""
+      },
+      {
+        "t": 373,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.81)",
+        "waveR": "20.7px",
+        "rimCatch": "0.322",
+        "animNames": ""
+      },
+      {
+        "t": 390,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.89)",
+        "waveR": "22.7px",
+        "rimCatch": "0.610",
+        "animNames": ""
+      },
+      {
+        "t": 406,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.953)",
+        "waveR": "24.7px",
+        "rimCatch": "0.831",
+        "animNames": ""
+      },
+      {
+        "t": 423,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.992)",
+        "waveR": "26.7px",
+        "rimCatch": "0.967",
+        "animNames": ""
+      },
+      {
+        "t": 440,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgb(216, 255, 252)",
+        "waveR": "28.6px",
+        "rimCatch": "0.998",
+        "animNames": ""
+      },
+      {
+        "t": 457,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.976)",
+        "waveR": "30.5px",
+        "rimCatch": "0.922",
+        "animNames": ""
+      },
+      {
+        "t": 473,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.93)",
+        "waveR": "32.4px",
+        "rimCatch": "0.749",
+        "animNames": ""
+      },
+      {
+        "t": 490,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.86)",
+        "waveR": "34.2px",
+        "rimCatch": "0.495",
+        "animNames": ""
+      },
+      {
+        "t": 507,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.773)",
+        "waveR": "35.9px",
+        "rimCatch": "0.189",
+        "animNames": ""
+      },
+      {
+        "t": 523,
+        "clsFlags": "is-glass-hovered,is-glass-waving",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "37.7px",
+        "rimCatch": "0",
+        "animNames": ""
+      },
+      {
+        "t": 540,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.72)",
+        "waveR": "39.3px",
+        "rimCatch": "0.000",
+        "animNames": ""
+      },
+      {
+        "t": 557,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.81)",
+        "waveR": "41.0px",
+        "rimCatch": "0.324",
+        "animNames": ""
+      },
+      {
+        "t": 592,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.89)",
+        "waveR": "42.5px",
+        "rimCatch": "0.610",
+        "animNames": ""
+      },
+      {
+        "t": 653,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.992)",
+        "waveR": "45.6px",
+        "rimCatch": "0.967",
+        "animNames": ""
+      },
+      {
+        "t": 679,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.93)",
+        "waveR": "49.7px",
+        "rimCatch": "0.748",
+        "animNames": ""
+      },
+      {
+        "t": 691,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.773)",
+        "waveR": "52.3px",
+        "rimCatch": "0.187",
+        "animNames": ""
+      },
+      {
+        "t": 707,
+        "clsFlags": "is-glass-hovered,is-glass-waving",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "53.5px",
+        "rimCatch": "0",
+        "animNames": ""
+      },
+      {
+        "t": 724,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.72)",
+        "waveR": "54.6px",
+        "rimCatch": "0.000",
+        "animNames": ""
+      },
+      {
+        "t": 740,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.81)",
+        "waveR": "55.7px",
+        "rimCatch": "0.322",
+        "animNames": ""
+      },
+      {
+        "t": 757,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.89)",
+        "waveR": "56.8px",
+        "rimCatch": "0.611",
+        "animNames": ""
+      },
+      {
+        "t": 774,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.953)",
+        "waveR": "57.7px",
+        "rimCatch": "0.833",
+        "animNames": ""
+      },
+      {
+        "t": 790,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.992)",
+        "waveR": "58.7px",
+        "rimCatch": "0.967",
+        "animNames": ""
+      },
+      {
+        "t": 807,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgb(216, 255, 252)",
+        "waveR": "59.5px",
+        "rimCatch": "0.998",
+        "animNames": ""
+      },
+      {
+        "t": 824,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.976)",
+        "waveR": "60.3px",
+        "rimCatch": "0.922",
+        "animNames": ""
+      },
+      {
+        "t": 841,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.93)",
+        "waveR": "61.1px",
+        "rimCatch": "0.748",
+        "animNames": ""
+      },
+      {
+        "t": 857,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.86)",
+        "waveR": "61.8px",
+        "rimCatch": "0.494",
+        "animNames": ""
+      },
+      {
+        "t": 875,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.773)",
+        "waveR": "62.4px",
+        "rimCatch": "0.187",
+        "animNames": ""
+      },
+      {
+        "t": 891,
+        "clsFlags": "is-glass-hovered,is-glass-waving",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "62.9px",
+        "rimCatch": "0",
+        "animNames": ""
+      },
+      {
+        "t": 908,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.72)",
+        "waveR": "63.4px",
+        "rimCatch": "0.000",
+        "animNames": ""
+      },
+      {
+        "t": 924,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.808)",
+        "waveR": "63.8px",
+        "rimCatch": "0.320",
+        "animNames": ""
+      },
+      {
+        "t": 941,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.89)",
+        "waveR": "64.1px",
+        "rimCatch": "0.608",
+        "animNames": ""
+      },
+      {
+        "t": 958,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.953)",
+        "waveR": "64.3px",
+        "rimCatch": "0.831",
+        "animNames": ""
+      },
+      {
+        "t": 974,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.992)",
+        "waveR": "64.3px",
+        "rimCatch": "0.967",
+        "animNames": ""
+      },
+      {
+        "t": 991,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgb(216, 255, 252)",
+        "waveR": "64.3px",
+        "rimCatch": "0.998",
+        "animNames": ""
+      },
+      {
+        "t": 1008,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.976)",
+        "waveR": "64.3px",
+        "rimCatch": "0.922",
+        "animNames": ""
+      },
+      {
+        "t": 1024,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.93)",
+        "waveR": "64.3px",
+        "rimCatch": "0.750",
+        "animNames": ""
+      },
+      {
+        "t": 1041,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.86)",
+        "waveR": "64.3px",
+        "rimCatch": "0.497",
+        "animNames": ""
+      },
+      {
+        "t": 1058,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.773)",
+        "waveR": "64.3px",
+        "rimCatch": "0.189",
+        "animNames": ""
+      },
+      {
+        "t": 1074,
+        "clsFlags": "is-glass-hovered",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "",
+        "rimCatch": "",
+        "animNames": ""
+      }
+    ],
+    "anims": []
+  },
+  "chatPwdExact": {
+    "label": "chatPwdExact",
+    "text": "密码房",
+    "events": [
+      {
+        "t": 123,
+        "evt": "pointerdown"
+      },
+      {
+        "t": 124,
+        "evt": "focus"
+      },
+      {
+        "t": 218,
+        "evt": "pointerup"
+      },
+      {
+        "t": 218,
+        "evt": "lostpointercapture"
+      },
+      {
+        "t": 219,
+        "evt": "click"
+      }
+    ],
+    "transitions": [
+      {
+        "t": 13,
+        "clsFlags": "is-glass-hovered",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "",
+        "rimCatch": "",
+        "animNames": ""
+      },
+      {
+        "t": 129,
+        "clsFlags": "is-glass-hovered,is-glass-held,is-ui-pressed",
+        "haloState": "hold",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(198, 250, 246, 0.88)",
+        "waveR": "",
+        "rimCatch": "",
+        "animNames": ""
+      },
+      {
+        "t": 250,
+        "clsFlags": "is-glass-hovered,is-glass-waving",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "10.0px",
+        "rimCatch": "",
+        "animNames": ""
+      },
+      {
+        "t": 380,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.72)",
+        "waveR": "19.4px",
+        "rimCatch": "0.000",
+        "animNames": ""
+      },
+      {
+        "t": 397,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.808)",
+        "waveR": "21.4px",
+        "rimCatch": "0.320",
+        "animNames": ""
+      },
+      {
+        "t": 413,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.89)",
+        "waveR": "23.4px",
+        "rimCatch": "0.608",
+        "animNames": ""
+      },
+      {
+        "t": 430,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.953)",
+        "waveR": "25.4px",
+        "rimCatch": "0.831",
+        "animNames": ""
+      },
+      {
+        "t": 446,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.992)",
+        "waveR": "27.3px",
+        "rimCatch": "0.966",
+        "animNames": ""
+      },
+      {
+        "t": 463,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgb(216, 255, 252)",
+        "waveR": "29.2px",
+        "rimCatch": "0.998",
+        "animNames": ""
+      },
+      {
+        "t": 480,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.98)",
+        "waveR": "31.0px",
+        "rimCatch": "0.923",
+        "animNames": ""
+      },
+      {
+        "t": 497,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.93)",
+        "waveR": "32.8px",
+        "rimCatch": "0.750",
+        "animNames": ""
+      },
+      {
+        "t": 513,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.86)",
+        "waveR": "34.6px",
+        "rimCatch": "0.495",
+        "animNames": ""
+      },
+      {
+        "t": 530,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.773)",
+        "waveR": "36.3px",
+        "rimCatch": "0.191",
+        "animNames": ""
+      },
+      {
+        "t": 547,
+        "clsFlags": "is-glass-hovered,is-glass-waving",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "38.0px",
+        "rimCatch": "0",
+        "animNames": ""
+      },
+      {
+        "t": 563,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.72)",
+        "waveR": "39.6px",
+        "rimCatch": "0.000",
+        "animNames": ""
+      },
+      {
+        "t": 580,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.81)",
+        "waveR": "41.2px",
+        "rimCatch": "0.322",
+        "animNames": ""
+      },
+      {
+        "t": 597,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.89)",
+        "waveR": "42.7px",
+        "rimCatch": "0.610",
+        "animNames": ""
+      },
+      {
+        "t": 613,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.953)",
+        "waveR": "44.2px",
+        "rimCatch": "0.833",
+        "animNames": ""
+      },
+      {
+        "t": 630,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.992)",
+        "waveR": "45.6px",
+        "rimCatch": "0.967",
+        "animNames": ""
+      },
+      {
+        "t": 647,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgb(216, 255, 252)",
+        "waveR": "47.0px",
+        "rimCatch": "0.998",
+        "animNames": ""
+      },
+      {
+        "t": 663,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.976)",
+        "waveR": "48.4px",
+        "rimCatch": "0.922",
+        "animNames": ""
+      },
+      {
+        "t": 680,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.93)",
+        "waveR": "49.7px",
+        "rimCatch": "0.749",
+        "animNames": ""
+      },
+      {
+        "t": 697,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.86)",
+        "waveR": "50.9px",
+        "rimCatch": "0.495",
+        "animNames": ""
+      },
+      {
+        "t": 714,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.773)",
+        "waveR": "52.1px",
+        "rimCatch": "0.189",
+        "animNames": ""
+      },
+      {
+        "t": 730,
+        "clsFlags": "is-glass-hovered,is-glass-waving",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "53.3px",
+        "rimCatch": "0",
+        "animNames": ""
+      },
+      {
+        "t": 747,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.72)",
+        "waveR": "54.4px",
+        "rimCatch": "0.000",
+        "animNames": ""
+      },
+      {
+        "t": 764,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.81)",
+        "waveR": "55.4px",
+        "rimCatch": "0.322",
+        "animNames": ""
+      },
+      {
+        "t": 780,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.89)",
+        "waveR": "56.4px",
+        "rimCatch": "0.610",
+        "animNames": ""
+      },
+      {
+        "t": 797,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.953)",
+        "waveR": "57.4px",
+        "rimCatch": "0.831",
+        "animNames": ""
+      },
+      {
+        "t": 814,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.992)",
+        "waveR": "58.3px",
+        "rimCatch": "0.967",
+        "animNames": ""
+      },
+      {
+        "t": 830,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgb(216, 255, 252)",
+        "waveR": "59.1px",
+        "rimCatch": "0.998",
+        "animNames": ""
+      },
+      {
+        "t": 847,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.98)",
+        "waveR": "59.8px",
+        "rimCatch": "0.923",
+        "animNames": ""
+      },
+      {
+        "t": 864,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.93)",
+        "waveR": "60.5px",
+        "rimCatch": "0.749",
+        "animNames": ""
+      },
+      {
+        "t": 881,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.86)",
+        "waveR": "61.2px",
+        "rimCatch": "0.497",
+        "animNames": ""
+      },
+      {
+        "t": 897,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.773)",
+        "waveR": "61.8px",
+        "rimCatch": "0.189",
+        "animNames": ""
+      },
+      {
+        "t": 914,
+        "clsFlags": "is-glass-hovered,is-glass-waving",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "62.2px",
+        "rimCatch": "0",
+        "animNames": ""
+      },
+      {
+        "t": 931,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.72)",
+        "waveR": "62.7px",
+        "rimCatch": "0.000",
+        "animNames": ""
+      },
+      {
+        "t": 947,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.808)",
+        "waveR": "63.0px",
+        "rimCatch": "0.320",
+        "animNames": ""
+      },
+      {
+        "t": 964,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.89)",
+        "waveR": "63.3px",
+        "rimCatch": "0.608",
+        "animNames": ""
+      },
+      {
+        "t": 981,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.953)",
+        "waveR": "63.4px",
+        "rimCatch": "0.833",
+        "animNames": ""
+      },
+      {
+        "t": 997,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.992)",
+        "waveR": "63.4px",
+        "rimCatch": "0.967",
+        "animNames": ""
+      },
+      {
+        "t": 1014,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgb(216, 255, 252)",
+        "waveR": "63.4px",
+        "rimCatch": "0.998",
+        "animNames": ""
+      },
+      {
+        "t": 1031,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.98)",
+        "waveR": "63.4px",
+        "rimCatch": "0.923",
+        "animNames": ""
+      },
+      {
+        "t": 1048,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.93)",
+        "waveR": "63.4px",
+        "rimCatch": "0.749",
+        "animNames": ""
+      },
+      {
+        "t": 1064,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.86)",
+        "waveR": "63.4px",
+        "rimCatch": "0.495",
+        "animNames": ""
+      },
+      {
+        "t": 1081,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.773)",
+        "waveR": "63.4px",
+        "rimCatch": "0.191",
+        "animNames": ""
+      },
+      {
+        "t": 1098,
+        "clsFlags": "is-glass-hovered",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "",
+        "rimCatch": "",
+        "animNames": ""
+      }
+    ],
+    "anims": []
+  },
+  "toolsOpen": {
+    "label": "toolsOpen",
+    "text": "打开",
+    "events": [
+      {
+        "t": 109,
+        "evt": "pointerdown"
+      },
+      {
+        "t": 110,
+        "evt": "focus"
+      },
+      {
+        "t": 203,
+        "evt": "pointerup"
+      },
+      {
+        "t": 204,
+        "evt": "lostpointercapture"
+      }
+    ],
+    "transitions": [
+      {
+        "t": 8,
+        "clsFlags": "",
+        "haloState": "none",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(182, 242, 236, 0.58)",
+        "waveR": "",
+        "rimCatch": "",
+        "animNames": ""
+      },
+      {
+        "t": 59,
+        "clsFlags": "is-glass-hovered",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "",
+        "rimCatch": "",
+        "animNames": ""
+      },
+      {
+        "t": 144,
+        "clsFlags": "is-glass-hovered,is-glass-held,is-ui-pressed",
+        "haloState": "hold",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(198, 250, 246, 0.88)",
+        "waveR": "",
+        "rimCatch": "",
+        "animNames": ""
+      },
+      {
+        "t": 275,
+        "clsFlags": "is-glass-hovered,is-glass-waving",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "10.0px",
+        "rimCatch": "",
+        "animNames": ""
+      },
+      {
+        "t": 427,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.72)",
+        "waveR": "17.2px",
+        "rimCatch": "0.000",
+        "animNames": ""
+      },
+      {
+        "t": 442,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.93)",
+        "waveR": "34.1px",
+        "rimCatch": "0.750",
+        "animNames": ""
+      },
+      {
+        "t": 459,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.86)",
+        "waveR": "36.3px",
+        "rimCatch": "0.495",
+        "animNames": ""
+      },
+      {
+        "t": 475,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.773)",
+        "waveR": "38.5px",
+        "rimCatch": "0.189",
+        "animNames": ""
+      },
+      {
+        "t": 492,
+        "clsFlags": "is-glass-hovered,is-glass-waving",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "40.6px",
+        "rimCatch": "0",
+        "animNames": ""
+      },
+      {
+        "t": 509,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.72)",
+        "waveR": "42.7px",
+        "rimCatch": "0.000",
+        "animNames": ""
+      },
+      {
+        "t": 525,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.81)",
+        "waveR": "44.7px",
+        "rimCatch": "0.322",
+        "animNames": ""
+      },
+      {
+        "t": 643,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.89)",
+        "waveR": "46.7px",
+        "rimCatch": "0.610",
+        "animNames": ""
+      },
+      {
+        "t": 659,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.773)",
+        "waveR": "58.9px",
+        "rimCatch": "0.189",
+        "animNames": ""
+      },
+      {
+        "t": 676,
+        "clsFlags": "is-glass-hovered,is-glass-waving",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "60.4px",
+        "rimCatch": "0",
+        "animNames": ""
+      },
+      {
+        "t": 692,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.72)",
+        "waveR": "61.9px",
+        "rimCatch": "0.000",
+        "animNames": ""
+      },
+      {
+        "t": 709,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.81)",
+        "waveR": "63.3px",
+        "rimCatch": "0.324",
+        "animNames": ""
+      },
+      {
+        "t": 726,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.89)",
+        "waveR": "64.6px",
+        "rimCatch": "0.611",
+        "animNames": ""
+      },
+      {
+        "t": 742,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.953)",
+        "waveR": "65.9px",
+        "rimCatch": "0.834",
+        "animNames": ""
+      },
+      {
+        "t": 759,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.992)",
+        "waveR": "67.1px",
+        "rimCatch": "0.967",
+        "animNames": ""
+      },
+      {
+        "t": 776,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgb(216, 255, 252)",
+        "waveR": "68.3px",
+        "rimCatch": "0.998",
+        "animNames": ""
+      },
+      {
+        "t": 793,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.976)",
+        "waveR": "69.4px",
+        "rimCatch": "0.922",
+        "animNames": ""
+      },
+      {
+        "t": 809,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.93)",
+        "waveR": "70.4px",
+        "rimCatch": "0.748",
+        "animNames": ""
+      },
+      {
+        "t": 826,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.86)",
+        "waveR": "71.3px",
+        "rimCatch": "0.494",
+        "animNames": ""
+      },
+      {
+        "t": 843,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.773)",
+        "waveR": "72.2px",
+        "rimCatch": "0.187",
+        "animNames": ""
+      },
+      {
+        "t": 859,
+        "clsFlags": "is-glass-hovered,is-glass-waving",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "73.0px",
+        "rimCatch": "0",
+        "animNames": ""
+      },
+      {
+        "t": 876,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.72)",
+        "waveR": "73.7px",
+        "rimCatch": "0.000",
+        "animNames": ""
+      },
+      {
+        "t": 893,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.81)",
+        "waveR": "74.3px",
+        "rimCatch": "0.322",
+        "animNames": ""
+      },
+      {
+        "t": 909,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.89)",
+        "waveR": "74.9px",
+        "rimCatch": "0.610",
+        "animNames": ""
+      },
+      {
+        "t": 926,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.953)",
+        "waveR": "75.3px",
+        "rimCatch": "0.833",
+        "animNames": ""
+      },
+      {
+        "t": 943,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.992)",
+        "waveR": "75.6px",
+        "rimCatch": "0.967",
+        "animNames": ""
+      },
+      {
+        "t": 960,
+        "clsFlags": "is-glass-hovered,is-glass-waving,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgb(216, 255, 252)",
+        "waveR": "75.9px",
+        "rimCatch": "0.998",
+        "animNames": ""
+      },
+      {
+        "t": 976,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.976)",
+        "waveR": "75.9px",
+        "rimCatch": "0.922",
+        "animNames": ""
+      },
+      {
+        "t": 993,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.93)",
+        "waveR": "75.9px",
+        "rimCatch": "0.749",
+        "animNames": ""
+      },
+      {
+        "t": 1009,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.86)",
+        "waveR": "75.9px",
+        "rimCatch": "0.495",
+        "animNames": ""
+      },
+      {
+        "t": 1026,
+        "clsFlags": "is-glass-hovered,is-glass-rim-catch",
+        "haloState": "rim",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(216, 255, 252, 0.773)",
+        "waveR": "75.9px",
+        "rimCatch": "0.189",
+        "animNames": ""
+      },
+      {
+        "t": 1043,
+        "clsFlags": "is-glass-hovered",
+        "haloState": "hover",
+        "haloBlur": "0",
+        "haloAlpha": "0",
+        "borderColor": "rgba(168, 250, 242, 0.88)",
+        "waveR": "",
+        "rimCatch": "",
+        "animNames": ""
+      }
+    ],
+    "anims": []
+  }
+}
