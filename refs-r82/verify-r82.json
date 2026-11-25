@@ -1,0 +1,70 @@
+{
+  "welcomeIcons": [
+    {
+      "title": "液态玻璃 CRT Glass Lite 全站按钮铺开与两处细节收口（r82）",
+      "iconClass": "update-icon update-icon-system"
+    },
+    {
+      "title": "全站已知问题集中修复与桌面池塘三步性能优化上线（r81）",
+      "iconClass": "update-icon update-icon-system"
+    },
+    {
+      "title": "视觉优化：猫国建设者铺满视口、禁用文字高对比、标签选中态与折叠控件放大（r80）",
+      "iconClass": "update-icon update-icon-games"
+    },
+    {
+      "title": "视觉优化：人生重开去两侧横纹、去画布切角并隐藏左上角白猫角标（r79）",
+      "iconClass": "update-icon update-icon-games"
+    },
+    {
+      "title": "在线画板 1.0.15：补齐画布搜索输入框中文占位提示（r78）",
+      "iconClass": "update-icon update-icon-tools"
+    }
+  ],
+  "glassRollout": {
+    "glassChatAudit": {
+      "totalBound": 29,
+      "counts": {
+        "glass-primary": 19,
+        "glass-icon": 1,
+        "glass-close": 9
+      },
+      "cardsOrInputsAccidentallyBound": 0
+    },
+    "chatGlassLive": {
+      "target": "换一个名字",
+      "heldState": {
+        "held": true,
+        "pressY": "2.49px",
+        "pressScale": "0.9452",
+        "holdR": "37.4px"
+      },
+      "waveState": {
+        "waving": true,
+        "waveR": "34.9px",
+        "waveAlpha": "0.800",
+        "disp": "0.143px"
+      },
+      "idleAfter": {
+        "activeCount": 0,
+        "frames": 74,
+        "avgJsMs": 0.0554,
+        "maxJsMs": 0.2
+      }
+    }
+  },
+  "kittensTooltip": {
+    "bldCoords": {
+      "text": "猫薄荷田(0)出售",
+      "x": 711.61875,
+      "y": 405
+    },
+    "tooltipAudit": {
+      "tooltipVisible": true,
+      "tooltipBg": "rgba(8, 30, 36, 0.96)",
+      "contentBg": "rgba(8, 30, 36, 0.96)",
+      "descColor": "rgb(200, 236, 230)",
+      "sampleText": "在村庄种植一些猫薄荷。猫薄荷田的产量在春天 +50%，冬天 -75%猫薄荷14.05效果:猫薄荷 产出: 0.63/秒一望无际的猫薄荷"
+    }
+  }
+}
