@@ -2,6 +2,8 @@
 
 ## 2026-11-25
 
+- `r91` 刷新播放启动动画补做：移除 `sessionStorage` 同会话仅播一次拦截，使每次完整页面加载（首次打开、F5 刷新、硬刷新）均播放 `r87` Persepolis 式由暗到亮显影，仅对浏览器前进/后退缓存恢复（`back_forward`）与 `prefers-reduced-motion` 直达终态；其余 `r87` 参数（约 1.4 秒、真实进度下限、2.5 秒墙钟兜底、点击/任意键即时跳过、弱 GPU 降 bloom）保持不变（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-refresh-boot-warm-r91` / `2026-11-25-refresh-boot-warm-r91`；视觉层缓存 `20261125-refresh-warm-r91`。
+
 - `r90` 系统性修复冷开与热开窗口不一致问题：在开窗管线 `crt-window-morph.mjs` 启动测量前强制同步排版落定并同时取消目标窗与父容器的旧版 WAAPI 竞争动画，避免冷开测量偏移导致关于窗内容先偏下再弹回；对 `#about .profile-avatar` 与 `#chatroom .chatroom-avatar` 在池塘空闲帧预解码并锁定 `aspect-ratio: 1 / 1` 几何；在欢迎窗 `prepareOpenMount` 前同步写入问候语；将 `.route-module-status.is-loading`（「正在打开应用模块...」占位板块）改造为无边框透明风格并加 260ms 延迟渐显，消除聊天室与其他窗口冷开瞬间闪现突兀占位框的问题（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-cold-open-consistency-r90` / `2026-11-25-cold-open-consistency-r90`；视觉层缓存 `20261125-cold-open-r90`。
 
 - `r89` 液态玻璃质感升级试点（欢迎窗真光学折射）＋全站动态主按钮点击特效补齐：修复 `#knowledge-list .article-card .article-card-cta` 的 `140ms transition !important` 与各区 `:hover` ID 权重覆盖 `.crt-glass-btn` 悬停/按压/边缘吃光态的问题；按按钮短边自适应缩放按住期折光脉动环半径（`--cg-hold-r`），确保 `36px` 高的知识库「阅读」、游戏「开始」、工具「打开」与筛选标签在按下第 0 帧即呈现完整 `2.5px` 下压＋`0.945` 缩放＋青紫折光环扩散脉动＋松开 `440ms` 释放波横扫＋`160ms` 边缘吃光，与欢迎窗 `r76` 签收版完全一致（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-glass-click-parity-r89` / `2026-11-25-glass-click-parity-r89`；视觉层缓存 `20261125-glass-parity-r89`。

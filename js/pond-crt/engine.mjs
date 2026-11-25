@@ -25,7 +25,7 @@ import {
   WATER_BG_FRAG
 } from './shaders.mjs?v=20261125-persepolis-warm-r87';
 import { PondUIOverlay } from './ui-overlay.mjs?v=20261125-persepolis-warm-r87';
-import { detectBootMode, markBootCompleted, runPondBootPreload } from './boot-preloader.mjs?v=20261125-persepolis-warm-r87';
+import { detectBootMode, markBootCompleted, runPondBootPreload } from './boot-preloader.mjs?v=20261125-refresh-warm-r91';
 
 const MAX_RIPPLES = 8;
 

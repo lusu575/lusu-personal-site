@@ -16758,6 +16758,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **第 0 フレーム計測の確定化**：`crt-window-morph.mjs` の計測前に同期レイアウト確定を行い、ウィンドウ本体および親セクションの競合 WAAPI アニメーションを全ルートで抑止。About／チャットのアバターをアイドル時に先行デコード＋`aspect-ratio: 1 / 1` 固定し、ようこそ画面の挨拶文もマウント前に同期反映しました。
 - **チャット室等のローディング枠点滅を解消**：`.route-module-status.is-loading` を透明・無枠・260ms 遅延フェードへ統一し、通常回線での不要な枠点滅を完全に除去しました。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-cold-open-r90', '2026-11-25')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-refresh-boot-warm-r91', '2026-11-25-refresh-boot-warm-r91', 'site-updates', '["pond","ui"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-refresh-boot-warm-r91-zh', 'seed-update-2026-11-25-refresh-boot-warm-r91', 'zh', '启动动画补齐刷新触发：首次打开、F5 刷新与硬刷新均完整显影（r91）', '移除同会话 sessionStorage 仅播一次拦截，改为每次完整页面加载（首次打开、F5 刷新、硬刷新）均播放 r87 Persepolis 式由暗到亮显影；仅浏览器前进/后退缓存恢复与 prefers-reduced-motion 直达终态，其余参数与 2.5s 墙钟兜底、点击/任意键跳过保持不变。', '# 启动动画补齐刷新触发：首次打开、F5 刷新与硬刷新均完整显影（r91）
+
+本次按站长最新口径调整 `r87` 启动显影的触发条件：
+
+- **每次完整加载均播放**：移除 `sessionStorage` 同会话仅播一次的拦截逻辑，无论是首次打开、F5 刷新还是硬刷新，均完整播放约 1.4 秒的 Persepolis 式由暗到亮显影。
+- **非加载场景与可访问性保留**：浏览器前进/后退缓存恢复（`back_forward`）与 `prefers-reduced-motion: reduce` 仍直接落至终态；2.5 秒墙钟兜底、真实进度下限、点击/任意键即时跳过与弱 GPU 同曲线降 bloom 全部保持不变。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-refresh-boot-warm-r91-en', 'seed-update-2026-11-25-refresh-boot-warm-r91', 'en', 'Play Persepolis CRT Warm-Up on Every Full Page Load & Refresh (r91)', 'Removed the once-per-session sessionStorage gate so every full page load (initial open, F5 refresh, hard refresh) plays the r87 Persepolis dark-to-bright CRT warm-up while back/forward cache restores and prefers-reduced-motion remain instant.', '# Play Persepolis CRT Warm-Up on Every Full Page Load & Refresh (r91)
+
+Updated the `r87` warm-up trigger condition so refreshing the page always plays the CRT dark-to-bright emergence:
+
+- **Every Full Load Plays**: Removed the `sessionStorage` once-per-session gate so first visit, F5 refresh, and hard refresh all play the ~1.4s Persepolis warm-up.
+- **Preserved Safeguards**: `back_forward` history restores and `prefers-reduced-motion: reduce` still go straight to the live pond; all `r87` parameters, 2.5s wall-clock failsafe, click/any-key skip, and weak-GPU bloom scaling stay unchanged.', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-refresh-boot-warm-r91-ja', 'seed-update-2026-11-25-refresh-boot-warm-r91', 'ja', 'リロード時も起動顕像を再生：初回・F5・ハードリロードすべて対応（r91）', 'sessionStorage による 1 セッション 1 回制限を解除し、初回表示・F5 リロード・ハードリロードのすべてで r87 の暗転から点灯するウォームアップ演出を再生するようにしました（戻る／進むキャッシュ復元と prefers-reduced-motion のみ即時終端表示）。', '# リロード時も起動顕像を再生：初回・F5・ハードリロードすべて対応（r91）
+
+`r87` 起動演出のトリガー条件を更新しました：
+
+- **すべてのフルロードで再生**：`sessionStorage` の 1 回限り制限を削除し、初回アクセス・F5 リロード・ハードリロードのいずれでも約 1.4 秒の Persepolis 式ウォームアップを再生します。
+- **既存パラメータ維持**：`back_forward` 復元と `prefers-reduced-motion` のみ即時終端とし、2.5 秒ウォールクロック保証・クリック／任意キー即時スキップ・弱 GPU 向け bloom 軽減はそのまま維持します。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-refresh-warm-r91', '2026-11-25')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261125-cold-open-r90', '2026-11-25', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261125-refresh-warm-r91', '2026-11-25', 'schema') on conflict(version) do nothing;

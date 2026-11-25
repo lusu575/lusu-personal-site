@@ -1,7 +1,7 @@
 // Critical-Path Asset Preloader for Persepolis-Style Single-Scene Warm-Up (r87)
 // Reports real critical progress (manifest + active-season flora); never blocks on non-critical assets.
 
-export const ASSET_CACHE_TAG = '20261125-persepolis-warm-r87';
+export const ASSET_CACHE_TAG = '20261125-refresh-warm-r91';
 
 const SEASON_PART_MAP = {
   spring: ['sakuraBranch', 'lotusLeaf1', 'lotusLeaf2', 'lotusLeaf3'],
@@ -40,21 +40,19 @@ export function detectBootMode() {
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return 'instant';
     }
-    if (sessionStorage.getItem('lusu-pond-booted-v1') === '1') {
+    const navEntry = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    if (navEntry && navEntry.type === 'back_forward') {
       return 'instant';
     }
   } catch {
-    // Storage unavailable
+    // Fallback to warm boot
   }
   return 'warm';
 }
 
 export function markBootCompleted() {
-  try {
-    sessionStorage.setItem('lusu-pond-booted-v1', '1');
-  } catch {
-    // Ignore storage errors
-  }
+  // r91: Every full page load (initial visit, F5 refresh, hard refresh) plays the warm-up;
+  // do not suppress subsequent reloads via sessionStorage.
 }
 
 function loadAndDecodeImage(url) {
