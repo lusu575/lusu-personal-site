@@ -1,0 +1,204 @@
+{
+  "timestamp": "2026-11-25T09:27:08.826Z",
+  "url": "https://lusu575.com/",
+  "cssVer": "/css/pond-windows.css?v=20261125-cold-open-pipeline-r94",
+  "windows": {
+    "about": {
+      "preOpen": {
+        "aboutAvatarReadyBeforeOpen": false,
+        "chatAvatarReadyBeforeOpen": true
+      },
+      "visibleLoadingCount": 0,
+      "socialStatusEverVisible": false,
+      "rssShiftPx": 0,
+      "listShiftPx": 0,
+      "firstVisible": {
+        "tMs": 474,
+        "isVisible": true,
+        "flying": true,
+        "h": 53,
+        "cards": 0,
+        "imgs": "1/1"
+      },
+      "firstLanded": {
+        "tMs": 1002,
+        "isVisible": true,
+        "flying": false,
+        "h": 460,
+        "cards": 0,
+        "imgs": "1/1"
+      },
+      "last": {
+        "tMs": 1796,
+        "isVisible": true,
+        "flying": false,
+        "h": 460,
+        "cards": 0,
+        "imgs": "1/1"
+      }
+    },
+    "knowledge": {
+      "preOpen": {
+        "aboutAvatarReadyBeforeOpen": true,
+        "chatAvatarReadyBeforeOpen": true
+      },
+      "visibleLoadingCount": 0,
+      "socialStatusEverVisible": false,
+      "rssShiftPx": 0,
+      "listShiftPx": 0,
+      "firstVisible": {
+        "tMs": 1201,
+        "isVisible": true,
+        "flying": true,
+        "h": 68,
+        "cards": 12,
+        "imgs": "0/0"
+      },
+      "firstLanded": {
+        "tMs": 1721,
+        "isVisible": true,
+        "flying": false,
+        "h": 684,
+        "cards": 12,
+        "imgs": "0/0"
+      },
+      "last": {
+        "tMs": 1757,
+        "isVisible": true,
+        "flying": false,
+        "h": 684,
+        "cards": 12,
+        "imgs": "0/0"
+      }
+    },
+    "games": {
+      "preOpen": {
+        "aboutAvatarReadyBeforeOpen": true,
+        "chatAvatarReadyBeforeOpen": true
+      },
+      "visibleLoadingCount": 0,
+      "socialStatusEverVisible": false,
+      "rssShiftPx": 0,
+      "listShiftPx": 0,
+      "firstVisible": {
+        "tMs": 394,
+        "isVisible": true,
+        "flying": true,
+        "h": 70,
+        "cards": 5,
+        "imgs": "5/5"
+      },
+      "firstLanded": {
+        "tMs": 959,
+        "isVisible": true,
+        "flying": false,
+        "h": 702,
+        "cards": 5,
+        "imgs": "5/5"
+      },
+      "last": {
+        "tMs": 1747,
+        "isVisible": true,
+        "flying": false,
+        "h": 702,
+        "cards": 5,
+        "imgs": "5/5"
+      }
+    },
+    "resources": {
+      "preOpen": {
+        "aboutAvatarReadyBeforeOpen": true,
+        "chatAvatarReadyBeforeOpen": true
+      },
+      "visibleLoadingCount": 0,
+      "socialStatusEverVisible": false,
+      "rssShiftPx": 0,
+      "listShiftPx": 0,
+      "firstVisible": {
+        "tMs": 223,
+        "isVisible": true,
+        "flying": true,
+        "h": 56,
+        "cards": 3,
+        "imgs": "3/3"
+      },
+      "firstLanded": {
+        "tMs": 722,
+        "isVisible": true,
+        "flying": false,
+        "h": 535,
+        "cards": 3,
+        "imgs": "3/3"
+      },
+      "last": {
+        "tMs": 1691,
+        "isVisible": true,
+        "flying": false,
+        "h": 535,
+        "cards": 3,
+        "imgs": "3/3"
+      }
+    },
+    "chatroom": {
+      "preOpen": {
+        "aboutAvatarReadyBeforeOpen": true,
+        "chatAvatarReadyBeforeOpen": true
+      },
+      "visibleLoadingCount": 0,
+      "socialStatusEverVisible": false,
+      "rssShiftPx": 0,
+      "listShiftPx": 0,
+      "firstVisible": {
+        "tMs": 778,
+        "isVisible": true,
+        "flying": true,
+        "h": 69,
+        "cards": 0,
+        "imgs": "1/1"
+      },
+      "firstLanded": null,
+      "last": {
+        "tMs": 17524,
+        "isVisible": true,
+        "flying": true,
+        "h": 621,
+        "cards": 0,
+        "imgs": "111/111"
+      }
+    },
+    "videos": {
+      "preOpen": {
+        "aboutAvatarReadyBeforeOpen": false,
+        "chatAvatarReadyBeforeOpen": false
+      },
+      "visibleLoadingCount": 0,
+      "socialStatusEverVisible": false,
+      "rssShiftPx": 0,
+      "listShiftPx": 42,
+      "firstVisible": {
+        "tMs": 683,
+        "isVisible": true,
+        "flying": false,
+        "h": 684,
+        "cards": 0,
+        "imgs": "0/0"
+      },
+      "firstLanded": {
+        "tMs": 683,
+        "isVisible": true,
+        "flying": false,
+        "h": 684,
+        "cards": 0,
+        "imgs": "0/0"
+      },
+      "last": {
+        "tMs": 39879,
+        "isVisible": true,
+        "flying": false,
+        "h": 684,
+        "cards": 14,
+        "imgs": "0/14"
+      }
+    }
+  }
+}
