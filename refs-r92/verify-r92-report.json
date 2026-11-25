@@ -1,0 +1,333 @@
+{
+  "url": "https://lusu575.com/",
+  "timestamp": "2026-11-25T08:56:43.433Z",
+  "versionCheck": {
+    "pondCss": "/css/pond-windows.css?v=20261125-mengto-edge-cold-r92",
+    "bridgeJs": "/js/pond-windows/pond-site-bridge.mjs?v=20261125-mengto-edge-cold-r92",
+    "pondBoot": "done",
+    "pondMode": "home"
+  },
+  "r91BootChecks": [
+    {
+      "label": "firstOpen",
+      "startState": {
+        "bootMode": "warm",
+        "bootActive": true,
+        "uWarm": 0,
+        "pondBoot": "active"
+      },
+      "endState": {
+        "bootMode": "warm",
+        "bootActive": false,
+        "uWarm": 1,
+        "pondBoot": "done"
+      }
+    },
+    {
+      "label": "refresh1",
+      "startState": {
+        "bootMode": "warm",
+        "bootActive": true,
+        "uWarm": 0,
+        "pondBoot": "active"
+      },
+      "endState": {
+        "bootMode": "warm",
+        "bootActive": false,
+        "uWarm": 1,
+        "pondBoot": "done"
+      }
+    },
+    {
+      "label": "refresh2",
+      "startState": {
+        "bootMode": "warm",
+        "bootActive": true,
+        "uWarm": 0,
+        "pondBoot": "active"
+      },
+      "endState": {
+        "bootMode": "warm",
+        "bootActive": false,
+        "uWarm": 1,
+        "pondBoot": "done"
+      }
+    }
+  ],
+  "coldVsWarm": {
+    "about": {
+      "coldF0": {
+        "rect": {
+          "top": 637,
+          "left": 1168,
+          "w": 90,
+          "h": 58
+        },
+        "loaderVisible": false
+      },
+      "coldMid": {
+        "rect": {
+          "top": 233,
+          "left": 360,
+          "w": 720,
+          "h": 460
+        },
+        "loaderVisible": false
+      },
+      "coldSettled": {
+        "rect": {
+          "top": 233,
+          "left": 360,
+          "w": 720,
+          "h": 460
+        },
+        "loaderVisible": false
+      },
+      "warmF0": {
+        "rect": {
+          "top": 646,
+          "left": 1186,
+          "w": 76,
+          "h": 49
+        },
+        "loaderVisible": false
+      },
+      "warmSettled": {
+        "rect": {
+          "top": 646,
+          "left": 1186,
+          "w": 76,
+          "h": 49
+        },
+        "loaderVisible": false
+      }
+    },
+    "chatroom": {
+      "coldF0": {
+        "rect": {
+          "top": 632,
+          "left": 380,
+          "w": 104,
+          "h": 68
+        },
+        "loaderVisible": false
+      },
+      "coldMid": {
+        "rect": {
+          "top": 129,
+          "left": 200,
+          "w": 1040,
+          "h": 684
+        },
+        "loaderVisible": false
+      },
+      "coldSettled": {
+        "rect": {
+          "top": 129,
+          "left": 200,
+          "w": 1040,
+          "h": 684
+        },
+        "loaderVisible": false
+      },
+      "warmF0": {
+        "rect": {
+          "top": 632,
+          "left": 380,
+          "w": 104,
+          "h": 68
+        },
+        "loaderVisible": false
+      },
+      "warmSettled": {
+        "rect": {
+          "top": 632,
+          "left": 380,
+          "w": 104,
+          "h": 68
+        },
+        "loaderVisible": false
+      }
+    },
+    "games": {
+      "coldF0": {
+        "rect": {
+          "top": 410,
+          "left": 123,
+          "w": 99,
+          "h": 70
+        },
+        "loaderVisible": false
+      },
+      "coldMid": {
+        "rect": {
+          "top": 187,
+          "left": 201,
+          "w": 786,
+          "h": 556
+        },
+        "loaderVisible": false
+      },
+      "coldSettled": {
+        "rect": {
+          "top": 187,
+          "left": 201,
+          "w": 786,
+          "h": 556
+        },
+        "loaderVisible": false
+      },
+      "warmF0": {
+        "rect": {
+          "top": 410,
+          "left": 123,
+          "w": 99,
+          "h": 70
+        },
+        "loaderVisible": false
+      },
+      "warmSettled": {
+        "rect": {
+          "top": 410,
+          "left": 123,
+          "w": 99,
+          "h": 70
+        },
+        "loaderVisible": false
+      }
+    },
+    "resources": {
+      "coldF0": {
+        "rect": {
+          "top": 288,
+          "left": 1218,
+          "w": 99,
+          "h": 46
+        },
+        "loaderVisible": false
+      },
+      "coldMid": {
+        "rect": {
+          "top": 284,
+          "left": 1218,
+          "w": 99,
+          "h": 52
+        },
+        "loaderVisible": false
+      },
+      "coldSettled": {
+        "rect": {
+          "top": 284,
+          "left": 1218,
+          "w": 99,
+          "h": 52
+        },
+        "loaderVisible": false
+      },
+      "warmF0": {
+        "rect": {
+          "top": 284,
+          "left": 1218,
+          "w": 99,
+          "h": 52
+        },
+        "loaderVisible": false
+      },
+      "warmSettled": {
+        "rect": {
+          "top": 284,
+          "left": 1218,
+          "w": 99,
+          "h": 52
+        },
+        "loaderVisible": false
+      }
+    },
+    "knowledge": {
+      "coldF0": {
+        "rect": {
+          "top": 186,
+          "left": 517,
+          "w": 104,
+          "h": 68
+        },
+        "loaderVisible": false
+      },
+      "coldMid": {
+        "rect": {
+          "top": 186,
+          "left": 517,
+          "w": 104,
+          "h": 68
+        },
+        "loaderVisible": false
+      },
+      "coldSettled": {
+        "rect": {
+          "top": 186,
+          "left": 517,
+          "w": 104,
+          "h": 68
+        },
+        "loaderVisible": false
+      },
+      "warmF0": {
+        "rect": {
+          "top": 186,
+          "left": 517,
+          "w": 104,
+          "h": 68
+        },
+        "loaderVisible": false
+      },
+      "warmSettled": {
+        "rect": {
+          "top": 186,
+          "left": 517,
+          "w": 104,
+          "h": 68
+        },
+        "loaderVisible": false
+      }
+    }
+  },
+  "pilotTelemetry": {
+    "hover": {
+      "classes": "quick-link blue quick-link-chat crt-glass-btn glass-primary crt-glass-liquid-pilot",
+      "filter": "none",
+      "transform": "matrix(1, 0, 0, 1, 0, 0)",
+      "boxShadow": "rgba(226, 252, 250, 0.42) 0px 1px 0px 0px inset, rgba(78, 206, 200, 0.2) 0px -1px 0px 0px inset, rgba(114, 226, 220, 0.08) 0px 0px 10px 0px inset",
+      "bgImage": "none"
+    },
+    "pressF0": {
+      "classes": "quick-link blue quick-link-chat crt-glass-btn glass-primary crt-glass-liquid-pilot",
+      "filter": "none",
+      "transform": "matrix(1, 0, 0, 1, 0, 0)",
+      "press": "",
+      "sigma": ""
+    },
+    "hold": {
+      "classes": "quick-link blue quick-link-chat crt-glass-btn glass-primary crt-glass-liquid-pilot",
+      "filter": "none",
+      "transform": "matrix(1, 0, 0, 1, 0, 0)",
+      "press": "",
+      "holdGlow": "",
+      "sigma": ""
+    },
+    "releaseWave": {
+      "classes": "quick-link blue quick-link-chat crt-glass-btn glass-primary crt-glass-liquid-pilot",
+      "filter": "none",
+      "transform": "matrix(1, 0, 0, 1, 0, 0)",
+      "waveR": "",
+      "waveA": "",
+      "wakeR": ""
+    }
+  },
+  "edgeChecks": {
+    "toolsOpen": {
+      "classes": "card-action crt-glass-btn glass-primary",
+      "boxShadow": "none",
+      "filter": "none"
+    }
+  }
+}

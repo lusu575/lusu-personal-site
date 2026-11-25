@@ -1,0 +1,66 @@
+{
+  "pilot": {
+    "qlRect": {
+      "x": 414,
+      "y": 346.8125,
+      "w": 145.5,
+      "h": 38
+    },
+    "hover": {
+      "classes": "quick-link blue quick-link-chat crt-glass-btn glass-primary crt-glass-liquid-pilot is-glass-hovered",
+      "filter": "none",
+      "transform": "matrix(1, 0, 0, 1, 0, 0)",
+      "boxShadow": "rgba(210, 248, 248, 0.28) 0px 1px 6px 0px inset, rgba(72, 206, 200, 0.18) 0px -1px 4px 0px inset, rgba(102, 236, 224, 0.24) 0px 0px 6px 0px",
+      "rimAngle": "",
+      "hover": ""
+    },
+    "pressF0": {
+      "classes": "quick-link blue quick-link-chat crt-glass-btn glass-primary crt-glass-liquid-pilot is-glass-hovered is-ui-pressed is-glass-held",
+      "transform": "matrix(0.972, 0, 0, 0.972, 0, 1.6)",
+      "press": "",
+      "sigma": "14.4px",
+      "filter": "none"
+    },
+    "hold": {
+      "classes": "quick-link blue quick-link-chat crt-glass-btn glass-primary crt-glass-liquid-pilot is-glass-hovered is-ui-pressed is-glass-held",
+      "transform": "matrix(0.972, 0, 0, 0.972, 0, 1.6)",
+      "press": "",
+      "holdGlow": "",
+      "sigma": "14.4px",
+      "filter": "none"
+    },
+    "releaseWave": {
+      "classes": "quick-link blue quick-link-chat crt-glass-btn glass-primary crt-glass-liquid-pilot is-glass-rim-catch",
+      "transform": "none",
+      "waveR": "115.9px",
+      "waveA": "",
+      "wakeR": "",
+      "filter": "none"
+    }
+  },
+  "edges": {
+    "knowledgeRect": null,
+    "gamesRect": null,
+    "toolsRect": null
+  },
+  "warmCheck": {
+    "about": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "chatroom": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "games": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    }
+  }
+}
