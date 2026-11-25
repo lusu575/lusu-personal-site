@@ -1,0 +1,72 @@
+{
+  "bootFloraGate": [
+    {
+      "tMs": 1100,
+      "uWarm": 0,
+      "primaryFloraReady": false,
+      "bootActive": true
+    },
+    {
+      "tMs": 1600,
+      "uWarm": 0.029,
+      "primaryFloraReady": false,
+      "bootActive": true
+    },
+    {
+      "tMs": 1620,
+      "uWarm": 0.058,
+      "primaryFloraReady": false,
+      "bootActive": true
+    },
+    {
+      "tMs": 1640,
+      "uWarm": 1,
+      "primaryFloraReady": true,
+      "bootActive": false
+    }
+  ],
+  "subpages": {
+    "whiteboard": {
+      "total": 3,
+      "bound": 3,
+      "unbound": 0,
+      "unboundSamples": []
+    },
+    "japanese-subtext": {
+      "total": 6,
+      "bound": 6,
+      "unbound": 0,
+      "unboundSamples": []
+    },
+    "game-2048": {
+      "total": 2,
+      "bound": 2,
+      "unbound": 0,
+      "unboundSamples": []
+    },
+    "game-a-dark-room": {
+      "total": 2,
+      "bound": 2,
+      "unbound": 0,
+      "unboundSamples": []
+    },
+    "game-hextris": {
+      "total": 2,
+      "bound": 2,
+      "unbound": 0,
+      "unboundSamples": []
+    },
+    "game-kittens-game": {
+      "total": 2,
+      "bound": 2,
+      "unbound": 0,
+      "unboundSamples": []
+    },
+    "game-life-restart": {
+      "total": 2,
+      "bound": 2,
+      "unbound": 0,
+      "unboundSamples": []
+    }
+  }
+}
