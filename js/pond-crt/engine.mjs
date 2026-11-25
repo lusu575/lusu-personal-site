@@ -23,7 +23,7 @@ import {
   FULLSCREEN_VERT,
   SURFACE_OVERLAY_FRAG,
   WATER_BG_FRAG
-} from './shaders.mjs?v=20261125-pond-lightup-r84';
+} from './shaders.mjs?v=20261125-pond-lightup-r84b';
 import { PondUIOverlay } from './ui-overlay.mjs?v=20261125-pond-lightup-r84';
 import { detectBootMode, runPondBootPreload } from './boot-preloader.mjs?v=20261125-pond-lightup-r84';
 

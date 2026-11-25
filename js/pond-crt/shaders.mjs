@@ -484,7 +484,7 @@ void main() {
     float scanLine = exp(-pow((warpedUv.y - scanY) / 0.016, 2.0)) * scanEnv;
     vec3 scanGlow = mix(uBootBeamTint, vec3(0.86, 0.99, 0.98), 0.45) * scanLine * (0.45 + 0.65 * dotCore) * 0.72;
 
-    // Composite seamlessly into the real live pond (UI already sits in `col` via uUiTex!)
+    // Composite seamlessly into the real live pond (UI already sits in col via uUiTex!)
     vec3 baseComposite = mix(deepPondBase, col, liveBlend);
     vec3 bootCol = baseComposite + uBootBeamTint * (centerBeam * 1.35 + centerHalo) + rippleRingCol + scanGlow;
     col = mix(bootCol, col, smoothstep(0.92, 1.0, p));
