@@ -8,7 +8,7 @@ import {
   saveManualSeasonOverride,
   startSeasonTimeSchedule
 } from '../pond-crt/season-schedule.mjs?v=20261122-pond-live-fix-r1';
-import { attachSiteGlassButtons, attachWelcomePilotButtons, getCrtGlassAudit, getCrtGlassButtonPerfStats, installAutoGlassBinding } from './crt-glass-button.mjs?v=20261125-glass-auto-r88b';
+import { attachSiteGlassButtons, attachWelcomePilotButtons, getCrtGlassAudit, getCrtGlassButtonPerfStats, installAutoGlassBinding } from './crt-glass-button.mjs?v=20261125-glass-parity-r89';
 import { PondWindowMorphController } from './crt-window-morph.mjs?v=20261124-welcome-scrollbar-r73';
 
 function isMobileShell() {

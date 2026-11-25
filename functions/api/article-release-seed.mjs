@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-glass-click-parity-r89', '2026-11-25-glass-click-parity-r89', 'site-updates', '["ui","glass","pond"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-25-glass-click-parity-r89", {
+  "zh": {
+    "title": "液态玻璃质感升级试点（欢迎窗真光学折射）＋全站动态主按钮点击特效补齐（r89）",
+    "summary": "先在欢迎窗 4 个快捷按钮试点升级至对标 MengTo 预览的真液态玻璃光学质感（按压期启用 SVG feDisplacementMap 边缘折射位移＋RGB 轻色散、双反相凸面流动高光、按压 3D 弹性形变与高弹释放波，静置零开销）；同时补齐知识库「阅读」、游戏「开始」、工具「打开」等全站动态主按钮至 r76 同强度完整点击特效。",
+    "content_markdown": "# 液态玻璃质感升级试点（欢迎窗真光学折射）＋全站动态主按钮点击特效补齐（r89）\n\n本次包含两项核心升级：\n\n- **欢迎窗 4 快捷按钮真液态玻璃试点（`.crt-glass-liquid-pilot`）**：严格限定在欢迎窗 4 颗快捷按钮先行试点，待站长确认后再铺开。接入共享 SVG `<feDisplacementMap>` 凸面边缘折射滤镜与微距 RGB 色散（仅在悬停/按压/释放波期间启用，静止自动卸除 `filter: none`，零静置开销）；悬停时呈现双反相凸透镜高光在冷青玻璃表面流动；按下时随触点偏移产生 3D 液态挤压弹性形变（`scaleX`/`scaleY` 体积守恒＋微倾角），松开触发 `zeta=0.58` 液态回弹与光学释放波横扫。\n- **全站动态主按钮补齐至 `r76` 完整点击强度**：消除知识库「阅读」`.article-card-cta` 的 `140ms transition !important` 与各区 `:hover` ID 权重抢占，按按钮短边自适应缩放按住期折光脉动环半径（`--cg-hold-r`），让 `36px` 紧凑胶囊按钮（知识库「阅读」、游戏「开始」、工具「打开」、筛选标签）同样呈现完整的第 0 帧下压、青紫折光脉动环与松开释放波。"
+  },
+  "en": {
+    "title": "MengTo Optical Liquid-Glass Pilot (Welcome Modal) & Site-Wide Dynamic Button Parity (r89)",
+    "summary": "Upgraded the 4 Welcome modal quick-link buttons as a pilot to true MengTo optical liquid-glass (on-demand SVG feDisplacementMap rim refraction + RGB split, dual counter-moving specular lobes, elastic 3D press deformation, bouncy release wave, zero idle GPU cost), and brought all dynamic primary buttons (Knowledge Read, Game Start, Tool Open) to full r76 press/wave parity.",
+    "content_markdown": "# MengTo Optical Liquid-Glass Pilot (Welcome Modal) & Site-Wide Dynamic Button Parity (r89)\n\nThis release delivers two focused upgrades:\n\n- **Welcome Modal 4-Button True Optical Liquid-Glass Pilot (`.crt-glass-liquid-pilot`)**: Scoped strictly to the 4 Welcome quick-links pending sign-off before wider rollout. Adds a shared SVG `<feDisplacementMap>` convex-rim refraction + subtle RGB split filter (active only during press/wave, removed at rest for zero idle GPU cost), dual counter-moving convex specular lobes on hover, contact-aware 3D elastic squash-and-stretch press tilt, and an under-damped (`zeta=0.58`) bouncy release wave.\n- **Site-Wide Dynamic Primary Button `r76` Parity**: Eliminated competing ID-scoped `:hover` / `140ms transition !important` overrides and scaled hold refraction ring radius (`--cg-hold-r`) to each button's minor axis so compact `36px` pills (Knowledge Read, Game Start, Tool Open, filter chips) exhibit full Frame-0 indentation, living hold refraction ring, and 440ms release wave."
+  },
+  "ja": {
+    "title": "液態ガラス光学パイロット（ようこそ画面）＆動的メインボタン演出統一（r89）",
+    "summary": "ようこそ画面の 4 つのクイックボタンをパイロットとして MengTo 準拠の光学液態ガラス（押下時のみ有効な SVG feDisplacementMap 縁屈折・RGB 分散・双方向ハイライト流動・3D 弾性変形・高弾性リリース波、静止時負荷ゼロ）へ刷新し、知識庫「読む」・ゲーム「開始」・ツール「開く」等の動的ボタンも r76 同等の完全演出へ統一しました。",
+    "content_markdown": "# 液態ガラス光学パイロット（ようこそ画面）＆動的メインボタン演出統一（r89）\n\n今回のアップデートは 2 点です：\n\n- **ようこそ画面 4 ボタン光学液態ガラス・パイロット（`.crt-glass-liquid-pilot`）**：全サイト展開前の検証としてようこそ画面の 4 ボタンに限定実装。押下／リリース波中のみ SVG `<feDisplacementMap>` 凸面縁屈折＋微細 RGB 分散を適用（静止時は `filter: none` で負荷ゼロ）、ホバー時の双方向ハイライト流動、接点連動 3D 弾性変形、弾むリリース波を冷青 CRT 配色で再現しました。\n- **全サイト動的ボタンの `r76` 完全統一**：競合していた `:hover`／`140ms transition !important` を解消し、短辺比率に応じた `--cg-hold-r` 調整により「読む」「開始」「開く」等のコンパクトボタンでも完全な押下・屈折・リリース波を実現しました。"
+  }
+}, "2026-11-25"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-glass-auto-binding-r88', '2026-11-25-glass-auto-binding-r88', 'site-updates', '["ui","glass","pond"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-25-glass-auto-binding-r88", {
   "zh": {

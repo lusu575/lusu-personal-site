@@ -2,6 +2,8 @@
 
 ## 2026-11-25
 
+- `r89` 全站动态主按钮液态玻璃点击特效补强至 `r76` 签收版同强度：修复 `#knowledge-list .article-card .article-card-cta` 的 `140ms transition !important` 与各区 `:hover` ID 权重覆盖 `.crt-glass-btn` 悬停/按压/边缘吃光态的问题；按按钮短边自适应缩放按住期折光脉动环半径（`--cg-hold-r`），确保 `36px` 高的知识库「阅读」、游戏「开始」、工具「打开」与筛选标签在按下第 0 帧即呈现完整 `2.5px` 下压＋`0.945` 缩放＋青紫折光环扩散脉动＋松开 `440ms` 释放波横扫＋`160ms` 边缘吃光，与欢迎窗 `r76` 签收版完全一致（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-glass-click-parity-r89` / `2026-11-25-glass-click-parity-r89`；视觉层缓存 `20261125-glass-parity-r89`。
+
 - `r88b–r88e` 紧急修复知识库文章卡片被压扁裁切摘要与「阅读」按钮的全端回归：定位根因为 `r88` 绑定 `.article-card.crt-glass-btn` 引入 `overflow: hidden !important` 后，CSS Grid 将子项自动最小高度退化为 `0`，桌面端 2 列网格将卡片压至 `57px`、移动端（无 `data-pond-mode`）更是被压至 `22px`；在 `css/pond-windows.css:3782` 将 `grid-auto-rows: max-content !important; align-content: start !important;` 与 `.article-card { min-height: max-content !important; flex: 0 0 auto !important; }` 统一覆盖桌面端、平板端与移动端 `#knowledge-list`，彻底恢复全端标题＋摘要＋元信息＋「阅读」按钮完整显示并保留液态玻璃特效（缓存刷新至 `20261125-glass-auto-r88e`）。
 
 - `r88` 液态玻璃全站动态自动绑定根治：查明并根治旧版静态白名单导致的漏绑（知识库文章卡片 `.article-card` 与「阅读」`.article-card-cta`、游戏区「开始」`.card-action` 与「来源」、工具区「打开」`.card-action`、欢迎窗「查看更多更新」与最近更新条目、视频/工具动态筛选按钮、聊天室 `?` 帮助键、关于页社交图标、账号「显示密码」键等）；重构 `crt-glass-button.mjs` 为统一语义选择器＋捕获期事件委托懒绑定＋`document.body` rAF 节流 `MutationObserver` 双重保障，任何动态渲染按钮均自动生效且零误绑正文链接与输入框；升级 `getGlassAudit()` 输出 `unboundCount` 自检闭环（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-glass-auto-binding-r88` / `2026-11-25-glass-auto-binding-r88`；视觉层缓存 `20261125-glass-auto-r88`。

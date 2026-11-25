@@ -92,8 +92,8 @@ export const CRT_GLASS_BUTTON_LEVELS = Object.freeze({
     enableRimCatch: true
   }),
   'glass-card': Object.freeze({
-    pressOffsetPx: 1.5,
-    pressScale: 0.992,
+    pressOffsetPx: CRT_GLASS.pressOffsetPx,
+    pressScale: 0.985,
     releaseDurationMs: CRT_GLASS.releaseDurationMs,
     enableWave: true,
     enableDispersion: true,

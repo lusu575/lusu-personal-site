@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-25-glass-click-parity-r89",
+      "slug": "2026-11-25-glass-click-parity-r89",
+      "category": "site-updates",
+      "tags": [
+        "ui",
+        "glass",
+        "pond"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": "2026-11-25",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "液态玻璃质感升级试点（欢迎窗真光学折射）＋全站动态主按钮点击特效补齐（r89）",
+        "en": "MengTo Optical Liquid-Glass Pilot (Welcome Modal) & Site-Wide Dynamic Button Parity (r89)",
+        "ja": "液態ガラス光学パイロット（ようこそ画面）＆動的メインボタン演出統一（r89）"
+      },
+      "summary": {
+        "zh": "先在欢迎窗 4 个快捷按钮试点升级至对标 MengTo 预览的真液态玻璃光学质感（按压期启用 SVG feDisplacementMap 边缘折射位移＋RGB 轻色散、双反相凸面流动高光、按压 3D 弹性形变与高弹释放波，静置零开销）；同时补齐知识库「阅读」、游戏「开始」、工具「打开」等全站动态主按钮至 r76 同强度完整点击特效。",
+        "en": "Upgraded the 4 Welcome modal quick-link buttons as a pilot to true MengTo optical liquid-glass (on-demand SVG feDisplacementMap rim refraction + RGB split, dual counter-moving specular lobes, elastic 3D press deformation, bouncy release wave, zero idle GPU cost), and brought all dynamic primary buttons (Knowledge Read, Game Start, Tool Open) to full r76 press/wave parity.",
+        "ja": "ようこそ画面の 4 つのクイックボタンをパイロットとして MengTo 準拠の光学液態ガラス（押下時のみ有効な SVG feDisplacementMap 縁屈折・RGB 分散・双方向ハイライト流動・3D 弾性変形・高弾性リリース波、静止時負荷ゼロ）へ刷新し、知識庫「読む」・ゲーム「開始」・ツール「開く」等の動的ボタンも r76 同等の完全演出へ統一しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-25-glass-auto-binding-r88",
       "slug": "2026-11-25-glass-auto-binding-r88",
       "category": "site-updates",
@@ -109,34 +137,6 @@ export const homeContent = Object.freeze({
         "zh": "消除全站 UI 外壳文字悬停出现 I 型输入光标与误拖选的问题：桌面图标/时钟/ID、欢迎窗、窗口标题栏与按钮/筛选/分页、各区卡片 UI 文字及聊天室元信息统一禁选并保持默认/手型光标；文章与更新记录正文/摘要/代码块、聊天消息正文、关于自介与联系方式、临时互传口令与内容及日语工具内容保持可拖选复制，输入区维持原生。",
         "en": "Removed stray I-beam cursors and accidental text selection across UI chrome (desktop icons/clock/ID, Welcome modal, titlebars, buttons, filters, card labels, chat metadata) while preserving full text selection for article/update bodies, summaries, code blocks, chat message bubbles, About bio/contact info, Quick Transfer room/content, and native inputs.",
         "ja": "デスクトップアイコン・時計・ID、ようこそ画面、ウィンドウ見出し、ボタン・フィルタ、各カード UI 文字やチャット付帯情報での誤選択と I 型カーソルを解消しつつ、記事・更新履歴本文・要約・コードブロック、チャット本文、自己紹介、クイック転送の内容、入力欄は選択・コピー可能なまま維持しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-25-pond-lightup-boot-r84",
-      "slug": "2026-11-25-pond-lightup-boot-r84",
-      "category": "site-updates",
-      "tags": [
-        "pond",
-        "ui",
-        "performance"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-25",
-      "updated_at": "2026-11-25",
-      "published_at": "2026-11-25",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "启动动画重做上线：A 方案「点亮池塘」同管线无缝显影（r84）",
-        "en": "Plan A 'Light Up the Pond' Same-Pipeline Boot Sequence (r84)",
-        "ja": "起動演出刷新：A案「池を灯す」同一パイプライン顕像（r84）"
-      },
-      "summary": {
-        "zh": "彻底下线 r57 旧版 CRT 开机壳，在池塘 WebGL2 本体管线内实现 2.2–2.6 秒「点亮池塘」显影：深青微光起手、点阵荧光涟漪由中心扩散依次点亮水面、当季景物、点阵汇聚锦鲤、气泡浮起桌面图标与顶部时钟，扫描光束扫过直接交接为活池塘。",
-        "en": "Replaced the legacy r57 boot shell with a unified WebGL2 pond emergence: 0.3s phosphor ignition over a luminous teal base, radial dot-matrix ripple revealing water, active-season flora, coalescing koi, bubble-rising desktop icons, and clock, finishing with a scan beam into the live pond.",
-        "ja": "旧 r57 起動画面シェルを完全撤去し、池 WebGL2 本体内で 0.3 秒の蛍光点火から波紋拡散による水面・四季景物・光点収束の錦鯉・泡のように浮上するアイコン・時計点灯までを一気通貫で描画し、走査光でそのまま生きた池へ引き継ぎます。"
       }
     }
   ]
