@@ -1534,6 +1534,8 @@ html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-hero h2
   font-weight: 500 !important;
   color: #f0fefa !important;
   margin: 0 !important;
+  overflow: visible !important;
+  padding-top: 14px !important;
 }
 
 html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-hero .resource-icon-image {
@@ -1543,8 +1545,10 @@ html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-hero .r
   object-fit: contain;
   background: transparent !important;
   border: none !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
   padding: 0 !important;
+  overflow: visible !important;
   filter: brightness(1.24) drop-shadow(0 0 12px rgba(186, 252, 242, 0.85));
 }
 
@@ -1561,6 +1565,7 @@ html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-downloa
   font-weight: 500 !important;
   color: #eefdf9 !important;
   margin: 0 !important;
+  overflow: visible !important;
 }
 
 html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-download .resource-icon-image {
@@ -1569,8 +1574,10 @@ html[data-pond-mode="resources"] #resource-list .resource-card.pond-tool-downloa
   object-fit: contain;
   background: transparent !important;
   border: none !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
   padding: 0 !important;
+  overflow: visible !important;
   filter: drop-shadow(0 0 6px rgba(176, 248, 236, 0.55));
 }
 
@@ -7038,8 +7045,49 @@ html[data-ui-shell="mobile"] .crt-glass-btn .crt-glass-wave-layer {
   opacity: 0;
 }
 
+/* Shared structural rule: never hard-clip drop-shadow / glowing icons or titles inside heading/wrapper boxes */
+html[data-pond-mode] :is(.resource-card, .game-card, .article-card) :is(h2, h3, .card-title, .resource-main, .game-card-head) {
+  overflow: visible !important;
+}
+
+html[data-pond-mode="resources"] #resource-list .resource-card {
+  overflow: visible !important;
+}
+
+/* r93 Structural Unclipped Top-Level Halo Overlay Layer:
+   Renders EXACT pre-r92 full-strength outer glow (14px hover / 20px hold / 22px rim-catch) on document.body
+   outside every card/scroll container overflow:hidden box, aligned pixel-for-pixel to the active button! */
+#crt-glass-halo-layer {
+  position: fixed !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  z-index: 2147483630 !important;
+  overflow: visible !important;
+}
+
+#crt-glass-halo-layer .crt-glass-halo-proxy {
+  position: fixed !important;
+  pointer-events: none !important;
+  background: transparent !important;
+  border: none !important;
+  box-sizing: border-box !important;
+  will-change: left, top, width, height;
+}
+
+#crt-glass-halo-layer .crt-glass-halo-proxy[data-halo-state="hover"] {
+  box-shadow: 0 0 14px rgba(102, 236, 224, 0.32) !important;
+}
+
+#crt-glass-halo-layer .crt-glass-halo-proxy[data-halo-state="hold"] {
+  box-shadow: 0 0 20px rgba(114, 232, 224, 0.56) !important;
+}
+
+#crt-glass-halo-layer .crt-glass-halo-proxy[data-halo-state="rim"] {
+  box-shadow: 0 0 22px rgba(114, 232, 224, calc(0.76 * var(--cg-rim-catch, 0))) !important;
+}
+
 /* Hover: Live pointer-tracking liquid glass specular lens & angled rim sheen (all V1.0 tiers, full ID specificity parity)
-   Outer glow kept tight (<= 6px) so parent scroll/card containers NEVER hard-clip a straight line across the halo! */
+   Pre-r92 border & inset restored; outer 14px halo rendered unclipped by #crt-glass-halo-layer! */
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-hovered,
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-hovered:hover,
 html[data-pond-mode] :is(#welcome-modal, #knowledge, #videos, #resources, #games, #chatroom, #about, #account-popover) .crt-glass-btn.is-glass-hovered,
@@ -7048,11 +7096,9 @@ html[data-pond-mode="knowledge"] #knowledge-list .article-card:hover .article-ca
 html[data-pond-mode] .crt-glass-btn.is-glass-hovered,
 html[data-pond-mode] .crt-glass-btn.is-glass-hovered:hover {
   border-style: solid !important;
-  border-color: rgba(168, 250, 242, 0.84) !important;
+  border-color: rgba(168, 250, 242, 0.88) !important;
   box-shadow:
-    inset 0 1px 6px rgba(210, 248, 248, 0.28),
-    inset 0 -1px 4px rgba(72, 206, 200, 0.18),
-    0 0 6px rgba(102, 236, 224, 0.24) !important;
+    inset 0 1px 6px rgba(210, 248, 248, 0.28) !important;
 }
 
 /* glass-close tier: subtle rim catch without displacing the × glyph */
@@ -7131,12 +7177,11 @@ html[data-pond-mode] #knowledge-list .article-card:hover .article-card-cta.crt-g
 html[data-pond-mode] .crt-glass-btn.is-glass-held,
 html[data-ui-shell="mobile"] .crt-glass-btn.is-glass-held {
   border-style: solid !important;
-  border-color: rgba(196, 252, 248, 0.94) !important;
-  background: rgba(10, 34, 40, 0.92) !important;
+  border-color: rgba(204, 255, 250, 0.98) !important;
+  background: rgba(10, 38, 44, 0.94) !important;
   box-shadow:
-    inset 0 2px 12px rgba(220, 252, 252, 0.38),
-    inset 0 -2px 8px rgba(3, 12, 16, 0.78),
-    0 0 7px rgba(114, 232, 224, 0.36) !important;
+    inset 0 2px 12px rgba(220, 252, 252, 0.42),
+    inset 0 -2px 8px rgba(3, 12, 16, 0.78) !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-held .crt-glass-wave-layer,
@@ -7170,7 +7215,7 @@ html[data-ui-shell="mobile"] .crt-glass-btn.is-glass-waving .crt-glass-wave-laye
     );
 }
 
-/* Rim Catch: 160ms phosphor edge light-up when release wave arrives at button rim (tight outer glow = ZERO straight-line clip!) */
+/* Rim Catch: 160ms phosphor edge light-up when release wave arrives at button rim (full 22px halo rendered unclipped by #crt-glass-halo-layer) */
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-rim-catch,
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-rim-catch:hover,
 html[data-pond-mode] :is(#welcome-modal, #knowledge, #videos, #resources, #games, #chatroom, #about, #account-popover) .crt-glass-btn.is-glass-rim-catch,
@@ -7181,8 +7226,7 @@ html[data-ui-shell="mobile"] .crt-glass-btn.is-glass-rim-catch {
   border-style: solid !important;
   border-color: rgba(216, 255, 252, calc(0.72 + 0.28 * var(--cg-rim-catch, 0))) !important;
   box-shadow:
-    inset 0 0 14px rgba(230, 255, 254, calc(0.50 * var(--cg-rim-catch, 0))),
-    0 0 8px rgba(114, 232, 224, calc(0.45 * var(--cg-rim-catch, 0))) !important;
+    inset 0 0 14px rgba(230, 255, 254, calc(0.55 * var(--cg-rim-catch, 0))) !important;
 }
 
 /* Preserve visible keyboard focus ring */

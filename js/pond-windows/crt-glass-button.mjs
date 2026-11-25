@@ -80,6 +80,115 @@ function scheduleController(ctrl) {
   }
 }
 
+// r93 Structural Unclipped Top-Level Halo Overlay Layer:
+// Renders full-strength outer glow (14px hover / 20px hold / 22px rim-catch) on document.body
+// outside every card/scroll container overflow:hidden box, aligned pixel-for-pixel to the active
+// button's live getBoundingClientRect() & borderRadius. Zero idle DOM nodes, zero idle listeners.
+let haloLayerEl = null;
+const haloProxyByCtrl = new Map();
+let haloScrollBound = false;
+let haloScrollRaf = 0;
+
+function ensureHaloLayer() {
+  if (haloLayerEl && haloLayerEl.isConnected) return haloLayerEl;
+  const existing = document.getElementById('crt-glass-halo-layer');
+  if (existing) {
+    haloLayerEl = existing;
+    return haloLayerEl;
+  }
+  if (!document.body) return null;
+  const layer = document.createElement('div');
+  layer.id = 'crt-glass-halo-layer';
+  layer.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(layer);
+  haloLayerEl = layer;
+  return haloLayerEl;
+}
+
+function scheduleHaloResync() {
+  if (haloScrollRaf || haloProxyByCtrl.size === 0) return;
+  haloScrollRaf = requestAnimationFrame(() => {
+    haloScrollRaf = 0;
+    for (const ctrl of [...haloProxyByCtrl.keys()]) {
+      syncHaloProxy(ctrl);
+    }
+  });
+}
+
+function updateHaloScrollListeners() {
+  if (haloProxyByCtrl.size > 0 && !haloScrollBound) {
+    haloScrollBound = true;
+    window.addEventListener('scroll', scheduleHaloResync, { capture: true, passive: true });
+    window.addEventListener('resize', scheduleHaloResync, { passive: true });
+  } else if (haloProxyByCtrl.size === 0 && haloScrollBound) {
+    haloScrollBound = false;
+    window.removeEventListener('scroll', scheduleHaloResync, { capture: true });
+    window.removeEventListener('resize', scheduleHaloResync);
+  }
+}
+
+function removeHaloProxy(ctrl) {
+  const proxy = haloProxyByCtrl.get(ctrl);
+  if (proxy) {
+    proxy.remove();
+    haloProxyByCtrl.delete(ctrl);
+    updateHaloScrollListeners();
+  }
+}
+
+function syncHaloProxy(ctrl) {
+  // Welcome MengTo pilot stays untouched (r92); low-perf tier disables outer halo
+  if (!ctrl || ctrl.isLiquidPilot) return;
+  if (document.documentElement.dataset.performanceTier === 'low') {
+    removeHaloProxy(ctrl);
+    return;
+  }
+  const el = ctrl.el;
+  const state = ctrl.rimCatchStartMs > 0 ? 'rim' : (ctrl.held ? 'hold' : (ctrl.hovered ? 'hover' : ''));
+  if (!state || !el || !el.isConnected) {
+    removeHaloProxy(ctrl);
+    return;
+  }
+  const rect = el.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) {
+    removeHaloProxy(ctrl);
+    return;
+  }
+  // Hide if scrolled completely outside its enclosing window / popover viewport
+  const win = el.closest('.xp-window, #account-popover, #welcome-modal, #video-modal');
+  if (win) {
+    const winR = win.getBoundingClientRect();
+    if (rect.bottom <= winR.top + 2 || rect.top >= winR.bottom - 2 || rect.right <= winR.left + 2 || rect.left >= winR.right - 2) {
+      removeHaloProxy(ctrl);
+      return;
+    }
+  }
+  const layer = ensureHaloLayer();
+  if (!layer) return;
+  let proxy = haloProxyByCtrl.get(ctrl);
+  if (!proxy) {
+    proxy = document.createElement('span');
+    proxy.className = 'crt-glass-halo-proxy';
+    proxy.setAttribute('aria-hidden', 'true');
+    layer.appendChild(proxy);
+    haloProxyByCtrl.set(ctrl, proxy);
+    updateHaloScrollListeners();
+  }
+  const cs = getComputedStyle(el);
+  const ps = proxy.style;
+  ps.left = `${rect.left.toFixed(2)}px`;
+  ps.top = `${rect.top.toFixed(2)}px`;
+  ps.width = `${rect.width.toFixed(2)}px`;
+  ps.height = `${rect.height.toFixed(2)}px`;
+  ps.borderRadius = cs.borderRadius;
+  proxy.dataset.haloState = state;
+  if (state === 'rim') {
+    ps.setProperty('--cg-rim-catch', el.style.getPropertyValue('--cg-rim-catch') || '0');
+  } else {
+    ps.removeProperty('--cg-rim-catch');
+  }
+}
+
 // MengTo shade-glass-button-press + refract-liquid-glass (r92 rework)
 // Zero SVG filter box-clipping! Pure smooth Gaussian face indent + exact MengTo 750ms crest/wake
 // release wave (pow(1-t, 1.7), crest = exp(-d^2), wake = exp(-((d+1.1)/1.6)^2)) + edge-gated rim catch.
@@ -171,6 +280,7 @@ class CrtGlassButtonController {
     this.hovered = true;
     this.el.classList.add('is-glass-hovered');
     this._updateHoverLiquid(e.clientX, e.clientY);
+    syncHaloProxy(this);
   }
 
   _handlePointerMove(e) {
@@ -178,6 +288,7 @@ class CrtGlassButtonController {
     if (!this.hovered) {
       this.hovered = true;
       this.el.classList.add('is-glass-hovered');
+      syncHaloProxy(this);
     }
     this._updateHoverLiquid(e.clientX, e.clientY);
   }
@@ -189,6 +300,7 @@ class CrtGlassButtonController {
       this.el.style.removeProperty('--cg-tilt-x');
       this.el.style.removeProperty('--cg-tilt-y');
     }
+    syncHaloProxy(this);
   }
 
   _measureContact(clientX, clientY, useCenter = false) {
@@ -307,6 +419,7 @@ class CrtGlassButtonController {
     const minDim = Math.min(this.btnW, this.btnH);
     const initHoldR = Math.max(10, Math.min(18, minDim * 0.36));
     s.setProperty('--cg-hold-r', `${initHoldR.toFixed(1)}px`);
+    syncHaloProxy(this);
     scheduleController(this);
   }
 
@@ -337,6 +450,7 @@ class CrtGlassButtonController {
       this.el.classList.add('is-glass-rim-catch');
       this.el.style.setProperty('--cg-rim-catch', '1');
     }
+    syncHaloProxy(this);
     scheduleController(this);
   }
 
@@ -355,6 +469,7 @@ class CrtGlassButtonController {
     s.removeProperty('--cg-wave-alpha');
     s.removeProperty('--cg-disp');
     s.removeProperty('--cg-rim-catch');
+    syncHaloProxy(this);
   }
 
   _step(nowMs, dtSec) {
@@ -444,6 +559,8 @@ class CrtGlassButtonController {
     const stillActive = this.held || !springSettled || waveRunning || rimRunning;
     if (!stillActive) {
       this._resetVisual();
+    } else {
+      syncHaloProxy(this);
     }
     return stillActive;
   }
@@ -517,7 +634,7 @@ function flushAutoBindQueue() {
 
 function queueAutoBind(node) {
   if (!(node instanceof Element)) return;
-  if (node.classList.contains('crt-glass-sheen-layer') || node.classList.contains('crt-glass-wave-layer')) return;
+  if (node.id === 'crt-glass-halo-layer' || node.classList.contains('crt-glass-halo-proxy') || node.classList.contains('crt-glass-sheen-layer') || node.classList.contains('crt-glass-wave-layer')) return;
   pendingRoots.add(node);
   if (!autoBindRaf) {
     autoBindRaf = requestAnimationFrame(flushAutoBindQueue);

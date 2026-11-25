@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-25-unclipped-halo-layer-r93",
+  "slug": "2026-11-25-unclipped-halo-layer-r93",
+  "category": "site-updates",
+  "tags": [
+    "ui",
+    "glass",
+    "pond"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-25",
+  "updated_at": "2026-11-25",
+  "published_at": "2026-11-25",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "液态玻璃外发光结构性根治：恢复完整光晕＋顶层无裁切光晕层（r93）",
+    "en": "Structural Unclipped Glass Halo Layer: Full-Strength Outer Glow Restored (r93)",
+    "ja": "液態ガラス外光の構造的根治：フル強度光彩復元＋最上位非クリップ層（r93）"
+  },
+  "summary": {
+    "zh": "撤回 r92 对全站共享外发光的收紧处理，完整恢复收紧前的原始光晕范围与强度（悬停 14px / 0.32、按住 20px / 0.56、释放波沿边 22px / 0.76）；改由挂载在 document.body 的顶层无裁切代理层 #crt-glass-halo-layer 按按钮实时位置与圆角对齐绘制外光晕，彻底摆脱卡片与滚动容器 overflow:hidden 的直线硬裁切，欢迎窗 MengTo 试点保持不变。",
+    "en": "Reverted r92's tightened outer glow radii and restored full original design values (14px hover, 20px hold, 22px rim-catch) rendered via a top-level unclipped #crt-glass-halo-layer mounted on document.body aligned pixel-for-pixel to active button bounds, eliminating card and scroll-container straight-line clipping with zero idle overhead while leaving the Welcome MengTo pilot untouched.",
+    "ja": "r92 の外光縮小を撤回し、本来の光彩強度（ホバー 14px／押下 20px／縁反射 22px）を完全復元。document.body 直下の最上位非クリップ層 #crt-glass-halo-layer でアクティブボタン位置に完全同期描画する構造改修により、カードやスクロール領域の overflow:hidden による直線切れを根治しました（ようこそ画面パイロットは変更なし）。"
+  },
+  "content_markdown": {
+    "zh": "# 液态玻璃外发光结构性根治：恢复完整光晕＋顶层无裁切光晕层（r93）\n\n本次按站长裁决撤回 `r92` 通过收紧光晕半径躲避裁切的权宜方案，改为结构性根治：\n\n- **100% 恢复收紧前的原始光晕设计值**：悬停外光晕恢复 `0 0 14px rgba(102, 236, 224, 0.32)`、按住外光晕恢复 `0 0 20px rgba(114, 232, 224, 0.56)`、释放波沿边光晕恢复 `0 0 22px rgba(114, 232, 224, calc(0.76 * var(--cg-rim-catch, 0)))`，同步恢复原始边框与内高光强度，不削弱分毫。\n- **顶层无裁切光晕层（`#crt-glass-halo-layer`）**：在 `crt-glass-button.mjs` 中将外光晕代理挂载至 `document.body` 顶层 `position: fixed` 透明层，按按钮实时 `getBoundingClientRect()`（含按压下沉/缩放）与 `borderRadius` 像素级同步定位；任何卡片或滚动容器的 `overflow: hidden` / `overflow-y: auto` 均无法再裁出直线切边，静置时零 DOM 节点、零滚动监听。\n- **范围边界**：欢迎窗 4 颗快捷按钮的 `r92` MengTo 试点保持原样不动。",
+    "en": "# Structural Unclipped Glass Halo Layer: Full-Strength Outer Glow Restored (r93)\n\nReverted the r92 glow-radius tightening in favor of a true structural fix:\n\n- **Full Original Glow Design Values Restored**: Restored `0 0 14px rgba(102, 236, 224, 0.32)` on hover, `0 0 20px rgba(114, 232, 224, 0.56)` on hold, and `0 0 22px rgba(114, 232, 224, calc(0.76 * var(--cg-rim-catch, 0)))` on rim catch along with original border and inset highlight intensities.\n- **Unclipped Top-Level Halo Overlay (`#crt-glass-halo-layer`)**: Mounted on `document.body` outside all card and scroll containers, syncing pixel-for-pixel to active button geometry and border-radius so outer halos fade naturally with zero straight-line clipping and zero idle DOM or scroll listener cost.\n- **Scope**: Welcome modal's 4 MengTo pilot buttons remain untouched.",
+    "ja": "# 液態ガラス外光の構造的根治：フル強度光彩復元＋最上位非クリップ層（r93）\n\nr92 の光彩半径縮小を撤回し、構造的な解決へ切り替えました：\n\n- **本来の光彩デザイン値を 100% 復元**：ホバー `0 0 14px rgba(102, 236, 224, 0.32)`・押下 `0 0 20px rgba(114, 232, 224, 0.56)`・縁反射 `0 0 22px rgba(114, 232, 224, calc(0.76 * var(--cg-rim-catch, 0)))` および枠・内ハイライト強度を完全復元しました。\n- **最上位非クリップ光彩層（`#crt-glass-halo-layer`）**：`document.body` 直下の `position: fixed` 層にアクティブボタンの実寸・角丸で同期描画し、カードやスクロール枠の `overflow: hidden` による直線切れを完全に解消（静止時 DOM ゼロ・リスナーゼロ）。\n- **対象範囲**：ようこそ画面 4 ボタンの MengTo パイロットはそのまま維持します。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-25-mengto-edge-cold-r92",
   "slug": "2026-11-25-mengto-edge-cold-r92",
   "category": "site-updates",
