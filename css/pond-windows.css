@@ -3781,10 +3781,12 @@ html[data-pond-mode="games"] #game-list .tag {
 /* --- Knowledge: Equal-Height Row Cards & Pixel-Aligned Bottom CTA --- */
 html[data-pond-mode="knowledge"] #knowledge-list {
   align-items: stretch !important;
+  align-content: start !important;
+  grid-auto-rows: max-content !important;
 }
 
 html[data-pond-mode="knowledge"] #knowledge-list .article-card {
-  height: auto !important;
+  height: 100% !important;
   min-height: max-content !important;
   flex: 0 0 auto !important;
   grid-template-rows: auto 1fr auto !important;
