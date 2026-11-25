@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-25-refresh-boot-warm-r91";
-const finalUpdateSlug = "2026-11-25-refresh-boot-warm-r91";
+const finalUpdateId = "seed-update-2026-11-25-mengto-edge-cold-r92";
+const finalUpdateSlug = "2026-11-25-mengto-edge-cold-r92";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Play Persepolis CRT Warm-Up on Every Full Page Load & Refresh (r91)";
+const finalTitleEn = "MengTo Liquid-Glass Welcome Pilot Rework, Site-Wide Edge Cut Fix & Cold-Open Consistency (r92)";
 const finalPublishedAt = "2026-11-25";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-25-refresh-boot-warm-r91",
   "seed-update-2026-11-25-cold-open-consistency-r90",
   "seed-update-2026-11-25-glass-click-parity-r89",
   "seed-update-2026-11-25-glass-auto-binding-r88",

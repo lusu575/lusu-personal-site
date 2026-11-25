@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-25-mengto-edge-cold-r92",
+  "slug": "2026-11-25-mengto-edge-cold-r92",
+  "category": "site-updates",
+  "tags": [
+    "ui",
+    "glass",
+    "pond"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-25",
+  "updated_at": "2026-11-25",
+  "published_at": "2026-11-25",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "欢迎窗 MengTo 液态玻璃重做＋全站光效边缘切层消除＋冷开跳位根治（r92）",
+    "en": "MengTo Liquid-Glass Welcome Pilot Rework, Site-Wide Edge Cut Fix & Cold-Open Consistency (r92)",
+    "ja": "ようこそ画面 MengTo 液態ガラス刷新・全サイト縁切れ解消・冷起動跳ね根治（r92）"
+  },
+  "summary": {
+    "zh": "严格按 MengTo 原规格重做欢迎窗 4 颗快捷按钮试点（透明中心玻璃面、外唇掠射边缘反射、按住平滑高斯凹陷、750ms 半透明波峰与尾迹释放波，彻底移除造成直线切框的 SVG 滤镜与横切渐变）；收紧全站共享玻璃外阴影消除父容器裁剪直线切边；冷开期彻底隐藏 .route-module-status.is-loading 并锁定游戏/工具/关于窗口桌面 min-height，消除全新配置禁用缓存下的冷开跳位。",
+    "en": "Rebuilt the 4 Welcome quick-link pilot buttons strictly to MengTo's liquid-glass spec (clear flat center, grazing perimeter rim reflection, smooth Gaussian hold dimple, 750ms translucent crest + wake release wave; removed clipped SVG displacement & horizontal seam), tightened shared outer glass glow radii site-wide to eliminate straight-line parent clipping, and locked cold-open window heights while hiding .route-module-status.is-loading in Pond mode.",
+    "ja": "ようこそ画面 4 ボタンを MengTo 原仕様準拠（透明な中心面・外縁かすめ反射・押下ガウス凹み・750ms 波峰＋尾引きリリース波）へ刷新し直線切れの原因だった SVG フィルタと横段差を撤去。全サイト共通のガラス外光半径を最適化して親要素クリッピングによる直線切れを解消し、冷起動時のモジュール読込枠非表示とゲーム／ツール／About 最小高さ固定で初回跳ねを根治しました。"
+  },
+  "content_markdown": {
+    "zh": "# 欢迎窗 MengTo 液态玻璃重做＋全站光效边缘切层消除＋冷开跳位根治（r92）\n\n本次整合三项高优先级视觉与管线修复：\n\n- **欢迎窗 4 按钮 MengTo 原规格液态玻璃试点重做**：仅限 `#welcome-modal .quick-link` 试点，完全移除会触发矩形裁切的 SVG `<feDisplacementMap>` 与造成「横切线」的竖向三段渐变；改为透明平坦中心面、外唇掠射边缘高光、按住期平滑高斯凹陷（`--cg-sigma`）与 `750ms` `pow(1-t, 1.7)` 半透明波峰＋尾迹释放波，保留本站冷青 CRT 色板。\n- **全站光效边缘直线切层统一消除**：在共享的 `.crt-glass-btn` 效果层收紧外发光扩散半径（悬停 `6px`、按住 `7px`、释放波沿边 `8px`），避免被 `overflow: hidden` / `overflow-y: auto` 父容器裁出整齐直线切边；并为欢迎窗快捷区开放 `overflow: visible`。\n- **全新配置冷开跳位与占位板块根治**：针对禁用缓存冷启动实测暴露的 `#games` 首帧高度不足跳变（`206px -> 674px`）与 `#chatroom` 慢网闪现「正在打开应用模块...」板块，在桌面 Pond 模式下直接隐藏 `.route-module-status.is-loading`（保留 `.is-error` 失败重试）并为 `#games`/`#resources`/`#about` 锁定确定性桌面 `min-height`。",
+    "en": "# MengTo Liquid-Glass Welcome Pilot Rework, Site-Wide Edge Cut Fix & Cold-Open Consistency (r92)\n\nThis release resolves three high-priority visual and pipeline issues together:\n\n- **MengTo Liquid-Glass Welcome Pilot Rework**: Scoped strictly to `#welcome-modal .quick-link` pending sign-off. Removed the rectangularly-clipped SVG `<feDisplacementMap>` filter and horizontal gradient seam in favor of a clear flat glass center, grazing perimeter rim reflection, smooth Gaussian concave hold dimple (`--cg-sigma`), and a `750ms` `pow(1-t, 1.7)` translucent crest + wake release wave in the site's cool-cyan CRT palette.\n- **Site-Wide Straight-Line Glow Edge Cut Elimination**: Tightened shared `.crt-glass-btn` outer glow radii (`6px` hover / `7px` hold / `8px` rim catch) so `overflow: hidden` and `overflow-y: auto` ancestors never slice button glows into straight lines, and granted `#welcome-modal .quick-links` `overflow: visible`.\n- **True Cold-Open Consistency**: Eliminated the cold-network `.route-module-status.is-loading` box in desktop Pond mode (keeping `.is-error` retry UI) and locked deterministic desktop `min-height` values on `#games`, `#resources`, and `#about` so Frame 0 matches warm opens with zero mid-flight jump.",
+    "ja": "# ようこそ画面 MengTo 液態ガラス刷新・全サイト縁切れ解消・冷起動跳ね根治（r92）\n\n3 つの高優先度課題をまとめて改修しました：\n\n- **ようこそ画面 4 ボタン MengTo 準拠パイロット刷新**：`#welcome-modal .quick-link` に限定し、矩形クリップを生む SVG `<feDisplacementMap>` と横段差グラデーションを撤去。透明な平坦中心面・外唇かすめ反射・ガウス凹み（`--cg-sigma`）・`750ms` `pow(1-t, 1.7)` 波峰＋尾引きリリース波を冷青 CRT 配色で再実装しました。\n- **全サイト光彩エッジの直線切れ解消**：共通の `.crt-glass-btn` 外側グロウ半径を `6–8px` に引き締め、`overflow: hidden` / `auto` の親要素による直線クリップを全サイトで一括解消しました。\n- **完全キャッシュ無効・冷起動時の初回跳ね根治**：デスクトップ Pond モードで `.route-module-status.is-loading` を非表示（`.is-error` 再試行は維持）とし、`#games`・`#resources`・`#about` の最小高さを確定させることで第 0 フレームから温起動と一致させました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-25-refresh-boot-warm-r91",
   "slug": "2026-11-25-refresh-boot-warm-r91",
   "category": "site-updates",

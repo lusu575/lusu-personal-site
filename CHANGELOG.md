@@ -2,6 +2,8 @@
 
 ## 2026-11-25
 
+- `r92` 三项联合根治（MengTo 欢迎窗试点原样返工＋全站光效边缘直线切层消除＋冷开窗口几何锁定与去占位框）：① 按 MengTo `refract-liquid-glass` / `shade-glass-button-press` 原文重做欢迎窗 4 颗快捷按钮试点（平透中心面＋边缘环绕高光＋接触点平滑高斯凹陷＋750ms `pow(1-t, 1.7)` 真实波峰/尾迹释放波，彻底移除导致切边与违和感的 SVG 矩形滤镜与横切渐变）；② 全站共享 `.crt-glass-btn` 收紧外扩光晕至 `6–8px`、将主要光学能量收敛于胶囊内部，彻底消除卡片/滚动容器 `overflow: hidden` 对全站按钮光效边缘的直线硬裁切；③ 桌面池塘模式彻底隐藏 `.route-module-status.is-loading`（「正在打开应用模块...」板块，保留失败重试态）并为 `#games` / `#resources` / `#about` 锁定冷开最小高度，使冷开第 0 帧与热开完全一致（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-mengto-edge-cold-r92` / `2026-11-25-mengto-edge-cold-r92`；视觉层缓存 `20261125-mengto-edge-cold-r92`。
+
 - `r91` 刷新播放启动动画补做：移除 `sessionStorage` 同会话仅播一次拦截，使每次完整页面加载（首次打开、F5 刷新、硬刷新）均播放 `r87` Persepolis 式由暗到亮显影，仅对浏览器前进/后退缓存恢复（`back_forward`）与 `prefers-reduced-motion` 直达终态；其余 `r87` 参数（约 1.4 秒、真实进度下限、2.5 秒墙钟兜底、点击/任意键即时跳过、弱 GPU 降 bloom）保持不变（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-refresh-boot-warm-r91` / `2026-11-25-refresh-boot-warm-r91`；视觉层缓存 `20261125-refresh-warm-r91`。
 
 - `r90` 系统性修复冷开与热开窗口不一致问题：在开窗管线 `crt-window-morph.mjs` 启动测量前强制同步排版落定并同时取消目标窗与父容器的旧版 WAAPI 竞争动画，避免冷开测量偏移导致关于窗内容先偏下再弹回；对 `#about .profile-avatar` 与 `#chatroom .chatroom-avatar` 在池塘空闲帧预解码并锁定 `aspect-ratio: 1 / 1` 几何；在欢迎窗 `prepareOpenMount` 前同步写入问候语；将 `.route-module-status.is-loading`（「正在打开应用模块...」占位板块）改造为无边框透明风格并加 260ms 延迟渐显，消除聊天室与其他窗口冷开瞬间闪现突兀占位框的问题（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-cold-open-consistency-r90` / `2026-11-25-cold-open-consistency-r90`；视觉层缓存 `20261125-cold-open-r90`。

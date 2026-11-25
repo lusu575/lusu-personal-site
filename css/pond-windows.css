@@ -7038,7 +7038,8 @@ html[data-ui-shell="mobile"] .crt-glass-btn .crt-glass-wave-layer {
   opacity: 0;
 }
 
-/* Hover: Live pointer-tracking liquid glass specular lens & angled rim sheen (all V1.0 tiers, full ID specificity parity) */
+/* Hover: Live pointer-tracking liquid glass specular lens & angled rim sheen (all V1.0 tiers, full ID specificity parity)
+   Outer glow kept tight (<= 6px) so parent scroll/card containers NEVER hard-clip a straight line across the halo! */
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-hovered,
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-hovered:hover,
 html[data-pond-mode] :is(#welcome-modal, #knowledge, #videos, #resources, #games, #chatroom, #about, #account-popover) .crt-glass-btn.is-glass-hovered,
@@ -7047,10 +7048,11 @@ html[data-pond-mode="knowledge"] #knowledge-list .article-card:hover .article-ca
 html[data-pond-mode] .crt-glass-btn.is-glass-hovered,
 html[data-pond-mode] .crt-glass-btn.is-glass-hovered:hover {
   border-style: solid !important;
-  border-color: rgba(168, 250, 242, 0.88) !important;
+  border-color: rgba(168, 250, 242, 0.84) !important;
   box-shadow:
     inset 0 1px 6px rgba(210, 248, 248, 0.28),
-    0 0 14px rgba(102, 236, 224, 0.32) !important;
+    inset 0 -1px 4px rgba(72, 206, 200, 0.18),
+    0 0 6px rgba(102, 236, 224, 0.24) !important;
 }
 
 /* glass-close tier: subtle rim catch without displacing the × glyph */
@@ -7129,12 +7131,12 @@ html[data-pond-mode] #knowledge-list .article-card:hover .article-card-cta.crt-g
 html[data-pond-mode] .crt-glass-btn.is-glass-held,
 html[data-ui-shell="mobile"] .crt-glass-btn.is-glass-held {
   border-style: solid !important;
-  border-color: rgba(204, 255, 250, 0.98) !important;
-  background: rgba(10, 38, 44, 0.94) !important;
+  border-color: rgba(196, 252, 248, 0.94) !important;
+  background: rgba(10, 34, 40, 0.92) !important;
   box-shadow:
-    inset 0 2px 12px rgba(220, 252, 252, 0.42),
+    inset 0 2px 12px rgba(220, 252, 252, 0.38),
     inset 0 -2px 8px rgba(3, 12, 16, 0.78),
-    0 0 20px rgba(114, 232, 224, 0.56) !important;
+    0 0 7px rgba(114, 232, 224, 0.36) !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-held .crt-glass-wave-layer,
@@ -7168,7 +7170,7 @@ html[data-ui-shell="mobile"] .crt-glass-btn.is-glass-waving .crt-glass-wave-laye
     );
 }
 
-/* Rim Catch: 160ms phosphor edge light-up when release wave arrives at button rim */
+/* Rim Catch: 160ms phosphor edge light-up when release wave arrives at button rim (tight outer glow = ZERO straight-line clip!) */
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-rim-catch,
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-rim-catch:hover,
 html[data-pond-mode] :is(#welcome-modal, #knowledge, #videos, #resources, #games, #chatroom, #about, #account-popover) .crt-glass-btn.is-glass-rim-catch,
@@ -7179,8 +7181,8 @@ html[data-ui-shell="mobile"] .crt-glass-btn.is-glass-rim-catch {
   border-style: solid !important;
   border-color: rgba(216, 255, 252, calc(0.72 + 0.28 * var(--cg-rim-catch, 0))) !important;
   box-shadow:
-    inset 0 0 14px rgba(230, 255, 254, calc(0.55 * var(--cg-rim-catch, 0))),
-    0 0 22px rgba(114, 232, 224, calc(0.76 * var(--cg-rim-catch, 0))) !important;
+    inset 0 0 14px rgba(230, 255, 254, calc(0.50 * var(--cg-rim-catch, 0))),
+    0 0 8px rgba(114, 232, 224, calc(0.45 * var(--cg-rim-catch, 0))) !important;
 }
 
 /* Preserve visible keyboard focus ring */
@@ -7191,90 +7193,88 @@ html[data-ui-shell="mobile"] .crt-glass-btn:focus-visible {
 }
 
 /* ============================================================
-   r89 PILOT: True MengTo Liquid-Glass Optical Quality
-   Scoped STRICTLY to #welcome-modal .quick-link (4 pilot buttons)
-   - SVG feDisplacementMap rim refraction + RGB split ONLY active while pressed/waving (ZERO idle GPU cost!)
-   - Dual counter-moving convex lens specular lobes on hover
-   - Elastic squash-and-stretch 3D perspective tilt on press/release
-   - Cold-cyan CRT phosphor palette preserved
+   r92 PILOT REWORK: Faithful MengTo Liquid-Glass (Welcome 4 Quick-Links ONLY)
+   - Flat clear center face + smooth high-curvature rounded glass lip/shoulder (NO horizontal gradient cut line!)
+   - Zero SVG filter box clipping! Zero straight-line edge cuts!
+   - Hover: perimeter grazing-angle rim specular reflection follows pointer angle
+   - Hold: smooth Gaussian concave face indent around contact (cx, cy) + subtle reduced thickness
+   - Release: 750ms MengTo crest + trailing wake (pow(1-t, 1.7)) + edge-gated cold-cyan rim shimmer
    ============================================================ */
-html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-liquid-pilot {
-  border-style: solid !important;
-  border-color: rgba(164, 242, 238, 0.52) !important;
-  background:
-    linear-gradient(180deg, rgba(210, 250, 248, 0.14) 0%, rgba(16, 42, 48, 0.72) 38%, rgba(8, 24, 30, 0.88) 100%) !important;
-  box-shadow:
-    inset 0 1.5px 0 rgba(235, 255, 254, 0.68),
-    inset 0 -1.5px 0 rgba(88, 224, 218, 0.36),
-    inset 0 0 14px rgba(114, 232, 224, 0.14),
-    0 6px 18px rgba(2, 12, 16, 0.54) !important;
-  transform: perspective(420px) rotateX(var(--cg-tilt-x, 0deg)) rotateY(var(--cg-tilt-y, 0deg)) translate3d(0, var(--cg-press-y, 0px), 0) scaleX(var(--cg-scale-x, 1)) scaleY(var(--cg-scale-y, 1)) !important;
+html[data-pond-mode="welcome"] #welcome-modal .quick-links {
+  padding: 6px 4px !important;
+  overflow: visible !important;
 }
 
-html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-liquid-pilot.is-liquid-refracting {
-  filter: url(#crt-liquid-refract-filter) !important;
+html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-liquid-pilot {
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-color: rgba(164, 234, 230, 0.36) !important;
+  background: rgba(14, 34, 40, 0.62) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(226, 252, 250, 0.42),
+    inset 0 -1px 0 rgba(78, 206, 200, 0.20),
+    inset 0 0 10px rgba(114, 226, 220, 0.08) !important;
+  transform: translate3d(0, var(--cg-press-y, 0px), 0) scale(var(--cg-press-scale, 1)) !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-liquid-pilot.is-glass-hovered .crt-glass-sheen-layer {
   opacity: 1 !important;
   background:
     radial-gradient(
-      ellipse 78px 34px at var(--cg-hx, 50%) var(--cg-hy, 50%),
-      rgba(238, 255, 254, 0.44) 0%,
-      rgba(114, 236, 228, 0.22) 45%,
+      circle 68px at var(--cg-hx, 50%) var(--cg-hy, 50%),
+      rgba(224, 254, 252, 0.20) 0%,
+      rgba(114, 228, 222, 0.08) 46%,
       transparent 78%
     ),
-    radial-gradient(
-      ellipse 54px 22px at var(--cg-hx-inv, 50%) var(--cg-hy-inv, 50%),
-      rgba(176, 138, 216, 0.28) 0%,
-      rgba(105, 214, 224, 0.16) 52%,
-      transparent 82%
-    ),
-    linear-gradient(
-      var(--cg-sheen-ang, 108deg),
-      transparent 22%,
-      rgba(232, 255, 254, 0.24) 48%,
-      rgba(114, 236, 228, 0.12) 56%,
-      transparent 72%
+    conic-gradient(
+      from var(--cg-sheen-ang, 0deg) at 50% 50%,
+      rgba(226, 254, 252, 0.16) 0deg,
+      transparent 55deg,
+      transparent 165deg,
+      rgba(114, 226, 220, 0.10) 195deg,
+      transparent 250deg,
+      rgba(226, 254, 252, 0.16) 360deg
     ) !important;
+  -webkit-mask-image: radial-gradient(ellipse 96% 92% at 50% 50%, rgba(0,0,0,0.28) 54%, #000 100%) !important;
+  mask-image: radial-gradient(ellipse 96% 92% at 50% 50%, rgba(0,0,0,0.28) 54%, #000 100%) !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-liquid-pilot.is-glass-held,
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-liquid-pilot.is-glass-held:hover {
-  border-color: rgba(220, 255, 252, 0.98) !important;
-  background:
-    linear-gradient(180deg, rgba(164, 246, 242, 0.20) 0%, rgba(12, 46, 54, 0.90) 48%, rgba(6, 20, 26, 0.96) 100%) !important;
+  border-color: rgba(198, 250, 246, 0.78) !important;
+  background: rgba(11, 29, 35, 0.74) !important;
   box-shadow:
-    inset 0 2px 14px rgba(235, 255, 254, 0.52),
-    inset 0 -2px 10px rgba(4, 16, 22, 0.85),
-    inset 2px 0 10px rgba(176, 138, 216, 0.34),
-    inset -2px 0 10px rgba(105, 214, 224, 0.36),
-    0 0 24px rgba(114, 236, 228, 0.62) !important;
+    inset 0 1.5px 8px rgba(226, 252, 250, 0.30),
+    inset 0 -1px 6px rgba(4, 16, 22, 0.68),
+    0 0 6px rgba(114, 232, 224, 0.24) !important;
 }
 
+/* Smooth Gaussian concave dimple around fingertip contact (cx, cy) — zero hard rings, zero neon bullseye! */
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-liquid-pilot.is-glass-held .crt-glass-wave-layer {
   opacity: 1 !important;
   background:
     radial-gradient(
       circle at var(--cg-cx, 50%) var(--cg-cy, 50%),
-      rgba(3, 14, 20, calc(0.74 * var(--cg-hold, 1))) 0px,
-      rgba(176, 138, 216, calc(0.52 * var(--cg-hold, 1))) max(0px, calc(var(--cg-hold-r, 22px) - 8px)),
-      rgba(240, 255, 254, calc(0.92 * var(--cg-hold, 1))) var(--cg-hold-r, 22px),
-      rgba(105, 224, 232, calc(0.54 * var(--cg-hold, 1))) calc(var(--cg-hold-r, 22px) + 8px),
-      transparent calc(var(--cg-hold-r, 22px) + 22px)
+      rgba(3, 14, 18, calc(0.48 * var(--cg-hold, 1))) 0px,
+      rgba(12, 34, 40, calc(0.22 * var(--cg-hold, 1))) var(--cg-sigma, 14px),
+      rgba(210, 252, 248, calc(0.28 * var(--cg-hold, 1))) calc(var(--cg-sigma, 14px) * 1.65),
+      rgba(114, 226, 220, calc(0.10 * var(--cg-hold, 1))) calc(var(--cg-sigma, 14px) * 2.3),
+      transparent calc(var(--cg-sigma, 14px) * 3.1)
     ) !important;
 }
 
+/* 750ms MengTo translucent crest + trailing wake with delicate 0.35px spectral fringe */
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-liquid-pilot.is-glass-waving .crt-glass-wave-layer {
   opacity: var(--cg-wave-alpha, 0) !important;
   background:
     radial-gradient(
       circle at calc(var(--cg-cx, 50%) + var(--cg-disp, 0px)) var(--cg-cy, 50%),
-      transparent max(0px, calc(var(--cg-wave-r, 10px) - var(--cg-wave-band, 14px) * 1.35)),
-      rgba(176, 138, 216, 0.78) max(0px, calc(var(--cg-wave-r, 10px) - var(--cg-wave-band, 14px) * 0.45)),
-      rgba(244, 255, 254, 0.98) var(--cg-wave-r, 10px),
-      rgba(105, 224, 234, 0.78) calc(var(--cg-wave-r, 10px) + var(--cg-wave-band, 14px) * 0.45),
-      transparent calc(var(--cg-wave-r, 10px) + var(--cg-wave-band, 14px) * 1.45)
+      transparent max(0px, calc(var(--cg-wave-r, 10px) - var(--cg-wave-band, 14px) * 1.9)),
+      rgba(12, 32, 38, 0.24) max(0px, calc(var(--cg-wave-r, 10px) - var(--cg-wave-band, 14px) * 1.1)),
+      rgba(168, 152, 220, 0.22) max(0px, calc(var(--cg-wave-r, 10px) - var(--cg-wave-band, 14px) * 0.38)),
+      rgba(232, 255, 252, 0.58) var(--cg-wave-r, 10px),
+      rgba(114, 232, 228, 0.26) calc(var(--cg-wave-r, 10px) + var(--cg-wave-band, 14px) * 0.42),
+      transparent calc(var(--cg-wave-r, 10px) + var(--cg-wave-band, 14px) * 1.35)
     ) !important;
 }
 
@@ -7533,6 +7533,24 @@ html[data-ui-shell="mobile"] .route-module-status.is-loading .loading-text {
   color: rgba(164, 232, 226, 0.72) !important;
   font-size: 12.5px !important;
   letter-spacing: 0.06em !important;
+}
+
+/* r92: Completely hide .route-module-status.is-loading in desktop Pond mode (eliminates "正在打开应用模块..." box flash
+   on cold open; .is-error retry UI stays visible!) + lock cold-open min-heights on Games/Tools/About so Frame 0 = Warm Open! */
+html[data-pond-mode] .route-module-status.is-loading {
+  display: none !important;
+}
+
+html[data-pond-mode="games"] #games .xp-window {
+  min-height: 640px !important;
+}
+
+html[data-pond-mode="resources"] #resources .xp-window {
+  min-height: 460px !important;
+}
+
+html[data-pond-mode="about"] #about .xp-window {
+  min-height: 460px !important;
 }
 
 html[data-pond-mode="about"] #about .profile-avatar {

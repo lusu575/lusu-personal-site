@@ -80,80 +80,9 @@ function scheduleController(ctrl) {
   }
 }
 
-let liquidSvgInjected = false;
-let liquidDispMapEl = null;
-let liquidRedOffsetEl = null;
-let liquidBlueOffsetEl = null;
-
-// Injects a single shared SVG optical refraction filter for the Welcome 4-button liquid-glass pilot.
-// Only activated during active hover/press/wave (filter: none at rest -> ZERO idle GPU cost!).
-function ensureLiquidRefractFilter() {
-  if (liquidSvgInjected || !document.body) return;
-  liquidSvgInjected = true;
-  const ns = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(ns, 'svg');
-  svg.setAttribute('id', 'crt-liquid-glass-svg');
-  svg.setAttribute('aria-hidden', 'true');
-  svg.style.cssText = 'position:fixed;width:0;height:0;pointer-events:none;overflow:hidden;';
-
-  // Procedural convex lens displacement map (128x64 canvas encoded once to PNG data URL)
-  let mapUrl = '';
-  try {
-    const c = document.createElement('canvas');
-    c.width = 128;
-    c.height = 64;
-    const ctx = c.getContext('2d');
-    const img = ctx.createImageData(128, 64);
-    const d = img.data;
-    for (let y = 0; y < 64; y++) {
-      const ny = (y / 63) * 2 - 1;
-      for (let x = 0; x < 128; x++) {
-        const nx = (x / 127) * 2 - 1;
-        const r = Math.min(1, Math.hypot(nx * 0.92, ny * 0.92));
-        // Strong rim refraction lens profile (zero in dead center, curving steeply near capsule rim)
-        const bevel = Math.pow(r, 2.2) * (1 - Math.pow(r, 6) * 0.35);
-        const dx = nx * bevel;
-        const dy = ny * bevel;
-        const idx = (y * 128 + x) * 4;
-        d[idx] = Math.round(128 + dx * 124);
-        d[idx + 1] = Math.round(128 + dy * 124);
-        d[idx + 2] = 128;
-        d[idx + 3] = 255;
-      }
-    }
-    ctx.putImageData(img, 0, 0);
-    mapUrl = c.toDataURL('image/png');
-  } catch {
-    mapUrl = '';
-  }
-
-  svg.innerHTML = `
-    <defs>
-      <filter id="crt-liquid-refract-filter" x="-8%" y="-12%" width="116%" height="124%" color-interpolation-filters="sRGB">
-        ${mapUrl ? `<feImage href="${mapUrl}" x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="lensMap" />` : '<feTurbulence type="fractalNoise" baseFrequency="0.018 0.036" numOctaves="1" seed="7" result="lensMap" />'}
-        <feDisplacementMap id="crt-liquid-disp" in="SourceGraphic" in2="lensMap" scale="0" xChannelSelector="R" yChannelSelector="G" result="refracted" />
-        <feOffset id="crt-liquid-r-off" in="refracted" dx="0" dy="0" result="rShift" />
-        <feColorMatrix in="rShift" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="rChan" />
-        <feColorMatrix in="refracted" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="gChan" />
-        <feOffset id="crt-liquid-b-off" in="refracted" dx="0" dy="0" result="bShift" />
-        <feColorMatrix in="bShift" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="bChan" />
-        <feBlend in="rChan" in2="gChan" mode="screen" result="rgChan" />
-        <feBlend in="rgChan" in2="bChan" mode="screen" />
-      </filter>
-    </defs>
-  `;
-  document.body.appendChild(svg);
-  liquidDispMapEl = svg.querySelector('#crt-liquid-disp');
-  liquidRedOffsetEl = svg.querySelector('#crt-liquid-r-off');
-  liquidBlueOffsetEl = svg.querySelector('#crt-liquid-b-off');
-}
-
-function setLiquidFilterParams(dispScalePx, chromaSplitPx) {
-  if (!liquidDispMapEl) return;
-  liquidDispMapEl.setAttribute('scale', dispScalePx.toFixed(2));
-  if (liquidRedOffsetEl) liquidRedOffsetEl.setAttribute('dx', chromaSplitPx.toFixed(2));
-  if (liquidBlueOffsetEl) liquidBlueOffsetEl.setAttribute('dx', (-chromaSplitPx).toFixed(2));
-}
+// MengTo shade-glass-button-press + refract-liquid-glass (r92 rework)
+// Zero SVG filter box-clipping! Pure smooth Gaussian face indent + exact MengTo 750ms crest/wake
+// release wave (pow(1-t, 1.7), crest = exp(-d^2), wake = exp(-((d+1.1)/1.6)^2)) + edge-gated rim catch.
 
 class CrtGlassButtonController {
   constructor(el, levelName = 'glass-primary') {
@@ -167,7 +96,7 @@ class CrtGlassButtonController {
     this.spring = { pos: 0, vel: 0 }; // 0 = rest, 1 = fully pressed
     this.contactX = 0;
     this.contactY = 0;
-    this.normContactX = 0; // -1..1 for liquid elastic tilt
+    this.normContactX = 0;
     this.normContactY = 0;
     this.btnW = 120;
     this.btnH = 36;
@@ -181,7 +110,6 @@ class CrtGlassButtonController {
     el.classList.add('crt-glass-btn', levelName);
     if (this.isLiquidPilot) {
       el.classList.add('crt-glass-liquid-pilot');
-      ensureLiquidRefractFilter();
     }
     el.dataset.crtGlassBound = levelName;
 
@@ -228,17 +156,14 @@ class CrtGlassButtonController {
     const hy = Math.max(0, Math.min(rect.height, clientY - rect.top));
     const normX = (hx / rect.width) * 2 - 1; // -1..1
     const normY = (hy / rect.height) * 2 - 1;
-    const angleDeg = 108 + normX * 42;
+    // Pointer angle around perimeter for rim specular reflection (refract-liquid-glass § Render the lens #4)
+    const rimAngleDeg = (Math.atan2(normY, normX) * 180) / Math.PI + 90;
     const s = this.el.style;
     s.setProperty('--cg-hx', `${hx.toFixed(1)}px`);
     s.setProperty('--cg-hy', `${hy.toFixed(1)}px`);
     s.setProperty('--cg-hx-inv', `${(rect.width - hx).toFixed(1)}px`);
     s.setProperty('--cg-hy-inv', `${(rect.height - hy).toFixed(1)}px`);
-    s.setProperty('--cg-sheen-ang', `${angleDeg.toFixed(1)}deg`);
-    if (this.isLiquidPilot && !this.held && !this.waveActive && !prefersReducedMotion()) {
-      s.setProperty('--cg-tilt-x', `${(-normY * 3.2).toFixed(2)}deg`);
-      s.setProperty('--cg-tilt-y', `${(normX * 4.2).toFixed(2)}deg`);
-    }
+    s.setProperty('--cg-sheen-ang', `${rimAngleDeg.toFixed(1)}deg`);
   }
 
   _handlePointerEnter(e) {
@@ -369,26 +294,18 @@ class CrtGlassButtonController {
       this.el.style.setProperty('--cg-hold', '1');
       return;
     }
-    // Synchronous Frame-0 tactile onset so even fast clicks visibly depress & refract immediately
-    this.spring.pos = Math.max(this.spring.pos, 0.52);
+    // Synchronous Frame-0 tactile onset (MengTo shade-glass-button-press: quick spring into held pose + Gaussian face indent)
+    this.spring.pos = Math.max(this.spring.pos, 0.42);
     const s = this.el.style;
-    const initY = this.spring.pos * (this.isLiquidPilot ? 3.2 : this.level.pressOffsetPx);
-    const initScale = 1 - this.spring.pos * (1 - this.level.pressScale);
+    const pressOffset = this.isLiquidPilot ? 1.6 : this.level.pressOffsetPx;
+    const pressTargetScale = this.isLiquidPilot ? 0.972 : this.level.pressScale;
+    const initY = this.spring.pos * pressOffset;
+    const initScale = 1 - this.spring.pos * (1 - pressTargetScale);
     s.setProperty('--cg-hold', this.spring.pos.toFixed(4));
     s.setProperty('--cg-press-y', `${initY.toFixed(2)}px`);
     s.setProperty('--cg-press-scale', initScale.toFixed(4));
-    if (this.isLiquidPilot) {
-      ensureLiquidRefractFilter();
-      this.el.classList.add('is-liquid-refracting');
-      setLiquidFilterParams(6.5, 0.75);
-      s.setProperty('--cg-scale-x', (1 - this.spring.pos * 0.032).toFixed(4));
-      s.setProperty('--cg-scale-y', (1 - this.spring.pos * 0.072).toFixed(4));
-      s.setProperty('--cg-tilt-x', `${(-this.normContactY * 5.2 * this.spring.pos).toFixed(2)}deg`);
-      s.setProperty('--cg-tilt-y', `${(this.normContactX * 6.5 * this.spring.pos).toFixed(2)}deg`);
-      s.setProperty('--cg-refract-scale', '6.50');
-    }
     const minDim = Math.min(this.btnW, this.btnH);
-    const initHoldR = Math.max(10, Math.min(18, minDim * 0.34));
+    const initHoldR = Math.max(10, Math.min(18, minDim * 0.36));
     s.setProperty('--cg-hold-r', `${initHoldR.toFixed(1)}px`);
     scheduleController(this);
   }
@@ -428,19 +345,11 @@ class CrtGlassButtonController {
     this.waveActive = false;
     this.spring.pos = 0;
     this.spring.vel = 0;
-    this.el.classList.remove('is-glass-held', 'is-glass-waving', 'is-glass-rim-catch', 'is-liquid-refracting');
-    if (this.isLiquidPilot) {
-      setLiquidFilterParams(0, 0);
-    }
+    this.el.classList.remove('is-glass-held', 'is-glass-waving', 'is-glass-rim-catch');
     const s = this.el.style;
     s.removeProperty('--cg-hold');
     s.removeProperty('--cg-press-y');
     s.removeProperty('--cg-press-scale');
-    s.removeProperty('--cg-scale-x');
-    s.removeProperty('--cg-scale-y');
-    s.removeProperty('--cg-tilt-x');
-    s.removeProperty('--cg-tilt-y');
-    s.removeProperty('--cg-refract-scale');
     s.removeProperty('--cg-wave-r');
     s.removeProperty('--cg-wave-band');
     s.removeProperty('--cg-wave-alpha');
@@ -451,38 +360,19 @@ class CrtGlassButtonController {
   _step(nowMs, dtSec) {
     const s = this.el.style;
 
-    // 1. Step unified second-order damped spring (liquid pilot uses elastic gel rebound zeta=0.58 on release!)
+    // 1. Step unified second-order damped spring (MengTo smooth critically-damped press & clean elastic release)
     const target = this.held ? 1 : 0;
-    const springCfg = this.held
-      ? CRT_GLASS_SPRINGS.buttonPress
-      : (this.isLiquidPilot ? { zeta: 0.58, omega0: 36 } : CRT_GLASS_SPRINGS.buttonRelease);
+    const springCfg = this.held ? CRT_GLASS_SPRINGS.buttonPress : CRT_GLASS_SPRINGS.buttonRelease;
     const springSettled = stepSecondOrderSpring(this.spring, target, springCfg, dtSec);
-    const holdAmt = Math.max(-0.22, Math.min(1.18, this.spring.pos));
+    const holdAmt = Math.max(-0.08, Math.min(1.06, this.spring.pos));
 
-    const pressY = Math.max(-0.8, holdAmt * (this.isLiquidPilot ? 3.2 : this.level.pressOffsetPx));
-    const pressScale = 1 - Math.max(-0.18, holdAmt) * (1 - this.level.pressScale);
+    const pressOffset = this.isLiquidPilot ? 1.6 : this.level.pressOffsetPx;
+    const pressTargetScale = this.isLiquidPilot ? 0.972 : this.level.pressScale;
+    const pressY = Math.max(0, holdAmt * pressOffset);
+    const pressScale = 1 - holdAmt * (1 - pressTargetScale);
     s.setProperty('--cg-hold', Math.max(0, holdAmt).toFixed(4));
     s.setProperty('--cg-press-y', `${pressY.toFixed(2)}px`);
     s.setProperty('--cg-press-scale', pressScale.toFixed(4));
-
-    if (this.isLiquidPilot) {
-      // Liquid elastic squash-and-stretch (conserves visual volume on press & elastic rebound!)
-      const sx = 1 - holdAmt * 0.032 + (holdAmt < 0 ? -holdAmt * 0.025 : 0);
-      const sy = 1 - holdAmt * 0.072;
-      s.setProperty('--cg-scale-x', sx.toFixed(4));
-      s.setProperty('--cg-scale-y', sy.toFixed(4));
-      s.setProperty('--cg-tilt-x', `${(-this.normContactY * 5.2 * holdAmt).toFixed(2)}deg`);
-      s.setProperty('--cg-tilt-y', `${(this.normContactX * 6.5 * holdAmt).toFixed(2)}deg`);
-      const holdSec = this.held ? Math.max(0, (nowMs - this.holdStartMs) * 0.001) : 0;
-      const breatheRefract = this.held ? Math.sin(holdSec * 6.2) * 1.6 : 0;
-      const waveRefract = this.waveActive
-        ? 8.5 * Math.pow(1 - Math.min(1, (nowMs - this.waveStartMs) / this.level.releaseDurationMs), 1.25)
-        : 0;
-      const dispScale = Math.max(0, Math.max(0, holdAmt) * 9.5 + breatheRefract + waveRefract);
-      const chromaPx = Math.max(0, Math.max(0, holdAmt) * 0.85 + (this.waveActive ? waveRefract * 0.14 : 0));
-      setLiquidFilterParams(dispScale, chromaPx);
-      s.setProperty('--cg-refract-scale', dispScale.toFixed(2));
-    }
 
     // Dynamic living refraction pulse while held (scales cleanly for both 56px quick-links and 36px CTA pills
     // so the glowing cyan-violet refraction ring stays vividly alive inside every button!)
@@ -494,25 +384,28 @@ class CrtGlassButtonController {
       s.setProperty('--cg-hold-r', `${pulseR.toFixed(1)}px`);
     }
 
-    // 2. Step MengTo non-linear release wave (travel = (1 - (1 - t)^1.55) * (reach + bandWidth))
+    // 2. Step exact MengTo release wave:
+    //    travel = (1 - pow(1 - t, 1.7)) * (reach + bandWidth) over 750ms (pilot) / 440ms (standard)
     const tier = getActivePerfTier();
     let waveRunning = false;
     if (this.waveActive && this.level.enableWave && tier.buttonWave !== 'css') {
       const elapsed = nowMs - this.waveStartMs;
-      const dur = this.level.releaseDurationMs;
+      const dur = this.isLiquidPilot ? 750 : this.level.releaseDurationMs;
+      const power = this.isLiquidPilot ? 1.7 : CRT_GLASS.releaseWavePower;
       const t = Math.min(1, Math.max(0, elapsed / dur));
       const bandWidth = this.btnW >= CRT_GLASS.waveWideThresholdPx ? CRT_GLASS.waveBandWidePx : CRT_GLASS.waveBandPx;
-      const travel = 8 + (1 - Math.pow(1 - t, CRT_GLASS.releaseWavePower)) * (this.reach + bandWidth * 1.2);
-      const fade = Math.pow(1 - t, 0.85) * Math.min(1, t * 14 + 0.35);
+      const travel = (1 - Math.pow(1 - t, power)) * (this.reach + bandWidth);
+      const fade = Math.pow(1 - t, 1.15) * Math.min(1, t * 18 + 0.35);
 
       s.setProperty('--cg-wave-r', `${travel.toFixed(1)}px`);
       s.setProperty('--cg-wave-band', `${bandWidth.toFixed(1)}px`);
       s.setProperty('--cg-wave-alpha', Math.min(1, fade).toFixed(3));
 
-      // Brief RGB spectral split at wave crest (gated by Step 7 performance tier)
-      if (this.level.enableDispersion && tier.dispersion && elapsed <= CRT_GLASS.dispersionDurationMs) {
-        const dispEnv = Math.sin((elapsed / CRT_GLASS.dispersionDurationMs) * Math.PI);
-        s.setProperty('--cg-disp', `${(CRT_GLASS.dispersionPx * dispEnv).toFixed(3)}px`);
+      // Delicate 0.35px (pilot) / 0.6px spectral split confined to passing crest
+      const maxDisp = this.isLiquidPilot ? 0.35 : CRT_GLASS.dispersionPx;
+      if (this.level.enableDispersion && tier.dispersion && elapsed <= 180) {
+        const dispEnv = Math.sin((elapsed / 180) * Math.PI);
+        s.setProperty('--cg-disp', `${(maxDisp * dispEnv).toFixed(3)}px`);
       } else {
         s.setProperty('--cg-disp', '0px');
       }
