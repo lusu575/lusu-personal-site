@@ -2067,11 +2067,34 @@
           .btn .linkContent, .btn.modern .linkContent, .btn a.link, .btn .linkbreak, .btn.modern span.btnTitle,
           .btn.modern a, .btn.modern a.enabled, .btn.modern a.off, .btn.modern .rightLinks a,
           .highlited, .tipr_content,
+          #tooltip, .button_tooltip, .tooltip-content, .tooltip-inner, .tooltip-block, .tooltip-block .tooltip-content,
           select, select > option, .login-popup {
-            background: rgba(8, 30, 36, 0.94) !important;
-            background-color: rgba(8, 30, 36, 0.94) !important;
+            background: rgba(8, 30, 36, 0.96) !important;
+            background-color: rgba(8, 30, 36, 0.96) !important;
             color: #e8fbf7 !important;
-            border-color: rgba(164, 236, 228, 0.42) !important;
+            border-color: rgba(136, 252, 226, 0.45) !important;
+          }
+          #tooltip, .button_tooltip, .tooltip-content, .tooltip-inner, .tooltip-block .tooltip-content {
+            box-shadow: 0 8px 24px rgba(0, 8, 12, 0.72) !important;
+            color: #e8fbf7 !important;
+          }
+          #tooltip .desc, .button_tooltip .desc, .tooltip-inner .desc, .tooltip-inner .desc.small,
+          .tooltip-content .desc, .tooltip-content span, .tooltip-content div, .tooltip-content td {
+            color: #c8ece6 !important;
+            background: transparent !important;
+            background-color: transparent !important;
+          }
+          #tooltip .flavor, .button_tooltip .flavor, .tooltip-inner .flavor {
+            color: #9ecfc8 !important;
+          }
+          #tooltip .noRes, .button_tooltip .noRes, .tooltip-content .noRes, .limited {
+            color: #ff9c9c !important;
+          }
+          #tooltip .effectName, .button_tooltip .effectName, .tooltip-content .effectName {
+            color: #96fff0 !important;
+          }
+          .tooltip-divider {
+            border-color: rgba(136, 252, 226, 0.28) !important;
           }
           .btn.modern a, .btn.modern a.enabled, .btn.modern a.off,
           .btn .linkContent a, .btn.modern .linkContent a {

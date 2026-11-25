@@ -8,7 +8,7 @@ import {
   saveManualSeasonOverride,
   startSeasonTimeSchedule
 } from '../pond-crt/season-schedule.mjs?v=20261122-pond-live-fix-r1';
-import { attachWelcomePilotButtons, getCrtGlassButtonPerfStats } from './crt-glass-button.mjs?v=20261124-glass-dynamic-r76';
+import { attachSiteGlassButtons, attachWelcomePilotButtons, getCrtGlassButtonPerfStats } from './crt-glass-button.mjs?v=20261125-glass-rollout-r82';
 import { PondWindowMorphController } from './crt-window-morph.mjs?v=20261124-welcome-scrollbar-r73';
 
 function isMobileShell() {
@@ -771,10 +771,10 @@ function bootPondVisualBridge() {
 
   const welcomeModalObs = document.getElementById('welcome-modal');
   if (welcomeModalObs) {
-    attachWelcomePilotButtons();
+    attachSiteGlassButtons();
     new MutationObserver(() => {
       if (!welcomeModalObs.hidden) {
-        attachWelcomePilotButtons();
+        attachSiteGlassButtons();
         window.requestAnimationFrame(syncRealTimeWelcomeGreeting);
       }
     }).observe(welcomeModalObs, { attributes: true, attributeFilter: ['hidden'] });
@@ -783,8 +783,10 @@ function bootPondVisualBridge() {
   new MutationObserver(() => {
     syncGamesCloudBanner();
     syncChatExplicitState();
+    window.requestAnimationFrame(() => attachSiteGlassButtons());
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'data-pond-mode'] });
   syncGamesCloudBanner();
+  attachSiteGlassButtons();
 
   window.addEventListener('hashchange', () => {
     syncVisualMode();

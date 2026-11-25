@@ -1,7 +1,7 @@
 import { normalizeHistoricalArticleTags } from "./article-tags.mjs";
 
 export const HISTORICAL_ARTICLE_BASELINE = "20260902-mobile-blog-retired-r1";
-export const ARTICLE_SEED_VERSION = "20261125-known-fixes-r81";
+export const ARTICLE_SEED_VERSION = "20261125-glass-rollout-r82";
 export const ARTICLE_SEED_STATE_KEY = "article_seed_version";
 export const ARTICLE_MIGRATION_LEASE_KEY = `${ARTICLE_SEED_STATE_KEY}:lease`;
 const MIGRATION_LEASE_MS = 60_000;
@@ -99,7 +99,8 @@ export const KNOWN_PREDECESSOR_SEED_VERSIONS = Object.freeze(new Set([
   "20261124-whiteboard-menu-r77",
   "20261124-whiteboard-placeholder-r78",
   "20261124-life-restart-r79",
-  "20261124-kittens-ui-r80"
+  "20261124-kittens-ui-r80",
+  "20261125-known-fixes-r81"
 ]));
 
 function extractCanonicalSeedDate(value) {

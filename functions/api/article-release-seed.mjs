@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-glass-rollout-and-residuals-r82', '2026-11-25-glass-rollout-and-residuals-r82', 'site-updates', '["ui","glass","pond","games"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-25-glass-rollout-and-residuals-r82", {
+  "zh": {
+    "title": "液态玻璃 CRT Glass Lite 全站按钮铺开与两处细节收口（r82）",
+    "summary": "按 V1.0 方案与 r76 签收参数将液态玻璃三档交互铺开至全站主操作、工具图标与关闭按钮，并同步修复欢迎窗系统更新图标映射为星芒、猫国建筑悬浮提示框整体深色化。",
+    "content_markdown": "# 液态玻璃 CRT Glass Lite 全站按钮铺开与两处细节收口（r82）\n\n本次更新按方案 V1.0 既定范围正式推进液态玻璃铺开，并同步清零 r81 复验两处残差：\n\n- **CRT Glass Lite 全站三档铺开（步骤 4 / 6 / 7）**：严格沿用 r76 签收参数（2.5px 下沉、0.945 缩放、440ms 非线性释放波、0.6px 瞬时色散与 160ms 边缘吃光），按 `glass-primary`（欢迎窗/账号弹窗/聊天室/知识库/视频/工具/游戏/关于主按钮与筛选标签）、`glass-icon`（最大化、回顶、聊天室工具图标）、`glass-close`（窗口关闭键）三档接入全站，不越界扩至卡片、输入框或正文链接，并接入高/中/低三档性能分层。\n- **欢迎窗系统更新图标修正**：修正 `recentUpdateIconClass()` 优先级，全站系统、性能、池塘与液态玻璃类更新不再因标签含 games 而误用游戏手柄，准确显示系统星芒图标。\n- **猫国建筑悬浮提示框深色化**：统一覆盖 `#tooltip`、`.button_tooltip`、`.tooltip-content`、`.tooltip-inner` 与 `.tipr_content` 的浅灰白底，全框采用深青底配高对比说明文字。"
+  },
+  "en": {
+    "title": "Site-Wide CRT Glass Lite Button Rollout & Two Visual Fixes (r82)",
+    "summary": "Rolled out the approved r76 CRT Glass Lite three-tier button interactions across all desktop windows, fixed Welcome system update icons to use the System Spark, and unified Kittens Game hover tooltips in dark teal.",
+    "content_markdown": "# Site-Wide CRT Glass Lite Button Rollout & Two Visual Fixes (r82)\n\nThis release rolls out CRT Glass Lite across the site within V1.0 scope and clears the two remaining visual residuals from r81:\n\n- **Site-Wide CRT Glass Lite Rollout (Steps 4, 6 & 7)**: Preserves exact r76 signed-off parameters (2.5px press offset, 0.945 scale, 440ms non-linear release wave, 0.6px crest dispersion, 160ms rim catch) across `glass-primary`, `glass-icon`, and `glass-close` tiers in all site windows while keeping cards, text inputs, and article prose links untouched, with high/medium/low performance tier gating.\n- **Welcome System Update Icon Mapping**: Fixed `recentUpdateIconClass()` precedence so site-wide system, performance, pond, and glass updates render the System Spark icon instead of falling into the game controller bucket.\n- **Kittens Game Dark Hover Tooltips**: Unified `#tooltip`, `.button_tooltip`, `.tooltip-content`, `.tooltip-inner`, and `.tipr_content` with deep teal backgrounds and high-contrast text."
+  },
+  "ja": {
+    "title": "CRT Glass Lite 全サイトボタン展開と細部 2 点の修正（r82）",
+    "summary": "r76 承認パラメータのまま CRT Glass Lite の 3 段階ボタン操作を全ウィンドウへ展開し、ようこそ画面のシステム更新アイコン（星芒）判定と猫国の建物ツールチップ暗色化を修正しました。",
+    "content_markdown": "# CRT Glass Lite 全サイトボタン展開と細部 2 点の修正（r82）\n\nV1.0 仕様の範囲内で CRT Glass Lite を全サイトへ展開し、r81 検証で残った 2 点を修正しました：\n\n- **CRT Glass Lite 全サイト 3 段階展開（Step 4 / 6 / 7）**：r76 承認パラメータ（押し込み 2.5px、0.945 スケール、440ms リリース波、0.6px 色分散、160ms 縁発光）を維持したまま、`glass-primary`・`glass-icon`・`glass-close` の 3 段階を全ウィンドウのボタンへ適用し、カード・入力欄・本文リンクへは拡張せず、高／中／低のパフォーマンス階層にも対応しました。\n- **ようこそ画面のシステム更新アイコン修正**：全サイト向け・性能・池・ガラス更新がタグ由来のゲームアイコンに誤分類されないよう判定順を修正し、星芒アイコンを表示するようにしました。\n- **猫国の建物ツールチップ全面暗色化**：`#tooltip`・`.button_tooltip`・`.tooltip-content`・`.tooltip-inner`・`.tipr_content` の白背景をすべて深青背景と高コントラスト文字へ統一しました。"
+  }
+}, "2026-11-25"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-known-issues-perf-r81', '2026-11-25-known-issues-perf-r81', 'site-updates', '["performance","ui","games","pond"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-25-known-issues-perf-r81", {
   "zh": {

@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-25-known-issues-perf-r81";
-const finalUpdateSlug = "2026-11-25-known-issues-perf-r81";
+const finalUpdateId = "seed-update-2026-11-25-glass-rollout-and-residuals-r82";
+const finalUpdateSlug = "2026-11-25-glass-rollout-and-residuals-r82";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Known-Issues Sweep & Three-Step Desktop Pond Performance Overhaul (r81)";
+const finalTitleEn = "Site-Wide CRT Glass Lite Button Rollout & Two Visual Fixes (r82)";
 const finalPublishedAt = "2026-11-25";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-25-known-issues-perf-r81",
   "seed-update-2026-11-24-kittens-layout-and-contrast-r80",
   "seed-update-2026-11-24-life-restart-visual-cleanup-r79",
   "seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78",

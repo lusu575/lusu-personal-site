@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-25-glass-rollout-and-residuals-r82",
+      "slug": "2026-11-25-glass-rollout-and-residuals-r82",
+      "category": "site-updates",
+      "tags": [
+        "ui",
+        "glass",
+        "pond",
+        "games"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": "2026-11-25",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "液态玻璃 CRT Glass Lite 全站按钮铺开与两处细节收口（r82）",
+        "en": "Site-Wide CRT Glass Lite Button Rollout & Two Visual Fixes (r82)",
+        "ja": "CRT Glass Lite 全サイトボタン展開と細部 2 点の修正（r82）"
+      },
+      "summary": {
+        "zh": "按 V1.0 方案与 r76 签收参数将液态玻璃三档交互铺开至全站主操作、工具图标与关闭按钮，并同步修复欢迎窗系统更新图标映射为星芒、猫国建筑悬浮提示框整体深色化。",
+        "en": "Rolled out the approved r76 CRT Glass Lite three-tier button interactions across all desktop windows, fixed Welcome system update icons to use the System Spark, and unified Kittens Game hover tooltips in dark teal.",
+        "ja": "r76 承認パラメータのまま CRT Glass Lite の 3 段階ボタン操作を全ウィンドウへ展開し、ようこそ画面のシステム更新アイコン（星芒）判定と猫国の建物ツールチップ暗色化を修正しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-25-known-issues-perf-r81",
       "slug": "2026-11-25-known-issues-perf-r81",
       "category": "site-updates",
@@ -111,34 +140,6 @@ export const homeContent = Object.freeze({
         "zh": "在线画板独立版本升至 1.0.15，将右侧画布搜索栏输入框占位文案由英文 Find text on canvas... 三语本地化为「在画布中查找文字…」。",
         "en": "Bumped Online Whiteboard to 1.0.15 and localized the canvas search sidebar input placeholder across zh/en/ja.",
         "ja": "ホワイトボードを 1.0.15 へ更新し、検索パネル入力欄の英語プレースホルダーを日本語・中国語・英語へ対応しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-whiteboard-1-0-14-main-menu-r77",
-      "slug": "whiteboard-1-0-14-localized-main-menu-r77",
-      "category": "site-updates",
-      "tags": [
-        "在线画板",
-        "视觉更新",
-        "本地化"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T20:16:00+08:00",
-      "updated_at": "2026-11-24T20:16:00+08:00",
-      "published_at": "2026-11-24T20:16:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "在线画板 1.0.14：主菜单搜索项中文化并移除第三方外链（r77）",
-        "en": "Online Whiteboard 1.0.14: Localized Main Menu & Removed External Links (r77)",
-        "ja": "オンラインホワイトボード 1.0.14：メインメニューの多言語化と外部リンク撤去（r77）"
-      },
-      "summary": {
-        "zh": "在线画板独立版本升至 1.0.14，通过 Excalidraw 官方自定义 MainMenu 将画布查找项中文化为「在画布中查找 Ctrl+F」，并移除 Excalidraw links 及 GitHub / Follow us / Discord 外链。",
-        "en": "Bumped Online Whiteboard to 1.0.14 with a custom Excalidraw MainMenu that localizes Find on canvas (Ctrl+F) and removes upstream Excalidraw external links.",
-        "ja": "ホワイトボードを 1.0.14 へ更新し、公式 MainMenu カスタマイズで「キャンバス内を検索 Ctrl+F」を多言語化、Excalidraw 外部リンク群を撤去しました。"
       }
     }
   ]

@@ -2025,8 +2025,17 @@ function recentUpdateElement(item) {
 }
 
 function recentUpdateIconClass(item) {
+  if (item?.icon === "system") {
+    return "update-icon-system";
+  }
   const tags = Array.isArray(item?.tags) ? item.tags.join(" ") : String(item?.tags || "");
-  const haystack = `${item?.category || ""} ${item?.slug || ""} ${tags} ${localText(item?.title) || ""}`.toLowerCase();
+  const titleAndSlug = `${item?.slug || ""} ${localText(item?.title) || ""}`.toLowerCase();
+  // Site-wide / system / performance / pond / glass updates always use the System Spark icon,
+  // even if their tag list also mentions affected areas such as games or tools.
+  if (/全站|系统|性能优化|已知问题|池塘|液态玻璃|桌面|known-issues|perf|pond|glass|boot|window/.test(titleAndSlug)) {
+    return "update-icon-system";
+  }
+  const haystack = `${item?.category || ""} ${titleAndSlug} ${tags}`.toLowerCase();
   if (/games|游戏|猫国|kittens|hextris|2048|dark-room|life-restart/.test(haystack)) {
     return "update-icon-games";
   }

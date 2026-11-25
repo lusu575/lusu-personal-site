@@ -7,8 +7,14 @@ import {
   CRT_GLASS,
   CRT_GLASS_BUTTON_LEVELS,
   CRT_GLASS_SPRINGS,
+  CRT_GLASS_TIERS,
   syncCrtGlassCssVars
 } from './crt-glass-config.mjs?v=20261124-glass-dynamic-r76';
+
+function getActivePerfTier() {
+  const tierName = document.documentElement.dataset.performanceTier || 'high';
+  return CRT_GLASS_TIERS[tierName] || CRT_GLASS_TIERS.high;
+}
 
 const activeControllers = new Set();
 let rafId = 0;
@@ -345,8 +351,9 @@ class CrtGlassButtonController {
     }
 
     // 2. Step MengTo non-linear release wave (travel = (1 - (1 - t)^1.55) * (reach + bandWidth))
+    const tier = getActivePerfTier();
     let waveRunning = false;
-    if (this.waveActive) {
+    if (this.waveActive && this.level.enableWave && tier.buttonWave !== 'css') {
       const elapsed = nowMs - this.waveStartMs;
       const dur = this.level.releaseDurationMs;
       const t = Math.min(1, Math.max(0, elapsed / dur));
@@ -358,8 +365,8 @@ class CrtGlassButtonController {
       s.setProperty('--cg-wave-band', `${bandWidth.toFixed(1)}px`);
       s.setProperty('--cg-wave-alpha', Math.min(1, fade).toFixed(3));
 
-      // Brief RGB spectral split at wave crest (<= 60ms, <= 0.35px)
-      if (this.level.enableDispersion && elapsed <= CRT_GLASS.dispersionDurationMs) {
+      // Brief RGB spectral split at wave crest (gated by Step 7 performance tier)
+      if (this.level.enableDispersion && tier.dispersion && elapsed <= CRT_GLASS.dispersionDurationMs) {
         const dispEnv = Math.sin((elapsed / CRT_GLASS.dispersionDurationMs) * Math.PI);
         s.setProperty('--cg-disp', `${(CRT_GLASS.dispersionPx * dispEnv).toFixed(3)}px`);
       } else {
@@ -411,6 +418,35 @@ export function attachCrtGlassButton(el, levelName = 'glass-primary') {
   return new CrtGlassButtonController(el, levelName);
 }
 
+// V1.0 Authoritative 3-Tier Button Selectors (Steps 4 & 6; excludes cards, inputs, prose links & iframes)
+const SITE_GLASS_SELECTORS = Object.freeze({
+  'glass-primary': [
+    '#welcome-modal .quick-link',
+    '#welcome-modal .welcome-footer .xp-button',
+    '#account-popover .xp-button',
+    '#account-popover button[type="submit"]',
+    '#chatroom #chat-send',
+    '#chatroom .chat-send-button',
+    '#chatroom .xp-button',
+    '#knowledge .xp-button',
+    '#knowledge .filter-button',
+    '#article-detail .xp-button',
+    '#videos .xp-button',
+    '#videos .filter-button',
+    '#video-modal .xp-button',
+    '#resources .xp-button',
+    '#games .xp-button',
+    '#about .xp-button'
+  ].join(', '),
+  'glass-icon': [
+    '#video-window-maximize',
+    '[data-article-scroll-top]',
+    '#chatroom .chat-tool-button',
+    '#chatroom [data-chat-help]'
+  ].join(', '),
+  'glass-close': '.xp-window .close-button'
+});
+
 export function attachWelcomePilotButtons() {
   syncCrtGlassCssVars();
   const buttons = document.querySelectorAll('#welcome-modal .quick-link');
@@ -419,6 +455,19 @@ export function attachWelcomePilotButtons() {
     const ctrl = attachCrtGlassButton(btn, 'glass-primary');
     if (ctrl) bound.push(ctrl);
   });
+  return bound;
+}
+
+export function attachSiteGlassButtons(root = document) {
+  syncCrtGlassCssVars();
+  const bound = [];
+  for (const [levelName, selector] of Object.entries(SITE_GLASS_SELECTORS)) {
+    root.querySelectorAll(selector).forEach((el) => {
+      if (el.dataset.crtGlassBound) return;
+      const ctrl = attachCrtGlassButton(el, levelName);
+      if (ctrl) bound.push(ctrl);
+    });
+  }
   return bound;
 }
 

@@ -6840,14 +6840,22 @@ html[data-ui-shell="mobile"] .crt-glass-btn .crt-glass-wave-layer {
   opacity: 0;
 }
 
-/* Hover: Live pointer-tracking liquid glass specular lens & angled rim sheen */
+/* Hover: Live pointer-tracking liquid glass specular lens & angled rim sheen (all V1.0 tiers) */
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-hovered,
-html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-hovered:hover {
+html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-hovered:hover,
+html[data-pond-mode] .crt-glass-btn.is-glass-hovered,
+html[data-pond-mode] .crt-glass-btn.is-glass-hovered:hover {
   border-style: solid !important;
   border-color: rgba(168, 250, 242, 0.88) !important;
   box-shadow:
     inset 0 1px 6px rgba(210, 248, 248, 0.28),
     0 0 14px rgba(102, 236, 224, 0.32) !important;
+}
+
+/* glass-close tier: subtle rim catch without displacing the × glyph */
+html[data-pond-mode] .crt-glass-btn.glass-close,
+html[data-ui-shell="mobile"] .crt-glass-btn.glass-close {
+  transform: none !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal .quick-link.crt-glass-btn.is-glass-hovered .crt-glass-sheen-layer,
