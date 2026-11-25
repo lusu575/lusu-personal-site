@@ -1,0 +1,80 @@
+{
+  "frames": [
+    {
+      "file": "boot-01-t0ms-r84.png",
+      "measuredMs": 1331,
+      "pondBoot": "active",
+      "pondBootWebgl": "",
+      "oldBeamExists": false,
+      "htmlBg": "radial-gradient(at 50% 48%, rgb(10, 44, 53) 0%, rgb(5, 23, 30) 56%, rgb(3, 13, 18) 100%)",
+      "bootVisual": null,
+      "bootTarget": null,
+      "seasonId": ""
+    },
+    {
+      "file": "boot-02-t300ms-r84.png",
+      "targetMs": 300,
+      "measuredMs": 305,
+      "pondBoot": "active",
+      "bootActive": true,
+      "bootVisual": 0.274,
+      "bootTarget": 0.606,
+      "bootMode": "full",
+      "seasonId": "summer"
+    },
+    {
+      "file": "boot-03-t800ms-r84.png",
+      "targetMs": 800,
+      "measuredMs": 806,
+      "pondBoot": "active",
+      "bootActive": true,
+      "bootVisual": 0.558,
+      "bootTarget": 1,
+      "bootMode": "full",
+      "seasonId": "summer"
+    },
+    {
+      "file": "boot-04-t1500ms-r84.png",
+      "targetMs": 1500,
+      "measuredMs": 1509,
+      "pondBoot": "active",
+      "bootActive": true,
+      "bootVisual": 0.843,
+      "bootTarget": 1,
+      "bootMode": "full",
+      "seasonId": "summer"
+    },
+    {
+      "file": "boot-05-t2200ms-r84.png",
+      "targetMs": 2200,
+      "measuredMs": 2211,
+      "pondBoot": "done",
+      "bootActive": false,
+      "bootVisual": 1,
+      "bootTarget": 1,
+      "bootMode": "full",
+      "seasonId": "summer"
+    },
+    {
+      "file": "boot-06-settled-r84.png",
+      "targetMs": 2900,
+      "measuredMs": 2916,
+      "pondBoot": "done",
+      "bootActive": false,
+      "bootVisual": 1,
+      "bootTarget": 1,
+      "bootMode": "full",
+      "seasonId": "summer"
+    }
+  ],
+  "repeatVisit": {
+    "repeatMode": "quick",
+    "repeatDoneMs": 1453,
+    "under1000ms": false
+  },
+  "winterBootCheck": {
+    "seasonId": "winter",
+    "bootVisual": 1,
+    "bootActive": false
+  }
+}
