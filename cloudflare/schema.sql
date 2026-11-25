@@ -16909,6 +16909,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **原因**：記事カード平常時の `border: none` に対しホバー時の `border-style: solid` が上左右を `3px` 広げ、下部カードを `37px` 押し下げていました。
 - **統一修正**：`.glass-card` のホバー／押下枠を非ボックスモデルの `box-shadow: inset 0 0 0 1px ...` へ統一し、ようこそ・動画・ゲーム・ツールカードでもホバー時変位 `0px` を保証しました。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-zero-hover-shift-r97', '2026-11-25')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-quiet-icons-unclipped-r98', '2026-11-25-quiet-icons-unclipped-r98', 'site-updates', '["ui","pond","glass"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-quiet-icons-unclipped-r98-zh', 'seed-update-2026-11-25-quiet-icons-unclipped-r98', 'zh', '桌面图标安静开窗（去点击闪光）＋全站标题栏图标与光晕直线切边根治（r98）', '取消池塘桌面 6 个点阵启动图标点击时的径向闪光脉冲（点下去安静开窗，悬停呈现保持不变）；在共享层统一解除全站所有窗口标题栏 .window-titlebar > span 与子 span 的 overflow: hidden，彻底消除游戏区/关于/工具/知识库/视频/聊天室标题图标左边与标题文字光晕的直线硬切。', '# 桌面图标安静开窗（去点击闪光）＋全站标题栏图标与光晕直线切边根治（r98）
+
+本次落实两项体验与视觉边缘收口：
+
+- **桌面 6 个点阵图标点击去闪光**：移除 `engine.mjs` 与 `ui-overlay.mjs` 中点击图标触发的 `clickPulse` 径向闪光环，点击后直接安静开窗；悬停时的静态呈现保持不变，全站其他按钮特效不受影响。
+- **全站窗口标题栏图标与文字光晕直线切边根治**：全站排查发现所有窗口 `.window-titlebar > span` 及标题文字子 `span` 均继承了 `overflow: hidden`，导致图标左边缘 `drop-shadow` 与标题文字 `text-shadow` 被切成整齐直线方框；在 `css/pond-windows.css` 共享层统一解除 `.window-titlebar` 及内部 `span` / `.title-icon` 的 `overflow: hidden`，全部窗口光效边缘自然渐隐。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-quiet-icons-unclipped-r98-en', 'seed-update-2026-11-25-quiet-icons-unclipped-r98', 'en', 'Quiet Desktop Icon Launch (No Click Flash) & Unclipped Window Titlebar Icons/Glows (r98)', 'Removed the clickPulse flash halo on the 6 pond desktop launch icons so clicking opens windows quietly while keeping hover states intact; unified overflow: visible on all window titlebar wrappers and icon/text spans across every window to eliminate straight-line drop-shadow and text-shadow clipping.', '# Quiet Desktop Icon Launch (No Click Flash) & Unclipped Window Titlebar Icons/Glows (r98)
+
+Delivered two visual polish fixes:
+
+- **Quiet Desktop Icon Launch**: Removed the `clickPulse` radial bloom flash in `engine.mjs` / `ui-overlay.mjs` when clicking the 6 pond desktop icons so they launch windows quietly while preserving hover visuals and all other site buttons.
+- **Unclipped Window Titlebar Icons & Glows**: Resolved the shared `overflow: hidden` inherited by `.window-titlebar > span` and its text span across all windows, eliminating straight-line `drop-shadow` and `text-shadow` cuts around every window''s title icon and title text.', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-quiet-icons-unclipped-r98-ja', 'seed-update-2026-11-25-quiet-icons-unclipped-r98', 'ja', 'デスクトップアイコンのクリック発光撤去＆全ウィンドウタイトルバー縁切れ根治（r98）', '池デスクトップ 6 アイコンのクリック時発光パルスを撤去し静かに開窓するように改善（ホバー表示は維持）。あわせて全ウィンドウのタイトルバー親 span の overflow: hidden を共通層で解除し、アイコン左端やタイトル文字光彩の直線切れを一掃しました。', '# デスクトップアイコンのクリック発光撤去＆全ウィンドウタイトルバー縁切れ根治（r98）
+
+2 点の仕上げを実施しました：
+
+- **デスクトップ 6 アイコンのクリック発光撤去**：`engine.mjs`／`ui-overlay.mjs` の `clickPulse` 発光を削除し、クリック時に静かにウィンドウを開くようにしました。
+- **全ウィンドウタイトルバーの直線切れ解消**：全ウィンドウ共通の `.window-titlebar > span` における `overflow: hidden` を解除し、タイトルアイコンと文字光彩の直線クリップを根治しました。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-quiet-icons-unclipped-r98', '2026-11-25')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261125-zero-hover-shift-r97', '2026-11-25', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261125-quiet-icons-unclipped-r98', '2026-11-25', 'schema') on conflict(version) do nothing;

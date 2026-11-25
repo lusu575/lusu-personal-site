@@ -7045,7 +7045,12 @@ html[data-ui-shell="mobile"] .crt-glass-btn .crt-glass-wave-layer {
   opacity: 0;
 }
 
-/* Shared structural rule: never hard-clip drop-shadow / glowing icons or titles inside heading/wrapper boxes */
+/* Shared structural rule: never hard-clip drop-shadow / text-shadow / glowing icons or titles inside heading/titlebar boxes (r93 + r98) */
+html[data-pond-mode] :is(.xp-window, #welcome-modal, #video-modal, #account-popover) .window-titlebar,
+html[data-pond-mode] :is(.xp-window, #welcome-modal, #video-modal, #account-popover) .window-titlebar > span,
+html[data-pond-mode] :is(.xp-window, #welcome-modal, #video-modal, #account-popover) .window-titlebar > span > span,
+html[data-pond-mode] :is(.xp-window, #welcome-modal, #video-modal, #account-popover) .window-titlebar .title-icon,
+html[data-pond-mode] :is(.xp-window, #welcome-modal, #video-modal, #account-popover) .window-titlebar .welcome-title-icon,
 html[data-pond-mode] :is(.resource-card, .game-card, .article-card) :is(h2, h3, .card-title, .resource-main, .game-card-head) {
   overflow: visible !important;
 }

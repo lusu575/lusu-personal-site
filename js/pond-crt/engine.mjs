@@ -398,7 +398,7 @@ export class PondCRTEngine {
         return;
       }
       if (hit && hit.type === 'icon') {
-        this.uiOverlay.triggerIconClick(hit.icon.id);
+        // r98: Quiet desktop icon launch — no click flash halo; hover static highlight stays intact
         this.spawnRipple(hit.icon.x, 1.0 - hit.icon.y, 1.05);
         if (this.onNavigate) this.onNavigate(hit.icon.route, hit.icon.id);
         return;

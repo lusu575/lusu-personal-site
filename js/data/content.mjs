@@ -1,6 +1,39 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-25-quiet-icons-unclipped-r98",
+  "slug": "2026-11-25-quiet-icons-unclipped-r98",
+  "category": "site-updates",
+  "tags": [
+    "ui",
+    "pond",
+    "glass"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-25",
+  "updated_at": "2026-11-25",
+  "published_at": "2026-11-25",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "桌面图标安静开窗（去点击闪光）＋全站标题栏图标与光晕直线切边根治（r98）",
+    "en": "Quiet Desktop Icon Launch (No Click Flash) & Unclipped Window Titlebar Icons/Glows (r98)",
+    "ja": "デスクトップアイコンのクリック発光撤去＆全ウィンドウタイトルバー縁切れ根治（r98）"
+  },
+  "summary": {
+    "zh": "取消池塘桌面 6 个点阵启动图标点击时的径向闪光脉冲（点下去安静开窗，悬停呈现保持不变）；在共享层统一解除全站所有窗口标题栏 .window-titlebar > span 与子 span 的 overflow: hidden，彻底消除游戏区/关于/工具/知识库/视频/聊天室标题图标左边与标题文字光晕的直线硬切。",
+    "en": "Removed the clickPulse flash halo on the 6 pond desktop launch icons so clicking opens windows quietly while keeping hover states intact; unified overflow: visible on all window titlebar wrappers and icon/text spans across every window to eliminate straight-line drop-shadow and text-shadow clipping.",
+    "ja": "池デスクトップ 6 アイコンのクリック時発光パルスを撤去し静かに開窓するように改善（ホバー表示は維持）。あわせて全ウィンドウのタイトルバー親 span の overflow: hidden を共通層で解除し、アイコン左端やタイトル文字光彩の直線切れを一掃しました。"
+  },
+  "content_markdown": {
+    "zh": "# 桌面图标安静开窗（去点击闪光）＋全站标题栏图标与光晕直线切边根治（r98）\n\n本次落实两项体验与视觉边缘收口：\n\n- **桌面 6 个点阵图标点击去闪光**：移除 `engine.mjs` 与 `ui-overlay.mjs` 中点击图标触发的 `clickPulse` 径向闪光环，点击后直接安静开窗；悬停时的静态呈现保持不变，全站其他按钮特效不受影响。\n- **全站窗口标题栏图标与文字光晕直线切边根治**：全站排查发现所有窗口 `.window-titlebar > span` 及标题文字子 `span` 均继承了 `overflow: hidden`，导致图标左边缘 `drop-shadow` 与标题文字 `text-shadow` 被切成整齐直线方框；在 `css/pond-windows.css` 共享层统一解除 `.window-titlebar` 及内部 `span` / `.title-icon` 的 `overflow: hidden`，全部窗口光效边缘自然渐隐。",
+    "en": "# Quiet Desktop Icon Launch (No Click Flash) & Unclipped Window Titlebar Icons/Glows (r98)\n\nDelivered two visual polish fixes:\n\n- **Quiet Desktop Icon Launch**: Removed the `clickPulse` radial bloom flash in `engine.mjs` / `ui-overlay.mjs` when clicking the 6 pond desktop icons so they launch windows quietly while preserving hover visuals and all other site buttons.\n- **Unclipped Window Titlebar Icons & Glows**: Resolved the shared `overflow: hidden` inherited by `.window-titlebar > span` and its text span across all windows, eliminating straight-line `drop-shadow` and `text-shadow` cuts around every window's title icon and title text.",
+    "ja": "# デスクトップアイコンのクリック発光撤去＆全ウィンドウタイトルバー縁切れ根治（r98）\n\n2 点の仕上げを実施しました：\n\n- **デスクトップ 6 アイコンのクリック発光撤去**：`engine.mjs`／`ui-overlay.mjs` の `clickPulse` 発光を削除し、クリック時に静かにウィンドウを開くようにしました。\n- **全ウィンドウタイトルバーの直線切れ解消**：全ウィンドウ共通の `.window-titlebar > span` における `overflow: hidden` を解除し、タイトルアイコンと文字光彩の直線クリップを根治しました。"
+  }
+},
+{
   "article_id": "seed-update-2026-11-25-zero-hover-shift-r97",
   "slug": "2026-11-25-zero-hover-shift-r97",
   "category": "site-updates",

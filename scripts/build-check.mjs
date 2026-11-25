@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-25-zero-hover-shift-r97";
-const finalUpdateSlug = "2026-11-25-zero-hover-shift-r97";
+const finalUpdateId = "seed-update-2026-11-25-quiet-icons-unclipped-r98";
+const finalUpdateSlug = "2026-11-25-quiet-icons-unclipped-r98";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Eliminate Card Hover Layout Shift: Non-Box-Model Inset Stroke Standard (r97)";
+const finalTitleEn = "Quiet Desktop Icon Launch (No Click Flash) & Unclipped Window Titlebar Icons/Glows (r98)";
 const finalPublishedAt = "2026-11-25";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-25-zero-hover-shift-r97",
   "seed-update-2026-11-25-continuous-glass-curve-r96",
   "seed-update-2026-11-25-mengto-site-rollout-r95",
   "seed-update-2026-11-25-cold-open-pipeline-r94",

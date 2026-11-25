@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-25-quiet-icons-unclipped-r98",
+      "slug": "2026-11-25-quiet-icons-unclipped-r98",
+      "category": "site-updates",
+      "tags": [
+        "ui",
+        "pond",
+        "glass"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": "2026-11-25",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "桌面图标安静开窗（去点击闪光）＋全站标题栏图标与光晕直线切边根治（r98）",
+        "en": "Quiet Desktop Icon Launch (No Click Flash) & Unclipped Window Titlebar Icons/Glows (r98)",
+        "ja": "デスクトップアイコンのクリック発光撤去＆全ウィンドウタイトルバー縁切れ根治（r98）"
+      },
+      "summary": {
+        "zh": "取消池塘桌面 6 个点阵启动图标点击时的径向闪光脉冲（点下去安静开窗，悬停呈现保持不变）；在共享层统一解除全站所有窗口标题栏 .window-titlebar > span 与子 span 的 overflow: hidden，彻底消除游戏区/关于/工具/知识库/视频/聊天室标题图标左边与标题文字光晕的直线硬切。",
+        "en": "Removed the clickPulse flash halo on the 6 pond desktop launch icons so clicking opens windows quietly while keeping hover states intact; unified overflow: visible on all window titlebar wrappers and icon/text spans across every window to eliminate straight-line drop-shadow and text-shadow clipping.",
+        "ja": "池デスクトップ 6 アイコンのクリック時発光パルスを撤去し静かに開窓するように改善（ホバー表示は維持）。あわせて全ウィンドウのタイトルバー親 span の overflow: hidden を共通層で解除し、アイコン左端やタイトル文字光彩の直線切れを一掃しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-25-zero-hover-shift-r97",
       "slug": "2026-11-25-zero-hover-shift-r97",
       "category": "site-updates",
@@ -111,34 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "按全量冷开审计结果从管线层根治冷开与热开不一致：开机 60ms 内并行预加载全部 7 个动态路由/数据 ES 模块并主动解码关于/聊天室头像、社交图标与工具 SVG；开窗前引入 Ready-Gate 等待内容与图片落定再发出第 0 帧飞窗（热开 0ms 零延迟）；统一消除全站冷开期一切多余加载框与骨架屏（含关于窗「正在检查社交链接…」行），冷开全程零位移、第 0 帧即终态。",
         "en": "Fixed cold-open vs warm-open inconsistencies at the pipeline level: silently pre-warms all 7 dynamic route/data ES modules and eagerly decodes About/Chatroom avatars, social icons, and Tools SVGs during the 1.4s boot warm-up; gates cold window morphs until content and images settle (0ms overhead on warm open); and eliminates all transient loading boxes/skeletons (including About's 'Checking social links...' row) so Frame 0 is the final settled state.",
         "ja": "冷起動監査の結果に基づきパイプライン層で根治：起動 60ms 以内に全 7 動的ルート／データ ES モジュールとアバター・SNS・ツール SVG を並列プリウォーム＆先行デコードし、開窓前に Ready-Gate でコンテンツと画像確定を待ってから第 0 フレームを表示（温起動は 0ms）。About の「ソーシャルリンクを確認中…」行を含む不要なローディング枠とスケルトンを全サイトで一掃し、初回からズレゼロの終端表示を実現しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-25-unclipped-halo-layer-r93",
-      "slug": "2026-11-25-unclipped-halo-layer-r93",
-      "category": "site-updates",
-      "tags": [
-        "ui",
-        "glass",
-        "pond"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-25",
-      "updated_at": "2026-11-25",
-      "published_at": "2026-11-25",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "液态玻璃外发光结构性根治：恢复完整光晕＋顶层无裁切光晕层（r93）",
-        "en": "Structural Unclipped Glass Halo Layer: Full-Strength Outer Glow Restored (r93)",
-        "ja": "液態ガラス外光の構造的根治：フル強度光彩復元＋最上位非クリップ層（r93）"
-      },
-      "summary": {
-        "zh": "撤回 r92 对全站共享外发光的收紧处理，完整恢复收紧前的原始光晕范围与强度（悬停 14px / 0.32、按住 20px / 0.56、释放波沿边 22px / 0.76）；改由挂载在 document.body 的顶层无裁切代理层 #crt-glass-halo-layer 按按钮实时位置与圆角对齐绘制外光晕，彻底摆脱卡片与滚动容器 overflow:hidden 的直线硬裁切，欢迎窗 MengTo 试点保持不变。",
-        "en": "Reverted r92's tightened outer glow radii and restored full original design values (14px hover, 20px hold, 22px rim-catch) rendered via a top-level unclipped #crt-glass-halo-layer mounted on document.body aligned pixel-for-pixel to active button bounds, eliminating card and scroll-container straight-line clipping with zero idle overhead while leaving the Welcome MengTo pilot untouched.",
-        "ja": "r92 の外光縮小を撤回し、本来の光彩強度（ホバー 14px／押下 20px／縁反射 22px）を完全復元。document.body 直下の最上位非クリップ層 #crt-glass-halo-layer でアクティブボタン位置に完全同期描画する構造改修により、カードやスクロール領域の overflow:hidden による直線切れを根治しました（ようこそ画面パイロットは変更なし）。"
       }
     }
   ]

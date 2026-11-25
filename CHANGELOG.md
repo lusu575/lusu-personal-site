@@ -2,6 +2,8 @@
 
 ## 2026-11-25
 
+- `r98` 桌面 6 图标取消点击闪光＋全站窗口标题栏图标与文字光晕直线切边共享层根治：① 移除 `engine.mjs` 与 `ui-overlay.mjs` 中点击桌面 6 个点阵图标触发的 `clickPulse` 径向闪光环，点击后安静开窗、保留悬停静态呈现；② 全站排查锁定所有窗口（游戏/知识库/文章/视频/工具/聊天室/关于/欢迎/视频弹窗）标题栏 `.window-titlebar > span` 与子 `span` 继承 `overflow: hidden` 导致标题文字 `text-shadow` 被切成矩形方框、标题图标 `drop-shadow` 左边被一刀切直的问题，在共享层统一改为 `overflow: visible !important`，边缘全部自然渐隐（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-quiet-icons-unclipped-r98` / `2026-11-25-quiet-icons-unclipped-r98`；视觉层缓存 `20261125-quiet-icons-unclipped-r98`。
+
 - `r97` 消除全站卡片悬停描边引起的排版位移：查明知识库 `.article-card` 常态 `border: none` 在悬停触发 `.crt-glass-btn.is-glass-hovered { border-style: solid }` 后三边宽度由 `0px` 骤增至 `3px`（`medium`），导致卡片变窄换行增高 `19px`、下方卡片整体被往下挤 `37px`；统一改为非盒模型 `box-shadow: inset 0 0 0 1px ...` 绘制 `.glass-card` 悬停/按住/沿边描边，并同步锁定欢迎窗 `.recent-update-link` 与视频/游戏/工具卡片的常态边框宽度，实现全站列表卡片悬停位移严格 `0px`（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-zero-hover-shift-r97` / `2026-11-25-zero-hover-shift-r97`；视觉层缓存 `20261125-zero-hover-shift-r97`。
 
 - `r96` 根治点击按钮「闪 3 下」与亮度跳变问题（单次触发锁定＋全过程连续液态亮度曲线）：① 查明单次点击闪 3–4 下的精确代码根因：`crt-glass-button.mjs` 在 `750ms` 释放波期间每跑完一轮 `160ms` `rimCatch` 即把 `rimCatchStartMs` 清零，导致下一帧 `travel >= nearestRim` 仍成立而连续重触发 3–4 次频闪；新增单波一次性锁 `rimCatchFired` 彻底压回 1 次；② 消除一切分档开关式亮度跳变：将 `#crt-glass-halo-layer` 改为由弹簧 `spring.pos` 与 `320ms` 升余弦 `rimEnv` 连续驱动 `--cg-halo-blur` / `--cg-halo-alpha`；松开释放波改为 `smoothstep` 零起点柔和展开，边框与内高光全程连续过渡、零频闪跳变（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-continuous-glass-curve-r96` / `2026-11-25-continuous-glass-curve-r96`；视觉层缓存 `20261125-continuous-glass-r96`。
