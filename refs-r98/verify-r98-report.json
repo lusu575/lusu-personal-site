@@ -1,0 +1,67 @@
+{
+  "cssVer": "/css/pond-windows.css?v=20261125-quiet-icons-unclipped-r98",
+  "desktopIconClickPulse": {
+    "knowledge": 0,
+    "videos": 0,
+    "resources": 0,
+    "games": 0,
+    "chatroom": 0,
+    "about": 0
+  },
+  "windows": {
+    "games": {
+      "winRect": {
+        "l": 224,
+        "t": 120
+      },
+      "tbOverflow": "visible",
+      "wrapOverflow": "visible",
+      "textSpanOverflow": "visible"
+    },
+    "knowledge": {
+      "winRect": {
+        "l": 513,
+        "t": 186
+      },
+      "tbOverflow": "visible",
+      "wrapOverflow": "visible",
+      "textSpanOverflow": "visible"
+    },
+    "videos": {
+      "winRect": {
+        "l": 821,
+        "t": 173
+      },
+      "tbOverflow": "visible",
+      "wrapOverflow": "visible",
+      "textSpanOverflow": "visible"
+    },
+    "resources": {
+      "winRect": {
+        "l": 224,
+        "t": 203
+      },
+      "tbOverflow": "visible",
+      "wrapOverflow": "visible",
+      "textSpanOverflow": "visible"
+    },
+    "chatroom": {
+      "winRect": {
+        "l": 200,
+        "t": 129
+      },
+      "tbOverflow": "visible",
+      "wrapOverflow": "visible",
+      "textSpanOverflow": "visible"
+    },
+    "about": {
+      "winRect": {
+        "l": 360,
+        "t": 233
+      },
+      "tbOverflow": "visible",
+      "wrapOverflow": "visible",
+      "textSpanOverflow": "visible"
+    }
+  }
+}
