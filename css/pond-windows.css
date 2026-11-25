@@ -3784,7 +3784,9 @@ html[data-pond-mode="knowledge"] #knowledge-list {
 }
 
 html[data-pond-mode="knowledge"] #knowledge-list .article-card {
-  height: 100% !important;
+  height: auto !important;
+  min-height: max-content !important;
+  flex: 0 0 auto !important;
   grid-template-rows: auto 1fr auto !important;
   align-items: start !important;
   box-sizing: border-box !important;
