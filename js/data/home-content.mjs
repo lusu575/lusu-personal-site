@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-25-zero-hover-shift-r97",
+      "slug": "2026-11-25-zero-hover-shift-r97",
+      "category": "site-updates",
+      "tags": [
+        "ui",
+        "glass",
+        "pond"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": "2026-11-25",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "消除全站卡片悬停描边挤动排版：非盒模型内描边与零位移统一标准（r97）",
+        "en": "Eliminate Card Hover Layout Shift: Non-Box-Model Inset Stroke Standard (r97)",
+        "ja": "カードホバー枠によるレイアウトズレ根治：非ボックスモデル内枠へ統一（r97）"
+      },
+      "summary": {
+        "zh": "定位并修复知识库文章卡片悬停时三边边框由 0px 骤增至 3px 引起换行与下方卡片下移 37px 的问题：全站统一改用不占盒模型的 box-shadow: inset 0 0 0 1px 绘制悬停/按压描边，并同步收口欢迎窗最近更新条目、视频/游戏/工具卡片边框宽度，实现全站卡片悬停位移严格 0px。",
+        "en": "Fixed the Knowledge article-card hover layout shift where toggling border-style: solid turned 0px borders into 3px (medium) and pushed lower cards down by 37px: switched .glass-card hover/press outlines to non-box-model inset box-shadow and locked constant border widths across Welcome, Video, Game, and Tool cards for 0px hover shift site-wide.",
+        "ja": "知識庫記事カードホバー時に枠幅が 0px から 3px へ増えて下部カードが 37px 押し下げられる不具合を根治。ボックスモデルを消費しない inset box-shadow 描画へ統一し、ようこそ更新一覧・動画・ゲーム・ツールカードもホバー時ズレ 0px に揃えました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-25-continuous-glass-curve-r96",
       "slug": "2026-11-25-continuous-glass-curve-r96",
       "category": "site-updates",
@@ -111,34 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "撤回 r92 对全站共享外发光的收紧处理，完整恢复收紧前的原始光晕范围与强度（悬停 14px / 0.32、按住 20px / 0.56、释放波沿边 22px / 0.76）；改由挂载在 document.body 的顶层无裁切代理层 #crt-glass-halo-layer 按按钮实时位置与圆角对齐绘制外光晕，彻底摆脱卡片与滚动容器 overflow:hidden 的直线硬裁切，欢迎窗 MengTo 试点保持不变。",
         "en": "Reverted r92's tightened outer glow radii and restored full original design values (14px hover, 20px hold, 22px rim-catch) rendered via a top-level unclipped #crt-glass-halo-layer mounted on document.body aligned pixel-for-pixel to active button bounds, eliminating card and scroll-container straight-line clipping with zero idle overhead while leaving the Welcome MengTo pilot untouched.",
         "ja": "r92 の外光縮小を撤回し、本来の光彩強度（ホバー 14px／押下 20px／縁反射 22px）を完全復元。document.body 直下の最上位非クリップ層 #crt-glass-halo-layer でアクティブボタン位置に完全同期描画する構造改修により、カードやスクロール領域の overflow:hidden による直線切れを根治しました（ようこそ画面パイロットは変更なし）。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-25-mengto-edge-cold-r92",
-      "slug": "2026-11-25-mengto-edge-cold-r92",
-      "category": "site-updates",
-      "tags": [
-        "ui",
-        "glass",
-        "pond"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-25",
-      "updated_at": "2026-11-25",
-      "published_at": "2026-11-25",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "欢迎窗 MengTo 液态玻璃重做＋全站光效边缘切层消除＋冷开跳位根治（r92）",
-        "en": "MengTo Liquid-Glass Welcome Pilot Rework, Site-Wide Edge Cut Fix & Cold-Open Consistency (r92)",
-        "ja": "ようこそ画面 MengTo 液態ガラス刷新・全サイト縁切れ解消・冷起動跳ね根治（r92）"
-      },
-      "summary": {
-        "zh": "严格按 MengTo 原规格重做欢迎窗 4 颗快捷按钮试点（透明中心玻璃面、外唇掠射边缘反射、按住平滑高斯凹陷、750ms 半透明波峰与尾迹释放波，彻底移除造成直线切框的 SVG 滤镜与横切渐变）；收紧全站共享玻璃外阴影消除父容器裁剪直线切边；冷开期彻底隐藏 .route-module-status.is-loading 并锁定游戏/工具/关于窗口桌面 min-height，消除全新配置禁用缓存下的冷开跳位。",
-        "en": "Rebuilt the 4 Welcome quick-link pilot buttons strictly to MengTo's liquid-glass spec (clear flat center, grazing perimeter rim reflection, smooth Gaussian hold dimple, 750ms translucent crest + wake release wave; removed clipped SVG displacement & horizontal seam), tightened shared outer glass glow radii site-wide to eliminate straight-line parent clipping, and locked cold-open window heights while hiding .route-module-status.is-loading in Pond mode.",
-        "ja": "ようこそ画面 4 ボタンを MengTo 原仕様準拠（透明な中心面・外縁かすめ反射・押下ガウス凹み・750ms 波峰＋尾引きリリース波）へ刷新し直線切れの原因だった SVG フィルタと横段差を撤去。全サイト共通のガラス外光半径を最適化して親要素クリッピングによる直線切れを解消し、冷起動時のモジュール読込枠非表示とゲーム／ツール／About 最小高さ固定で初回跳ねを根治しました。"
       }
     }
   ]

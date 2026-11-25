@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-zero-hover-shift-r97', '2026-11-25-zero-hover-shift-r97', 'site-updates', '["ui","glass","pond"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-25-zero-hover-shift-r97", {
+  "zh": {
+    "title": "消除全站卡片悬停描边挤动排版：非盒模型内描边与零位移统一标准（r97）",
+    "summary": "定位并修复知识库文章卡片悬停时三边边框由 0px 骤增至 3px 引起换行与下方卡片下移 37px 的问题：全站统一改用不占盒模型的 box-shadow: inset 0 0 0 1px 绘制悬停/按压描边，并同步收口欢迎窗最近更新条目、视频/游戏/工具卡片边框宽度，实现全站卡片悬停位移严格 0px。",
+    "content_markdown": "# 消除全站卡片悬停描边挤动排版：非盒模型内描边与零位移统一标准（r97）\n\n本次修复知识库文章卡片并自查全站列表卡片的悬停布局位移：\n\n- **精确致因**：知识库 `.article-card` 常态为 `border: none; border-bottom: 1px dotted`，悬停挂载 `.crt-glass-btn.is-glass-hovered { border-style: solid }` 后，上/左/右三边宽度由 `0px` 骤变为浏览器默认 `medium (3px)`，导致正文折行增高约 `19px`、下方卡片整体被向下挤动 `37px`。\n- **全站零位移统一修复**：`.article-card.glass-card` 锁定盒模型三边 `0px`、底部 `1px dotted` 恒定不变，悬停/按住/释放描边统一改由不占盒模型的 `box-shadow: inset 0 0 0 1px ...` 绘制；同步锁定欢迎窗 `.recent-update-link`、视频/游戏/工具卡片的常态边框宽度，确保全站所有卡片悬停时下方元素位移严格为 `0px`。"
+  },
+  "en": {
+    "title": "Eliminate Card Hover Layout Shift: Non-Box-Model Inset Stroke Standard (r97)",
+    "summary": "Fixed the Knowledge article-card hover layout shift where toggling border-style: solid turned 0px borders into 3px (medium) and pushed lower cards down by 37px: switched .glass-card hover/press outlines to non-box-model inset box-shadow and locked constant border widths across Welcome, Video, Game, and Tool cards for 0px hover shift site-wide.",
+    "content_markdown": "# Eliminate Card Hover Layout Shift: Non-Box-Model Inset Stroke Standard (r97)\n\nEliminated hover-triggered layout shift on Knowledge article cards and standardized zero-shift card borders site-wide:\n\n- **Root Cause**: `.article-card` used `border: none` at rest; hovering applied `.is-glass-hovered { border-style: solid }`, inflating top/left/right borders from `0px` to `3px (medium)`, wrapping text, and shifting cards below down by `37px`.\n- **Site-Wide Zero-Shift Fix**: Locked `.article-card.glass-card` box-model borders constant and rendered its hover/hold/rim outline with non-box-model `box-shadow: inset 0 0 0 1px ...`; verified constant rest/hover border widths on Welcome recent updates, Video, Game, and Tool cards (`0px` shift across all lists)."
+  },
+  "ja": {
+    "title": "カードホバー枠によるレイアウトズレ根治：非ボックスモデル内枠へ統一（r97）",
+    "summary": "知識庫記事カードホバー時に枠幅が 0px から 3px へ増えて下部カードが 37px 押し下げられる不具合を根治。ボックスモデルを消費しない inset box-shadow 描画へ統一し、ようこそ更新一覧・動画・ゲーム・ツールカードもホバー時ズレ 0px に揃えました。",
+    "content_markdown": "# カードホバー枠によるレイアウトズレ根治：非ボックスモデル内枠へ統一（r97）\n\n知識庫記事カードおよび全サイト一覧カードのホバー時レイアウトズレを根治しました：\n\n- **原因**：記事カード平常時の `border: none` に対しホバー時の `border-style: solid` が上左右を `3px` 広げ、下部カードを `37px` 押し下げていました。\n- **統一修正**：`.glass-card` のホバー／押下枠を非ボックスモデルの `box-shadow: inset 0 0 0 1px ...` へ統一し、ようこそ・動画・ゲーム・ツールカードでもホバー時変位 `0px` を保証しました。"
+  }
+}, "2026-11-25"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-continuous-glass-curve-r96', '2026-11-25-continuous-glass-curve-r96', 'site-updates', '["ui","glass","pond"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-25-continuous-glass-curve-r96", {
   "zh": {
