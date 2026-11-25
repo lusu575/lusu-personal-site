@@ -1,0 +1,35 @@
+{
+  "cssVer": "/css/pond-windows.css?v=20261125-zero-hover-shift-r97",
+  "cards": {
+    "knowledge": {
+      "name": "knowledge",
+      "heightDeltaPx": 0,
+      "nextCardShiftPx": 0,
+      "restR2Top": 525.34,
+      "hoverR2Top": 525.34,
+      "restBorderWidth": "0px/1px/0px",
+      "hoverBorderWidth": "0px/1px/0px",
+      "hoverBoxShadow": "rgba(168, 250, 242, 0.72) 0px 0px 0px 1px inset, rgba(210, 248, 248, 0.18) 0px 1px 6px 0px inset"
+    },
+    "games": {
+      "name": "games",
+      "heightDeltaPx": 0,
+      "nextCardShiftPx": 0,
+      "restR2Top": 560.5,
+      "hoverR2Top": 560.5,
+      "restBorderWidth": "1px/1px/1px",
+      "hoverBorderWidth": "1px/1px/1px",
+      "hoverBoxShadow": "rgba(108, 238, 228, 0.34) 0px 0px 24px 0px, rgba(244, 118, 192, 0.22) 0px 0px 20px 0px"
+    },
+    "resources": {
+      "name": "resources",
+      "heightDeltaPx": 0,
+      "nextCardShiftPx": 0,
+      "restR2Top": 339.48,
+      "hoverR2Top": 339.48,
+      "restBorderWidth": "1px/1px/1px",
+      "hoverBorderWidth": "1px/1px/1px",
+      "hoverBoxShadow": "rgba(108, 238, 228, 0.28) 0px 0px 22px 0px"
+    }
+  }
+}
