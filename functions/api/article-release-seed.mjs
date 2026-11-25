@@ -2,6 +2,24 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
+    env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-glass-v1-complete-r83', '2026-11-25-glass-v1-complete-r83', 'site-updates', '["ui","glass","pond","performance"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing`),
+    ...articleTranslationsStatements(env, "seed-update-2026-11-25-glass-v1-complete-r83", {
+  "zh": {
+    "title": "液态玻璃 CRT Glass Lite V1.0 全量收口：窗口薄壳高光边与动态按钮全覆盖（r83）",
+    "summary": "完成液态玻璃方案 V1.0 剩余步骤 5 与步骤 8：为桌面池塘窗口与账号弹窗补齐零 backdrop-filter 的 1.25px 荧光薄壳高光边与聚焦微虹彩，补全知识库/视频分类按钮、账号弹窗与快传动态按钮的自动绑定与性能分层闭环。",
+    "content_markdown": "# 液态玻璃 CRT Glass Lite V1.0 全量收口：窗口薄壳高光边与动态按钮全覆盖（r83）\n\n本次更新完成《lusu575.com「液态玻璃」风格化适配方案 V1.0》剩余步骤 5 与步骤 8，全站 8 步正式闭环：\n\n- **步骤 5（窗口薄壳高光边与聚焦微虹彩）**：在桌面端池塘窗口（`.xp-window`）与 `#account-popover` 接入基于 `crt-glass-config.mjs` 权威色板的 `1.25px` 顶/底镜面肩部与克制紫蓝聚焦虹彩边；纯 `box-shadow` 零 `backdrop-filter`、零额外 DOM、零后台 RAF 开销。\n- **动态渲染按钮补齐（步骤 4/6 完整性）**：补全知识库与视频区动态生成的 `.category-button` 分类筛选按钮、账号弹窗的登录/注册/退出/关闭按钮（`.account-mode-button` / `.account-primary-action` / `.account-danger-action` / `.account-close-button`）、快传面板按钮及聊天室未读胶囊按钮，保持卡片、输入框与正文链接零误绑。\n- **步骤 7/8（性能分层与全站自检闭环）**：补齐 `low` 性能档静态平边与波纹/高光层关闭降级，并暴露 `getGlassAudit()` 自检接口用于线上逐窗核验覆盖数与零越界。"
+  },
+  "en": {
+    "title": "CRT Glass Lite V1.0 Completion: Thin-Shell Window Rims & Dynamic Button Coverage (r83)",
+    "summary": "Completed remaining V1.0 Steps 5 and 8: added zero-backdrop-filter 1.25px thin-shell CRT glass window rims with subtle focus iridescence, auto-bound dynamic category/account/transfer buttons, and finalized low-tier & audit gates.",
+    "content_markdown": "# CRT Glass Lite V1.0 Completion: Thin-Shell Window Rims & Dynamic Button Coverage (r83)\n\nThis release completes Steps 5 and 8 of the CRT Glass Lite V1.0 plan, closing all 8 steps site-wide:\n\n- **Step 5 (Thin-Shell Window Rim & Focus Iridescence)**: Applied a pure `box-shadow` 1.25px top/bottom specular shoulder and subtle purple-cyan focus iridescence using `crt-glass-config.mjs` tokens to desktop `.xp-window` surfaces and `#account-popover` with zero `backdrop-filter` and zero idle RAF overhead.\n- **Dynamic Button Coverage (Steps 4 & 6 Completeness)**: Added automatic idempotent binding for dynamically rendered `.category-button` filters in Knowledge/Videos, Account Popover mode/action/close controls, Quick Transfer buttons, and Chatroom unread capsule while keeping cards, inputs, and article prose links untouched.\n- **Steps 7 & 8 (Tier Degradation & Audit Closure)**: Finalized `low` performance-tier static degradation and exposed `getGlassAudit()` for live cross-window coverage and zero-leakage verification."
+  },
+  "ja": {
+    "title": "CRT Glass Lite V1.0 全ステップ完了：ウィンドウ薄殻リム光と動的ボタン自動適用（r83）",
+    "summary": "V1.0 残ステップ 5・8 を完了。backdrop-filter を使わない 1.25px 蛍光薄殻リムとフォーカス微虹彩をウィンドウ・アカウント枠へ追加し、知識庫／動画のカテゴリボタンやアカウント／転送の動的ボタンも完全カバーしました。",
+    "content_markdown": "# CRT Glass Lite V1.0 全ステップ完了：ウィンドウ薄殻リム光と動的ボタン自動適用（r83）\n\nCRT Glass Lite V1.0 の残ステップ 5・8 を実装し、全 8 ステップを完了しました：\n\n- **Step 5（ウィンドウ薄殻リム＆フォーカス微虹彩）**：`crt-glass-config.mjs` の定義色に準拠した 1.25px 鏡面リムと控えめな紫青フォーカス虹彩を `.xp-window` と `#account-popover` に純 `box-shadow` で実装（`backdrop-filter` ゼロ、常時 RAF ゼロ）。\n- **動的ボタンの完全自動適用（Step 4・6 補完）**：知識庫・動画の `.category-button`、アカウントポップオーバーの各操作／閉じるボタン、クイック転送ボタン、チャット未読カプセルまで自動バインドしつつ、カード・入力欄・記事本文リンクは対象外を維持しました。\n- **Step 7・8（低性能階層と監査 API）**：`low` パフォーマンス階層の静的フォールバックと、`getGlassAudit()` による全ウィンドウ監査を実装しました。"
+  }
+}, "2026-11-25"),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-glass-rollout-and-residuals-r82', '2026-11-25-glass-rollout-and-residuals-r82', 'site-updates', '["ui","glass","pond","games"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-25-glass-rollout-and-residuals-r82", {
   "zh": {

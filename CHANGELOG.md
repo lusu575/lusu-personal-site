@@ -2,6 +2,8 @@
 
 ## 2026-11-25
 
+- `r83` 液态玻璃 CRT Glass Lite V1.0 步骤 5 与步骤 8 全量收口：为桌面池塘窗口与 `#account-popover` 接入零 `backdrop-filter` 的 `1.25px` 薄壳高光边与聚焦微紫蓝虹彩；补全知识库/视频 `.category-button`、账号弹窗与快传动态按钮的自动绑定，完善 `low` 性能档静态降级与 `getGlassAudit()` 自检接口（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-glass-v1-complete-r83` / `2026-11-25-glass-v1-complete-r83`；视觉层缓存 `20261125-glass-complete-r83`。
+
 - `r82b` 欢迎窗更新图标分级微调：移除 `recentUpdateIconClass()` 头部对默认 `icon: "system"` 的早退，确保全站系统/性能/池塘/液态玻璃更新（`r82`/`r81`）显示星芒、游戏类（`r80`/`r79`）保留手柄、画板工具类（`r78`）保留扳手。
 
 - `r82` 液态玻璃 CRT Glass Lite 步骤 4/6/7 全站三档按钮铺开与两处细节收口：沿用 `r76` 签收参数按 `glass-primary` / `glass-icon` / `glass-close` 铺开至全站窗口按钮（不含卡片、输入框与正文链接）并接入三档性能分层；修正欢迎窗 `recentUpdateIconClass()` 优先级使全站系统更新准确显示星芒图标；统一猫国建筑悬浮提示框（`#tooltip` / `.button_tooltip` / `.tooltip-content` / `.tooltip-inner`）整体深青底与高对比文字（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-glass-rollout-and-residuals-r82` / `2026-11-25-glass-rollout-and-residuals-r82`；视觉层缓存 `20261125-glass-rollout-r82`。

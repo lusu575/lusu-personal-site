@@ -8,7 +8,7 @@ import {
   saveManualSeasonOverride,
   startSeasonTimeSchedule
 } from '../pond-crt/season-schedule.mjs?v=20261122-pond-live-fix-r1';
-import { attachSiteGlassButtons, attachWelcomePilotButtons, getCrtGlassButtonPerfStats } from './crt-glass-button.mjs?v=20261125-glass-rollout-r82';
+import { attachSiteGlassButtons, attachWelcomePilotButtons, getCrtGlassAudit, getCrtGlassButtonPerfStats } from './crt-glass-button.mjs?v=20261125-glass-complete-r83';
 import { PondWindowMorphController } from './crt-window-morph.mjs?v=20261124-welcome-scrollbar-r73';
 
 function isMobileShell() {
@@ -780,10 +780,27 @@ function bootPondVisualBridge() {
     }).observe(welcomeModalObs, { attributes: true, attributeFilter: ['hidden'] });
   }
 
+  let glassBindQueued = false;
+  const scheduleSiteGlassBind = () => {
+    if (glassBindQueued) return;
+    glassBindQueued = true;
+    window.requestAnimationFrame(() => {
+      glassBindQueued = false;
+      attachSiteGlassButtons();
+    });
+  };
+
+  ['knowledge', 'videos', 'resources', 'games', 'chatroom', 'account-widget'].forEach((id) => {
+    const node = document.getElementById(id);
+    if (node) {
+      new MutationObserver(scheduleSiteGlassBind).observe(node, { childList: true, subtree: true });
+    }
+  });
+
   new MutationObserver(() => {
     syncGamesCloudBanner();
     syncChatExplicitState();
-    window.requestAnimationFrame(() => attachSiteGlassButtons());
+    scheduleSiteGlassBind();
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'data-pond-mode'] });
   syncGamesCloudBanner();
   attachSiteGlassButtons();
@@ -803,6 +820,7 @@ function bootPondVisualBridge() {
     openWelcomeFromPond,
     getEngine: () => engine,
     getGlassButtonPerfStats: getCrtGlassButtonPerfStats,
+    getGlassAudit: getCrtGlassAudit,
     getWindowMorphState: () => windowMorph.getState(),
     getWindowMorphPerfStats: () => windowMorph.getPerfStats()
   };

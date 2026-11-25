@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-25-glass-v1-complete-r83",
+      "slug": "2026-11-25-glass-v1-complete-r83",
+      "category": "site-updates",
+      "tags": [
+        "ui",
+        "glass",
+        "pond",
+        "performance"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": "2026-11-25",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "液态玻璃 CRT Glass Lite V1.0 全量收口：窗口薄壳高光边与动态按钮全覆盖（r83）",
+        "en": "CRT Glass Lite V1.0 Completion: Thin-Shell Window Rims & Dynamic Button Coverage (r83)",
+        "ja": "CRT Glass Lite V1.0 全ステップ完了：ウィンドウ薄殻リム光と動的ボタン自動適用（r83）"
+      },
+      "summary": {
+        "zh": "完成液态玻璃方案 V1.0 剩余步骤 5 与步骤 8：为桌面池塘窗口与账号弹窗补齐零 backdrop-filter 的 1.25px 荧光薄壳高光边与聚焦微虹彩，补全知识库/视频分类按钮、账号弹窗与快传动态按钮的自动绑定与性能分层闭环。",
+        "en": "Completed remaining V1.0 Steps 5 and 8: added zero-backdrop-filter 1.25px thin-shell CRT glass window rims with subtle focus iridescence, auto-bound dynamic category/account/transfer buttons, and finalized low-tier & audit gates.",
+        "ja": "V1.0 残ステップ 5・8 を完了。backdrop-filter を使わない 1.25px 蛍光薄殻リムとフォーカス微虹彩をウィンドウ・アカウント枠へ追加し、知識庫／動画のカテゴリボタンやアカウント／転送の動的ボタンも完全カバーしました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-25-glass-rollout-and-residuals-r82",
       "slug": "2026-11-25-glass-rollout-and-residuals-r82",
       "category": "site-updates",
@@ -113,33 +142,6 @@ export const homeContent = Object.freeze({
         "zh": "将人生重开两侧宽带改为与画布底色柔和衔接的纯暗底，去掉画布 10px 圆角二次裁切，并通过自有桥接脚本隐藏左上角 GitHub 白猫角标。",
         "en": "Replaces striped sidebands with a seamless matte dark backdrop, removes 10px canvas corner clipping, and hides the top-left GitHub corner badge via our bridge script.",
         "ja": "左右の縞背景をキャンバスになじむ暗色単色へ変更し、10px 角丸による切り欠きを撤去、独自ブリッジ経由で左上の GitHub 角バッジを非表示にしました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-whiteboard-1-0-15-search-placeholder-r78",
-      "slug": "whiteboard-1-0-15-search-placeholder-r78",
-      "category": "site-updates",
-      "tags": [
-        "在线画板",
-        "本地化"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T20:26:00+08:00",
-      "updated_at": "2026-11-24T20:26:00+08:00",
-      "published_at": "2026-11-24T20:26:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "在线画板 1.0.15：补齐画布搜索输入框中文占位提示（r78）",
-        "en": "Online Whiteboard 1.0.15: Localized Canvas Search Placeholder (r78)",
-        "ja": "オンラインホワイトボード 1.0.15：検索入力欄のプレースホルダーを多言語化（r78）"
-      },
-      "summary": {
-        "zh": "在线画板独立版本升至 1.0.15，将右侧画布搜索栏输入框占位文案由英文 Find text on canvas... 三语本地化为「在画布中查找文字…」。",
-        "en": "Bumped Online Whiteboard to 1.0.15 and localized the canvas search sidebar input placeholder across zh/en/ja.",
-        "ja": "ホワイトボードを 1.0.15 へ更新し、検索パネル入力欄の英語プレースホルダーを日本語・中国語・英語へ対応しました。"
       }
     }
   ]

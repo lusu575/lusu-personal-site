@@ -418,23 +418,31 @@ export function attachCrtGlassButton(el, levelName = 'glass-primary') {
   return new CrtGlassButtonController(el, levelName);
 }
 
-// V1.0 Authoritative 3-Tier Button Selectors (Steps 4 & 6; excludes cards, inputs, prose links & iframes)
+// V1.0 Authoritative 3-Tier Button Selectors (Steps 4, 6 & 8; excludes cards, inputs, prose links & iframes)
 const SITE_GLASS_SELECTORS = Object.freeze({
   'glass-primary': [
     '#welcome-modal .quick-link',
     '#welcome-modal .welcome-footer .xp-button',
     '#account-popover .xp-button',
     '#account-popover button[type="submit"]',
+    '#account-popover .account-primary-action',
+    '#account-popover .account-danger-action',
+    '#account-popover .account-retry-action',
+    '#account-popover .account-mode-button',
     '#chatroom #chat-send',
     '#chatroom .chat-send-button',
+    '#chatroom #chat-scroll-bottom',
     '#chatroom .xp-button',
     '#knowledge .xp-button',
+    '#knowledge .category-button',
     '#knowledge .filter-button',
     '#article-detail .xp-button',
     '#videos .xp-button',
+    '#videos .category-button',
     '#videos .filter-button',
     '#video-modal .xp-button',
     '#resources .xp-button',
+    '#transfer-app .xp-button',
     '#games .xp-button',
     '#about .xp-button'
   ].join(', '),
@@ -444,8 +452,30 @@ const SITE_GLASS_SELECTORS = Object.freeze({
     '#chatroom .chat-tool-button',
     '#chatroom [data-chat-help]'
   ].join(', '),
-  'glass-close': '.xp-window .close-button'
+  'glass-close': [
+    '.xp-window .close-button',
+    '#account-popover .account-close-button'
+  ].join(', ')
 });
+
+export function getCrtGlassAudit() {
+  const all = [...document.querySelectorAll('[data-crt-glass-bound]')];
+  const counts = { 'glass-primary': 0, 'glass-icon': 0, 'glass-close': 0 };
+  for (const el of all) {
+    const k = el.dataset.crtGlassBound;
+    counts[k] = (counts[k] || 0) + 1;
+  }
+  const excludedLeaks = document.querySelectorAll(
+    '.article-card[data-crt-glass-bound], .video-card[data-crt-glass-bound], .game-card[data-crt-glass-bound], .resource-card[data-crt-glass-bound], input[data-crt-glass-bound], textarea[data-crt-glass-bound], #article-detail-body a[data-crt-glass-bound]'
+  ).length;
+  return {
+    totalBound: all.length,
+    counts,
+    excludedLeaks,
+    tier: document.documentElement.dataset.performanceTier || 'high',
+    reducedMotion: prefersReducedMotion()
+  };
+}
 
 export function attachWelcomePilotButtons() {
   syncCrtGlassCssVars();
