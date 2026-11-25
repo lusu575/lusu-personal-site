@@ -2,6 +2,8 @@
 
 ## 2026-11-25
 
+- `r84` 启动动画重做（A 方案「点亮池塘」）：整段删除 `r57` 旧版 `#pond-boot-beam` 独立开机壳与 `_drawBootTitle` 进度条，在池塘 WebGL2 本体管线内实现深青微光首帧＋0.3 秒亮线点火、点阵荧光涟漪向外扩散依次点亮水面→当季四季景物→光点汇聚锦鲤→气泡浮起桌面图标→顶部时钟，末尾扫描光束直接无缝交接为活池塘；严格绑定真实预加载、支持点击/按键跳过与二次访问 1 秒内压缩（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-pond-lightup-boot-r84` / `2026-11-25-pond-lightup-boot-r84`；视觉层缓存 `20261125-pond-lightup-r84`。
+
 - `r83` 液态玻璃 CRT Glass Lite V1.0 步骤 5 与步骤 8 全量收口：为桌面池塘窗口与 `#account-popover` 接入零 `backdrop-filter` 的 `1.25px` 薄壳高光边与聚焦微紫蓝虹彩；补全知识库/视频 `.category-button`、账号弹窗与快传动态按钮的自动绑定，完善 `low` 性能档静态降级与 `getGlassAudit()` 自检接口（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-glass-v1-complete-r83` / `2026-11-25-glass-v1-complete-r83`；视觉层缓存 `20261125-glass-complete-r83`。
 
 - `r82b` 欢迎窗更新图标分级微调：移除 `recentUpdateIconClass()` 头部对默认 `icon: "system"` 的早退，确保全站系统/性能/池塘/液态玻璃更新（`r82`/`r81`）显示星芒、游戏类（`r80`/`r79`）保留手柄、画板工具类（`r78`）保留扳手。

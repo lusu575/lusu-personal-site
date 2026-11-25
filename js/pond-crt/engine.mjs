@@ -13,7 +13,7 @@
 
 import { FloraLayer } from './flora.mjs?v=20261124-autumn-lotus-r69';
 import { createFBO, createFullscreenVAO, createProgram } from './gl-utils.mjs';
-import { KoiGLRenderer } from './koi-gl.mjs?v=20261124-season-wavefront-r67';
+import { KoiGLRenderer } from './koi-gl.mjs?v=20261125-pond-lightup-r84';
 import { ParticlesGLRenderer } from './particles-gl.mjs?v=20261124-wind-water-r75';
 import { lerpNum, lerpVec3, SEASON_ORDER, SEASONS } from './seasons.mjs';
 import {
@@ -23,9 +23,9 @@ import {
   FULLSCREEN_VERT,
   SURFACE_OVERLAY_FRAG,
   WATER_BG_FRAG
-} from './shaders.mjs?v=20261124-wind-water-r75';
-import { PondUIOverlay } from './ui-overlay.mjs?v=20261123-pond-boot-r57';
-import { detectBootMode, runPondBootPreload } from './boot-preloader.mjs?v=20261123-pond-boot-r57';
+} from './shaders.mjs?v=20261125-pond-lightup-r84';
+import { PondUIOverlay } from './ui-overlay.mjs?v=20261125-pond-lightup-r84';
+import { detectBootMode, runPondBootPreload } from './boot-preloader.mjs?v=20261125-pond-lightup-r84';
 
 const MAX_RIPPLES = 8;
 
@@ -76,12 +76,13 @@ export class PondCRTEngine {
     this.onBootComplete = options.onBootComplete || null;
     this.bootMode = options.skipBoot ? 'instant' : detectBootMode();
     this.bootActive = this.bootMode !== 'instant';
-    this.bootVisual = this.bootActive ? 0.18 : 1.0;
-    this.bootTarget = this.bootActive ? (this.bootMode === 'quick' ? 1.0 : 0.26) : 1.0;
+    this.bootVisual = this.bootActive ? 0.04 : 1.0;
+    this.bootTarget = this.bootActive ? (this.bootMode === 'quick' ? 1.0 : 0.14) : 1.0;
     this._pendingFloraQueue = [];
     this._floraBakeScheduled = false;
+    this._bootRippleSpawned = false;
     this.bootStartMs = performance.now();
-    this.bootHardTimeoutMs = this.bootMode === 'quick' ? 340 : 2600;
+    this.bootHardTimeoutMs = this.bootMode === 'quick' ? 680 : 2600;
     this._bootSkipped = false;
     this._bootFirstFrameFired = false;
     this.startTime = performance.now();
@@ -632,22 +633,35 @@ export class PondCRTEngine {
       if (this.onFpsUpdate) this.onFpsUpdate(this.currentFps);
     }
 
-    // Step pure-code CRT Boot Sequence (strictly driven by real preload progress; quick flash on repeat visits)
-    let bootFloraAlpha = 1.0;
+    // Step Plan A "Light Up the Pond" Boot Sequence (r84):
+    // Strictly bound to real preload progress (bootTarget); ~2.3s on first visit, <0.7s on repeat visit, instant skip on click/key.
+    let bootFloraReveal = 1.0;
+    let bootKoiReveal = 1.0;
     if (this.bootActive) {
       const elapsedBootMs = nowMs - this.bootStartMs;
       if (elapsedBootMs >= this.bootHardTimeoutMs) {
         this.bootTarget = 1.0;
       }
-      const speed = this._bootSkipped ? 7.5 : (this.bootMode === 'quick' ? 4.4 : 2.8);
       const diff = this.bootTarget - this.bootVisual;
-      this.bootVisual = diff <= 0.002 ? this.bootTarget : this.bootVisual + Math.min(diff, Math.max(dt * 0.45, diff * Math.min(1, dt * speed)));
+      if (diff <= 0.002) {
+        this.bootVisual = this.bootTarget;
+      } else {
+        const maxRate = this._bootSkipped ? 9.5 : (this.bootMode === 'quick' ? 1.65 : 0.45);
+        const step = Math.min(diff, Math.max(dt * 0.14, dt * maxRate));
+        this.bootVisual += step;
+      }
+      if (!this._bootRippleSpawned && this.bootVisual >= 0.12) {
+        this._bootRippleSpawned = true;
+        this.spawnRipple(0.50, 0.50, 0.85);
+      }
       this.uiOverlay.setBootState(true, this.bootVisual);
-      bootFloraAlpha = Math.max(0, Math.min(1, (this.bootVisual - 0.36) / 0.44));
+      bootFloraReveal = Math.max(0, Math.min(1, (this.bootVisual - 0.26) / 0.38));
+      bootKoiReveal = Math.max(0, Math.min(1, (this.bootVisual - 0.38) / 0.34));
       if (this.bootVisual >= 0.996 && this.bootTarget >= 0.999) {
         this.bootActive = false;
         this.bootVisual = 1.0;
-        bootFloraAlpha = 1.0;
+        bootFloraReveal = 1.0;
+        bootKoiReveal = 1.0;
         this.uiOverlay.setBootState(false, 1.0);
         if (this.onBootComplete) this.onBootComplete();
       }
@@ -683,10 +697,10 @@ export class PondCRTEngine {
     gl.uniform1f(wu.uWinterMode, season.winterMode);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-    // 1b. Pure GPU Underwater Nishikigoi (continuous integrated swimTime -> ZERO jump on Winter switch!)
+    // 1b. Pure GPU Underwater Nishikigoi (coalesce from phosphor dots during boot; ZERO jump on handoff or Winter switch!)
     this.koiGL.render(t, dt, aspect, season, this.visualSeasonId, (rx, ry, str) => {
       this.spawnRipple(rx, ry, str);
-    });
+    }, bootKoiReveal);
 
     // 1c. Surface Ripples + C1-Continuous Premultiplied 4-Season Flora Blend
     gl.enable(gl.BLEND);
@@ -719,7 +733,7 @@ export class PondCRTEngine {
     gl.uniform3fv(su.uSpecularTint, season.specularTint);
     gl.uniform4fv(su.uRipples, this.rippleUniformData);
     gl.uniform1i(su.uRippleCount, rippleCount);
-    if (su.uBootFloraAlpha) gl.uniform1f(su.uBootFloraAlpha, bootFloraAlpha);
+    if (su.uBootFloraAlpha) gl.uniform1f(su.uBootFloraAlpha, bootFloraReveal);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     gl.disable(gl.BLEND);
 

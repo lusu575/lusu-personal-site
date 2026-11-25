@@ -506,60 +506,30 @@ export class PondUIOverlay {
     ctx.clearRect(0, 0, w, h);
 
     if (this.bootActive && this.bootProgress < 0.995) {
-      // Smoothly cross-fade normal UI in during the final 24% of boot (0.76 -> 1.0)
-      const uiAlpha = Math.max(0, Math.min(1, (this.bootProgress - 0.74) / 0.26));
-      if (uiAlpha > 0.01) {
+      const p = this.bootProgress;
+      // Plan A "Light Up the Pond" (r84): NO old r57 title/progress-bar shell!
+      // Desktop icons rise like bubbles from the water (0.54 -> 0.84); clock & controls light up LAST (0.74 -> 0.92).
+      if (p > 0.52) {
+        this._drawDesktopIcons(ctx, w, h, t, dt, p);
+      }
+      const clockAlpha = Math.max(0, Math.min(1, (p - 0.74) / 0.18));
+      if (clockAlpha > 0.01) {
         ctx.save();
-        ctx.globalAlpha = uiAlpha;
+        ctx.globalAlpha = clockAlpha;
         this._drawClock(ctx, w, h);
         this._drawSeasonSlider(ctx, w, h, t);
-        this._drawDesktopIcons(ctx, w, h, t, dt);
         this._drawDiscreetCorner(ctx, w, h, t);
         ctx.restore();
       }
-      this._drawBootTitle(ctx, w, h, this.bootProgress);
       return { canvas: this.canvas, updated: true };
     }
 
     this._drawClock(ctx, w, h);
     this._drawSeasonSlider(ctx, w, h, t);
-    this._drawDesktopIcons(ctx, w, h, t, dt);
+    this._drawDesktopIcons(ctx, w, h, t, dt, 1.0);
     this._drawDiscreetCorner(ctx, w, h, t);
 
     return { canvas: this.canvas, updated: true };
-  }
-
-  _drawBootTitle(ctx, w, h, progress) {
-    const fadeIn = Math.max(0, Math.min(1, (progress - 0.16) / 0.22));
-    const fadeOut = 1 - Math.max(0, Math.min(1, (progress - 0.80) / 0.16));
-    const alpha = fadeIn * fadeOut;
-    if (alpha <= 0.01) return;
-
-    const titleSize = Math.max(18, Math.round(Math.min(w, h * 1.4) * 0.028));
-    const y = h * 0.085;
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.font = `600 ${titleSize}px "JetBrains Mono", "Cascadia Mono", Consolas, monospace`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    const label = 'L U S U 5 7 5';
-    ctx.fillStyle = 'rgba(104, 240, 224, 0.28)';
-    ctx.fillText(label, w * 0.5, y + 1);
-    ctx.fillStyle = 'rgba(222, 252, 248, 0.94)';
-    ctx.fillText(label, w * 0.5, y);
-
-    // Restrained dotted real-progress bar directly underneath site title
-    const barW = Math.min(220, w * 0.22);
-    const barX = (w - barW) * 0.5;
-    const barY = y + titleSize * 0.92;
-    const dots = 24;
-    const filled = Math.round(progress * dots);
-    for (let i = 0; i < dots; i++) {
-      const dx = barX + (i / (dots - 1)) * barW;
-      ctx.fillStyle = i < filled ? 'rgba(126, 252, 224, 0.92)' : 'rgba(126, 252, 224, 0.22)';
-      ctx.fillRect(dx - 1.5, barY - 1.5, 3, 3);
-    }
-    ctx.restore();
   }
 
   _drawClock(ctx, w, h) {
@@ -647,7 +617,7 @@ export class PondUIOverlay {
     ctx.restore();
   }
 
-  _drawDesktopIcons(ctx, w, h, t, dt) {
+  _drawDesktopIcons(ctx, w, h, t, dt, bootP = 1.0) {
     const baseRadius = Math.max(26, Math.min(w, h * 1.45) * 0.040);
     const spriteHalf = Math.max(3.1, baseRadius * 0.088);
     const labelSize = Math.max(13, Math.round(baseRadius * 0.37));
@@ -658,8 +628,25 @@ export class PondUIOverlay {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
 
-    for (const ic of DESKTOP_ICONS) {
+    for (let idx = 0; idx < DESKTOP_ICONS.length; idx++) {
+      const ic = DESKTOP_ICONS[idx];
       const st = this.iconStates[ic.id];
+      // Plan A "bubble rise" staggered per icon (bootP: 0.54 -> 0.84)
+      let bubbleAlpha = 1.0;
+      let bubbleRiseY = 0;
+      let bubbleScale = 1.0;
+      let bubbleRing = 0;
+      if (bootP < 0.995) {
+        const start = 0.54 + idx * 0.032;
+        const localP = Math.max(0, Math.min(1, (bootP - start) / 0.16));
+        if (localP <= 0.005) continue;
+        const eased = animeEaseOutBack(localP);
+        bubbleAlpha = Math.min(1, localP * 2.2);
+        bubbleRiseY = (1 - eased) * 28;
+        bubbleScale = 0.78 + 0.22 * eased;
+        bubbleRing = Math.sin(localP * Math.PI);
+      }
+
       const targetHover = st.hover ? 1 : 0;
       st.hoverAnim += (targetHover - st.hoverAnim) * Math.min(1, dt * 12);
       if (st.clickPulse > 0) {
@@ -668,13 +655,26 @@ export class PondUIOverlay {
 
       const hoverScale = 1.0 + 0.085 * animeEaseOutBack(st.hoverAnim);
       const clickBounce = st.clickPulse > 0 ? Math.sin(st.clickPulse * Math.PI * 2.0) * 0.10 * st.clickPulse : 0;
-      const scale = hoverScale + clickBounce;
-      const floatY = -st.hoverAnim * 3.0;
+      const scale = (hoverScale + clickBounce) * bubbleScale;
+      const floatY = -st.hoverAnim * 3.0 + bubbleRiseY;
 
       const cx = ic.x * w;
       const cy = ic.y * h + floatY;
       const dots = this.iconDotMaps[ic.id];
       const sr = spriteHalf * (1.0 + st.hoverAnim * 0.14);
+
+      if (bubbleRing > 0.02) {
+        const ringR = baseRadius * (0.45 + (1 - bubbleRing * 0.4) * 0.95);
+        ctx.save();
+        ctx.strokeStyle = `rgba(138, 248, 232, ${(bubbleRing * 0.52).toFixed(3)})`;
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.ellipse(cx, ic.y * h + baseRadius * 0.15, ringR, ringR * 0.58, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+      ctx.save();
+      ctx.globalAlpha = bubbleAlpha;
 
       // Video 2 iridescent pink-violet-white bloom halo pulse on icon click!
       if (st.clickPulse > 0.01) {
@@ -734,9 +734,10 @@ export class PondUIOverlay {
       ctx.fillText(label, cx + 1, ly);
       ctx.fillText(label, cx, ly - 1);
       ctx.fillText(label, cx, ly + 1.5);
-      ctx.globalAlpha = st.hover ? 1.0 : (isWinter ? 0.96 : 0.90);
+      ctx.globalAlpha = (st.hover ? 1.0 : (isWinter ? 0.96 : 0.90)) * bubbleAlpha;
       ctx.fillStyle = isWinter ? '#f4fbff' : '#e8f4f8';
       ctx.fillText(label, cx, ly);
+      ctx.restore();
     }
 
     ctx.restore();

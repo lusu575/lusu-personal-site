@@ -1,8 +1,7 @@
-// Full-Site Asset Preloader for Midnight Pond CRT Boot Sequence (r57)
-// Preloads & decodes all 32 site visual assets (seasonal WebPs, game covers, chat avatars,
-// tool SVGs, about avatar, and JSON catalogs) with real per-asset progress reporting.
+// Full-Site Asset Preloader for Plan A "Light Up the Pond" Boot Sequence (r84)
+// Preloads & decodes site visual assets with real per-asset progress reporting.
 
-export const ASSET_CACHE_TAG = '20261123-pond-boot-r57';
+export const ASSET_CACHE_TAG = '20261125-pond-lightup-r84';
 
 const SEASON_PART_MAP = {
   spring: ['sakuraBranch', 'lotusLeaf1', 'lotusLeaf2', 'lotusLeaf3'],

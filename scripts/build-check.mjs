@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-25-glass-v1-complete-r83";
-const finalUpdateSlug = "2026-11-25-glass-v1-complete-r83";
+const finalUpdateId = "seed-update-2026-11-25-pond-lightup-boot-r84";
+const finalUpdateSlug = "2026-11-25-pond-lightup-boot-r84";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "CRT Glass Lite V1.0 Completion: Thin-Shell Window Rims & Dynamic Button Coverage (r83)";
+const finalTitleEn = "Plan A 'Light Up the Pond' Same-Pipeline Boot Sequence (r84)";
 const finalPublishedAt = "2026-11-25";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-25-glass-v1-complete-r83",
   "seed-update-2026-11-25-glass-rollout-and-residuals-r82",
   "seed-update-2026-11-25-known-issues-perf-r81",
   "seed-update-2026-11-24-kittens-layout-and-contrast-r80",

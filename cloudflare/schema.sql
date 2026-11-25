@@ -16610,6 +16610,29 @@ CRT Glass Lite V1.0 の残ステップ 5・8 を実装し、全 8 ステップ�
 - **動的ボタンの完全自動適用（Step 4・6 補完）**：知識庫・動画の `.category-button`、アカウントポップオーバーの各操作／閉じるボタン、クイック転送ボタン、チャット未読カプセルまで自動バインドしつつ、カード・入力欄・記事本文リンクは対象外を維持しました。
 - **Step 7・8（低性能階層と監査 API）**：`low` パフォーマンス階層の静的フォールバックと、`getGlassAudit()` による全ウィンドウ監査を実装しました。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-glass-complete-r83', '2026-11-25')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-pond-lightup-boot-r84', '2026-11-25-pond-lightup-boot-r84', 'site-updates', '["pond","ui","performance"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-pond-lightup-boot-r84-zh', 'seed-update-2026-11-25-pond-lightup-boot-r84', 'zh', '启动动画重做上线：A 方案「点亮池塘」同管线无缝显影（r84）', '彻底下线 r57 旧版 CRT 开机壳，在池塘 WebGL2 本体管线内实现 2.2–2.6 秒「点亮池塘」显影：深青微光起手、点阵荧光涟漪由中心扩散依次点亮水面、当季景物、点阵汇聚锦鲤、气泡浮起桌面图标与顶部时钟，扫描光束扫过直接交接为活池塘。', '# 启动动画重做上线：A 方案「点亮池塘」同管线无缝显影（r84）
+
+本次更新彻底推翻并删除 `r57` 旧版独立 CRT 开机壳，按 A 方案在池塘 WebGL2 本体管线内重做「点亮池塘」启动显影：
+
+- **同管线无缝交接**：取消独立开机 DOM 壳与旧版 `LUSU575` 进度条标题，首帧沿用深青微光径向底色与 0.3 秒极短 CRT 亮线点火，绝不出现纯黑帧；随后点阵荧光涟漪由池塘中心向外扩散，依次显影真实流动水面、当前时段对应四季景物（春樱／夏荷／秋枫／冬霜全部原生支持）、由光点汇聚成形并持续游动的锦鲤、如气泡般伴随水波纹浮起落位的 6 颗桌面图标，最后亮起顶部时钟与角落控件。
+- **扫光收尾零跳帧**：末尾一道自上而下的点阵扫描光束扫过管面，直接交接为可交互活池塘（水继续流、鱼继续游），无切屏、无跳帧、静置零额外开销。
+- **真实预加载与交互约束**：显影进度严格绑定真实素材预加载与首帧就绪度；点击或按 `Esc`/`Space` 可随时跳过，二次访问自动压缩在 1 秒内完成，并完整守住 `r81` 性能基线。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-pond-lightup-boot-r84-en', 'seed-update-2026-11-25-pond-lightup-boot-r84', 'en', 'Plan A ''Light Up the Pond'' Same-Pipeline Boot Sequence (r84)', 'Replaced the legacy r57 boot shell with a unified WebGL2 pond emergence: 0.3s phosphor ignition over a luminous teal base, radial dot-matrix ripple revealing water, active-season flora, coalescing koi, bubble-rising desktop icons, and clock, finishing with a scan beam into the live pond.', '# Plan A ''Light Up the Pond'' Same-Pipeline Boot Sequence (r84)
+
+This release deletes the legacy `r57` CRT boot shell and replaces it with Plan A ''Light Up the Pond'' rendered directly inside the live WebGL2 pond pipeline:
+
+- **Same-Pipeline Zero-Seam Handoff**: Removed `#pond-boot-beam` and the old `LUSU575` progress-bar overlay. Frame 0 opens on the deep luminous teal radial base with a crisp 0.3s ignition hairline (never pure black), followed by a radial dot-matrix phosphor ripple illuminating live water, current-season flora (all 4 seasons natively supported via `wallpaper-time`), koi coalescing from glowing phosphor motes while already swimming, desktop icons rising like bubbles with surface ripple rings, and the top clock lighting up last.
+- **Scan Beam Finale**: A top-to-bottom phosphor scan beam sweeps seamlessly into the live interactive pond with zero frame jump and zero idle overhead.
+- **Real Preload, Skip & Repeat Compression**: Driven strictly by real preload progress, skippable anytime via click/`Esc`/`Space`, compressed under 1s on repeat visits, and preserving all `r81` performance gains.', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-pond-lightup-boot-r84-ja', 'seed-update-2026-11-25-pond-lightup-boot-r84', 'ja', '起動演出刷新：A案「池を灯す」同一パイプライン顕像（r84）', '旧 r57 起動画面シェルを完全撤去し、池 WebGL2 本体内で 0.3 秒の蛍光点火から波紋拡散による水面・四季景物・光点収束の錦鯉・泡のように浮上するアイコン・時計点灯までを一気通貫で描画し、走査光でそのまま生きた池へ引き継ぎます。', '# 起動演出刷新：A案「池を灯す」同一パイプライン顕像（r84）
+
+旧 `r57` の独立 CRT 起動シェルとスタイルを完全削除し、池本体の WebGL2 パイプライン内で直接顕像する A 案「池を灯す」を実装しました：
+
+- **同一パイプラインのシームレス引き継ぎ**：第 0 フレームから深青の微光下地＋約 0.3 秒の蛍光点火線で立ち上がり（真っ黒フレームなし）、中心から広がるドット蛍光波紋が水面→現在時刻の季節景物（春夏秋冬すべて対応）→光点から収束しそのまま泳ぎ続ける錦鯉→水紋を伴い泡のように浮上するデスクトップアイコン→上部時計の順に点灯します。
+- **走査光フィナーレとゼロ段差**：仕上げの上下走査ビームが通過するとそのまま操作可能な池本体へ直結し、静止後の追加負荷はゼロです。
+- **実プリロード連動・スキップ・再訪短縮**：実際の素材読み込み進捗に厳密連動し、クリック／`Esc`／`Space` で即時スキップ、再訪問時は 1 秒未満に短縮され、`r81` の性能成果もそのまま維持します。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-pond-lightup-r84', '2026-11-25')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261125-glass-complete-r83', '2026-11-25', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261125-pond-lightup-r84', '2026-11-25', 'schema') on conflict(version) do nothing;

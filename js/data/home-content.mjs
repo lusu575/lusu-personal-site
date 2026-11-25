@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-25-pond-lightup-boot-r84",
+      "slug": "2026-11-25-pond-lightup-boot-r84",
+      "category": "site-updates",
+      "tags": [
+        "pond",
+        "ui",
+        "performance"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": "2026-11-25",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "启动动画重做上线：A 方案「点亮池塘」同管线无缝显影（r84）",
+        "en": "Plan A 'Light Up the Pond' Same-Pipeline Boot Sequence (r84)",
+        "ja": "起動演出刷新：A案「池を灯す」同一パイプライン顕像（r84）"
+      },
+      "summary": {
+        "zh": "彻底下线 r57 旧版 CRT 开机壳，在池塘 WebGL2 本体管线内实现 2.2–2.6 秒「点亮池塘」显影：深青微光起手、点阵荧光涟漪由中心扩散依次点亮水面、当季景物、点阵汇聚锦鲤、气泡浮起桌面图标与顶部时钟，扫描光束扫过直接交接为活池塘。",
+        "en": "Replaced the legacy r57 boot shell with a unified WebGL2 pond emergence: 0.3s phosphor ignition over a luminous teal base, radial dot-matrix ripple revealing water, active-season flora, coalescing koi, bubble-rising desktop icons, and clock, finishing with a scan beam into the live pond.",
+        "ja": "旧 r57 起動画面シェルを完全撤去し、池 WebGL2 本体内で 0.3 秒の蛍光点火から波紋拡散による水面・四季景物・光点収束の錦鯉・泡のように浮上するアイコン・時計点灯までを一気通貫で描画し、走査光でそのまま生きた池へ引き継ぎます。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-25-glass-v1-complete-r83",
       "slug": "2026-11-25-glass-v1-complete-r83",
       "category": "site-updates",
@@ -114,34 +142,6 @@ export const homeContent = Object.freeze({
         "zh": "消除猫国建设者两侧黑边与三栏下方大片黑空，将禁用态文字提亮至对比度 7.5:1 以上，补齐主标签与筛选标签选中态高光下划线，并放大提亮左栏折叠箭头。",
         "en": "Expands Kittens Game to fill viewport width and height, boosts disabled text above 7.5:1 contrast, highlights active tabs and filters, and enlarges left-column collapse arrows.",
         "ja": "左右の黒余白と下部空白を解消して全幅・全高表示にし、無効ボタン文字を AA+ へ改善、選択中タブの下線強調と左欄矢印の拡大を行いました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-life-restart-visual-cleanup-r79",
-      "slug": "life-restart-sidebands-and-github-corner-cleanup-r79",
-      "category": "site-updates",
-      "tags": [
-        "视觉更新",
-        "游戏区",
-        "人生重开"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T22:20:00+08:00",
-      "updated_at": "2026-11-24T22:20:00+08:00",
-      "published_at": "2026-11-24T22:20:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "视觉优化：人生重开去两侧横纹、去画布切角并隐藏左上角白猫角标（r79）",
-        "en": "Visual Polish: Clean Life Restart Sidebands, Square Canvas & Hidden Corner Badge (r79)",
-        "ja": "ビジュアル調整：人生リスタートの左右縞撤去・角丸切欠き解消・左上角バッジ非表示（r79）"
-      },
-      "summary": {
-        "zh": "将人生重开两侧宽带改为与画布底色柔和衔接的纯暗底，去掉画布 10px 圆角二次裁切，并通过自有桥接脚本隐藏左上角 GitHub 白猫角标。",
-        "en": "Replaces striped sidebands with a seamless matte dark backdrop, removes 10px canvas corner clipping, and hides the top-left GitHub corner badge via our bridge script.",
-        "ja": "左右の縞背景をキャンバスになじむ暗色単色へ変更し、10px 角丸による切り欠きを撤去、独自ブリッジ経由で左上の GitHub 角バッジを非表示にしました。"
       }
     }
   ]
