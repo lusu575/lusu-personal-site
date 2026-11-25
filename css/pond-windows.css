@@ -3778,11 +3778,23 @@ html[data-pond-mode="games"] #game-list .tag {
   letter-spacing: 0.02em !important;
 }
 
-/* --- Knowledge: Equal-Height Row Cards & Pixel-Aligned Bottom CTA --- */
-html[data-pond-mode="knowledge"] #knowledge-list {
+/* --- Knowledge: Equal-Height Row Cards & Pixel-Aligned Bottom CTA (Desktop + Mobile + Tablet universal) --- */
+#knowledge-list,
+html[data-pond-mode="knowledge"] #knowledge-list,
+html[data-ui-shell="mobile"] #knowledge-list,
+html[data-shell="mobile"] #knowledge-list {
   align-items: stretch !important;
   align-content: start !important;
   grid-auto-rows: max-content !important;
+}
+
+#knowledge-list .article-card,
+html[data-ui-shell="mobile"] #knowledge-list .article-card,
+html[data-shell="mobile"] #knowledge-list .article-card {
+  height: auto !important;
+  min-height: max-content !important;
+  flex: 0 0 auto !important;
+  box-sizing: border-box !important;
 }
 
 html[data-pond-mode="knowledge"] #knowledge-list .article-card {

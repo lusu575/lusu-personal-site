@@ -2,7 +2,7 @@
 
 ## 2026-11-25
 
-- `r88b/r88c/r88d` 紧急修复知识库文章卡片被压扁裁切摘要与「阅读」按钮的回归：根因为 `r88` 绑定 `.article-card.crt-glass-btn` 引入 `overflow: hidden !important` 后，CSS Grid 将子项自动最小高度退化为 `0`，导致 `#knowledge-list`（2 列网格）把 6 行卡片压进可视高度（`340px / 6 ≈ 57px`）裁切了摘要与「阅读」按钮；在 `css/pond-windows.css:3782` 为 `#knowledge-list` 补齐 `grid-auto-rows: max-content !important; align-content: start !important;` 并为 `.article-card` 设置 `min-height: max-content !important; height: 100% !important;`（同时排除 `.article-card-skeleton`），彻底恢复零重叠、零裁切的标题＋摘要＋元信息＋「阅读」按钮完整卡片，且完整保留卡片与按钮液态玻璃特效（缓存刷新至 `20261125-glass-auto-r88d`）。
+- `r88b–r88e` 紧急修复知识库文章卡片被压扁裁切摘要与「阅读」按钮的全端回归：定位根因为 `r88` 绑定 `.article-card.crt-glass-btn` 引入 `overflow: hidden !important` 后，CSS Grid 将子项自动最小高度退化为 `0`，桌面端 2 列网格将卡片压至 `57px`、移动端（无 `data-pond-mode`）更是被压至 `22px`；在 `css/pond-windows.css:3782` 将 `grid-auto-rows: max-content !important; align-content: start !important;` 与 `.article-card { min-height: max-content !important; flex: 0 0 auto !important; }` 统一覆盖桌面端、平板端与移动端 `#knowledge-list`，彻底恢复全端标题＋摘要＋元信息＋「阅读」按钮完整显示并保留液态玻璃特效（缓存刷新至 `20261125-glass-auto-r88e`）。
 
 - `r88` 液态玻璃全站动态自动绑定根治：查明并根治旧版静态白名单导致的漏绑（知识库文章卡片 `.article-card` 与「阅读」`.article-card-cta`、游戏区「开始」`.card-action` 与「来源」、工具区「打开」`.card-action`、欢迎窗「查看更多更新」与最近更新条目、视频/工具动态筛选按钮、聊天室 `?` 帮助键、关于页社交图标、账号「显示密码」键等）；重构 `crt-glass-button.mjs` 为统一语义选择器＋捕获期事件委托懒绑定＋`document.body` rAF 节流 `MutationObserver` 双重保障，任何动态渲染按钮均自动生效且零误绑正文链接与输入框；升级 `getGlassAudit()` 输出 `unboundCount` 自检闭环（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-glass-auto-binding-r88` / `2026-11-25-glass-auto-binding-r88`；视觉层缓存 `20261125-glass-auto-r88`。
 
