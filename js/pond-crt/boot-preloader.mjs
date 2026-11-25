@@ -1,7 +1,7 @@
-// Full-Site Asset Preloader for Plan A "Light Up the Pond" Boot Sequence (r84)
-// Preloads & decodes site visual assets with real per-asset progress reporting.
+// Critical-Path Asset Preloader for Persepolis-Style Single-Scene Warm-Up (r87)
+// Reports real critical progress (manifest + active-season flora); never blocks on non-critical assets.
 
-export const ASSET_CACHE_TAG = '20261125-pond-lightup-r84';
+export const ASSET_CACHE_TAG = '20261125-persepolis-warm-r87';
 
 const SEASON_PART_MAP = {
   spring: ['sakuraBranch', 'lotusLeaf1', 'lotusLeaf2', 'lotusLeaf3'],
@@ -41,21 +41,17 @@ export function detectBootMode() {
       return 'instant';
     }
     if (sessionStorage.getItem('lusu-pond-booted-v1') === '1') {
-      return 'quick';
-    }
-    if (localStorage.getItem('lusu-pond-cache-v1') === ASSET_CACHE_TAG) {
-      return 'quick';
+      return 'instant';
     }
   } catch {
     // Storage unavailable
   }
-  return 'full';
+  return 'warm';
 }
 
 export function markBootCompleted() {
   try {
     sessionStorage.setItem('lusu-pond-booted-v1', '1');
-    localStorage.setItem('lusu-pond-cache-v1', ASSET_CACHE_TAG);
   } catch {
     // Ignore storage errors
   }
@@ -102,36 +98,39 @@ export async function runPondBootPreload({
   const primaryParts = allParts.filter(([k]) => primaryKeys.has(k));
   const secondaryParts = allParts.filter(([k]) => !primaryKeys.has(k));
 
-  const totalTasks = allParts.length + STATIC_PRELOAD_IMAGES.length + 2; // +2 for manifests already done
-  let completed = 2;
+  // Critical progress ONLY tracks manifest + active-season flora (never waits for non-critical assets!)
+  const criticalTotal = primaryParts.length + 1; // +1 for manifest fetch
+  let criticalLoaded = 1;
   const report = () => {
-    if (onProgress) onProgress(Math.min(1, completed / Math.max(1, totalTasks)), completed, totalTasks);
+    if (onProgress) onProgress(Math.min(1, criticalLoaded / Math.max(1, criticalTotal)), criticalLoaded, criticalTotal);
   };
   report();
 
-  const runPart = async ([key, url]) => {
+  const runCriticalPart = async ([key, url]) => {
     const img = await loadAndDecodeImage(url);
     if (img && onFloraPart) onFloraPart(key, img);
-    completed++;
+    criticalLoaded++;
     report();
   };
 
-  const runStatic = async (url) => {
-    await loadAndDecodeImage(url);
-    completed++;
-    report();
+  const runBackgroundPart = async ([key, url]) => {
+    const img = await loadAndDecodeImage(url);
+    if (img && onFloraPart) onFloraPart(key, img);
   };
 
-  // Phase A: Active season parts FIRST (immediate GPU bake) + static site assets in parallel
-  const primaryPromise = Promise.allSettled(primaryParts.map(runPart)).then(() => {
+  // Phase A (critical): Active-season parts FIRST -> immediate GPU bake & critical progress completion
+  await Promise.allSettled(primaryParts.map(runCriticalPart));
+  if (onPrimaryFloraDone) onPrimaryFloraDone();
+  if (onProgress) onProgress(1, criticalTotal, criticalTotal);
+  if (onComplete) onComplete({ total: criticalTotal, completed: criticalTotal });
+
+  // Phase B (non-blocking background): Remaining 3 seasons + static sub-window assets
+  Promise.allSettled([
+    ...secondaryParts.map(runBackgroundPart),
+    ...STATIC_PRELOAD_IMAGES.map((url) => loadAndDecodeImage(url))
+  ]).then(() => {
     if (onPrimaryFloraDone) onPrimaryFloraDone();
   });
-  const staticPromise = Promise.allSettled(STATIC_PRELOAD_IMAGES.map(runStatic));
-  // Phase B: Remaining 3 seasons' WebP parts in parallel so season switching is 0ms stutter
-  const secondaryPromise = Promise.allSettled(secondaryParts.map(runPart));
 
-  await Promise.all([primaryPromise, staticPromise, secondaryPromise]);
-  markBootCompleted();
-  if (onComplete) onComplete({ total: totalTasks, completed });
-  return { manifest, total: totalTasks, completed };
+  return { manifest, total: criticalTotal, completed: criticalTotal };
 }

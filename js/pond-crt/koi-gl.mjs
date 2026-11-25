@@ -48,7 +48,6 @@ uniform vec3 uWaterMid;
 uniform vec3 uCausticTint;
 uniform float uKoiDepthFog;
 uniform float uWinterMode;
-uniform float uKoiBoot;
 uniform float uTime;
 
 out vec4 fragColor;
@@ -90,9 +89,6 @@ void main() {
     finCol = mix(finCol, uWaterMid * 1.45, depthFog * 0.80);
 
     float alpha = shapeMask * (isDorsal > 0.5 ? 0.52 : 0.70) * baseAlpha;
-    if (uKoiBoot < 0.999) {
-      alpha *= smoothstep(0.32, 0.92, clamp(uKoiBoot, 0.0, 1.0));
-    }
     if (alpha < 0.015) discard;
     fragColor = vec4(finCol, alpha);
     return;
@@ -143,20 +139,7 @@ void main() {
   vec3 waterVeil = mix(uWaterMid * 1.50, uCausticTint * 0.70, 0.28);
   col = mix(col, waterVeil, depthFog * 0.85);
 
-  // Plan A "Light Up the Pond": Koi materialize from glowing golden-teal phosphor dots into live fish
   float outAlpha = edgeAA * baseAlpha;
-  if (uKoiBoot < 0.999) {
-    float kb = clamp(uKoiBoot, 0.0, 1.0);
-    if (kb <= 0.005) discard;
-    vec2 cell = fract(vec2(t * 28.0, y * 7.0)) - 0.5;
-    float moteR = mix(0.16, 0.68, kb);
-    float mote = 1.0 - smoothstep(moteR * 0.45, moteR, length(cell));
-    float headSweep = 1.0 - smoothstep(kb * 1.25 - 0.22, kb * 1.25 + 0.08, t);
-    vec3 phosphorGold = mix(uCausticTint * 1.35, vec3(1.0, 0.78, 0.46), 0.58);
-    col = mix(phosphorGold, col, smoothstep(0.28, 0.88, kb));
-    outAlpha *= mix(mote * headSweep, 1.0, smoothstep(0.62, 1.0, kb)) * smoothstep(0.0, 0.22, kb);
-    if (outAlpha < 0.015) discard;
-  }
 
   fragColor = vec4(col, outAlpha);
 }
@@ -467,7 +450,7 @@ export class KoiGLRenderer {
     return this.fish.map((f) => ({ uvX: f.uvX, uvY: f.uvY }));
   }
 
-  render(t, dt, aspect, season, seasonId, onWakeRipple, koiBoot = 1.0) {
+  render(t, dt, aspect, season, seasonId, onWakeRipple) {
     const gl = this.gl;
     // Smoothly modulate speed by continuous winterMode [0..1] + per-koi wavefront startle -> NEVER teleports!
     const winterBlend = Number.isFinite(season.winterMode) ? season.winterMode : (seasonId === 'winter' ? 1.0 : 0.0);
@@ -506,7 +489,6 @@ export class KoiGLRenderer {
     gl.uniform3fv(u.uCausticTint, season.causticTint);
     gl.uniform1f(u.uKoiDepthFog, season.koiDepthFog);
     gl.uniform1f(u.uWinterMode, winterBlend);
-    if (u.uKoiBoot) gl.uniform1f(u.uKoiBoot, koiBoot);
 
     gl.drawArrays(gl.TRIANGLES, 0, this.vertCount);
     gl.disable(gl.BLEND);

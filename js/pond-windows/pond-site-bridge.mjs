@@ -2,7 +2,7 @@
 // Zero business-logic rewrites: all routing, API fetching, filtering, sorting, pinning,
 // search, pagination, account sessions, and language switching stay 100% in existing main.js & routes/*.mjs.
 
-import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261125-pond-lightup-r84b';
+import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261125-persepolis-warm-r87';
 import {
   resolveInitialPondSeason,
   saveManualSeasonOverride,
@@ -453,9 +453,7 @@ function bootPondVisualBridge() {
       if (engine && engine.bootActive) engine.skipBoot();
     };
     window.addEventListener('pointerdown', skipActiveBoot, { passive: true });
-    window.addEventListener('keydown', (ev) => {
-      if (ev.key === 'Escape' || ev.key === ' ') skipActiveBoot();
-    });
+    window.addEventListener('keydown', skipActiveBoot);
     return engine;
   }
 

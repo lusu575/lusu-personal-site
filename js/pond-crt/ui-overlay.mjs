@@ -330,8 +330,6 @@ export class PondUIOverlay {
     this.toStopIdx = this.currentSeasonIdx;
     this.morphStartTime = -10;
     this.morphDuration = 0.92;
-    this.bootActive = false;
-    this.bootProgress = 1;
 
     this.particleSeeds = Array.from({ length: EMBLEM_PARTICLE_COUNT }, (_, i) => {
       const a = (i * 2.399963) % (Math.PI * 2);
@@ -358,16 +356,6 @@ export class PondUIOverlay {
   setIconAsset(id, img) {
     if (this.iconStates[id]) {
       this.iconAssets[id] = img;
-      this.dirty = true;
-    }
-  }
-
-  setBootState(active, progress = 1) {
-    const nextActive = Boolean(active);
-    const nextProg = Math.max(0, Math.min(1, progress));
-    if (this.bootActive !== nextActive || Math.abs(this.bootProgress - nextProg) > 0.003) {
-      this.bootActive = nextActive;
-      this.bootProgress = nextProg;
       this.dirty = true;
     }
   }
@@ -494,7 +482,7 @@ export class PondUIOverlay {
     const clockNow = this._formatClock();
     const clockChanged = clockNow !== this.lastClockText;
 
-    if (!this.dirty && !morphing && !iconAnimating && !clockChanged && !this.bootActive) {
+    if (!this.dirty && !morphing && !iconAnimating && !clockChanged) {
       return { canvas: this.canvas, updated: false };
     }
 
@@ -505,28 +493,9 @@ export class PondUIOverlay {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, w, h);
 
-    if (this.bootActive && this.bootProgress < 0.995) {
-      const p = this.bootProgress;
-      // Plan A "Light Up the Pond" (r84): NO old r57 title/progress-bar shell!
-      // Desktop icons rise like bubbles from the water (0.54 -> 0.84); clock & controls light up LAST (0.74 -> 0.92).
-      if (p > 0.52) {
-        this._drawDesktopIcons(ctx, w, h, t, dt, p);
-      }
-      const clockAlpha = Math.max(0, Math.min(1, (p - 0.74) / 0.18));
-      if (clockAlpha > 0.01) {
-        ctx.save();
-        ctx.globalAlpha = clockAlpha;
-        this._drawClock(ctx, w, h);
-        this._drawSeasonSlider(ctx, w, h, t);
-        this._drawDiscreetCorner(ctx, w, h, t);
-        ctx.restore();
-      }
-      return { canvas: this.canvas, updated: true };
-    }
-
     this._drawClock(ctx, w, h);
     this._drawSeasonSlider(ctx, w, h, t);
-    this._drawDesktopIcons(ctx, w, h, t, dt, 1.0);
+    this._drawDesktopIcons(ctx, w, h, t, dt);
     this._drawDiscreetCorner(ctx, w, h, t);
 
     return { canvas: this.canvas, updated: true };
@@ -617,7 +586,7 @@ export class PondUIOverlay {
     ctx.restore();
   }
 
-  _drawDesktopIcons(ctx, w, h, t, dt, bootP = 1.0) {
+  _drawDesktopIcons(ctx, w, h, t, dt) {
     const baseRadius = Math.max(26, Math.min(w, h * 1.45) * 0.040);
     const spriteHalf = Math.max(3.1, baseRadius * 0.088);
     const labelSize = Math.max(13, Math.round(baseRadius * 0.37));
@@ -631,21 +600,6 @@ export class PondUIOverlay {
     for (let idx = 0; idx < DESKTOP_ICONS.length; idx++) {
       const ic = DESKTOP_ICONS[idx];
       const st = this.iconStates[ic.id];
-      // Plan A "bubble rise" staggered per icon (bootP: 0.54 -> 0.84)
-      let bubbleAlpha = 1.0;
-      let bubbleRiseY = 0;
-      let bubbleScale = 1.0;
-      let bubbleRing = 0;
-      if (bootP < 0.995) {
-        const start = 0.54 + idx * 0.032;
-        const localP = Math.max(0, Math.min(1, (bootP - start) / 0.16));
-        if (localP <= 0.005) continue;
-        const eased = animeEaseOutBack(localP);
-        bubbleAlpha = Math.min(1, localP * 2.2);
-        bubbleRiseY = (1 - eased) * 28;
-        bubbleScale = 0.78 + 0.22 * eased;
-        bubbleRing = Math.sin(localP * Math.PI);
-      }
 
       const targetHover = st.hover ? 1 : 0;
       st.hoverAnim += (targetHover - st.hoverAnim) * Math.min(1, dt * 12);
@@ -655,26 +609,15 @@ export class PondUIOverlay {
 
       const hoverScale = 1.0 + 0.085 * animeEaseOutBack(st.hoverAnim);
       const clickBounce = st.clickPulse > 0 ? Math.sin(st.clickPulse * Math.PI * 2.0) * 0.10 * st.clickPulse : 0;
-      const scale = (hoverScale + clickBounce) * bubbleScale;
-      const floatY = -st.hoverAnim * 3.0 + bubbleRiseY;
+      const scale = hoverScale + clickBounce;
+      const floatY = -st.hoverAnim * 3.0;
 
       const cx = ic.x * w;
       const cy = ic.y * h + floatY;
       const dots = this.iconDotMaps[ic.id];
       const sr = spriteHalf * (1.0 + st.hoverAnim * 0.14);
 
-      if (bubbleRing > 0.02) {
-        const ringR = baseRadius * (0.45 + (1 - bubbleRing * 0.4) * 0.95);
-        ctx.save();
-        ctx.strokeStyle = `rgba(138, 248, 232, ${(bubbleRing * 0.52).toFixed(3)})`;
-        ctx.lineWidth = 1.6;
-        ctx.beginPath();
-        ctx.ellipse(cx, ic.y * h + baseRadius * 0.15, ringR, ringR * 0.58, 0, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
-      }
       ctx.save();
-      ctx.globalAlpha = bubbleAlpha;
 
       // Video 2 iridescent pink-violet-white bloom halo pulse on icon click!
       if (st.clickPulse > 0.01) {
@@ -734,7 +677,7 @@ export class PondUIOverlay {
       ctx.fillText(label, cx + 1, ly);
       ctx.fillText(label, cx, ly - 1);
       ctx.fillText(label, cx, ly + 1.5);
-      ctx.globalAlpha = (st.hover ? 1.0 : (isWinter ? 0.96 : 0.90)) * bubbleAlpha;
+      ctx.globalAlpha = st.hover ? 1.0 : (isWinter ? 0.96 : 0.90);
       ctx.fillStyle = isWinter ? '#f4fbff' : '#e8f4f8';
       ctx.fillText(label, cx, ly);
       ctx.restore();

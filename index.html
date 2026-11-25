@@ -171,11 +171,10 @@
   <link rel="stylesheet" href="/css/style.css?v=20260908-site-review-r1">
   <link rel="stylesheet" data-mobile-shell-style href="/css/mobile-ios-shell.css?v=20261029-private-mcp-r1">
   <link rel="stylesheet" href="/css/motion-system.css?v=20260908-site-review-r1">
-  <script>(function(){try{if(window.innerWidth>=900){var h=(location.hash||'').replace(/^#/,'').split('?')[0];var m=h==='knowledge'?'knowledge':h.indexOf('article-')===0?'article':h==='videos'?'videos':h==='resources'?'resources':h==='games'?'games':h==='chatroom'?'chatroom':h==='about'?'about':'home';var d=document.documentElement.dataset;d.pondMode=m;var red=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;if(m==='home'&&!red){var seen=false;try{seen=sessionStorage.getItem('lusu-pond-booted-v1')==='1'||localStorage.getItem('lusu-pond-cache-v1')==='20261125-pond-lightup-r84';}catch(e){}d.pondBoot=seen?'quick':'active';}else{d.pondBoot='done';d.pondBootWebgl='ready';}}}catch(e){}})();</script>
+  <script>(function(){try{if(window.innerWidth>=900){var h=(location.hash||'').replace(/^#/,'').split('?')[0];var m=h==='knowledge'?'knowledge':h.indexOf('article-')===0?'article':h==='videos'?'videos':h==='resources'?'resources':h==='games'?'games':h==='chatroom'?'chatroom':h==='about'?'about':'home';var d=document.documentElement.dataset;d.pondMode=m;var red=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;if(m==='home'&&!red){var seen=false;try{seen=sessionStorage.getItem('lusu-pond-booted-v1')==='1';}catch(e){}d.pondBoot=seen?'done':'active';if(seen){d.pondBootWebgl='ready';}else{var finishBoot=function(){if(d.pondBoot!=='done'){d.pondBoot='done';d.pondBootWebgl='ready';try{sessionStorage.setItem('lusu-pond-booted-v1','1');}catch(e){}}try{var eng=window.__pondVisualBridge&&window.__pondVisualBridge.getEngine&&window.__pondVisualBridge.getEngine();if(eng&&eng.bootActive)eng.skipBoot();}catch(e){}};window.setTimeout(finishBoot,2500);window.addEventListener('pointerdown',finishBoot,{passive:true,once:true});window.addEventListener('keydown',finishBoot,{once:true});}}else{d.pondBoot='done';d.pondBootWebgl='ready';}}}catch(e){}})();</script>
   <style id="pond-boot-critical">
     html[data-pond-mode]{background:#04141a radial-gradient(ellipse at 50% 48%,#0a2c35 0%,#05171e 56%,#030d12 100%) !important}
     html[data-pond-mode] .wallpaper-root,html[data-pond-mode] #wallpaper-time-switch{display:none !important;animation:none !important}
-    html[data-pond-boot="active"]:not([data-pond-boot-webgl="ready"])::after,html[data-pond-boot="quick"]:not([data-pond-boot-webgl="ready"])::after{content:"";position:fixed;left:18vw;right:18vw;top:50%;height:2px;margin-top:-1px;z-index:9990;pointer-events:none;border-radius:999px;background:linear-gradient(90deg,transparent 0%,rgba(94,244,216,.90) 22%,rgba(226,255,250,1) 50%,rgba(94,244,216,.90) 78%,transparent 100%);box-shadow:0 0 18px rgba(94,244,216,.80),0 0 44px rgba(48,200,188,.44)}
   </style>
   <link rel="preload" as="fetch" href="/assets/pond-assets-manifest.json?v=20261123-pond-polish-r55" crossorigin>
   <link rel="stylesheet" href="/css/pond-windows.css?v=20261125-no-img-drag-r86">
@@ -702,6 +701,6 @@
   <script src="/js/telemetry.js?v=20260802-traffic-budget-r1"></script>
   <script src="/js/ui-motion.js?v=20260908-site-review-r1"></script>
   <script type="module" src="/js/main.js?v=20261029-private-mcp-r1"></script>
-  <script type="module" src="/js/pond-windows/pond-site-bridge.mjs?v=20261125-no-img-drag-r86"></script>
+  <script type="module" src="/js/pond-windows/pond-site-bridge.mjs?v=20261125-persepolis-warm-r87"></script>
 </body>
 </html>

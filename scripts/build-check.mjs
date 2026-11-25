@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-25-disable-image-drag-r86";
-const finalUpdateSlug = "2026-11-25-disable-image-drag-r86";
+const finalUpdateId = "seed-update-2026-11-25-persepolis-warm-boot-r87";
+const finalUpdateSlug = "2026-11-25-persepolis-warm-boot-r87";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "App-Like Interaction Polish: Disable Native Ghost-Image Dragging (r86)";
+const finalTitleEn = "Persepolis-Style Single-Scene Dark-to-Bright CRT Warm-Up (r87)";
 const finalPublishedAt = "2026-11-25";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-25-disable-image-drag-r86",
   "seed-update-2026-11-25-ui-text-select-cursor-r85",
   "seed-update-2026-11-25-pond-lightup-boot-r84",
   "seed-update-2026-11-25-glass-v1-complete-r83",

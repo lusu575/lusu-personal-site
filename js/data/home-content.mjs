@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-25-persepolis-warm-boot-r87",
+      "slug": "2026-11-25-persepolis-warm-boot-r87",
+      "category": "site-updates",
+      "tags": [
+        "pond",
+        "ui",
+        "performance"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": "2026-11-25",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "启动动画重做：Persepolis 式同场景由暗到亮显影（r87）",
+        "en": "Persepolis-Style Single-Scene Dark-to-Bright CRT Warm-Up (r87)",
+        "ja": "起動演出刷新：Persepolis 式・同一シーン暗転から点灯ウォームアップ（r87）"
+      },
+      "summary": {
+        "zh": "整段下线 r84 亮线、光波与扫描线动画，改由单个全局 uWarm（0→1）驱动现有 CRT 后处理 Pass 的亮度、对比度、饱和度、RGB 收敛、Bloom 阈值与暗角，场景本身即为加载器；配真实关键进度、0.9–1.6s 节拍与 2.5s 墙钟硬兜底，点击或任意键即刻直达终态。",
+        "en": "Replaced r84's bright line, radial wave, and scan beam with a single global uWarm (0->1) driving the existing CRT post-process pass (brightness, contrast, saturation overshoot, RGB convergence, bloom threshold, vignette). Driven by real critical load progress with a 0.9-1.6s envelope, 2.5s wall-clock failsafe, and instant click/key skip.",
+        "ja": "r84 の輝線・波紋・走査光を完全撤去し、単一のグローバル uniform uWarm（0→1）で既存 CRT ポスト処理の輝度・コントラスト・彩度・RGB 収束・Bloom 閾値・ビネットを滑らかに駆動。実読み込み進捗＋0.9–1.6 秒制御＋2.5 秒強制フォールバックとクリック／任意キー即時スキップを備えます。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-25-disable-image-drag-r86",
       "slug": "2026-11-25-disable-image-drag-r86",
       "category": "site-updates",
@@ -110,35 +138,6 @@ export const homeContent = Object.freeze({
         "zh": "完成液态玻璃方案 V1.0 剩余步骤 5 与步骤 8：为桌面池塘窗口与账号弹窗补齐零 backdrop-filter 的 1.25px 荧光薄壳高光边与聚焦微虹彩，补全知识库/视频分类按钮、账号弹窗与快传动态按钮的自动绑定与性能分层闭环。",
         "en": "Completed remaining V1.0 Steps 5 and 8: added zero-backdrop-filter 1.25px thin-shell CRT glass window rims with subtle focus iridescence, auto-bound dynamic category/account/transfer buttons, and finalized low-tier & audit gates.",
         "ja": "V1.0 残ステップ 5・8 を完了。backdrop-filter を使わない 1.25px 蛍光薄殻リムとフォーカス微虹彩をウィンドウ・アカウント枠へ追加し、知識庫／動画のカテゴリボタンやアカウント／転送の動的ボタンも完全カバーしました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-25-glass-rollout-and-residuals-r82",
-      "slug": "2026-11-25-glass-rollout-and-residuals-r82",
-      "category": "site-updates",
-      "tags": [
-        "ui",
-        "glass",
-        "pond",
-        "games"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-25",
-      "updated_at": "2026-11-25",
-      "published_at": "2026-11-25",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "液态玻璃 CRT Glass Lite 全站按钮铺开与两处细节收口（r82）",
-        "en": "Site-Wide CRT Glass Lite Button Rollout & Two Visual Fixes (r82)",
-        "ja": "CRT Glass Lite 全サイトボタン展開と細部 2 点の修正（r82）"
-      },
-      "summary": {
-        "zh": "按 V1.0 方案与 r76 签收参数将液态玻璃三档交互铺开至全站主操作、工具图标与关闭按钮，并同步修复欢迎窗系统更新图标映射为星芒、猫国建筑悬浮提示框整体深色化。",
-        "en": "Rolled out the approved r76 CRT Glass Lite three-tier button interactions across all desktop windows, fixed Welcome system update icons to use the System Spark, and unified Kittens Game hover tooltips in dark teal.",
-        "ja": "r76 承認パラメータのまま CRT Glass Lite の 3 段階ボタン操作を全ウィンドウへ展開し、ようこそ画面のシステム更新アイコン（星芒）判定と猫国の建物ツールチップ暗色化を修正しました。"
       }
     }
   ]

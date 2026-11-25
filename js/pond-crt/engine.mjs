@@ -13,7 +13,7 @@
 
 import { FloraLayer } from './flora.mjs?v=20261124-autumn-lotus-r69';
 import { createFBO, createFullscreenVAO, createProgram } from './gl-utils.mjs';
-import { KoiGLRenderer } from './koi-gl.mjs?v=20261125-pond-lightup-r84';
+import { KoiGLRenderer } from './koi-gl.mjs?v=20261125-persepolis-warm-r87';
 import { ParticlesGLRenderer } from './particles-gl.mjs?v=20261124-wind-water-r75';
 import { lerpNum, lerpVec3, SEASON_ORDER, SEASONS } from './seasons.mjs';
 import {
@@ -23,9 +23,9 @@ import {
   FULLSCREEN_VERT,
   SURFACE_OVERLAY_FRAG,
   WATER_BG_FRAG
-} from './shaders.mjs?v=20261125-pond-lightup-r84b';
-import { PondUIOverlay } from './ui-overlay.mjs?v=20261125-pond-lightup-r84';
-import { detectBootMode, runPondBootPreload } from './boot-preloader.mjs?v=20261125-pond-lightup-r84';
+} from './shaders.mjs?v=20261125-persepolis-warm-r87';
+import { PondUIOverlay } from './ui-overlay.mjs?v=20261125-persepolis-warm-r87';
+import { detectBootMode, markBootCompleted, runPondBootPreload } from './boot-preloader.mjs?v=20261125-persepolis-warm-r87';
 
 const MAX_RIPPLES = 8;
 
@@ -76,14 +76,17 @@ export class PondCRTEngine {
     this.onBootComplete = options.onBootComplete || null;
     this.bootMode = options.skipBoot ? 'instant' : detectBootMode();
     this.bootActive = this.bootMode !== 'instant';
-    this.bootVisual = this.bootActive ? 0.04 : 1.0;
-    this.bootTarget = this.bootActive ? (this.bootMode === 'quick' ? 1.0 : 0.14) : 1.0;
+    // Single global Persepolis warm-up uniform uWarm (0 -> 1)
+    this.uWarm = this.bootActive ? 0.0 : 1.0;
+    this.realLoadProgress = this.bootActive ? 0.0 : 1.0;
+    this._shaderReady = false;
     this._pendingFloraQueue = [];
     this._floraBakeScheduled = false;
-    this._bootRippleSpawned = false;
     this.bootStartMs = performance.now();
-    this.bootHardTimeoutMs = this.bootMode === 'quick' ? 680 : 2600;
-    this._bootSkipped = false;
+    this.bootMinDurationMs = 1280; // Perceived warm-up duration inside [0.9s, 1.6s] envelope
+    this.bootMaxDurationMs = 1600;
+    this.bootHardTimeoutMs = 2500; // Absolute wall-clock failsafe (never stuck on intermediate frame!)
+    this._bootFailsafeTimer = 0;
     this._bootFirstFrameFired = false;
     this.startTime = performance.now();
     this.lastFrameTime = 0;
@@ -98,12 +101,17 @@ export class PondCRTEngine {
     this._fpsLastTs = performance.now();
     this.currentFps = 0;
 
+    // Weak-GPU / mobile detection: keep the EXACT same uWarm ramp, only dial down bloom intensity
+    const lowGpu = (Number(navigator.hardwareConcurrency) > 0 && Number(navigator.hardwareConcurrency) <= 2)
+      || (Number(navigator.deviceMemory) > 0 && Number(navigator.deviceMemory) <= 2)
+      || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+
     this.crtConfig = {
       curvature: 0.068,
       dotPitchCssPx: 4.1,
       scanlinePitchCssPx: 3.6,
       bloomThreshold: 0.30,
-      bloomIntensity: 0.62,
+      bloomIntensity: lowGpu ? 0.28 : 0.62,
       chromaticEdge: 0.0115
     };
 
@@ -132,6 +140,14 @@ export class PondCRTEngine {
     this._uiTexSize = [0, 0];
 
     this._initPrograms();
+    this._shaderReady = true;
+    if (this.bootActive) {
+      this.realLoadProgress = Math.max(this.realLoadProgress, 0.35);
+      // Independent wall-clock failsafe outside RAF loop: guaranteed uWarm = 1.0 by 2.5s
+      this._bootFailsafeTimer = window.setTimeout(() => {
+        if (this.bootActive) this._finishBootImmediate();
+      }, this.bootHardTimeoutMs);
+    }
     this.vao = createFullscreenVAO(this.gl);
     this.fbos = {};
     this.resize();
@@ -139,10 +155,28 @@ export class PondCRTEngine {
     this._bindInteractions();
   }
 
+  _finishBootImmediate() {
+    if (this._bootFailsafeTimer) {
+      window.clearTimeout(this._bootFailsafeTimer);
+      this._bootFailsafeTimer = 0;
+    }
+    this.uWarm = 1.0;
+    this.realLoadProgress = 1.0;
+    const wasActive = this.bootActive;
+    this.bootActive = false;
+    markBootCompleted();
+    if (wasActive && this.onBootComplete) {
+      this.onBootComplete();
+    }
+    // Render one synchronous frame immediately so even a paused/stalled RAF snaps to live pond!
+    if (this.gl && this.fbos && this.fbos.scene) {
+      try { this.render(); } catch {}
+    }
+  }
+
   skipBoot() {
-    if (!this.bootActive) return;
-    this._bootSkipped = true;
-    this.bootTarget = 1.0;
+    if (!this.bootActive && this.uWarm >= 0.999) return;
+    this._finishBootImmediate();
   }
 
   async _loadAssetManifest() {
@@ -156,13 +190,14 @@ export class PondCRTEngine {
           if (this.gl) this._prebakeAllFlora();
         },
         onProgress: (realProg) => {
-          if (this.bootActive && this.bootMode === 'full' && !this._bootSkipped) {
-            this.bootTarget = Math.max(this.bootTarget, 0.10 + realProg * 0.90);
+          if (this.bootActive) {
+            const combined = (this._shaderReady ? 0.35 : 0.0) + realProg * 0.65;
+            this.realLoadProgress = Math.max(this.realLoadProgress, Math.min(1.0, combined));
           }
         },
         onComplete: () => {
           if (this.gl) this._prebakeAllFlora();
-          if (this.bootActive) this.bootTarget = 1.0;
+          this.realLoadProgress = 1.0;
         }
       });
 
@@ -173,7 +208,7 @@ export class PondCRTEngine {
         }
       }
     } catch {
-      if (this.bootActive) this.bootTarget = 1.0;
+      this.realLoadProgress = 1.0;
     }
   }
 
@@ -633,37 +668,40 @@ export class PondCRTEngine {
       if (this.onFpsUpdate) this.onFpsUpdate(this.currentFps);
     }
 
-    // Step Plan A "Light Up the Pond" Boot Sequence (r84):
-    // Strictly bound to real preload progress (bootTarget); ~2.3s on first visit, <0.7s on repeat visit, instant skip on click/key.
-    let bootFloraReveal = 1.0;
-    let bootKoiReveal = 1.0;
+    // Persepolis-style single-scene dark-to-bright phosphor warm-up (r87):
+    // uWarm (0 -> 1) is gated by real critical preload progress (floor) and smooth time envelope (0.9s - 1.6s),
+    // with an absolute 2.5s wall-clock hard failsafe so it can NEVER stall on any intermediate frame.
     if (this.bootActive) {
       const elapsedBootMs = nowMs - this.bootStartMs;
       if (elapsedBootMs >= this.bootHardTimeoutMs) {
-        this.bootTarget = 1.0;
-      }
-      const diff = this.bootTarget - this.bootVisual;
-      if (diff <= 0.002) {
-        this.bootVisual = this.bootTarget;
-      } else {
-        const maxRate = this._bootSkipped ? 9.5 : (this.bootMode === 'quick' ? 1.65 : 0.45);
-        const step = Math.min(diff, Math.max(dt * 0.14, dt * maxRate));
-        this.bootVisual += step;
-      }
-      if (!this._bootRippleSpawned && this.bootVisual >= 0.12) {
-        this._bootRippleSpawned = true;
-        this.spawnRipple(0.50, 0.50, 0.85);
-      }
-      this.uiOverlay.setBootState(true, this.bootVisual);
-      bootFloraReveal = Math.max(0, Math.min(1, (this.bootVisual - 0.26) / 0.38));
-      bootKoiReveal = Math.max(0, Math.min(1, (this.bootVisual - 0.38) / 0.34));
-      if (this.bootVisual >= 0.996 && this.bootTarget >= 0.999) {
+        if (this._bootFailsafeTimer) {
+          window.clearTimeout(this._bootFailsafeTimer);
+          this._bootFailsafeTimer = 0;
+        }
+        this.uWarm = 1.0;
         this.bootActive = false;
-        this.bootVisual = 1.0;
-        bootFloraReveal = 1.0;
-        bootKoiReveal = 1.0;
-        this.uiOverlay.setBootState(false, 1.0);
+        markBootCompleted();
         if (this.onBootComplete) this.onBootComplete();
+      } else {
+        // Time-capped envelope: reaches 1.0 around 1.28s on hot cache (inside 0.9s - 1.6s target)
+        const timeCap = Math.min(1.0, elapsedBootMs / this.bootMinDurationMs);
+        // After 1.6s, smoothly release realLoadProgress gate so slow networks still finish cleanly before 2.5s
+        const releaseFloor = elapsedBootMs > this.bootMaxDurationMs
+          ? Math.min(1.0, (elapsedBootMs - this.bootMaxDurationMs) / (this.bootHardTimeoutMs - this.bootMaxDurationMs))
+          : 0.0;
+        const effectiveReal = Math.max(this.realLoadProgress, releaseFloor);
+        const targetWarm = Math.min(timeCap, effectiveReal);
+        this.uWarm = Math.max(this.uWarm, targetWarm);
+        if (this.uWarm >= 0.998 && effectiveReal >= 0.998) {
+          if (this._bootFailsafeTimer) {
+            window.clearTimeout(this._bootFailsafeTimer);
+            this._bootFailsafeTimer = 0;
+          }
+          this.uWarm = 1.0;
+          this.bootActive = false;
+          markBootCompleted();
+          if (this.onBootComplete) this.onBootComplete();
+        }
       }
     }
 
@@ -697,10 +735,10 @@ export class PondCRTEngine {
     gl.uniform1f(wu.uWinterMode, season.winterMode);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-    // 1b. Pure GPU Underwater Nishikigoi (coalesce from phosphor dots during boot; ZERO jump on handoff or Winter switch!)
+    // 1b. Pure GPU Underwater Nishikigoi (always live in scene; warmed naturally by uWarm!)
     this.koiGL.render(t, dt, aspect, season, this.visualSeasonId, (rx, ry, str) => {
       this.spawnRipple(rx, ry, str);
-    }, bootKoiReveal);
+    });
 
     // 1c. Surface Ripples + C1-Continuous Premultiplied 4-Season Flora Blend
     gl.enable(gl.BLEND);
@@ -733,7 +771,6 @@ export class PondCRTEngine {
     gl.uniform3fv(su.uSpecularTint, season.specularTint);
     gl.uniform4fv(su.uRipples, this.rippleUniformData);
     gl.uniform1i(su.uRippleCount, rippleCount);
-    if (su.uBootFloraAlpha) gl.uniform1f(su.uBootFloraAlpha, bootFloraReveal);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     gl.disable(gl.BLEND);
 
@@ -753,7 +790,12 @@ export class PondCRTEngine {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.fbos.scene.texture);
     gl.uniform1i(this.programs.bloomExtract.uniforms.uTex, 0);
-    gl.uniform1f(this.programs.bloomExtract.uniforms.uThreshold, this.crtConfig.bloomThreshold);
+    // Bloom threshold starts high (0.66) so brightest water specular highlights & koi scales emerge first,
+    // settling smoothly to normal (0.30) as uWarm reaches 1.0.
+    const warmBloomThreshold = this.uWarm < 0.999
+      ? 0.66 + (this.crtConfig.bloomThreshold - 0.66) * Math.pow(Math.max(0, this.uWarm), 0.72)
+      : this.crtConfig.bloomThreshold;
+    gl.uniform1f(this.programs.bloomExtract.uniforms.uThreshold, warmBloomThreshold);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbos.bloomB.fbo);
@@ -798,18 +840,7 @@ export class PondCRTEngine {
     gl.uniform1f(cu.uScanlineCount, Math.max(160, this.cssHeight / this.crtConfig.scanlinePitchCssPx));
     gl.uniform1f(cu.uBloomIntensity, this.crtConfig.bloomIntensity);
     gl.uniform1f(cu.uChromaticEdge, this.crtConfig.chromaticEdge);
-    if (cu.uBootReveal) gl.uniform1f(cu.uBootReveal, this.bootVisual);
-    if (cu.uBootBeamTint) {
-      // Restrained deep teal-cyan phosphor gently tinted by active season (never neon lime!)
-      const bt = this.seasonId === 'spring'
-        ? [0.46, 0.94, 0.88]
-        : this.seasonId === 'autumn'
-          ? [0.54, 0.90, 0.82]
-          : this.seasonId === 'winter'
-            ? [0.56, 0.92, 1.0]
-            : [0.38, 0.96, 0.86];
-      gl.uniform3fv(cu.uBootBeamTint, bt);
-    }
+    if (cu.uWarm) gl.uniform1f(cu.uWarm, this.uWarm);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
     gl.bindVertexArray(null);
@@ -841,6 +872,10 @@ export class PondCRTEngine {
 
   destroy() {
     this.stop();
+    if (this._bootFailsafeTimer) {
+      window.clearTimeout(this._bootFailsafeTimer);
+      this._bootFailsafeTimer = 0;
+    }
     if (this._onPointerMove) this.canvas.removeEventListener('pointermove', this._onPointerMove);
     if (this._onPointerDown) this.canvas.removeEventListener('pointerdown', this._onPointerDown);
     if (this._onPointerUp) window.removeEventListener('pointerup', this._onPointerUp);

@@ -16676,6 +16676,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **対象範囲**：`img`・`picture`・`svg`、各種アイコン、ゲーム表紙、About アバター、チャットアバター、動画サムネイル、知識庫カード画像、デスクトップ／カード操作アイコンに対し、`-webkit-user-drag: none`・動的 `draggable="false"`・`dragstart` 抑止を適用。
 - **機能操作は完全維持**：`[draggable="true"]`・`[data-allow-drag]`・ホワイトボード `.excalidraw`・入力欄および外部ファイルドロップは対象外とし、ウィンドウ移動や描画・スライダー操作へ一切影響しません。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-no-img-drag-r86', '2026-11-25')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-persepolis-warm-boot-r87', '2026-11-25-persepolis-warm-boot-r87', 'site-updates', '["pond","ui","performance"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-persepolis-warm-boot-r87-zh', 'seed-update-2026-11-25-persepolis-warm-boot-r87', 'zh', '启动动画重做：Persepolis 式同场景由暗到亮显影（r87）', '整段下线 r84 亮线、光波与扫描线动画，改由单个全局 uWarm（0→1）驱动现有 CRT 后处理 Pass 的亮度、对比度、饱和度、RGB 收敛、Bloom 阈值与暗角，场景本身即为加载器；配真实关键进度、0.9–1.6s 节拍与 2.5s 墙钟硬兜底，点击或任意键即刻直达终态。', '# 启动动画重做：Persepolis 式同场景由暗到亮显影（r87）
+
+本次整段删除 `r84` 亮线点火、径向光波与扫描光束实现，按 Persepolis Reimagined 单场景架构重做开场：
+
+- **单全局 `uWarm`（0→1）驱动现有 CRT 后处理**：无独立开场壳、无遮罩层、无任何发光波带或移动线条。0–0.2s 池塘场景已在场呈暗态显像管预热；0.2–1.1s 随 `uWarm` 上升，高阈值 Bloom 先透出水面高光与锦鲤亮鳞，对比度（`0.20→1.0`）快于亮度（`0.10→1.0`，`1-exp(-3t)`）先勾勒出形体，RGB 收敛偏移（`2.5px→0` 指数衰减）归零落定；1.1–1.4s 饱和度由 `1.05` 回落至 `1.0`，暗角由 `0.62` 收敛至 `0.34`，最后一帧即活池塘首帧。
+- **防卡死与硬约束**：`uWarm` 仅绑定关键加载进度（shader 编译＋当季核心素材），不等待非关键资源；配备脱离 RAF 主循环的 2.5s 墙钟兜底与点击/任意键直达终态；`sessionStorage` 同会话仅播一次，重访与 `prefers-reduced-motion` 直出 `uWarm = 1`，弱 GPU 保持同曲线仅降 bloom。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-persepolis-warm-boot-r87-en', 'seed-update-2026-11-25-persepolis-warm-boot-r87', 'en', 'Persepolis-Style Single-Scene Dark-to-Bright CRT Warm-Up (r87)', 'Replaced r84''s bright line, radial wave, and scan beam with a single global uWarm (0->1) driving the existing CRT post-process pass (brightness, contrast, saturation overshoot, RGB convergence, bloom threshold, vignette). Driven by real critical load progress with a 0.9-1.6s envelope, 2.5s wall-clock failsafe, and instant click/key skip.', '# Persepolis-Style Single-Scene Dark-to-Bright CRT Warm-Up (r87)
+
+This release completely removes the `r84` hairline, radial wave, and scan-beam boot and replaces it with a Persepolis-style single-scene warm-up:
+
+- **Single Global `uWarm` (0 -> 1) on Existing CRT Pass**: Zero boot shell, zero overlay mask, zero glowing waves or moving scanlines. Brightness (`0.10 -> 1.0`, `1-exp(-3t)`), contrast (`0.20 -> 1.0`, faster curve), saturation (`0.30 -> 1.05 -> 1.0`), RGB convergence (`2.5px -> 0` exponential), bloom threshold (`0.66 -> 0.30`), and vignette (`0.62 -> 0.34`) warm the live pond seamlessly so the final warm-up frame is literally Frame 1 of the live scene.
+- **Unbreakable Failsafe & Controls**: Gated only by critical preload (shader compile + active-season flora) inside a 0.9-1.6s envelope, backed by an independent 2.5s wall-clock failsafe and instant click/any-key skip outside the RAF loop. Plays once per `sessionStorage` session, skips directly on repeat visit or `prefers-reduced-motion`, and preserves full `r81` performance.', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-persepolis-warm-boot-r87-ja', 'seed-update-2026-11-25-persepolis-warm-boot-r87', 'ja', '起動演出刷新：Persepolis 式・同一シーン暗転から点灯ウォームアップ（r87）', 'r84 の輝線・波紋・走査光を完全撤去し、単一のグローバル uniform uWarm（0→1）で既存 CRT ポスト処理の輝度・コントラスト・彩度・RGB 収束・Bloom 閾値・ビネットを滑らかに駆動。実読み込み進捗＋0.9–1.6 秒制御＋2.5 秒強制フォールバックとクリック／任意キー即時スキップを備えます。', '# 起動演出刷新：Persepolis 式・同一シーン暗転から点灯ウォームアップ（r87）
+
+旧 `r84` の輝線・波紋・走査ビーム実装を完全削除し、Persepolis Reimagined 型の単一シーン・ウォームアップへ刷新しました：
+
+- **単一 uniform `uWarm`（0→1）による CRT ポスト処理駆動**：独立シェルや遮蔽マスク、光波・移動走査線は一切なし。輝度（`0.10→1.0`、`1-exp(-3t)`）・コントラスト（`0.20→1.0`）・彩度（`0.30→1.05→1.0`）・RGB 収束（`2.5px→0` 指数減衰）・Bloom 閾値（`0.66→0.30`）・ビネット（`0.62→0.34`）が池本体を暗状態からそのまま通常状態へ立ち上げます。
+- **フリーズ防止と制約遵守**：重要素材＋シェーダー完了のみに連動し 0.9–1.6 秒で完了。RAF から独立した 2.5 秒ウォールクロック保証とクリック／任意キー即時スキップを搭載し、同一セッション 1 回のみ再生・再訪／`prefers-reduced-motion` は即時終端表示とします。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-persepolis-warm-r87', '2026-11-25')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261125-no-img-drag-r86', '2026-11-25', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261125-persepolis-warm-r87', '2026-11-25', 'schema') on conflict(version) do nothing;

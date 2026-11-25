@@ -131,7 +131,6 @@ uniform vec3 uCausticTint;
 uniform vec3 uSpecularTint;
 uniform vec4 uRipples[8];
 uniform int uRippleCount;
-uniform float uBootFloraAlpha;
 
 float hash21(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
@@ -257,23 +256,8 @@ void main() {
     floraPremul += tW.rgb * (tW.a * w.w);
     floraAlpha += tW.a * w.w;
   }
-  // Plan A "Light Up the Pond" radial flora reveal (works identically for all 4 seasons via uSeasonWeights)
-  vec3 bootFloraGlint = vec3(0.0);
-  if (uBootFloraAlpha < 0.999) {
-    float bp = clamp(uBootFloraAlpha, 0.0, 1.0);
-    vec2 centered = (uv - 0.5) * vec2(aspect, 1.0);
-    float distC = length(centered);
-    float maxR = length(vec2(0.5 * aspect, 0.5)) + 0.14;
-    float revealR = mix(-0.08, maxR, bp);
-    float radMask = (1.0 - smoothstep(revealR - 0.16, revealR + 0.06, distC)) * smoothstep(0.0, 0.12, bp);
-    float edgeSpark = exp(-pow((distC - revealR) / 0.045, 2.0)) * smoothstep(0.02, 0.16, bp) * (1.0 - smoothstep(0.84, 1.0, bp));
-    bootFloraGlint = mix(uCausticTint, uSpecularTint, 0.65) * edgeSpark * floraAlpha * 0.85;
-    floraAlpha = clamp(floraAlpha * radMask, 0.0, 1.0);
-    floraPremul *= radMask;
-  }
-
   // Ripples & seasonal shimmer glow are purely additive light (alpha = 0 contribution to darkening!)
-  vec3 additiveLight = mix(uCausticTint, uSpecularTint, 0.52) * rip.z * 0.65 + sweepGlow + bootFloraGlint;
+  vec3 additiveLight = mix(uCausticTint, uSpecularTint, 0.52) * rip.z * 0.65 + sweepGlow;
   vec3 outPremul = floraPremul * (0.96 + 0.10 * rip.z) + additiveLight * (1.0 - floraAlpha * 0.65);
   fragColor = vec4(outPremul, floraAlpha);
 }
@@ -335,8 +319,7 @@ uniform float uDotPitchPx;
 uniform float uScanlineCount;
 uniform float uBloomIntensity;
 uniform float uChromaticEdge;
-uniform float uBootReveal;
-uniform vec3 uBootBeamTint;
+uniform float uWarm;
 
 float hash21(vec2 p) {
   p = fract(p * vec2(234.34, 435.345));
@@ -374,11 +357,17 @@ void main() {
     return;
   }
 
-  // Edge-only chromatic aberration (0 in center for razor-sharp text & icons)
+  // Edge-only chromatic aberration + Persepolis uWarm RGB convergence (2.5px -> 0, exponential decay, zero lines/bands)
+  float warm = clamp(uWarm, 0.0, 1.0);
+  float rgbConvPx = warm < 0.999
+    ? 2.5 * exp(-4.2 * warm) * (1.0 - smoothstep(0.86, 1.0, warm))
+    : 0.0;
+  vec2 rgbConvUv = vec2(rgbConvPx / max(1.0, uResolution.x), rgbConvPx * 0.32 / max(1.0, uResolution.y));
+
   vec2 fromCenter = warpedUv - 0.5;
   float r = length(fromCenter);
   float caWeight = smoothstep(0.28, 0.74, r);
-  vec2 caOffset = fromCenter * caWeight * uChromaticEdge;
+  vec2 caOffset = fromCenter * caWeight * uChromaticEdge + rgbConvUv;
 
   // --- Fused CRT Phosphor-Dot Matrix Quantization ---
   vec2 cellSize = vec2(uDotPitchPx * 1.04, uDotPitchPx * 0.94);
@@ -412,82 +401,56 @@ void main() {
   vec3 bloom = texture(uBloomTex, warpedUv).rgb;
   col += bloom * uBloomIntensity;
 
-  // Composite crisp UI layer
+  // Composite crisp UI layer (gently shares RGB convergence while warming, razor-sharp at uWarm = 1.0)
   vec2 uiUv = vec2(warpedUv.x, 1.0 - warpedUv.y);
-  vec4 ui = texture(uUiTex, uiUv);
+  vec4 ui;
+  if (rgbConvPx > 0.02) {
+    vec4 uiR = texture(uUiTex, clamp(uiUv + rgbConvUv * 0.85, 0.001, 0.999));
+    vec4 uiG = texture(uUiTex, uiUv);
+    vec4 uiB = texture(uUiTex, clamp(uiUv - rgbConvUv * 0.85, 0.001, 0.999));
+    ui = vec4(uiR.r, uiG.g, uiB.b, max(uiG.a, max(uiR.a, uiB.a) * 0.65));
+  } else {
+    ui = texture(uUiTex, uiUv);
+  }
   col = mix(col, ui.rgb * 1.08, ui.a);
 
-  // Anti-moiré horizontal CRT scanlines
+  // Anti-moiré static horizontal CRT scanlines (part of final CRT texture, zero movement)
   float scanPhase = warpedUv.y * uScanlineCount * 3.14159265;
   float scanWave = 0.5 + 0.5 * cos(scanPhase * 2.0);
   float finalLum = dot(col, vec3(0.299, 0.587, 0.114));
   float scanDepth = mix(0.28, 0.09, clamp(finalLum * 1.1 + ui.a * 0.55, 0.0, 1.0));
   col *= 1.0 - scanDepth * (1.0 - scanWave);
 
-  // Subtle CRT tube edge vignette
+  // Subtle CRT tube edge vignette (slightly stronger while cold, settling smoothly to 0.34 at uWarm = 1.0)
+  float vigStrength = mix(0.62, 0.34, smoothstep(0.0, 0.85, warm));
   vec2 v2 = warpedUv * 2.0 - 1.0;
-  float edgeVignette = 1.0 - 0.34 * pow(clamp(dot(v2 * vec2(0.85, 0.92), v2 * vec2(0.85, 0.92)), 0.0, 1.4), 1.45);
-  col *= clamp(edgeVignette, 0.28, 1.0);
+  float edgeVignette = 1.0 - vigStrength * pow(clamp(dot(v2 * vec2(0.85, 0.92), v2 * vec2(0.85, 0.92)), 0.0, 1.4), 1.45);
+  col *= clamp(edgeVignette, 0.18, 1.0);
 
   // Filmic highlight roll-off
   col = col / (1.0 + col * 0.18);
   col = pow(max(col, 0.0), vec3(0.96));
 
-  // Plan A "Light Up the Pond" (r84): Same-Pipeline Pond Emergence (Zero old r57 shell, Zero pure-black frame)
-  // Beat 1 (0.00-0.14): 0.3s CRT phosphor hairline ignition over deep luminous teal radial pond base
-  // Beat 2 (0.14-0.86): Radial dot-matrix phosphor ripple wavefront illuminates live pond water -> flora -> koi -> icons -> clock
-  // Beat 3 (0.84-1.00): Crisp top-to-bottom scanline beam sweeps into 100% live interactive pond (zero jump/flash)
-  if (uBootReveal < 0.999) {
-    float p = clamp(uBootReveal, 0.0, 1.0);
-    float aspect = uResolution.x / max(1.0, uResolution.y);
-    vec2 centered = (warpedUv - 0.5) * vec2(aspect, 1.0);
-    float distC = length(centered);
-    float maxR = length(vec2(0.5 * aspect, 0.5)) + 0.12;
+  // Persepolis-style single-scene dark-to-bright phosphor warm-up (r87)
+  // Driven strictly by global uWarm (0 -> 1); exact identity at uWarm = 1.0 (zero exit animation, zero flash!)
+  if (warm < 0.999) {
+    // Contrast: 0.20 -> 1.0 (faster than brightness so forms emerge before full luminance)
+    float cCurve = (1.0 - exp(-4.2 * warm)) / (1.0 - exp(-4.2));
+    float warmContrast = mix(0.20, 1.0, cCurve);
+    vec3 pivot = vec3(0.14, 0.20, 0.22);
+    col = max(vec3(0.0), pivot + (col - pivot) * warmContrast);
 
-    // Deep luminous radial pond base (matches r81 #0a2c35 -> #05171e -> #030d12, NEVER pure black)
-    float radBg = clamp(1.0 - distC / max(0.001, maxR * 0.92), 0.0, 1.0);
-    vec3 deepPondBase = mix(vec3(0.015, 0.055, 0.075), vec3(0.042, 0.165, 0.195), pow(radBg, 1.25));
-    // Subtle dot-matrix texture even on the luminous radial base
-    deepPondBase *= (0.72 + 0.38 * dotCore);
+    // Saturation: 0.30 -> 1.05 -> 1.0 (subtle late overshoot settling back to 1.0)
+    float satBase = mix(0.30, 1.0, smoothstep(0.0, 0.78, warm));
+    float satOvershoot = 0.05 * sin(smoothstep(0.55, 1.0, warm) * 3.14159265);
+    float warmSat = satBase + satOvershoot;
+    float wLum = dot(col, vec3(0.299, 0.587, 0.114));
+    col = max(vec3(0.0), mix(vec3(wLum), col, warmSat));
 
-    // Beat 1: Ultra-short (~0.3s) horizontal CRT ignition beam expanding into the tube
-    float igniteW = smoothstep(0.0, 0.10, p);
-    float igniteFade = 1.0 - smoothstep(0.10, 0.24, p);
-    float dy = abs(warpedUv.y - 0.5);
-    float dx = abs(warpedUv.x - 0.5);
-    float insideX = 1.0 - smoothstep(mix(0.16, 0.54, igniteW) - 0.04, mix(0.16, 0.54, igniteW) + 0.04, dx);
-    float centerBeam = exp(-pow(dy / 0.0068, 2.0)) * insideX * igniteFade;
-    float centerHalo = exp(-pow(dy / 0.036, 2.0)) * insideX * igniteFade * 0.42;
-
-    // Beat 2: Expanding radial dot-matrix phosphor ripple illuminating the live pond
-    float ripProg = smoothstep(0.08, 0.68, p);
-    float rippleR = mix(0.02, maxR * 1.08, pow(ripProg, 0.88));
-    float pondMask = 1.0 - smoothstep(rippleR - 0.18, rippleR + 0.05, distC);
-    float waterReveal = smoothstep(0.04, 0.26, p);
-    float liveBlend = clamp(pondMask * waterReveal, 0.0, 1.0);
-
-    // Sparkling dot-matrix wavefront ring along the expanding ripple edge
-    float ringBand = exp(-pow((distC - rippleR) / 0.038, 2.0));
-    float ringFade = smoothstep(0.06, 0.16, p) * (1.0 - smoothstep(0.60, 0.80, p));
-    float dotSpark = (0.42 + 0.88 * dotCore) * (0.85 + 0.15 * sin(uTime * 8.0 + rnd * 6.2831));
-    vec3 rippleRingCol = uBootBeamTint * ringBand * ringFade * dotSpark * 1.15;
-
-    // Secondary soft inner ripple echo
-    float echoR = max(0.0, rippleR - 0.11);
-    float echoBand = exp(-pow((distC - echoR) / 0.028, 2.0)) * ringFade * 0.36;
-    rippleRingCol += uBootBeamTint * echoBand * (0.5 + 0.5 * dotCore);
-
-    // Beat 3: Final top-to-bottom phosphor scan beam handoff (p: 0.82 -> 0.99)
-    float scanP = smoothstep(0.82, 0.99, p);
-    float scanEnv = smoothstep(0.82, 0.86, p) * (1.0 - smoothstep(0.95, 1.0, p));
-    float scanY = 1.0 - scanP; // top (1.0) -> bottom (0.0) in WebGL UV
-    float scanLine = exp(-pow((warpedUv.y - scanY) / 0.016, 2.0)) * scanEnv;
-    vec3 scanGlow = mix(uBootBeamTint, vec3(0.86, 0.99, 0.98), 0.45) * scanLine * (0.45 + 0.65 * dotCore) * 0.72;
-
-    // Composite seamlessly into the real live pond (UI already sits in col via uUiTex!)
-    vec3 baseComposite = mix(deepPondBase, col, liveBlend);
-    vec3 bootCol = baseComposite + uBootBeamTint * (centerBeam * 1.35 + centerHalo) + rippleRingCol + scanGlow;
-    col = mix(bootCol, col, smoothstep(0.92, 1.0, p));
+    // Brightness: dark tube warm floor (0.10) -> 1.0 via exponential approach 1 - exp(-3t)
+    float bCurve = (1.0 - exp(-3.0 * warm)) / (1.0 - exp(-3.0));
+    float warmBrightness = mix(0.10, 1.0, bCurve);
+    col *= warmBrightness;
   }
 
   col *= glassMask;
