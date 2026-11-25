@@ -434,7 +434,7 @@ const GLASS_SCOPE_SELECTOR = '.xp-window, #account-popover, #welcome-modal, #vid
 const GLASS_EXCLUDE_ANCESTOR = '#article-detail-body, iframe, .excalidraw, [data-no-glass]';
 const GLASS_CLOSE_MATCH = '.close-button, .account-close-button';
 const GLASS_ICON_MATCH = '#video-window-maximize, [data-article-scroll-top], .chat-tool-button, .chat-room-help-trigger, .about-social-link, .account-password-toggle, .transfer-pending-remove';
-const GLASS_CARD_MATCH = '.article-card';
+const GLASS_CARD_MATCH = '.article-card:not(.article-card-skeleton)';
 const GLASS_PRIMARY_MATCH = [
   'button',
   '.xp-button',

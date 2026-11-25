@@ -3238,6 +3238,8 @@ html[data-pond-mode="knowledge"] #knowledge-list .article-card {
   column-gap: 14px !important;
   row-gap: 5px !important;
   align-items: center !important;
+  flex: 0 0 auto !important;
+  height: auto !important;
   padding: 13px 12px !important;
 }
 
