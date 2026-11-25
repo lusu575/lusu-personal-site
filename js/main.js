@@ -2025,9 +2025,6 @@ function recentUpdateElement(item) {
 }
 
 function recentUpdateIconClass(item) {
-  if (item?.icon === "system") {
-    return "update-icon-system";
-  }
   const tags = Array.isArray(item?.tags) ? item.tags.join(" ") : String(item?.tags || "");
   const titleAndSlug = `${item?.slug || ""} ${localText(item?.title) || ""}`.toLowerCase();
   // Site-wide / system / performance / pond / glass updates always use the System Spark icon,
