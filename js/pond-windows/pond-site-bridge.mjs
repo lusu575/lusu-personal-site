@@ -780,6 +780,32 @@ function bootPondVisualBridge() {
     }).observe(welcomeModalObs, { attributes: true, attributeFilter: ['hidden'] });
   }
 
+  // r86: Prevent native browser ghost-image dragging on all images, icons, avatars & covers
+  // without interfering with window titlebar dragging, whiteboard drawing, sliders, or OS file drops.
+  function lockImagesNonDraggable(root = document) {
+    if (!root || !root.querySelectorAll) return;
+    root.querySelectorAll('img:not([draggable="false"]):not([data-allow-drag])').forEach((img) => {
+      if (img.closest('.excalidraw, [data-allow-drag]')) return;
+      img.draggable = false;
+    });
+  }
+
+  document.addEventListener('dragstart', (event) => {
+    const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+    if (!target) return;
+    if (target.closest('[data-allow-drag], [draggable="true"], .excalidraw, input, textarea, [contenteditable]:not([contenteditable="false"])')) {
+      return;
+    }
+    if (
+      target.tagName === 'IMG' ||
+      target.tagName === 'PICTURE' ||
+      target.tagName === 'SVG' ||
+      target.closest('img, picture, svg, .pixel-icon, .title-icon, .asset-icon, .social-icon, .quick-link-asset, .game-cover, .profile-avatar, .chatroom-avatar, .chat-message-avatar, .video-thumb, .desktop-icon, .about-social-link, .card-action, .game-source-link')
+    ) {
+      event.preventDefault();
+    }
+  }, true);
+
   let glassBindQueued = false;
   const scheduleSiteGlassBind = () => {
     if (glassBindQueued) return;
@@ -787,6 +813,7 @@ function bootPondVisualBridge() {
     window.requestAnimationFrame(() => {
       glassBindQueued = false;
       attachSiteGlassButtons();
+      lockImagesNonDraggable();
     });
   };
 
@@ -804,6 +831,7 @@ function bootPondVisualBridge() {
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'data-pond-mode'] });
   syncGamesCloudBanner();
   attachSiteGlassButtons();
+  lockImagesNonDraggable();
 
   window.addEventListener('hashchange', () => {
     syncVisualMode();

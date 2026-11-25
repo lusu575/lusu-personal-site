@@ -2,6 +2,8 @@
 
 ## 2026-11-25
 
+- `r86` 全站图片与图标禁止原生拖拽（去拖影）：通过 `-webkit-user-drag: none`、动态补齐 `draggable="false"` 与捕获期 `dragstart` 拦截，统一禁止游戏封面、关于页头像、视频封面、知识库卡片图、聊天头像、桌面图标及卡片/社交图标链接被按住拖出半透明拖影；严格保留窗口标题栏移动、画板绘图、滑块与临时互传外部文件拖放等功能性交互（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-disable-image-drag-r86` / `2026-11-25-disable-image-drag-r86`；视觉层缓存 `20261125-no-img-drag-r86`。
+
 - `r85` 分区域文字禁选与默认光标优化：将桌面池塘默认光标从 `auto` 调整为 `default` 并按确认清单为纯 UI 外壳（桌面图标/顶部时钟/左下角 ID、欢迎窗全文字、各窗口标题栏与控件/筛选/分页、知识库/视频/工具/游戏卡面 UI 文字、聊天室昵称/时间/系统提示/未读胶囊、关于页兴趣标签与社交链接）禁用误拖选；同时保留文章阅读页正文/摘要/代码块与更新记录正文、聊天室消息正文、关于页自介与联系方式、临时互传口令与传输内容、日语的言外之意内容文本可选可复制，所有输入框/文本域/`contenteditable` 与内嵌游戏保持原生（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-ui-text-select-cursor-r85` / `2026-11-25-ui-text-select-cursor-r85`；视觉层缓存 `20261125-ui-select-r85`。
 
 - `r84b` 紧急修复：`shaders.mjs` 模板字符串注释中误含反引号导致的语法错误（缓存刷新至 `20261125-pond-lightup-r84b`）。

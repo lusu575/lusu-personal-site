@@ -16656,6 +16656,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **選択・コピー維持（本文エリア）**：記事・更新履歴の本文・要約・コードブロック（目次とタイトルバーは選択禁止）、チャットメッセージ本文、About の自己紹介と連絡先、クイック転送の合言葉・転送内容、日本語サブテキスト練習ツールの本文。
 - **ネイティブ維持**：入力欄・テキストエリア・`contenteditable` およびゲーム iframe 内はそのまま維持しています。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-ui-select-r85', '2026-11-25')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-disable-image-drag-r86', '2026-11-25-disable-image-drag-r86', 'site-updates', '["ui","pond"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-disable-image-drag-r86-zh', 'seed-update-2026-11-25-disable-image-drag-r86', 'zh', '交互手感收口：全站图片与图标禁止原生拖拽去拖影（r86）', '统一禁止游戏区封面图与卡片、关于页头像、视频封面、知识库卡片图、聊天头像及桌面图标区的浏览器原生拖影行为（-webkit-user-drag: none + draggable=false + dragstart 拦截），同时完整保留窗口标题栏拖动、画板绘图、滑块与临时互传文件拖放等功能性交互。', '# 交互手感收口：全站图片与图标禁止原生拖拽去拖影（r86）
+
+紧接 `r85` 的应用化交互收口，本次统一消除全站图片与图标按住拖动时出现半透明拖影的问题：
+
+- **全站图片与图标禁拖**：对全站 `img`、`picture`、`svg`、像素/窗口/社交图标、游戏封面、关于页头像、聊天头像、视频封面、知识库卡片图及卡片/桌面图标链接统一应用 `-webkit-user-drag: none`，动态补齐 `draggable="false"`，并在捕获阶段拦截原生 `dragstart`。
+- **红线零误伤**：严格跳过 `[draggable="true"]`、`[data-allow-drag]`、画板 `.excalidraw`、输入框/文本域与外部文件拖放事件，窗口标题栏拖动、画板绘图与滑块拖动不受任何影响。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-disable-image-drag-r86-en', 'seed-update-2026-11-25-disable-image-drag-r86', 'en', 'App-Like Interaction Polish: Disable Native Ghost-Image Dragging (r86)', 'Disabled native browser ghost-image dragging across game covers, About avatars, video thumbnails, knowledge card images, chat avatars, and desktop icons via -webkit-user-drag: none, draggable=false, and dragstart interception while preserving window dragging, whiteboard drawing, sliders, and file drops.', '# App-Like Interaction Polish: Disable Native Ghost-Image Dragging (r86)
+
+Following `r85`, this release eliminates browser ghost-image dragging when holding and moving over site images and icons:
+
+- **Site-Wide No-Drag Coverage**: Applies `-webkit-user-drag: none`, dynamic `draggable="false"`, and capturing `dragstart` prevention across `img`, `picture`, `svg`, pixel/window/social icons, game covers, About avatars, chat avatars, video thumbnails, knowledge card images, and desktop/card action icons.
+- **Functional Dragging Preserved**: Explicitly bypasses `[draggable="true"]`, `[data-allow-drag]`, `.excalidraw`, inputs, and OS file drop events so window titlebar dragging, whiteboard drawing, sliders, and Quick Transfer drops remain untouched.', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-disable-image-drag-r86-ja', 'seed-update-2026-11-25-disable-image-drag-r86', 'ja', 'UI 操作感の調整：画像・アイコンのネイティブドラッグ残像を無効化（r86）', 'ゲーム表紙、About アバター、動画サムネイル、知識庫カード画像、チャットアイコン、デスクトップアイコンのブラウザ標準ドラッグ残像を無効化し、ウィンドウ移動・ホワイトボード描画・スライダー・ファイルドロップ等の機能操作はそのまま維持しました。', '# UI 操作感の調整：画像・アイコンのネイティブドラッグ残像を無効化（r86）
+
+`r85` に続き、サイト内の画像やアイコンをドラッグした際に半透明の残像が出るブラウザ標準挙動を解消しました：
+
+- **対象範囲**：`img`・`picture`・`svg`、各種アイコン、ゲーム表紙、About アバター、チャットアバター、動画サムネイル、知識庫カード画像、デスクトップ／カード操作アイコンに対し、`-webkit-user-drag: none`・動的 `draggable="false"`・`dragstart` 抑止を適用。
+- **機能操作は完全維持**：`[draggable="true"]`・`[data-allow-drag]`・ホワイトボード `.excalidraw`・入力欄および外部ファイルドロップは対象外とし、ウィンドウ移動や描画・スライダー操作へ一切影響しません。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-no-img-drag-r86', '2026-11-25')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261125-ui-select-r85', '2026-11-25', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261125-no-img-drag-r86', '2026-11-25', 'schema') on conflict(version) do nothing;

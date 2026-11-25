@@ -6914,6 +6914,34 @@ html[data-pond-mode] :is(button:disabled, input:disabled, select:disabled, [aria
   cursor: not-allowed !important;
 }
 
+/* r86: Disable native browser ghost-image dragging on all images, icons, covers & avatars */
+img:not([data-allow-drag]),
+picture:not([data-allow-drag]),
+svg:not([data-allow-drag]),
+.pixel-icon,
+.title-icon,
+.asset-icon,
+.social-icon,
+.quick-link-asset,
+.game-cover,
+.profile-avatar,
+.profile-avatar-image,
+.chatroom-avatar,
+.chat-message-avatar,
+.video-thumb,
+.video-thumb img,
+.article-card img,
+.desktop-icon,
+.desktop-icon *,
+.about-social-link,
+.card-action,
+.game-source-link,
+.brand-orb,
+.start-windows-icon {
+  -webkit-user-drag: none !important;
+  user-drag: none;
+}
+
 html[data-pond-mode] :is(.close-button, .account-close-button):where(:hover, :focus-visible, :active) {
   width: 36px !important;
   height: 36px !important;

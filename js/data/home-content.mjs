@@ -2,6 +2,33 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-25-disable-image-drag-r86",
+      "slug": "2026-11-25-disable-image-drag-r86",
+      "category": "site-updates",
+      "tags": [
+        "ui",
+        "pond"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": "2026-11-25",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "交互手感收口：全站图片与图标禁止原生拖拽去拖影（r86）",
+        "en": "App-Like Interaction Polish: Disable Native Ghost-Image Dragging (r86)",
+        "ja": "UI 操作感の調整：画像・アイコンのネイティブドラッグ残像を無効化（r86）"
+      },
+      "summary": {
+        "zh": "统一禁止游戏区封面图与卡片、关于页头像、视频封面、知识库卡片图、聊天头像及桌面图标区的浏览器原生拖影行为（-webkit-user-drag: none + draggable=false + dragstart 拦截），同时完整保留窗口标题栏拖动、画板绘图、滑块与临时互传文件拖放等功能性交互。",
+        "en": "Disabled native browser ghost-image dragging across game covers, About avatars, video thumbnails, knowledge card images, chat avatars, and desktop icons via -webkit-user-drag: none, draggable=false, and dragstart interception while preserving window dragging, whiteboard drawing, sliders, and file drops.",
+        "ja": "ゲーム表紙、About アバター、動画サムネイル、知識庫カード画像、チャットアイコン、デスクトップアイコンのブラウザ標準ドラッグ残像を無効化し、ウィンドウ移動・ホワイトボード描画・スライダー・ファイルドロップ等の機能操作はそのまま維持しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-25-ui-text-select-cursor-r85",
       "slug": "2026-11-25-ui-text-select-cursor-r85",
       "category": "site-updates",
@@ -112,35 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "按 V1.0 方案与 r76 签收参数将液态玻璃三档交互铺开至全站主操作、工具图标与关闭按钮，并同步修复欢迎窗系统更新图标映射为星芒、猫国建筑悬浮提示框整体深色化。",
         "en": "Rolled out the approved r76 CRT Glass Lite three-tier button interactions across all desktop windows, fixed Welcome system update icons to use the System Spark, and unified Kittens Game hover tooltips in dark teal.",
         "ja": "r76 承認パラメータのまま CRT Glass Lite の 3 段階ボタン操作を全ウィンドウへ展開し、ようこそ画面のシステム更新アイコン（星芒）判定と猫国の建物ツールチップ暗色化を修正しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-25-known-issues-perf-r81",
-      "slug": "2026-11-25-known-issues-perf-r81",
-      "category": "site-updates",
-      "tags": [
-        "performance",
-        "ui",
-        "games",
-        "pond"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-25",
-      "updated_at": "2026-11-25",
-      "published_at": "2026-11-25",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "全站已知问题集中修复与桌面池塘三步性能优化上线（r81）",
-        "en": "Known-Issues Sweep & Three-Step Desktop Pond Performance Overhaul (r81)",
-        "ja": "既知不具合の一括修正とデスクトップ池 3 段階パフォーマンス最適化（r81）"
-      },
-      "summary": {
-        "zh": "桌面池塘停止加载后台旧壁纸视频与隐藏星光动画、荷叶纹理改为按帧增量烘焙、开窗样式不再整表重排，并同步修复猫国语言同步与白按钮深色化、欢迎窗图标区分度与移除临时公告横条、视频失败态按钮与游戏云存档提示文案。",
-        "en": "Eliminated hidden legacy wallpaper video/star overhead on desktop Pond, switched flora baking to incremental idle slices, stopped stylesheet detachment during window opens, darkened Kittens sell buttons, upgraded Welcome icons, removed the temporary notice banner, and tightened Knowledge/Video fallbacks.",
-        "ja": "デスクトップ池モードで背面の旧壁紙動画と星アニメーションを停止し、季節植生の段階ベイクとスタイルシート非再挿入化を実施。さらに猫国の言語同期と白ボタン暗色化、ようこそ画面のアイコン改善と仮お知らせ削除、動画再試行ボタンと知識庫の再試行耐性を修正しました。"
       }
     }
   ]
