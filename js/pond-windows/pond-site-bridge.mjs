@@ -458,6 +458,108 @@ function bootPondVisualBridge() {
     return engine;
   }
 
+  let openGateSeq = 0;
+
+  function isWindowContentReady(mode) {
+    if (mode === 'welcome' || mode === 'article') return true;
+    const section = document.getElementById(mode);
+    if (!section) return true;
+    if (section.querySelector('.route-module-status.is-loading, .content-state.is-loading, .content-recovery-notice.is-loading, .article-card-skeleton, #about-social-network-status.is-loading')) return false;
+
+    if (mode === 'about') {
+      const socialNav = document.getElementById('about-social-links');
+      if (socialNav && socialNav.getAttribute('aria-busy') === 'true') return false;
+      const avatar = section.querySelector('.profile-avatar-image');
+      if (avatar && (!avatar.complete || avatar.naturalWidth === 0)) return false;
+      return true;
+    }
+    if (mode === 'resources') {
+      const cards = section.querySelectorAll('#resource-list .resource-card');
+      if (!cards.length) return false;
+      applyToolsSvgPresentation();
+      const icons = [...section.querySelectorAll('#resource-list .resource-icon-image')];
+      if (icons.some((img) => !img.complete || img.naturalWidth === 0)) return false;
+      return true;
+    }
+    if (mode === 'games') {
+      const cards = section.querySelectorAll('#game-list .game-card');
+      if (!cards.length) return false;
+      syncGamesCloudBanner();
+      applyGamesCoverPresentation();
+      return true;
+    }
+    if (mode === 'knowledge') {
+      const realCards = section.querySelectorAll('#knowledge-list .article-card:not(.article-card-skeleton)');
+      if (realCards.length > 0) return true;
+      const empty = section.querySelector('#knowledge-list .empty-state, #knowledge-list .content-state:not(.is-loading)');
+      return Boolean(empty);
+    }
+    if (mode === 'videos') {
+      const cards = section.querySelectorAll('#video-list .video-card');
+      if (cards.length > 0) return true;
+      const empty = section.querySelector('#video-list .empty-state, #video-list .content-state:not(.is-loading)');
+      return Boolean(empty);
+    }
+    if (mode === 'chatroom') {
+      applyChatAvatarPresentation();
+      const avatar = section.querySelector('.chatroom-avatar');
+      if (avatar && (!avatar.complete || avatar.naturalWidth === 0)) return false;
+      return true;
+    }
+    return true;
+  }
+
+  function openWindowWithReadyGate(mode) {
+    const token = ++openGateSeq;
+    // Fast path: warm open or already pre-warmed cold open -> 0ms delay, immediate Frame 0 launch!
+    if (isWindowContentReady(mode)) {
+      windowMorph.startOpen(mode);
+      return;
+    }
+    // Cold-open Ready-Gate: keep empty shell hidden while module/data/images settle, then morph directly into final state!
+    windowMorph.prepareOpenMount(mode);
+    const section = document.getElementById(mode);
+    const maxWaitMs = (mode === 'knowledge' || mode === 'games' || mode === 'videos') ? 1500 : 950;
+    const startMs = performance.now();
+    let done = false;
+    let obs = null;
+    let rafHandle = 0;
+
+    const finish = () => {
+      if (done) return;
+      done = true;
+      if (obs) { obs.disconnect(); obs = null; }
+      if (rafHandle) { cancelAnimationFrame(rafHandle); rafHandle = 0; }
+      if (token !== openGateSeq || activeMode !== mode) return;
+      if (mode === 'resources') applyToolsSvgPresentation();
+      else if (mode === 'games') { syncGamesCloudBanner(); applyGamesCoverPresentation(); }
+      else if (mode === 'chatroom') applyChatAvatarPresentation();
+      windowMorph.startOpen(mode);
+    };
+
+    const check = () => {
+      if (done) return;
+      if (token !== openGateSeq || activeMode !== mode) {
+        done = true;
+        if (obs) { obs.disconnect(); obs = null; }
+        return;
+      }
+      if (isWindowContentReady(mode) || (performance.now() - startMs) >= maxWaitMs) {
+        finish();
+        return;
+      }
+      rafHandle = window.requestAnimationFrame(check);
+    };
+
+    if (section && typeof MutationObserver === 'function') {
+      obs = new MutationObserver(() => {
+        if (!done && isWindowContentReady(mode)) finish();
+      });
+      obs.observe(section, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-busy', 'hidden', 'class', 'src'] });
+    }
+    rafHandle = window.requestAnimationFrame(check);
+  }
+
   function syncVisualMode() {
     const route = document.body.dataset.route || 'home';
     const prevMode = activeMode;
@@ -516,9 +618,10 @@ function bootPondVisualBridge() {
         || (prevMode === 'article' && nextMode === 'knowledge');
       if (prevMode && prevMode !== nextMode) {
         if (nextMode === 'home') {
+          openGateSeq++;
           windowMorph.syncScrimImmediate(false);
         } else if (!isInnerKnowledgeSwap) {
-          windowMorph.startOpen(nextMode);
+          openWindowWithReadyGate(nextMode);
         }
       } else if (!prevMode) {
         windowMorph.syncScrimImmediate(nextMode !== 'home');
@@ -833,18 +936,42 @@ function bootPondVisualBridge() {
   installAutoGlassBinding();
   lockImagesNonDraggable();
 
-  // r90: Eagerly decode lightweight static window avatars on idle so cold-open matches warm-open on Frame 0
-  const warmStaticWindowMedia = () => {
-    document.querySelectorAll('#about .profile-avatar-image, #chatroom .chatroom-avatar').forEach((img) => {
+  // r94 Boot-Time Silent Pre-Warming (runs in parallel with the 1.4s r87 CRT warm-up — ZERO first-paint blocking):
+  // 1) Immediately eagerly decode About avatar, social icons, Chatroom avatar, and Tools SVG icons into GPU memory.
+  // 2) Silently pre-import all dynamic route/data ES modules so cold-open module resolution is instant (<1ms).
+  const prewarmPondAssetsAndModules = () => {
+    document.querySelectorAll('#about .profile-avatar-image, #about .about-social-link img, #chatroom .chatroom-avatar').forEach((img) => {
       if (img.loading === 'lazy') img.loading = 'eager';
       img.removeAttribute('loading');
+      if (typeof img.decode === 'function') {
+        img.decode().catch(() => {});
+      }
+    });
+    const svgIcons = [
+      '/assets/pond-windows/svg/icon-palette.svg?v=20261122-pond-polish-r14',
+      '/assets/pond-windows/svg/icon-transfer.svg?v=20261122-pond-polish-r14',
+      '/assets/pond-windows/svg/icon-torii.svg?v=20261122-pond-polish-r14'
+    ];
+    svgIcons.forEach((url) => {
+      const im = new Image();
+      im.src = url;
+      if (typeof im.decode === 'function') im.decode().catch(() => {});
+    });
+    const routeModules = [
+      '../routes/knowledge.mjs?v=20260908-site-review-r1',
+      '../routes/videos.mjs?v=20260908-site-review-r1',
+      '../data/videos-content.mjs?v=20260718-resource-icons-layout-r1',
+      '../routes/resources.mjs?v=20261029-private-mcp-r1',
+      '../data/resources-content.mjs?v=20261029-private-mcp-r1',
+      '../routes/games.mjs?v=20260726-security-reliability-r1',
+      '../routes/chatroom.mjs?v=20260809-motion-polish-r2'
+    ];
+    routeModules.forEach((modUrl) => {
+      import(modUrl).catch(() => {});
     });
   };
-  if (typeof window.requestIdleCallback === 'function') {
-    window.requestIdleCallback(warmStaticWindowMedia, { timeout: 1200 });
-  } else {
-    window.setTimeout(warmStaticWindowMedia, 400);
-  }
+  // Fire immediately on next microtask/frame so pre-warming finishes well before the 1.4s boot animation ends!
+  window.setTimeout(prewarmPondAssetsAndModules, 60);
 
   window.addEventListener('hashchange', () => {
     syncVisualMode();

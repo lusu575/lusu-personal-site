@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-25-unclipped-halo-layer-r93";
-const finalUpdateSlug = "2026-11-25-unclipped-halo-layer-r93";
+const finalUpdateId = "seed-update-2026-11-25-cold-open-pipeline-r94";
+const finalUpdateSlug = "2026-11-25-cold-open-pipeline-r94";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Structural Unclipped Glass Halo Layer: Full-Strength Outer Glow Restored (r93)";
+const finalTitleEn = "Systemic Cold-Open Pipeline Fix: Boot Pre-Warming, Ready-Gate & Zero Transient Loading Boxes (r94)";
 const finalPublishedAt = "2026-11-25";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-25-unclipped-halo-layer-r93",
   "seed-update-2026-11-25-mengto-edge-cold-r92",
   "seed-update-2026-11-25-refresh-boot-warm-r91",
   "seed-update-2026-11-25-cold-open-consistency-r90",

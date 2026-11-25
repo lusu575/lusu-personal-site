@@ -16824,6 +16824,29 @@ r92 の光彩半径縮小を撤回し、構造的な解決へ切り替えまし�
 - **最上位非クリップ光彩層（`#crt-glass-halo-layer`）**：`document.body` 直下の `position: fixed` 層にアクティブボタンの実寸・角丸で同期描画し、カードやスクロール枠の `overflow: hidden` による直線切れを完全に解消（静止時 DOM ゼロ・リスナーゼロ）。
 - **対象範囲**：ようこそ画面 4 ボタンの MengTo パイロットはそのまま維持します。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-unclipped-halo-r93', '2026-11-25')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-cold-open-pipeline-r94', '2026-11-25-cold-open-pipeline-r94', 'site-updates', '["ui","pond","performance"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-cold-open-pipeline-r94-zh', 'seed-update-2026-11-25-cold-open-pipeline-r94', 'zh', '全站冷开管线级根治：开机静默预热＋开窗 Ready-Gate＋全站零多余加载框（r94）', '按全量冷开审计结果从管线层根治冷开与热开不一致：开机 60ms 内并行预加载全部 7 个动态路由/数据 ES 模块并主动解码关于/聊天室头像、社交图标与工具 SVG；开窗前引入 Ready-Gate 等待内容与图片落定再发出第 0 帧飞窗（热开 0ms 零延迟）；统一消除全站冷开期一切多余加载框与骨架屏（含关于窗「正在检查社交链接…」行），冷开全程零位移、第 0 帧即终态。', '# 全站冷开管线级根治：开机静默预热＋开窗 Ready-Gate＋全站零多余加载框（r94）
+
+本次按全站冷开审计结论从管线层彻底根治冷开与热开不一致及全站多余加载框问题：
+
+- **开机显影期并行静默预热**：在 `pond-site-bridge.mjs` 启动 60ms 后并行预导入全部 7 个路由/数据 ES 模块，并立即主动 `decode()` 关于窗头像、5 个社交图标、聊天室头像与 3 个工具 SVG 图标，不阻塞首屏绘制。
+- **开窗 Ready-Gate 管线**：在 `syncVisualMode()` 中引入 `openWindowWithReadyGate()`。热开或已预热路径 0ms 同步直发；冷开如遇路由模块、接口数据、社交链接检查或关键图片仍在加载，先通过 `prepareOpenMount()` 隐藏空壳，待终态 DOM 与图片全部落定后再发出第 0 帧飞窗动画（设 950–1500ms 兜底上限）。
+- **全站统一消除冷开多余加载框**：统一屏蔽桌面 Pond 模式下的 `.route-module-status.is-loading`、`#about-social-network-status.is-loading`（「正在检查社交链接…」行）、`.content-state.is-loading`、`.content-recovery-notice.is-loading` 与 `.article-card-skeleton`（保留 `.is-error` 重试与 `.is-empty` 空态），并锁定 `#about-social-links` 单行 `36px` 高度，彻底消除冷开多框与内容整体上顶位移。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-cold-open-pipeline-r94-en', 'seed-update-2026-11-25-cold-open-pipeline-r94', 'en', 'Systemic Cold-Open Pipeline Fix: Boot Pre-Warming, Ready-Gate & Zero Transient Loading Boxes (r94)', 'Fixed cold-open vs warm-open inconsistencies at the pipeline level: silently pre-warms all 7 dynamic route/data ES modules and eagerly decodes About/Chatroom avatars, social icons, and Tools SVGs during the 1.4s boot warm-up; gates cold window morphs until content and images settle (0ms overhead on warm open); and eliminates all transient loading boxes/skeletons (including About''s ''Checking social links...'' row) so Frame 0 is the final settled state.', '# Systemic Cold-Open Pipeline Fix: Boot Pre-Warming, Ready-Gate & Zero Transient Loading Boxes (r94)
+
+Resolved cold-open vs warm-open discrepancies and transient loading boxes across all windows at the pipeline layer:
+
+- **Boot-Time Silent Pre-Warming**: Pre-imports all 7 dynamic route/data ES modules and eagerly decodes About avatar, social icons, Chatroom avatar, and Tools SVGs 60ms into boot alongside the 1.4s CRT warm-up with zero first-paint blocking.
+- **Window Morph Ready-Gate**: `openWindowWithReadyGate()` launches warm/pre-warmed windows synchronously (0ms delay), while holding unready cold windows hidden via `prepareOpenMount()` until modules, API cards/social links, and visible images settle (950–1500ms failsafe ceiling).
+- **Zero Transient Loading Boxes**: Unified rule hides `.route-module-status.is-loading`, `#about-social-network-status.is-loading`, `.content-state.is-loading`, `.content-recovery-notice.is-loading`, and `.article-card-skeleton` in desktop Pond mode (preserving `.is-error` and `.is-empty`) and locks `#about-social-links` single-row height at `36px`.', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-cold-open-pipeline-r94-ja', 'seed-update-2026-11-25-cold-open-pipeline-r94', 'ja', '全サイト冷起動パイプライン根治：起動時プリウォーム＋Ready-Gate＋不要ローディング枠撤廃（r94）', '冷起動監査の結果に基づきパイプライン層で根治：起動 60ms 以内に全 7 動的ルート／データ ES モジュールとアバター・SNS・ツール SVG を並列プリウォーム＆先行デコードし、開窓前に Ready-Gate でコンテンツと画像確定を待ってから第 0 フレームを表示（温起動は 0ms）。About の「ソーシャルリンクを確認中…」行を含む不要なローディング枠とスケルトンを全サイトで一掃し、初回からズレゼロの終端表示を実現しました。', '# 全サイト冷起動パイプライン根治：起動時プリウォーム＋Ready-Gate＋不要ローディング枠撤廃（r94）
+
+全サイト冷起動監査に基づき、パイプライン層から冷起動と温起動の差異および一時ローディング枠を根治しました：
+
+- **起動顕像中の並列プリウォーム**：起動 60ms 後に全 7 動的ルート／データ ES モジュールを並列プリロードし、About アバター・SNS アイコン・チャットアバター・ツール SVG を先行 `decode()` します。
+- **開窓 Ready-Gate**：温起動やプリウォーム済みは 0ms で即時展開。未完了の冷起動は `prepareOpenMount()` で空枠を隠し、コンテンツ・画像確定後に第 0 フレームから終端状態で展開します。
+- **一時ローディング枠の全サイト統一撤廃**：デスクトップ Pond モードで各種 `.is-loading` 枠と `.article-card-skeleton` を非表示（`.is-error`／`.is-empty` は維持）とし、`#about-social-links` の 1 行高さを `36px` に固定しました。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-cold-open-pipeline-r94', '2026-11-25')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261125-unclipped-halo-r93', '2026-11-25', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261125-cold-open-pipeline-r94', '2026-11-25', 'schema') on conflict(version) do nothing;

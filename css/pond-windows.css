@@ -7579,10 +7579,17 @@ html[data-ui-shell="mobile"] .route-module-status.is-loading .loading-text {
   letter-spacing: 0.06em !important;
 }
 
-/* r92: Completely hide .route-module-status.is-loading in desktop Pond mode (eliminates "正在打开应用模块..." box flash
-   on cold open; .is-error retry UI stays visible!) + lock cold-open min-heights on Games/Tools/About so Frame 0 = Warm Open! */
-html[data-pond-mode] .route-module-status.is-loading {
+/* r92 + r94: Unified rule — ZERO transient loading boxes/skeletons ever take layout space on cold open in desktop Pond mode
+   (covers .route-module-status.is-loading, #about-social-network-status.is-loading, .content-state.is-loading,
+   .content-recovery-notice.is-loading, .knowledge-skeleton-label, .article-card-skeleton; .is-error & .is-empty stay visible!) */
+html[data-pond-mode] :is(.route-module-status.is-loading, #about-social-network-status.is-loading, .content-state.is-loading, .content-recovery-notice.is-loading, .article-card-skeleton) {
   display: none !important;
+}
+
+html[data-pond-mode="about"] #about-social-links {
+  min-height: 36px !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
 }
 
 html[data-pond-mode="games"] #games .xp-window {

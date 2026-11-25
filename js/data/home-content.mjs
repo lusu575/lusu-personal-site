@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-25-cold-open-pipeline-r94",
+      "slug": "2026-11-25-cold-open-pipeline-r94",
+      "category": "site-updates",
+      "tags": [
+        "ui",
+        "pond",
+        "performance"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": "2026-11-25",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "全站冷开管线级根治：开机静默预热＋开窗 Ready-Gate＋全站零多余加载框（r94）",
+        "en": "Systemic Cold-Open Pipeline Fix: Boot Pre-Warming, Ready-Gate & Zero Transient Loading Boxes (r94)",
+        "ja": "全サイト冷起動パイプライン根治：起動時プリウォーム＋Ready-Gate＋不要ローディング枠撤廃（r94）"
+      },
+      "summary": {
+        "zh": "按全量冷开审计结果从管线层根治冷开与热开不一致：开机 60ms 内并行预加载全部 7 个动态路由/数据 ES 模块并主动解码关于/聊天室头像、社交图标与工具 SVG；开窗前引入 Ready-Gate 等待内容与图片落定再发出第 0 帧飞窗（热开 0ms 零延迟）；统一消除全站冷开期一切多余加载框与骨架屏（含关于窗「正在检查社交链接…」行），冷开全程零位移、第 0 帧即终态。",
+        "en": "Fixed cold-open vs warm-open inconsistencies at the pipeline level: silently pre-warms all 7 dynamic route/data ES modules and eagerly decodes About/Chatroom avatars, social icons, and Tools SVGs during the 1.4s boot warm-up; gates cold window morphs until content and images settle (0ms overhead on warm open); and eliminates all transient loading boxes/skeletons (including About's 'Checking social links...' row) so Frame 0 is the final settled state.",
+        "ja": "冷起動監査の結果に基づきパイプライン層で根治：起動 60ms 以内に全 7 動的ルート／データ ES モジュールとアバター・SNS・ツール SVG を並列プリウォーム＆先行デコードし、開窓前に Ready-Gate でコンテンツと画像確定を待ってから第 0 フレームを表示（温起動は 0ms）。About の「ソーシャルリンクを確認中…」行を含む不要なローディング枠とスケルトンを全サイトで一掃し、初回からズレゼロの終端表示を実現しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-25-unclipped-halo-layer-r93",
       "slug": "2026-11-25-unclipped-halo-layer-r93",
       "category": "site-updates",
@@ -110,34 +138,6 @@ export const homeContent = Object.freeze({
         "zh": "在开窗管线层统一根治刷新后首开与有缓存再开的不一致：开窗测量前强制同步排版并取消目标窗与父容器的旧版竞争动画，空闲帧预解码关于/聊天室头像并锁定比例，消除关于窗首开先偏下再弹回；将「正在打开应用模块...」占位改造为无边框透明风格并延迟 260ms 渐显，彻底消除聊天室等窗口冷开闪现突兀板块。",
         "en": "Fixed cold-open vs warm-open inconsistencies at the window-morph pipeline level: synchronous layout settle and parent/window WAAPI cancellation before measurement, idle eager avatar pre-decoding with locked 1:1 aspect-ratio (eliminating About downward shift/snap), synchronous Welcome greeting before mount, and a borderless 260ms-delayed .route-module-status placeholder (eliminating Chatroom's jarring loading box flash).",
         "ja": "リロード直後の初回起動と再起動の挙動差をパイプライン層で根治。計測前の同期レイアウト確定と親／ウィンドウ競合 WAAPI 抑止、About／チャットのアバター事前デコードと比率固定により初回ズレ跳ね戻りを解消し、モジュール読込中の枠表示を透明＋260ms 遅延フェード化してチャット室等の違和感ある枠点滅をなくしました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-25-glass-click-parity-r89",
-      "slug": "2026-11-25-glass-click-parity-r89",
-      "category": "site-updates",
-      "tags": [
-        "ui",
-        "glass",
-        "pond"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-25",
-      "updated_at": "2026-11-25",
-      "published_at": "2026-11-25",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "液态玻璃质感升级试点（欢迎窗真光学折射）＋全站动态主按钮点击特效补齐（r89）",
-        "en": "MengTo Optical Liquid-Glass Pilot (Welcome Modal) & Site-Wide Dynamic Button Parity (r89)",
-        "ja": "液態ガラス光学パイロット（ようこそ画面）＆動的メインボタン演出統一（r89）"
-      },
-      "summary": {
-        "zh": "先在欢迎窗 4 个快捷按钮试点升级至对标 MengTo 预览的真液态玻璃光学质感（按压期启用 SVG feDisplacementMap 边缘折射位移＋RGB 轻色散、双反相凸面流动高光、按压 3D 弹性形变与高弹释放波，静置零开销）；同时补齐知识库「阅读」、游戏「开始」、工具「打开」等全站动态主按钮至 r76 同强度完整点击特效。",
-        "en": "Upgraded the 4 Welcome modal quick-link buttons as a pilot to true MengTo optical liquid-glass (on-demand SVG feDisplacementMap rim refraction + RGB split, dual counter-moving specular lobes, elastic 3D press deformation, bouncy release wave, zero idle GPU cost), and brought all dynamic primary buttons (Knowledge Read, Game Start, Tool Open) to full r76 press/wave parity.",
-        "ja": "ようこそ画面の 4 つのクイックボタンをパイロットとして MengTo 準拠の光学液態ガラス（押下時のみ有効な SVG feDisplacementMap 縁屈折・RGB 分散・双方向ハイライト流動・3D 弾性変形・高弾性リリース波、静止時負荷ゼロ）へ刷新し、知識庫「読む」・ゲーム「開始」・ツール「開く」等の動的ボタンも r76 同等の完全演出へ統一しました。"
       }
     }
   ]
