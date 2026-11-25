@@ -9,7 +9,7 @@ import {
   startSeasonTimeSchedule
 } from '../pond-crt/season-schedule.mjs?v=20261122-pond-live-fix-r1';
 import { attachSiteGlassButtons, attachWelcomePilotButtons, getCrtGlassAudit, getCrtGlassButtonPerfStats, installAutoGlassBinding } from './crt-glass-button.mjs?v=20261125-glass-parity-r89';
-import { PondWindowMorphController } from './crt-window-morph.mjs?v=20261124-welcome-scrollbar-r73';
+import { PondWindowMorphController } from './crt-window-morph.mjs?v=20261125-cold-open-r90';
 
 function isMobileShell() {
   return document.documentElement.dataset.shell === 'mobile' || window.innerWidth <= 768;
@@ -363,6 +363,7 @@ function bootPondVisualBridge() {
     if (!trigger) return;
     suppressNextOutsideClickUntil = performance.now() + 320;
     window.setTimeout(() => {
+      syncRealTimeWelcomeGreeting();
       windowMorph.prepareOpenMount('welcome');
       trigger.click();
       // Synchronously cancel legacy ui-motion.js WAAPI modal animation attached by trigger.click()
@@ -484,6 +485,7 @@ function bootPondVisualBridge() {
     if (nextMode) {
       const eng = ensureEngine();
       document.documentElement.dataset.pondMode = nextMode;
+      windowMorph.cancelCompetingOn(nextMode);
       eng.setLanguage(getCurrentSiteLang());
       if (!activeMode) {
         eng.resize();
@@ -830,6 +832,19 @@ function bootPondVisualBridge() {
   syncGamesCloudBanner();
   installAutoGlassBinding();
   lockImagesNonDraggable();
+
+  // r90: Eagerly decode lightweight static window avatars on idle so cold-open matches warm-open on Frame 0
+  const warmStaticWindowMedia = () => {
+    document.querySelectorAll('#about .profile-avatar-image, #chatroom .chatroom-avatar').forEach((img) => {
+      if (img.loading === 'lazy') img.loading = 'eager';
+      img.removeAttribute('loading');
+    });
+  };
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(warmStaticWindowMedia, { timeout: 1200 });
+  } else {
+    window.setTimeout(warmStaticWindowMedia, 400);
+  }
 
   window.addEventListener('hashchange', () => {
     syncVisualMode();

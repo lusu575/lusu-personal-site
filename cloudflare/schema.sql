@@ -16738,6 +16738,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **ようこそ画面 4 ボタン光学液態ガラス・パイロット（`.crt-glass-liquid-pilot`）**：全サイト展開前の検証としてようこそ画面の 4 ボタンに限定実装。押下／リリース波中のみ SVG `<feDisplacementMap>` 凸面縁屈折＋微細 RGB 分散を適用（静止時は `filter: none` で負荷ゼロ）、ホバー時の双方向ハイライト流動、接点連動 3D 弾性変形、弾むリリース波を冷青 CRT 配色で再現しました。
 - **全サイト動的ボタンの `r76` 完全統一**：競合していた `:hover`／`140ms transition !important` を解消し、短辺比率に応じた `--cg-hold-r` 調整により「読む」「開始」「開く」等のコンパクトボタンでも完全な押下・屈折・リリース波を実現しました。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-glass-parity-r89', '2026-11-25')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-cold-open-consistency-r90', '2026-11-25-cold-open-consistency-r90', 'site-updates', '["ui","pond","performance"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-cold-open-consistency-r90-zh', 'seed-update-2026-11-25-cold-open-consistency-r90', 'zh', '开窗管线系统性收口：消除刷新后冷开与热开不一致（r90）', '在开窗管线层统一根治刷新后首开与有缓存再开的不一致：开窗测量前强制同步排版并取消目标窗与父容器的旧版竞争动画，空闲帧预解码关于/聊天室头像并锁定比例，消除关于窗首开先偏下再弹回；将「正在打开应用模块...」占位改造为无边框透明风格并延迟 260ms 渐显，彻底消除聊天室等窗口冷开闪现突兀板块。', '# 开窗管线系统性收口：消除刷新后冷开与热开不一致（r90）
+
+本次从开窗管线底层统一排查并根治「刷新后首开」与「热缓存再开」的表现差异：
+
+- **消除关于窗首开偏下弹回与全窗测量偏差**：在 `crt-window-morph.mjs` 启动测量前强制同步排版落定（`offsetHeight`），并在 `cancelCompetingOn()` 中同时取消目标窗口及其父级 `<section>` / `.modal` 上由旧版 `ui-motion.js` 挂起的 WAAPI 竞争动画；对 `#about .profile-avatar-image` 与 `#chatroom .chatroom-avatar` 在空闲帧提前去除 `loading="lazy"` 预解码并锁定 `aspect-ratio: 1 / 1`，欢迎窗在 `prepareOpenMount` 前同步写入问候语，保证冷开与热开第 0 帧几何完全一致。
+- **消除聊天室冷开「正在打开应用模块...」突兀占位板块**：`js/main.js` 首次动态加载路由模块时会插入 `.route-module-status.is-loading`。本次在 `css/pond-windows.css` 中将其统一改为透明无边框样式并施加 260ms 延迟渐显（正常加载零闪现，弱网时以极轻冷青文字自然呈现、零跳位），同时完整保留 `.is-error` 失败重试态。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-cold-open-consistency-r90-en', 'seed-update-2026-11-25-cold-open-consistency-r90', 'en', 'Systemic Window-Open Pipeline Fix: Cold-Open vs Warm-Open Consistency (r90)', 'Fixed cold-open vs warm-open inconsistencies at the window-morph pipeline level: synchronous layout settle and parent/window WAAPI cancellation before measurement, idle eager avatar pre-decoding with locked 1:1 aspect-ratio (eliminating About downward shift/snap), synchronous Welcome greeting before mount, and a borderless 260ms-delayed .route-module-status placeholder (eliminating Chatroom''s jarring loading box flash).', '# Systemic Window-Open Pipeline Fix: Cold-Open vs Warm-Open Consistency (r90)
+
+This release eliminates cold-open vs warm-open discrepancies across all windows at the pipeline layer:
+
+- **Deterministic Frame-0 Measurement & Zero Snap**: Forces synchronous layout settle (`offsetHeight`) before `measureWindowRectSafe()` and cancels competing `ui-motion.js` WAAPI animations on both the target `.xp-window` and its parent section/modal on every route switch. Eagerly pre-decodes `#about` and `#chatroom` avatars on idle with locked `1:1` aspect ratio and updates the Welcome greeting synchronously prior to mount.
+- **Zero Jarring Loading Box Flash**: Converts `.route-module-status.is-loading` into a borderless, transparent, 260ms-delayed Midnight Pond fade so normal cold opens never flash a stark loading card in Chatroom or other routes while preserving error/retry UI.', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-cold-open-consistency-r90-ja', 'seed-update-2026-11-25-cold-open-consistency-r90', 'ja', 'ウィンドウ起動パイプライン統一：初回冷起動とキャッシュ再起動の差異解消（r90）', 'リロード直後の初回起動と再起動の挙動差をパイプライン層で根治。計測前の同期レイアウト確定と親／ウィンドウ競合 WAAPI 抑止、About／チャットのアバター事前デコードと比率固定により初回ズレ跳ね戻りを解消し、モジュール読込中の枠表示を透明＋260ms 遅延フェード化してチャット室等の違和感ある枠点滅をなくしました。', '# ウィンドウ起動パイプライン統一：初回冷起動とキャッシュ再起動の差異解消（r90）
+
+初回オープン時のみ発生していたレイアウト跳ね戻りや違和感あるローディング枠をパイプライン層で一括解消しました：
+
+- **第 0 フレーム計測の確定化**：`crt-window-morph.mjs` の計測前に同期レイアウト確定を行い、ウィンドウ本体および親セクションの競合 WAAPI アニメーションを全ルートで抑止。About／チャットのアバターをアイドル時に先行デコード＋`aspect-ratio: 1 / 1` 固定し、ようこそ画面の挨拶文もマウント前に同期反映しました。
+- **チャット室等のローディング枠点滅を解消**：`.route-module-status.is-loading` を透明・無枠・260ms 遅延フェードへ統一し、通常回線での不要な枠点滅を完全に除去しました。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-cold-open-r90', '2026-11-25')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261125-glass-parity-r89', '2026-11-25', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261125-cold-open-r90', '2026-11-25', 'schema') on conflict(version) do nothing;

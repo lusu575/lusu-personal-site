@@ -217,7 +217,10 @@ export class PondWindowMorphController {
 
   cancelCompetingOn(mode) {
     const winEl = resolveWindowElement(mode);
-    if (winEl) cancelCompetingAnimations(winEl);
+    if (winEl) {
+      cancelCompetingAnimations(winEl);
+      if (winEl.parentElement) cancelCompetingAnimations(winEl.parentElement);
+    }
     if (mode === 'welcome') {
       const modal = document.getElementById('welcome-modal');
       if (modal) {
@@ -247,6 +250,8 @@ export class PondWindowMorphController {
     if (!winEl) return false;
     this.cancelCompetingOn(mode);
 
+    // Force deterministic layout settle before measuring so cold open matches warm open on Frame 0
+    void winEl.offsetHeight;
     const icon = measureLiveIconCenter(mode);
     const winRect = measureWindowRectSafe(winEl, mode);
     const winCx = winRect.x + winRect.w * 0.5;

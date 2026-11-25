@@ -7501,6 +7501,51 @@ html[data-pond-mode="about"] #about .profile-card::-webkit-scrollbar {
   height: 0 !important;
 }
 
+/* ============================================================
+   r90: Systemic Cold-Open vs Warm-Open Consistency
+   1. Seamless, borderless, 260ms-delayed .route-module-status.is-loading
+      (eliminates the jarring "正在打开应用模块..." box flash in Chatroom & other windows on cold open)
+   2. Deterministic #about avatar & card geometry from Frame 0 (zero cold-open downward shift/snap)
+   ============================================================ */
+@keyframes pondRouteLoadDelay {
+  0%, 72% { opacity: 0; }
+  100% { opacity: 0.72; }
+}
+
+html[data-pond-mode] .route-module-status.is-loading,
+html[data-ui-shell="mobile"] .route-module-status.is-loading {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 18px 12px !important;
+  margin: 0 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 0;
+  animation: pondRouteLoadDelay 380ms ease forwards !important;
+}
+
+html[data-pond-mode] .route-module-status.is-loading .loading-text,
+html[data-ui-shell="mobile"] .route-module-status.is-loading .loading-text {
+  margin: 0 !important;
+  color: rgba(164, 232, 226, 0.72) !important;
+  font-size: 12.5px !important;
+  letter-spacing: 0.06em !important;
+}
+
+html[data-pond-mode="about"] #about .profile-avatar {
+  flex: 0 0 auto !important;
+  aspect-ratio: 1 / 1 !important;
+}
+
+html[data-pond-mode="about"] #about .profile-avatar-image {
+  display: block !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+}
+
 /* Unified Midnight Pond dark phosphor 5px scrollbar for all settled scrollable surfaces */
 html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window,
 html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window * {
