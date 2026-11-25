@@ -739,11 +739,10 @@ function bootPondVisualBridge() {
       gameList.parentNode.insertBefore(banner, gameList);
     }
     const lang = getCurrentSiteLang();
-    const acctBtn = document.querySelector('#account-widget .account-button, #account-menu-trigger');
+    const popover = document.getElementById('account-popover');
     const signedIn = Boolean(
-      document.body.dataset.accountSignedIn === 'true'
-      || document.querySelector('#account-popover [data-account-logout]:not([hidden])')
-      || (acctBtn && acctBtn.dataset.signedIn === 'true')
+      popover?.dataset.accountState === 'signed-in'
+      || document.querySelector('#account-popover .account-signed-in:not([hidden])')
     );
     banner.dataset.signedIn = signedIn ? '1' : '0';
     banner.textContent = signedIn

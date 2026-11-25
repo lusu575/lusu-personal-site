@@ -2540,6 +2540,7 @@ function ensureWallpaperTimeSwitchThemeAssets(theme, group = document.getElement
 }
 
 function ensureWallpaperTimeSwitchAssets(group = document.getElementById("wallpaper-time-switch")) {
+  if (document.documentElement.dataset.pondMode) return Promise.resolve(false);
   if (!group) return Promise.resolve(false);
   const includeAccent = wallpaperTimeSwitchAccentAllowed();
   const coreReady = group.dataset.visualCoreAssetsReady === "true";
@@ -2690,6 +2691,7 @@ function wallpaperAssetWidth() {
 }
 
 function wallpaperAssetCandidates(theme) {
+  if (document.documentElement.dataset.pondMode) return [];
   const mobile = document.documentElement.dataset.uiShell === "mobile"
     || window.matchMedia?.("(max-width: 760px), (max-height: 520px) and (pointer: coarse)")?.matches;
   if (mobile) {
@@ -2706,6 +2708,7 @@ function wallpaperAssetCandidates(theme) {
 }
 
 function wallpaperCloudAssetCandidates(theme) {
+  if (document.documentElement.dataset.pondMode) return [];
   const mobile = document.documentElement.dataset.uiShell === "mobile"
     || window.matchMedia?.("(max-width: 760px), (max-height: 520px) and (pointer: coarse)")?.matches;
   if (mobile

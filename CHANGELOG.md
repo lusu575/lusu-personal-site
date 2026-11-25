@@ -6,6 +6,8 @@
 
 ## 2026-11-25
 
+- `r81b` 线上复验兜底收口：修正游戏区云存档横幅对未登录访客的误判（改读 `#account-popover[data-account-state="signed-in"]` / `.account-signed-in:not([hidden])`）、移除 `pond-windows.css` 中覆盖新版欢迎窗分类图标的旧版重复块，并在 `ensureWallpaperTimeSwitchAssets` / `wallpaperAssetCandidates` 中补齐桌面池塘模式拦截，进一步省去 `scene-atlas.png` / `node-atlas.png` / `base-1920.avif` 约 850 KB 冷加载流量（视觉层缓存 `20261125-known-fixes-r81b`）。
+
 - 全站已知问题集中修复与桌面池塘三步性能优化上线（r81）：桌面池塘禁用隐藏旧壁纸视频与星光样式重算、四季荷叶改为按空闲帧增量烘焙、开窗样式表改为前置插入消除整表重排、冷加载首帧增加深池塘径向底色并前移 WebGL2 启动起点；猫国存档恢复后保持跟随站点语言并将建筑「出售」等浅底按钮深色化；欢迎窗升级 6 类图标实线＋微色相并移除临时公告横条；加固视频失败态重试按钮深色虚线风；优化知识库中止判断与重试窗口；修正游戏壳云存档提示文案指向桌面端左下角 ID（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-known-issues-perf-r81` / `2026-11-25-known-issues-perf-r81`；视觉层缓存 `20261125-known-fixes-r81`。
 
 ## 2026-11-24
