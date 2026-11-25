@@ -1,0 +1,84 @@
+{
+  "source": "http://127.0.0.1:49563/",
+  "frames": [
+    {
+      "file": "warm-01-t0ms-r87.png",
+      "targetMs": 0,
+      "measuredMs": 76,
+      "uWarm": 0.058,
+      "realLoadProgress": 0.458,
+      "bootActive": true,
+      "bootMode": "warm",
+      "pondBoot": "active",
+      "seasonId": "summer",
+      "hasBrightLineAfter": false
+    },
+    {
+      "file": "warm-02-t300ms-r87.png",
+      "targetMs": 300,
+      "measuredMs": 302,
+      "uWarm": 0.232,
+      "realLoadProgress": 1,
+      "bootActive": true,
+      "bootMode": "warm",
+      "pondBoot": "active",
+      "seasonId": "summer",
+      "hasBrightLineAfter": false
+    },
+    {
+      "file": "warm-03-t700ms-r87.png",
+      "targetMs": 700,
+      "measuredMs": 713,
+      "uWarm": 0.545,
+      "realLoadProgress": 1,
+      "bootActive": true,
+      "bootMode": "warm",
+      "pondBoot": "active",
+      "seasonId": "summer",
+      "hasBrightLineAfter": false
+    },
+    {
+      "file": "warm-04-t1100ms-r87.png",
+      "targetMs": 1100,
+      "measuredMs": 1108,
+      "uWarm": 0.857,
+      "realLoadProgress": 1,
+      "bootActive": true,
+      "bootMode": "warm",
+      "pondBoot": "active",
+      "seasonId": "summer",
+      "hasBrightLineAfter": false
+    },
+    {
+      "file": "warm-05-t1400ms-r87.png",
+      "targetMs": 1400,
+      "measuredMs": 1403,
+      "uWarm": 1,
+      "realLoadProgress": 1,
+      "bootActive": false,
+      "bootMode": "warm",
+      "pondBoot": "done",
+      "seasonId": "summer",
+      "hasBrightLineAfter": false
+    }
+  ],
+  "repeatCheck": {
+    "bootMode": "instant",
+    "bootActive": false,
+    "uWarm": 1,
+    "pondBoot": "done",
+    "sessionFlag": "1"
+  },
+  "keySkipCheck": {
+    "beforeSkip": {
+      "uWarm": 0.015,
+      "bootActive": true
+    },
+    "afterSkip": {
+      "uWarm": 1,
+      "bootActive": false,
+      "pondBoot": "done"
+    }
+  },
+  "exceptions": []
+}
