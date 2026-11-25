@@ -173,14 +173,16 @@
   <link rel="stylesheet" href="/css/motion-system.css?v=20260908-site-review-r1">
   <script>(function(){try{if(window.innerWidth>=900){var h=(location.hash||'').replace(/^#/,'').split('?')[0];var m=h==='knowledge'?'knowledge':h.indexOf('article-')===0?'article':h==='videos'?'videos':h==='resources'?'resources':h==='games'?'games':h==='chatroom'?'chatroom':h==='about'?'about':'home';var d=document.documentElement.dataset;d.pondMode=m;var red=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;if(m==='home'&&!red){var seen=false;try{seen=sessionStorage.getItem('lusu-pond-booted-v1')==='1'||localStorage.getItem('lusu-pond-cache-v1')==='20261123-pond-boot-r57';}catch(e){}d.pondBoot=seen?'quick':'active';}else{d.pondBoot='done';d.pondBootWebgl='ready';}}}catch(e){}})();</script>
   <style id="pond-boot-critical">
+    html[data-pond-mode]{background:#04141a radial-gradient(ellipse at 50% 48%,#0a2c35 0%,#05171e 56%,#030d12 100%) !important}
+    html[data-pond-mode] .wallpaper-root,html[data-pond-mode] #wallpaper-time-switch{display:none !important;animation:none !important}
     #pond-boot-beam{display:none}
-    html[data-pond-boot="active"] #pond-boot-beam,html[data-pond-boot="quick"] #pond-boot-beam{position:fixed;inset:0;z-index:9990;display:flex;align-items:center;justify-content:center;background:#020a0d;pointer-events:none;opacity:1;transition:opacity .18s ease}
+    html[data-pond-boot="active"] #pond-boot-beam,html[data-pond-boot="quick"] #pond-boot-beam{position:fixed;inset:0;z-index:9990;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 50%,rgba(14,56,64,.96) 0%,rgba(6,24,30,.98) 54%,rgba(3,13,18,1) 100%);pointer-events:none;opacity:1;transition:opacity .20s ease}
     html[data-pond-boot-webgl="ready"] #pond-boot-beam,html[data-pond-boot="done"] #pond-boot-beam{opacity:0;pointer-events:none}
-    #pond-boot-beam .pond-boot-beam-line{width:68vw;height:2px;border-radius:999px;background:linear-gradient(90deg,transparent 0%,rgba(94,244,216,.92) 22%,rgba(220,255,248,1) 50%,rgba(94,244,216,.92) 78%,transparent 100%);box-shadow:0 0 18px rgba(94,244,216,.72),0 0 40px rgba(48,200,188,.36);animation:pondBootLinePulse .55s ease-out both}
-    @keyframes pondBootLinePulse{0%{transform:scaleX(.08);opacity:.3}100%{transform:scaleX(1);opacity:1}}
+    #pond-boot-beam .pond-boot-beam-line{width:72vw;height:2.5px;border-radius:999px;background:linear-gradient(90deg,transparent 0%,rgba(94,244,216,.94) 20%,rgba(226,255,250,1) 50%,rgba(94,244,216,.94) 80%,transparent 100%);box-shadow:0 0 22px rgba(94,244,216,.84),0 0 56px rgba(48,200,188,.48);animation:pondBootLinePulse .45s ease-out both}
+    @keyframes pondBootLinePulse{0%{transform:scaleX(.24);opacity:.65}100%{transform:scaleX(1);opacity:1}}
   </style>
   <link rel="preload" as="fetch" href="/assets/pond-assets-manifest.json?v=20261123-pond-polish-r55" crossorigin>
-  <link rel="stylesheet" href="/css/pond-windows.css?v=20261124-glass-dynamic-r76">
+  <link rel="stylesheet" href="/css/pond-windows.css?v=20261125-known-fixes-r81">
   <style id="pixel-cursor-r3">
     @media (hover: hover) and (pointer: fine) and (forced-colors: none) {
       html,
@@ -650,12 +652,6 @@
         <button class="close-button" data-close-welcome aria-label="关闭对话框" data-i18n-aria-label="closeDialogAria">×</button>
       </div>
       <div class="welcome-content">
-        <!-- TEMP_REBUILD_NOTICE:START -->
-        <div class="welcome-announcement" role="note">
-          <span class="welcome-announcement-badge" data-i18n="welcomeNoticeBadge">公告</span>
-          <p class="welcome-announcement-copy" data-i18n="welcomeNoticeCopy">本站前端正在重构中，部分页面可能会出现排版错位、显示不清晰等 BUG，正在逐步修复中，敬请谅解。</p>
-        </div>
-        <!-- TEMP_REBUILD_NOTICE:END -->
         <section class="welcome-main">
           <h2 data-i18n="welcomeHeading">欢迎回来，朋友！</h2>
           <div class="welcome-note">
@@ -711,6 +707,6 @@
   <script src="/js/telemetry.js?v=20260802-traffic-budget-r1"></script>
   <script src="/js/ui-motion.js?v=20260908-site-review-r1"></script>
   <script type="module" src="/js/main.js?v=20261029-private-mcp-r1"></script>
-  <script type="module" src="/js/pond-windows/pond-site-bridge.mjs?v=20261124-glass-dynamic-r76"></script></script>
+  <script type="module" src="/js/pond-windows/pond-site-bridge.mjs?v=20261125-known-fixes-r81"></script>
 </body>
 </html>

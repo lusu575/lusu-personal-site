@@ -2,7 +2,7 @@
 // Zero business-logic rewrites: all routing, API fetching, filtering, sorting, pinning,
 // search, pagination, account sessions, and language switching stay 100% in existing main.js & routes/*.mjs.
 
-import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261124-wind-water-r75';
+import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261125-known-fixes-r81';
 import {
   resolveInitialPondSeason,
   saveManualSeasonOverride,
@@ -275,13 +275,18 @@ function bootPondVisualBridge() {
 
   // Root architectural cascade fix:
   // main.js lazily appends /css/routes/*.css and /css/transfer.css to document.head AFTER initial load.
-  // Keep pond-windows.css pinned as the last stylesheet in <head> so Midnight Pond always wins cascade order.
+  // Keep pond-windows.css pinned as the last stylesheet in <head> WITHOUT ever detaching/re-attaching
+  // pond-windows.css itself (which previously forced a 250ms full-sheet re-parse mid-window-open).
   const keepPondStylesheetLast = () => {
     const pondLink = document.head.querySelector('link[rel="stylesheet"][href*="pond-windows.css"]');
     if (!pondLink) return;
-    const links = document.head.querySelectorAll('link[rel="stylesheet"]');
-    if (links.length > 0 && links[links.length - 1] !== pondLink) {
-      document.head.appendChild(pondLink);
+    let cursor = pondLink.nextElementSibling;
+    while (cursor) {
+      const next = cursor.nextElementSibling;
+      if (cursor.tagName === 'LINK' && cursor.getAttribute('rel') === 'stylesheet') {
+        document.head.insertBefore(cursor, pondLink);
+      }
+      cursor = next;
     }
   };
   keepPondStylesheetLast();

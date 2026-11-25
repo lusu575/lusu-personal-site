@@ -30,7 +30,7 @@ function responseError(response, payload) {
 
 export function createJsonResourceCache({
   maxEntries = 32,
-  retryDelays = [0, 180, 640],
+  retryDelays = [0, 220, 750, 1500],
   now = () => Date.now()
 } = {}) {
   const entries = new Map();

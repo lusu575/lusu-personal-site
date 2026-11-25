@@ -4477,6 +4477,18 @@ html[data-pond-mode="welcome"] #welcome-modal #recent-updates li a.recent-update
   border-radius: 8px !important;
 }
 
+/* --- Desktop Pond Perf Step 1: Completely suppress hidden legacy wallpaper & star animations --- */
+html[data-pond-mode] .wallpaper-root,
+html[data-pond-mode] #wallpaper-root,
+html[data-pond-mode] #wallpaper-stage,
+html[data-pond-mode] .wallpaper-base,
+html[data-pond-mode] .wallpaper-stars,
+html[data-pond-mode] #wallpaper-time-switch {
+  display: none !important;
+  animation: none !important;
+  background-image: none !important;
+}
+
 html[data-pond-mode="welcome"] #welcome-modal #recent-updates li a.recent-update-link .update-icon {
   width: 28px !important;
   height: 28px !important;
@@ -4485,33 +4497,39 @@ html[data-pond-mode="welcome"] #welcome-modal #recent-updates li a.recent-update
   background-color: transparent !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
-  background-size: 26px 26px !important;
+  background-size: 25px 25px !important;
   opacity: 1 !important;
-  filter: drop-shadow(0 0 8px rgba(154, 252, 242, 0.92)) !important;
+  filter: drop-shadow(0 0 6px rgba(154, 252, 242, 0.55)) !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal #recent-updates .update-icon-knowledge {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2.8 5.2c3.1-.8 6.1-.3 9.2 1.4 3.1-1.7 6.1-2.2 9.2-1.4v12.6c-3.1-.8-6.1-.3-9.2 1.4-3.1-1.7-6.1-2.2-9.2-1.4V5.2zM12 6.6v12.6' fill='rgba(154,248,238,0.08)' stroke='%23e8fffc' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round' stroke-dasharray='1.8 1.9'/%3E%3C/svg%3E") !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2.8 5.2c3.1-.8 6.1-.3 9.2 1.4 3.1-1.7 6.1-2.2 9.2-1.4v12.6c-3.1-.8-6.1-.3-9.2 1.4-3.1-1.7-6.1-2.2-9.2-1.4V5.2z' fill='rgba(126,247,230,0.22)' stroke='%237ef7e6' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M12 6.6v12.6M5.8 9.2h3.4M5.8 12.6h3.4M14.8 9.2h3.4M14.8 12.6h3.4' stroke='%23d9fff9' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+  filter: drop-shadow(0 0 6px rgba(126, 247, 230, 0.55)) !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal #recent-updates .update-icon-videos {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2.8' y='4.8' width='18.4' height='14.4' rx='3' fill='rgba(154,248,238,0.08)' stroke='%23e8fffc' stroke-width='2.1' stroke-dasharray='1.8 1.9'/%3E%3Cpolygon points='10,8.8 16.4,12 10,15.2' fill='%23e8fffc' stroke='%23e8fffc' stroke-width='1.2' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2.6' y='4.8' width='18.8' height='14.4' rx='3.2' fill='rgba(255,158,187,0.20)' stroke='%23ff9ebb' stroke-width='1.9'/%3E%3Cpolygon points='9.8,8.5 16.6,12 9.8,15.5' fill='%23ffd9e5' stroke='%23ffd9e5' stroke-width='1.1' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  filter: drop-shadow(0 0 6px rgba(255, 158, 187, 0.52)) !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal #recent-updates .update-icon-games {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.5 8.5h11a3.6 3.6 0 0 1 3.5 4.3l-.8 3.2a2.4 2.4 0 0 1-4.1 1l-1.6-1.6H9.5l-1.6 1.6a2.4 2.4 0 0 1-4.1-1L3 12.8A3.6 3.6 0 0 1 6.5 8.5z' fill='rgba(154,248,238,0.08)' stroke='%23e8fffc' stroke-width='2.1' stroke-dasharray='1.8 1.9' stroke-linejoin='round'/%3E%3Cpath d='M8.5 11.2v3.2M6.9 12.8h3.2M15.6 12h.1M17.3 13.5h.1' stroke='%23e8fffc' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.5 8.4h11a3.6 3.6 0 0 1 3.5 4.3l-.8 3.2a2.4 2.4 0 0 1-4.1 1l-1.6-1.6H9.5l-1.6 1.6a2.4 2.4 0 0 1-4.1-1L3 12.7A3.6 3.6 0 0 1 6.5 8.4z' fill='rgba(255,211,122,0.22)' stroke='%23ffd37a' stroke-width='1.9' stroke-linejoin='round'/%3E%3Cpath d='M8.4 11v3.4M6.7 12.7h3.4' stroke='%23fff1cc' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='15.6' cy='11.8' r='1.15' fill='%23fff1cc'/%3E%3Ccircle cx='17.5' cy='13.6' r='1.15' fill='%23fff1cc'/%3E%3C/svg%3E") !important;
+  filter: drop-shadow(0 0 6px rgba(255, 211, 122, 0.52)) !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal #recent-updates .update-icon-tools {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.1 5.1L4.5 16.5a1.8 1.8 0 0 0 2.5 2.5l5.1-5.1a4 4 0 0 0 5.1-5.1l-2.3 2.3-2.5-2.5 2.3-2.3z' fill='rgba(154,248,238,0.08)' stroke='%23e8fffc' stroke-width='2.1' stroke-dasharray='1.8 1.9' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.1 5.1L4.5 16.5a1.8 1.8 0 0 0 2.5 2.5l5.1-5.1a4 4 0 0 0 5.1-5.1l-2.3 2.3-2.5-2.5 2.3-2.3z' fill='rgba(132,212,255,0.24)' stroke='%2384d4ff' stroke-width='1.9' stroke-linejoin='round'/%3E%3Ccircle cx='6.2' cy='17.4' r='0.9' fill='%23dcf4ff'/%3E%3C/svg%3E") !important;
+  filter: drop-shadow(0 0 6px rgba(132, 212, 255, 0.52)) !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal #recent-updates .update-icon-chat {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 6h12a2.5 2.5 0 0 1 2.5 2.5v5.5A2.5 2.5 0 0 1 17 16.5h-6L7.2 19.5v-3H5A2.5 2.5 0 0 1 2.5 14V8.5A2.5 2.5 0 0 1 5 6z' fill='rgba(154,248,238,0.08)' stroke='%23e8fffc' stroke-width='2.1' stroke-dasharray='1.8 1.9' stroke-linejoin='round'/%3E%3Ccircle cx='8.4' cy='11.2' r='1.1' fill='%23e8fffc'/%3E%3Ccircle cx='11.4' cy='11.2' r='1.1' fill='%23e8fffc'/%3E%3Ccircle cx='14.4' cy='11.2' r='1.1' fill='%23e8fffc'/%3E%3C/svg%3E") !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 5.8h12.2a2.5 2.5 0 0 1 2.5 2.5v5.6a2.5 2.5 0 0 1-2.5 2.5h-6.1l-3.9 3.1v-3.1H5a2.5 2.5 0 0 1-2.5-2.5V8.3A2.5 2.5 0 0 1 5 5.8z' fill='rgba(146,245,180,0.22)' stroke='%2392f5b4' stroke-width='1.9' stroke-linejoin='round'/%3E%3Ccircle cx='8.3' cy='11.1' r='1.2' fill='%23e2ffec'/%3E%3Ccircle cx='11.4' cy='11.1' r='1.2' fill='%23e2ffec'/%3E%3Ccircle cx='14.5' cy='11.1' r='1.2' fill='%23e2ffec'/%3E%3C/svg%3E") !important;
+  filter: drop-shadow(0 0 6px rgba(146, 245, 180, 0.52)) !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal #recent-updates .update-icon-system {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.8 L14.4 9.6 L21.2 12 L14.4 14.4 L12 21.2 L9.6 14.4 L2.8 12 L9.6 9.6 Z' fill='rgba(154,248,238,0.10)' stroke='%23e8fffc' stroke-width='2.1' stroke-dasharray='1.8 1.9' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.6 L14.6 9.4 L21.4 12 L14.6 14.6 L12 21.4 L9.4 14.6 L2.6 12 L9.4 9.4 Z' fill='rgba(232,255,252,0.26)' stroke='%23e8fffc' stroke-width='1.9' stroke-linejoin='round'/%3E%3Ccircle cx='12' cy='12' r='2.1' fill='%23ffffff'/%3E%3C/svg%3E") !important;
+  filter: drop-shadow(0 0 7px rgba(212, 255, 250, 0.68)) !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal #recent-updates li a.recent-update-link > span:not(.update-icon) {
@@ -5371,59 +5389,6 @@ html[data-pond-mode="chatroom"] #chat-sync-status[data-connection-state="offline
 html[data-pond-mode="chatroom"] #chat-sync-status[data-connection-state="reconnecting"]::before {
   background: #ffe07a !important;
   box-shadow: 0 0 8px rgba(255, 224, 122, 0.85) !important;
-}
-
-/* TEMP_REBUILD_NOTICE:START — temporary frontend rebuild banner inside #welcome-modal */
-html[data-pond-mode="welcome"] #welcome-modal .welcome-announcement,
-html[data-ui-shell="mobile"] #welcome-modal .welcome-announcement {
-  display: flex !important;
-  align-items: flex-start !important;
-  gap: 10px !important;
-  margin: 0 !important;
-  padding: 9px 12px !important;
-  border-radius: 10px !important;
-  border: 1.2px dashed rgba(255, 214, 126, 0.76) !important;
-  background: rgba(44, 30, 10, 0.56) !important;
-  box-shadow: 0 0 14px rgba(255, 198, 96, 0.16) !important;
-}
-
-html[data-pond-mode="welcome"] #welcome-modal .welcome-announcement-badge,
-html[data-ui-shell="mobile"] #welcome-modal .welcome-announcement-badge {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 5px !important;
-  flex: 0 0 auto !important;
-  padding: 2px 9px !important;
-  border-radius: 999px !important;
-  border: 1px dotted rgba(255, 224, 148, 0.82) !important;
-  background: rgba(255, 198, 88, 0.16) !important;
-  color: #ffe8a8 !important;
-  font-size: 11.5px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.04em !important;
-  line-height: 1.4 !important;
-  white-space: nowrap !important;
-}
-
-html[data-pond-mode="welcome"] #welcome-modal .welcome-announcement-badge::before,
-html[data-ui-shell="mobile"] #welcome-modal .welcome-announcement-badge::before {
-  content: "" !important;
-  width: 6px !important;
-  height: 6px !important;
-  border-radius: 999px !important;
-  background: #ffd978 !important;
-  box-shadow: 0 0 6px rgba(255, 217, 120, 0.90) !important;
-}
-
-html[data-pond-mode="welcome"] #welcome-modal .welcome-announcement-copy,
-html[data-ui-shell="mobile"] #welcome-modal .welcome-announcement-copy {
-  margin: 0 !important;
-  padding-top: 1px !important;
-  color: #fff6df !important;
-  font-size: 12.2px !important;
-  line-height: 1.48 !important;
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
 }
 
 html[data-pond-mode="welcome"] #welcome-modal .xp-window.welcome-window {
@@ -6611,9 +6576,13 @@ html[data-pond-mode="article"] .article-toc-tip {
 }
 
 html[data-pond-mode] #video-modal [data-video-player-retry],
+html[data-pond-mode] #video-modal .video-player-fallback .xp-button,
+html[data-pond-mode] #video-modal .video-player-fallback-actions .xp-button,
+html[data-pond-mode] #video-modal #video-frame .xp-button,
 html[data-pond-mode] #video-modal .video-fallback .xp-button,
 html[data-pond-mode] #video-modal .video-frame button,
 html[data-pond-mode] #video-modal .video-frame a.xp-button,
+#video-modal .video-player-fallback .xp-button,
 #video-modal .video-frame button,
 #video-modal .video-frame a.xp-button {
   display: inline-flex !important;
@@ -6625,9 +6594,21 @@ html[data-pond-mode] #video-modal .video-frame a.xp-button,
   border-radius: 999px !important;
   border: 1.3px dashed #88fce2 !important;
   background: rgba(10, 38, 44, 0.92) !important;
+  background-color: rgba(10, 38, 44, 0.92) !important;
   background-image: none !important;
   color: #f0fefa !important;
   box-shadow: none !important;
+}
+
+html[data-pond-mode] #video-modal [data-video-player-retry]:hover,
+html[data-pond-mode] #video-modal .video-player-fallback .xp-button:hover,
+html[data-pond-mode] #video-modal .video-frame button:hover,
+html[data-pond-mode] #video-modal .video-frame a.xp-button:hover {
+  border-style: solid !important;
+  border-color: #b4fff0 !important;
+  background: rgba(18, 62, 70, 0.94) !important;
+  background-image: none !important;
+  color: #ffffff !important;
 }
 
 /* --- Tools (#resources) & Quick Transfer Sub-Panel (#transfer-app) --- */

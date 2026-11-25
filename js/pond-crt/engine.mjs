@@ -76,8 +76,10 @@ export class PondCRTEngine {
     this.onBootComplete = options.onBootComplete || null;
     this.bootMode = options.skipBoot ? 'instant' : detectBootMode();
     this.bootActive = this.bootMode !== 'instant';
-    this.bootVisual = this.bootActive ? 0.03 : 1.0;
-    this.bootTarget = this.bootActive ? (this.bootMode === 'quick' ? 1.0 : 0.12) : 1.0;
+    this.bootVisual = this.bootActive ? 0.18 : 1.0;
+    this.bootTarget = this.bootActive ? (this.bootMode === 'quick' ? 1.0 : 0.26) : 1.0;
+    this._pendingFloraQueue = [];
+    this._floraBakeScheduled = false;
     this.bootStartMs = performance.now();
     this.bootHardTimeoutMs = this.bootMode === 'quick' ? 340 : 2600;
     this._bootSkipped = false;
@@ -218,14 +220,48 @@ export class PondCRTEngine {
     }
   }
 
-  _prebakeAllFlora() {
+  _bakeSeasonFlora(sId) {
     const gl = this.gl;
-    for (const sId of SEASON_ORDER) {
-      const floraCanvas = this.floraLayer.render(sId, this.cssWidth, this.cssHeight);
-      gl.bindTexture(gl.TEXTURE_2D, this.floraTextures[sId]);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, floraCanvas);
-    }
+    if (!gl || !this.floraTextures[sId]) return;
+    const floraCanvas = this.floraLayer.render(sId, this.cssWidth, this.cssHeight);
+    gl.bindTexture(gl.TEXTURE_2D, this.floraTextures[sId]);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, floraCanvas);
     gl.bindTexture(gl.TEXTURE_2D, null);
+    const idx = this._pendingFloraQueue.indexOf(sId);
+    if (idx !== -1) this._pendingFloraQueue.splice(idx, 1);
+  }
+
+  _drainFloraBakeQueue() {
+    this._floraBakeScheduled = false;
+    if (!this.gl || this._pendingFloraQueue.length === 0) return;
+    const nextSeason = this._pendingFloraQueue.shift();
+    if (nextSeason) this._bakeSeasonFlora(nextSeason);
+    if (this._pendingFloraQueue.length > 0) {
+      this._scheduleFloraDrain();
+    }
+  }
+
+  _scheduleFloraDrain() {
+    if (this._floraBakeScheduled || this._pendingFloraQueue.length === 0) return;
+    this._floraBakeScheduled = true;
+    const schedule = typeof window.requestIdleCallback === 'function'
+      ? (fn) => window.requestIdleCallback(fn, { timeout: 180 })
+      : (fn) => window.setTimeout(fn, 32);
+    schedule(() => this._drainFloraBakeQueue());
+  }
+
+  _prebakeAllFlora() {
+    if (!this.gl) return;
+    // Bake active season immediately for crisp first paint; defer other 3 seasons 1-per-idle-slice
+    // to eliminate the 500ms+ cold-load main-thread freeze.
+    const active = SEASONS[this.seasonId] ? this.seasonId : SEASON_ORDER[0];
+    this._bakeSeasonFlora(active);
+    for (const sId of SEASON_ORDER) {
+      if (sId !== active && !this._pendingFloraQueue.includes(sId)) {
+        this._pendingFloraQueue.push(sId);
+      }
+    }
+    this._scheduleFloraDrain();
   }
 
   loadFloraAsset(seasonId, url) {
@@ -461,6 +497,9 @@ export class PondCRTEngine {
 
   setSeason(seasonId, originNx = 0.86, originNy = 0.072, { manual = true } = {}) {
     if (SEASONS[seasonId] && seasonId !== this.seasonId) {
+      if (this._pendingFloraQueue.includes(seasonId)) {
+        this._bakeSeasonFlora(seasonId);
+      }
       const prev = this.seasonId;
       const wasInTransition = this.transitionPhase !== 'idle';
       this.fromSeasonId = prev;

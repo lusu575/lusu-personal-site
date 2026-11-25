@@ -17,7 +17,7 @@ import { blogManifest } from "./data/blog-manifest.mjs?v=20260718-resource-icons
 import { createRouteLifecycle, isAbortError } from "./core/route-lifecycle.mjs?v=20260908-site-review-r1";
 import { createRouter } from "./core/router.mjs?v=20260718-resource-icons-layout-r1";
 import { createRouteModuleRegistry } from "./core/route-modules.mjs?v=20260718-resource-icons-layout-r1";
-import { createJsonResourceCache } from "./core/content-cache.mjs?v=20260718-resource-icons-layout-r1";
+import { createJsonResourceCache } from "./core/content-cache.mjs?v=20261125-known-fixes-r81";
 import {
   createWallpaperAmbientController,
   releaseWallpaperAmbientVideo
@@ -3132,6 +3132,7 @@ function wallpaperAmbientState() {
       && width > 0
       && height > 0
       && root.dataset.motion === "full"
+      && !document.documentElement.dataset.pondMode
       && document.documentElement.dataset.uiShell !== "mobile"
       && document.documentElement.dataset.performanceTier !== "low"
       && connection?.saveData !== true;
@@ -3190,6 +3191,7 @@ function updateWallpaperMotionState() {
     const accentMissing = wallpaperTimeSwitchAccentAllowed()
       && switchControl.dataset.visualAccentAssetsReady !== "true";
     if (wallpaperTimeSwitchRouteReady
+      && !document.documentElement.dataset.pondMode
       && wallpaperTimeSwitchIsVisible(switchControl)
       && (coreMissing || accentMissing)) {
       void ensureWallpaperTimeSwitchAssets(switchControl);
@@ -3205,6 +3207,7 @@ function updateWallpaperMotionState() {
 function dynamicWallpaperIsActive(root) {
   return root?.dataset.motion === "full"
     && !document.hidden
+    && !document.documentElement.dataset.pondMode
     && document.body.dataset.route === "home"
     && document.documentElement.dataset.uiShell !== "mobile"
     && document.documentElement.dataset.performanceTier !== "low"

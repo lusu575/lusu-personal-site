@@ -757,7 +757,11 @@ export function createKnowledgeRoute({
         articleState.updateArticlesLanguage = query.lang;
       }
     } catch (error) {
-      if (requestId !== articleState.requestId || knowledgeQuery().key !== query.key || isAbortError(error)) return;
+      if (requestId !== articleState.requestId
+        || knowledgeQuery().key !== query.key
+        || controller.signal.aborted
+        || options.signal?.aborted
+        || isAbortError(error)) return;
       articleState.error = error.message || "failed";
     } finally {
       options.signal?.removeEventListener("abort", abortFromScope);
@@ -813,6 +817,10 @@ export function createKnowledgeRoute({
         if (articleState.currentSlug !== slug
           || requestId !== articleState.detailRequestId
           || getCurrentLang() !== requestedLang) return;
+        if (!result?.data?.article) {
+          if (!background) throw new TypeError("Missing article payload");
+          return;
+        }
         articleState.currentArticle = { ...result.data.article, requestedLang };
         articleState.detailCache.set(detailKey, articleState.currentArticle);
         while (articleState.detailCache.size > 12) {
@@ -832,7 +840,7 @@ export function createKnowledgeRoute({
       }
       applyDetailResult(result);
     } catch (error) {
-      if (isAbortError(error)) {
+      if (options.signal?.aborted || isAbortError(error)) {
         return;
       }
       if (articleState.currentSlug === slug

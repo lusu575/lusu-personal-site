@@ -16538,6 +16538,32 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 3. **タブ・フィルタ選択態の明示**：選択中タブに背景強調と 2px 下線を付与しました。
 4. **左欄矢印の拡大**：折りたたみ矢印・歯車を 16px・高輝度へ拡大しました。', '2026-11-24T23:36:00+08:00', '2026-11-24T23:36:00+08:00') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261124-kittens-ui-r80', '2026-11-24T23:36:00+08:00')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-known-issues-perf-r81', '2026-11-25-known-issues-perf-r81', 'site-updates', '["performance","ui","games","pond"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-known-issues-perf-r81-zh', 'seed-update-2026-11-25-known-issues-perf-r81', 'zh', '全站已知问题集中修复与桌面池塘三步性能优化上线（r81）', '桌面池塘停止加载后台旧壁纸视频与隐藏星光动画、荷叶纹理改为按帧增量烘焙、开窗样式不再整表重排，并同步修复猫国语言同步与白按钮深色化、欢迎窗图标区分度与移除临时公告横条、视频失败态按钮与游戏云存档提示文案。', '# 全站已知问题集中修复与桌面池塘三步性能优化上线（r81）
+
+本次更新对已确认的全站问题与性能瓶颈进行集中销账：
+
+- **三步性能优化**：桌面池塘模式不再下载与解码池塘背后的隐藏旧壁纸视频（省去约 3.85 MB 冷加载流量）并停用隐藏星光样式重算；四季荷叶纹理改为优先烘焙当前季、其余三季按空闲帧增量烘焙，消除冷加载主线程长冻结；路由样式表改为插在 `pond-windows.css` 之前而非反复挪动整表，消除开窗卡顿尖峰。
+- **冷加载首帧优化**：为桌面池塘首帧提供深池塘微光径向底色并将 WebGL2 启动展开起点前移，消除冷加载第 0 帧纯黑画面。
+- **猫国建设者与游戏区**：存档恢复后保持游戏语言与站点语言一致，将建筑卡片的「出售」等浅底子按钮统一深色化，并修正游戏壳云存档提示中指向桌面端左下角 ID 入口的文案。
+- **欢迎窗、视频与知识库**：移除欢迎窗顶部临时「公告」横条，升级 6 类最近更新图标为实线轮廓加分类 CRT 微色相；加固视频失败态重试按钮深色虚线样式；优化知识库请求中止判断与重试窗口，减少偶发读取失败。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-known-issues-perf-r81-en', 'seed-update-2026-11-25-known-issues-perf-r81', 'en', 'Known-Issues Sweep & Three-Step Desktop Pond Performance Overhaul (r81)', 'Eliminated hidden legacy wallpaper video/star overhead on desktop Pond, switched flora baking to incremental idle slices, stopped stylesheet detachment during window opens, darkened Kittens sell buttons, upgraded Welcome icons, removed the temporary notice banner, and tightened Knowledge/Video fallbacks.', '# Known-Issues Sweep & Three-Step Desktop Pond Performance Overhaul (r81)
+
+This release clears our tracked quality and performance backlog in one pass:
+
+- **Three-Step Performance Overhaul**: Desktop Pond mode no longer downloads or decodes hidden legacy wallpaper videos (~3.85 MB saved on cold load) and suppresses hidden star animation style recalculations; seasonal flora textures now bake the active season immediately and defer the other three seasons one-per-idle-slice to eliminate the 500ms cold-load freeze; lazily loaded route CSS is inserted before `pond-windows.css` instead of re-attaching the entire stylesheet during window opens.
+- **Frame-0 Cold-Load Polish**: Added a deep luminous pond radial base for Frame 0 and advanced the initial WebGL2 boot reveal so cold loads never flash dead black.
+- **Kittens Game & Games Shell**: Preserved site-language alignment after cloud/local save restores, darkened light-background building action links (`sell` / `+`), and updated the game-shell cloud-save sign-in hint to point to the desktop bottom-left ID entry.
+- **Welcome, Videos & Knowledge**: Removed the temporary rebuild notice bar from the Welcome modal, upgraded the 6 update category icons with crisp solid outlines and subtle CRT phosphor tints, reinforced dark dashed styling on video player retry buttons, and hardened Knowledge abort/retry handling.', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-known-issues-perf-r81-ja', 'seed-update-2026-11-25-known-issues-perf-r81', 'ja', '既知不具合の一括修正とデスクトップ池 3 段階パフォーマンス最適化（r81）', 'デスクトップ池モードで背面の旧壁紙動画と星アニメーションを停止し、季節植生の段階ベイクとスタイルシート非再挿入化を実施。さらに猫国の言語同期と白ボタン暗色化、ようこそ画面のアイコン改善と仮お知らせ削除、動画再試行ボタンと知識庫の再試行耐性を修正しました。', '# 既知不具合の一括修正とデスクトップ池 3 段階パフォーマンス最適化（r81）
+
+確認済みの不具合とパフォーマンス課題をまとめて解消しました：
+
+- **3 段階のパフォーマンス最適化**：デスクトップ池モードでは背面の旧壁紙動画（約 3.85 MB）の取得・デコードと非表示の星アニメーション再計算を停止しました。季節ごとの蓮葉テクスチャは表示中の季節のみ即時生成し、残り 3 季節をアイドルフレームで段階生成することで初回ロード時の長いフリーズを解消。さらにルート専用 CSS を `pond-windows.css` の手前へ挿入する方式へ改め、ウィンドウ開閉時の再解析スパイクを防ぎました。
+- **初回ロード第 0 フレーム改善**：池の深青ラジアル下地と WebGL2 起動開始位置の調整により、冷起動直後の真っ黒なフレームを解消しました。
+- **猫国建設者・ゲーム区**：セーブ復元後もサイト言語と一致するよう同期を強化し、建物カードの明るい「売却」系リンクを暗色化。ゲーム殻のクラウドセーブ案内もデスクトップ左下の ID 入口に合わせました。
+- **ようこそ画面・動画・知識庫**：ようこそ画面上部の仮お知らせバーを削除し、更新カテゴリ 6 種のアイコンを実線輪郭と控えめな CRT 蛍光色相へ刷新。動画プレーヤー失敗時の再試行ボタンを暗色破線テーマで統一し、知識庫の通信中断判定とリトライ耐性を強化しました。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-known-fixes-r81', '2026-11-25')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261124-kittens-ui-r80', '2026-11-24T23:36:00+08:00', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261125-known-fixes-r81', '2026-11-25', 'schema') on conflict(version) do nothing;

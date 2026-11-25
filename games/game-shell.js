@@ -32,7 +32,7 @@
       syncNow: "立即同步",
       logout: "退出",
       notSignedIn: "未登录，当前使用本地存档。",
-      signinHint: "如需自动云存档，请回主界面右上角登录账号。",
+      signinHint: "如需自动云存档，请返回主界面点击账号入口（桌面端左下角 ID）登录。",
       loginFromHome: "回主界面登录",
       loggedOutPanel: "已退出，当前仍会保留本地存档。",
       loggedOutStatus: "已退出账号，本地存档仍在当前浏览器。",
@@ -107,7 +107,7 @@
       syncNow: "Sync Now",
       logout: "Log out",
       notSignedIn: "Not signed in. This game is using local saves.",
-      signinHint: "To enable automatic cloud saves, return to the home screen and sign in from the top right.",
+      signinHint: "To enable automatic cloud saves, return to the home screen and sign in via the account entry (bottom-left ID on desktop).",
       loginFromHome: "Sign in from Home",
       loggedOutPanel: "You are signed out. Local saves are still kept here.",
       loggedOutStatus: "Signed out. Local saves remain in this browser.",
@@ -182,7 +182,7 @@
       syncNow: "今すぐ同期",
       logout: "ログアウト",
       notSignedIn: "未ログインです。現在はローカルセーブを使用しています。",
-      signinHint: "自動クラウドセーブを使うには、ホーム画面右上からログインしてください。",
+      signinHint: "自動クラウドセーブを使うには、ホーム画面のアカウント入口（デスクトップ左下の ID）からログインしてください。",
       loginFromHome: "ホームでログイン",
       loggedOutPanel: "ログアウトしました。ローカルセーブは引き続き保存されます。",
       loggedOutStatus: "ログアウトしました。ローカルセーブはこのブラウザーに残ります。",
@@ -620,6 +620,8 @@
         }
       }
     });
+    // Always keep game language aligned with the active site language even after cloud/import restore.
+    applyLanguagePreference(game);
   }
 
   function getCloudMetaKey(game) {
@@ -2063,19 +2065,26 @@
             box-shadow: none !important;
           }
           .btn .linkContent, .btn.modern .linkContent, .btn a.link, .btn .linkbreak, .btn.modern span.btnTitle,
+          .btn.modern a, .btn.modern a.enabled, .btn.modern a.off, .btn.modern .rightLinks a,
+          .highlited, .tipr_content,
           select, select > option, .login-popup {
-            background: rgba(8, 30, 36, 0.92) !important;
-            background-color: rgba(8, 30, 36, 0.92) !important;
+            background: rgba(8, 30, 36, 0.94) !important;
+            background-color: rgba(8, 30, 36, 0.94) !important;
             color: #e8fbf7 !important;
             border-color: rgba(164, 236, 228, 0.42) !important;
           }
+          .btn.modern a, .btn.modern a.enabled, .btn.modern a.off,
           .btn .linkContent a, .btn.modern .linkContent a {
             color: #9af8ec !important;
-            background: transparent !important;
+            background: rgba(8, 30, 36, 0.94) !important;
+            background-color: rgba(8, 30, 36, 0.94) !important;
+            border-left-color: rgba(164, 236, 228, 0.34) !important;
           }
+          .btn.modern a:hover, .btn.modern a.enabled:hover,
           .btn .linkContent a:hover, .btn.modern .linkContent a:hover {
             color: #ffffff !important;
-            background: rgba(24, 76, 82, 0.72) !important;
+            background: rgba(24, 76, 82, 0.85) !important;
+            background-color: rgba(24, 76, 82, 0.85) !important;
           }
           .btn:hover:not(.disabled), .btnContent:hover, button:hover:not(:disabled) {
             border-style: solid !important;
@@ -2396,6 +2405,7 @@
           : t("loadedLocal"));
       void initializeBrowserGameAgent(game);
     });
+    applyLanguagePreference(game);
     frame.src = buildEntry(game);
     renderCloudPanel();
     window.addEventListener("beforeunload", flushGameSave);

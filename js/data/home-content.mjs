@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-25-known-issues-perf-r81",
+      "slug": "2026-11-25-known-issues-perf-r81",
+      "category": "site-updates",
+      "tags": [
+        "performance",
+        "ui",
+        "games",
+        "pond"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": "2026-11-25",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "全站已知问题集中修复与桌面池塘三步性能优化上线（r81）",
+        "en": "Known-Issues Sweep & Three-Step Desktop Pond Performance Overhaul (r81)",
+        "ja": "既知不具合の一括修正とデスクトップ池 3 段階パフォーマンス最適化（r81）"
+      },
+      "summary": {
+        "zh": "桌面池塘停止加载后台旧壁纸视频与隐藏星光动画、荷叶纹理改为按帧增量烘焙、开窗样式不再整表重排，并同步修复猫国语言同步与白按钮深色化、欢迎窗图标区分度与移除临时公告横条、视频失败态按钮与游戏云存档提示文案。",
+        "en": "Eliminated hidden legacy wallpaper video/star overhead on desktop Pond, switched flora baking to incremental idle slices, stopped stylesheet detachment during window opens, darkened Kittens sell buttons, upgraded Welcome icons, removed the temporary notice banner, and tightened Knowledge/Video fallbacks.",
+        "ja": "デスクトップ池モードで背面の旧壁紙動画と星アニメーションを停止し、季節植生の段階ベイクとスタイルシート非再挿入化を実施。さらに猫国の言語同期と白ボタン暗色化、ようこそ画面のアイコン改善と仮お知らせ削除、動画再試行ボタンと知識庫の再試行耐性を修正しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-24-kittens-layout-and-contrast-r80",
       "slug": "kittens-game-full-width-layout-and-contrast-r80",
       "category": "site-updates",
@@ -110,34 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "在线画板独立版本升至 1.0.14，通过 Excalidraw 官方自定义 MainMenu 将画布查找项中文化为「在画布中查找 Ctrl+F」，并移除 Excalidraw links 及 GitHub / Follow us / Discord 外链。",
         "en": "Bumped Online Whiteboard to 1.0.14 with a custom Excalidraw MainMenu that localizes Find on canvas (Ctrl+F) and removes upstream Excalidraw external links.",
         "ja": "ホワイトボードを 1.0.14 へ更新し、公式 MainMenu カスタマイズで「キャンバス内を検索 Ctrl+F」を多言語化、Excalidraw 外部リンク群を撤去しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-24-glass-dynamic-pilot-r76",
-      "slug": "crt-glass-pilot-dynamic-hover-and-expanding-wave-r76",
-      "category": "site-updates",
-      "tags": [
-        "视觉更新",
-        "液态玻璃试点",
-        "按钮动效"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-24T19:00:00+08:00",
-      "updated_at": "2026-11-24T19:00:00+08:00",
-      "published_at": "2026-11-24T19:00:00+08:00",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "视觉优化：欢迎窗液态玻璃按钮试点动态化升级（r76）",
-        "en": "Visual Polish: Dynamic Liquid Glass Pilot for Welcome Buttons (r76)",
-        "ja": "ビジュアル調整：ようこそ画面ガラス試作ボタンの動的屈折強化（r76）"
-      },
-      "summary": {
-        "zh": "清除旧版 transition 对弹簧形变的阻尼干扰，新增随指针流动的液态玻璃高光、按住呼吸扩散折光环与清晰的 440ms 释放扩散波，严格限定在第 3 步试点范围。",
-        "en": "Removes legacy CSS transition lag on the Step-3 pilot buttons and adds live pointer-tracking liquid sheen, breathing hold refraction, and a 440ms expanding release wave.",
-        "ja": "旧 CSS transition 干渉を除去し、ポインタ追従の液状ハイライト・押下中の呼吸屈折リング・440ms 拡散リリース波をステップ3試作範囲のみに実装しました。"
       }
     }
   ]

@@ -1,5 +1,13 @@
 # CHANGELOG.md
 
+## 2026-11-25
+
+- 全站已知问题集中修复与桌面池塘三步性能优化上线（r81）（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-known-issues-perf-r81` / `2026-11-25-known-issues-perf-r81`；视觉层缓存 `20261125-known-fixes-r81`。
+
+## 2026-11-25
+
+- 全站已知问题集中修复与桌面池塘三步性能优化上线（r81）：桌面池塘禁用隐藏旧壁纸视频与星光样式重算、四季荷叶改为按空闲帧增量烘焙、开窗样式表改为前置插入消除整表重排、冷加载首帧增加深池塘径向底色并前移 WebGL2 启动起点；猫国存档恢复后保持跟随站点语言并将建筑「出售」等浅底按钮深色化；欢迎窗升级 6 类图标实线＋微色相并移除临时公告横条；加固视频失败态重试按钮深色虚线风；优化知识库中止判断与重试窗口；修正游戏壳云存档提示文案指向桌面端左下角 ID（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-known-issues-perf-r81` / `2026-11-25-known-issues-perf-r81`；视觉层缓存 `20261125-known-fixes-r81`。
+
 ## 2026-11-24
 
 - 优化猫国建设者界面布局与对比度：三栏铺满视口宽高消除大片黑空、禁用按钮文字提亮至 AA+（>= 7.5:1）、补齐主标签与筛选标签选中态高光下划线、放大并提亮左栏折叠箭头与设置图标（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-24-kittens-layout-and-contrast-r80` / `kittens-game-full-width-layout-and-contrast-r80`；视觉层缓存 `20261124-kittens-ui-r80`。
