@@ -2,13 +2,13 @@
 // Zero business-logic rewrites: all routing, API fetching, filtering, sorting, pinning,
 // search, pagination, account sessions, and language switching stay 100% in existing main.js & routes/*.mjs.
 
-import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261125-refresh-warm-r91';
+import { PondCRTEngine } from '../pond-crt/engine.mjs?v=20261125-mengto-rollout-r95';
 import {
   resolveInitialPondSeason,
   saveManualSeasonOverride,
   startSeasonTimeSchedule
 } from '../pond-crt/season-schedule.mjs?v=20261122-pond-live-fix-r1';
-import { attachSiteGlassButtons, attachWelcomePilotButtons, getCrtGlassAudit, getCrtGlassButtonPerfStats, installAutoGlassBinding } from './crt-glass-button.mjs?v=20261125-unclipped-halo-r93';
+import { attachSiteGlassButtons, attachWelcomePilotButtons, getCrtGlassAudit, getCrtGlassButtonPerfStats, installAutoGlassBinding } from './crt-glass-button.mjs?v=20261125-mengto-rollout-r95';
 import { PondWindowMorphController } from './crt-window-morph.mjs?v=20261125-cold-open-r90';
 
 function isMobileShell() {

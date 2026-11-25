@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-25-mengto-site-rollout-r95",
+      "slug": "2026-11-25-mengto-site-rollout-r95",
+      "category": "site-updates",
+      "tags": [
+        "ui",
+        "glass",
+        "pond"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-25",
+      "updated_at": "2026-11-25",
+      "published_at": "2026-11-25",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "MengTo 液态玻璃全站及子页统一铺开＋开机显影前桌面贴图全量就绪（r95）",
+        "en": "Site-Wide & Subpage MengTo Liquid-Glass Rollout + Pre-Warmup Desktop Texture Readiness (r95)",
+        "ja": "MengTo 液態ガラス全サイト＆サブページ展開＋起動顕像前のデスクトップ貼図事前確定（r95）"
+      },
+      "summary": {
+        "zh": "按站长拍板将欢迎窗签收版 MengTo 液态玻璃特效（透明平坦中心面、外唇掠射高光、按住高斯凹陷、750ms 释放波＋r93 顶层无裁切完整光晕）铺开至全站所有按钮，并通过共享 standalone 层统一接入在线画板、日语的言外之意与全部 5 个游戏子页（零漏绑）；同时将开机显影 uWarm 起跳绑定至当季桌面贴图解码与 GPU 烘焙完成，消除显影中途贴图迟到弹出。",
+        "en": "Rolled out the approved Welcome MengTo liquid-glass button spec (clear flat center, grazing rim reflection, smooth Gaussian hold dimple, 750ms crest+wake release wave, plus r93's unclipped top-level halo layer) to every button across the main site and all standalone subpages (Whiteboard, Japanese Subtext, all 5 game shells), and gated boot uWarm emergence on active-season desktop flora decode & GPU bake so zero textures pop in mid-warmup.",
+        "ja": "承認済みのようこそ画面 MengTo 液態ガラス仕様（透明中心面・外唇かすめ反射・ガウス凹み・750ms 放出波＋r93 最上位非クリップ光彩）を全サイトおよび独立サブページ（画板・日本語の言外之意・全 5 ゲーム）へ統一展開し、起動顕像 uWarm を当季デスクトップ貼図のデコード＆GPU ベイク完了後に開始するよう改善しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-25-cold-open-pipeline-r94",
       "slug": "2026-11-25-cold-open-pipeline-r94",
       "category": "site-updates",
@@ -110,34 +138,6 @@ export const homeContent = Object.freeze({
         "zh": "移除同会话 sessionStorage 仅播一次拦截，改为每次完整页面加载（首次打开、F5 刷新、硬刷新）均播放 r87 Persepolis 式由暗到亮显影；仅浏览器前进/后退缓存恢复与 prefers-reduced-motion 直达终态，其余参数与 2.5s 墙钟兜底、点击/任意键跳过保持不变。",
         "en": "Removed the once-per-session sessionStorage gate so every full page load (initial open, F5 refresh, hard refresh) plays the r87 Persepolis dark-to-bright CRT warm-up while back/forward cache restores and prefers-reduced-motion remain instant.",
         "ja": "sessionStorage による 1 セッション 1 回制限を解除し、初回表示・F5 リロード・ハードリロードのすべてで r87 の暗転から点灯するウォームアップ演出を再生するようにしました（戻る／進むキャッシュ復元と prefers-reduced-motion のみ即時終端表示）。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-25-cold-open-consistency-r90",
-      "slug": "2026-11-25-cold-open-consistency-r90",
-      "category": "site-updates",
-      "tags": [
-        "ui",
-        "pond",
-        "performance"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-25",
-      "updated_at": "2026-11-25",
-      "published_at": "2026-11-25",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "开窗管线系统性收口：消除刷新后冷开与热开不一致（r90）",
-        "en": "Systemic Window-Open Pipeline Fix: Cold-Open vs Warm-Open Consistency (r90)",
-        "ja": "ウィンドウ起動パイプライン統一：初回冷起動とキャッシュ再起動の差異解消（r90）"
-      },
-      "summary": {
-        "zh": "在开窗管线层统一根治刷新后首开与有缓存再开的不一致：开窗测量前强制同步排版并取消目标窗与父容器的旧版竞争动画，空闲帧预解码关于/聊天室头像并锁定比例，消除关于窗首开先偏下再弹回；将「正在打开应用模块...」占位改造为无边框透明风格并延迟 260ms 渐显，彻底消除聊天室等窗口冷开闪现突兀板块。",
-        "en": "Fixed cold-open vs warm-open inconsistencies at the window-morph pipeline level: synchronous layout settle and parent/window WAAPI cancellation before measurement, idle eager avatar pre-decoding with locked 1:1 aspect-ratio (eliminating About downward shift/snap), synchronous Welcome greeting before mount, and a borderless 260ms-delayed .route-module-status placeholder (eliminating Chatroom's jarring loading box flash).",
-        "ja": "リロード直後の初回起動と再起動の挙動差をパイプライン層で根治。計測前の同期レイアウト確定と親／ウィンドウ競合 WAAPI 抑止、About／チャットのアバター事前デコードと比率固定により初回ズレ跳ね戻りを解消し、モジュール読込中の枠表示を透明＋260ms 遅延フェード化してチャット室等の違和感ある枠点滅をなくしました。"
       }
     }
   ]

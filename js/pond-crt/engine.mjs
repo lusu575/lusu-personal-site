@@ -141,8 +141,12 @@ export class PondCRTEngine {
 
     this._initPrograms();
     this._shaderReady = true;
+    this.primaryFloraReady = !this.bootActive;
+    this.warmRampStartMs = 0;
     if (this.bootActive) {
-      this.realLoadProgress = Math.max(this.realLoadProgress, 0.35);
+      // r95: Hold uWarm at 0.0 until active-season desktop flora textures are 100% decoded & GPU-baked
+      // so zero branches/leaves/icons can ever pop in mid-warm-up!
+      this.realLoadProgress = 0.0;
       // Independent wall-clock failsafe outside RAF loop: guaranteed uWarm = 1.0 by 2.5s
       this._bootFailsafeTimer = window.setTimeout(() => {
         if (this.bootActive) this._finishBootImmediate();
@@ -188,15 +192,16 @@ export class PondCRTEngine {
         },
         onPrimaryFloraDone: () => {
           if (this.gl) this._prebakeAllFlora();
+          this.primaryFloraReady = true;
         },
         onProgress: (realProg) => {
           if (this.bootActive) {
-            const combined = (this._shaderReady ? 0.35 : 0.0) + realProg * 0.65;
-            this.realLoadProgress = Math.max(this.realLoadProgress, Math.min(1.0, combined));
+            this.realLoadProgress = Math.max(this.realLoadProgress, Math.min(1.0, realProg));
           }
         },
         onComplete: () => {
           if (this.gl) this._prebakeAllFlora();
+          this.primaryFloraReady = true;
           this.realLoadProgress = 1.0;
         }
       });
@@ -208,6 +213,7 @@ export class PondCRTEngine {
         }
       }
     } catch {
+      this.primaryFloraReady = true;
       this.realLoadProgress = 1.0;
     }
   }
@@ -683,24 +689,31 @@ export class PondCRTEngine {
         markBootCompleted();
         if (this.onBootComplete) this.onBootComplete();
       } else {
-        // Time-capped envelope: reaches 1.0 around 1.28s on hot cache (inside 0.9s - 1.6s target)
-        const timeCap = Math.min(1.0, elapsedBootMs / this.bootMinDurationMs);
-        // After 1.6s, smoothly release realLoadProgress gate so slow networks still finish cleanly before 2.5s
-        const releaseFloor = elapsedBootMs > this.bootMaxDurationMs
-          ? Math.min(1.0, (elapsedBootMs - this.bootMaxDurationMs) / (this.bootHardTimeoutMs - this.bootMaxDurationMs))
-          : 0.0;
-        const effectiveReal = Math.max(this.realLoadProgress, releaseFloor);
-        const targetWarm = Math.min(timeCap, effectiveReal);
-        this.uWarm = Math.max(this.uWarm, targetWarm);
-        if (this.uWarm >= 0.998 && effectiveReal >= 0.998) {
-          if (this._bootFailsafeTimer) {
-            window.clearTimeout(this._bootFailsafeTimer);
-            this._bootFailsafeTimer = 0;
+        // r95: Wait in dark (uWarm = 0) until active-season desktop flora textures are 100% GPU-baked
+        // (max 950ms slow-network gate so total boot still finishes smoothly inside 2.5s wall-clock ceiling)
+        if (!this.primaryFloraReady && elapsedBootMs < 950) {
+          this.uWarm = 0.0;
+        } else {
+          if (!this.warmRampStartMs) this.warmRampStartMs = nowMs;
+          const rampElapsed = nowMs - this.warmRampStartMs;
+          const rampDur = Math.min(1150, Math.max(700, this.bootHardTimeoutMs - (this.warmRampStartMs - this.bootStartMs) - 120));
+          const timeCap = Math.min(1.0, rampElapsed / rampDur);
+          const releaseFloor = elapsedBootMs > this.bootMaxDurationMs
+            ? Math.min(1.0, (elapsedBootMs - this.bootMaxDurationMs) / (this.bootHardTimeoutMs - this.bootMaxDurationMs))
+            : 0.0;
+          const effectiveReal = Math.max(this.primaryFloraReady ? 1.0 : this.realLoadProgress, releaseFloor);
+          const targetWarm = Math.min(timeCap, effectiveReal);
+          this.uWarm = Math.max(this.uWarm, targetWarm);
+          if (this.uWarm >= 0.998 && effectiveReal >= 0.998) {
+            if (this._bootFailsafeTimer) {
+              window.clearTimeout(this._bootFailsafeTimer);
+              this._bootFailsafeTimer = 0;
+            }
+            this.uWarm = 1.0;
+            this.bootActive = false;
+            markBootCompleted();
+            if (this.onBootComplete) this.onBootComplete();
           }
-          this.uWarm = 1.0;
-          this.bootActive = false;
-          markBootCompleted();
-          if (this.onBootComplete) this.onBootComplete();
         }
       }
     }

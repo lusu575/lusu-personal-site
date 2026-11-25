@@ -137,8 +137,8 @@ function removeHaloProxy(ctrl) {
 }
 
 function syncHaloProxy(ctrl) {
-  // Welcome MengTo pilot stays untouched (r92); low-perf tier disables outer halo
-  if (!ctrl || ctrl.isLiquidPilot) return;
+  // Low-perf tier disables outer halo; all other tiers get full unclipped outer glow on document.body!
+  if (!ctrl) return;
   if (document.documentElement.dataset.performanceTier === 'low') {
     removeHaloProxy(ctrl);
     return;
@@ -197,7 +197,8 @@ class CrtGlassButtonController {
   constructor(el, levelName = 'glass-primary') {
     this.el = el;
     this.levelName = levelName;
-    this.isLiquidPilot = Boolean(el.matches && el.matches('#welcome-modal .quick-link'));
+    // r95 Full Rollout: ALL non-close glass buttons use the approved Welcome MengTo liquid-glass spec!
+    this.isLiquidPilot = levelName !== 'glass-close';
     this.level = CRT_GLASS_BUTTON_LEVELS[levelName] || CRT_GLASS_BUTTON_LEVELS['glass-primary'];
     this.held = false;
     this.hovered = false;
@@ -577,16 +578,17 @@ export function attachCrtGlassButton(el, levelName = 'glass-primary') {
   return ctrl;
 }
 
-// r88 Unified Semantic Glass Binding Rules (covers ALL static & dynamically rendered controls
-// across every window while strictly excluding prose links, inputs, textareas, selects & iframes)
-const GLASS_SCOPE_SELECTOR = '.xp-window, #account-popover, #welcome-modal, #video-modal, #transfer-app, .game-shell';
+// r88 + r95 Unified Semantic Glass Binding Rules (covers ALL static & dynamically rendered controls
+// across every SPA window AND standalone subpages: Whiteboard, Japanese Subtext, all 5 Game Shells)
+const GLASS_SCOPE_SELECTOR = '.xp-window, #account-popover, #welcome-modal, #video-modal, #transfer-app, .game-shell, .trainer-shell, #whiteboard-root, .whiteboard-page';
 const GLASS_EXCLUDE_ANCESTOR = '#article-detail-body, iframe, .excalidraw, [data-no-glass]';
 const GLASS_CLOSE_MATCH = '.close-button, .account-close-button';
-const GLASS_ICON_MATCH = '#video-window-maximize, [data-article-scroll-top], .chat-tool-button, .chat-room-help-trigger, .about-social-link, .account-password-toggle, .transfer-pending-remove';
+const GLASS_ICON_MATCH = '#video-window-maximize, [data-article-scroll-top], .chat-tool-button, .chat-room-help-trigger, .room-help-toggle, .about-social-link, .account-password-toggle, .transfer-pending-remove';
 const GLASS_CARD_MATCH = '.article-card:not(.article-card-skeleton)';
 const GLASS_PRIMARY_MATCH = [
   'button',
   '.xp-button',
+  '.xp-control',
   '.quick-link',
   '.card-action',
   '.article-card-cta',
@@ -598,6 +600,10 @@ const GLASS_PRIMARY_MATCH = [
   '.transfer-file-picker',
   '.game-source-link',
   '.back-link',
+  '.trainer-back-link',
+  '.whiteboard-button',
+  '.header-link',
+  '.game-tools-toggle',
   '.tool-button',
   '.file-button',
   'summary'
@@ -652,6 +658,7 @@ function findNearestGlassCandidate(target) {
 export function installAutoGlassBinding() {
   if (autoGlassInstalled) return;
   autoGlassInstalled = true;
+  document.documentElement.dataset.crtGlassReady = '1';
   syncCrtGlassCssVars();
 
   // 1. Document-level capturing lazy delegation: even an element inserted 0.1ms ago gets

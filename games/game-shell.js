@@ -1,4 +1,11 @@
 (async function () {
+  // r95: Auto-load unified MengTo liquid-glass button layer across all 5 game shells
+  try {
+    import("/js/pond-windows/crt-glass-button.mjs?v=20261125-mengto-rollout-r95")
+      .then((m) => m.installAutoGlassBinding?.())
+      .catch(() => {});
+  } catch {}
+
   const slug = window.GAME_SLUG;
   const shellParams = new URLSearchParams(window.location.search);
   const storedSiteLang = (() => {

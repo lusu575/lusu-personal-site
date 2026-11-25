@@ -16847,6 +16847,26 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **開窓 Ready-Gate**：温起動やプリウォーム済みは 0ms で即時展開。未完了の冷起動は `prepareOpenMount()` で空枠を隠し、コンテンツ・画像確定後に第 0 フレームから終端状態で展開します。
 - **一時ローディング枠の全サイト統一撤廃**：デスクトップ Pond モードで各種 `.is-loading` 枠と `.article-card-skeleton` を非表示（`.is-error`／`.is-empty` は維持）とし、`#about-social-links` の 1 行高さを `36px` に固定しました。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-cold-open-pipeline-r94', '2026-11-25')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-25-mengto-site-rollout-r95', '2026-11-25-mengto-site-rollout-r95', 'site-updates', '["ui","glass","pond"]', '', 'published', 0, 0, '2026-11-25', '2026-11-25', '2026-11-25') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-mengto-site-rollout-r95-zh', 'seed-update-2026-11-25-mengto-site-rollout-r95', 'zh', 'MengTo 液态玻璃全站及子页统一铺开＋开机显影前桌面贴图全量就绪（r95）', '按站长拍板将欢迎窗签收版 MengTo 液态玻璃特效（透明平坦中心面、外唇掠射高光、按住高斯凹陷、750ms 释放波＋r93 顶层无裁切完整光晕）铺开至全站所有按钮，并通过共享 standalone 层统一接入在线画板、日语的言外之意与全部 5 个游戏子页（零漏绑）；同时将开机显影 uWarm 起跳绑定至当季桌面贴图解码与 GPU 烘焙完成，消除显影中途贴图迟到弹出。', '# MengTo 液态玻璃全站及子页统一铺开＋开机显影前桌面贴图全量就绪（r95）
+
+本次完成两项全站级体验升级：
+
+- **欢迎窗 MengTo 液态玻璃特效全站与独立子页统一铺开**：将经站长确认的透明平坦中心面、外唇掠射高光、按住 `1.6px / 0.972`＋`--cg-sigma` 平滑高斯凹陷与 `750ms pow(1-t, 1.7)` 释放波转正至全站所有按钮，并全量沿用 `r93` 顶层无裁切 `#crt-glass-halo-layer` 外光晕（`14px/20px/22px`）；新增共享 `css/crt-glass-standalone.css` 并按机制自动接入在线画板、日语的言外之意与 5 个游戏子页共用 `games/game-shell.js`（严格排除 `.excalidraw` 与游戏 iframe），主站与子页均实现零漏绑。
+- **开机显影前当季桌面贴图全量就绪**：在 `js/pond-crt/engine.mjs` 中保持 `uWarm = 0` 直至当季枝叶/荷叶/荷花等桌面贴图全部解码并完成 GPU 纹理烘焙（`primaryFloraReady`，设 950ms 弱网兜底与 2.5s 墙钟硬兜底），确保显影第 1 帧至结束全程贴图在位、零中途弹出；其余三季仍在后台异步补齐。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-mengto-site-rollout-r95-en', 'seed-update-2026-11-25-mengto-site-rollout-r95', 'en', 'Site-Wide & Subpage MengTo Liquid-Glass Rollout + Pre-Warmup Desktop Texture Readiness (r95)', 'Rolled out the approved Welcome MengTo liquid-glass button spec (clear flat center, grazing rim reflection, smooth Gaussian hold dimple, 750ms crest+wake release wave, plus r93''s unclipped top-level halo layer) to every button across the main site and all standalone subpages (Whiteboard, Japanese Subtext, all 5 game shells), and gated boot uWarm emergence on active-season desktop flora decode & GPU bake so zero textures pop in mid-warmup.', '# Site-Wide & Subpage MengTo Liquid-Glass Rollout + Pre-Warmup Desktop Texture Readiness (r95)
+
+This release delivers two site-wide upgrades:
+
+- **Full Site-Wide & Subpage MengTo Liquid-Glass Rollout**: Promoted the approved Welcome pilot spec (clear flat center, grazing perimeter specular, `1.6px / 0.972` press with `--cg-sigma` Gaussian dimple, `750ms pow(1-t, 1.7)` crest+wake release wave, and `r93`''s unclipped `#crt-glass-halo-layer`) to all buttons across the main SPA and standalone subpages (Whiteboard, Japanese Subtext, and all 5 game shells via `games/game-shell.js`), achieving zero unbound buttons while preserving Excalidraw and game iframes.
+- **Pre-Warmup Desktop Texture Readiness**: Held `uWarm` at `0.0` in `engine.mjs` until all active-season desktop flora textures finish decoding and GPU pre-baking (`primaryFloraReady`, with a 950ms slow-network gate and 2.5s wall-clock failsafe), eliminating mid-emergence texture pop-in while remaining 3 seasons load asynchronously in the background.', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-25-mengto-site-rollout-r95-ja', 'seed-update-2026-11-25-mengto-site-rollout-r95', 'ja', 'MengTo 液態ガラス全サイト＆サブページ展開＋起動顕像前のデスクトップ貼図事前確定（r95）', '承認済みのようこそ画面 MengTo 液態ガラス仕様（透明中心面・外唇かすめ反射・ガウス凹み・750ms 放出波＋r93 最上位非クリップ光彩）を全サイトおよび独立サブページ（画板・日本語の言外之意・全 5 ゲーム）へ統一展開し、起動顕像 uWarm を当季デスクトップ貼図のデコード＆GPU ベイク完了後に開始するよう改善しました。', '# MengTo 液態ガラス全サイト＆サブページ展開＋起動顕像前のデスクトップ貼図事前確定（r95）
+
+2 つのサイト全体アップデートを実施しました：
+
+- **MengTo 液態ガラスの全サイト＆独立サブページ統一展開**：ようこそ画面で承認された仕様と `r93` の最上位非クリップ光彩層を全ボタンおよび独立サブページ（画板・日本語の言外之意・全 5 ゲーム）へ展開し、未バインド 0 を達成しました。
+- **起動顕像前の当季デスクトップ貼図事前確定**：`engine.mjs` で当季貼図のデコード＆GPU ベイク完了（`primaryFloraReady`）まで `uWarm = 0` を維持し、顕像途中の貼図遅延ポップインを根治しました。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-mengto-rollout-r95', '2026-11-25')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261125-cold-open-pipeline-r94', '2026-11-25', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261125-mengto-rollout-r95', '2026-11-25', 'schema') on conflict(version) do nothing;
