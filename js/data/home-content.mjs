@@ -2,6 +2,33 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-26-unpublish-three-articles-r1",
+      "slug": "2026-11-26-unpublish-three-articles-r1",
+      "category": "site-updates",
+      "tags": [
+        "content",
+        "knowledge"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-26",
+      "updated_at": "2026-11-26",
+      "published_at": "2026-11-26",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "知识库内容整理：下架三篇旧文章（转为草稿态）",
+        "en": "Knowledge Base Curation: Unpublished Three Articles (Moved to Draft)",
+        "ja": "知識庫コンテンツ整理：3 件の記事を非公開化（下書き状態へ変更）"
+      },
+      "summary": {
+        "zh": "按站长指令将工具雷达 2 篇（2026-08-04、2026-07-28）与 AI 分类 1 篇（2026-06-14）文章以可恢复方式调整为草稿状态（status = 'draft'），前台列表与文章直达链接均不再展示正文，原始数据完整保留。",
+        "en": "Reversibly moved three articles (two Tool Radar posts from 2026-08-04 / 2026-07-28 and one AI guide from 2026-06-14) to draft status so they no longer appear in public listings or direct article URLs while keeping underlying records intact.",
+        "ja": "ツールレーダー 2 件（2026-08-04・2026-07-28）および AI 記事 1 件（2026-06-14）を復元可能な下書き状態（status = 'draft'）へ変更し、公開一覧および直リンクからの閲覧を停止しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-25-quiet-icons-unclipped-r98",
       "slug": "2026-11-25-quiet-icons-unclipped-r98",
       "category": "site-updates",
@@ -111,34 +138,6 @@ export const homeContent = Object.freeze({
         "zh": "按站长拍板将欢迎窗签收版 MengTo 液态玻璃特效（透明平坦中心面、外唇掠射高光、按住高斯凹陷、750ms 释放波＋r93 顶层无裁切完整光晕）铺开至全站所有按钮，并通过共享 standalone 层统一接入在线画板、日语的言外之意与全部 5 个游戏子页（零漏绑）；同时将开机显影 uWarm 起跳绑定至当季桌面贴图解码与 GPU 烘焙完成，消除显影中途贴图迟到弹出。",
         "en": "Rolled out the approved Welcome MengTo liquid-glass button spec (clear flat center, grazing rim reflection, smooth Gaussian hold dimple, 750ms crest+wake release wave, plus r93's unclipped top-level halo layer) to every button across the main site and all standalone subpages (Whiteboard, Japanese Subtext, all 5 game shells), and gated boot uWarm emergence on active-season desktop flora decode & GPU bake so zero textures pop in mid-warmup.",
         "ja": "承認済みのようこそ画面 MengTo 液態ガラス仕様（透明中心面・外唇かすめ反射・ガウス凹み・750ms 放出波＋r93 最上位非クリップ光彩）を全サイトおよび独立サブページ（画板・日本語の言外之意・全 5 ゲーム）へ統一展開し、起動顕像 uWarm を当季デスクトップ貼図のデコード＆GPU ベイク完了後に開始するよう改善しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-25-cold-open-pipeline-r94",
-      "slug": "2026-11-25-cold-open-pipeline-r94",
-      "category": "site-updates",
-      "tags": [
-        "ui",
-        "pond",
-        "performance"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-25",
-      "updated_at": "2026-11-25",
-      "published_at": "2026-11-25",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "全站冷开管线级根治：开机静默预热＋开窗 Ready-Gate＋全站零多余加载框（r94）",
-        "en": "Systemic Cold-Open Pipeline Fix: Boot Pre-Warming, Ready-Gate & Zero Transient Loading Boxes (r94)",
-        "ja": "全サイト冷起動パイプライン根治：起動時プリウォーム＋Ready-Gate＋不要ローディング枠撤廃（r94）"
-      },
-      "summary": {
-        "zh": "按全量冷开审计结果从管线层根治冷开与热开不一致：开机 60ms 内并行预加载全部 7 个动态路由/数据 ES 模块并主动解码关于/聊天室头像、社交图标与工具 SVG；开窗前引入 Ready-Gate 等待内容与图片落定再发出第 0 帧飞窗（热开 0ms 零延迟）；统一消除全站冷开期一切多余加载框与骨架屏（含关于窗「正在检查社交链接…」行），冷开全程零位移、第 0 帧即终态。",
-        "en": "Fixed cold-open vs warm-open inconsistencies at the pipeline level: silently pre-warms all 7 dynamic route/data ES modules and eagerly decodes About/Chatroom avatars, social icons, and Tools SVGs during the 1.4s boot warm-up; gates cold window morphs until content and images settle (0ms overhead on warm open); and eliminates all transient loading boxes/skeletons (including About's 'Checking social links...' row) so Frame 0 is the final settled state.",
-        "ja": "冷起動監査の結果に基づきパイプライン層で根治：起動 60ms 以内に全 7 動的ルート／データ ES モジュールとアバター・SNS・ツール SVG を並列プリウォーム＆先行デコードし、開窓前に Ready-Gate でコンテンツと画像確定を待ってから第 0 フレームを表示（温起動は 0ms）。About の「ソーシャルリンクを確認中…」行を含む不要なローディング枠とスケルトンを全サイトで一掃し、初回からズレゼロの終端表示を実現しました。"
       }
     }
   ]

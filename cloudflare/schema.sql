@@ -16929,6 +16929,30 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **デスクトップ 6 アイコンのクリック発光撤去**：`engine.mjs`／`ui-overlay.mjs` の `clickPulse` 発光を削除し、クリック時に静かにウィンドウを開くようにしました。
 - **全ウィンドウタイトルバーの直線切れ解消**：全ウィンドウ共通の `.window-titlebar > span` における `overflow: hidden` を解除し、タイトルアイコンと文字光彩の直線クリップを根治しました。', '2026-11-25', '2026-11-25') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261125-quiet-icons-unclipped-r98', '2026-11-25')
+update articles set status = 'draft', is_pinned = 0, updated_at = '2026-11-26' where slug in ('tool-radar-2026-08-04', 'tool-radar-2026-07-28', 'ai-agent-workflow-guide') and status = 'published';
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-26-unpublish-three-articles-r1', '2026-11-26-unpublish-three-articles-r1', 'site-updates', '["content","knowledge"]', '', 'published', 0, 0, '2026-11-26', '2026-11-26', '2026-11-26') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-26-unpublish-three-articles-r1-zh', 'seed-update-2026-11-26-unpublish-three-articles-r1', 'zh', '知识库内容整理：下架三篇旧文章（转为草稿态）', '按站长指令将工具雷达 2 篇（2026-08-04、2026-07-28）与 AI 分类 1 篇（2026-06-14）文章以可恢复方式调整为草稿状态（status = ''draft''），前台列表与文章直达链接均不再展示正文，原始数据完整保留。', '# 知识库内容整理：下架三篇旧文章（转为草稿态）
+
+本次按站长指令以可恢复的草稿态（`status = ''draft''`，不物理删除数据）下架以下三篇文章：
+
+- `tool-radar-2026-08-04`：《工具雷达｜总在设计、代码和本地 AI 之间卡住？6 个工具把研究、自动化与部署串起来》
+- `tool-radar-2026-07-28`：《工具雷达｜AI 总做不出你想要的效果？7 个设计、视频、代码与本地 AI 工具》
+- `ai-agent-workflow-guide`：《从提问到上线：普通人如何用 AI Agent 放大执行力》', '2026-11-26', '2026-11-26') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-26-unpublish-three-articles-r1-en', 'seed-update-2026-11-26-unpublish-three-articles-r1', 'en', 'Knowledge Base Curation: Unpublished Three Articles (Moved to Draft)', 'Reversibly moved three articles (two Tool Radar posts from 2026-08-04 / 2026-07-28 and one AI guide from 2026-06-14) to draft status so they no longer appear in public listings or direct article URLs while keeping underlying records intact.', '# Knowledge Base Curation: Unpublished Three Articles (Moved to Draft)
+
+Reversibly moved the following three articles to `status = ''draft''` (preserving all records without physical deletion):
+
+- `tool-radar-2026-08-04`
+- `tool-radar-2026-07-28`
+- `ai-agent-workflow-guide`', '2026-11-26', '2026-11-26') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-26-unpublish-three-articles-r1-ja', 'seed-update-2026-11-26-unpublish-three-articles-r1', 'ja', '知識庫コンテンツ整理：3 件の記事を非公開化（下書き状態へ変更）', 'ツールレーダー 2 件（2026-08-04・2026-07-28）および AI 記事 1 件（2026-06-14）を復元可能な下書き状態（status = ''draft''）へ変更し、公開一覧および直リンクからの閲覧を停止しました。', '# 知識庫コンテンツ整理：3 件の記事を非公開化（下書き状態へ変更）
+
+以下の 3 件の記事を復元可能な `status = ''draft''` へ変更しました（物理削除なし）：
+
+- `tool-radar-2026-08-04`
+- `tool-radar-2026-07-28`
+- `ai-agent-workflow-guide`', '2026-11-26', '2026-11-26') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261126-unpublish-three-articles-r1', '2026-11-26')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
-insert into site_data_migrations (version, applied_at, source) values ('20261125-quiet-icons-unclipped-r98', '2026-11-25', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261126-unpublish-three-articles-r1', '2026-11-26', 'schema') on conflict(version) do nothing;

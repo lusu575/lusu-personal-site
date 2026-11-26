@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2026-11-26
+
+- 下架三篇指定知识库文章（可恢复 `status = 'draft'` 软下架，保留正文与翻译数据不做物理删除）：将 `tool-radar-2026-08-04`（《工具雷达｜总在设计、代码和本地 AI 之间卡住？6 个工具把研究、自动化与部署串起来》）、`tool-radar-2026-07-28`（《工具雷达｜AI 总做不出你想要的效果？7 个设计、视频、代码与本地 AI 工具》）与 `ai-agent-workflow-guide`（《从提问到上线：普通人如何用 AI Agent 放大执行力》）通过 D1 幂等迁移更新为 `status = 'draft', is_pinned = 0`，前台列表与直达链接均不再展示或返回正文，工具雷达与 AI 分类计数归零（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-26-unpublish-three-articles-r1` / `2026-11-26-unpublish-three-articles-r1`。
+
 ## 2026-11-25
 
 - `r98` 桌面 6 图标取消点击闪光＋全站窗口标题栏图标与文字光晕直线切边共享层根治：① 移除 `engine.mjs` 与 `ui-overlay.mjs` 中点击桌面 6 个点阵图标触发的 `clickPulse` 径向闪光环，点击后安静开窗、保留悬停静态呈现；② 全站排查锁定所有窗口（游戏/知识库/文章/视频/工具/聊天室/关于/欢迎/视频弹窗）标题栏 `.window-titlebar > span` 与子 `span` 继承 `overflow: hidden` 导致标题文字 `text-shadow` 被切成矩形方框、标题图标 `drop-shadow` 左边被一刀切直的问题，在共享层统一改为 `overflow: visible !important`，边缘全部自然渐隐（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-25-quiet-icons-unclipped-r98` / `2026-11-25-quiet-icons-unclipped-r98`；视觉层缓存 `20261125-quiet-icons-unclipped-r98`。

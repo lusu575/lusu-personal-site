@@ -1,6 +1,38 @@
 export const content = {
   updates: [
 {
+  "article_id": "seed-update-2026-11-26-unpublish-three-articles-r1",
+  "slug": "2026-11-26-unpublish-three-articles-r1",
+  "category": "site-updates",
+  "tags": [
+    "content",
+    "knowledge"
+  ],
+  "cover_image": "",
+  "status": "published",
+  "is_pinned": 0,
+  "created_at": "2026-11-26",
+  "updated_at": "2026-11-26",
+  "published_at": "2026-11-26",
+  "fallbackOnly": true,
+  "icon": "system",
+  "title": {
+    "zh": "知识库内容整理：下架三篇旧文章（转为草稿态）",
+    "en": "Knowledge Base Curation: Unpublished Three Articles (Moved to Draft)",
+    "ja": "知識庫コンテンツ整理：3 件の記事を非公開化（下書き状態へ変更）"
+  },
+  "summary": {
+    "zh": "按站长指令将工具雷达 2 篇（2026-08-04、2026-07-28）与 AI 分类 1 篇（2026-06-14）文章以可恢复方式调整为草稿状态（status = 'draft'），前台列表与文章直达链接均不再展示正文，原始数据完整保留。",
+    "en": "Reversibly moved three articles (two Tool Radar posts from 2026-08-04 / 2026-07-28 and one AI guide from 2026-06-14) to draft status so they no longer appear in public listings or direct article URLs while keeping underlying records intact.",
+    "ja": "ツールレーダー 2 件（2026-08-04・2026-07-28）および AI 記事 1 件（2026-06-14）を復元可能な下書き状態（status = 'draft'）へ変更し、公開一覧および直リンクからの閲覧を停止しました。"
+  },
+  "content_markdown": {
+    "zh": "# 知识库内容整理：下架三篇旧文章（转为草稿态）\n\n本次按站长指令以可恢复的草稿态（`status = 'draft'`，不物理删除数据）下架以下三篇文章：\n\n- `tool-radar-2026-08-04`：《工具雷达｜总在设计、代码和本地 AI 之间卡住？6 个工具把研究、自动化与部署串起来》\n- `tool-radar-2026-07-28`：《工具雷达｜AI 总做不出你想要的效果？7 个设计、视频、代码与本地 AI 工具》\n- `ai-agent-workflow-guide`：《从提问到上线：普通人如何用 AI Agent 放大执行力》",
+    "en": "# Knowledge Base Curation: Unpublished Three Articles (Moved to Draft)\n\nReversibly moved the following three articles to `status = 'draft'` (preserving all records without physical deletion):\n\n- `tool-radar-2026-08-04`\n- `tool-radar-2026-07-28`\n- `ai-agent-workflow-guide`",
+    "ja": "# 知識庫コンテンツ整理：3 件の記事を非公開化（下書き状態へ変更）\n\n以下の 3 件の記事を復元可能な `status = 'draft'` へ変更しました（物理削除なし）：\n\n- `tool-radar-2026-08-04`\n- `tool-radar-2026-07-28`\n- `ai-agent-workflow-guide`"
+  }
+},
+{
   "article_id": "seed-update-2026-11-25-quiet-icons-unclipped-r98",
   "slug": "2026-11-25-quiet-icons-unclipped-r98",
   "category": "site-updates",

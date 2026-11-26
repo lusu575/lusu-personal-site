@@ -4841,14 +4841,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-25-quiet-icons-unclipped-r98";
-const finalUpdateSlug = "2026-11-25-quiet-icons-unclipped-r98";
+const finalUpdateId = "seed-update-2026-11-26-unpublish-three-articles-r1";
+const finalUpdateSlug = "2026-11-26-unpublish-three-articles-r1";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Quiet Desktop Icon Launch (No Click Flash) & Unclipped Window Titlebar Icons/Glows (r98)";
-const finalPublishedAt = "2026-11-25";
+const finalTitleEn = "Knowledge Base Curation: Unpublished Three Articles (Moved to Draft)";
+const finalPublishedAt = "2026-11-26";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-25-quiet-icons-unclipped-r98",
   "seed-update-2026-11-25-zero-hover-shift-r97",
   "seed-update-2026-11-25-continuous-glass-curve-r96",
   "seed-update-2026-11-25-mengto-site-rollout-r95",
@@ -5004,7 +5005,7 @@ const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 
 
 const changelog20260827Section = markdownSection(changelog, "## 2026-08-27");
-const changelog20260928Section = markdownSection(changelog, "## 2026-11-25");
+const changelog20260928Section = markdownSection(changelog, "## 2026-11-26");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {
