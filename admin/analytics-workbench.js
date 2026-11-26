@@ -5,7 +5,6 @@
   const allowedDays = new Set([1, 7, 14, 30]);
   const analyticsPanels = new Set(["dashboard", "visits", "clicks"]);
   let days = 14;
-  let paused = false;
   let context = null;
   let lastOverview = null;
   let pendingFocus = null;
@@ -169,16 +168,6 @@
         if (!matched) doc.getElementById("analytics-change-note").textContent = "新日期范围未读取成功；当前仍为上次成功结果，请点击刷新重试。";
       }
     });
-    const pause = element("button", "暂停自动刷新", "xp-button");
-    pause.id = "analytics-pause-refresh";
-    pause.type = "button";
-    pause.setAttribute("aria-pressed", "false");
-    pause.addEventListener("click", () => {
-      paused = !paused;
-      pause.textContent = paused ? "恢复自动刷新" : "暂停自动刷新";
-      pause.setAttribute("aria-pressed", String(paused));
-      doc.getElementById("analytics-change-note").textContent = paused ? "自动刷新已暂停；仍可手动刷新。" : "自动刷新已恢复，每 30 秒检查一次。";
-    });
     const exportButton = element("button", "导出统计 CSV", "xp-button");
     exportButton.type = "button";
     exportButton.id = "analytics-export-csv";
@@ -197,11 +186,11 @@
     });
     const note = element("p", "统计时区与截至时间将在读取后显示。", "analytics-range-note");
     note.id = "analytics-range-note";
-    const change = element("p", "每 30 秒自动刷新；页面隐藏时暂停。", "analytics-change-note");
+    const change = element("p", "统计在首次打开、点击刷新或切换日期范围时更新。", "analytics-change-note");
     change.id = "analytics-change-note";
     change.setAttribute("role", "status");
     change.setAttribute("aria-live", "polite");
-    toolbar.append(control, pause, exportButton, note, change);
+    toolbar.append(control, exportButton, note, change);
     doc.getElementById("dashboard-panel")?.prepend(toolbar);
     createWorkQueue();
     syncPanel();
@@ -237,7 +226,6 @@
       change.textContent = Number(lastOverview.windowDays) !== Number(overview.windowDays)
         ? `已切换至 ${overview.windowDays} 天范围。`
         : changes.length ? `已更新：${changes.map((item) => `${item.label} ${item.value ?? "未提供"}`).join("；")}` : "已检查，核心指标暂无变化。";
-      if (paused) change.textContent += " 自动刷新保持暂停。";
     }
     lastOverview = overview;
     const exportButton = doc?.getElementById("analytics-export-csv");
@@ -361,7 +349,7 @@
 
   root.AdminAnalyticsWorkbench = Object.freeze({
     init, syncPanel, beforeOverview, afterOverview, renderWorkQueue, refreshWorkSummary,
-    isPaused: () => paused, overviewUrl: () => `/api/admin/analytics/overview?days=${days}`,
+    overviewUrl: () => `/api/admin/analytics/overview?days=${days}`,
     metricModels, metricRows, csvCell, overviewCsv, nextPlannedAt, formatDate, samplingNote, workItems
   });
 })(globalThis);

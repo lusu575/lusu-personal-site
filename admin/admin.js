@@ -205,11 +205,17 @@ const panelMeta = {
 };
 
 const overviewPanels = new Set(["dashboard", "visits", "clicks"]);
-const autoRefreshPanels = new Set([...overviewPanels, "traffic"]);
+// Historical analytics scan event tables; load them only on explicit navigation or refresh.
+const autoRefreshPanels = new Set(["traffic"]);
 const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
+  {
+    date: "2026-11-26",
+    title: "访问统计改为按需刷新",
+    body: "总览、访问和点击统计不再定时重算历史记录；首次打开、手动刷新和切换日期仍可更新，CSV 导出与访客记录保持不变。"
+  },
   {
     date: "2026-09-08",
     title: "统计、内容工作台与移动管理优化",
@@ -2259,7 +2265,7 @@ async function handleNavKeydown(event, index, buttons) {
 }
 
 function autoRefreshActivePanel() {
-  if (document.hidden || window.AdminAnalyticsWorkbench?.isPaused() || !autoRefreshPanels.has(state.activePanel)) {
+  if (document.hidden || !autoRefreshPanels.has(state.activePanel)) {
     return false;
   }
   loadPanelData(state.activePanel, { force: true });
