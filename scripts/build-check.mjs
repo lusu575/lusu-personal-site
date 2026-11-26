@@ -2417,8 +2417,9 @@ for (const asset of ["admin.css", "admin.js", "shared-console.css", "analytics-w
 }
 
 const adminSafetyCacheVersion = "20260908-admin-review-r1";
-const adminPublicContentVersion = adminSafetyCacheVersion;
+const adminPublicContentVersion = "20261126-d1-p0-r1";
 if (!changelog.includes(adminSafetyCacheVersion)) fail("CHANGELOG.md must document the current admin cache version");
+if (!changelog.includes(adminPublicContentVersion)) fail("CHANGELOG.md must document the current admin JS cache version");
 if (!adminHtml.includes(`/admin/admin.css?v=${adminSafetyCacheVersion}`)
   || !adminHtml.includes(`/admin/admin.js?v=${adminPublicContentVersion}`)) {
   fail("admin CSS and JS must use their current cache versions");
@@ -2502,7 +2503,7 @@ if (!hasPattern(apiJs, /function\s+createdAtFromChatMessageId[\s\S]*Number\.pars
   fail("functions/api/[[route]].js should recover chat cursor timestamps from generated message ids");
 }
 
-if (!hasPattern(apiJs, /if\s*\(!cursor\)\s*\{[\s\S]*const\s+recoveredCreatedAt\s*=\s*createdAtFromChatMessageId\(after\)[\s\S]*await\s+getChatMessagesAfter\(env,\s*recoveredCreatedAt,\s*after,\s*limit,\s*roomKey\)[\s\S]*await\s+getRecentChatMessages\(env,\s*limit,\s*roomKey\)/)) {
+if (!hasPattern(apiJs, /const\s+recoveredCreatedAt\s*=\s*createdAtFromChatMessageId\(after\)[\s\S]*await\s+getChatMessagesAfter\(env,\s*recoveredCreatedAt,\s*after,\s*limit,\s*roomKey\)[\s\S]*await\s+getRecentChatMessages\(env,\s*limit,\s*roomKey\)/)) {
   fail("functions/api/[[route]].js should recover deleted chat cursors instead of returning an empty incremental result forever");
 }
 
@@ -4841,14 +4842,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-26-unpublish-three-articles-r1";
-const finalUpdateSlug = "2026-11-26-unpublish-three-articles-r1";
+const finalUpdateId = "seed-update-2026-11-26-d1-quota-p0-r1";
+const finalUpdateSlug = "2026-11-26-d1-quota-p0-r1";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "Knowledge Base Curation: Unpublished Three Articles (Moved to Draft)";
+const finalTitleEn = "D1 Read/Write Quota P0 Fixes & On-Demand Admin Analytics";
 const finalPublishedAt = "2026-11-26";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-26-unpublish-three-articles-r1",
   "seed-update-2026-11-25-quiet-icons-unclipped-r98",
   "seed-update-2026-11-25-zero-hover-shift-r97",
   "seed-update-2026-11-25-continuous-glass-curve-r96",
@@ -5632,12 +5634,12 @@ function createChatCursorRecoveryD1({ cursorId, cursorCreatedAt, rows }) {
         return null;
       },
       async all() {
-        if (/from\s+anonymous_chat_messages/i.test(sql) && /created_at\s*>\s*\?/i.test(sql)) {
+        if (/from\s+anonymous_chat_messages/i.test(sql) && (/\(created_at,\s*message_id\)\s*>\s*\(\?,\s*\?\)/i.test(sql) || /created_at\s*>\s*\?/i.test(sql))) {
+          const isRowValue = /\(created_at,\s*message_id\)\s*>\s*\(\?,\s*\?\)/i.test(sql);
           if (
             this.params[0] !== "public"
             || this.params[1] !== cursorCreatedAt
-            || this.params[2] !== cursorCreatedAt
-            || this.params[3] !== cursorId
+            || (isRowValue ? this.params[2] !== cursorId : (this.params[2] !== cursorCreatedAt || this.params[3] !== cursorId))
           ) {
             fail("functions/api/[[route]].js chat cursor recovery should query from the recovered message timestamp");
           }

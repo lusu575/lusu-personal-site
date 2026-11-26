@@ -53,7 +53,8 @@ test("admin safely switches independent Daily AI News and Tool Radar delivery co
   assert.doesNotMatch(html + source, /本机定时任务 ai-7-8 已启用|正式任务已启用/);
   assert.match(html, /时区：Asia\/Shanghai；每个栏目的开关、自动公开和凭证彼此独立/);
   assert.match(html, /admin\.css\?v=20260908-admin-review-r1/);
-  assert.match(html, /admin\.js\?v=20260908-admin-review-r1/);
+  assert.match(html, /analytics-workbench\.js\?v=20261126-d1-p0-r1/);
+  assert.match(html, /admin\.js\?v=20261126-d1-p0-r1/);
   assert.doesNotMatch(html, /本轮只准备入口，不创建定时任务/);
   for (const id of [
     "automation-channel-select",
@@ -124,8 +125,18 @@ test("admin traffic panel monitors D1 pressure and saves telemetry controls with
     assert.ok(html.includes(`name="${name}"`), `missing traffic field ${name}`);
   }
 
-  assert.match(source, /const autoRefreshPanels = new Set\(\[\.\.\.overviewPanels, "traffic"\]\)/);
-  assert.match(source, /api\("\/api\/admin\/traffic-control"\)/);
+  // Behavioral assertions: zero idle auto-refresh on historical & traffic tabs,
+  // single-flight explicit reloads, and traffic tab isolated from historical overview scans.
+  assert.match(source, /const autoRefreshPanels = new Set\(\)/);
+  assert.doesNotMatch(source, /setInterval\(\s*autoRefreshActivePanel/);
+  assert.match(source, /state\.timer = null;/);
+  const loadPanelBlock = source.match(/async function loadPanelData\(panel, options = \{\}\) \{([\s\S]*?)\n\}/)?.[1] || "";
+  assert.match(loadPanelBlock, /if \(state\.loadingPanels\[key\]\)[\s\S]*return state\.loadingPanels\[key\]/);
+  assert.match(loadPanelBlock, /if \(!force && state\.loadedPanels\[key\]\)\s*\{\s*return;\s*\}/);
+  assert.match(loadPanelBlock, /else if \(panel === "traffic"\)[\s\S]{0,120}await loadTrafficControl\(\)/);
+  const loadTrafficBlock = source.match(/async function loadTrafficControl\(\) \{([\s\S]*?)\n\}/)?.[1] || "";
+  assert.match(loadTrafficBlock, /api\("\/api\/admin\/traffic-control"\)/);
+  assert.doesNotMatch(loadTrafficBlock, /\/api\/admin\/analytics\/overview/);
   assert.match(source, /expectedUpdatedAt:\s*state\.trafficControlUpdatedAt/);
   assert.match(source, /TRAFFIC_CONTROL_CONFLICT/);
   assert.match(source, /if \(!isEditorDirty\("traffic"\)\)/);

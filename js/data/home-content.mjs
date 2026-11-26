@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-26-d1-quota-p0-r1",
+      "slug": "2026-11-26-d1-quota-p0-r1",
+      "category": "site-updates",
+      "tags": [
+        "ops",
+        "performance",
+        "admin"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-26",
+      "updated_at": "2026-11-26",
+      "published_at": "2026-11-26",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "D1 读写额度 P0 治理与后台按需统计上线",
+        "en": "D1 Read/Write Quota P0 Fixes & On-Demand Admin Analytics",
+        "ja": "D1 読み書き枠 P0 対策＆管理画面オンデマンド統計の反映"
+      },
+      "summary": {
+        "zh": "补齐 98606dc 后台历史统计按需刷新与本次 D1 读写 P0 治理：关闭流量与写入面板 30 秒自动重数、补齐 article_view_events(created_at) 时间前导索引、将聊天室私密房过期清理移出请求路径并改用 (created_at, message_id) 增量游标与版本/时间条件删除、私人浏览器伴侣空队列轮询改为指数退避且零 grant touch/双审计写入，同步修复发布门测试。",
+        "en": "Completed D1 read/write P0 fixes and backfilled release notes for 98606dc: disabled 30s auto-refresh on the Traffic panel (all analytics/traffic tabs now load strictly on demand), added a leading created_at index on article_view_events, moved private chat room cleanup out of request hot paths with (created_at, message_id) cursors and guarded deletes, added idle backoff with zero grant-touch/audit writes on empty private browser companion polls, and updated release-gate tests.",
+        "ja": "98606dc の管理画面オンデマンド統計化を補記し、D1 読み書き P0 対策を完了：トラフィック画面の 30 秒自動更新を停止、article_view_events(created_at) 先頭インデックスを追加、チャット秘密部屋の期限切れ削除をリクエスト経路外へ移設して (created_at, message_id) カーソルと条件付き削除へ刷新、プライベートブラウザ伴侶の空ポーリングに指数バックオフと無書き込み化を導入しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-26-unpublish-three-articles-r1",
       "slug": "2026-11-26-unpublish-three-articles-r1",
       "category": "site-updates",
@@ -110,34 +138,6 @@ export const homeContent = Object.freeze({
         "zh": "定位并根治 r95 铺开后点击按钮「闪 3–4 下」的代码根因（750ms 释放波期间 160ms rimCatch 归零后被下一帧重复触发），新增单波一次性锁 rimCatchFired 压回严格 1 次；同时彻底消除分档开关式亮度跳变，将外光晕半径/透明度改为由弹簧与 320ms 升余弦连续驱动，释放波改由 smoothstep 零起点柔和展开，全程丝滑无闪。",
         "en": "Fixed the 3-4x click strobe bug caused by rimCatch resetting to 0 mid-wave during the 750ms MengTo release wave (added one-shot rimCatchFired guard), and replaced all discrete halo/border/wave brightness jumps with continuous spring + 320ms raised-cosine luminance curves and smoothstep wave onset.",
         "ja": "750ms 放出波中に 160ms の rimCatch がリセットされて 3–4 回連続再発火していた不具合を単発ロック rimCatchFired で根治。さらに外光・枠・放出波の段階的輝度ジャンプをすべて廃止し、スプリング＋320ms コサイン曲線と smoothstep 起動による連続的な液態輝度遷移へ統一しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-25-mengto-site-rollout-r95",
-      "slug": "2026-11-25-mengto-site-rollout-r95",
-      "category": "site-updates",
-      "tags": [
-        "ui",
-        "glass",
-        "pond"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-25",
-      "updated_at": "2026-11-25",
-      "published_at": "2026-11-25",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "MengTo 液态玻璃全站及子页统一铺开＋开机显影前桌面贴图全量就绪（r95）",
-        "en": "Site-Wide & Subpage MengTo Liquid-Glass Rollout + Pre-Warmup Desktop Texture Readiness (r95)",
-        "ja": "MengTo 液態ガラス全サイト＆サブページ展開＋起動顕像前のデスクトップ貼図事前確定（r95）"
-      },
-      "summary": {
-        "zh": "按站长拍板将欢迎窗签收版 MengTo 液态玻璃特效（透明平坦中心面、外唇掠射高光、按住高斯凹陷、750ms 释放波＋r93 顶层无裁切完整光晕）铺开至全站所有按钮，并通过共享 standalone 层统一接入在线画板、日语的言外之意与全部 5 个游戏子页（零漏绑）；同时将开机显影 uWarm 起跳绑定至当季桌面贴图解码与 GPU 烘焙完成，消除显影中途贴图迟到弹出。",
-        "en": "Rolled out the approved Welcome MengTo liquid-glass button spec (clear flat center, grazing rim reflection, smooth Gaussian hold dimple, 750ms crest+wake release wave, plus r93's unclipped top-level halo layer) to every button across the main site and all standalone subpages (Whiteboard, Japanese Subtext, all 5 game shells), and gated boot uWarm emergence on active-season desktop flora decode & GPU bake so zero textures pop in mid-warmup.",
-        "ja": "承認済みのようこそ画面 MengTo 液態ガラス仕様（透明中心面・外唇かすめ反射・ガウス凹み・750ms 放出波＋r93 最上位非クリップ光彩）を全サイトおよび独立サブページ（画板・日本語の言外之意・全 5 ゲーム）へ統一展開し、起動顕像 uWarm を当季デスクトップ貼図のデコード＆GPU ベイク完了後に開始するよう改善しました。"
       }
     }
   ]

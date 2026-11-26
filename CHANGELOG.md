@@ -2,6 +2,8 @@
 
 ## 2026-11-26
 
+- D1 读写额度 P0 治理与发布门修复（并补录 `98606dc` 后台历史统计按需刷新）：① P0 读额度：取消后台 `traffic`（流量与写入）面板默认 30 秒自动重数，`autoRefreshPanels` 归零并移除定时轮询（缓存版本更新为 `20261126-d1-p0-r1`）；为 `article_view_events` 补齐 `article_view_events_created_idx(created_at)` 索引消除 `traffic-control` 按时间 COUNT 全索引扫描；将 `cleanupExpiredPrivateChatRooms` 移出 `getChatMessages`/`postChatMessage` 请求路径改走 `chat_room_activity` 索引定时清理，增量拉取改为 `(created_at, message_id)` 游标，物理删除增加版本与时间条件防误删新发言；② P0 写额度：私人浏览器伴侣空队列轮询改为 1s→30s 指数退避，消除空 `browser_command_claim` 的重复 grant touch 与双份审计写入（保留真实领取/执行/失败审计）；③ 发布门：将 `tests/admin-workflows.test.mjs` 过期断言改为行为断言（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-26-d1-quota-p0-r1` / `2026-11-26-d1-quota-p0-r1`。
+
 - 下架三篇指定知识库文章（可恢复 `status = 'draft'` 软下架，保留正文与翻译数据不做物理删除）：将 `tool-radar-2026-08-04`（《工具雷达｜总在设计、代码和本地 AI 之间卡住？6 个工具把研究、自动化与部署串起来》）、`tool-radar-2026-07-28`（《工具雷达｜AI 总做不出你想要的效果？7 个设计、视频、代码与本地 AI 工具》）与 `ai-agent-workflow-guide`（《从提问到上线：普通人如何用 AI Agent 放大执行力》）通过 D1 幂等迁移更新为 `status = 'draft', is_pinned = 0`，前台列表与直达链接均不再展示或返回正文，工具雷达与 AI 分类计数归零（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-26-unpublish-three-articles-r1` / `2026-11-26-unpublish-three-articles-r1`。
 
 ## 2026-11-25

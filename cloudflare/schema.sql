@@ -16962,6 +16962,30 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - `tool-radar-2026-07-28`
 - `ai-agent-workflow-guide`', '2026-11-26', '2026-11-26') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261126-unpublish-three-articles-r1', '2026-11-26')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-26-d1-quota-p0-r1', '2026-11-26-d1-quota-p0-r1', 'site-updates', '["ops","performance","admin"]', '', 'published', 0, 0, '2026-11-26', '2026-11-26', '2026-11-26') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-26-d1-quota-p0-r1-zh', 'seed-update-2026-11-26-d1-quota-p0-r1', 'zh', 'D1 读写额度 P0 治理与后台按需统计上线', '补齐 98606dc 后台历史统计按需刷新与本次 D1 读写 P0 治理：关闭流量与写入面板 30 秒自动重数、补齐 article_view_events(created_at) 时间前导索引、将聊天室私密房过期清理移出请求路径并改用 (created_at, message_id) 增量游标与版本/时间条件删除、私人浏览器伴侣空队列轮询改为指数退避且零 grant touch/双审计写入，同步修复发布门测试。', '# D1 读写额度 P0 治理与后台按需统计上线
+
+本次合并补录 `98606dc`（后台历史访问/点击统计改为按需刷新）并落地三批 D1 读写 P0 修复：
+
+- **P0 读额度**：取消后台 `traffic`（流量与写入）面板默认 30 秒自动刷新，全部分析与流量面板统一为首开/手动/切日期按需取数；补齐 `article_view_events(created_at)` 时间前导索引消除 `traffic-control` 全索引扫描；将 `cleanupExpiredPrivateChatRooms` 移出聊天室读/发请求路径改走 `chat_room_activity` 索引定时清理，增量拉取改为 `(created_at, message_id)` 游标且物理删除加版本/时间守卫防止误删新发言。
+- **P0 写额度**：私人浏览器伴侣空队列轮询改为 1s→30s 指数退避，消除 `browser_command_claim` 空查时的重复 grant touch 与双份审计写入，真实领取、执行与失败审计完整保留。
+- **发布门与测试**：更新 `tests/admin-workflows.test.mjs` 为行为断言并同步后台缓存版本 `20261126-d1-p0-r1`。', '2026-11-26', '2026-11-26') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-26-d1-quota-p0-r1-en', 'seed-update-2026-11-26-d1-quota-p0-r1', 'en', 'D1 Read/Write Quota P0 Fixes & On-Demand Admin Analytics', 'Completed D1 read/write P0 fixes and backfilled release notes for 98606dc: disabled 30s auto-refresh on the Traffic panel (all analytics/traffic tabs now load strictly on demand), added a leading created_at index on article_view_events, moved private chat room cleanup out of request hot paths with (created_at, message_id) cursors and guarded deletes, added idle backoff with zero grant-touch/audit writes on empty private browser companion polls, and updated release-gate tests.', '# D1 Read/Write Quota P0 Fixes & On-Demand Admin Analytics
+
+This release records `98606dc` (on-demand historical analytics) and lands three batches of D1 quota P0 fixes:
+
+- **P0 Read Quota**: Removed the 30s auto-refresh on the admin Traffic panel so all analytics and traffic panels load only on explicit navigation, manual refresh, or filter change; added `article_view_events_created_idx(created_at)`; moved `cleanupExpiredPrivateChatRooms` out of chat read/send paths into indexed periodic cleanup via `chat_room_activity`, adopted `(created_at, message_id)` incremental cursors, and added revision/timestamp guards on physical deletes.
+- **P0 Write Quota**: Added exponential idle backoff (1s to 30s) to the private browser companion and eliminated redundant grant touches and duplicate audit inserts on empty `browser_command_claim` polls while keeping full auditing for real claims, executions, and failures.
+- **Release Gate**: Replaced stale assertions in `tests/admin-workflows.test.mjs` with behavioral checks and synced admin asset cache version `20261126-d1-p0-r1`.', '2026-11-26', '2026-11-26') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-26-d1-quota-p0-r1-ja', 'seed-update-2026-11-26-d1-quota-p0-r1', 'ja', 'D1 読み書き枠 P0 対策＆管理画面オンデマンド統計の反映', '98606dc の管理画面オンデマンド統計化を補記し、D1 読み書き P0 対策を完了：トラフィック画面の 30 秒自動更新を停止、article_view_events(created_at) 先頭インデックスを追加、チャット秘密部屋の期限切れ削除をリクエスト経路外へ移設して (created_at, message_id) カーソルと条件付き削除へ刷新、プライベートブラウザ伴侶の空ポーリングに指数バックオフと無書き込み化を導入しました。', '# D1 読み書き枠 P0 対策＆管理画面オンデマンド統計の反映
+
+`98606dc` の公開更新記録を補完し、D1 読み書き P0 対策 3 バッチを反映しました：
+
+- **P0 読み取り対策**：管理画面のトラフィック枠 30 秒自動更新を停止して全統計をオンデマンド化、`article_view_events(created_at)` インデックスを追加、チャット期限切れ秘密部屋の削除を定期クリーンアップへ移設し `(created_at, message_id)` カーソルと版数／時刻ガード付き物理削除を導入。
+- **P0 書き込み対策**：プライベートブラウザ伴侶の空キュー待機に 1 秒→30 秒の指数バックオフを導入し、空の `browser_command_claim` での grant touch・二重監査書き込みを撤去（実ジョブの取得・実行・失敗監査は維持）。
+- **リリースゲート**：`tests/admin-workflows.test.mjs` を振る舞い検証へ更新し、管理画面キャッシュ版 `20261126-d1-p0-r1` を同期しました。', '2026-11-26', '2026-11-26') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261126-d1-quota-p0-r1', '2026-11-26')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
 insert into site_data_migrations (version, applied_at, source) values ('20261126-unpublish-three-articles-r1', '2026-11-26', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261126-d1-quota-p0-r1', '2026-11-26', 'schema') on conflict(version) do nothing;
