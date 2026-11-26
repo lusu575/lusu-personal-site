@@ -2,9 +2,6 @@
 // databases upgrading across either release retain both public update records.
 export function articleReleaseSeedStatements(env, { articleTranslationsStatements }) {
   return [
-    env.DB.prepare(`create index if not exists article_view_events_created_idx on article_view_events(created_at)`),
-    env.DB.prepare(`create table if not exists chat_room_activity (room_key text primary key, last_message_at text not null, revision integer not null default 1)`),
-    env.DB.prepare(`create index if not exists chat_room_activity_last_message_idx on chat_room_activity(last_message_at, room_key)`),
     env.DB.prepare(`insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-26-d1-quota-p0-r1', '2026-11-26-d1-quota-p0-r1', 'site-updates', '["ops","performance","admin"]', '', 'published', 0, 0, '2026-11-26', '2026-11-26', '2026-11-26') on conflict(article_id) do nothing`),
     ...articleTranslationsStatements(env, "seed-update-2026-11-26-d1-quota-p0-r1", {
   "zh": {
