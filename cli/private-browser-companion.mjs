@@ -4,6 +4,13 @@ import { CDP } from "../lib/capabilities/browser-cdp.mjs";
 import { runKittensCompanionOnce } from "../lib/capabilities/kittens-companion.mjs";
 import { createProxyAwareFetch } from "../自动新闻/integrations/lusu-site/network-fetch.mjs";
 
+const COMPANION_IDLE_BACKOFF_MS = [1000, 2000, 4000, 8000, 15000, 30000];
+
+export function nextCompanionIdleDelayMs(idleStreak) {
+  const index = Math.min(Math.max(0, Number(idleStreak || 0)), COMPANION_IDLE_BACKOFF_MS.length - 1);
+  return COMPANION_IDLE_BACKOFF_MS[index];
+}
+
 export function companionOptions(args, env) {
   const options = {};
   for (let i=0;i<args.length;i++) {
@@ -65,12 +72,14 @@ export async function main(args = process.argv.slice(2), runtime = {}) {
       if (result.exceptionDetails) throw new Error("Browser execution failed.");
       return result.result.value;
     };
+    let idleStreak = 0;
     do {
       const result = await runKittensCompanionOnce({ browserId: options["browser-id"], evaluate,
         callTool: async (name, args) => (await rpc("tools/call", { name, arguments: args })).structuredContent });
       console.log(JSON.stringify({ idle: Boolean(result.idle), jobId: result.jobId, failed: result.failed }));
       if (options.once || stopped) break;
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const delayMs = result.idle ? nextCompanionIdleDelayMs(idleStreak++) : (idleStreak = 0, COMPANION_IDLE_BACKOFF_MS[0]);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
     } while (!stopped);
   } finally { cdp.close(); await network.close(); process.removeListener("SIGINT", stop); process.removeListener("SIGTERM", stop); }
 }

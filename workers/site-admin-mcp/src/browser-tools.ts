@@ -18,7 +18,23 @@ export function registerBrowserTools(server: McpServer, env: Env, principal: any
       : "Private browser companion command lifecycle. Claim and complete are for the local companion; results report actual execution state.",
       inputSchema: item.schema, annotations: { readOnlyHint: item.operation === "result", destructiveHint: item.operation !== "result", idempotentHint: item.operation === "result", openWorldHint: false },
       _meta: { securitySchemes: [{ type: "oauth2", scopes: [scope] }] }
-    }, async (input: any) => execute({ requiredScope: scope, capabilityId: `browser.${item.operation}`, toolName: item.name, action: item.name,
-      invoke: async () => ({ status: 200, payload: await privateBrowserJob({ env, principal, operation: item.operation, input: item.name === "whiteboard_snapshot" ? { ...input, action: "whiteboard_snapshot" } : input }) }) }));
+    }, async (input: any) => execute({
+      requiredScope: scope,
+      capabilityId: `browser.${item.operation}`,
+      toolName: item.name,
+      action: item.name,
+      touchGrant: item.operation !== "claim",
+      skipIdleAudit: item.operation === "claim" ? (payload: Record<string, unknown>) => !payload?.job : undefined,
+      invoke: async () => ({
+        status: 200,
+        payload: await privateBrowserJob({
+          env,
+          principal,
+          operation: item.operation,
+          skipGrantTouch: item.operation !== "claim",
+          input: item.name === "whiteboard_snapshot" ? { ...input, action: "whiteboard_snapshot" } : input
+        })
+      })
+    }));
   }
 }

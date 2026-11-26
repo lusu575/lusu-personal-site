@@ -1,17 +1,30 @@
 import { assertActiveMcpOAuthGrant } from "./mcp-oauth-ledger.mjs";
 
 const ACTIONS = new Set(["observe", "gather", "build", "research", "assign", "whiteboard_snapshot"]);
+const schemaReadyBindings = new WeakSet();
 
-/** Commands are consumed once; uncertain execution is never automatically replayed. */
-export async function privateBrowserJob({ env, principal, operation, input }) {
-  if (!env.MCP_OWNER_USER_ID || principal?.userId !== env.MCP_OWNER_USER_ID) throw new Error("MCP_OWNER_REQUIRED");
-  await assertActiveMcpOAuthGrant({ env, principal, requireAdmin: true,
-    requiredScopes: [operation === "result" ? "admin:read" : "admin:write"] });
+async function ensurePrivateBrowserJobsSchema(env) {
+  if (schemaReadyBindings.has(env.DB)) return;
   await env.DB.prepare(`create table if not exists private_mcp_browser_jobs (
     job_id text primary key, user_id text not null, browser_id text not null,
     request_json text not null, state text not null, result_json text,
     created_at text not null, expires_at text not null
   )`).run();
+  schemaReadyBindings.add(env.DB);
+}
+
+/** Commands are consumed once; uncertain execution is never automatically replayed. */
+export async function privateBrowserJob({ env, principal, operation, input, skipGrantTouch = false }) {
+  if (!env.MCP_OWNER_USER_ID || principal?.userId !== env.MCP_OWNER_USER_ID) throw new Error("MCP_OWNER_REQUIRED");
+  const isClaim = operation === "claim";
+  await assertActiveMcpOAuthGrant({
+    env,
+    principal,
+    requireAdmin: true,
+    requiredScopes: [operation === "result" ? "admin:read" : "admin:write"],
+    touch: !skipGrantTouch && !isClaim
+  });
+  await ensurePrivateBrowserJobsSchema(env);
   const now = new Date().toISOString();
   if (operation === "submit") {
     if (!/^[A-Za-z0-9_-]{16,100}$/.test(input.browserId || "")) throw new Error("BROWSER_ID_INVALID");
@@ -40,7 +53,18 @@ export async function privateBrowserJob({ env, principal, operation, input }) {
     const changed = await env.DB.prepare(`update private_mcp_browser_jobs set state='running'
       where job_id=? and user_id=? and browser_id=? and state='queued' and expires_at>?`)
       .bind(row.job_id, principal.userId, input.browserId, now).run();
-    return { job: Number(changed.meta?.changes) === 1 ? { jobId: row.job_id, request: JSON.parse(row.request_json) } : null };
+    if (Number(changed.meta?.changes) === 1) {
+      await assertActiveMcpOAuthGrant({
+        env,
+        principal,
+        requireAdmin: true,
+        requiredScopes: ["admin:write"],
+        touch: true,
+        now
+      });
+      return { job: { jobId: row.job_id, request: JSON.parse(row.request_json) } };
+    }
+    return { job: null };
   }
   if (operation === "complete") {
     const result = JSON.stringify(input.result);

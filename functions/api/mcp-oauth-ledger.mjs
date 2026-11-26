@@ -443,6 +443,7 @@ export async function assertActiveMcpOAuthGrant({
   requiredScopes = /** @type {string[]} */ ([]),
   requireAdmin = false,
   touch = true,
+  touchMinIntervalMs = 0,
   now = new Date().toISOString()
 }) {
   await ensureMcpOAuthLedgerSchema(env);
@@ -502,7 +503,16 @@ export async function assertActiveMcpOAuthGrant({
     );
   }
 
-  if (touch) {
+  const lastUsedMs = Date.parse(String(row.last_used_at || ""));
+  const nowMs = Date.parse(normalizedNow);
+  const shouldTouch = Boolean(touch) && !(
+    touchMinIntervalMs > 0
+    && Number.isFinite(lastUsedMs)
+    && Number.isFinite(nowMs)
+    && nowMs - lastUsedMs < touchMinIntervalMs
+  );
+
+  if (shouldTouch) {
     const result = await env.DB.prepare(`
       update mcp_oauth_grants
       set last_used_at = ?

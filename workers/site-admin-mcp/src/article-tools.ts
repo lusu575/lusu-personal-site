@@ -55,6 +55,8 @@ type ArticleToolExecution = {
   operationId?: string;
   targetType?: string;
   targetId?: string;
+  touchGrant?: boolean;
+  skipIdleAudit?: (payload: Record<string, unknown>) => boolean;
   invoke: () => Promise<unknown>;
 };
 
@@ -431,7 +433,7 @@ async function executeArticleTool(
       principal,
       requiredScopes: [execution.requiredScope],
       requireAdmin: true,
-      touch: true
+      touch: execution.touchGrant ?? true
     });
   } catch (error) {
     if (isAdminRevocationError(error)) {
@@ -441,17 +443,21 @@ async function executeArticleTool(
     return toolErrorResult(error, execution.requiredScope);
   }
 
-  try {
-    await recordToolAudit(env, principal, request, execution, "attempt", "");
-  } catch (auditError) {
-    logToolAuditFailure(execution.toolName, auditError);
-    return failedToolResult("MCP tool audit failed.", "MCP_OAUTH_AUDIT_FAILED");
+  if (!execution.skipIdleAudit) {
+    try {
+      await recordToolAudit(env, principal, request, execution, "attempt", "");
+    } catch (auditError) {
+      logToolAuditFailure(execution.toolName, auditError);
+      return failedToolResult("MCP tool audit failed.", "MCP_OAUTH_AUDIT_FAILED");
+    }
   }
 
   try {
     const rawResult: unknown = await execution.invoke();
     const result = normalizeServiceResult(rawResult);
-    await recordToolAuditSafely(env, principal, request, execution, "success", "");
+    if (!execution.skipIdleAudit || !execution.skipIdleAudit(result.payload)) {
+      await recordToolAuditSafely(env, principal, request, execution, "success", "");
+    }
     return successfulToolResult(result.payload);
   } catch (error) {
     const errorCode = safeErrorCode(error);
