@@ -205,16 +205,16 @@ const panelMeta = {
 };
 
 const overviewPanels = new Set(["dashboard", "visits", "clicks"]);
-// Historical analytics scan event tables; load them only on explicit navigation or refresh.
-const autoRefreshPanels = new Set(["traffic"]);
+// Historical analytics and traffic counters scan event tables; load them only on explicit navigation, refresh, or filter changes.
+const autoRefreshPanels = new Set();
 const staticPanels = new Set(["updates", "docs"]);
 const validPanels = new Set(Object.keys(panelMeta));
 
 const adminUpdates = [
   {
     date: "2026-11-26",
-    title: "访问统计改为按需刷新",
-    body: "总览、访问和点击统计不再定时重算历史记录；首次打开、手动刷新和切换日期仍可更新，CSV 导出与访客记录保持不变。"
+    title: "访问统计与流量面板改为按需刷新",
+    body: "总览、访问、点击与流量与写入面板不再定时自动重算历史记录；首次打开、手动刷新和切换日期仍可更新，CSV 导出与访客记录保持不变。"
   },
   {
     date: "2026-09-08",
@@ -9697,7 +9697,7 @@ async function init() {
     await initializeContentWorkbench();
     window.AdminAnalyticsWorkbench?.refreshWorkSummary();
     await loadPanelData(state.activePanel, { force: true });
-    state.timer = window.setInterval(autoRefreshActivePanel, 30000);
+    state.timer = null;
   } catch (error) {
     setStatus(error.message);
   }

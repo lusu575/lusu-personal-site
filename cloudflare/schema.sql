@@ -598,6 +598,13 @@ create index if not exists anonymous_chat_messages_room_visitor_idx
   on anonymous_chat_messages(room_key, visitor_id, created_at);
 create index if not exists anonymous_chat_messages_room_ip_idx
   on anonymous_chat_messages(room_key, ip_hash, created_at);
+create table if not exists chat_room_activity (
+  room_key text primary key,
+  last_message_at text not null,
+  revision integer not null default 1
+);
+create index if not exists chat_room_activity_last_message_idx
+  on chat_room_activity(last_message_at, room_key);
 create table if not exists chat_bans (
   ban_id text primary key,
   ban_type text not null,
@@ -956,6 +963,8 @@ create index if not exists article_view_events_slug_idx
   on article_view_events(slug, created_at);
 create index if not exists article_view_events_visitor_idx
   on article_view_events(visitor_id, created_at);
+create index if not exists article_view_events_created_idx
+  on article_view_events(created_at);
 
 insert into articles (
   article_id, slug, category, tags, cover_image, status, is_pinned,

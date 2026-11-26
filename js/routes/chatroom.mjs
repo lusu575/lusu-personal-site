@@ -799,6 +799,7 @@ export function createChatroomRoute({
     list.replaceChildren();
     appendChatSystemMessage(message || t("chatWelcome"));
     chatState.lastMessageId = "";
+    chatState.lastMessageCreatedAt = "";
     chatState.hasLoadedInitial = false;
     chatState.idlePolls = 0;
     chatState.seenMessageIds.clear();
@@ -833,6 +834,9 @@ export function createChatroomRoute({
       appendChatRoomParam(params);
       if (!options.initial && chatState.lastMessageId) {
         params.set("after", chatState.lastMessageId);
+        if (chatState.lastMessageCreatedAt) {
+          params.set("afterCreatedAt", chatState.lastMessageCreatedAt);
+        }
       }
       const payload = await chatApi(`/api/chat/messages?${params.toString()}`, {
         signal: activeRouteScope("chatroom")?.signal
@@ -899,6 +903,9 @@ export function createChatroomRoute({
       }
       chatState.seenMessageIds.add(message.message_id);
       chatState.lastMessageId = message.message_id;
+      if (message.created_at) {
+        chatState.lastMessageCreatedAt = message.created_at;
+      }
       list.appendChild(createChatMessageNode(message));
       appendedCount += 1;
     });

@@ -58,6 +58,9 @@ export async function runPeriodicDataCleanup(env, { now = new Date(), budgetMs =
       pending = pending.filter((_policy, index) => Number(results[index]?.meta?.changes || 0) >= DELETE_LIMIT);
       rounds += 1;
     }
+    if (!pending.length && tables.has("anonymous_chat_messages") && Date.now() - startedAt < budgetMs) {
+      await cleanupExpiredPrivateChatRoomsPeriodic(env, { now, hasActivityTable: tables.has("chat_room_activity") });
+    }
     if (pending.length) return false;
     const marked = await env.DB.prepare(`
       insert into site_runtime_state (key, value, updated_at)
@@ -70,5 +73,52 @@ export async function runPeriodicDataCleanup(env, { now = new Date(), budgetMs =
   } finally {
     await env.DB.prepare("delete from site_runtime_state where key = ? and value = ?")
       .bind(DATA_CLEANUP_LEASE_KEY, owner).run();
+  }
+}
+
+async function cleanupExpiredPrivateChatRoomsPeriodic(env, { now, hasActivityTable }) {
+  const cutoff = new Date(now.getTime() - DAY).toISOString();
+  const statements = [];
+  if (hasActivityTable) {
+    const expired = (await env.DB.prepare(`
+      select room_key, last_message_at, revision
+      from chat_room_activity
+      where room_key <> 'public' and last_message_at < ?
+      order by last_message_at asc, room_key asc
+      limit 20
+    `).bind(cutoff).all()).results || [];
+    for (const row of expired) {
+      const roomKey = String(row.room_key || "").trim();
+      const expectedRevision = Number(row.revision || 0);
+      if (!roomKey || roomKey === "public") continue;
+      statements.push(
+        env.DB.prepare(`
+          delete from anonymous_chat_messages
+          where room_key = ?
+            and created_at < ?
+            and not exists (
+              select 1 from anonymous_chat_messages newest
+              where newest.room_key = ? and newest.created_at >= ?
+            )
+            and not exists (
+              select 1 from chat_room_activity act
+              where act.room_key = ? and (act.last_message_at >= ? or act.revision <> ?)
+            )
+        `).bind(roomKey, cutoff, roomKey, cutoff, roomKey, cutoff, expectedRevision),
+        env.DB.prepare(`
+          delete from chat_room_activity
+          where room_key = ?
+            and revision = ?
+            and last_message_at < ?
+            and not exists (
+              select 1 from anonymous_chat_messages remaining
+              where remaining.room_key = ?
+            )
+        `).bind(roomKey, expectedRevision, cutoff, roomKey)
+      );
+    }
+  }
+  if (statements.length) {
+    await env.DB.batch(statements);
   }
 }

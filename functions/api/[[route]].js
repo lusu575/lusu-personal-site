@@ -2402,28 +2402,40 @@ async function getChatMessages(request, env) {
   const url = new URL(request.url);
   const limit = clampLimit(url.searchParams.get("limit"), 100);
   const after = String(url.searchParams.get("after") || "").trim();
+  const rawAfterCreatedAt = String(url.searchParams.get("afterCreatedAt") || "").trim();
+  const afterCreatedAt = parseIsoCursorTimestamp(rawAfterCreatedAt);
   const roomKey = normalizeChatRoomKey(url.searchParams.get("room"));
-  await cleanupExpiredPrivateChatRooms(env);
 
   let rows;
-  if (after) {
-    const cursor = await env.DB.prepare(
-      "select created_at from anonymous_chat_messages where message_id = ? and room_key = ?"
-    ).bind(after, roomKey).first();
-
-    if (!cursor) {
-      const recoveredCreatedAt = createdAtFromChatMessageId(after);
-      rows = recoveredCreatedAt
-        ? await getChatMessagesAfter(env, recoveredCreatedAt, after, limit, roomKey)
-        : await getRecentChatMessages(env, limit, roomKey);
+  if (after && afterCreatedAt) {
+    rows = await getChatMessagesAfter(env, afterCreatedAt, after, limit, roomKey);
+  } else if (after) {
+    const recoveredCreatedAt = createdAtFromChatMessageId(after);
+    if (recoveredCreatedAt) {
+      rows = await getChatMessagesAfter(env, recoveredCreatedAt, after, limit, roomKey);
     } else {
-      rows = await getChatMessagesAfter(env, cursor.created_at, after, limit, roomKey);
+      const cursor = await env.DB.prepare(
+        "select created_at from anonymous_chat_messages where message_id = ? and room_key = ?"
+      ).bind(after, roomKey).first();
+      rows = cursor
+        ? await getChatMessagesAfter(env, cursor.created_at, after, limit, roomKey)
+        : await getRecentChatMessages(env, limit, roomKey);
     }
   } else {
     rows = await getRecentChatMessages(env, limit, roomKey);
   }
 
-  return json({ messages: rows });
+  const lastRow = rows.length ? rows[rows.length - 1] : null;
+  const nextCursor = lastRow
+    ? { createdAt: lastRow.created_at, messageId: lastRow.message_id }
+    : (after && afterCreatedAt ? { createdAt: afterCreatedAt, messageId: after } : null);
+  return json({ messages: rows, nextCursor });
+}
+
+function parseIsoCursorTimestamp(value) {
+  if (!value || value.length > 40) return "";
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? value : "";
 }
 
 async function getChatMessagesAfter(env, createdAt, after, limit, roomKey = PUBLIC_CHAT_ROOM_KEY) {
@@ -2432,10 +2444,10 @@ async function getChatMessagesAfter(env, createdAt, after, limit, roomKey = PUBL
     from anonymous_chat_messages
     where hidden = 0
       and room_key = ?
-      and (created_at > ? or (created_at = ? and message_id > ?))
+      and (created_at, message_id) > (?, ?)
     order by created_at asc, message_id asc
     limit ?
-  `).bind(roomKey, createdAt, createdAt, after, limit).all()).results || [];
+  `).bind(roomKey, createdAt, after, limit).all()).results || [];
 }
 
 async function getRecentChatMessages(env, limit, roomKey = PUBLIC_CHAT_ROOM_KEY) {
@@ -2478,7 +2490,6 @@ async function postChatMessage(request, env, suppliedIdentity = null) {
     return withAnonymousIdentityCookie(json({ message: publicChatMessage(replay), idempotentReplay: true }), request, identity);
   }
 
-  await cleanupExpiredPrivateChatRooms(env);
   await ensureVisitorProfile(env, request, identity.anonymousId, {}, false);
   const ban = await activeChatBan(env, identity.anonymousId, ipHash, ipHashKeyId);
   if (ban) {
@@ -2519,7 +2530,7 @@ async function postChatMessage(request, env, suppliedIdentity = null) {
 
   const messageId = chatMessageId(now);
   try {
-    await env.DB.prepare(`
+    const insertMessage = env.DB.prepare(`
       insert into anonymous_chat_messages (
         message_id, visitor_id, client_id, nickname, content, created_at,
         hidden, ip_hash, ip_hash_key_id, ip_prefix, room_key, encrypted, client_request_id
@@ -2538,7 +2549,24 @@ async function postChatMessage(request, env, suppliedIdentity = null) {
       roomKey,
       encrypted ? 1 : 0,
       clientRequestId
-    ).run();
+    );
+    if (encrypted) {
+      await env.DB.batch([
+        insertMessage,
+        env.DB.prepare(`
+          insert into chat_room_activity (room_key, last_message_at, revision)
+          values (?, ?, 1)
+          on conflict(room_key) do update set
+            last_message_at = case
+              when excluded.last_message_at > chat_room_activity.last_message_at then excluded.last_message_at
+              else chat_room_activity.last_message_at
+            end,
+            revision = chat_room_activity.revision + 1
+        `).bind(roomKey, nowText)
+      ]);
+    } else {
+      await insertMessage.run();
+    }
   } catch (error) {
     const concurrentReplay = await findChatRequestReplay(env, identity.anonymousId, roomKey, clientRequestId);
     if (!concurrentReplay) throw error;
@@ -4961,22 +4989,48 @@ async function activeChatBan(env, visitorId, ipHash, ipHashKeyId) {
 async function cleanupExpiredPrivateChatRooms(env) {
   const cutoff = new Date(Date.now() - CHAT_PRIVATE_ROOM_TTL_MS).toISOString();
   const rows = (await env.DB.prepare(`
-    select room_key
-    from anonymous_chat_messages
-    where room_key <> ?
-    group by room_key
-    having max(created_at) < ?
+    select room_key, last_message_at, revision
+    from chat_room_activity
+    where room_key <> ? and last_message_at < ?
+    order by last_message_at asc, room_key asc
     limit 20
   `).bind(PUBLIC_CHAT_ROOM_KEY, cutoff).all()).results || [];
   if (!rows.length) {
     return;
   }
-  const deletes = rows
-    .map((row) => String(row.room_key || "").trim())
-    .filter((roomKey) => roomKey && roomKey !== PUBLIC_CHAT_ROOM_KEY)
-    .map((roomKey) => env.DB.prepare("delete from anonymous_chat_messages where room_key = ?").bind(roomKey));
-  if (deletes.length) {
-    await env.DB.batch(deletes);
+  const statements = [];
+  for (const row of rows) {
+    const roomKey = String(row.room_key || "").trim();
+    const expectedRevision = Number(row.revision || 0);
+    if (!roomKey || roomKey === PUBLIC_CHAT_ROOM_KEY) continue;
+    statements.push(
+      env.DB.prepare(`
+        delete from anonymous_chat_messages
+        where room_key = ?
+          and created_at < ?
+          and not exists (
+            select 1 from anonymous_chat_messages newest
+            where newest.room_key = ? and newest.created_at >= ?
+          )
+          and not exists (
+            select 1 from chat_room_activity act
+            where act.room_key = ? and (act.last_message_at >= ? or act.revision <> ?)
+          )
+      `).bind(roomKey, cutoff, roomKey, cutoff, roomKey, cutoff, expectedRevision),
+      env.DB.prepare(`
+        delete from chat_room_activity
+        where room_key = ?
+          and revision = ?
+          and last_message_at < ?
+          and not exists (
+            select 1 from anonymous_chat_messages remaining
+            where remaining.room_key = ?
+          )
+      `).bind(roomKey, expectedRevision, cutoff, roomKey)
+    );
+  }
+  if (statements.length) {
+    await env.DB.batch(statements);
   }
 }
 
@@ -5031,7 +5085,15 @@ async function ensureChatSchema(env) {
         on anonymous_chat_messages(ip_hash, created_at)
     `),
     env.DB.prepare("create index if not exists chat_bans_active_visitor_idx on chat_bans(active, visitor_id, expires_at)"),
-    env.DB.prepare("create index if not exists chat_bans_active_ip_idx on chat_bans(active, ip_hash, expires_at)")
+    env.DB.prepare("create index if not exists chat_bans_active_ip_idx on chat_bans(active, ip_hash, expires_at)"),
+    env.DB.prepare(`
+      create table if not exists chat_room_activity (
+        room_key text primary key,
+        last_message_at text not null,
+        revision integer not null default 1
+      )
+    `),
+    env.DB.prepare("create index if not exists chat_room_activity_last_message_idx on chat_room_activity(last_message_at, room_key)")
   ]);
   await ensureTableColumns(env, "anonymous_chat_messages", [
     ["client_id", "text not null default ''"],
@@ -5437,7 +5499,8 @@ async function ensureAnalyticsSchema(env) {
     env.DB.prepare("create index if not exists analytics_click_events_visitor_idx on analytics_click_events(visitor_id, created_at)"),
     env.DB.prepare("create index if not exists article_view_events_article_idx on article_view_events(article_id, created_at)"),
     env.DB.prepare("create index if not exists article_view_events_slug_idx on article_view_events(slug, created_at)"),
-    env.DB.prepare("create index if not exists article_view_events_visitor_idx on article_view_events(visitor_id, created_at)")
+    env.DB.prepare("create index if not exists article_view_events_visitor_idx on article_view_events(visitor_id, created_at)"),
+    env.DB.prepare("create index if not exists article_view_events_created_idx on article_view_events(created_at)")
   ]);
   analyticsSchemaReady = true;
 }
