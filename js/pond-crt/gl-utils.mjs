@@ -37,6 +37,55 @@ export function createProgram(gl, vertSrc, fragSrc) {
   return { program, uniforms };
 }
 
+export async function createProgramAsync(gl, vertSrc, fragSrc) {
+  const vert = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vert, vertSrc);
+  gl.compileShader(vert);
+
+  const frag = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(frag, fragSrc);
+  gl.compileShader(frag);
+
+  const program = gl.createProgram();
+  gl.attachShader(program, vert);
+  gl.attachShader(program, frag);
+  gl.linkProgram(program);
+
+  const parallelExt = gl.getExtension('KHR_parallel_shader_compile');
+  const yieldTick = () => new Promise((resolve) => window.setTimeout(resolve, 4));
+  if (parallelExt) {
+    for (let i = 0; i < 60; i++) {
+      if (gl.isContextLost()) {
+        gl.deleteShader(vert);
+        gl.deleteShader(frag);
+        gl.deleteProgram(program);
+        throw new Error('WebGL context lost during shader compile');
+      }
+      if (gl.getProgramParameter(program, parallelExt.COMPLETION_STATUS_KHR)) break;
+      await yieldTick();
+    }
+  } else {
+    await yieldTick();
+  }
+
+  gl.deleteShader(vert);
+  gl.deleteShader(frag);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    const info = gl.getProgramInfoLog(program) || 'Unknown link error';
+    gl.deleteProgram(program);
+    throw new Error(`Program link failed:\n${info}`);
+  }
+  const uniforms = {};
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  for (let i = 0; i < count; i++) {
+    const active = gl.getActiveUniform(program, i);
+    if (!active) continue;
+    const name = active.name.replace(/\[0\]$/, '');
+    uniforms[name] = gl.getUniformLocation(program, name);
+  }
+  return { program, uniforms };
+}
+
 export function createFBO(gl, width, height, options = {}) {
   const w = Math.max(1, Math.floor(width));
   const h = Math.max(1, Math.floor(height));

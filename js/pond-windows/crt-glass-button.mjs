@@ -728,6 +728,47 @@ export function resolveGlassLevel(el) {
 let autoGlassInstalled = false;
 let pendingRoots = new Set();
 let autoBindRaf = 0;
+let pendingBindElements = [];
+let bindChunkTimer = 0;
+
+function drainBindChunk() {
+  bindChunkTimer = 0;
+  if (!pendingBindElements.length) return;
+  syncCrtGlassCssVars();
+  const startMs = performance.now();
+  let count = 0;
+  while (pendingBindElements.length > 0 && count < 12 && (performance.now() - startMs) < 6) {
+    const el = pendingBindElements.shift();
+    if (!el || !el.isConnected || el.dataset.crtGlassBound) continue;
+    const level = resolveGlassLevel(el);
+    if (level) {
+      attachCrtGlassButton(el, level);
+      count++;
+    }
+  }
+  if (pendingBindElements.length > 0) {
+    bindChunkTimer = window.setTimeout(drainBindChunk, 0);
+  }
+}
+
+function enqueueGlassCandidatesFromRoot(root) {
+  if (!root) return;
+  if (root instanceof Element) {
+    if (!root.dataset.crtGlassBound && resolveGlassLevel(root)) {
+      pendingBindElements.push(root);
+    }
+  }
+  if (typeof root.querySelectorAll === 'function') {
+    root.querySelectorAll(GLASS_CANDIDATE_SELECTOR).forEach((el) => {
+      if (!el.dataset.crtGlassBound) {
+        pendingBindElements.push(el);
+      }
+    });
+  }
+  if (pendingBindElements.length > 0 && !bindChunkTimer) {
+    bindChunkTimer = window.setTimeout(drainBindChunk, 0);
+  }
+}
 
 function flushAutoBindQueue() {
   autoBindRaf = 0;
@@ -735,7 +776,7 @@ function flushAutoBindQueue() {
   pendingRoots.clear();
   for (const root of roots) {
     if (root && root.isConnected) {
-      attachSiteGlassButtons(root);
+      enqueueGlassCandidatesFromRoot(root);
     }
   }
 }
@@ -778,7 +819,7 @@ export function installAutoGlassBinding() {
     obs.observe(document.body, { childList: true, subtree: true });
   }
 
-  attachSiteGlassButtons(document);
+  enqueueGlassCandidatesFromRoot(document);
 }
 
 export function getCrtGlassAudit() {

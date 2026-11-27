@@ -12,7 +12,7 @@
 // - preserveDrawingBuffer: false by default (zero backbuffer copy!)
 
 import { FloraLayer } from './flora.mjs?v=20261124-autumn-lotus-r69';
-import { createFBO, createFullscreenVAO, createProgram } from './gl-utils.mjs';
+import { createFBO, createFullscreenVAO, createProgram, createProgramAsync } from './gl-utils.mjs';
 import { KoiGLRenderer } from './koi-gl.mjs?v=20261125-persepolis-warm-r87';
 import { ParticlesGLRenderer } from './particles-gl.mjs?v=20261124-wind-water-r75';
 import { lerpNum, lerpVec3, SEASON_ORDER, SEASONS } from './seasons.mjs';
@@ -28,6 +28,24 @@ import { PondUIOverlay } from './ui-overlay.mjs?v=20261125-persepolis-warm-r87';
 import { detectBootMode, loadSeasonFloraParts, markBootCompleted, runPondBootPreload } from './boot-preloader.mjs?v=20261127-opt093-perf-r100';
 
 const MAX_RIPPLES = 8;
+
+function yieldToMain() {
+  return new Promise((resolve) => window.setTimeout(resolve, 0));
+}
+
+function detectSoftwareWebGL(gl) {
+  try {
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    const renderer = String(
+      (ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : '')
+      || gl.getParameter(gl.RENDERER)
+      || ''
+    );
+    return /swiftshader|llvmpipe|software|basic render driver|mesa offscreen|subzero/i.test(renderer);
+  } catch {
+    return false;
+  }
+}
 
 export class PondCRTEngine {
   constructor(canvas, options = {}) {
@@ -101,8 +119,11 @@ export class PondCRTEngine {
     this._fpsLastTs = performance.now();
     this.currentFps = 0;
 
-    // Weak-GPU / mobile detection: keep the EXACT same uWarm ramp, only dial down bloom intensity
-    const lowGpu = (Number(navigator.hardwareConcurrency) > 0 && Number(navigator.hardwareConcurrency) <= 2)
+    // Weak-GPU / mobile / software-WebGL detection: keep hardware GPUs at full fidelity while
+    // preventing CPU software renderers (SwiftShader/llvmpipe) from starving the main thread.
+    this.isSoftwareRenderer = detectSoftwareWebGL(this.gl);
+    const lowGpu = this.isSoftwareRenderer
+      || (Number(navigator.hardwareConcurrency) > 0 && Number(navigator.hardwareConcurrency) <= 2)
       || (Number(navigator.deviceMemory) > 0 && Number(navigator.deviceMemory) <= 2)
       || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
 
@@ -111,7 +132,7 @@ export class PondCRTEngine {
       dotPitchCssPx: 4.1,
       scanlinePitchCssPx: 3.6,
       bloomThreshold: 0.30,
-      bloomIntensity: lowGpu ? 0.28 : 0.62,
+      bloomIntensity: this.isSoftwareRenderer ? 0 : (lowGpu ? 0.28 : 0.62),
       chromaticEdge: 0.0115
     };
 
@@ -125,10 +146,16 @@ export class PondCRTEngine {
     for (const sId of SEASON_ORDER) {
       this.floraTextures[sId] = this._createDynamicTexture();
     }
+    this.dummyBlackTex = this._createSolidBlackTexture();
 
-    // Pure GPU Koi & Ambient/Stardust Particles (ZERO Canvas2D per-frame upload stalls!)
-    this.koiGL = new KoiGLRenderer(this.gl);
-    this.particlesGL = new ParticlesGLRenderer(this.gl);
+    // Time-sliced GPU pipeline init: compile shaders & create FBOs across short macrotasks
+    // so cold-start WebGL2 compilation never creates a >50ms main-thread TBT block.
+    this._gpuReady = false;
+    this._destroyed = false;
+    this._lastSoftwareRenderMs = 0;
+    this.koiGL = null;
+    this.particlesGL = null;
+    this.programs = null;
 
     this.uiOverlay = new PondUIOverlay({
       season: this.seasonId,
@@ -139,8 +166,6 @@ export class PondCRTEngine {
     this.uiTex = this._createDynamicTexture();
     this._uiTexSize = [0, 0];
 
-    this._initPrograms();
-    this._shaderReady = true;
     this.primaryFloraReady = !this.bootActive;
     this.warmRampStartMs = 0;
     if (this.bootActive) {
@@ -154,9 +179,63 @@ export class PondCRTEngine {
     }
     this.vao = createFullscreenVAO(this.gl);
     this.fbos = {};
-    this.resize();
-    this._loadAssetManifest();
     this._bindInteractions();
+    this._initGpuPipelineSliced();
+  }
+
+  _createSolidBlackTexture() {
+    const gl = this.gl;
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255]));
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    return tex;
+  }
+
+  async _initGpuPipelineSliced() {
+    const gl = this.gl;
+    try {
+      await yieldToMain();
+      if (this._destroyed || gl.isContextLost()) return;
+      this.koiGL = new KoiGLRenderer(gl);
+
+      await yieldToMain();
+      if (this._destroyed || gl.isContextLost()) return;
+      this.particlesGL = new ParticlesGLRenderer(gl);
+
+      const programs = {};
+      const specs = [
+        ['waterBg', WATER_BG_FRAG],
+        ['surfaceOverlay', SURFACE_OVERLAY_FRAG],
+        ...(this.isSoftwareRenderer ? [] : [['bloomExtract', BLOOM_EXTRACT_FRAG], ['blur', BLUR_FRAG]]),
+        ['crtFinal', CRT_PHOSPHOR_FINAL_FRAG]
+      ];
+      // Kick off all main programs asynchronously via KHR_parallel_shader_compile so shader
+      // compilation runs on the browser's background thread pool with near-zero main-thread TBT.
+      const compiledEntries = await Promise.all(
+        specs.map(async ([name, fragSrc]) => [name, await createProgramAsync(gl, FULLSCREEN_VERT, fragSrc)])
+      );
+      if (this._destroyed || gl.isContextLost()) return;
+      for (const [name, compiled] of compiledEntries) {
+        programs[name] = compiled;
+      }
+      this.programs = programs;
+      this._shaderReady = true;
+
+      await yieldToMain();
+      if (this._destroyed || gl.isContextLost()) return;
+      this._gpuReady = true;
+      this.resize({ deferFloraBake: true });
+      await yieldToMain();
+      if (this._destroyed || gl.isContextLost()) return;
+      this._prebakeAllFlora();
+      this._loadAssetManifest();
+    } catch {
+      this.primaryFloraReady = true;
+      this.realLoadProgress = 1.0;
+    }
   }
 
   _finishBootImmediate() {
@@ -462,16 +541,18 @@ export class PondCRTEngine {
     this.fbos = {};
   }
 
-  resize() {
+  resize({ deferFloraBake = false } = {}) {
+    if (!this._gpuReady) return;
     const rect = this.canvas.getBoundingClientRect();
     const cssW = Math.max(320, Math.round(rect.width || window.innerWidth));
     const cssH = Math.max(240, Math.round(rect.height || window.innerHeight));
-    // 1.0x CSS resolution -> razor-sharp 4px CRT phosphor dots & 2.25x fewer pixels for locked 120 FPS!
-    const dpr = 1.0;
-    const w = cssW;
-    const h = cssH;
+    // 1.0x CSS resolution on hardware GPUs; 0.5x on CPU software WebGL (4x fewer fragment pixels).
+    const renderScale = this.isSoftwareRenderer ? 0.5 : 1.0;
+    const dpr = renderScale;
+    const w = Math.max(240, Math.round(cssW * renderScale));
+    const h = Math.max(160, Math.round(cssH * renderScale));
 
-    if (w === this.width && h === this.height) return;
+    if (w === this.width && h === this.height && this.fbos.scene) return;
 
     this.cssWidth = cssW;
     this.cssHeight = cssH;
@@ -484,18 +565,22 @@ export class PondCRTEngine {
     const gl = this.gl;
     this._destroyFBOs();
 
-    const sceneW = Math.max(360, Math.round(w * 0.50));
-    const sceneH = Math.max(240, Math.round(h * 0.50));
+    const sceneW = Math.max(240, Math.round(w * 0.50));
+    const sceneH = Math.max(160, Math.round(h * 0.50));
     const bloomW = Math.max(120, w >> 2);
     const bloomH = Math.max(80, h >> 2);
 
-    this.fbos = {
-      scene: createFBO(gl, sceneW, sceneH),
-      bloomA: createFBO(gl, bloomW, bloomH),
-      bloomB: createFBO(gl, bloomW, bloomH)
-    };
+    this.fbos = this.isSoftwareRenderer
+      ? { scene: createFBO(gl, sceneW, sceneH) }
+      : {
+          scene: createFBO(gl, sceneW, sceneH),
+          bloomA: createFBO(gl, bloomW, bloomH),
+          bloomB: createFBO(gl, bloomW, bloomH)
+        };
 
-    this._prebakeAllFlora();
+    if (!deferFloraBake) {
+      this._prebakeAllFlora();
+    }
     this.uiOverlay.markDirty();
   }
 
@@ -578,14 +663,16 @@ export class PondCRTEngine {
       this._koiWaveStartled = [false, false];
 
       this.uiOverlay.setSeason(seasonId, this.elapsed);
-      this.particlesGL.triggerWavefrontTransition(
-        prev,
-        seasonId,
-        this.windDirX,
-        this.windDirY,
-        this.elapsed,
-        this.seasonWaveDuration
-      );
+      if (this.particlesGL) {
+        this.particlesGL.triggerWavefrontTransition(
+          prev,
+          seasonId,
+          this.windDirX,
+          this.windDirY,
+          this.elapsed,
+          this.seasonWaveDuration
+        );
+      }
       if (typeof this.onSeasonChange === 'function') {
         this.onSeasonChange(seasonId, { manual });
       }
@@ -668,6 +755,7 @@ export class PondCRTEngine {
   }
 
   render(timeSec) {
+    if (!this._gpuReady || !this.programs || !this.fbos || !this.fbos.scene || !this.koiGL || !this.particlesGL) return;
     const gl = this.gl;
     const nowMs = performance.now();
     const t = Number.isFinite(timeSec) ? timeSec : (nowMs - this.startTime) * 0.001;
@@ -801,39 +889,43 @@ export class PondCRTEngine {
       this.spawnRipple(rx, ry, str);
     });
 
-    // --- PASS 2: Quarter-Res Bloom Extract + H/V Blur (directly from sceneFBO!) ---
+    // --- PASS 2: Quarter-Res Bloom Extract + H/V Blur (hardware GPUs; skipped on CPU software WebGL) ---
     gl.bindVertexArray(this.vao);
-    const bw = this.fbos.bloomA.width;
-    const bh = this.fbos.bloomA.height;
+    let bloomTex = this.dummyBlackTex;
+    if (!this.isSoftwareRenderer && this.fbos.bloomA && this.fbos.bloomB && this.programs.bloomExtract && this.programs.blur) {
+      const bw = this.fbos.bloomA.width;
+      const bh = this.fbos.bloomA.height;
 
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbos.bloomA.fbo);
-    gl.viewport(0, 0, bw, bh);
-    gl.useProgram(this.programs.bloomExtract.program);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.fbos.scene.texture);
-    gl.uniform1i(this.programs.bloomExtract.uniforms.uTex, 0);
-    // Bloom threshold starts high (0.66) so brightest water specular highlights & koi scales emerge first,
-    // settling smoothly to normal (0.30) as uWarm reaches 1.0.
-    const warmBloomThreshold = this.uWarm < 0.999
-      ? 0.66 + (this.crtConfig.bloomThreshold - 0.66) * Math.pow(Math.max(0, this.uWarm), 0.72)
-      : this.crtConfig.bloomThreshold;
-    gl.uniform1f(this.programs.bloomExtract.uniforms.uThreshold, warmBloomThreshold);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbos.bloomA.fbo);
+      gl.viewport(0, 0, bw, bh);
+      gl.useProgram(this.programs.bloomExtract.program);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, this.fbos.scene.texture);
+      gl.uniform1i(this.programs.bloomExtract.uniforms.uTex, 0);
+      // Bloom threshold starts high (0.66) so brightest water specular highlights & koi scales emerge first,
+      // settling smoothly to normal (0.30) as uWarm reaches 1.0.
+      const warmBloomThreshold = this.uWarm < 0.999
+        ? 0.66 + (this.crtConfig.bloomThreshold - 0.66) * Math.pow(Math.max(0, this.uWarm), 0.72)
+        : this.crtConfig.bloomThreshold;
+      gl.uniform1f(this.programs.bloomExtract.uniforms.uThreshold, warmBloomThreshold);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbos.bloomB.fbo);
-    gl.useProgram(this.programs.blur.program);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.fbos.bloomA.texture);
-    gl.uniform1i(this.programs.blur.uniforms.uTex, 0);
-    gl.uniform2f(this.programs.blur.uniforms.uTexelSize, 1.8 / bw, 1.8 / bh);
-    gl.uniform2f(this.programs.blur.uniforms.uDirection, 1.0, 0.0);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbos.bloomB.fbo);
+      gl.useProgram(this.programs.blur.program);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, this.fbos.bloomA.texture);
+      gl.uniform1i(this.programs.blur.uniforms.uTex, 0);
+      gl.uniform2f(this.programs.blur.uniforms.uTexelSize, 1.8 / bw, 1.8 / bh);
+      gl.uniform2f(this.programs.blur.uniforms.uDirection, 1.0, 0.0);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbos.bloomA.fbo);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.fbos.bloomB.texture);
-    gl.uniform2f(this.programs.blur.uniforms.uDirection, 0.0, 1.0);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbos.bloomA.fbo);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, this.fbos.bloomB.texture);
+      gl.uniform2f(this.programs.blur.uniforms.uDirection, 0.0, 1.0);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      bloomTex = this.fbos.bloomA.texture;
+    }
 
     // Dirty-flag UI overlay (0 GPU uploads/sec while idle!)
     const uiRes = this.uiOverlay.render(t, dt, this.cssWidth, this.cssHeight);
@@ -850,7 +942,7 @@ export class PondCRTEngine {
     gl.bindTexture(gl.TEXTURE_2D, this.fbos.scene.texture);
     gl.uniform1i(cu.uSceneTex, 0);
     gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, this.fbos.bloomA.texture);
+    gl.bindTexture(gl.TEXTURE_2D, bloomTex);
     gl.uniform1i(cu.uBloomTex, 1);
     gl.activeTexture(gl.TEXTURE2);
     gl.bindTexture(gl.TEXTURE_2D, this.uiTex);
@@ -876,9 +968,17 @@ export class PondCRTEngine {
   start() {
     if (this.running) return;
     this.running = true;
-    const tick = () => {
+    const tick = (nowMs) => {
       if (!this.running) return;
-      this.render();
+      if (this.isSoftwareRenderer) {
+        const ts = Number.isFinite(nowMs) ? nowMs : performance.now();
+        if (!this._lastSoftwareRenderMs || (ts - this._lastSoftwareRenderMs) >= 120) {
+          this._lastSoftwareRenderMs = ts;
+          this.render();
+        }
+      } else {
+        this.render();
+      }
       this.rafId = requestAnimationFrame(tick);
     };
     this.rafId = requestAnimationFrame(tick);
@@ -893,6 +993,7 @@ export class PondCRTEngine {
   }
 
   destroy() {
+    this._destroyed = true;
     this.stop();
     if (this._bootFailsafeTimer) {
       window.clearTimeout(this._bootFailsafeTimer);
@@ -902,15 +1003,18 @@ export class PondCRTEngine {
     if (this._onPointerDown) this.canvas.removeEventListener('pointerdown', this._onPointerDown);
     if (this._onPointerUp) window.removeEventListener('pointerup', this._onPointerUp);
     this._destroyFBOs();
-    this.koiGL.destroy();
-    this.particlesGL.destroy();
+    this.koiGL?.destroy();
+    this.particlesGL?.destroy();
     const gl = this.gl;
     for (const sId of SEASON_ORDER) {
       gl.deleteTexture(this.floraTextures[sId]);
     }
     gl.deleteTexture(this.uiTex);
-    for (const p of Object.values(this.programs)) {
-      gl.deleteProgram(p.program);
+    if (this.dummyBlackTex) gl.deleteTexture(this.dummyBlackTex);
+    if (this.programs) {
+      for (const p of Object.values(this.programs)) {
+        gl.deleteProgram(p.program);
+      }
     }
     gl.deleteVertexArray(this.vao);
   }

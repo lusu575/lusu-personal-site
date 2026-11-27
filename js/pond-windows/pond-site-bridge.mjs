@@ -8,7 +8,7 @@ import {
   saveManualSeasonOverride,
   startSeasonTimeSchedule
 } from '../pond-crt/season-schedule.mjs?v=20261122-pond-live-fix-r1';
-import { attachSiteGlassButtons, getCrtGlassAudit, getCrtGlassButtonPerfStats, installAutoGlassBinding } from './crt-glass-button.mjs?v=20261125-continuous-glass-r96';
+import { getCrtGlassAudit, getCrtGlassButtonPerfStats, installAutoGlassBinding } from './crt-glass-button.mjs?v=20261125-continuous-glass-r96';
 import { PondWindowMorphController } from './crt-window-morph.mjs?v=20261125-cold-open-r90';
 
 function isMobileShell() {
@@ -280,8 +280,7 @@ function bootPondVisualBridge() {
   keepPondStylesheetLast();
   new MutationObserver(keepPondStylesheetLast).observe(document.head, { childList: true });
 
-  const probe = document.createElement('canvas');
-  if (!probe.getContext('webgl2')) return;
+  if (typeof window.WebGL2RenderingContext !== 'function') return;
 
   const backdrop = document.createElement('div');
   backdrop.id = 'pond-visual-backdrop';
@@ -861,10 +860,8 @@ function bootPondVisualBridge() {
 
   const welcomeModalObs = document.getElementById('welcome-modal');
   if (welcomeModalObs) {
-    attachSiteGlassButtons();
     new MutationObserver(() => {
       if (!welcomeModalObs.hidden) {
-        attachSiteGlassButtons();
         window.requestAnimationFrame(syncRealTimeWelcomeGreeting);
       }
     }).observe(welcomeModalObs, { attributes: true, attributeFilter: ['hidden'] });
@@ -902,7 +899,6 @@ function bootPondVisualBridge() {
     glassBindQueued = true;
     window.requestAnimationFrame(() => {
       glassBindQueued = false;
-      attachSiteGlassButtons();
       lockImagesNonDraggable();
     });
   };
@@ -949,8 +945,12 @@ function bootPondVisualBridge() {
   });
 }
 
+function scheduleBootPondVisualBridge() {
+  window.setTimeout(bootPondVisualBridge, 0);
+}
+
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', bootPondVisualBridge, { once: true });
+  document.addEventListener('DOMContentLoaded', scheduleBootPondVisualBridge, { once: true });
 } else {
-  bootPondVisualBridge();
+  scheduleBootPondVisualBridge();
 }
