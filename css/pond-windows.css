@@ -3033,6 +3033,37 @@ html[data-pond-mode] .xp-topbar {
   overflow: visible !important;
 }
 
+/* Keep the real welcome trigger keyboard-focusable & hit-testable over the Pond top-center clock
+   while keeping the legacy XP header visually hidden (and #account-popover independently visible). */
+html[data-pond-mode]:not([data-ui-shell="mobile"]):not([data-shell="mobile"]) .site-shell > header [data-open-welcome] {
+  visibility: visible !important;
+  opacity: 0 !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  top: 6px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 140px !important;
+  min-width: 140px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  z-index: 92 !important;
+}
+
+/* Keep the real account toggle keyboard-focusable so closing #account-popover via Escape/outside click
+   restores focus cleanly without exposing the legacy XP header visually. */
+html[data-pond-mode]:not([data-ui-shell="mobile"]):not([data-shell="mobile"]) .site-shell > header [data-account-toggle] {
+  visibility: visible !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Enforce 44px primary touch-target floor on all mobile shells (including 844x390 landscape). */
+html[data-ui-shell="mobile"] :is(.close-button, .mobile-home-button, .card-action, .xp-button, .chat-send-button, .about-social-link, [data-account-toggle], .resource-details > summary) {
+  min-width: 44px !important;
+  min-height: 44px !important;
+}
+
 html[data-pond-mode] #account-popover:not([hidden]) {
   opacity: 1 !important;
   visibility: visible !important;
@@ -6156,14 +6187,20 @@ html[data-pond-mode="chatroom"] #chatroom .chatroom-counter {
 }
 
 html[data-ui-shell="mobile"] #chatroom .chat-send-button {
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 7px !important;
+  gap: 4px !important;
+  min-width: 44px !important;
   min-height: 44px !important;
-  padding: 0 18px !important;
-  width: auto !important;
-  max-width: none !important;
+  padding: 0 6px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 html[data-pond-mode="chatroom"] #chatroom .chat-room-help-trigger {
@@ -6637,13 +6674,11 @@ html[data-pond-mode="resources"] #resource-list .resource-card > p {
 }
 
 html[data-pond-mode="resources"] #resource-list .resource-card details[open] {
-  max-height: 116px !important;
-  overflow-y: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
   padding-right: 4px !important;
   font-size: 11.5px !important;
   line-height: 1.45 !important;
-  scrollbar-width: thin !important;
-  scrollbar-color: rgba(136, 252, 226, 0.42) rgba(6, 22, 26, 0.72) !important;
 }
 
 html[data-pond-mode="resources"] #resources:has(#transfer-app:not([hidden])) #resource-list,

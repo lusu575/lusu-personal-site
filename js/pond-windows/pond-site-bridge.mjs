@@ -12,7 +12,10 @@ import { getCrtGlassAudit, getCrtGlassButtonPerfStats, installAutoGlassBinding }
 import { PondWindowMorphController } from './crt-window-morph.mjs?v=20261125-cold-open-r90';
 
 function isMobileShell() {
-  return document.documentElement.dataset.shell === 'mobile' || window.innerWidth <= 768;
+  const d = document.documentElement.dataset;
+  if (d.uiShell === 'mobile' || d.shell === 'mobile') return true;
+  if (window.matchMedia?.('(max-width: 760px), (max-height: 520px) and (pointer: coarse)')?.matches) return true;
+  return window.innerWidth <= 768;
 }
 
 function getCurrentSiteLang() {
@@ -669,16 +672,11 @@ function bootPondVisualBridge() {
     }
   }, true);
 
-  // Step 7: Intercept window close button & welcome close clicks so content fades first and shell contracts back to re-measured icon
+  // Step 7: Intercept window close button clicks so content fades first and shell contracts back to re-measured icon.
+  // Welcome modal close is handled directly by main.js closeWelcome() to preserve immediate Escape dismissal,
+  // data-ui-closing isolation lifecycle, and trigger focus restoration.
   document.addEventListener('click', (e) => {
     if (bypassCloseIntercept) return;
-    const closeWelcomeBtn = e.target?.closest?.('#welcome-modal [data-close-welcome]');
-    if (closeWelcomeBtn && isWelcomeModalOpen()) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      closeWindowAnimated('welcome', () => closeWelcomeBtn.click());
-      return;
-    }
     const closeWinBtn = e.target?.closest?.('.xp-window .close-button[data-route="home"]');
     if (closeWinBtn) {
       const modeToClose = isMobileShell() ? (document.body.dataset.route || 'home') : activeMode;
@@ -710,12 +708,6 @@ function bootPondVisualBridge() {
   window.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (activeMode === 'welcome' && isWelcomeModalOpen()) {
-      const closeBtn = document.querySelector('#welcome-modal .close-button[data-close-welcome]');
-      if (closeBtn) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        closeWindowAnimated('welcome', () => closeBtn.click());
-      }
       return;
     }
     if (activeMode === 'article') {
