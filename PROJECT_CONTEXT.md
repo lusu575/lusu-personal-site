@@ -1,5 +1,11 @@
 # PROJECT_CONTEXT.md
 
+## 2026-11-27 手机端池塘 CRT 同源整体改造与八项体验修复（r103–r104）
+
+- 手机端已全面接入与 PC 端同源的 WebGL2 午夜池塘 CRT 引擎（`html[data-pond-mode]` 覆盖桌面与移动视口）：首页直接渲染动态池塘、锦鲤、四季景物、1.0 秒风吹切季、Persepolis `uWarm 0→1` 启动显影、6 个点阵入口图标、顶部时钟与季节滑块，以及 Dock 上方高对比 `ID · 中 / EN / 日` 角标；同时保留底部 6 入口磨砂 CRT Dock（含 44px 收起/展开手柄）与各窗口全部既有业务逻辑和数据。
+- 移动端在共享 `data-pond-mode` 样式基础上通过末尾高优先级规则锁定所有主触控目标 `>= 44×44px`（不改变桌面端 34/36/38px 紧凑按钮尺寸），捕获期路由预挂载严格限定 `[data-route]:not(body)` 防止误匹配 `<body data-route="...">`；`.site-shell > header` 保持 `visibility: hidden`（禁用 `display: none`），使 `[data-open-welcome]`（`left: calc(50% - 70px); width: 140px; height: 44px`，`359×500` 下 `right = 249.5 <= 359`）、`[data-account-toggle]` 与 `#account-popover` 在全视口下可聚焦、可命中且焦点可恢复。
+- 桌面端八项审计问题（冷开=热开、开机贴图预烘焙、触摸连续液态玻璃无频闪、标题栏与卡片光效零直线切边、点按内描边 0px 位移、主站与子页 MengTo 液态玻璃 `unboundCount === 0`、单层 GPU 飞窗同步缩放与飞行期隐藏滚动条、首页与 Dock 启动图标安静开窗不闪）及 `OPT-091/092` 168 组合响应矩阵、`manual welcome isolation` 在移动端全部实测通过。
+
 ## 2026-10-29 Private MCP production adapter
 
 Approved production rollout: Pages commit c1c3c10f5f65d6a1d3eb138ac92c96f78c414da3; MCP Worker 355575bb-0d9c-4bde-9578-1a73ccd09275 at 100% traffic. PRIVATE_ADMIN_BACKEND=pages forwards the 51 backend operations to /api/private-mcp. Pages PRIVATE_MCP_AUTH calls PrivateMcpVerifier and pins the confirmed owner ID hash; preview has no binding. Existing secrets stay in Pages; no rotation, copying or new grant. Production health/metadata return 200, anonymous and invalid-token requests return 401. Local OAuth/RPC/Pages regression: 39 tests passed. Authenticated production tool calls have not been exercised without a new owner grant. Rollback must disable route/mode together while retaining owner restriction. Details: docs/agent-capabilities/PRIVATE_MCP_BACKEND_ADAPTER.md.

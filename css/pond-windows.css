@@ -3035,24 +3035,26 @@ html[data-pond-mode] .xp-topbar {
 
 /* Keep the real welcome trigger keyboard-focusable & hit-testable over the Pond top-center clock
    while keeping the legacy XP header visually hidden (and #account-popover independently visible). */
-html[data-pond-mode]:not([data-ui-shell="mobile"]):not([data-shell="mobile"]) .site-shell > header [data-open-welcome] {
+html[data-pond-mode] .site-shell > header [data-open-welcome] {
   visibility: visible !important;
   opacity: 0 !important;
   pointer-events: auto !important;
   position: fixed !important;
   top: 6px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
+  left: calc(50% - 70px) !important;
+  right: auto !important;
   width: 140px !important;
   min-width: 140px !important;
+  max-width: calc(100vw - 24px) !important;
   height: 44px !important;
   min-height: 44px !important;
+  margin: 0 !important;
   z-index: 92 !important;
 }
 
 /* Keep the real account toggle keyboard-focusable so closing #account-popover via Escape/outside click
    restores focus cleanly without exposing the legacy XP header visually. */
-html[data-pond-mode]:not([data-ui-shell="mobile"]):not([data-shell="mobile"]) .site-shell > header [data-account-toggle] {
+html[data-pond-mode] .site-shell > header [data-account-toggle] {
   visibility: visible !important;
   opacity: 0 !important;
   pointer-events: none !important;
@@ -7926,11 +7928,19 @@ html[data-shell="mobile"][data-pond-mode] .page:not(#home) > .xp-window > .windo
   border-bottom: 1px dotted rgba(182, 238, 232, 0.36) !important;
 }
 
+/* Keep .site-shell > header visibility:hidden (never display:none) so [data-open-welcome],
+   [data-account-toggle], and #account-popover remain focusable and functional on mobile Pond mode. */
 html[data-ui-shell="mobile"][data-pond-mode] .site-shell > header,
+html[data-shell="mobile"][data-pond-mode] .site-shell > header {
+  visibility: hidden !important;
+  pointer-events: none !important;
+  overflow: visible !important;
+}
+
 html[data-ui-shell="mobile"][data-pond-mode] .mobile-appbar,
-html[data-shell="mobile"][data-pond-mode] .site-shell > header,
 html[data-shell="mobile"][data-pond-mode] .mobile-appbar {
-  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 html[data-ui-shell="mobile"][data-pond-mode] .window-titlebar::after {
@@ -8363,4 +8373,108 @@ html[data-shell="mobile"] .xp-taskbar :is(.start-button, .taskbar-tabs button):w
   box-shadow: none !important;
   transform: none !important;
 }
+
+/* --- r104: Mobile 44px Touch Target Floor & Responsive Card/Chat Containment Across All Mobile Viewports --- */
+:is(html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(body, #main-content#knowledge#knowledge-list) :is(.close-button, .mobile-home-button, .card-action, .xp-button, .chat-send-button, .about-social-link, [data-account-toggle], [data-open-welcome], .welcome-open, .resource-details > summary, .game-secondary-details > summary, .chat-room-help-trigger, #video-categories button, #knowledge-categories .category-button, #video-list .video-card button:not(.video-thumb), #game-list .game-card .card-action, #knowledge-list .article-card .card-action) {
+  min-width: 44px !important;
+  min-height: 44px !important;
+}
+
+:is(html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(body, #main-content#knowledge#knowledge-list) :is(.close-button, .account-close-button),
+:is(html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(body, #main-content#knowledge#knowledge-list) :is(.close-button, .account-close-button):where(:hover, :focus-visible, :active) {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  max-width: 44px !important;
+  max-height: 44px !important;
+  flex: 0 0 44px !important;
+}
+
+:is(html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(body, #main-content#knowledge#knowledge-list) :is(.about-social-link, .chat-room-help-trigger) {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  flex: 0 0 44px !important;
+}
+
+/* Mobile Games & Tools Card Containment (Portrait + 844x390 Landscape) */
+html[data-ui-shell="mobile"][data-pond-mode] #game-list .game-card,
+html[data-ui-shell="mobile"][data-pond-mode] #game-list .game-card:nth-child(4),
+html[data-ui-shell="mobile"][data-pond-mode] #game-list .game-card:nth-child(5) {
+  grid-column: auto !important;
+  grid-template-columns: 84px minmax(0, 1fr) !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] #resource-list .resource-card,
+html[data-ui-shell="mobile"][data-pond-mode] #resource-list .resource-main,
+html[data-ui-shell="mobile"][data-pond-mode] #resource-list .resource-details,
+html[data-ui-shell="mobile"][data-pond-mode] #resource-list .resource-facts {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] #resource-list .resource-fact {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+  box-sizing: border-box !important;
+}
+
+/* Mobile Chatroom Header & Composer Geometry (Portrait + 844x390 Landscape) */
+html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-header {
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  padding: 6px 12px !important;
+  gap: 6px 8px !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-nickname-row,
+html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-status {
+  flex-wrap: wrap !important;
+  white-space: normal !important;
+  width: auto !important;
+  justify-content: flex-start !important;
+  gap: 6px 8px !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-compose {
+  width: 100% !important;
+  padding: 6px 10px !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-input-shell {
+  width: 100% !important;
+  padding: 6px 8px 6px 14px !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chat-send-button {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 64px !important;
+  min-height: 44px !important;
+  padding: 0 14px !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-counter {
+  position: static !important;
+  margin: 0 4px !important;
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  html[data-ui-shell="mobile"][data-pond-mode] #resource-list,
+  html[data-ui-shell="mobile"][data-pond-mode] #game-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    padding: 8px 12px 16px !important;
+    gap: 12px !important;
+  }
+}
+
 

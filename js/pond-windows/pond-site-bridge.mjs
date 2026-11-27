@@ -296,7 +296,6 @@ function bootPondVisualBridge() {
 
   let engine = null;
   let activeMode = '';
-  let lastMobileRoute = '';
   let suppressNextOutsideClickUntil = 0;
   let bypassCloseIntercept = false;
   const windowMorph = new PondWindowMorphController();
@@ -553,24 +552,22 @@ function bootPondVisualBridge() {
     const route = document.body.dataset.route || 'home';
     const prevMode = activeMode;
     let nextMode = '';
-    if (!isMobileShell()) {
-      if (isWelcomeModalOpen()) {
-        nextMode = 'welcome';
-      } else if (route === 'home') {
-        nextMode = 'home';
-      } else if (route === 'knowledge') {
-        nextMode = isArticleDetailOpen() ? 'article' : 'knowledge';
-      } else if (route === 'videos') {
-        nextMode = 'videos';
-      } else if (route === 'resources') {
-        nextMode = 'resources';
-      } else if (route === 'games') {
-        nextMode = 'games';
-      } else if (route === 'chatroom') {
-        nextMode = 'chatroom';
-      } else if (route === 'about') {
-        nextMode = 'about';
-      }
+    if (isWelcomeModalOpen()) {
+      nextMode = 'welcome';
+    } else if (route === 'home') {
+      nextMode = 'home';
+    } else if (route === 'knowledge') {
+      nextMode = isArticleDetailOpen() ? 'article' : 'knowledge';
+    } else if (route === 'videos') {
+      nextMode = 'videos';
+    } else if (route === 'resources') {
+      nextMode = 'resources';
+    } else if (route === 'games') {
+      nextMode = 'games';
+    } else if (route === 'chatroom') {
+      nextMode = 'chatroom';
+    } else if (route === 'about') {
+      nextMode = 'about';
     }
 
     if (nextMode) {
@@ -608,6 +605,7 @@ function bootPondVisualBridge() {
       if (prevMode && prevMode !== nextMode) {
         if (nextMode === 'home') {
           openGateSeq++;
+          windowMorph.cancel();
           windowMorph.syncScrimImmediate(false);
         } else if (!isInnerKnowledgeSwap) {
           openWindowWithReadyGate(nextMode);
@@ -621,16 +619,6 @@ function bootPondVisualBridge() {
       windowMorph.syncScrimImmediate(false);
       if (engine) engine.stop();
       activeMode = '';
-    }
-
-    if (isMobileShell()) {
-      const prevMobile = lastMobileRoute;
-      lastMobileRoute = route;
-      if (prevMobile && prevMobile !== route && route !== 'home') {
-        windowMorph.startOpen(route);
-      }
-    } else {
-      lastMobileRoute = '';
     }
   }
 
@@ -677,6 +665,7 @@ function bootPondVisualBridge() {
   // data-ui-closing isolation lifecycle, and trigger focus restoration.
   document.addEventListener('click', (e) => {
     if (bypassCloseIntercept) return;
+    if (document.documentElement.dataset.motion === 'off' || document.body?.dataset?.motion === 'off') return;
     const closeWinBtn = e.target?.closest?.('.xp-window .close-button[data-route="home"], .mobile-appbar .mobile-home-button[data-route="home"], .xp-taskbar .start-button[data-route="home"]');
     if (closeWinBtn) {
       const mobile = isMobileShell();
@@ -684,7 +673,7 @@ function bootPondVisualBridge() {
       if (modeToClose && modeToClose !== 'home' && (mobile || modeToClose !== 'article')) {
         e.preventDefault();
         e.stopImmediatePropagation();
-        closeWindowAnimated(modeToClose, () => triggerSiteRoute('home'));
+        closeWindowAnimated(modeToClose, () => closeWinBtn.click());
       }
     }
   }, true);
@@ -856,6 +845,8 @@ function bootPondVisualBridge() {
     new MutationObserver(() => {
       if (!welcomeModalObs.hidden) {
         window.requestAnimationFrame(syncRealTimeWelcomeGreeting);
+      } else {
+        windowMorph.cancel();
       }
     }).observe(welcomeModalObs, { attributes: true, attributeFilter: ['hidden'] });
   }
@@ -937,14 +928,17 @@ function bootPondVisualBridge() {
   document.addEventListener('click', (event) => {
     const target = event.target instanceof Element ? event.target : null;
     if (!target) return;
-    const routeBtn = target.closest('[data-route]');
+    const routeBtn = target.closest('[data-route]:not(body)');
     if (!routeBtn) return;
     const targetRoute = routeBtn.getAttribute('data-route') || '';
     if (!targetRoute || targetRoute === 'home') return;
     const resolvedMode = targetRoute === 'blog' ? 'knowledge' : targetRoute;
-    if (WINDOW_MODES.has(resolvedMode) && activeMode !== resolvedMode) {
+    const currentRoute = document.body?.dataset?.route || 'home';
+    if (WINDOW_MODES.has(resolvedMode) && activeMode !== resolvedMode && currentRoute !== resolvedMode) {
       document.documentElement.dataset.pondMode = resolvedMode;
-      windowMorph.prepareOpenMount(resolvedMode);
+      if (document.documentElement.dataset.motion !== 'off' && document.body?.dataset?.motion !== 'off') {
+        windowMorph.prepareOpenMount(resolvedMode);
+      }
       queueMicrotask(syncVisualMode);
     }
   }, true);

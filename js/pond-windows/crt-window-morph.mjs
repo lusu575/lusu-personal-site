@@ -24,7 +24,13 @@ const DESKTOP_ICON_COORDS = {
 const ICON_BOX_PX = 76;
 const SAMPLE_STEP_MS = 4;
 
+function isMotionOff() {
+  return document.documentElement.dataset.motion === 'off'
+    || document.body?.dataset?.motion === 'off';
+}
+
 function prefersReducedMotion() {
+  if (isMotionOff() || document.documentElement.dataset.motion === 'reduced') return true;
   return Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 }
 
@@ -289,6 +295,10 @@ export class PondWindowMorphController {
     const winEl = resolveWindowElement(mode);
     if (!winEl) return;
     cancelCompetingAnimations(winEl);
+    if (isMotionOff()) {
+      this._clearWindowVisuals(winEl);
+      return;
+    }
     winEl.classList.add('is-morph-measuring');
     winEl.style.visibility = 'hidden';
     winEl.style.opacity = '0';
@@ -302,6 +312,20 @@ export class PondWindowMorphController {
     const winEl = resolveWindowElement(mode);
     if (!winEl) return false;
     this.cancelCompetingOn(mode);
+
+    if (isMotionOff() || (mode === 'welcome' && prefersReducedMotion())) {
+      if (this.rafId) {
+        cancelAnimationFrame(this.rafId);
+        this.rafId = 0;
+      }
+      if (this.active?.winEl && this.active.winEl !== winEl) {
+        this._clearWindowVisuals(this.active.winEl);
+      }
+      this.active = null;
+      this._clearWindowVisuals(winEl);
+      this._setScrim(1);
+      return false;
+    }
 
     // Force deterministic layout settle before measuring so cold open matches warm open on Frame 0
     void winEl.offsetHeight;
@@ -384,6 +408,21 @@ export class PondWindowMorphController {
     }
     cancelCompetingAnimations(winEl);
 
+    if (isMotionOff()) {
+      if (this.rafId) {
+        cancelAnimationFrame(this.rafId);
+        this.rafId = 0;
+      }
+      if (this.active?.winEl) {
+        this._clearWindowVisuals(this.active.winEl);
+      }
+      this.active = null;
+      this._clearWindowVisuals(winEl);
+      this._setScrim(0);
+      if (typeof onComplete === 'function') onComplete();
+      return false;
+    }
+
     // Re-measure live target icon center right before close starts (NEVER stale open coords)
     const icon = measureLiveIconCenter(mode);
     const winRect = measureWindowRectSafe(winEl, mode);
@@ -455,6 +494,11 @@ export class PondWindowMorphController {
     if (this.active) {
       this._clearWindowVisuals(this.active.winEl);
       this.active = null;
+    }
+    if (typeof document !== 'undefined') {
+      document.querySelectorAll('.xp-window.is-morph-measuring, .xp-window.is-morph-flying').forEach((el) => {
+        this._clearWindowVisuals(el);
+      });
     }
   }
 
