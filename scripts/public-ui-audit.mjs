@@ -4391,7 +4391,7 @@ async function auditAmbientWallpaperPlayback(client, server) {
 async function auditLifeRestartGameShell(client, server, output) {
   const scenarios = [
     { name:"desktop-standard", width:1280, height:720, mobile:false, expectedCollapsed:true },
-    { name:"desktop-zoom-out-33", width:3840, height:1740, mobile:false, expectedCollapsed:false, emulationScale:1/3 },
+    { name:"desktop-zoom-out-33", width:3840, height:1740, mobile:false, expectedCollapsed:true, emulationScale:1/3 },
     { name:"phone-portrait", width:390, height:844, mobile:true, expectedCollapsed:true },
     { name:"phone-landscape", width:844, height:390, mobile:true, expectedCollapsed:true }
   ];
