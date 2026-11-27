@@ -64,12 +64,21 @@ export async function openIsolatedKittens(t, options = {}) {
     await rm(profile, { recursive: true, force: true, maxRetries: 2 });
   });
   let port;
-  for (let i=0;i<80;i++) {
+  for (let i=0;i<150;i++) {
     try { port = Number((await readFile(join(profile, "DevToolsActivePort"), "utf8")).split("\n")[0]); break; } catch { await new Promise(r => setTimeout(r,100)); }
   }
   assert.ok(port, "Browser debugging endpoint did not start");
-  const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
-  cdp = new CDP(targets.find(x => x.type === "page").webSocketDebuggerUrl); await cdp.connect();
+  let pageTarget;
+  for (let i=0;i<50;i++) {
+    try {
+      const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
+      pageTarget = targets.find(x => x.type === "page" && x.webSocketDebuggerUrl);
+      if (pageTarget) break;
+    } catch {}
+    await new Promise(r => setTimeout(r,100));
+  }
+  assert.ok(pageTarget, "Browser page target did not appear");
+  cdp = new CDP(pageTarget.webSocketDebuggerUrl); await cdp.connect();
   if (options.initScript) await cdp.send("Page.addScriptToEvaluateOnNewDocument", { source: options.initScript });
   await cdp.send("Page.navigate", { url: `http://127.0.0.1:${server.address().port}/${options.path || ""}` });
   const evaluate = async expression => {
