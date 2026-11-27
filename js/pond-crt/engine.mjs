@@ -174,7 +174,11 @@ export class PondCRTEngine {
     }
     // Render one synchronous frame immediately so even a paused/stalled RAF snaps to live pond!
     if (this.gl && this.fbos && this.fbos.scene) {
-      try { this.render(); } catch {}
+      try {
+        this.render();
+      } catch {
+        /* Ignore synchronous frame error if WebGL context is unavailable */
+      }
     }
   }
 
@@ -537,7 +541,7 @@ export class PondCRTEngine {
     ];
   }
 
-  setSeason(seasonId, originNx = 0.86, originNy = 0.072, { manual = true } = {}) {
+  setSeason(seasonId, _originNx = 0.86, _originNy = 0.072, { manual = true } = {}) {
     if (SEASONS[seasonId] && seasonId !== this.seasonId) {
       if (this._pendingFloraQueue.includes(seasonId)) {
         this._bakeSeasonFlora(seasonId);

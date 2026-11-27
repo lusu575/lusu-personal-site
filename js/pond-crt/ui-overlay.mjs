@@ -686,11 +686,10 @@ export class PondUIOverlay {
     ctx.restore();
   }
 
-  _drawDiscreetCorner(ctx, w, h, t) {
+  _drawDiscreetCorner(ctx, w, h, _t) {
     const x0 = w * 0.068;
     const y0 = h * 0.935;
     const fontSize = Math.max(11, Math.round(Math.min(w, h * 1.4) * 0.0145));
-    const isAnyHover = Boolean(this.cornerHover);
     const isWinter = this.seasonId === 'winter';
 
     ctx.save();

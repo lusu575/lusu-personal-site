@@ -4,7 +4,9 @@
     import("/js/pond-windows/crt-glass-button.mjs?v=20261125-continuous-glass-r96")
       .then((m) => m.installAutoGlassBinding?.())
       .catch(() => {});
-  } catch {}
+  } catch {
+    /* Optional glass button enhancement; ignore unsupported dynamic import */
+  }
 
   const slug = window.GAME_SLUG;
   const shellParams = new URLSearchParams(window.location.search);

@@ -152,7 +152,6 @@ const CHAT_COOLDOWN_MS = 3000;
 const CHAT_IP_WINDOW_MS = 60000;
 const CHAT_IP_WINDOW_LIMIT = 20;
 const PUBLIC_CHAT_ROOM_KEY = "public";
-const CHAT_PRIVATE_ROOM_TTL_MS = 24 * 60 * 60 * 1000;
 const MAX_CHAT_ROOM_KEY_CHARS = 80;
 const MAX_CHAT_ENCRYPTED_CONTENT_CHARS = 3200;
 const REQUIRED_RUNTIME_SECRETS = Object.freeze([
@@ -4986,53 +4985,7 @@ async function activeChatBan(env, visitorId, ipHash, ipHashKeyId) {
   `).bind(nowIso(), visitorId, ipHashKeyId, ipHash).first();
 }
 
-async function cleanupExpiredPrivateChatRooms(env) {
-  const cutoff = new Date(Date.now() - CHAT_PRIVATE_ROOM_TTL_MS).toISOString();
-  const rows = (await env.DB.prepare(`
-    select room_key, last_message_at, revision
-    from chat_room_activity
-    where room_key <> ? and last_message_at < ?
-    order by last_message_at asc, room_key asc
-    limit 20
-  `).bind(PUBLIC_CHAT_ROOM_KEY, cutoff).all()).results || [];
-  if (!rows.length) {
-    return;
-  }
-  const statements = [];
-  for (const row of rows) {
-    const roomKey = String(row.room_key || "").trim();
-    const expectedRevision = Number(row.revision || 0);
-    if (!roomKey || roomKey === PUBLIC_CHAT_ROOM_KEY) continue;
-    statements.push(
-      env.DB.prepare(`
-        delete from anonymous_chat_messages
-        where room_key = ?
-          and created_at < ?
-          and not exists (
-            select 1 from anonymous_chat_messages newest
-            where newest.room_key = ? and newest.created_at >= ?
-          )
-          and not exists (
-            select 1 from chat_room_activity act
-            where act.room_key = ? and (act.last_message_at >= ? or act.revision <> ?)
-          )
-      `).bind(roomKey, cutoff, roomKey, cutoff, roomKey, cutoff, expectedRevision),
-      env.DB.prepare(`
-        delete from chat_room_activity
-        where room_key = ?
-          and revision = ?
-          and last_message_at < ?
-          and not exists (
-            select 1 from anonymous_chat_messages remaining
-            where remaining.room_key = ?
-          )
-      `).bind(roomKey, expectedRevision, cutoff, roomKey)
-    );
-  }
-  if (statements.length) {
-    await env.DB.batch(statements);
-  }
-}
+export { cleanupExpiredPrivateChatRoomsPeriodic as cleanupExpiredPrivateChatRooms } from "./data-cleanup-service.mjs";
 
 async function ensureChatSchema(env) {
   if (chatSchemaReady) {

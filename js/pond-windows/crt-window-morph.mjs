@@ -87,7 +87,9 @@ function cancelCompetingAnimations(el) {
     for (const anim of el.getAnimations()) {
       anim.cancel();
     }
-  } catch {}
+  } catch {
+    /* Ignore animation cancellation errors on detached elements */
+  }
 }
 
 function measureLiveIconCenter(mode) {

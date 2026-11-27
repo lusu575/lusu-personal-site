@@ -396,7 +396,9 @@ class CrtGlassButtonController {
         if (this.el.hasPointerCapture?.(this.activePointerId)) {
           this.el.releasePointerCapture(this.activePointerId);
         }
-      } catch {}
+      } catch {
+        /* Pointer capture may already be released by the browser */
+      }
       this.activePointerId = null;
     }
   }

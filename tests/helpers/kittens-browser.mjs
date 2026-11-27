@@ -74,7 +74,9 @@ export async function openIsolatedKittens(t, options = {}) {
       const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
       pageTarget = targets.find(x => x.type === "page" && x.webSocketDebuggerUrl);
       if (pageTarget) break;
-    } catch {}
+    } catch {
+      /* Retry until Chrome DevTools HTTP endpoint exposes a page target */
+    }
     await new Promise(r => setTimeout(r,100));
   }
   assert.ok(pageTarget, "Browser page target did not appear");

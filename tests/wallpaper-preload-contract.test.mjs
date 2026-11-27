@@ -5,7 +5,6 @@ import vm from "node:vm";
 
 const root = new URL("../", import.meta.url);
 const indexHtml = await readFile(new URL("index.html", root), "utf8");
-const desktopCss = await readFile(new URL("css/style.css", root), "utf8");
 const mobileCss = await readFile(new URL("css/mobile-ios-shell.css", root), "utf8");
 const bootstrapMatch = indexHtml.match(/<script>\s*(\(\(\) => \{[\s\S]*?dataset\.wallpaperPreload[\s\S]*?\}\)\(\);)\s*<\/script>/);
 

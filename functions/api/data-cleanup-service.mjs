@@ -76,7 +76,7 @@ export async function runPeriodicDataCleanup(env, { now = new Date(), budgetMs =
   }
 }
 
-async function cleanupExpiredPrivateChatRoomsPeriodic(env, { now, hasActivityTable }) {
+export async function cleanupExpiredPrivateChatRoomsPeriodic(env, { now = new Date(), hasActivityTable = true } = {}) {
   const cutoff = new Date(now.getTime() - DAY).toISOString();
   const statements = [];
   if (hasActivityTable) {

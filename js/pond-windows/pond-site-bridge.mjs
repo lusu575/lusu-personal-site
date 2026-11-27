@@ -8,7 +8,7 @@ import {
   saveManualSeasonOverride,
   startSeasonTimeSchedule
 } from '../pond-crt/season-schedule.mjs?v=20261122-pond-live-fix-r1';
-import { attachSiteGlassButtons, attachWelcomePilotButtons, getCrtGlassAudit, getCrtGlassButtonPerfStats, installAutoGlassBinding } from './crt-glass-button.mjs?v=20261125-continuous-glass-r96';
+import { attachSiteGlassButtons, getCrtGlassAudit, getCrtGlassButtonPerfStats, installAutoGlassBinding } from './crt-glass-button.mjs?v=20261125-continuous-glass-r96';
 import { PondWindowMorphController } from './crt-window-morph.mjs?v=20261125-cold-open-r90';
 
 function isMobileShell() {
@@ -305,7 +305,6 @@ function bootPondVisualBridge() {
   document.body.prepend(backdrop);
 
   let engine = null;
-  let stopSchedule = null;
   let activeMode = '';
   let lastMobileRoute = '';
   let suppressNextOutsideClickUntil = 0;
@@ -444,7 +443,7 @@ function bootPondVisualBridge() {
         if (manual) saveManualSeasonOverride(nextSeason);
       }
     });
-    stopSchedule = startSeasonTimeSchedule({
+    startSeasonTimeSchedule({
       isPreview,
       onAutoSeasonChange: (nextSeason) => {
         if (engine) engine.setSeason(nextSeason, 0.86, 0.072, { manual: false });
