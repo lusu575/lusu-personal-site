@@ -70,7 +70,9 @@ test("every public game has its own generated cover icon", () => {
   assert.equal(covers.length, 5);
   assert.equal(new Set(covers).size, covers.length);
   for (const cover of covers) {
-    assert.match(cover, /^\.\.\/assets\/images\/generated-icons\/[a-z0-9-]+\.png\?v=20260719-content-experience-fixes-r1$/);
+    assert.match(cover, /^\.\.\/assets\/pond-windows\/covers\/cover-[a-z0-9-]+\.(?:webp|svg)\?v=[a-z0-9-]+$/);
+    const localRelPath = cover.replace(/^\.\.\//, "").split("?")[0];
+    assert.ok(read(localRelPath).length > 0, `cover asset missing: ${localRelPath}`);
   }
 });
 

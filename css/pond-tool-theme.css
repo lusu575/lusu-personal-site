@@ -235,6 +235,13 @@ body {
   text-shadow: none !important;
 }
 
+.room-help-toggle,
+.lobby-card button.room-help-toggle {
+  min-width: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+}
+
 .whiteboard-button:hover:not(:disabled),
 .room-help-toggle:hover:not(:disabled),
 .lobby-card button:hover:not(:disabled),

@@ -229,5 +229,5 @@ test("all four supported game runtimes install an audited semantic bridge", asyn
   assert.match(life, /identifyPhase/);
   assert.match(life, /advance-one-year/);
   assert.match(adrIndex, /lusu-agent-bridge\.js\?v=20260809-browser-game-agent-v1/);
-  assert.match(lifeIndex, /lusu-agent-bridge\.js\?v=20260809-browser-game-agent-v1/);
+  assert.match(lifeIndex, /lusu-agent-bridge\.js\?v=20261124-life-restart-r79/);
 });

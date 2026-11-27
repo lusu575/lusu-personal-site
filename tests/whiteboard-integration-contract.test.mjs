@@ -63,9 +63,13 @@ test("whiteboard custom UI uses the generated lobby artwork without code-drawn i
   assert.match(main, /assets\/images\/whiteboard\/lobby-background\.png/);
 });
 
-test("whiteboard exposes v1.0.11 and gives every room the same editable pencil sketch style", async () => {
-  const main = await read("tools/whiteboard/src/main.jsx");
-  assert.match(main, /const WHITEBOARD_VERSION = "1\.0\.11"/);
+test("whiteboard exposes current governed version and gives every room the same editable pencil sketch style", async () => {
+  const [main, version] = await Promise.all([
+    read("tools/whiteboard/src/main.jsx"),
+    read("docs/whiteboard/VERSION"),
+  ]);
+  const expected = version.trim().replaceAll(".", "\\.");
+  assert.match(main, new RegExp(`const WHITEBOARD_VERSION = "${expected}"`));
   assert.match(main, /const ALL_ROOM_SKETCH_APP_STATE = Object\.freeze/);
   assert.match(main, /function createAllRoomSketchInitialData\(\)/);
   assert.match(main, /initialData=\{sketchInitialData\}/);

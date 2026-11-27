@@ -13,7 +13,7 @@ const gameEntries = [
   "games/kittens-game/index.html",
   "games/life-restart/index.html"
 ].map((path) => [path, read(path)]);
-const shellCacheVersion = "20260922-cloud-save-10min-r1";
+const shellCacheVersion = "20261123-pond-polish-r53";
 
 function mediaBlock(css, query, nextQuery = null) {
   const start = css.indexOf(`@media ${query}`);
@@ -40,7 +40,7 @@ test("shared game shell owns exactly one viewport and gives remaining space to t
 test("short game shells expose an accessible tool toggle so gameplay keeps the viewport", () => {
   const shell = read("games/game-shell.js");
   assert.match(shell, /function initializeGameToolsToggle\(\)/);
-  assert.match(shell, /\(max-width: 860px\), \(max-height: 720px\)/);
+  assert.match(shell, /const collapseByDefault = true;/);
   assert.match(shell, /button\.setAttribute\("aria-expanded", String\(!collapsed\)\)/);
   assert.match(shell, /card\.dataset\.toolsCollapsed = String\(collapsed\)/);
   assert.match(gameShellCss, /\.game-tools-toggle\s*\{[\s\S]*?min-height:\s*44px;/);

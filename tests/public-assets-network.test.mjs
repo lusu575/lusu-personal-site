@@ -413,7 +413,7 @@ test("sprite and entry icons use decode-sized production atlases", async () => {
     .map((pixel) => chatroomIconPixels.data[pixel * 4 + 3]);
   assert.ok(chatroomCornerAlpha.every((alpha) => alpha === 0), "canonical chatroom icon must have transparent corners");
 
-  for (const name of ["quick-transfer", "whiteboard", "kittens-game", "a-dark-room", "2048", "hextris", "life-restart"]) {
+  for (const name of ["quick-transfer", "whiteboard"]) {
     const path = `assets/images/generated-icons/${name}.png`;
     const icon = await asset(path);
     assert.deepEqual([icon.metadata.width, icon.metadata.height], [192, 192]);
@@ -423,6 +423,12 @@ test("sprite and entry icons use decode-sized production atlases", async () => {
     assert.ok(opaqueMagentaKeyRatio(pixels) < 0.001, `${path} must not retain its generation key color`);
     const cornerAlpha = [0, 191, 191 * 192, 192 * 192 - 1].map((pixel) => pixels.data[pixel * 4 + 3]);
     assert.ok(cornerAlpha.every((alpha) => alpha === 0), `${path} must have transparent corners`);
+  }
+
+  for (const file of ["cover-cat.webp", "cover-darkroom.webp", "cover-2048.svg", "cover-hextris.svg", "cover-restart.webp"]) {
+    const coverPath = `assets/pond-windows/covers/${file}`;
+    const bytes = (await readFile(new URL(coverPath, root))).byteLength;
+    assert.ok(bytes > 0 && bytes < 128 * 1024, `${coverPath} size ${bytes} out of bounds`);
   }
 });
 

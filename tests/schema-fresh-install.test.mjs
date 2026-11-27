@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
+import { ARTICLE_SEED_VERSION } from "../functions/api/content-migrations.mjs";
 import { content } from "../js/data/content.mjs";
 import {
   CHAT_COLUMN_MIGRATIONS,
@@ -572,7 +573,7 @@ test("D1 schema initializes an empty database and remains idempotent", () => {
     assert.equal(trafficSettings.sampling.hard.clicks, 0);
     assert.equal(
       db.prepare("select value from site_runtime_state where key = 'article_seed_version'").get().value,
-      "20261029-private-mcp-r1"
+      ARTICLE_SEED_VERSION
     );
     assert.deepEqual(
       db.prepare("pragma table_info(whiteboard_rooms)").all().map((column) => column.name),

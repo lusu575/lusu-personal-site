@@ -1,14 +1,18 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import {
   checkSubprojectGovernance,
   hasAnchoredVisibleVersion,
 } from "../scripts/check-subproject-governance.mjs";
 
+const whiteboardVersion = readFileSync(new URL("../docs/whiteboard/VERSION", import.meta.url), "utf8").trim();
+const transferVersion = readFileSync(new URL("../docs/transfer/VERSION", import.meta.url), "utf8").trim();
+
 test("whiteboard and Quick Transfer keep independent patch versions and synchronized project docs", () => {
   assert.deepEqual(checkSubprojectGovernance(), [
-    "online-whiteboard@1.0.11",
-    "quick-transfer@1.0.15",
+    `online-whiteboard@${whiteboardVersion}`,
+    `quick-transfer@${transferVersion}`,
   ]);
 });
 

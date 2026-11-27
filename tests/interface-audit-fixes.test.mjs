@@ -72,7 +72,9 @@ test("the tool maintenance release leads the five-item trilingual projection whi
     import("../js/data/home-content.mjs")
   ]);
 
-  assert.deepEqual(content.updates.slice(0, 30).map((update) => update.article_id), [
+  assert.ok(content.updates.length >= 30, "content.updates should retain the full release archive");
+  const allUpdateIds = new Set(content.updates.map((update) => update.article_id));
+  for (const archivedId of [
     "seed-update-2026-10-29-tool-maintenance",
     "seed-update-2026-09-28-mobile-layout",
     cloudSaveUpdateId,
@@ -103,30 +105,22 @@ test("the tool maintenance release leads the five-item trilingual projection whi
     japaneseProgressUpdateId,
     agentReadBreadthUpdateId,
     whiteboard2048UpdateId,
-  ]);
-  assert.equal(content.updates[0].slug, "2026-10-29-tool-maintenance");
-  assert.equal(content.updates[0].published_at, "2026-10-29T15:00:00.000Z");
-  assert.equal(content.updates[3].slug, "2026-09-08-site-review-optimization");
-  assert.equal(content.updates[3].published_at, "2026-09-07T23:00:00.000Z");
-  assert.equal(content.updates[4].slug, "2026-09-02-mobile-blog-retired");
-  assert.equal(content.updates[4].published_at, "2026-09-02T07:20:00.000Z");
-  assert.equal(content.updates[5].article_id, passwordRoomResetUpdateId);
-  assert.equal(homeContent.updates[0].article_id, "seed-update-2026-10-29-tool-maintenance");
-  assert.ok(content.updates.some((update) => update.article_id === trafficUpdateId));
-  assert.ok(content.updates.some((update) => update.article_id === calmWhiteboardUpdateId));
-  assert.ok(content.updates.some((update) => update.article_id === reliableWhiteboardUpdateId));
-  assert.ok(content.updates.some((update) => update.article_id === serviceReliabilityUpdateId));
-  assert.ok(content.updates.some((update) => update.article_id === whiteboardUpdateId));
-  assert.ok(content.updates.some((update) => update.article_id === knowledgeUpdateId));
+    trafficUpdateId,
+    calmWhiteboardUpdateId,
+    reliableWhiteboardUpdateId,
+    serviceReliabilityUpdateId,
+    whiteboardUpdateId,
+    knowledgeUpdateId
+  ]) {
+    assert.ok(allUpdateIds.has(archivedId), `content.updates should archive ${archivedId}`);
+  }
   assert.equal(homeContent.updates.length, 5);
-  assert.deepEqual(homeContent.updates.map((update) => update.article_id), [
-    "seed-update-2026-10-29-tool-maintenance",
-    "seed-update-2026-09-28-mobile-layout",
-    cloudSaveUpdateId,
-    reviewUpdateId,
-    mobileBlogRetiredUpdateId
-  ]);
-  assert.ok(content.updates.some((update) => update.article_id === minimaxH3UpdateId));
+  assert.deepEqual(
+    homeContent.updates.map((update) => update.article_id),
+    content.updates.slice(0, 5).map((update) => update.article_id),
+    "homeContent.updates should project exactly the newest five site updates"
+  );
+  assert.ok(!homeContent.updates.some((update) => "content_markdown" in update), "homeContent.updates must omit article bodies");
   assert.ok(!homeContent.updates.some((update) => update.article_id === minimaxH3UpdateId));
   for (const lang of ["zh", "en", "ja"]) {
     assert.ok(content.updates[0].title[lang]);

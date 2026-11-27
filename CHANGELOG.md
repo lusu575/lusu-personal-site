@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2026-11-27
+
+- 清零 Verify 发布门 18 项失败：修复 css/pond-tool-theme.css 将画板 .room-help-toggle 压至 40px 低于 44px 触控标准的真回归（#483–#485），并同步其余 15 项因池塘改版/子项目升级/例行发版过时的测试断言（文章种子版本、游戏封面路径与资源体检、游戏壳缓存版本与默认折叠、首页 5 条更新投影、画板受治理版本 1.0.15 及桌面池塘无废弃 AVIF 壁纸预加载）。
+
 ## 2026-11-26
 
 - D1 读写额度 P0 治理与发布门修复（并补录 `98606dc` 后台历史统计按需刷新）：① P0 读额度：取消后台 `traffic`（流量与写入）面板默认 30 秒自动重数，`autoRefreshPanels` 归零并移除定时轮询（缓存版本更新为 `20261126-d1-p0-r1`）；为 `article_view_events` 补齐 `article_view_events_created_idx(created_at)` 索引消除 `traffic-control` 按时间 COUNT 全索引扫描；将 `cleanupExpiredPrivateChatRooms` 移出 `getChatMessages`/`postChatMessage` 请求路径改走 `chat_room_activity` 索引定时清理，增量拉取改为 `(created_at, message_id)` 游标，物理删除增加版本与时间条件防误删新发言；② P0 写额度：私人浏览器伴侣空队列轮询改为 1s→30s 指数退避，消除空 `browser_command_claim` 的重复 grant touch 与双份审计写入（保留真实领取/执行/失败审计）；③ 发布门：将 `tests/admin-workflows.test.mjs` 过期断言改为行为断言（main.js 维持 `20261029-private-mcp-r1`；手机/视频/site-updates 校验标记）。site-updates：`seed-update-2026-11-26-d1-quota-p0-r1` / `2026-11-26-d1-quota-p0-r1`。

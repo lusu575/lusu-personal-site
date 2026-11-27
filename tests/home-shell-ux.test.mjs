@@ -41,7 +41,7 @@ test("welcome updates remain compact and preserve complete titles", async () => 
     read("js/main.js"),
     read("css/style.css")
   ]);
-  assert.match(source, /siteUpdateArticles\(\)\.slice\(0, 3\)/);
+  assert.match(source, /siteUpdateArticles\(\)\.slice\(0, 5\)/);
   assert.match(source, /title\.textContent = fullTitle/);
   assert.match(source, /detail\.textContent = publishedDate/);
   assert.doesNotMatch(source, /truncateText\(fullTitle, 28\)/);
