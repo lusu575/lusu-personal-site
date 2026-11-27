@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-27-mobile-pond-crt-r103",
+      "slug": "2026-11-27-mobile-pond-crt-r103",
+      "category": "site-updates",
+      "tags": [
+        "mobile",
+        "pond",
+        "ui",
+        "glass"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-27",
+      "updated_at": "2026-11-27",
+      "published_at": "2026-11-27",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "手机端池塘 CRT 同源整体改造与八项体验修复上线（r103）",
+        "en": "Mobile Midnight Pond CRT Full Overhaul & 8-Item UX Audit Closure (r103)",
+        "ja": "モバイル版の池 CRT 同源全面刷新＆8 項目 UX 監査修正の反映（r103）"
+      },
+      "summary": {
+        "zh": "手机端全面升级为与 PC 端同源的午夜池塘 CRT 设计语言（WebGL2 池塘、四季风吹过渡、Persepolis 启动显影、6 个点阵入口图标、顶部时钟与季节滑块、左下角 ID/三语切换、底部 6 入口磨砂 CRT Dock 及悬浮 CRT 窗口与飞窗开合动画），并同步闭环冷开=热开、贴图预烘焙、触摸连续液态玻璃无闪、光效零直线切边、点按 0px 位移、全站与子页液态玻璃全绑定、飞窗零抖动发糊与启动图标安静开窗八项修复。",
+        "en": "Unified mobile onto the desktop Midnight Pond CRT engine (live WebGL2 pond, 4-season wind transition, Persepolis warm-up boot, 6 pond dotted icons, top clock & season slider, bottom-left ID/language switcher, bottom 6-route frosted CRT Dock, and spring window zoom morph) while closing all 8 desktop UX audit items on mobile.",
+        "ja": "モバイル版を PC 版と同源の深夜の池 CRT デザイン（WebGL2 池・四季風トランジション・Persepolis 起動顕像・6 点陣アイコン・上部時計と季節スライダー・左下 ID／三言語切替・下部 6 ルート CRT ドック・ウィンドウ開閉ズーム）へ全面刷新し、PC 版の 8 項目 UX 修正もモバイルで一括完了しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-27-mobile-44px-welcome-focus-r102",
       "slug": "2026-11-27-mobile-44px-welcome-focus-r102",
       "category": "site-updates",
@@ -110,34 +139,6 @@ export const homeContent = Object.freeze({
         "zh": "取消池塘桌面 6 个点阵启动图标点击时的径向闪光脉冲（点下去安静开窗，悬停呈现保持不变）；在共享层统一解除全站所有窗口标题栏 .window-titlebar > span 与子 span 的 overflow: hidden，彻底消除游戏区/关于/工具/知识库/视频/聊天室标题图标左边与标题文字光晕的直线硬切。",
         "en": "Removed the clickPulse flash halo on the 6 pond desktop launch icons so clicking opens windows quietly while keeping hover states intact; unified overflow: visible on all window titlebar wrappers and icon/text spans across every window to eliminate straight-line drop-shadow and text-shadow clipping.",
         "ja": "池デスクトップ 6 アイコンのクリック時発光パルスを撤去し静かに開窓するように改善（ホバー表示は維持）。あわせて全ウィンドウのタイトルバー親 span の overflow: hidden を共通層で解除し、アイコン左端やタイトル文字光彩の直線切れを一掃しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-25-zero-hover-shift-r97",
-      "slug": "2026-11-25-zero-hover-shift-r97",
-      "category": "site-updates",
-      "tags": [
-        "ui",
-        "glass",
-        "pond"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-25",
-      "updated_at": "2026-11-25",
-      "published_at": "2026-11-25",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "消除全站卡片悬停描边挤动排版：非盒模型内描边与零位移统一标准（r97）",
-        "en": "Eliminate Card Hover Layout Shift: Non-Box-Model Inset Stroke Standard (r97)",
-        "ja": "カードホバー枠によるレイアウトズレ根治：非ボックスモデル内枠へ統一（r97）"
-      },
-      "summary": {
-        "zh": "定位并修复知识库文章卡片悬停时三边边框由 0px 骤增至 3px 引起换行与下方卡片下移 37px 的问题：全站统一改用不占盒模型的 box-shadow: inset 0 0 0 1px 绘制悬停/按压描边，并同步收口欢迎窗最近更新条目、视频/游戏/工具卡片边框宽度，实现全站卡片悬停位移严格 0px。",
-        "en": "Fixed the Knowledge article-card hover layout shift where toggling border-style: solid turned 0px borders into 3px (medium) and pushed lower cards down by 37px: switched .glass-card hover/press outlines to non-box-model inset box-shadow and locked constant border widths across Welcome, Video, Game, and Tool cards for 0px hover shift site-wide.",
-        "ja": "知識庫記事カードホバー時に枠幅が 0px から 3px へ増えて下部カードが 37px 押し下げられる不具合を根治。ボックスモデルを消費しない inset box-shadow 描画へ統一し、ようこそ更新一覧・動画・ゲーム・ツールカードもホバー時ズレ 0px に揃えました。"
       }
     }
   ]

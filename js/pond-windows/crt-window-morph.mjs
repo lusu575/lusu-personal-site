@@ -11,14 +11,14 @@
 import { CRT_GLASS_SPRINGS } from './crt-glass-config.mjs?v=20261125-glass-parity-r89';
 
 const DESKTOP_ICON_COORDS = {
-  knowledge: { x: 0.395, y: 0.245 },
-  article:   { x: 0.395, y: 0.245 },
-  videos:    { x: 0.650, y: 0.235 },
-  resources: { x: 0.880, y: 0.345 },
-  games:     { x: 0.120, y: 0.495 },
-  chatroom:  { x: 0.300, y: 0.740 },
-  about:     { x: 0.850, y: 0.745 },
-  welcome:   { x: 0.500, y: 0.048 }
+  knowledge: { x: 0.395, y: 0.245, mx: 0.28, my: 0.22, lx: 0.36, ly: 0.22 },
+  article:   { x: 0.395, y: 0.245, mx: 0.28, my: 0.22, lx: 0.36, ly: 0.22 },
+  videos:    { x: 0.650, y: 0.235, mx: 0.72, my: 0.21, lx: 0.64, ly: 0.21 },
+  resources: { x: 0.880, y: 0.345, mx: 0.78, my: 0.41, lx: 0.86, ly: 0.32 },
+  games:     { x: 0.120, y: 0.495, mx: 0.22, my: 0.43, lx: 0.14, ly: 0.44 },
+  chatroom:  { x: 0.300, y: 0.740, mx: 0.28, my: 0.63, lx: 0.32, ly: 0.62 },
+  about:     { x: 0.850, y: 0.745, mx: 0.74, my: 0.64, lx: 0.82, ly: 0.63 },
+  welcome:   { x: 0.500, y: 0.048, mx: 0.28, my: 0.048, lx: 0.50, ly: 0.048 }
 };
 
 const ICON_BOX_PX = 76;
@@ -31,7 +31,46 @@ function prefersReducedMotion() {
 function isMobileViewport() {
   return document.documentElement.dataset.shell === 'mobile'
     || document.documentElement.dataset.uiShell === 'mobile'
-    || window.innerWidth <= 768;
+    || window.matchMedia?.('(max-width: 760px), (max-height: 520px) and (pointer: coarse)')?.matches
+    || window.innerWidth <= 760;
+}
+
+let lastTappedRouteOrigin = { route: '', cx: 0, cy: 0, timeMs: 0 };
+
+function captureRouteOriginFromEvent(e) {
+  const target = e.target instanceof Element ? e.target : null;
+  if (!target) return;
+  const welcomeTrigger = target.closest('[data-open-welcome], .welcome-open');
+  if (welcomeTrigger) {
+    const r = welcomeTrigger.getBoundingClientRect();
+    if (r.width > 0 && r.height > 0) {
+      lastTappedRouteOrigin = {
+        route: 'welcome',
+        cx: r.left + r.width * 0.5,
+        cy: r.top + r.height * 0.5,
+        timeMs: performance.now()
+      };
+    }
+    return;
+  }
+  const routeTrigger = target.closest('.desktop-icons .desktop-icon[data-route], .xp-taskbar [data-route], #welcome-modal .quick-link[data-route]');
+  if (routeTrigger) {
+    const route = routeTrigger.getAttribute('data-route') || '';
+    const r = routeTrigger.getBoundingClientRect();
+    if (route && r.width > 0 && r.height > 0) {
+      lastTappedRouteOrigin = {
+        route,
+        cx: r.left + r.width * 0.5,
+        cy: r.top + r.height * 0.5,
+        timeMs: performance.now()
+      };
+    }
+  }
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('pointerdown', captureRouteOriginFromEvent, true);
+  document.addEventListener('click', captureRouteOriginFromEvent, true);
 }
 
 function buildSpringLut(zeta, omega0, durationMs) {
@@ -92,22 +131,31 @@ function cancelCompetingAnimations(el) {
   }
 }
 
-function measureLiveIconCenter(mode) {
+function measureLiveIconCenter(mode, preferRecentTap = false) {
   const vw = window.innerWidth || 1280;
   const vh = window.innerHeight || 720;
+  const mobile = isMobileViewport();
 
-  if (isMobileViewport()) {
+  if (mobile) {
     const routeKey = mode === 'article' ? 'knowledge' : mode;
-    const dockBtn = document.querySelector(
-      `.mobile-dock [data-route="${routeKey}"], #mobile-dock [data-route="${routeKey}"], [data-mobile-dock] [data-route="${routeKey}"]`
+    if (
+      preferRecentTap
+      && lastTappedRouteOrigin.route === routeKey
+      && (performance.now() - lastTappedRouteOrigin.timeMs) < 1600
+      && lastTappedRouteOrigin.cx > 0
+      && lastTappedRouteOrigin.cy > 0
+    ) {
+      return { cx: lastTappedRouteOrigin.cx, cy: lastTappedRouteOrigin.cy };
+    }
+    const candidates = document.querySelectorAll(
+      `.xp-taskbar .mobile-dock-scroll [data-route="${routeKey}"]:not([data-mobile-dock-excluded]), .desktop-icons .desktop-icon[data-route="${routeKey}"]`
     );
-    if (dockBtn) {
-      const r = dockBtn.getBoundingClientRect();
+    for (const btn of candidates) {
+      const r = btn.getBoundingClientRect();
       if (r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < vh) {
         return { cx: r.left + r.width * 0.5, cy: r.top + r.height * 0.5 };
       }
     }
-    return { cx: vw * 0.5, cy: vh - 40 };
   }
 
   const norm = DESKTOP_ICON_COORDS[mode];
@@ -115,14 +163,17 @@ function measureLiveIconCenter(mode) {
   if (norm && canvas) {
     const cr = canvas.getBoundingClientRect();
     if (cr.width > 0 && cr.height > 0) {
-      const cx = cr.left + norm.x * cr.width;
-      const cy = cr.top + norm.y * cr.height;
+      const isPort = mobile && vh > vw;
+      const nx = mobile ? (isPort ? (norm.mx ?? norm.x) : (norm.lx ?? norm.x)) : norm.x;
+      const ny = mobile ? (isPort ? (norm.my ?? norm.y) : (norm.ly ?? norm.y)) : norm.y;
+      const cx = cr.left + nx * cr.width;
+      const cy = cr.top + ny * cr.height;
       if (cx >= 0 && cx <= vw && cy >= 0 && cy <= vh) {
         return { cx, cy };
       }
     }
   }
-  return { cx: vw * 0.5, cy: vh * 0.5 };
+  return { cx: vw * 0.5, cy: mobile ? vh - 40 : vh * 0.5 };
 }
 
 function measureWindowRectSafe(el, mode = '') {
@@ -254,7 +305,7 @@ export class PondWindowMorphController {
 
     // Force deterministic layout settle before measuring so cold open matches warm open on Frame 0
     void winEl.offsetHeight;
-    const icon = measureLiveIconCenter(mode);
+    const icon = measureLiveIconCenter(mode, true);
     const winRect = measureWindowRectSafe(winEl, mode);
     const winCx = winRect.x + winRect.w * 0.5;
     const winCy = winRect.y + winRect.h * 0.5;
@@ -435,7 +486,7 @@ export class PondWindowMorphController {
     const done = elapsed >= anim.durationMs;
     // Guard against legacy ui-motion.js WAAPI animations attached synchronously or asynchronously after startOpen()
     if (elapsed < 120) {
-      cancelCompetingAnimations(anim.winEl);
+      this.cancelCompetingOn(anim.mode);
     }
 
     if (anim.reduced) {

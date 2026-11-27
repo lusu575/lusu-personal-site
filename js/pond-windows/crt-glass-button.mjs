@@ -182,13 +182,15 @@ function syncHaloProxy(ctrl) {
   ps.height = `${rect.height.toFixed(2)}px`;
   ps.borderRadius = cs.borderRadius;
 
-  // r96: 100% continuous halo radius & alpha driven by smooth spring + raised-cosine rim shimmer (ZERO discrete flashes!)
+  // r96 + r99: 100% continuous halo radius & alpha driven by smooth spring + wave carrier + raised-cosine rim shimmer (ZERO discrete flashes or dip-and-reflare on mobile touch!)
   const holdNorm = Math.max(0, Math.min(1, ctrl.spring ? ctrl.spring.pos : 0));
   const rimNorm = Math.max(0, Math.min(1, ctrl.rimEnv || 0));
+  const waveBridge = Math.max(0, Math.min(1, ctrl.waveBridge || 0));
+  const glowNorm = Math.max(holdNorm, waveBridge, rimNorm * 0.78);
   const hoverBase = ctrl.hovered ? 1 : 0;
-  const blur = hoverBase * 14 + (1 - hoverBase) * Math.max(holdNorm, rimNorm) * 14 + holdNorm * 6 + rimNorm * 3.5;
-  const alpha = Math.min(0.58, hoverBase * 0.32 + (1 - hoverBase) * Math.max(holdNorm, rimNorm) * 0.28 + holdNorm * 0.22 + rimNorm * 0.08);
-  proxy.dataset.haloState = ctrl.held ? 'hold' : (rimNorm > 0.01 ? 'rim' : 'hover');
+  const blur = hoverBase * 14 + (1 - hoverBase) * glowNorm * 16 + holdNorm * 4;
+  const alpha = Math.min(0.56, hoverBase * 0.32 + (1 - hoverBase) * glowNorm * 0.38 + holdNorm * 0.12);
+  proxy.dataset.haloState = ctrl.held ? 'hold' : (glowNorm > 0.01 ? 'rim' : 'hover');
   ps.setProperty('--cg-halo-blur', `${blur.toFixed(1)}px`);
   ps.setProperty('--cg-halo-alpha', alpha.toFixed(3));
 }
@@ -264,20 +266,22 @@ class CrtGlassButtonController {
 
   _handlePointerEnter(e) {
     if (this.el.disabled) return;
+    this._updateHoverLiquid(e.clientX, e.clientY);
+    if (e.pointerType === 'touch') return;
     this.hovered = true;
     this.el.classList.add('is-glass-hovered');
-    this._updateHoverLiquid(e.clientX, e.clientY);
     syncHaloProxy(this);
   }
 
   _handlePointerMove(e) {
     if (this.el.disabled) return;
+    this._updateHoverLiquid(e.clientX, e.clientY);
+    if (e.pointerType === 'touch') return;
     if (!this.hovered) {
       this.hovered = true;
       this.el.classList.add('is-glass-hovered');
       syncHaloProxy(this);
     }
-    this._updateHoverLiquid(e.clientX, e.clientY);
   }
 
   _handlePointerLeave() {
@@ -400,12 +404,14 @@ class CrtGlassButtonController {
     }
     // Smooth continuous spring onset from current pos (zero harsh brightness jump on Frame 0)
     this.spring.pos = Math.max(this.spring.pos, 0.22);
+    this.waveBridge = 0;
     const s = this.el.style;
     const pressOffset = this.isLiquidPilot ? 1.6 : this.level.pressOffsetPx;
     const pressTargetScale = this.isLiquidPilot ? 0.972 : this.level.pressScale;
     const initY = this.spring.pos * pressOffset;
     const initScale = 1 - this.spring.pos * (1 - pressTargetScale);
     s.setProperty('--cg-hold', this.spring.pos.toFixed(4));
+    s.setProperty('--cg-edge-boost', this.spring.pos.toFixed(4));
     s.setProperty('--cg-press-y', `${initY.toFixed(2)}px`);
     s.setProperty('--cg-press-scale', initScale.toFixed(4));
     const minDim = Math.min(this.btnW, this.btnH);
@@ -424,12 +430,14 @@ class CrtGlassButtonController {
       return;
     }
 
+    const holdPeak = Math.max(0.22, Math.min(1, this.spring.pos));
     if (triggerWave && this.level.enableWave) {
       this.waveActive = true;
       this.waveStartMs = performance.now();
       this.rimCatchStartMs = 0;
       this.rimCatchFired = false;
       this.rimEnv = 0;
+      this.waveBridge = holdPeak * 0.72;
       this.el.classList.add('is-glass-waving');
       // r96: Start wave alpha smoothly at 0 so the concave dimple unfurls continuously without a 1-frame flash
       const bandWidth = this.btnW >= CRT_GLASS.waveWideThresholdPx ? CRT_GLASS.waveBandWidePx : CRT_GLASS.waveBandPx;
@@ -438,12 +446,15 @@ class CrtGlassButtonController {
       s.setProperty('--cg-wave-band', `${bandWidth.toFixed(1)}px`);
       s.setProperty('--cg-wave-alpha', '0');
       s.setProperty('--cg-disp', '0px');
+      s.setProperty('--cg-edge-boost', holdPeak.toFixed(4));
     } else if (triggerWave && this.level.enableRimCatch) {
       // glass-close: single smooth rim shimmer, no release wave
       this.rimCatchStartMs = performance.now();
       this.rimCatchFired = true;
+      this.waveBridge = 0;
       this.el.classList.add('is-glass-rim-catch');
       this.el.style.setProperty('--cg-rim-catch', '0');
+      this.el.style.setProperty('--cg-edge-boost', holdPeak.toFixed(4));
     }
     syncHaloProxy(this);
     scheduleController(this);
@@ -455,11 +466,13 @@ class CrtGlassButtonController {
     this.rimCatchStartMs = 0;
     this.rimCatchFired = false;
     this.rimEnv = 0;
+    this.waveBridge = 0;
     this.spring.pos = 0;
     this.spring.vel = 0;
     this.el.classList.remove('is-glass-held', 'is-glass-waving', 'is-glass-rim-catch');
     const s = this.el.style;
     s.removeProperty('--cg-hold');
+    s.removeProperty('--cg-edge-boost');
     s.removeProperty('--cg-press-y');
     s.removeProperty('--cg-press-scale');
     s.removeProperty('--cg-wave-r');
@@ -483,7 +496,8 @@ class CrtGlassButtonController {
     const pressTargetScale = this.isLiquidPilot ? 0.972 : this.level.pressScale;
     const pressY = Math.max(0, holdAmt * pressOffset);
     const pressScale = 1 - holdAmt * (1 - pressTargetScale);
-    s.setProperty('--cg-hold', Math.max(0, holdAmt).toFixed(4));
+    const holdClamped = Math.max(0, holdAmt);
+    s.setProperty('--cg-hold', holdClamped.toFixed(4));
     s.setProperty('--cg-press-y', `${pressY.toFixed(2)}px`);
     s.setProperty('--cg-press-scale', pressScale.toFixed(4));
 
@@ -512,6 +526,7 @@ class CrtGlassButtonController {
       const onset = Math.min(1, t / 0.09);
       const smoothOnset = onset * onset * (3 - 2 * onset);
       const fade = Math.pow(1 - t, 1.25) * smoothOnset;
+      this.waveBridge = Math.pow(1 - t, 1.35) * 0.72;
 
       s.setProperty('--cg-wave-r', `${travel.toFixed(1)}px`);
       s.setProperty('--cg-wave-band', `${bandWidth.toFixed(1)}px`);
@@ -535,12 +550,15 @@ class CrtGlassButtonController {
 
       if (t >= 1) {
         this.waveActive = false;
+        this.waveBridge = 0;
         this.el.classList.remove('is-glass-waving');
         s.setProperty('--cg-wave-alpha', '0');
         s.setProperty('--cg-disp', '0px');
       } else {
         waveRunning = true;
       }
+    } else {
+      this.waveBridge = 0;
     }
 
     // 3. Step single smooth raised-cosine rim shimmer (320ms, zero sharp flash!)
@@ -561,6 +579,15 @@ class CrtGlassButtonController {
         s.setProperty('--cg-rim-catch', '0');
       }
     }
+
+    // 4. Unified monotonic edge boost across hold -> release wave -> rim shimmer (zero 1-frame snap on touch pointerup!)
+    const edgeBoost = Math.max(
+      this.hovered ? 0.85 : 0,
+      Math.min(1, holdClamped),
+      this.waveBridge || 0,
+      (this.rimEnv || 0) * 0.78
+    );
+    s.setProperty('--cg-edge-boost', edgeBoost.toFixed(4));
 
     const stillActive = this.held || !springSettled || waveRunning || rimRunning;
     if (!stillActive) {
@@ -680,10 +707,11 @@ export function attachCrtGlassButton(el, levelName = 'glass-primary') {
   return ctrl;
 }
 
-// r88 + r95 Unified Semantic Glass Binding Rules (covers ALL static & dynamically rendered controls
-// across every SPA window AND standalone subpages: Whiteboard, Japanese Subtext, all 5 Game Shells)
-const GLASS_SCOPE_SELECTOR = '.xp-window, #account-popover, #welcome-modal, #video-modal, #transfer-app, .game-shell, .trainer-shell, #whiteboard-root, .whiteboard-page';
-const GLASS_EXCLUDE_ANCESTOR = '#article-detail-body, iframe, .excalidraw, [data-no-glass]';
+// r88 + r95 + r99 Unified Semantic Glass Binding Rules (covers ALL static & dynamically rendered controls
+// across every SPA window, mobile topbar/appbar, AND standalone subpages: Whiteboard, Japanese Subtext, all 5 Game Shells;
+// launch icons in .desktop-icons and .xp-taskbar are explicitly excluded so they open quietly without flash)
+const GLASS_SCOPE_SELECTOR = '.xp-window, .xp-topbar, #account-popover, #welcome-modal, #video-modal, #transfer-app, .game-shell, .trainer-shell, #whiteboard-root, .whiteboard-page';
+const GLASS_EXCLUDE_ANCESTOR = '#article-detail-body, iframe, .excalidraw, .desktop-icons, .xp-taskbar, [data-no-glass]';
 const GLASS_CLOSE_MATCH = '.close-button, .account-close-button';
 const GLASS_ICON_MATCH = '#video-window-maximize, [data-article-scroll-top], .chat-tool-button, .chat-room-help-trigger, .room-help-toggle, .about-social-link, .account-password-toggle, .transfer-pending-remove';
 const GLASS_CARD_MATCH = '.article-card:not(.article-card-skeleton)';
@@ -728,47 +756,6 @@ export function resolveGlassLevel(el) {
 let autoGlassInstalled = false;
 let pendingRoots = new Set();
 let autoBindRaf = 0;
-let pendingBindElements = [];
-let bindChunkTimer = 0;
-
-function drainBindChunk() {
-  bindChunkTimer = 0;
-  if (!pendingBindElements.length) return;
-  syncCrtGlassCssVars();
-  const startMs = performance.now();
-  let count = 0;
-  while (pendingBindElements.length > 0 && count < 12 && (performance.now() - startMs) < 6) {
-    const el = pendingBindElements.shift();
-    if (!el || !el.isConnected || el.dataset.crtGlassBound) continue;
-    const level = resolveGlassLevel(el);
-    if (level) {
-      attachCrtGlassButton(el, level);
-      count++;
-    }
-  }
-  if (pendingBindElements.length > 0) {
-    bindChunkTimer = window.setTimeout(drainBindChunk, 0);
-  }
-}
-
-function enqueueGlassCandidatesFromRoot(root) {
-  if (!root) return;
-  if (root instanceof Element) {
-    if (!root.dataset.crtGlassBound && resolveGlassLevel(root)) {
-      pendingBindElements.push(root);
-    }
-  }
-  if (typeof root.querySelectorAll === 'function') {
-    root.querySelectorAll(GLASS_CANDIDATE_SELECTOR).forEach((el) => {
-      if (!el.dataset.crtGlassBound) {
-        pendingBindElements.push(el);
-      }
-    });
-  }
-  if (pendingBindElements.length > 0 && !bindChunkTimer) {
-    bindChunkTimer = window.setTimeout(drainBindChunk, 0);
-  }
-}
 
 function flushAutoBindQueue() {
   autoBindRaf = 0;
@@ -776,7 +763,7 @@ function flushAutoBindQueue() {
   pendingRoots.clear();
   for (const root of roots) {
     if (root && root.isConnected) {
-      enqueueGlassCandidatesFromRoot(root);
+      attachSiteGlassButtons(root);
     }
   }
 }
@@ -819,7 +806,7 @@ export function installAutoGlassBinding() {
     obs.observe(document.body, { childList: true, subtree: true });
   }
 
-  enqueueGlassCandidatesFromRoot(document);
+  attachSiteGlassButtons(document);
 }
 
 export function getCrtGlassAudit() {

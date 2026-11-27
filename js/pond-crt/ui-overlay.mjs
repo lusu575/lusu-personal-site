@@ -269,12 +269,12 @@ const SEASON_EMBLEMS = {
 };
 
 export const DESKTOP_ICONS = [
-  { id: 'knowledge', route: '#knowledge', x: 0.395, y: 0.245, label: { zh: '知识库', en: 'Knowledge', ja: '知識庫' } },
-  { id: 'videos',    route: '#videos',    x: 0.65, y: 0.235, label: { zh: '视频',   en: 'Videos',    ja: '動画' } },
-  { id: 'resources', route: '#resources', x: 0.88, y: 0.345, label: { zh: '工具',   en: 'Tools',     ja: 'ツール' } },
-  { id: 'games',     route: '#games',     x: 0.12, y: 0.495, label: { zh: '游戏',   en: 'Games',     ja: 'ゲーム' } },
-  { id: 'chatroom',  route: '#chatroom',  x: 0.30, y: 0.740, label: { zh: '聊天室', en: 'Chat',      ja: 'チャット' } },
-  { id: 'about',     route: '#about',     x: 0.85, y: 0.745, label: { zh: '关于',   en: 'About',     ja: '概要' } }
+  { id: 'knowledge', route: '#knowledge', x: 0.395, y: 0.245, mx: 0.28, my: 0.22, lx: 0.36, ly: 0.22, label: { zh: '知识库', en: 'Knowledge', ja: '知識庫' } },
+  { id: 'videos',    route: '#videos',    x: 0.65,  y: 0.235, mx: 0.72, my: 0.21, lx: 0.64, ly: 0.21, label: { zh: '视频',   en: 'Videos',    ja: '動画' } },
+  { id: 'resources', route: '#resources', x: 0.88,  y: 0.345, mx: 0.78, my: 0.41, lx: 0.86, ly: 0.32, label: { zh: '工具',   en: 'Tools',     ja: 'ツール' } },
+  { id: 'games',     route: '#games',     x: 0.12,  y: 0.495, mx: 0.22, my: 0.43, lx: 0.14, ly: 0.44, label: { zh: '游戏',   en: 'Games',     ja: 'ゲーム' } },
+  { id: 'chatroom',  route: '#chatroom',  x: 0.30,  y: 0.740, mx: 0.28, my: 0.63, lx: 0.32, ly: 0.62, label: { zh: '聊天室', en: 'Chat',      ja: 'チャット' } },
+  { id: 'about',     route: '#about',     x: 0.85,  y: 0.745, mx: 0.74, my: 0.64, lx: 0.82, ly: 0.63, label: { zh: '关于',   en: 'About',     ja: '概要' } }
 ];
 
 function animeEaseOutBack(t) {
@@ -398,18 +398,59 @@ export class PondUIOverlay {
     }
   }
 
+  _isMobileViewport(w = this.width, h = this.height) {
+    if (typeof document !== 'undefined') {
+      const d = document.documentElement.dataset;
+      if (d.uiShell === 'mobile' || d.shell === 'mobile') return true;
+    }
+    return w <= 760 || (h <= 520 && w <= 960);
+  }
+
+  _isPortraitMobile(w = this.width, h = this.height) {
+    return this._isMobileViewport(w, h) && h > w;
+  }
+
+  _getSliderRect(w = this.width, h = this.height) {
+    if (this._isPortraitMobile(w, h)) {
+      return { x0: 0.63, x1: 0.91, y: 0.048 };
+    }
+    if (this._isMobileViewport(w, h)) {
+      return { x0: 0.74, x1: 0.93, y: 0.068 };
+    }
+    return this.sliderRect;
+  }
+
+  _getIconCoord(ic, w = this.width, h = this.height) {
+    if (this._isPortraitMobile(w, h)) {
+      return { x: ic.mx ?? ic.x, y: ic.my ?? ic.y };
+    }
+    if (this._isMobileViewport(w, h)) {
+      return { x: ic.lx ?? ic.x, y: ic.ly ?? ic.y };
+    }
+    return { x: ic.x, y: ic.y };
+  }
+
   hitTest(nx, ny) {
-    // Top-center clock/date HUD -> opens Welcome & Recent Updates modal
-    if (ny >= 0.01 && ny <= 0.095 && nx >= 0.36 && nx <= 0.64) {
+    const isMob = this._isMobileViewport();
+    const isPort = this._isPortraitMobile();
+    // Top clock/date HUD -> opens Welcome & Recent Updates modal
+    if (isPort) {
+      if (ny >= 0.01 && ny <= 0.095 && nx >= 0.04 && nx <= 0.56) {
+        return { type: 'clock' };
+      }
+    } else if (ny >= 0.01 && ny <= 0.095 && nx >= 0.34 && nx <= 0.66) {
       return { type: 'clock' };
     }
 
-    const sy = this.sliderRect.y;
-    if (Math.abs(ny - sy) < 0.048 && nx >= this.sliderRect.x0 - 0.03 && nx <= this.sliderRect.x1 + 0.03) {
+    const sRect = this._getSliderRect();
+    const sy = sRect.y;
+    const hitY = isMob ? 0.056 : 0.048;
+    const hitXPad = isMob ? 0.042 : 0.03;
+    if (Math.abs(ny - sy) < hitY && nx >= sRect.x0 - hitXPad && nx <= sRect.x1 + hitXPad) {
       let bestIdx = 0;
       let bestDist = Infinity;
       for (let i = 0; i < 4; i++) {
-        const sx = this.sliderRect.x0 + (this.sliderRect.x1 - this.sliderRect.x0) * (i / 3);
+        const sx = sRect.x0 + (sRect.x1 - sRect.x0) * (i / 3);
         const d = Math.abs(nx - sx);
         if (d < bestDist) {
           bestDist = d;
@@ -419,11 +460,14 @@ export class PondUIOverlay {
       return { type: 'season', seasonId: SEASON_ORDER[bestIdx], index: bestIdx };
     }
 
+    const iconHitX = isPort ? 0.11 : (isMob ? 0.075 : 0.055);
+    const iconHitY = isPort ? 0.082 : 0.075;
     for (const ic of DESKTOP_ICONS) {
-      const dx = nx - ic.x;
-      const dy = ny - (ic.y + 0.015);
-      if (Math.abs(dx) < 0.055 && Math.abs(dy) < 0.075) {
-        return { type: 'icon', icon: ic };
+      const pos = this._getIconCoord(ic);
+      const dx = nx - pos.x;
+      const dy = ny - (pos.y + 0.015);
+      if (Math.abs(dx) < iconHitX && Math.abs(dy) < iconHitY) {
+        return { type: 'icon', icon: { ...ic, x: pos.x, y: pos.y } };
       }
     }
 
@@ -502,7 +546,12 @@ export class PondUIOverlay {
   }
 
   _drawClock(ctx, w, h) {
-    const fontSize = Math.max(15, Math.round(Math.min(w, h * 1.4) * 0.022));
+    const isPort = this._isPortraitMobile(w, h);
+    const fontSize = isPort
+      ? Math.max(13, Math.round(w * 0.036))
+      : Math.max(15, Math.round(Math.min(w, h * 1.4) * 0.022));
+    const cx = isPort ? w * 0.28 : w * 0.5;
+    const cy = isPort ? h * 0.035 : h * 0.024;
     ctx.save();
     ctx.font = `500 ${fontSize}px "JetBrains Mono", "Cascadia Mono", Consolas, monospace`;
     ctx.textAlign = 'center';
@@ -510,16 +559,17 @@ export class PondUIOverlay {
     const txt = this._formatClock();
     // Fast dual-layer text glow (no expensive shadowBlur)
     ctx.fillStyle = 'rgba(180, 236, 255, 0.28)';
-    ctx.fillText(txt, w * 0.5, h * 0.024 + 1);
+    ctx.fillText(txt, cx, cy + 1);
     ctx.fillStyle = 'rgba(238, 248, 252, 0.95)';
-    ctx.fillText(txt, w * 0.5, h * 0.024);
+    ctx.fillText(txt, cx, cy);
     ctx.restore();
   }
 
   _drawSeasonSlider(ctx, w, h, t) {
-    const x0 = this.sliderRect.x0 * w;
-    const x1 = this.sliderRect.x1 * w;
-    const y = this.sliderRect.y * h;
+    const sRect = this._getSliderRect(w, h);
+    const x0 = sRect.x0 * w;
+    const x1 = sRect.x1 * w;
+    const y = sRect.y * h;
     const stopX = (idx) => x0 + (x1 - x0) * (idx / 3);
     const scale = Math.max(15, Math.min(w, h * 1.45) * 0.023);
 
@@ -612,8 +662,9 @@ export class PondUIOverlay {
       const scale = hoverScale + clickBounce;
       const floatY = -st.hoverAnim * 3.0;
 
-      const cx = ic.x * w;
-      const cy = ic.y * h + floatY;
+      const pos = this._getIconCoord(ic, w, h);
+      const cx = pos.x * w;
+      const cy = pos.y * h + floatY;
       const dots = this.iconDotMaps[ic.id];
       const sr = spriteHalf * (1.0 + st.hoverAnim * 0.14);
 
@@ -687,9 +738,16 @@ export class PondUIOverlay {
   }
 
   _drawDiscreetCorner(ctx, w, h, _t) {
-    const x0 = w * 0.068;
-    const y0 = h * 0.935;
-    const fontSize = Math.max(11, Math.round(Math.min(w, h * 1.4) * 0.0145));
+    const isMob = this._isMobileViewport(w, h);
+    const isPort = this._isPortraitMobile(w, h);
+    const dockCollapsed = typeof document !== 'undefined' && document.body?.dataset?.mobileDock === 'collapsed';
+    const x0 = isPort ? Math.max(22, w * 0.075) : w * 0.068;
+    const y0 = isMob
+      ? (dockCollapsed ? h - 46 : (isPort ? h - Math.max(104, Math.round(h * 0.135)) : h - 78))
+      : h * 0.935;
+    const fontSize = isMob
+      ? Math.max(13, Math.round(Math.min(w, h * 1.4) * 0.032))
+      : Math.max(11, Math.round(Math.min(w, h * 1.4) * 0.0145));
     const isWinter = this.seasonId === 'winter';
 
     ctx.save();
@@ -698,19 +756,20 @@ export class PondUIOverlay {
     ctx.textBaseline = 'middle';
 
     const drawCornerText = (txt, tx, ty, fillCol) => {
-      if (isWinter) {
-        ctx.fillStyle = 'rgba(4, 12, 22, 0.92)';
+      if (isWinter || isMob) {
+        ctx.fillStyle = isWinter ? 'rgba(4, 12, 22, 0.92)' : 'rgba(2, 10, 12, 0.90)';
         ctx.fillText(txt, tx - 1, ty);
         ctx.fillText(txt, tx + 1, ty);
-        ctx.fillText(txt, tx, ty + 1);
+        ctx.fillText(txt, tx, ty - 1);
+        ctx.fillText(txt, tx, ty + 1.2);
       }
       ctx.fillStyle = fillCol;
       ctx.fillText(txt, tx, ty);
     };
 
     const accHover = this.cornerHover === 'account';
-    const dotR = accHover ? 5.5 : 4.0;
-    ctx.globalAlpha = accHover ? 0.98 : (isWinter ? 0.85 : 0.52);
+    const dotR = accHover ? 5.5 : (isMob ? 4.5 : 4.0);
+    ctx.globalAlpha = accHover ? 0.98 : (isWinter || isMob ? 0.88 : 0.52);
     ctx.drawImage(this.whiteDotSprite, x0 - dotR, y0 - dotR, dotR * 2, dotR * 2);
 
     ctx.globalAlpha = 1.0;
@@ -723,7 +782,7 @@ export class PondUIOverlay {
       y0,
       accHover
         ? 'rgba(255, 255, 255, 1.0)'
-        : 'rgba(232, 252, 248, 0.94)'
+        : 'rgba(232, 252, 248, 0.96)'
     );
 
     const padX = fontSize * 1.15;
@@ -739,7 +798,7 @@ export class PondUIOverlay {
     ];
 
     const sepX = accTextX + accTextW + fontSize * 0.65;
-    ctx.fillStyle = 'rgba(204, 242, 238, 0.65)';
+    ctx.fillStyle = 'rgba(204, 242, 238, 0.80)';
     ctx.fillRect(sepX - 1, y0 - 1, 2, 2);
 
     const langs = [
@@ -756,7 +815,7 @@ export class PondUIOverlay {
         ? 'rgba(255, 255, 255, 1.0)'
         : active
           ? 'rgba(255, 255, 255, 0.98)'
-          : 'rgba(214, 244, 240, 0.78)';
+          : (isMob ? 'rgba(224, 250, 244, 0.90)' : 'rgba(214, 244, 240, 0.78)');
       drawCornerText(item.text, curX, y0, col);
       if (active) {
         ctx.fillStyle = 'rgba(136, 252, 232, 0.95)';

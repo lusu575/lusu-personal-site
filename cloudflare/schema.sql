@@ -17008,8 +17008,31 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **チャット送信ボタン＆ツール詳細カード収まり修正**：モバイル送信ボタンの残留オフセットと余白を調整して `#chat-form` 内に収め、デスクトップ展開時 `details[open]` の高さ制限を解除してカード底面あふれを解消しました。
 - **デスクトップようこそ／アカウント窓のフォーカス復元**：池デスクトップの上部見た目を保ったままキーボードフォーカスと `Escape` 即時クローズ・フォーカス戻しを回復しました。', '2026-11-27', '2026-11-27') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261127-mobile-44px-welcome-focus-r102', '2026-11-27')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-27-mobile-pond-crt-r103', '2026-11-27-mobile-pond-crt-r103', 'site-updates', '["mobile","pond","ui","glass"]', '', 'published', 0, 0, '2026-11-27', '2026-11-27', '2026-11-27') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-27-mobile-pond-crt-r103-zh', 'seed-update-2026-11-27-mobile-pond-crt-r103', 'zh', '手机端池塘 CRT 同源整体改造与八项体验修复上线（r103）', '手机端全面升级为与 PC 端同源的午夜池塘 CRT 设计语言（WebGL2 池塘、四季风吹过渡、Persepolis 启动显影、6 个点阵入口图标、顶部时钟与季节滑块、左下角 ID/三语切换、底部 6 入口磨砂 CRT Dock 及悬浮 CRT 窗口与飞窗开合动画），并同步闭环冷开=热开、贴图预烘焙、触摸连续液态玻璃无闪、光效零直线切边、点按 0px 位移、全站与子页液态玻璃全绑定、飞窗零抖动发糊与启动图标安静开窗八项修复。', '# 手机端池塘 CRT 同源整体改造与八项体验修复上线（r103）
+
+本次按站长指令完成手机端同源视觉整体改造，并将桌面端八项体验修复在移动端同步闭环：
+
+- **同源池塘 CRT 桌面与移动专属适配**：手机端首页直接运行 WebGL2 午夜池塘 CRT 引擎（锦鲤、四季景物、1.0 秒风吹切季、Persepolis `uWarm 0→1` 由暗到亮启动显影），针对竖屏（`390×844` / `375×667` / `359×500`）与短横屏（`844×390`）排布 6 个点阵入口图标、顶部时钟（打开欢迎窗）、右上四季滑块以及 Dock 上方的高对比 `ID · 中 / EN / 日` 角标；完整保留底部 6 入口磨砂 CRT Dock 与 44px 收起/展开手柄。
+- **悬浮 CRT 窗口与全部功能保留**：各窗口采用安全区悬浮 CRT 深色玻璃壳与 44×44 点阵 `×` 关闭按钮，工具点阵 SVG 图标、游戏定制 CRT 封面与云存档横幅、聊天室点阵头像与响应式顶栏/横排发送键全量对齐。
+- **桌面端八项问题移动端同步销账**：冷开=热开（零过渡占位框、Ready-Gate 就绪起飞、关于窗 `0px` 位移）、开机显影前当季贴图全量就绪、触摸点击连续单调 `--cg-edge-boost` 无频闪跳变、标题栏与卡片光效 `overflow: visible` 零直线切边、点按内描边 `0px` 位移、主站与子页 MengTo 液态玻璃 `unboundCount === 0`、单层 GPU 飞窗开合零竞争动画与飞行期隐藏滚动条、首页与 Dock 启动图标安静开窗不闪。', '2026-11-27', '2026-11-27') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-27-mobile-pond-crt-r103-en', 'seed-update-2026-11-27-mobile-pond-crt-r103', 'en', 'Mobile Midnight Pond CRT Full Overhaul & 8-Item UX Audit Closure (r103)', 'Unified mobile onto the desktop Midnight Pond CRT engine (live WebGL2 pond, 4-season wind transition, Persepolis warm-up boot, 6 pond dotted icons, top clock & season slider, bottom-left ID/language switcher, bottom 6-route frosted CRT Dock, and spring window zoom morph) while closing all 8 desktop UX audit items on mobile.', '# Mobile Midnight Pond CRT Full Overhaul & 8-Item UX Audit Closure (r103)
+
+Completed the full mobile overhaul to share the exact same Midnight Pond CRT design language as desktop while closing all 8 UX audit items on mobile:
+
+- **Shared Pond CRT Engine & Mobile Adaptation**: Mobile Home now runs the live WebGL2 Midnight Pond CRT engine (Koi, 4 seasons, 1.0s wind transition, Persepolis `uWarm 0->1` boot warm-up) with responsive portrait (`390x844`, `375x667`, `359x500`) and short-landscape (`844x390`) layouts for the 6 dotted pond icons, top clock, season slider, and high-contrast `ID · 中 / EN / 日` corner control above the 6-route frosted CRT Dock.
+- **Floating CRT Windows & Full Feature Parity**: All windows render inside safe-area floating CRT dark glass shells with 44x44 dotted `×` close buttons, glowing Tools SVG icons, custom CRT Game covers + cloud save banner, and responsive Chatroom header/composer.
+- **8-Item Mobile Audit Closure**: Cold=Warm open consistency (zero loader boxes, Ready-Gate before Frame 0, 0px About shift), pre-warmed flora textures before boot ramp, touch-path monotonic `--cg-edge-boost` without click flash, unclipped titlebar/card glows, 0px press stroke shift, 100% MengTo liquid-glass binding across main windows and standalone subpages, single-layer GPU spring zoom morph with hidden in-flight scrollbars, and quiet launch icons.', '2026-11-27', '2026-11-27') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-27-mobile-pond-crt-r103-ja', 'seed-update-2026-11-27-mobile-pond-crt-r103', 'ja', 'モバイル版の池 CRT 同源全面刷新＆8 項目 UX 監査修正の反映（r103）', 'モバイル版を PC 版と同源の深夜の池 CRT デザイン（WebGL2 池・四季風トランジション・Persepolis 起動顕像・6 点陣アイコン・上部時計と季節スライダー・左下 ID／三言語切替・下部 6 ルート CRT ドック・ウィンドウ開閉ズーム）へ全面刷新し、PC 版の 8 項目 UX 修正もモバイルで一括完了しました。', '# モバイル版の池 CRT 同源全面刷新＆8 項目 UX 監査修正の反映（r103）
+
+モバイル版を PC 版と同一の深夜の池 CRT デザイン言語へ全面刷新し、PC 版で解消した 8 項目の UX 課題をモバイルでも一括解決しました：
+
+- **池 CRT エンジン同源化とモバイル専用設計**：モバイルホームで WebGL2 深夜の池 CRT エンジン（錦鯉・四季・1.0 秒風切替・Persepolis `uWarm 0→1` 起動顕像）を稼働し、縦画面（`390×844`／`375×667`／`359×500`）と横画面（`844×390`）に最適化した 6 点陣アイコン・上部時計・季節スライダー・ドック上の `ID · 中 / EN / 日` を配置。下部 6 ルート CRT ドック（44px 折りたたみハンドル付き）と全ウィンドウ機能を完全維持。
+- **8 項目のモバイル監査完遂**：コールド／ウォーム開窓一致（ローディング枠ゼロ・Ready-Gate・About 変位 0px）、起動顕像前の季節テクスチャ準備、タッチ操作での連続単調 `--cg-edge-boost` による点滅解消、タイトルバーとカード光彩の直線切れ解消、押下時 `0px` 変位、全画面＋サブページの MengTo 液態ガラス完全バインド、単層 GPU ウィンドウ開閉ズームと飛行中スクロールバー非表示、起動アイコンの静かな開窓。', '2026-11-27', '2026-11-27') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261127-mobile-pond-crt-r103', '2026-11-27')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
 insert into site_data_migrations (version, applied_at, source) values ('20261126-unpublish-three-articles-r1', '2026-11-26', 'schema') on conflict(version) do nothing;
 insert into site_data_migrations (version, applied_at, source) values ('20261126-d1-quota-p0-r1', '2026-11-26', 'schema') on conflict(version) do nothing;
 insert into site_data_migrations (version, applied_at, source) values ('20261127-mobile-44px-welcome-focus-r102', '2026-11-27', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261127-mobile-pond-crt-r103', '2026-11-27', 'schema') on conflict(version) do nothing;

@@ -15,7 +15,7 @@ function isMobileShell() {
   const d = document.documentElement.dataset;
   if (d.uiShell === 'mobile' || d.shell === 'mobile') return true;
   if (window.matchMedia?.('(max-width: 760px), (max-height: 520px) and (pointer: coarse)')?.matches) return true;
-  return window.innerWidth <= 768;
+  return window.innerWidth <= 760;
 }
 
 function getCurrentSiteLang() {
@@ -453,7 +453,7 @@ function bootPondVisualBridge() {
     if (mode === 'welcome' || mode === 'article') return true;
     const section = document.getElementById(mode);
     if (!section) return true;
-    if (section.querySelector('.route-module-status.is-loading, .content-state.is-loading, .content-recovery-notice.is-loading, .article-card-skeleton, #about-social-network-status.is-loading')) return false;
+    if (section.querySelector('.route-module-status.is-loading, .content-state.is-loading, .content-recovery-notice.is-loading, .article-card-skeleton, #about-social-network-status.is-loading, .video-status-state.is-loading')) return false;
 
     if (mode === 'about') {
       const socialNav = document.getElementById('about-social-links');
@@ -635,8 +635,8 @@ function bootPondVisualBridge() {
   }
 
   const observer = new MutationObserver(() => syncVisualMode());
-  observer.observe(document.body, { attributes: true, attributeFilter: ['data-route'] });
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'data-shell'] });
+  observer.observe(document.body, { attributes: true, attributeFilter: ['data-route', 'data-mobile-dock'] });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'data-shell', 'data-ui-shell'] });
 
   const detailEl = document.getElementById('article-detail');
   if (detailEl) {
@@ -677,10 +677,11 @@ function bootPondVisualBridge() {
   // data-ui-closing isolation lifecycle, and trigger focus restoration.
   document.addEventListener('click', (e) => {
     if (bypassCloseIntercept) return;
-    const closeWinBtn = e.target?.closest?.('.xp-window .close-button[data-route="home"]');
+    const closeWinBtn = e.target?.closest?.('.xp-window .close-button[data-route="home"], .mobile-appbar .mobile-home-button[data-route="home"], .xp-taskbar .start-button[data-route="home"]');
     if (closeWinBtn) {
-      const modeToClose = isMobileShell() ? (document.body.dataset.route || 'home') : activeMode;
-      if (modeToClose && modeToClose !== 'home' && modeToClose !== 'article') {
+      const mobile = isMobileShell();
+      const modeToClose = mobile ? (document.body.dataset.route || 'home') : activeMode;
+      if (modeToClose && modeToClose !== 'home' && (mobile || modeToClose !== 'article')) {
         e.preventDefault();
         e.stopImmediatePropagation();
         closeWindowAnimated(modeToClose, () => triggerSiteRoute('home'));
@@ -920,6 +921,33 @@ function bootPondVisualBridge() {
     syncVisualMode();
     if (activeMode && engine) engine.resize();
   });
+
+  const mainEl = document.querySelector('.site-shell > main');
+  if (mainEl) {
+    mainEl.querySelectorAll(':scope > section.page').forEach((sec) => {
+      new MutationObserver(() => {
+        if (sec.classList.contains('active')) {
+          syncVisualMode();
+        }
+      }).observe(sec, { attributes: true, attributeFilter: ['class'] });
+    });
+  }
+
+  const WINDOW_MODES = new Set(['knowledge', 'videos', 'resources', 'games', 'chatroom', 'about']);
+  document.addEventListener('click', (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target) return;
+    const routeBtn = target.closest('[data-route]');
+    if (!routeBtn) return;
+    const targetRoute = routeBtn.getAttribute('data-route') || '';
+    if (!targetRoute || targetRoute === 'home') return;
+    const resolvedMode = targetRoute === 'blog' ? 'knowledge' : targetRoute;
+    if (WINDOW_MODES.has(resolvedMode) && activeMode !== resolvedMode) {
+      document.documentElement.dataset.pondMode = resolvedMode;
+      windowMorph.prepareOpenMount(resolvedMode);
+      queueMicrotask(syncVisualMode);
+    }
+  }, true);
 
   window.__pondVisualBridge = {
     syncVisualMode,

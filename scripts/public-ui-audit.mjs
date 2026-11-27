@@ -4347,7 +4347,7 @@ async function auditAmbientWallpaperPlayback(client, server) {
     for (const sample of [
       { viewport: desktop4k, expectedShell: "desktop", expectPond: true },
       { viewport: desktop1080, expectedShell: "desktop", expectPond: true },
-      { viewport: mobile, expectedShell: "mobile", expectPond: false }
+      { viewport: mobile, expectedShell: "mobile", expectPond: true }
     ]) {
       await client.send("Page.navigate", { url: "about:blank" });
       await waitFor(client, `document.readyState==='complete'`, `${sample.viewport.name} ambient blank boundary`);

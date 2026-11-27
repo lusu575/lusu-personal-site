@@ -7667,10 +7667,10 @@ html[data-ui-shell="mobile"] .route-module-status.is-loading .loading-text {
   letter-spacing: 0.06em !important;
 }
 
-/* r92 + r94: Unified rule — ZERO transient loading boxes/skeletons ever take layout space on cold open in desktop Pond mode
+/* r92 + r94 + r99: Unified rule — ZERO transient loading boxes/skeletons ever take layout space on cold open in desktop Pond mode OR mobile shell
    (covers .route-module-status.is-loading, #about-social-network-status.is-loading, .content-state.is-loading,
-   .content-recovery-notice.is-loading, .knowledge-skeleton-label, .article-card-skeleton; .is-error & .is-empty stay visible!) */
-html[data-pond-mode] :is(.route-module-status.is-loading, #about-social-network-status.is-loading, .content-state.is-loading, .content-recovery-notice.is-loading, .article-card-skeleton) {
+   .content-recovery-notice.is-loading, .knowledge-skeleton-label, .article-card-skeleton, .video-status-state.is-loading; .is-error & .is-empty stay visible!) */
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(.route-module-status.is-loading, #about-social-network-status.is-loading, .content-state.is-loading, .content-recovery-notice.is-loading, .article-card-skeleton, .video-status-state.is-loading) {
   display: none !important;
 }
 
@@ -7703,50 +7703,664 @@ html[data-pond-mode="about"] #about .profile-avatar-image {
   object-fit: cover !important;
 }
 
-/* Unified Midnight Pond dark phosphor 5px scrollbar for all settled scrollable surfaces */
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window,
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window * {
+/* Unified Midnight Pond dark phosphor 5px scrollbar for all settled scrollable surfaces (Desktop + Mobile) */
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window,
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window * {
   scrollbar-width: thin;
   scrollbar-color: rgba(136, 252, 226, 0.34) transparent;
 }
 
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window::-webkit-scrollbar,
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window *::-webkit-scrollbar {
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window::-webkit-scrollbar,
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window *::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
 
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window::-webkit-scrollbar-track,
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window *::-webkit-scrollbar-track {
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window::-webkit-scrollbar-track,
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window *::-webkit-scrollbar-track {
   background: transparent;
 }
 
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window::-webkit-scrollbar-thumb,
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window *::-webkit-scrollbar-thumb {
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window::-webkit-scrollbar-thumb,
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window *::-webkit-scrollbar-thumb {
   background: rgba(136, 252, 226, 0.34);
   border-radius: 999px;
 }
 
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window::-webkit-scrollbar-button,
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window *::-webkit-scrollbar-button {
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window::-webkit-scrollbar-button,
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window *::-webkit-scrollbar-button {
   display: none;
   width: 0;
   height: 0;
 }
 
-/* Hide scrollbars during active window zoom flight so zero scrollbar can ever flash mid-animation */
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying,
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying *,
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-measuring,
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-measuring * {
+/* Hide scrollbars during active window zoom flight so zero scrollbar can ever flash mid-animation (Desktop + Mobile) */
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying,
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying *,
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-measuring,
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-measuring * {
   scrollbar-width: none !important;
 }
 
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying::-webkit-scrollbar,
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying *::-webkit-scrollbar,
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-measuring::-webkit-scrollbar,
-html[data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-measuring *::-webkit-scrollbar {
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying::-webkit-scrollbar,
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-flying *::-webkit-scrollbar,
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-measuring::-webkit-scrollbar,
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal) .xp-window.is-morph-measuring *::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
 }
+
+/* ============================================================
+   r99: Mobile Midnight Pond CRT Full Overhaul & 8-Item Audit Closure
+   1. Unified WebGL2 Pond CRT Desktop on Mobile Home (seasons, koi, boot warm-up, 6 pond icons, ID/lang corner)
+   2. Mobile 6-Route Frosted CRT Dock Restored & Styled in Midnight Pond Glass
+   3. Mobile Safe-Area Floating CRT Window Geometry + 44x44 Dotted Titlebar Close Button
+   4. All 8 Desktop Audit Items Closed on Mobile (Cold=Warm, Boot Prebake, Touch Monotonic Edge Boost,
+      Unclipped Glow, 0px Stroke Shift, Full Liquid-Glass Specificity Parity, Morph Scrollbar Lock, Quiet Icons)
+   ============================================================ */
+
+/* --- 1. Mobile Home: Full Pass-Through to Live WebGL2 Pond CRT Canvas + Interactive Bottom CRT Dock --- */
+html[data-ui-shell="mobile"][data-pond-mode] .wallpaper-root,
+html[data-ui-shell="mobile"][data-pond-mode] #wallpaper-root,
+html[data-ui-shell="mobile"][data-pond-mode] .wallpaper-stage,
+html[data-ui-shell="mobile"][data-pond-mode] .wallpaper-base,
+html[data-ui-shell="mobile"][data-pond-mode] #wallpaper-time-switch,
+html[data-ui-shell="mobile"][data-pond-mode] .mobile-statusbar {
+  display: none !important;
+  animation: none !important;
+  background-image: none !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] .site-shell,
+html[data-ui-shell="mobile"][data-pond-mode] .site-shell::before,
+html[data-ui-shell="mobile"][data-pond-mode] .site-shell::after,
+html[data-ui-shell="mobile"][data-pond-mode="home"] .site-shell > main,
+html[data-ui-shell="mobile"][data-pond-mode="home"] .page-home {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  pointer-events: none !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode="home"] .desktop-intro,
+html[data-ui-shell="mobile"][data-pond-mode="home"] .desktop-icons {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] .xp-taskbar,
+html[data-shell="mobile"][data-pond-mode] .xp-taskbar {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  z-index: 75 !important;
+  background: rgba(6, 22, 26, 0.84) !important;
+  border: 1.2px solid rgba(164, 238, 230, 0.48) !important;
+  box-shadow:
+    0 10px 28px rgba(1, 10, 14, 0.64),
+    0 0 18px rgba(96, 232, 220, 0.18),
+    inset 0 1px 0 rgba(226, 252, 250, 0.28) !important;
+  backdrop-filter: blur(14px) saturate(1.18) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.18) !important;
+}
+
+html[data-ui-shell="mobile"][data-mobile-keyboard="open"] body .xp-taskbar {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+html[data-ui-shell="mobile"] .mobile-dock-selection,
+html[data-shell="mobile"] .mobile-dock-selection {
+  background: rgba(18, 76, 82, 0.86) !important;
+  border: 1.2px solid rgba(136, 252, 226, 0.78) !important;
+  box-shadow:
+    0 0 12px rgba(102, 240, 224, 0.28),
+    inset 0 1px 0 rgba(226, 252, 250, 0.34) !important;
+}
+
+html[data-ui-shell="mobile"] .mobile-home-indicator span,
+html[data-shell="mobile"] .mobile-home-indicator span {
+  background: rgba(154, 248, 238, 0.68) !important;
+  box-shadow: 0 0 8px rgba(102, 236, 224, 0.30) !important;
+}
+
+@media (max-height: 520px) {
+  html[data-ui-shell="mobile"][data-pond-mode] .xp-taskbar,
+  html[data-shell="mobile"][data-pond-mode] .xp-taskbar {
+    min-height: 60px !important;
+    padding-bottom: 6px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] .xp-taskbar :is(.start-button, .taskbar-tabs button),
+  html[data-shell="mobile"][data-pond-mode] .xp-taskbar :is(.start-button, .taskbar-tabs button) {
+    min-height: 46px !important;
+    padding-top: 3px !important;
+    padding-bottom: 4px !important;
+    overflow: visible !important;
+  }
+}
+
+/* --- 2. Mobile Floating CRT Window Geometry & Titlebar Parity (Preserves Top Pond Clock/Seasons & Bottom Dock) --- */
+html[data-ui-shell="mobile"][data-pond-mode] .site-shell > main,
+html[data-shell="mobile"][data-pond-mode] .site-shell > main {
+  position: fixed !important;
+  inset: 0 !important;
+  left: 0 !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  transform: none !important;
+  z-index: 20 !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: var(--mobile-viewport-height, 100dvh) !important;
+  min-height: 0 !important;
+  max-height: var(--mobile-viewport-height, 100dvh) !important;
+  margin: 0 !important;
+  padding:
+    max(44px, calc(var(--mobile-safe-top, env(safe-area-inset-top, 0px)) + 36px))
+    max(8px, var(--mobile-safe-right, env(safe-area-inset-right, 0px)))
+    calc(var(--mobile-dock-space, 86px) + 6px)
+    max(8px, var(--mobile-safe-left, env(safe-area-inset-left, 0px))) !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+  background: transparent !important;
+  pointer-events: none !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about).page,
+html[data-ui-shell="mobile"][data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about).page.active {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about).page.active {
+  display: flex !important;
+  flex-direction: column !important;
+  pointer-events: auto !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about).page > .xp-window,
+html[data-ui-shell="mobile"][data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about).page.active > .xp-window {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 0 10px !important;
+  border-radius: 18px !important;
+  border: 1.5px solid rgba(190, 248, 240, 0.72) !important;
+  background: rgba(6, 20, 24, 0.94) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Show unified CRT Window Titlebar + 44x44 Dotted × Close Button on Mobile Pond Windows (always ready from Frame 0!) */
+html[data-ui-shell="mobile"][data-pond-mode] .page:not(#home) > .xp-window > .window-titlebar,
+html[data-shell="mobile"][data-pond-mode] .page:not(#home) > .xp-window > .window-titlebar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  min-height: 50px !important;
+  padding: 6px 12px 6px 14px !important;
+  flex: 0 0 auto !important;
+  background: rgba(8, 28, 32, 0.92) !important;
+  border-bottom: 1px dotted rgba(182, 238, 232, 0.36) !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] .site-shell > header,
+html[data-ui-shell="mobile"][data-pond-mode] .mobile-appbar,
+html[data-shell="mobile"][data-pond-mode] .site-shell > header,
+html[data-shell="mobile"][data-pond-mode] .mobile-appbar {
+  display: none !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] .window-titlebar::after {
+  display: none !important;
+  content: none !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] :is(#knowledge, #videos, #resources, #games, #chatroom, #about, #welcome-modal, #video-modal) .window-titlebar .close-button {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  max-width: 44px !important;
+  max-height: 44px !important;
+  flex: 0 0 44px !important;
+  background-size: 17px 17px !important;
+}
+
+/* Mobile Responsive Inner Grids Inside Pond CRT Windows (359x500 / 375x667 / 390x844 / 844x390) */
+@media (max-width: 620px) {
+  html[data-ui-shell="mobile"][data-pond-mode] #video-list {
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding: 8px 12px 18px !important;
+    gap: 14px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #resource-list,
+  html[data-ui-shell="mobile"][data-pond-mode] #game-list {
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding: 10px 12px 18px !important;
+    gap: 14px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #knowledge-searchbar {
+    padding: 8px 12px 6px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #knowledge-categories,
+  html[data-ui-shell="mobile"][data-pond-mode] #video-categories {
+    padding: 6px 12px 8px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #knowledge-list {
+    padding: 8px 10px 24px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #about .profile-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    padding: 14px 14px 18px !important;
+    gap: 12px !important;
+    overflow-y: auto !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #about .window-titlebar {
+    margin: 0 !important;
+    padding: 6px 12px 6px 14px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #about .profile-avatar {
+    width: 124px !important;
+    height: 124px !important;
+    min-width: 124px !important;
+    min-height: 124px !important;
+    margin: 2px auto 4px !important;
+    padding: 0 !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #about .profile-avatar-image {
+    width: 124px !important;
+    height: 124px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #about .profile-info {
+    width: 100% !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #about .profile-info dl {
+    display: grid !important;
+    gap: 8px !important;
+    margin: 0 0 12px !important;
+    padding: 0 0 10px !important;
+    border-bottom: 1px dotted rgba(182, 236, 230, 0.28) !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #about .profile-info dl > div {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 2px 0 !important;
+    margin: 0 !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #about .about-copy {
+    margin: 0 0 12px !important;
+    padding: 0 !important;
+    font-size: 13.5px !important;
+    line-height: 1.65 !important;
+  }
+
+  /* Mobile Chatroom responsive header & full-width horizontal send button */
+  html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-header {
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    padding: 8px 12px !important;
+    gap: 6px 8px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-nickname-row,
+  html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-status {
+    flex-wrap: wrap !important;
+    white-space: normal !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+    gap: 6px 8px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-compose {
+    width: 100% !important;
+    padding: 6px 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-input-shell {
+    width: 100% !important;
+    padding: 6px 8px 6px 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chat-send-button {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 64px !important;
+    min-height: 44px !important;
+    padding: 0 14px !important;
+    white-space: nowrap !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-footer {
+    padding: 6px 12px 4px !important;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  html[data-ui-shell="mobile"][data-pond-mode] .site-shell > main {
+    padding:
+      32px
+      max(10px, var(--mobile-safe-right, env(safe-area-inset-right, 0px)))
+      calc(var(--mobile-dock-space, 62px) + 4px)
+      max(10px, var(--mobile-safe-left, env(safe-area-inset-left, 0px))) !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] body:not([data-route="home"]) .page.active > .xp-window > .window-titlebar {
+    min-height: 44px !important;
+    padding: 4px 10px 4px 12px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #video-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    padding: 8px 12px 16px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #about .profile-card {
+    padding: 10px 16px 14px !important;
+    gap: 14px !important;
+    overflow-y: auto !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #about .profile-avatar {
+    width: 108px !important;
+    height: 108px !important;
+    min-width: 108px !important;
+    min-height: 108px !important;
+  }
+}
+
+/* --- Item 1 & Item 5: Mobile #about deterministic layout, dark CRT social buttons & RSS card --- */
+html[data-ui-shell="mobile"] #about-social-links,
+html[data-shell="mobile"] #about-social-links {
+  min-height: 44px !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+html[data-ui-shell="mobile"] #about .profile-avatar,
+html[data-shell="mobile"] #about .profile-avatar {
+  flex: 0 0 auto !important;
+  aspect-ratio: 1 / 1 !important;
+}
+
+html[data-ui-shell="mobile"] #about .profile-avatar-image,
+html[data-shell="mobile"] #about .profile-avatar-image {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+}
+
+html[data-ui-shell="mobile"] #about .about-social-link,
+html[data-shell="mobile"] #about .about-social-link {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(164, 234, 230, 0.42) !important;
+  background: rgba(10, 32, 38, 0.78) !important;
+  background-image: none !important;
+  color: #eefcf9 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(226, 252, 250, 0.36),
+    0 0 10px rgba(96, 228, 218, 0.16) !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"] #about .social-icon-x,
+html[data-ui-shell="mobile"] #about .social-icon-github,
+html[data-shell="mobile"] #about .social-icon-x,
+html[data-shell="mobile"] #about .social-icon-github {
+  filter: invert(1) brightness(1.18) drop-shadow(0 0 4px rgba(186, 248, 240, 0.45)) !important;
+}
+
+html[data-ui-shell="mobile"] #about .about-rss-row,
+html[data-shell="mobile"] #about .about-rss-row {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  border-radius: 14px !important;
+  border: 1.2px solid rgba(182, 242, 234, 0.48) !important;
+  background: rgba(8, 28, 34, 0.74) !important;
+  background-image: none !important;
+  box-shadow: 0 0 16px rgba(102, 236, 224, 0.14) !important;
+  color: #f0fefa !important;
+}
+
+html[data-ui-shell="mobile"] #about .about-rss-copy strong,
+html[data-shell="mobile"] #about .about-rss-copy strong {
+  color: #f0fefa !important;
+}
+
+html[data-ui-shell="mobile"] #about .about-rss-copy small,
+html[data-shell="mobile"] #about .about-rss-copy small {
+  color: rgba(196, 236, 232, 0.84) !important;
+}
+
+/* Share Tools SVG glow, Games cloud banner & Chatroom avatar presentation on Mobile */
+html[data-ui-shell="mobile"] #resource-list .resource-card.pond-tool-hero .resource-icon-image,
+html[data-shell="mobile"] #resource-list .resource-card.pond-tool-hero .resource-icon-image {
+  width: 72px !important;
+  height: 56px !important;
+  object-fit: contain !important;
+  filter: brightness(1.42) contrast(1.10) drop-shadow(0 0 12px rgba(176, 252, 244, 0.88)) !important;
+}
+
+html[data-ui-shell="mobile"] #games #pond-games-cloud-banner,
+html[data-shell="mobile"] #games #pond-games-cloud-banner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin: 0 12px 8px !important;
+  padding: 7px 12px !important;
+  border-radius: 10px !important;
+  border: 1px dashed rgba(164, 236, 228, 0.44) !important;
+  background: rgba(8, 30, 36, 0.72) !important;
+  color: #c8f6f0 !important;
+  font-size: 12px !important;
+  line-height: 1.38 !important;
+}
+
+html[data-ui-shell="mobile"] #chatroom .pond-chat-avatar,
+html[data-shell="mobile"] #chatroom .pond-chat-avatar {
+  width: 24px !important;
+  height: 24px !important;
+  flex: 0 0 24px !important;
+  margin-right: 6px !important;
+  vertical-align: middle !important;
+  filter: brightness(1.28) drop-shadow(0 0 6px rgba(154, 246, 236, 0.58)) !important;
+}
+
+/* --- Item 4: Shared Unclipped Titlebar, Mobile Appbar, Card Headings & Tool Icons (Desktop + Mobile) --- */
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(.xp-window, #welcome-modal, #video-modal, #account-popover) :is(.window-titlebar, .window-titlebar > span, .window-titlebar > span > span, .window-titlebar .title-icon, .window-titlebar .welcome-title-icon),
+:is(html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(.mobile-appbar, .mobile-route-copy, .mobile-route-copy span, .mobile-route-copy strong, #mobile-route-title),
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(.resource-card, .game-card, .article-card, .video-card) :is(h2, h3, .card-title, .resource-main, .game-card-head),
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#resource-list .resource-card, #game-list .game-card) {
+  overflow: visible !important;
+}
+
+/* --- Item 4: Mobile #welcome-modal Full Dark CRT Parity (No White Bottom Fade, Centered Above Dock) --- */
+html[data-ui-shell="mobile"] #welcome-modal .welcome-window::before,
+html[data-ui-shell="mobile"] #welcome-modal .welcome-window::after,
+html[data-shell="mobile"] #welcome-modal .welcome-window::before,
+html[data-shell="mobile"] #welcome-modal .welcome-window::after {
+  display: none !important;
+  content: none !important;
+}
+
+html[data-ui-shell="mobile"] #welcome-modal {
+  align-items: center !important;
+  justify-content: center !important;
+  padding:
+    max(16px, var(--mobile-safe-top, env(safe-area-inset-top, 0px)))
+    max(10px, var(--mobile-safe-right, env(safe-area-inset-right, 0px)))
+    calc(var(--mobile-dock-space, 86px) + 8px)
+    max(10px, var(--mobile-safe-left, env(safe-area-inset-left, 0px))) !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"] #welcome-modal .xp-window.welcome-window,
+html[data-shell="mobile"] #welcome-modal .xp-window.welcome-window {
+  width: min(640px, 100%) !important;
+  max-height: calc(var(--mobile-viewport-height, 100dvh) - var(--mobile-dock-space, 86px) - 28px) !important;
+  padding: 14px 16px 26px !important;
+  border-radius: 18px !important;
+  background: rgba(6, 20, 24, 0.95) !important;
+  border: 1.5px solid rgba(202, 252, 244, 0.78) !important;
+  box-shadow: 0 0 34px rgba(114, 244, 232, 0.30), 0 0 54px rgba(212, 138, 248, 0.20) !important;
+  color: #f0fefa !important;
+}
+
+/* --- Item 3 & Item 6: Full Desktop + Mobile ID-Specificity Parity & Continuous Monotonic Edge Boost --- */
+html[data-ui-shell="mobile"] .topbar-actions {
+  border-color: rgba(164, 234, 230, 0.28) !important;
+  background: rgba(8, 26, 32, 0.48) !important;
+}
+
+html[data-ui-shell="mobile"] .xp-topbar :is(.brand-button, .mobile-home-button, .account-button, .mobile-language-cycle, .welcome-open) {
+  color: #f0fefa !important;
+}
+
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #knowledge-list, #videos, #video-list, #resources, #resource-list, #games, #game-list, #chatroom, #about, #welcome-modal, #video-modal, #account-popover, #article-detail, #transfer-app, .xp-topbar) .crt-glass-btn.glass-primary.crt-glass-liquid-pilot,
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) .crt-glass-btn.glass-primary.crt-glass-liquid-pilot {
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-color: rgba(164, 234, 230, 0.36) !important;
+  background: rgba(14, 34, 40, 0.62) !important;
+  background-image: none !important;
+  color: #f0fefa !important;
+  box-shadow:
+    inset 0 1px 0 rgba(226, 252, 250, 0.42),
+    inset 0 -1px 0 rgba(78, 206, 200, 0.20),
+    inset 0 0 10px rgba(114, 226, 220, 0.08) !important;
+  transform: translate3d(0, var(--cg-press-y, 0px), 0) scale(var(--cg-press-scale, 1)) !important;
+}
+
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge-categories, #video-categories) button.active.crt-glass-btn.glass-primary.crt-glass-liquid-pilot,
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) #account-popover :is(.account-mode-button.is-active, .account-primary-action, button[type="submit"]).crt-glass-btn.glass-primary.crt-glass-liquid-pilot {
+  background: rgba(18, 76, 82, 0.88) !important;
+  border-color: rgba(136, 252, 226, 0.82) !important;
+}
+
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #knowledge-list, #videos, #video-list, #resources, #resource-list, #games, #game-list, #chatroom, #about, #welcome-modal, #video-modal, #account-popover, #article-detail, #transfer-app, .xp-topbar) .crt-glass-btn.crt-glass-liquid-pilot:is(.is-glass-hovered, .is-glass-held, .is-glass-waving, .is-glass-rim-catch),
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) :is(#knowledge, #knowledge-list, #videos, #video-list, #resources, #resource-list, #games, #game-list, #chatroom, #about, #welcome-modal, #video-modal, #account-popover, #article-detail, #transfer-app, .xp-topbar) .crt-glass-btn.crt-glass-liquid-pilot:is(.is-glass-hovered, .is-glass-held, .is-glass-waving, .is-glass-rim-catch):hover,
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) .crt-glass-btn.crt-glass-liquid-pilot:is(.is-glass-hovered, .is-glass-held, .is-glass-waving, .is-glass-rim-catch),
+:is(html[data-pond-mode], html[data-ui-shell="mobile"], html[data-shell="mobile"]) .crt-glass-btn.crt-glass-liquid-pilot:is(.is-glass-hovered, .is-glass-held, .is-glass-waving, .is-glass-rim-catch):hover {
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-color: rgba(
+    calc(164 + 34 * var(--cg-edge-boost, 0.85)),
+    calc(234 + 18 * var(--cg-edge-boost, 0.85)),
+    calc(230 + 18 * var(--cg-edge-boost, 0.85)),
+    calc(0.36 + 0.52 * var(--cg-edge-boost, 0.85))
+  ) !important;
+  box-shadow:
+    inset 0 1px calc(1px + 7px * var(--cg-edge-boost, 0.85)) rgba(226, 252, 250, calc(0.42 - 0.06 * var(--cg-edge-boost, 0.85))),
+    inset 0 -1px calc(1px + 5px * var(--cg-edge-boost, 0.85)) rgba(78, 206, 200, calc(0.20 + 0.14 * var(--cg-edge-boost, 0.85))),
+    inset 0 0 10px rgba(114, 226, 220, calc(0.08 + 0.14 * var(--cg-edge-boost, 0.85))) !important;
+}
+
+/* --- Item 5: Zero-Layout-Shift Card & Recent-Update Link Stroke Parity on Mobile (0px shift!) --- */
+:is(html[data-pond-mode="knowledge"], html[data-ui-shell="mobile"], html[data-shell="mobile"]) #knowledge-list .article-card.crt-glass-btn.glass-card,
+:is(html[data-pond-mode="knowledge"], html[data-ui-shell="mobile"], html[data-shell="mobile"]) #knowledge-list .article-card.crt-glass-btn.glass-card:is(.is-glass-hovered, .is-glass-held, .is-glass-waving, .is-glass-rim-catch),
+:is(html[data-pond-mode="knowledge"], html[data-ui-shell="mobile"], html[data-shell="mobile"]) #knowledge-list .article-card.crt-glass-btn.glass-card:is(.is-glass-hovered, .is-glass-held, .is-glass-waving, .is-glass-rim-catch):hover {
+  border-top: 0 solid transparent !important;
+  border-left: 0 solid transparent !important;
+  border-right: 0 solid transparent !important;
+  border-bottom: 1px dotted rgba(176, 230, 224, 0.26) !important;
+  border-radius: 8px !important;
+}
+
+:is(html[data-pond-mode="knowledge"], html[data-ui-shell="mobile"], html[data-shell="mobile"]) #knowledge-list .article-card.crt-glass-btn.glass-card:is(.is-glass-hovered, .is-glass-held, .is-glass-waving, .is-glass-rim-catch),
+:is(html[data-pond-mode="knowledge"], html[data-ui-shell="mobile"], html[data-shell="mobile"]) #knowledge-list .article-card.crt-glass-btn.glass-card:is(.is-glass-hovered, .is-glass-held, .is-glass-waving, .is-glass-rim-catch):hover {
+  box-shadow:
+    inset 0 0 0 1px rgba(188, 250, 244, calc(0.32 + 0.56 * var(--cg-edge-boost, 0.85))),
+    inset 0 1px 6px rgba(210, 248, 248, calc(0.12 + 0.16 * var(--cg-edge-boost, 0.85))) !important;
+}
+
+:is(html[data-pond-mode="welcome"], html[data-ui-shell="mobile"], html[data-shell="mobile"]) #welcome-modal #recent-updates a.recent-update-link.crt-glass-btn,
+:is(html[data-pond-mode="welcome"], html[data-ui-shell="mobile"], html[data-shell="mobile"]) #welcome-modal #recent-updates a.recent-update-link.crt-glass-btn:is(.is-glass-hovered, .is-glass-held, .is-glass-waving, .is-glass-rim-catch) {
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: transparent !important;
+}
+
+/* --- Item 8: Quiet Launch Icons on Mobile Home & Restored 6-Route Mobile Dock (Zero Tap Flash!) --- */
+html[data-ui-shell="mobile"] .desktop-icons .desktop-icon,
+html[data-ui-shell="mobile"] .desktop-icons .desktop-icon:where(:hover, :active, :focus, .is-hovered, .is-active, .is-ui-pressed),
+html[data-shell="mobile"] .desktop-icons .desktop-icon,
+html[data-shell="mobile"] .desktop-icons .desktop-icon:where(:hover, :active, :focus, .is-hovered, .is-active, .is-ui-pressed) {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+html[data-ui-shell="mobile"] .desktop-icons .desktop-icon:focus-visible,
+html[data-shell="mobile"] .desktop-icons .desktop-icon:focus-visible {
+  outline: 2px solid var(--crt-glass-rim, #72C9C3) !important;
+  outline-offset: 2px !important;
+}
+
+html[data-ui-shell="mobile"] .xp-taskbar :is(.start-button, .taskbar-tabs button),
+html[data-ui-shell="mobile"] .xp-taskbar :is(.start-button, .taskbar-tabs button):where(:hover, :active, :focus, .is-hovered, .is-active, .is-ui-pressed),
+html[data-shell="mobile"] .xp-taskbar :is(.start-button, .taskbar-tabs button),
+html[data-shell="mobile"] .xp-taskbar :is(.start-button, .taskbar-tabs button):where(:hover, :active, :focus, .is-hovered, .is-active, .is-ui-pressed) {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
