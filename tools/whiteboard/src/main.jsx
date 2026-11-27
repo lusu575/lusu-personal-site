@@ -41,7 +41,7 @@ import {
 import { roomHelpState } from "./room-help-state.js";
 
 const RECENT_ROOM_KEY = "lusu-whiteboard-recent-room-v1";
-const WHITEBOARD_VERSION = "1.0.15";
+const WHITEBOARD_VERSION = "1.0.16";
 const SEARCH_MENU_ICON = (
   <svg
     aria-hidden="true"
