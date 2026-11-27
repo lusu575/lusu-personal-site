@@ -2,6 +2,34 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-27-mobile-44px-welcome-focus-r102",
+      "slug": "2026-11-27-mobile-44px-welcome-focus-r102",
+      "category": "site-updates",
+      "tags": [
+        "ui",
+        "mobile",
+        "a11y"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-27",
+      "updated_at": "2026-11-27",
+      "published_at": "2026-11-27",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "移动端 44px 触控与聊天/工具排版修复＋桌面欢迎窗键盘焦点恢复（r102）",
+        "en": "Mobile 44px Touch Targets, Chat/Tools Containment & Desktop Welcome Keyboard Focus Fixes (r102)",
+        "ja": "モバイル 44px タッチ基準・チャット／ツール枠はみ出し修正＆デスクトップ案内窓フォーカス復元（r102）"
+      },
+      "summary": {
+        "zh": "修复移动端（含 844×390 横屏）主触控按钮低于 44px、移动端聊天发送按钮越出输入框、桌面端工具详情卡展开后文字溢出底边，以及桌面池塘模式下欢迎窗与账号弹窗键盘打开/关闭后焦点无法返回的问题。",
+        "en": "Restored 44px primary touch targets across mobile and 844x390 landscape layouts, kept the mobile chat send button inside #chat-form, fixed expanded desktop tool card overflow, and restored keyboard focus/Escape/return-focus behavior for desktop Welcome and Account dialogs.",
+        "ja": "モバイルおよび 844×390 横画面の 44px タッチ基準を回復し、モバイルチャット送信ボタンの枠外はみ出しとデスクトップツール詳細カード底面あふれを修正。さらにデスクトップ池モードでようこそ窓・アカウント窓のキーボード操作とフォーカス復元を修正しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-26-d1-quota-p0-r1",
       "slug": "2026-11-26-d1-quota-p0-r1",
       "category": "site-updates",
@@ -110,34 +138,6 @@ export const homeContent = Object.freeze({
         "zh": "定位并修复知识库文章卡片悬停时三边边框由 0px 骤增至 3px 引起换行与下方卡片下移 37px 的问题：全站统一改用不占盒模型的 box-shadow: inset 0 0 0 1px 绘制悬停/按压描边，并同步收口欢迎窗最近更新条目、视频/游戏/工具卡片边框宽度，实现全站卡片悬停位移严格 0px。",
         "en": "Fixed the Knowledge article-card hover layout shift where toggling border-style: solid turned 0px borders into 3px (medium) and pushed lower cards down by 37px: switched .glass-card hover/press outlines to non-box-model inset box-shadow and locked constant border widths across Welcome, Video, Game, and Tool cards for 0px hover shift site-wide.",
         "ja": "知識庫記事カードホバー時に枠幅が 0px から 3px へ増えて下部カードが 37px 押し下げられる不具合を根治。ボックスモデルを消費しない inset box-shadow 描画へ統一し、ようこそ更新一覧・動画・ゲーム・ツールカードもホバー時ズレ 0px に揃えました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-25-continuous-glass-curve-r96",
-      "slug": "2026-11-25-continuous-glass-curve-r96",
-      "category": "site-updates",
-      "tags": [
-        "ui",
-        "glass",
-        "pond"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-25",
-      "updated_at": "2026-11-25",
-      "published_at": "2026-11-25",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "消除按钮点击频闪与亮度跳变：单波单次触发＋全程连续液态亮度曲线（r96）",
-        "en": "Eliminate Button Click Strobe & Brightness Jumps: One-Shot Wave + Continuous Liquid Luminance (r96)",
-        "ja": "ボタンクリック点滅と輝度段差を根治：単発波ロック＋連続液態輝度カーブ（r96）"
-      },
-      "summary": {
-        "zh": "定位并根治 r95 铺开后点击按钮「闪 3–4 下」的代码根因（750ms 释放波期间 160ms rimCatch 归零后被下一帧重复触发），新增单波一次性锁 rimCatchFired 压回严格 1 次；同时彻底消除分档开关式亮度跳变，将外光晕半径/透明度改为由弹簧与 320ms 升余弦连续驱动，释放波改由 smoothstep 零起点柔和展开，全程丝滑无闪。",
-        "en": "Fixed the 3-4x click strobe bug caused by rimCatch resetting to 0 mid-wave during the 750ms MengTo release wave (added one-shot rimCatchFired guard), and replaced all discrete halo/border/wave brightness jumps with continuous spring + 320ms raised-cosine luminance curves and smoothstep wave onset.",
-        "ja": "750ms 放出波中に 160ms の rimCatch がリセットされて 3–4 回連続再発火していた不具合を単発ロック rimCatchFired で根治。さらに外光・枠・放出波の段階的輝度ジャンプをすべて廃止し、スプリング＋320ms コサイン曲線と smoothstep 起動による連続的な液態輝度遷移へ統一しました。"
       }
     }
   ]

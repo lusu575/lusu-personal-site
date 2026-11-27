@@ -4301,8 +4301,11 @@ async function auditReducedMotionWallpaperNetwork(client, server) {
       const preload=document.querySelector('link[data-wallpaper-preload]');
       return {
         reduced:matchMedia('(prefers-reduced-motion: reduce)').matches,
+        shell:document.documentElement.dataset.uiShell||'',
+        pondMode:document.documentElement.dataset.pondMode||'',
+        pondBoot:document.documentElement.dataset.pondBoot||'',
+        pondCanvas:Boolean(document.getElementById('pond-desktop-canvas')),
         motion:document.getElementById('wallpaper-root')?.dataset.motion||'',
-        background:getComputedStyle(document.querySelector('.wallpaper-base')).backgroundImage,
         preload:preload?{href:new URL(preload.href).pathname+new URL(preload.href).search,type:preload.type,srcset:preload.imageSrcset||''}:null
       };
     })()`);
@@ -4311,11 +4314,14 @@ async function auditReducedMotionWallpaperNetwork(client, server) {
   }
   const failures = [];
   if (!state.reduced) failures.push("prefers-reduced-motion was not active");
-  if (requests.length !== 1 || requests[0]?.path !== "/assets/images/wallpapers/optimized/day-1440.avif" || requests[0]?.search) {
-    failures.push(`reduced motion did not make exactly one request for the CSS-selected AVIF: ${JSON.stringify(requests)}`);
+  if (state.shell !== "desktop" || state.pondMode !== "home" || state.pondBoot !== "done") {
+    failures.push(`desktop reduced-motion pond bootstrap is wrong: ${JSON.stringify(state)}`);
   }
-  if (state.preload?.href !== "/assets/images/wallpapers/optimized/day-1440.avif" || state.preload?.type !== "image/avif" || state.preload?.srcset) {
-    failures.push(`reduced motion preload does not exactly match the applied CSS resource: ${JSON.stringify(state.preload)}`);
+  if (requests.length !== 0) {
+    failures.push(`desktop pond reduced-motion requested deprecated static wallpaper assets: ${JSON.stringify(requests)}`);
+  }
+  if (state.preload !== null) {
+    failures.push(`desktop pond reduced-motion injected deprecated wallpaper preload: ${JSON.stringify(state.preload)}`);
   }
   return { kind:"reduced-motion-network", name:"optimized-static-wallpaper", shell:"desktop", viewport, state, requests, failures, status:failures.length?"FAIL":"PASS" };
 }
@@ -4326,10 +4332,6 @@ async function auditAmbientWallpaperPlayback(client, server) {
   const mobile = { name: "phone-standard", width: 390, height: 844, mobile: true };
   const failures = [];
   const samples = [];
-  const highTier = await client.send("Page.addScriptToEvaluateOnNewDocument", { source: `(() => {
-    try { Object.defineProperty(navigator, 'hardwareConcurrency', { configurable:true, get:()=>8 }); } catch {}
-    try { Object.defineProperty(navigator, 'deviceMemory', { configurable:true, get:()=>8 }); } catch {}
-  })();` });
   const videoRequests = () => server.requestLog().filter((entry) => /\/assets\/videos\/wallpaper-dynamic\/(morning|day|dusk|night)\/motion-(1080|2160)\.mp4/.test(entry.path));
   const emulateAmbient = async (viewport, reduced = false) => {
     await emulate(client, viewport);
@@ -4341,119 +4343,46 @@ async function auditAmbientWallpaperPlayback(client, server) {
       ]
     });
   };
-  const playableState = async () => evaluate(client, `(() => {
-    const video=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]');
-    return {route:document.body.dataset.route||'',shell:document.documentElement.dataset.uiShell||'',tier:document.documentElement.dataset.performanceTier||'',motion:document.querySelector('#wallpaper-root')?.dataset.motion||'',theme:video?.dataset.wallpaperAmbientTheme||'',resolution:video?.dataset.wallpaperAmbientResolution||'',videoWidth:video?.videoWidth||0,videoHeight:video?.videoHeight||0,readyState:video?.readyState||0,paused:video?.paused??true,opacity:video?.style.opacity||'',currentPath:video?.currentSrc?new URL(video.currentSrc).pathname:'',cloudCount:document.querySelectorAll('[data-wallpaper-dynamic-layer]').length};
-  })()`);
   try {
     for (const sample of [
-      { viewport: desktop4k, expectedResolution: "2160", expectedWidth: 3840, expectedHeight: 2160 },
-      { viewport: desktop1080, expectedResolution: "1080", expectedWidth: 1920, expectedHeight: 1080 }
+      { viewport: desktop4k, expectedShell: "desktop", expectPond: true },
+      { viewport: desktop1080, expectedShell: "desktop", expectPond: true },
+      { viewport: mobile, expectedShell: "mobile", expectPond: false }
     ]) {
       await client.send("Page.navigate", { url: "about:blank" });
       await waitFor(client, `document.readyState==='complete'`, `${sample.viewport.name} ambient blank boundary`);
       await emulateAmbient(sample.viewport);
       await client.send("Network.clearBrowserCache");
       server.resetRequests();
-      await navigateFresh(client, `${server.origin}/?lang=zh&wallpaper=day&welcome=0&audit-ambient-playback=${sample.expectedResolution}`, `${sample.viewport.name}-ambient-playback`);
-      await waitFor(client, `document.readyState==='complete'&&document.body.dataset.route==='home'&&document.documentElement.dataset.uiShell==='desktop'`, `${sample.viewport.name} ambient shell`);
-      await waitFor(client, `(() => {const video=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]');return video&&video.readyState>=3&&!video.paused&&video.style.opacity==='1';})()`, `${sample.viewport.name} ambient playback`);
-      const state = await playableState();
-      const requests = videoRequests();
-      const expectedPath = `/assets/videos/wallpaper-dynamic/day/motion-${sample.expectedResolution}.mp4`;
-      if (state.resolution !== sample.expectedResolution) failures.push(`${sample.viewport.name} selected ${state.resolution || "no"} video instead of ${sample.expectedResolution}`);
-      if (state.videoWidth !== sample.expectedWidth || state.videoHeight !== sample.expectedHeight) failures.push(`${sample.viewport.name} decoded ${state.videoWidth}x${state.videoHeight} instead of ${sample.expectedWidth}x${sample.expectedHeight}`);
-      if (state.currentPath !== expectedPath) failures.push(`${sample.viewport.name} current video path ${state.currentPath || "missing"} !== ${expectedPath}`);
-      if (requests.length !== 1 || requests[0]?.path !== expectedPath) failures.push(`${sample.viewport.name} requested ambient assets ${JSON.stringify(requests.map((entry) => entry.path))}`);
-      if (state.cloudCount !== 0) failures.push(`${sample.viewport.name} mounted ${state.cloudCount} CSS cloud layers while video wallpaper was eligible`);
-      samples.push({ ...sample, state, requests });
-      if (sample.expectedResolution === "2160") {
-        await evaluate(client, `window.__auditRetainedAmbientVideo=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]'); true`);
-        await setAuditRoute(client, "resources");
-        await waitFor(client, `(() => {const video=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]');return document.body.dataset.route==='resources'&&video===window.__auditRetainedAmbientVideo&&video.paused&&video.hasAttribute('src');})()`, "non-Home ambient pause with decoder retained");
-        const paused = await evaluate(client, `({route:document.body.dataset.route,videoCount:document.querySelectorAll('video.wallpaper-ambient-video').length,sameNode:document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]')===window.__auditRetainedAmbientVideo,paused:window.__auditRetainedAmbientVideo?.paused??false,hasSource:window.__auditRetainedAmbientVideo?.hasAttribute('src')??false,cloudCount:document.querySelectorAll('[data-wallpaper-dynamic-layer]').length})`);
-        if (paused.videoCount !== 1 || !paused.sameNode || !paused.paused || !paused.hasSource) failures.push(`non-Home route did not retain one paused ambient decoder: ${JSON.stringify(paused)}`);
-        if (paused.cloudCount !== 0) failures.push(`non-Home route retained ${paused.cloudCount} CSS cloud layers`);
-        await setAuditRoute(client, "home");
-        await waitFor(client, `(() => {const video=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]');return document.body.dataset.route==='home'&&video===window.__auditRetainedAmbientVideo&&!video.paused&&video.style.opacity==='1';})()`, "Home ambient resume with retained decoder");
-        const resumed = await evaluate(client, `({route:document.body.dataset.route,sameNode:document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]')===window.__auditRetainedAmbientVideo,paused:window.__auditRetainedAmbientVideo?.paused??true,cloudCount:document.querySelectorAll('[data-wallpaper-dynamic-layer]').length})`);
-        const resumedRequests = videoRequests();
-        if (!resumed.sameNode || resumed.paused || resumedRequests.length !== 1) failures.push(`Home return did not resume the retained ambient video without another request: ${JSON.stringify({ resumed, requests: resumedRequests.map((entry) => entry.path) })}`);
-        if (resumed.cloudCount !== 0) failures.push(`Home return mounted ${resumed.cloudCount} CSS cloud layers over the video`);
-        samples.at(-1).routeRoundTrip = { paused, resumed, requests: resumedRequests };
+      await navigateFresh(client, `${server.origin}/?lang=zh&wallpaper=day&welcome=0&audit-ambient-playback=${sample.viewport.name}`, `${sample.viewport.name}-ambient-playback`);
+      await waitFor(client, `document.readyState==='complete'&&document.body.dataset.route==='home'&&document.documentElement.dataset.uiShell===${JSON.stringify(sample.expectedShell)}`, `${sample.viewport.name} ambient shell`);
+      if (sample.expectPond) {
+        await waitFor(client, `document.documentElement.dataset.pondMode==='home'&&Boolean(document.getElementById('pond-desktop-canvas'))`, `${sample.viewport.name} pond canvas`);
       }
-    }
-
-    await client.send("Page.navigate", { url: "about:blank" });
-    await waitFor(client, `document.readyState==='complete'`, "ambient BFCache blank boundary");
-    await emulateAmbient(desktop1080);
-    await client.send("Network.clearBrowserCache");
-    server.resetRequests();
-    await navigateFresh(
-      client,
-      `${server.origin}/?lang=zh&wallpaper=day&welcome=0&audit-ambient-bfcache=1`,
-      "ambient-bfcache-home"
-    );
-    await waitFor(client, `document.readyState==='complete'&&document.body.dataset.route==='home'`, "ambient BFCache initial Home");
-    await waitFor(client, `(() => {const video=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]');return video&&video.readyState>=3&&!video.paused&&video.style.opacity==='1';})()`, "ambient BFCache initial playback");
-    await evaluate(client, `(() => {
-      window.__auditAmbientBfCacheEvents=[];
-      window.addEventListener('pagehide', event => window.__auditAmbientBfCacheEvents.push({type:'pagehide',persisted:event.persisted}));
-      window.addEventListener('pageshow', event => window.__auditAmbientBfCacheEvents.push({type:'pageshow',persisted:event.persisted}));
-      return true;
-    })()`);
-    server.resetRequests();
-    const bfcacheNotUsed = [];
-    const stopBfCacheNotUsed = client.on("Page.backForwardCacheNotUsed", (event) => bfcacheNotUsed.push(event));
-    try {
-      await client.send("Page.navigate", { url: `${server.origin}/__audit/bfcache-away` });
-      await waitFor(client, `document.body?.dataset.auditBfcacheAway==='true'`, "ambient BFCache away page");
-      await evaluate(client, `history.back(); true`);
-      await waitFor(client, `document.body?.dataset.route==='home'&&document.getElementById('wallpaper-stage')`, "ambient BFCache restored Home");
-      await waitFor(client, `(() => {const video=document.querySelector('video.wallpaper-ambient-video[data-wallpaper-ambient-active="true"]');return video&&video.readyState>=3&&!video.paused&&video.style.opacity==='1';})()`, "ambient BFCache restored playback");
-    } finally {
-      stopBfCacheNotUsed();
-    }
-    const bfcacheState = await playableState();
-    const bfcacheEvents = await evaluate(client, `window.__auditAmbientBfCacheEvents || []`);
-    const bfcacheRequests = videoRequests();
-    const bfcacheExpectedPath = "/assets/videos/wallpaper-dynamic/day/motion-1080.mp4";
-    const restoredFromBfCache = bfcacheEvents.some((event) => event.type === "pageshow" && event.persisted === true);
-    if (!restoredFromBfCache) failures.push(`ambient playback audit did not restore from BFCache: ${JSON.stringify({ bfcacheEvents, bfcacheNotUsed })}`);
-    if (bfcacheState.resolution !== "1080" || bfcacheState.currentPath !== bfcacheExpectedPath || bfcacheState.paused) {
-      failures.push(`BFCache restored the wrong ambient playback state: ${JSON.stringify(bfcacheState)}`);
-    }
-    if (bfcacheRequests.length !== 1 || bfcacheRequests[0]?.path !== bfcacheExpectedPath) {
-      failures.push(`BFCache restoration requested ambient assets ${JSON.stringify(bfcacheRequests.map((entry) => entry.path))}`);
-    }
-    samples.push({
-      viewport: desktop1080,
-      name: "desktop-1080-bfcache-restore",
-      state: bfcacheState,
-      events: bfcacheEvents,
-      bfcacheNotUsed,
-      requests: bfcacheRequests
-    });
-
-    for (const sample of [
-      { viewport: mobile, reduced: false, name: "mobile-zero-request" },
-      { viewport: desktop1080, reduced: true, name: "reduced-zero-request" }
-    ]) {
-      await client.send("Page.navigate", { url: "about:blank" });
-      await waitFor(client, `document.readyState==='complete'`, `${sample.name} blank boundary`);
-      await emulateAmbient(sample.viewport, sample.reduced);
-      await client.send("Network.clearBrowserCache");
-      server.resetRequests();
-      await navigateFresh(client, `${server.origin}/?lang=zh&wallpaper=night&welcome=0&audit-ambient-playback=${sample.name}`, sample.name);
-      await waitFor(client, `document.readyState==='complete'&&Boolean(document.documentElement.dataset.uiShell)`, `${sample.name} shell`);
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      const state = await evaluate(client, `({route:document.body.dataset.route,shell:document.documentElement.dataset.uiShell,motion:document.querySelector('#wallpaper-root')?.dataset.motion||'',videoCount:document.querySelectorAll('video.wallpaper-ambient-video').length})`);
+      await new Promise((ok) => setTimeout(ok, 200));
+      const state = await evaluate(client, `({
+        route: document.body.dataset.route || '',
+        shell: document.documentElement.dataset.uiShell || '',
+        pondMode: document.documentElement.dataset.pondMode || '',
+        pondCanvas: Boolean(document.getElementById('pond-desktop-canvas')),
+        legacyVideos: document.querySelectorAll('video.wallpaper-ambient-video').length
+      })`);
       const requests = videoRequests();
-      if (state.videoCount !== 0 || requests.length) failures.push(`${sample.name} created ${state.videoCount} videos and requested ${JSON.stringify(requests.map((entry) => entry.path))}`);
-      samples.push({ ...sample, state, requests });
+      if (state.shell !== sample.expectedShell) failures.push(`${sample.viewport.name} resolved shell ${state.shell} !== ${sample.expectedShell}`);
+      if (sample.expectPond && (state.pondMode !== "home" || !state.pondCanvas)) failures.push(`${sample.viewport.name} did not mount desktop Pond canvas: ${JSON.stringify(state)}`);
+      if (!sample.expectPond && state.pondMode) failures.push(`${sample.viewport.name} unexpectedly set desktop pondMode: ${JSON.stringify(state)}`);
+      if (requests.length !== 0) failures.push(`${sample.viewport.name} requested deprecated ambient MP4 assets: ${JSON.stringify(requests.map((entry) => entry.path))}`);
+      if (sample.viewport.name === "desktop-1080") {
+        await setAuditRoute(client, "resources");
+        await stable(client, "resources");
+        await setAuditRoute(client, "home");
+        await stable(client, "home");
+        const roundTripRequests = videoRequests();
+        if (roundTripRequests.length !== 0) failures.push(`desktop-1080 route round-trip requested deprecated ambient MP4 assets: ${JSON.stringify(roundTripRequests.map((entry) => entry.path))}`);
+      }
+      samples.push({ viewport: sample.viewport, state, requests });
     }
   } finally {
-    await client.send("Page.removeScriptToEvaluateOnNewDocument", { identifier: highTier.identifier }).catch(() => {});
     await emulate(client, viewports.find((item) => item.width === 1280 && item.height === 720));
   }
   return { kind:"ambient-wallpaper-playback", name:"current-theme-1080-2160-and-zero-request-fallbacks", samples, failures, status:failures.length?"FAIL":"PASS" };
@@ -4558,6 +4487,8 @@ async function auditWallpaperPreloadNetwork(client, server) {
         return {
           reduced:matchMedia('(prefers-reduced-motion: reduce)').matches,
           shell:document.documentElement.dataset.uiShell||'',
+          pondMode:document.documentElement.dataset.pondMode||'',
+          pondCanvas:Boolean(document.getElementById('pond-desktop-canvas')),
           theme:document.querySelector('#wallpaper-root')?.dataset.time||'',
           motion:document.querySelector('#wallpaper-root')?.dataset.motion||'',
           background:getComputedStyle(document.querySelector('.wallpaper-base')).backgroundImage,
@@ -4573,11 +4504,17 @@ async function auditWallpaperPreloadNetwork(client, server) {
     if (state.shell !== scenario.expectedShell || state.theme !== "day") {
       failures.push(`wallpaper shell/theme bootstrap is wrong: ${JSON.stringify(state)}`);
     }
-    if (state.preload?.href !== expectedHref || state.preload?.type !== scenario.expectedType || state.preload?.srcset) {
-      failures.push(`preload does not exactly match the applied CSS resource: ${JSON.stringify(state.preload)}`);
-    }
-    if (requests.length !== 1 || requests[0]?.path !== scenario.expectedPath || requests[0]?.search !== scenario.expectedSearch) {
-      failures.push(`expected one exact wallpaper request for ${expectedHref}: ${JSON.stringify(requests)}`);
+    if (scenario.expectedShell === "desktop") {
+      if (state.pondMode !== "home") failures.push(`desktop wallpaper scenario did not activate Pond desktop mode: ${JSON.stringify(state)}`);
+      if (state.preload !== null) failures.push(`desktop pond mode injected deprecated AVIF wallpaper preload: ${JSON.stringify(state.preload)}`);
+      if (requests.length !== 0) failures.push(`desktop pond mode requested deprecated AVIF wallpaper assets: ${JSON.stringify(requests)}`);
+    } else {
+      if (state.preload?.href !== expectedHref || state.preload?.type !== scenario.expectedType || state.preload?.srcset) {
+        failures.push(`preload does not exactly match the applied CSS resource: ${JSON.stringify(state.preload)}`);
+      }
+      if (requests.length !== 1 || requests[0]?.path !== scenario.expectedPath || requests[0]?.search !== scenario.expectedSearch) {
+        failures.push(`expected one exact wallpaper request for ${expectedHref}: ${JSON.stringify(requests)}`);
+      }
     }
     results.push({
       kind: "wallpaper-preload-network",

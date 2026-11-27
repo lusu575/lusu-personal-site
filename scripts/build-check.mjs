@@ -4842,14 +4842,15 @@ if (!desktopTaskbarActiveBlock.includes("var(--chrome-task-button-active-bg)")
   fail("desktop active taskbar buttons should keep a blue pressed state without a persistent yellow edge or glow");
 }
 
-const finalUpdateId = "seed-update-2026-11-26-d1-quota-p0-r1";
-const finalUpdateSlug = "2026-11-26-d1-quota-p0-r1";
+const finalUpdateId = "seed-update-2026-11-27-mobile-44px-welcome-focus-r102";
+const finalUpdateSlug = "2026-11-27-mobile-44px-welcome-focus-r102";
 const finalMainVersion = currentMainVersion;
 const finalCssVersion = currentCssVersion;
 const supersededAccountA11yMainVersion = "20260623-account-expanded-a11y-r1";
-const finalTitleEn = "D1 Read/Write Quota P0 Fixes & On-Demand Admin Analytics";
-const finalPublishedAt = "2026-11-26";
+const finalTitleEn = "Mobile 44px Touch Targets, Chat/Tools Containment & Desktop Welcome Keyboard Focus Fixes (r102)";
+const finalPublishedAt = "2026-11-27";
 const preservedReleaseUpdateIds = [
+  "seed-update-2026-11-26-d1-quota-p0-r1",
   "seed-update-2026-11-26-unpublish-three-articles-r1",
   "seed-update-2026-11-25-quiet-icons-unclipped-r98",
   "seed-update-2026-11-25-zero-hover-shift-r97",
@@ -5007,7 +5008,7 @@ const changelog20260811Section = markdownSection(changelog, "## 2026-08-11");
 
 
 const changelog20260827Section = markdownSection(changelog, "## 2026-08-27");
-const changelog20260928Section = markdownSection(changelog, "## 2026-11-26");
+const changelog20260928Section = markdownSection(changelog, "## 2026-11-27");
 
 if (!finalUpdateStarted) {
   if (!indexHtml.includes(`/js/main.js?v=${currentPreFinalMainVersion}`)) {

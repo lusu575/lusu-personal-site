@@ -16985,7 +16985,31 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **P0 書き込み対策**：プライベートブラウザ伴侶の空キュー待機に 1 秒→30 秒の指数バックオフを導入し、空の `browser_command_claim` での grant touch・二重監査書き込みを撤去（実ジョブの取得・実行・失敗監査は維持）。
 - **リリースゲート**：`tests/admin-workflows.test.mjs` を振る舞い検証へ更新し、管理画面キャッシュ版 `20261126-d1-p0-r1` を同期しました。', '2026-11-26', '2026-11-26') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261126-d1-quota-p0-r1', '2026-11-26')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-27-mobile-44px-welcome-focus-r102', '2026-11-27-mobile-44px-welcome-focus-r102', 'site-updates', '["ui","mobile","a11y"]', '', 'published', 0, 0, '2026-11-27', '2026-11-27', '2026-11-27') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-27-mobile-44px-welcome-focus-r102-zh', 'seed-update-2026-11-27-mobile-44px-welcome-focus-r102', 'zh', '移动端 44px 触控与聊天/工具排版修复＋桌面欢迎窗键盘焦点恢复（r102）', '修复移动端（含 844×390 横屏）主触控按钮低于 44px、移动端聊天发送按钮越出输入框、桌面端工具详情卡展开后文字溢出底边，以及桌面池塘模式下欢迎窗与账号弹窗键盘打开/关闭后焦点无法返回的问题。', '# 移动端 44px 触控与聊天/工具排版修复＋桌面欢迎窗键盘焦点恢复（r102）
+
+本次修复多项前后台可见交互与响应式排版问题：
+
+- **移动端与横屏 44px 触控标准**：补齐 `pond-site-bridge.mjs` 对 `data-ui-shell="mobile"` 与横屏触控视口（`844×390`）的判定，避免移动横屏误入桌面 Pond 模式；在 `css/pond-windows.css` 为移动端关闭按钮、卡片操作按钮、工具详情摘要等主触控目标统一锁定最小 `44×44px`。
+- **聊天发送按钮与资源详情卡边界收口**：清除移动端 `.chat-send-button` 残留的 `right/bottom` 绝对偏移与过宽 `padding`，使其完整落于 `#chat-form` 网格内；取消桌面端 `.resource-card details[open]` 的 `116px` 截断高度，展开后卡片自然增高包住详情正文。
+- **桌面欢迎窗与账号弹窗键盘焦点恢复**：保持池塘桌面顶栏视觉无痕的同时恢复 `[data-open-welcome]` 与 `[data-account-toggle]` 的键盘可聚焦性，并交还 `main.js` 原生 `closeWelcome()` 处理即时 `Escape` 关闭与焦点回退。', '2026-11-27', '2026-11-27') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-27-mobile-44px-welcome-focus-r102-en', 'seed-update-2026-11-27-mobile-44px-welcome-focus-r102', 'en', 'Mobile 44px Touch Targets, Chat/Tools Containment & Desktop Welcome Keyboard Focus Fixes (r102)', 'Restored 44px primary touch targets across mobile and 844x390 landscape layouts, kept the mobile chat send button inside #chat-form, fixed expanded desktop tool card overflow, and restored keyboard focus/Escape/return-focus behavior for desktop Welcome and Account dialogs.', '# Mobile 44px Touch Targets, Chat/Tools Containment & Desktop Welcome Keyboard Focus Fixes (r102)
+
+Delivered visible responsive layout and keyboard accessibility fixes:
+
+- **Mobile & Landscape 44px Touch Targets**: Updated `pond-site-bridge.mjs` mobile shell detection for `data-ui-shell="mobile"` and `844x390` landscape viewports, and enforced a 44x44px minimum target floor on primary mobile controls in `css/pond-windows.css`.
+- **Chat Composer & Resource Card Containment**: Reset residual `right/bottom` offsets and excess padding on the mobile chat send button so it stays cleanly inside `#chat-form`, and removed the `116px` cap on expanded desktop `.resource-card details[open]` so details expand cleanly inside the card.
+- **Desktop Welcome & Account Focus Restoration**: Kept the Pond desktop topbar visually clean while restoring focusability on `[data-open-welcome]` and `[data-account-toggle]`, and let `main.js` `closeWelcome()` handle immediate Escape dismissal and focus return.', '2026-11-27', '2026-11-27') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-27-mobile-44px-welcome-focus-r102-ja', 'seed-update-2026-11-27-mobile-44px-welcome-focus-r102', 'ja', 'モバイル 44px タッチ基準・チャット／ツール枠はみ出し修正＆デスクトップ案内窓フォーカス復元（r102）', 'モバイルおよび 844×390 横画面の 44px タッチ基準を回復し、モバイルチャット送信ボタンの枠外はみ出しとデスクトップツール詳細カード底面あふれを修正。さらにデスクトップ池モードでようこそ窓・アカウント窓のキーボード操作とフォーカス復元を修正しました。', '# モバイル 44px タッチ基準・チャット／ツール枠はみ出し修正＆デスクトップ案内窓フォーカス復元（r102）
+
+公開 UI のレスポンシブ配置とキーボードアクセシビリティを修正しました：
+
+- **モバイル・横画面 44px 基準**：`pond-site-bridge.mjs` のモバイル判定を `data-ui-shell="mobile"` および `844×390` 横画面まで拡張し、主要ボタンの最小 `44×44px` を保証しました。
+- **チャット送信ボタン＆ツール詳細カード収まり修正**：モバイル送信ボタンの残留オフセットと余白を調整して `#chat-form` 内に収め、デスクトップ展開時 `details[open]` の高さ制限を解除してカード底面あふれを解消しました。
+- **デスクトップようこそ／アカウント窓のフォーカス復元**：池デスクトップの上部見た目を保ったままキーボードフォーカスと `Escape` 即時クローズ・フォーカス戻しを回復しました。', '2026-11-27', '2026-11-27') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261127-mobile-44px-welcome-focus-r102', '2026-11-27')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
 insert into site_data_migrations (version, applied_at, source) values ('20261126-unpublish-three-articles-r1', '2026-11-26', 'schema') on conflict(version) do nothing;
 insert into site_data_migrations (version, applied_at, source) values ('20261126-d1-quota-p0-r1', '2026-11-26', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261127-mobile-44px-welcome-focus-r102', '2026-11-27', 'schema') on conflict(version) do nothing;
