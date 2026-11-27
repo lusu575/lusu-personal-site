@@ -2,6 +2,8 @@
 
 ## 2026-11-27
 
+- 修复 OPT-093 性能预算五项全红真性能回归（不放宽任何阈值，五项全绿）：① 清理 `js/pond-crt/boot-preloader.mjs` 首屏启动期对非当季四季植物贴图、18 项静态子窗图片、`/games/catalog.json` 及 `/assets/pond-assets-manifest.json` 的无差别预取，改为仅加载当季植物贴图并在 `engine.mjs` `setSeason()` 切季时按需加载；② 移除 `js/pond-windows/pond-site-bridge.mjs` 开机 60ms 强制预加载全部 7 个懒加载路由模块与重复 SVG 图标及聊天室全量头像预拉，并统一 `crt-window-morph.mjs` 对 `crt-glass-config.mjs` 的缓存版本参数消除重复加载；③ 新增 `scripts/build-pond-bundle.mjs` 将 14 个 Pond ES 模块打包为单文件 `js/pond-windows/pond-site-bundle.mjs` 并在桌面 Pond 模式下跳过隐藏 `#wallpaper-time-switch` 图集首屏赋值，全站首屏请求数由 97–107 降至 42–54（传输体积减半）；④ 将 `js/pond-windows/crt-glass-button.mjs` 逐按钮 10 个事件监听重构为文档级单组事件委托，`jsEventListeners` 由 705–875 降至 118–148（`transfer` 875→148 ≤ 800）。
+
 - 清零 Verify 发布门 18 项失败：修复 css/pond-tool-theme.css 将画板 .room-help-toggle 压至 40px 低于 44px 触控标准的真回归（#483–#485），并同步其余 15 项因池塘改版/子项目升级/例行发版过时的测试断言（文章种子版本、游戏封面路径与资源体检、游戏壳缓存版本与默认折叠、首页 5 条更新投影、画板受治理版本 1.0.15 及桌面池塘无废弃 AVIF 壁纸预加载）。
 
 ## 2026-11-26

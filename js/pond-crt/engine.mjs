@@ -25,7 +25,7 @@ import {
   WATER_BG_FRAG
 } from './shaders.mjs?v=20261125-persepolis-warm-r87';
 import { PondUIOverlay } from './ui-overlay.mjs?v=20261125-persepolis-warm-r87';
-import { detectBootMode, markBootCompleted, runPondBootPreload } from './boot-preloader.mjs?v=20261125-refresh-warm-r91';
+import { detectBootMode, loadSeasonFloraParts, markBootCompleted, runPondBootPreload } from './boot-preloader.mjs?v=20261127-opt093-perf-r100';
 
 const MAX_RIPPLES = 8;
 
@@ -546,6 +546,11 @@ export class PondCRTEngine {
       if (this._pendingFloraQueue.includes(seasonId)) {
         this._bakeSeasonFlora(seasonId);
       }
+      loadSeasonFloraParts(seasonId, (key, img) => {
+        this.floraLayer.setPart(key, img);
+      }).then(() => {
+        if (this.gl) this._bakeSeasonFlora(seasonId);
+      }).catch(() => {});
       const prev = this.seasonId;
       const wasInTransition = this.transitionPhase !== 'idle';
       this.fromSeasonId = prev;

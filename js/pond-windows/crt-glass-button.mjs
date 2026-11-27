@@ -242,27 +242,7 @@ class CrtGlassButtonController {
       sheenLayer.setAttribute('aria-hidden', 'true');
       el.prepend(sheenLayer);
     }
-
-    this._onPointerEnter = this._handlePointerEnter.bind(this);
-    this._onPointerMove = this._handlePointerMove.bind(this);
-    this._onPointerLeave = this._handlePointerLeave.bind(this);
-    this._onPointerDown = this._handlePointerDown.bind(this);
-    this._onPointerUp = this._handlePointerUp.bind(this);
-    this._onPointerCancel = this._handlePointerCancel.bind(this);
-    this._onKeyDown = this._handleKeyDown.bind(this);
-    this._onKeyUp = this._handleKeyUp.bind(this);
-    this._onBlur = this._handleCancelVisual.bind(this);
-
-    el.addEventListener('pointerenter', this._onPointerEnter);
-    el.addEventListener('pointermove', this._onPointerMove);
-    el.addEventListener('pointerleave', this._onPointerLeave);
-    el.addEventListener('pointerdown', this._onPointerDown);
-    el.addEventListener('pointerup', this._onPointerUp);
-    el.addEventListener('pointercancel', this._onPointerCancel);
-    el.addEventListener('lostpointercapture', this._onPointerCancel);
-    el.addEventListener('keydown', this._onKeyDown);
-    el.addEventListener('keyup', this._onKeyUp);
-    el.addEventListener('blur', this._onBlur);
+    // Event handling is delegated at document level (O(1) listeners total instead of 10*N per button).
   }
 
   _updateHoverLiquid(clientX, clientY) {
@@ -593,11 +573,108 @@ class CrtGlassButtonController {
 }
 
 const controllerByElement = new WeakMap();
+let delegatedListenersInstalled = false;
+let currentHoveredCtrl = null;
+const activePointerCtrlById = new Map();
+let activeKeyCtrl = null;
+
+function resolveBoundController(target, autoAttach = false) {
+  if (!(target instanceof Element)) return null;
+  const boundEl = target.closest('[data-crt-glass-bound]');
+  if (boundEl) {
+    const existing = controllerByElement.get(boundEl);
+    if (existing) return existing;
+  }
+  if (!autoAttach) return null;
+  const found = findNearestGlassCandidate(target);
+  if (!found) return null;
+  return attachCrtGlassButton(found.el, found.level);
+}
+
+function installDelegatedGlassListeners() {
+  if (delegatedListenersInstalled || typeof document === 'undefined') return;
+  delegatedListenersInstalled = true;
+
+  document.addEventListener('pointerover', (e) => {
+    const ctrl = resolveBoundController(e.target, true);
+    if (ctrl === currentHoveredCtrl) return;
+    if (currentHoveredCtrl) {
+      currentHoveredCtrl._handlePointerLeave();
+    }
+    currentHoveredCtrl = ctrl;
+    if (ctrl) {
+      ctrl._handlePointerEnter(e);
+    }
+  }, true);
+
+  document.addEventListener('pointerout', (e) => {
+    if (!currentHoveredCtrl) return;
+    const nextTarget = e.relatedTarget;
+    if (nextTarget instanceof Node && currentHoveredCtrl.el.contains(nextTarget)) return;
+    const leavingCtrl = resolveBoundController(e.target, false);
+    if (leavingCtrl === currentHoveredCtrl || !currentHoveredCtrl.el.isConnected) {
+      currentHoveredCtrl._handlePointerLeave();
+      currentHoveredCtrl = null;
+    }
+  }, true);
+
+  document.addEventListener('pointermove', (e) => {
+    const activeCtrl = activePointerCtrlById.get(e.pointerId) || currentHoveredCtrl;
+    if (activeCtrl && activeCtrl.el.isConnected) {
+      activeCtrl._handlePointerMove(e);
+    }
+  }, { passive: true });
+
+  document.addEventListener('pointerdown', (e) => {
+    const ctrl = resolveBoundController(e.target, true);
+    if (!ctrl) return;
+    activePointerCtrlById.set(e.pointerId, ctrl);
+    ctrl._handlePointerDown(e);
+  }, true);
+
+  document.addEventListener('pointerup', (e) => {
+    const ctrl = activePointerCtrlById.get(e.pointerId) || resolveBoundController(e.target, false);
+    activePointerCtrlById.delete(e.pointerId);
+    if (ctrl) ctrl._handlePointerUp(e);
+  }, true);
+
+  const handlePointerAbort = (e) => {
+    const ctrl = activePointerCtrlById.get(e.pointerId) || resolveBoundController(e.target, false);
+    activePointerCtrlById.delete(e.pointerId);
+    if (ctrl) ctrl._handlePointerCancel();
+  };
+  document.addEventListener('pointercancel', handlePointerAbort, true);
+  document.addEventListener('lostpointercapture', handlePointerAbort, true);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== ' ' && e.key !== 'Enter') return;
+    const ctrl = resolveBoundController(e.target, true);
+    if (!ctrl) return;
+    activeKeyCtrl = ctrl;
+    ctrl._handleKeyDown(e);
+  }, true);
+
+  document.addEventListener('keyup', (e) => {
+    if (e.key !== ' ' && e.key !== 'Enter') return;
+    const ctrl = activeKeyCtrl || resolveBoundController(e.target, false);
+    activeKeyCtrl = null;
+    if (ctrl) ctrl._handleKeyUp(e);
+  }, true);
+
+  document.addEventListener('blur', (e) => {
+    const ctrl = resolveBoundController(e.target, false);
+    if (ctrl) {
+      if (activeKeyCtrl === ctrl) activeKeyCtrl = null;
+      ctrl._handleCancelVisual();
+    }
+  }, true);
+}
 
 export function attachCrtGlassButton(el, levelName = 'glass-primary') {
   if (!el || !(el instanceof Element)) return null;
   if (el.dataset.crtGlassBound) return controllerByElement.get(el) || null;
   syncCrtGlassCssVars();
+  installDelegatedGlassListeners();
   const ctrl = new CrtGlassButtonController(el, levelName);
   controllerByElement.set(el, ctrl);
   return ctrl;
@@ -685,32 +762,9 @@ export function installAutoGlassBinding() {
   autoGlassInstalled = true;
   document.documentElement.dataset.crtGlassReady = '1';
   syncCrtGlassCssVars();
+  installDelegatedGlassListeners();
 
-  // 1. Document-level capturing lazy delegation: even an element inserted 0.1ms ago gets
-  // immediate live glass hover/press on its very first interaction!
-  document.addEventListener('pointerover', (e) => {
-    const found = findNearestGlassCandidate(e.target);
-    if (!found || found.el.dataset.crtGlassBound) return;
-    const ctrl = attachCrtGlassButton(found.el, found.level);
-    if (ctrl) ctrl._handlePointerEnter(e);
-  }, true);
-
-  document.addEventListener('pointerdown', (e) => {
-    const found = findNearestGlassCandidate(e.target);
-    if (!found || found.el.dataset.crtGlassBound) return;
-    const ctrl = attachCrtGlassButton(found.el, found.level);
-    if (ctrl) ctrl._handlePointerDown(e);
-  }, true);
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key !== ' ' && e.key !== 'Enter') return;
-    const found = findNearestGlassCandidate(e.target);
-    if (!found || found.el.dataset.crtGlassBound) return;
-    const ctrl = attachCrtGlassButton(found.el, found.level);
-    if (ctrl) ctrl._handleKeyDown(e);
-  }, true);
-
-  // 2. Single lightweight body MutationObserver (rAF-debounced, ignores own optical layers)
+  // Single lightweight body MutationObserver (rAF-debounced, ignores own optical layers)
   // so every dynamically rendered button/card receives .crt-glass-btn immediately upon mount.
   if (document.body && typeof MutationObserver === 'function') {
     const obs = new MutationObserver((mutations) => {

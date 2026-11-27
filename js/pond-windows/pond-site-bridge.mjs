@@ -137,17 +137,6 @@ const CHAT_AVATARS = [
   '/assets/pond-windows/svg/avatar-ripple.svg?v=20261122-pond-polish-r30',
   '/assets/pond-windows/svg/avatar-star.svg?v=20261122-pond-polish-r30'
 ];
-let chatAvatarsPreloaded = false;
-function preloadChatAvatars() {
-  if (chatAvatarsPreloaded) return;
-  chatAvatarsPreloaded = true;
-  CHAT_AVATARS.forEach((src) => {
-    const img = new Image();
-    img.decoding = 'async';
-    img.src = src;
-  });
-}
-
 function hashString(str) {
   let h = 0;
   for (let i = 0; i < str.length; i++) {
@@ -157,7 +146,6 @@ function hashString(str) {
 }
 
 function applyChatAvatarPresentation() {
-  preloadChatAvatars();
   const list = document.getElementById('chat-message-list');
   if (!list) return;
   list.querySelectorAll('.chat-message, .chat-item, article').forEach((msg) => {
@@ -934,43 +922,6 @@ function bootPondVisualBridge() {
   syncGamesCloudBanner();
   installAutoGlassBinding();
   lockImagesNonDraggable();
-
-  // r94 Boot-Time Silent Pre-Warming (runs in parallel with the 1.4s r87 CRT warm-up — ZERO first-paint blocking):
-  // 1) Immediately eagerly decode About avatar, social icons, Chatroom avatar, and Tools SVG icons into GPU memory.
-  // 2) Silently pre-import all dynamic route/data ES modules so cold-open module resolution is instant (<1ms).
-  const prewarmPondAssetsAndModules = () => {
-    document.querySelectorAll('#about .profile-avatar-image, #about .about-social-link img, #chatroom .chatroom-avatar').forEach((img) => {
-      if (img.loading === 'lazy') img.loading = 'eager';
-      img.removeAttribute('loading');
-      if (typeof img.decode === 'function') {
-        img.decode().catch(() => {});
-      }
-    });
-    const svgIcons = [
-      '/assets/pond-windows/svg/icon-palette.svg?v=20261122-pond-polish-r14',
-      '/assets/pond-windows/svg/icon-transfer.svg?v=20261122-pond-polish-r14',
-      '/assets/pond-windows/svg/icon-torii.svg?v=20261122-pond-polish-r14'
-    ];
-    svgIcons.forEach((url) => {
-      const im = new Image();
-      im.src = url;
-      if (typeof im.decode === 'function') im.decode().catch(() => {});
-    });
-    const routeModules = [
-      '../routes/knowledge.mjs?v=20260908-site-review-r1',
-      '../routes/videos.mjs?v=20260908-site-review-r1',
-      '../data/videos-content.mjs?v=20260718-resource-icons-layout-r1',
-      '../routes/resources.mjs?v=20261029-private-mcp-r1',
-      '../data/resources-content.mjs?v=20261029-private-mcp-r1',
-      '../routes/games.mjs?v=20260726-security-reliability-r1',
-      '../routes/chatroom.mjs?v=20260809-motion-polish-r2'
-    ];
-    routeModules.forEach((modUrl) => {
-      import(modUrl).catch(() => {});
-    });
-  };
-  // Fire immediately on next microtask/frame so pre-warming finishes well before the 1.4s boot animation ends!
-  window.setTimeout(prewarmPondAssetsAndModules, 60);
 
   window.addEventListener('hashchange', () => {
     syncVisualMode();

@@ -1,7 +1,22 @@
 // Critical-Path Asset Preloader for Persepolis-Style Single-Scene Warm-Up (r87)
 // Reports real critical progress (manifest + active-season flora); never blocks on non-critical assets.
 
-export const ASSET_CACHE_TAG = '20261125-refresh-warm-r91';
+export const ASSET_CACHE_TAG = '20261127-opt093-perf-r100';
+
+const DEFAULT_POND_PARTS = Object.freeze({
+  sakuraBranch: '/assets/pond-parts/part-sakura-branch.webp',
+  mapleBranch: '/assets/pond-parts/part-maple-branch.webp',
+  winterBranch: '/assets/pond-parts/part-winter-branch.webp',
+  lotusLeaf1: '/assets/pond-parts/part-lotus-leaf-1.webp',
+  lotusLeaf2: '/assets/pond-parts/part-lotus-leaf-2.webp',
+  lotusLeaf3: '/assets/pond-parts/part-lotus-leaf-3.webp',
+  lotusFlower: '/assets/pond-parts/part-lotus-flower.webp',
+  lotusBud: '/assets/pond-parts/part-lotus-bud.webp',
+  mapleLeaf1: '/assets/pond-parts/part-maple-leaf-1.webp',
+  mapleLeaf2: '/assets/pond-parts/part-maple-leaf-2.webp',
+  mapleLeaf3: '/assets/pond-parts/part-maple-leaf-3.webp',
+  iceOverlay: '/assets/pond-parts/part-ice-overlay.webp'
+});
 
 const SEASON_PART_MAP = {
   spring: ['sakuraBranch', 'lotusLeaf1', 'lotusLeaf2', 'lotusLeaf3'],
@@ -10,30 +25,32 @@ const SEASON_PART_MAP = {
   winter: ['winterBranch', 'iceOverlay']
 };
 
-export const STATIC_PRELOAD_IMAGES = [
-  // 5 Game covers (WebP + SVG, ~61 KB total)
-  '/assets/pond-windows/covers/cover-cat.webp?v=20261123-pond-polish-r56',
-  '/assets/pond-windows/covers/cover-darkroom.webp?v=20261123-pond-polish-r56',
-  '/assets/pond-windows/covers/cover-restart.webp?v=20261123-pond-polish-r56',
-  '/assets/pond-windows/covers/cover-2048.svg?v=20261123-pond-polish-r56',
-  '/assets/pond-windows/covers/cover-hextris.svg?v=20261123-pond-polish-r56',
-  // 6 Chatroom dot-matrix avatars (~3.2 KB total)
-  '/assets/pond-windows/svg/avatar-lotus.svg?v=20261122-pond-polish-r30',
-  '/assets/pond-windows/svg/avatar-koi.svg?v=20261122-pond-polish-r30',
-  '/assets/pond-windows/svg/avatar-moon.svg?v=20261122-pond-polish-r30',
-  '/assets/pond-windows/svg/avatar-leaf.svg?v=20261122-pond-polish-r30',
-  '/assets/pond-windows/svg/avatar-ripple.svg?v=20261122-pond-polish-r30',
-  '/assets/pond-windows/svg/avatar-star.svg?v=20261122-pond-polish-r30',
-  // 6 Tool & window dot-matrix icons (~2.2 KB total)
-  '/assets/pond-windows/svg/icon-palette.svg',
-  '/assets/pond-windows/svg/icon-transfer.svg',
-  '/assets/pond-windows/svg/icon-torii.svg',
-  '/assets/pond-windows/svg/icon-box.svg',
-  '/assets/pond-windows/svg/icon-layers.svg',
-  '/assets/pond-windows/svg/icon-vr.svg',
-  // 1 About page avatar
-  '/assets/images/lusu-about-avatar-256.png'
-];
+export const STATIC_PRELOAD_IMAGES = [];
+
+const loadedPartPromises = new Map();
+
+function ensureFloraPartLoaded(key, url, onFloraPart) {
+  if (!url) return Promise.resolve(null);
+  let pending = loadedPartPromises.get(key);
+  if (!pending) {
+    pending = loadAndDecodeImage(url).then((img) => {
+      if (!img) loadedPartPromises.delete(key);
+      return img;
+    });
+    loadedPartPromises.set(key, pending);
+  }
+  return pending.then((img) => {
+    if (img && onFloraPart) onFloraPart(key, img);
+    return img;
+  });
+}
+
+export async function loadSeasonFloraParts(seasonId, onFloraPart = null) {
+  const keys = SEASON_PART_MAP[seasonId] || SEASON_PART_MAP.summer;
+  await Promise.allSettled(
+    keys.map((key) => ensureFloraPartLoaded(key, DEFAULT_POND_PARTS[key], onFloraPart))
+  );
+}
 
 export function detectBootMode() {
   try {
@@ -79,56 +96,31 @@ export async function runPondBootPreload({
   onProgress = null,
   onComplete = null
 } = {}) {
-  let manifest = null;
-  const manifestUrl = '/assets/pond-assets-manifest.json?v=20261123-pond-polish-r55';
+  const manifest = { version: '2026-11-23-v3-webp', parts: DEFAULT_POND_PARTS, icons: {} };
+  const primaryKeys = SEASON_PART_MAP[seasonId] || SEASON_PART_MAP.summer;
+  const primaryParts = primaryKeys
+    .map((key) => [key, DEFAULT_POND_PARTS[key]])
+    .filter(([, url]) => Boolean(url));
 
-  // Fetch manifest + warm games catalog in parallel
-  const [manifestRes] = await Promise.allSettled([
-    fetch(manifestUrl, { cache: 'default' }).then((r) => (r.ok ? r.json() : null)),
-    fetch('/games/catalog.json', { cache: 'default' }).then((r) => (r.ok ? r.json() : null)).catch(() => null)
-  ]);
-  if (manifestRes.status === 'fulfilled' && manifestRes.value) {
-    manifest = manifestRes.value;
-  }
-
-  const allParts = manifest?.parts ? Object.entries(manifest.parts).filter(([, u]) => Boolean(u)) : [];
-  const primaryKeys = new Set(SEASON_PART_MAP[seasonId] || SEASON_PART_MAP.summer);
-  const primaryParts = allParts.filter(([k]) => primaryKeys.has(k));
-  const secondaryParts = allParts.filter(([k]) => !primaryKeys.has(k));
-
-  // Critical progress ONLY tracks manifest + active-season flora (never waits for non-critical assets!)
-  const criticalTotal = primaryParts.length + 1; // +1 for manifest fetch
-  let criticalLoaded = 1;
+  // Critical progress tracks ONLY active-season flora parts; inactive seasons and sub-window
+  // assets load on demand so first-screen request budgets stay lean across all routes.
+  const criticalTotal = Math.max(1, primaryParts.length);
+  let criticalLoaded = 0;
   const report = () => {
-    if (onProgress) onProgress(Math.min(1, criticalLoaded / Math.max(1, criticalTotal)), criticalLoaded, criticalTotal);
+    if (onProgress) onProgress(Math.min(1, criticalLoaded / criticalTotal), criticalLoaded, criticalTotal);
   };
   report();
 
   const runCriticalPart = async ([key, url]) => {
-    const img = await loadAndDecodeImage(url);
-    if (img && onFloraPart) onFloraPart(key, img);
+    await ensureFloraPartLoaded(key, url, onFloraPart);
     criticalLoaded++;
     report();
   };
 
-  const runBackgroundPart = async ([key, url]) => {
-    const img = await loadAndDecodeImage(url);
-    if (img && onFloraPart) onFloraPart(key, img);
-  };
-
-  // Phase A (critical): Active-season parts FIRST -> immediate GPU bake & critical progress completion
   await Promise.allSettled(primaryParts.map(runCriticalPart));
   if (onPrimaryFloraDone) onPrimaryFloraDone();
   if (onProgress) onProgress(1, criticalTotal, criticalTotal);
   if (onComplete) onComplete({ total: criticalTotal, completed: criticalTotal });
-
-  // Phase B (non-blocking background): Remaining 3 seasons + static sub-window assets
-  Promise.allSettled([
-    ...secondaryParts.map(runBackgroundPart),
-    ...STATIC_PRELOAD_IMAGES.map((url) => loadAndDecodeImage(url))
-  ]).then(() => {
-    if (onPrimaryFloraDone) onPrimaryFloraDone();
-  });
 
   return { manifest, total: criticalTotal, completed: criticalTotal };
 }

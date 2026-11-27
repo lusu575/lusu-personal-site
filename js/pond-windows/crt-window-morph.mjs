@@ -8,7 +8,7 @@
 //   * Close: zeta = 0.95, omega0 = 12, 400ms (re-measures live icon origin before close)
 // - Fully interruptible from live (tx, ty, sc) visual state; prefers-reduced-motion 100ms opacity fallback.
 
-import { CRT_GLASS_SPRINGS } from './crt-glass-config.mjs?v=20261124-window-morph-r65';
+import { CRT_GLASS_SPRINGS } from './crt-glass-config.mjs?v=20261125-glass-parity-r89';
 
 const DESKTOP_ICON_COORDS = {
   knowledge: { x: 0.395, y: 0.245 },

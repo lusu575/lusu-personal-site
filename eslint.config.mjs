@@ -95,7 +95,8 @@ export default [
       "games/a-dark-room/source/script/events/**",
       "games/kittens-game/source/{config,game,core,i18n}.js",
       "games/kittens-game/source/{lib,js,test,tools}/**",
-      "games/life-restart/source/{assets,libs}/**"
+      "games/life-restart/source/{assets,libs}/**",
+      "js/pond-windows/pond-site-bundle.mjs"
     ]
   },
   {
