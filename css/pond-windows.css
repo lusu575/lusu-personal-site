@@ -8477,4 +8477,648 @@ html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-counter {
   }
 }
 
+/* ============================================================
+   r105: Real-Phone Full Single-Column Responsive Overhaul (360/390/430),
+         Top-Bar Hit-Zone Separation (Spring Season vs Welcome vs Login),
+         Mobile Home 3x2 Icon Grid, Compact Single-Screen Tools List,
+         Full-Width Article Reader & Chatroom Input, and Restored Dock Animation
+   ============================================================ */
+
+/* --- 1. Top-Bar & Home Hit-Zone Separation (Spring Season Unblocked + Login ID Clickable) --- */
+html[data-ui-shell="mobile"][data-pond-mode] .site-shell > header [data-open-welcome],
+html[data-shell="mobile"][data-pond-mode] .site-shell > header [data-open-welcome] {
+  position: fixed !important;
+  top: 8px !important;
+  left: 12px !important;
+  right: auto !important;
+  width: 148px !important;
+  min-width: 148px !important;
+  max-width: 42vw !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  margin: 0 !important;
+  opacity: 0 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  z-index: 92 !important;
+}
+
+/* Disable welcome trigger pointer capture off Home or when a modal/popover is active */
+html[data-ui-shell="mobile"][data-pond-mode] body:not([data-route="home"]) .site-shell > header [data-open-welcome],
+html[data-pond-mode="welcome"] .site-shell > header [data-open-welcome],
+html[data-pond-mode]:has(#account-popover:not([hidden])) .site-shell > header [data-open-welcome] {
+  pointer-events: none !important;
+}
+
+/* Position real [data-account-toggle] over the Pond bottom-left ID button so both canvas taps
+   and direct DOM [data-account-toggle] clicks work seamlessly without being collapsed/unreachable */
+html[data-pond-mode="home"] .site-shell > header [data-account-toggle] {
+  position: fixed !important;
+  left: max(16px, calc(6.8vw - 12px)) !important;
+  bottom: max(14px, calc(6.5vh - 22px)) !important;
+  top: auto !important;
+  right: auto !important;
+  width: 54px !important;
+  min-width: 44px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  margin: 0 !important;
+  opacity: 0 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  z-index: 92 !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] body[data-route="home"] .site-shell > header [data-account-toggle],
+html[data-shell="mobile"][data-pond-mode] body[data-route="home"] .site-shell > header [data-account-toggle] {
+  position: fixed !important;
+  left: 16px !important;
+  bottom: calc(var(--mobile-dock-space, 88px) + 6px) !important;
+  top: auto !important;
+  right: auto !important;
+  width: 54px !important;
+  min-width: 44px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  margin: 0 !important;
+  opacity: 0 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  z-index: 92 !important;
+}
+
+/* Align Mobile Home DOM .desktop-icons to the exact 3-col x 2-row Pond icon grid
+   and disable pointer-events so #pond-desktop-canvas handles all 4 seasons + 6 icons + ripples */
+html[data-ui-shell="mobile"][data-pond-mode] #home .desktop-intro,
+html[data-shell="mobile"][data-pond-mode] #home .desktop-intro {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] #home .desktop-icons,
+html[data-shell="mobile"][data-pond-mode] #home .desktop-icons {
+  position: fixed !important;
+  top: 13% !important;
+  left: 5% !important;
+  right: 5% !important;
+  bottom: auto !important;
+  height: 37% !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
+  grid-auto-rows: auto !important;
+  align-items: center !important;
+  justify-items: center !important;
+  gap: 8px 6px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* --- 2. Restore Smooth Bottom Dock Tab Switch Animation --- */
+html[data-ui-shell="mobile"]:not([data-motion="off"]):not([data-motion="reduced"]) .mobile-dock-selection.is-dock-indicator-ready,
+html[data-shell="mobile"]:not([data-motion="off"]):not([data-motion="reduced"]) .mobile-dock-selection.is-dock-indicator-ready {
+  transition:
+    transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 180ms ease-out,
+    background-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+html[data-ui-shell="mobile"]:not([data-motion="off"]):not([data-motion="reduced"]) .xp-taskbar :is(.start-button, .taskbar-tabs button),
+html[data-shell="mobile"]:not([data-motion="off"]):not([data-motion="reduced"]) .xp-taskbar :is(.start-button, .taskbar-tabs button) {
+  transition:
+    color 180ms ease-out,
+    opacity 180ms ease-out,
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+html[data-ui-shell="mobile"]:not([data-motion="off"]):not([data-motion="reduced"]) .xp-taskbar :is(.start-button, .taskbar-tabs button) :is(.mini-icon, .start-windows-icon),
+html[data-ui-shell="mobile"]:not([data-motion="off"]):not([data-motion="reduced"]) .xp-taskbar .start-button::before {
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 220ms ease-out !important;
+}
+
+html[data-ui-shell="mobile"]:not([data-motion="off"]):not([data-motion="reduced"]) .xp-taskbar :is(.start-button.active, .taskbar-tabs button.active) :is(.mini-icon, .start-windows-icon),
+html[data-ui-shell="mobile"]:not([data-motion="off"]):not([data-motion="reduced"]) .xp-taskbar .start-button.active::before {
+  transform: translate3d(0, -1.5px, 0) scale(1.06) !important;
+  filter: drop-shadow(0 0 8px rgba(136, 252, 226, 0.75)) !important;
+}
+
+/* --- 3. Knowledge Article Reader (#article-detail) Mobile Single-Column Full-Width Switch --- */
+html[data-pond-mode="article"] #knowledge #knowledge-list,
+html[data-pond-mode="article"] #knowledge #knowledge-categories,
+html[data-pond-mode="article"] #knowledge #knowledge-searchbar,
+html[data-ui-shell="mobile"] #knowledge .folder-layout.is-reading #knowledge-list,
+html[data-ui-shell="mobile"] #knowledge .folder-layout.is-reading #knowledge-categories {
+  display: none !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail-body {
+  font-size: 16px !important;
+  line-height: 1.72 !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode="article"] [data-article-scroll-top]:not([hidden]) {
+  position: fixed !important;
+  right: 22px !important;
+  bottom: calc(var(--mobile-dock-space, 88px) + 16px) !important;
+  left: auto !important;
+  top: auto !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  z-index: 48 !important;
+}
+
+@media (orientation: portrait) {
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    gap: 10px !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    flex: 1 1 auto !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding: 8px 10px 28px !important;
+    box-sizing: border-box !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] .article-reader-sidebar {
+    grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
+    position: static !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    border-right: none !important;
+    border-bottom: 1px dotted rgba(176, 230, 224, 0.28) !important;
+    padding: 0 0 8px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] .article-reader-sidebar > .article-back-button {
+    position: static !important;
+    align-self: flex-start !important;
+    width: auto !important;
+    min-height: 44px !important;
+    padding: 7px 14px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] .article-toc > p,
+  html[data-ui-shell="mobile"][data-pond-mode="article"] .article-toc-tip {
+    display: none !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail-toc {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail-toc-list {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    gap: 6px !important;
+    max-height: none !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    border-left: none !important;
+    padding: 2px 18px 8px 2px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail-toc-list .article-toc-link {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: min(72vw, 250px) !important;
+    min-height: 44px !important;
+    height: auto !important;
+    padding: 7px 10px !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail .article-detail-card,
+  html[data-ui-shell="mobile"][data-pond-mode="article"] .article-detail-card {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    display: block !important;
+    grid-template-columns: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding: 6px 6px 64px !important;
+    box-sizing: border-box !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail .article-detail-head,
+  html[data-ui-shell="mobile"][data-pond-mode="article"] .article-detail-head {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 6px !important;
+    margin-bottom: 10px !important;
+    padding-bottom: 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail #article-detail-meta,
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail-meta {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail #article-detail-title,
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail-title {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: clamp(19px, 5.4vw, 23px) !important;
+    line-height: 1.28 !important;
+    margin: 4px 0 !important;
+    overflow-wrap: anywhere !important;
+    box-sizing: border-box !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail #article-detail-summary,
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail #article-detail-body,
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail-summary,
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail-body {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-height: 540px) and (orientation: portrait) {
+  html[data-ui-shell="mobile"][data-pond-mode="article"] .article-reader-sidebar {
+    grid-template-columns: minmax(124px, 40%) minmax(0, 1fr) !important;
+    grid-template-rows: auto !important;
+    align-items: start !important;
+    gap: 6px !important;
+    padding: 0 0 4px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] .article-reader-sidebar > .article-back-button {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    padding-inline: 8px !important;
+    font-size: 12px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail-toc {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    max-height: 82px !important;
+    overflow: hidden !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail-toc-list {
+    max-height: 80px !important;
+    padding: 0 18px 8px 0 !important;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail {
+    display: grid !important;
+    grid-template-columns: 172px minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    align-items: start !important;
+    gap: 8px 10px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding: 8px 8px 28px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] .article-reader-sidebar {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    position: sticky !important;
+    top: 8px !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: 8px !important;
+    height: 248px !important;
+    max-height: 248px !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    padding: 0 8px 0 0 !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] .article-toc > p,
+  html[data-ui-shell="mobile"][data-pond-mode="article"] .article-toc-tip {
+    display: none !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail-toc {
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail-toc-list {
+    display: grid !important;
+    gap: 4px !important;
+    height: 100% !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding: 4px 18px 28px 4px !important;
+    border-left: none !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] #article-detail-toc-list .article-toc-link {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 44px !important;
+    white-space: normal !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode="article"] .article-detail-card {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 8px 10px 64px !important;
+  }
+}
+
+/* --- 4. Chatroom Input Row Full-Width Fix (#chat-message-input) --- */
+html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-compose {
+  display: block !important;
+  width: 100% !important;
+  padding: 6px 10px !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-input-shell {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  width: 100% !important;
+  gap: 8px !important;
+  padding: 4px 6px 4px 14px !important;
+  border-radius: 999px !important;
+  border: 1.4px solid rgba(190, 246, 240, 0.58) !important;
+  background: rgba(4, 18, 22, 0.78) !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] #chatroom #chat-message-input {
+  flex: 1 1 0% !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  max-height: 68px !important;
+  padding: 10px 4px !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 15px !important;
+  line-height: 1.4 !important;
+  color: #f0fefa !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chatroom-counter {
+  flex: 0 0 auto !important;
+  position: static !important;
+  margin: 0 4px !important;
+  font-size: 12px !important;
+  white-space: nowrap !important;
+}
+
+html[data-ui-shell="mobile"][data-pond-mode] #chatroom .chat-send-button {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 68px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  max-height: 44px !important;
+  padding: 0 14px !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+/* --- 5. Tools List (#resources) Compact Single-Screen Layout & Hidden Category Gap Fix --- */
+html[data-pond-mode="resources"] #resource-categories[hidden],
+html[data-pond-mode="resources"] #resource-categories:empty,
+html[data-ui-shell="mobile"] #resource-categories[hidden],
+html[data-ui-shell="mobile"] #resource-categories:empty {
+  display: none !important;
+  min-height: 0 !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+@media (orientation: portrait) {
+  html[data-ui-shell="mobile"][data-pond-mode] #resources #resource-list,
+  html[data-ui-shell="mobile"][data-pond-mode] #resource-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 7px !important;
+    padding: 2px 10px 10px !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #resources #resource-list > .resource-card,
+  html[data-ui-shell="mobile"][data-pond-mode] #resource-list > .resource-card {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto !important;
+    grid-template-areas:
+      "main main"
+      "tags action" !important;
+    align-items: center !important;
+    gap: 4px 8px !important;
+    padding: 7px 10px !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    flex: 0 0 auto !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #resources #resource-list .resource-card .resource-main,
+  html[data-ui-shell="mobile"][data-pond-mode] #resource-list .resource-card .resource-main {
+    grid-area: main !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    min-height: 0 !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #resources #resource-list .resource-card.pond-tool-hero h2,
+  html[data-ui-shell="mobile"][data-pond-mode] #resource-list .resource-card.pond-tool-hero h2 {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding-top: 0 !important;
+    margin: 0 !important;
+    font-size: 15px !important;
+    line-height: 1.2 !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #resources #resource-list .resource-card.pond-tool-hero .resource-icon-image,
+  html[data-ui-shell="mobile"][data-pond-mode] #resource-list .resource-card.pond-tool-hero .resource-icon-image {
+    width: 26px !important;
+    height: 26px !important;
+    flex: 0 0 26px !important;
+    align-self: center !important;
+    margin: 0 !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #resources #resource-list .resource-card > p,
+  html[data-ui-shell="mobile"][data-pond-mode] #resources #resource-list .resource-card .resource-main > p,
+  html[data-ui-shell="mobile"][data-pond-mode] #resource-list .resource-card > p,
+  html[data-ui-shell="mobile"][data-pond-mode] #resource-list .resource-card .resource-main > p {
+    min-height: 0 !important;
+    font-size: 11.8px !important;
+    line-height: 1.32 !important;
+    margin: 0 !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #resources #resource-list .resource-card .resource-details,
+  html[data-ui-shell="mobile"][data-pond-mode] #resource-list .resource-card .resource-details {
+    margin: 0 !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #resources #resource-list .resource-card .resource-details > summary,
+  html[data-ui-shell="mobile"][data-pond-mode] #resource-list .resource-card .resource-details > summary {
+    min-height: 44px !important;
+    height: 44px !important;
+    padding: 0 10px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #resources #resource-list .resource-card > .card-action,
+  html[data-ui-shell="mobile"][data-pond-mode] #resource-list .resource-card > .card-action {
+    grid-area: action !important;
+    width: auto !important;
+    min-width: 96px !important;
+    min-height: 44px !important;
+    height: 44px !important;
+    padding: 0 16px !important;
+    margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  html[data-ui-shell="mobile"][data-pond-mode] #resources #resource-list .resource-tags,
+  html[data-ui-shell="mobile"][data-pond-mode] #resource-list .resource-tags {
+    grid-area: tags !important;
+    gap: 3px 5px !important;
+    margin: 0 !important;
+  }
+}
+
+/* --- 6. Account Login/Register Popover (#account-popover) & Video Modal (#video-modal) Mobile Polish --- */
+html[data-ui-shell="mobile"] #account-popover :is(#account-form, .account-field:not([hidden]), #account-form label:not([hidden])) {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"] #account-popover .account-control-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"] #account-popover .account-control-row > input,
+html[data-ui-shell="mobile"] #account-popover #account-form input:not([type="checkbox"]):not([type="radio"]) {
+  flex: 1 1 0% !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  min-height: 44px !important;
+  height: 44px !important;
+  box-sizing: border-box !important;
+}
+
+html[data-ui-shell="mobile"] #account-popover .account-control-row > .account-password-toggle {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 88px !important;
+  min-height: 44px !important;
+}
+
+html[data-ui-shell="mobile"] #account-popover #account-submit-button,
+html[data-ui-shell="mobile"] #account-popover #account-form [data-account-submit] {
+  width: 100% !important;
+  min-height: 44px !important;
+  height: 46px !important;
+  max-height: 48px !important;
+  flex: 0 0 auto !important;
+  border-radius: 999px !important;
+}
+
+html[data-ui-shell="mobile"] #video-modal .window-titlebar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+}
+
+html[data-ui-shell="mobile"] #video-modal .window-titlebar > span {
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+html[data-ui-shell="mobile"] #video-modal #modal-title {
+  display: block !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  font-size: 15px !important;
+}
+
+html[data-ui-shell="mobile"] #video-modal .window-controls {
+  flex: 0 0 auto !important;
+  position: static !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+
 

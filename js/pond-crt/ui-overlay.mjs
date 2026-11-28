@@ -269,12 +269,12 @@ const SEASON_EMBLEMS = {
 };
 
 export const DESKTOP_ICONS = [
-  { id: 'knowledge', route: '#knowledge', x: 0.395, y: 0.245, mx: 0.28, my: 0.22, lx: 0.36, ly: 0.22, label: { zh: '知识库', en: 'Knowledge', ja: '知識庫' } },
-  { id: 'videos',    route: '#videos',    x: 0.65,  y: 0.235, mx: 0.72, my: 0.21, lx: 0.64, ly: 0.21, label: { zh: '视频',   en: 'Videos',    ja: '動画' } },
-  { id: 'resources', route: '#resources', x: 0.88,  y: 0.345, mx: 0.78, my: 0.41, lx: 0.86, ly: 0.32, label: { zh: '工具',   en: 'Tools',     ja: 'ツール' } },
-  { id: 'games',     route: '#games',     x: 0.12,  y: 0.495, mx: 0.22, my: 0.43, lx: 0.14, ly: 0.44, label: { zh: '游戏',   en: 'Games',     ja: 'ゲーム' } },
-  { id: 'chatroom',  route: '#chatroom',  x: 0.30,  y: 0.740, mx: 0.28, my: 0.63, lx: 0.32, ly: 0.62, label: { zh: '聊天室', en: 'Chat',      ja: 'チャット' } },
-  { id: 'about',     route: '#about',     x: 0.85,  y: 0.745, mx: 0.74, my: 0.64, lx: 0.82, ly: 0.63, label: { zh: '关于',   en: 'About',     ja: '概要' } }
+  { id: 'knowledge', route: '#knowledge', x: 0.395, y: 0.245, mx: 0.20, my: 0.22, lx: 0.22, ly: 0.26, label: { zh: '知识库', en: 'Knowledge', ja: '知識庫' } },
+  { id: 'videos',    route: '#videos',    x: 0.65,  y: 0.235, mx: 0.50, my: 0.22, lx: 0.50, ly: 0.26, label: { zh: '视频',   en: 'Videos',    ja: '動画' } },
+  { id: 'resources', route: '#resources', x: 0.88,  y: 0.345, mx: 0.80, my: 0.22, lx: 0.78, ly: 0.26, label: { zh: '工具',   en: 'Tools',     ja: 'ツール' } },
+  { id: 'games',     route: '#games',     x: 0.12,  y: 0.495, mx: 0.20, my: 0.41, lx: 0.22, ly: 0.54, label: { zh: '游戏',   en: 'Games',     ja: 'ゲーム' } },
+  { id: 'chatroom',  route: '#chatroom',  x: 0.30,  y: 0.740, mx: 0.50, my: 0.41, lx: 0.50, ly: 0.54, label: { zh: '聊天室', en: 'Chat',      ja: 'チャット' } },
+  { id: 'about',     route: '#about',     x: 0.85,  y: 0.745, mx: 0.80, my: 0.41, lx: 0.78, ly: 0.54, label: { zh: '关于',   en: 'About',     ja: '概要' } }
 ];
 
 function animeEaseOutBack(t) {
@@ -412,10 +412,10 @@ export class PondUIOverlay {
 
   _getSliderRect(w = this.width, h = this.height) {
     if (this._isPortraitMobile(w, h)) {
-      return { x0: 0.63, x1: 0.91, y: 0.048 };
+      return { x0: 0.59, x1: 0.91, y: 0.048 };
     }
     if (this._isMobileViewport(w, h)) {
-      return { x0: 0.74, x1: 0.93, y: 0.068 };
+      return { x0: 0.72, x1: 0.93, y: 0.068 };
     }
     return this.sliderRect;
   }
@@ -433,19 +433,12 @@ export class PondUIOverlay {
   hitTest(nx, ny) {
     const isMob = this._isMobileViewport();
     const isPort = this._isPortraitMobile();
-    // Top clock/date HUD -> opens Welcome & Recent Updates modal
-    if (isPort) {
-      if (ny >= 0.01 && ny <= 0.095 && nx >= 0.04 && nx <= 0.56) {
-        return { type: 'clock' };
-      }
-    } else if (ny >= 0.01 && ny <= 0.095 && nx >= 0.34 && nx <= 0.66) {
-      return { type: 'clock' };
-    }
 
+    // 1. Season Slider hit-tested FIRST so nothing can steal Spring (index 0)
     const sRect = this._getSliderRect();
     const sy = sRect.y;
-    const hitY = isMob ? 0.056 : 0.048;
-    const hitXPad = isMob ? 0.042 : 0.03;
+    const hitY = isMob ? 0.064 : 0.048;
+    const hitXPad = isMob ? 0.052 : 0.03;
     if (Math.abs(ny - sy) < hitY && nx >= sRect.x0 - hitXPad && nx <= sRect.x1 + hitXPad) {
       let bestIdx = 0;
       let bestDist = Infinity;
@@ -460,8 +453,17 @@ export class PondUIOverlay {
       return { type: 'season', seasonId: SEASON_ORDER[bestIdx], index: bestIdx };
     }
 
-    const iconHitX = isPort ? 0.11 : (isMob ? 0.075 : 0.055);
-    const iconHitY = isPort ? 0.082 : 0.075;
+    // 2. Top clock/date HUD -> opens Welcome & Recent Updates modal
+    if (isPort) {
+      if (ny >= 0.01 && ny <= 0.095 && nx >= 0.03 && nx <= 0.48) {
+        return { type: 'clock' };
+      }
+    } else if (ny >= 0.01 && ny <= 0.095 && nx >= 0.34 && nx <= 0.66) {
+      return { type: 'clock' };
+    }
+
+    const iconHitX = isPort ? 0.135 : (isMob ? 0.11 : 0.055);
+    const iconHitY = isPort ? 0.088 : (isMob ? 0.11 : 0.075);
     for (const ic of DESKTOP_ICONS) {
       const pos = this._getIconCoord(ic);
       const dx = nx - pos.x;
@@ -497,8 +499,10 @@ export class PondUIOverlay {
 
   // Returns { canvas, updated } so WebGL only uploads uiTex when needed -> huge 120 FPS win!
   render(t, dt, cssWidth, cssHeight) {
-    // Cap UI canvas at crisp 1x CSS resolution (up to 1600px wide) — plenty sharp & 4x lighter than DPR 2!
-    const scaleCap = Math.min(1.25, 1600 / Math.max(1, cssWidth));
+    // Use 2x supersampling on mobile viewports so icons and CJK labels stay razor-sharp through the CRT shader
+    const scaleCap = cssWidth <= 760
+      ? 2.0
+      : Math.min(1.25, 1600 / Math.max(1, cssWidth));
     const w = Math.max(320, Math.round(cssWidth * scaleCap));
     const h = Math.max(240, Math.round(cssHeight * scaleCap));
     if (this.width !== w || this.height !== h) {
@@ -637,10 +641,18 @@ export class PondUIOverlay {
   }
 
   _drawDesktopIcons(ctx, w, h, t, dt) {
-    const baseRadius = Math.max(26, Math.min(w, h * 1.45) * 0.040);
-    const spriteHalf = Math.max(3.1, baseRadius * 0.088);
-    const labelSize = Math.max(13, Math.round(baseRadius * 0.37));
-    const labelFont = `400 ${labelSize}px "PingFang SC", "Microsoft YaHei", "Hiragino Sans", sans-serif`;
+    const isMob = this._isMobileViewport(w, h);
+    const isPort = this._isPortraitMobile(w, h);
+    const baseRadius = isPort
+      ? Math.max(30, Math.round(w * 0.080))
+      : isMob
+        ? Math.max(28, Math.round(Math.min(w, h * 1.45) * 0.052))
+        : Math.max(26, Math.min(w, h * 1.45) * 0.040);
+    const spriteHalf = Math.max(3.1, baseRadius * (isMob ? 0.096 : 0.088));
+    const labelSize = isMob
+      ? Math.max(14, Math.round(baseRadius * 0.44))
+      : Math.max(13, Math.round(baseRadius * 0.37));
+    const labelFont = `${isMob ? '600' : '400'} ${labelSize}px "PingFang SC", "Microsoft YaHei", "Hiragino Sans", sans-serif`;
 
     ctx.save();
     ctx.font = labelFont;

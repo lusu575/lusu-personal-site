@@ -4499,22 +4499,18 @@ async function auditWallpaperPreloadNetwork(client, server) {
       server.setWallpaperBaseAssetCaching(false);
     }
     const failures = [];
-    const expectedHref = `${scenario.expectedPath}${scenario.expectedSearch}`;
     if (state.reduced) failures.push("no-preference motion emulation was not active");
     if (state.shell !== scenario.expectedShell || state.theme !== "day") {
       failures.push(`wallpaper shell/theme bootstrap is wrong: ${JSON.stringify(state)}`);
     }
-    if (scenario.expectedShell === "desktop") {
-      if (state.pondMode !== "home") failures.push(`desktop wallpaper scenario did not activate Pond desktop mode: ${JSON.stringify(state)}`);
-      if (state.preload !== null) failures.push(`desktop pond mode injected deprecated AVIF wallpaper preload: ${JSON.stringify(state.preload)}`);
-      if (requests.length !== 0) failures.push(`desktop pond mode requested deprecated AVIF wallpaper assets: ${JSON.stringify(requests)}`);
-    } else {
-      if (state.preload?.href !== expectedHref || state.preload?.type !== scenario.expectedType || state.preload?.srcset) {
-        failures.push(`preload does not exactly match the applied CSS resource: ${JSON.stringify(state.preload)}`);
-      }
-      if (requests.length !== 1 || requests[0]?.path !== scenario.expectedPath || requests[0]?.search !== scenario.expectedSearch) {
-        failures.push(`expected one exact wallpaper request for ${expectedHref}: ${JSON.stringify(requests)}`);
-      }
+    if (state.pondMode !== "home") {
+      failures.push(`${scenario.expectedShell} wallpaper scenario did not activate Pond mode: ${JSON.stringify(state)}`);
+    }
+    if (state.preload !== null) {
+      failures.push(`${scenario.expectedShell} pond mode injected deprecated wallpaper preload: ${JSON.stringify(state.preload)}`);
+    }
+    if (requests.length !== 0) {
+      failures.push(`${scenario.expectedShell} pond mode requested deprecated wallpaper assets: ${JSON.stringify(requests)}`);
     }
     results.push({
       kind: "wallpaper-preload-network",

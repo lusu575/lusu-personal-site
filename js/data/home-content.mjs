@@ -2,6 +2,35 @@
 export const homeContent = Object.freeze({
   "updates": [
     {
+      "article_id": "seed-update-2026-11-28-mobile-pond-all-r105",
+      "slug": "2026-11-28-mobile-pond-all-r105",
+      "category": "site-updates",
+      "tags": [
+        "mobile",
+        "pond",
+        "ui",
+        "a11y"
+      ],
+      "cover_image": "",
+      "status": "published",
+      "is_pinned": 0,
+      "created_at": "2026-11-28",
+      "updated_at": "2026-11-28",
+      "published_at": "2026-11-28",
+      "fallbackOnly": true,
+      "icon": "system",
+      "title": {
+        "zh": "手机端全页面真机适配、首页三列网格与四季/Dock 交互修复上线（r105）",
+        "en": "Mobile Full-Page Real-Device Adaptation, 3x2 Home Grid & Season/Dock UX Fixes (r105)",
+        "ja": "モバイル全ページ実機最適化・ホーム 3×2 グリッド＆四季／Dock 操作修正の反映（r105）"
+      },
+      "summary": {
+        "zh": "完成手机端全量一级与二级页面真机适配：知识库文章页改为分屏切换与 100% 全宽单栏阅读、聊天室输入框占满剩余宽度且冷开 0ms 即显、工具区消除顶部空白并一屏展示全部工具、首页 6 入口重排为规整三列网格与高清点阵、解耦顶部公告与春季按钮热区并对齐左下 ID 登录热区、恢复底部 Dock 切换平滑过渡动画，同时彻底封死旧版星空移动壳回退路径并下线旧移动壁纸素材。",
+        "en": "Completed full mobile real-device adaptation across all primary and secondary pages: full-width single-column Knowledge article reader, full-width Chatroom input bar with instant 0ms cold open, single-screen compact Tools list without top blank gap, neat 3x2 mobile Home icon grid with crisp 2x supersampled CRT rendering, non-overlapping Spring season slider and ID login/welcome hit zones, smooth Dock tab switch animation, and complete retirement of legacy mobile wallpaper assets.",
+        "ja": "モバイル全ページ（主要画面・全サブ画面）の実機最適化を完了：知識庫記事ページの画面切替＆100% 全幅 1 カラム表示、チャット入力欄の全幅展開と 0ms 即時開窓、ツール一覧の上部余白解消と 1 画面一覧表示、ホーム 6 アイコンの整然とした 3×2 グリッドと高精細 CRT 描画、左上案内と「春」季節スライダー／左下 ID ログインのタッチ領域分離、下部 Dock 切替アニメーション復元、および旧モバイル壁紙アセットの完全廃止を実施しました。"
+      }
+    },
+    {
       "article_id": "seed-update-2026-11-27-mobile-pond-crt-r103",
       "slug": "2026-11-27-mobile-pond-crt-r103",
       "category": "site-updates",
@@ -111,34 +140,6 @@ export const homeContent = Object.freeze({
         "zh": "按站长指令将工具雷达 2 篇（2026-08-04、2026-07-28）与 AI 分类 1 篇（2026-06-14）文章以可恢复方式调整为草稿状态（status = 'draft'），前台列表与文章直达链接均不再展示正文，原始数据完整保留。",
         "en": "Reversibly moved three articles (two Tool Radar posts from 2026-08-04 / 2026-07-28 and one AI guide from 2026-06-14) to draft status so they no longer appear in public listings or direct article URLs while keeping underlying records intact.",
         "ja": "ツールレーダー 2 件（2026-08-04・2026-07-28）および AI 記事 1 件（2026-06-14）を復元可能な下書き状態（status = 'draft'）へ変更し、公開一覧および直リンクからの閲覧を停止しました。"
-      }
-    },
-    {
-      "article_id": "seed-update-2026-11-25-quiet-icons-unclipped-r98",
-      "slug": "2026-11-25-quiet-icons-unclipped-r98",
-      "category": "site-updates",
-      "tags": [
-        "ui",
-        "pond",
-        "glass"
-      ],
-      "cover_image": "",
-      "status": "published",
-      "is_pinned": 0,
-      "created_at": "2026-11-25",
-      "updated_at": "2026-11-25",
-      "published_at": "2026-11-25",
-      "fallbackOnly": true,
-      "icon": "system",
-      "title": {
-        "zh": "桌面图标安静开窗（去点击闪光）＋全站标题栏图标与光晕直线切边根治（r98）",
-        "en": "Quiet Desktop Icon Launch (No Click Flash) & Unclipped Window Titlebar Icons/Glows (r98)",
-        "ja": "デスクトップアイコンのクリック発光撤去＆全ウィンドウタイトルバー縁切れ根治（r98）"
-      },
-      "summary": {
-        "zh": "取消池塘桌面 6 个点阵启动图标点击时的径向闪光脉冲（点下去安静开窗，悬停呈现保持不变）；在共享层统一解除全站所有窗口标题栏 .window-titlebar > span 与子 span 的 overflow: hidden，彻底消除游戏区/关于/工具/知识库/视频/聊天室标题图标左边与标题文字光晕的直线硬切。",
-        "en": "Removed the clickPulse flash halo on the 6 pond desktop launch icons so clicking opens windows quietly while keeping hover states intact; unified overflow: visible on all window titlebar wrappers and icon/text spans across every window to eliminate straight-line drop-shadow and text-shadow clipping.",
-        "ja": "池デスクトップ 6 アイコンのクリック時発光パルスを撤去し静かに開窓するように改善（ホバー表示は維持）。あわせて全ウィンドウのタイトルバー親 span の overflow: hidden を共通層で解除し、アイコン左端やタイトル文字光彩の直線切れを一掃しました。"
       }
     }
   ]

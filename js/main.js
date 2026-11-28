@@ -2701,7 +2701,7 @@ function wallpaperAssetCandidates(theme) {
   const mobile = document.documentElement.dataset.uiShell === "mobile"
     || window.matchMedia?.("(max-width: 760px), (max-height: 520px) and (pointer: coarse)")?.matches;
   if (mobile) {
-    return [`/assets/images/mobile-wallpapers/${theme}.webp?v=20260711-calm-motion-r13`];
+    return [];
   }
   const width = wallpaperAssetWidth();
   const staticWallpaper = document.documentElement.dataset.motion !== "full";

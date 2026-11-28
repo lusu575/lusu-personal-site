@@ -127,13 +127,16 @@ export class PondCRTEngine {
       || (Number(navigator.deviceMemory) > 0 && Number(navigator.deviceMemory) <= 2)
       || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
 
+    const isMobileInit = window.innerWidth <= 760
+      || (window.matchMedia && window.matchMedia('(max-width: 760px), (max-height: 520px) and (pointer: coarse)').matches);
+
     this.crtConfig = {
-      curvature: 0.068,
-      dotPitchCssPx: 4.1,
-      scanlinePitchCssPx: 3.6,
+      curvature: isMobileInit ? 0.032 : 0.068,
+      dotPitchCssPx: isMobileInit ? 2.15 : 4.1,
+      scanlinePitchCssPx: isMobileInit ? 2.1 : 3.6,
       bloomThreshold: 0.30,
       bloomIntensity: this.isSoftwareRenderer ? 0 : (lowGpu ? 0.28 : 0.62),
-      chromaticEdge: 0.0115
+      chromaticEdge: isMobileInit ? 0.0065 : 0.0115
     };
 
     this.ripples = [];
@@ -546,8 +549,13 @@ export class PondCRTEngine {
     const rect = this.canvas.getBoundingClientRect();
     const cssW = Math.max(320, Math.round(rect.width || window.innerWidth));
     const cssH = Math.max(240, Math.round(rect.height || window.innerHeight));
-    // 1.0x CSS resolution on hardware GPUs; 0.5x on CPU software WebGL (4x fewer fragment pixels).
-    const renderScale = this.isSoftwareRenderer ? 0.5 : 1.0;
+    const isMobView = cssW <= 760 || (cssH <= 520 && cssW <= 960);
+    this.crtConfig.curvature = isMobView ? 0.032 : 0.068;
+    this.crtConfig.dotPitchCssPx = isMobView ? 2.15 : 4.1;
+    this.crtConfig.scanlinePitchCssPx = isMobView ? 2.1 : 3.6;
+    this.crtConfig.chromaticEdge = isMobView ? 0.0065 : 0.0115;
+    // 1.5x CSS resolution on mobile hardware GPUs for crisp CJK labels; 0.5x on CPU software WebGL.
+    const renderScale = this.isSoftwareRenderer ? 0.5 : (isMobView ? 1.5 : 1.0);
     const dpr = renderScale;
     const w = Math.max(240, Math.round(cssW * renderScale));
     const h = Math.max(160, Math.round(cssH * renderScale));

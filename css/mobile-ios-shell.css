@@ -1482,26 +1482,17 @@ html[data-ui-shell="mobile"] {
   --mobile-frame-mid: #8cadd7;
   --mobile-frame-highlight: #f8fbff;
   --mobile-frame-surface: #e9f1fb;
-  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/day.webp?v=20260711-calm-motion-r13");
+  --mobile-wallpaper: none;
   min-height: 100%;
-  background: #071536;
-  color-scheme: light;
+  background: #030e10;
+  color-scheme: dark;
 }
 
-html[data-ui-shell="mobile"][data-time-theme="morning"] {
-  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/morning.webp?v=20260711-calm-motion-r13");
-}
-
-html[data-ui-shell="mobile"][data-time-theme="day"] {
-  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/day.webp?v=20260711-calm-motion-r13");
-}
-
-html[data-ui-shell="mobile"][data-time-theme="dusk"] {
-  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/dusk.webp?v=20260711-calm-motion-r13");
-}
-
+html[data-ui-shell="mobile"][data-time-theme="morning"],
+html[data-ui-shell="mobile"][data-time-theme="day"],
+html[data-ui-shell="mobile"][data-time-theme="dusk"],
 html[data-ui-shell="mobile"][data-time-theme="night"] {
-  --mobile-wallpaper: url("../assets/images/mobile-wallpapers/night.webp?v=20260711-calm-motion-r13");
+  --mobile-wallpaper: none;
 }
 
 html[data-ui-shell="mobile"] body {

@@ -17030,9 +17030,39 @@ insert into article_translations (translation_id, article_id, lang, title, summa
 - **池 CRT エンジン同源化とモバイル専用設計**：モバイルホームで WebGL2 深夜の池 CRT エンジン（錦鯉・四季・1.0 秒風切替・Persepolis `uWarm 0→1` 起動顕像）を稼働し、縦画面（`390×844`／`375×667`／`359×500`）と横画面（`844×390`）に最適化した 6 点陣アイコン・上部時計・季節スライダー・ドック上の `ID · 中 / EN / 日` を配置。下部 6 ルート CRT ドック（44px 折りたたみハンドル付き）と全ウィンドウ機能を完全維持。
 - **8 項目のモバイル監査完遂**：コールド／ウォーム開窓一致（ローディング枠ゼロ・Ready-Gate・About 変位 0px）、起動顕像前の季節テクスチャ準備、タッチ操作での連続単調 `--cg-edge-boost` による点滅解消、タイトルバーとカード光彩の直線切れ解消、押下時 `0px` 変位、全画面＋サブページの MengTo 液態ガラス完全バインド、単層 GPU ウィンドウ開閉ズームと飛行中スクロールバー非表示、起動アイコンの静かな開窓。', '2026-11-27', '2026-11-27') on conflict(translation_id) do nothing;
 
-insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261127-mobile-pond-crt-r103', '2026-11-27')
+insert into articles (article_id, slug, category, tags, cover_image, status, is_pinned, view_count, created_at, updated_at, published_at) values ('seed-update-2026-11-28-mobile-pond-all-r105', '2026-11-28-mobile-pond-all-r105', 'site-updates', '["mobile","pond","ui","a11y"]', '', 'published', 0, 0, '2026-11-28', '2026-11-28', '2026-11-28') on conflict(article_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-28-mobile-pond-all-r105-zh', 'seed-update-2026-11-28-mobile-pond-all-r105', 'zh', '手机端全页面真机适配、首页三列网格与四季/Dock 交互修复上线（r105）', '完成手机端全量一级与二级页面真机适配：知识库文章页改为分屏切换与 100% 全宽单栏阅读、聊天室输入框占满剩余宽度且冷开 0ms 即显、工具区消除顶部空白并一屏展示全部工具、首页 6 入口重排为规整三列网格与高清点阵、解耦顶部公告与春季按钮热区并对齐左下 ID 登录热区、恢复底部 Dock 切换平滑过渡动画，同时彻底封死旧版星空移动壳回退路径并下线旧移动壁纸素材。', '# 手机端全页面真机适配、首页三列网格与四季/Dock 交互修复上线（r105）
+
+本次根据站长真机实测与全量页面排查，完成手机端全部一级与二级页面的单栏/流式适配及交互修复：
+
+- **知识库文章阅读页全宽单栏切换**：移动端进入文章正文后自动隐藏文章列表、分类栏与搜索栏，解除桌面双栏与右内边距挤压，顶部提供「返回文章列表」与横向章节目录，正文 100% 全宽单栏排版。
+- **聊天室全宽输入行与即时开窗**：移除输入框内层冗余胶囊边框，输入框占满剩余宽度，字数计数与发送按钮固定右侧；修复移动端隐藏头像导致的冷开等待，点击即刻打开。
+- **工具区紧凑一屏排布**：消除标题栏下方隐藏分类区占高造成的空白，工具卡改为紧凑横向图标标题与同行标签/打开按钮，一屏完整显示在线画板、临时互传、日语的言外之意全部入口。
+- **首页规整三列网格、四季「春天」可点与登录直达**：首页 6 入口改为规整 `3 列 × 2 行` 居中网格并提升点阵清晰度；将左上欢迎入口热区与右上四季滑块完全错开、左下 `ID` 对齐账号登录触发区，春夏秋冬四格与账号弹窗均一点即应。
+- **Dock 切换动效恢复与旧移动壳彻底下线**：恢复底部 Dock 选中胶囊滑动与图标动效；首屏无条件锁定池塘模式并下线删除旧版星空移动壁纸素材，杜绝任何概率回退旧版路径。', '2026-11-28', '2026-11-28') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-28-mobile-pond-all-r105-en', 'seed-update-2026-11-28-mobile-pond-all-r105', 'en', 'Mobile Full-Page Real-Device Adaptation, 3x2 Home Grid & Season/Dock UX Fixes (r105)', 'Completed full mobile real-device adaptation across all primary and secondary pages: full-width single-column Knowledge article reader, full-width Chatroom input bar with instant 0ms cold open, single-screen compact Tools list without top blank gap, neat 3x2 mobile Home icon grid with crisp 2x supersampled CRT rendering, non-overlapping Spring season slider and ID login/welcome hit zones, smooth Dock tab switch animation, and complete retirement of legacy mobile wallpaper assets.', '# Mobile Full-Page Real-Device Adaptation, 3x2 Home Grid & Season/Dock UX Fixes (r105)
+
+Based on real-device testing and a full page-by-page mobile audit, this release delivers comprehensive layout and interaction fixes across all mobile primary and secondary pages:
+
+- **Full-Width Single-Column Knowledge Article Reader**: Opening an article on mobile hides the list/category/search panels and switches to a 100% full-width single-column reader with a top Back button and horizontal TOC strip.
+- **Full-Width Chatroom Input & Instant Cold Open**: Expanded `#chat-message-input` to fill all remaining width with fixed right counter and Send button, and skipped hidden mobile avatar wait for instant 0ms window open.
+- **Compact Single-Screen Tools List**: Removed the blank gap caused by hidden `#resource-categories` and compacted `.resource-card` so all 3 tools fit cleanly on one screen without scrolling.
+- **Neat 3x2 Home Icon Grid & Non-Overlapping Spring / Login Hit Zones**: Re-arranged the 6 Home icons into a balanced 3-column × 2-row grid with 2x UI canvas supersampling; separated the top-left Welcome clock trigger from the top-right Spring season stop and aligned `[data-account-toggle]` over the bottom-left `ID` control.
+- **Restored Dock Tab Animation & Legacy Mobile Shell Retirement**: Restored smooth Dock selection sliding transitions and permanently removed legacy mobile wallpaper assets and fallback paths.', '2026-11-28', '2026-11-28') on conflict(translation_id) do nothing;
+insert into article_translations (translation_id, article_id, lang, title, summary, content_markdown, created_at, updated_at) values ('seed-update-2026-11-28-mobile-pond-all-r105-ja', 'seed-update-2026-11-28-mobile-pond-all-r105', 'ja', 'モバイル全ページ実機最適化・ホーム 3×2 グリッド＆四季／Dock 操作修正の反映（r105）', 'モバイル全ページ（主要画面・全サブ画面）の実機最適化を完了：知識庫記事ページの画面切替＆100% 全幅 1 カラム表示、チャット入力欄の全幅展開と 0ms 即時開窓、ツール一覧の上部余白解消と 1 画面一覧表示、ホーム 6 アイコンの整然とした 3×2 グリッドと高精細 CRT 描画、左上案内と「春」季節スライダー／左下 ID ログインのタッチ領域分離、下部 Dock 切替アニメーション復元、および旧モバイル壁紙アセットの完全廃止を実施しました。', '# モバイル全ページ実機最適化・ホーム 3×2 グリッド＆四季／Dock 操作修正の反映（r105）
+
+実機検証および全ページのモバイル総点検に基づき、全主要画面・サブ画面のレイアウトと操作性を一括改善しました：
+
+- **知識庫記事ページの 100% 全幅 1 カラム切替**：モバイルで記事を開くと一覧・カテゴリ・検索バーを隠して全幅 1 カラムのリーダー画面へ切り替え、上部に「記事一覧へ戻る」と横スクロール目次を配置しました。
+- **チャット入力欄の全幅化と即時開窓**：内側ピル枠を外して入力欄を残余幅いっぱいに広げ、モバイル非表示アバター待機をスキップして即時開窓を実現しました。
+- **ツール一覧の 1 画面コンパクト配置**：非表示カテゴリ欄による上部空白を解消し、全 3 ツールが 1 画面に収まるコンパクトなカード配置に改めました。
+- **ホーム 3×2 グリッド・「春」季節ボタン＆ID ログインのヒット領域最適化**：ホーム 6 アイコンを整然とした 3 列 × 2 行グリッドへ再配置して高精細化。左上の案内トリガーと右上の「春」スライダーの重なりを解消し、左下 `ID` ボタンで直接ログイン窓を開けるようにしました。
+- **Dock 切替アニメーション復元と旧モバイル壁紙の完全廃止**：下部 Dock の選択インジケーター遷移アニメーションを復元し、旧モバイル壁紙アセットとフォールバック経路を完全撤去しました。', '2026-11-28', '2026-11-28') on conflict(translation_id) do nothing;
+
+insert into site_runtime_state (key, value, updated_at) values ('article_seed_version', '20261128-mobile-pond-all-r105', '2026-11-28')
 on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at;
 insert into site_data_migrations (version, applied_at, source) values ('20261126-unpublish-three-articles-r1', '2026-11-26', 'schema') on conflict(version) do nothing;
 insert into site_data_migrations (version, applied_at, source) values ('20261126-d1-quota-p0-r1', '2026-11-26', 'schema') on conflict(version) do nothing;
 insert into site_data_migrations (version, applied_at, source) values ('20261127-mobile-44px-welcome-focus-r102', '2026-11-27', 'schema') on conflict(version) do nothing;
 insert into site_data_migrations (version, applied_at, source) values ('20261127-mobile-pond-crt-r103', '2026-11-27', 'schema') on conflict(version) do nothing;
+insert into site_data_migrations (version, applied_at, source) values ('20261128-mobile-pond-all-r105', '2026-11-28', 'schema') on conflict(version) do nothing;

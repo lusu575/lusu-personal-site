@@ -1,5 +1,11 @@
 # PROJECT_CONTEXT.md
 
+## 2026-11-28 手机端真机实测全量适配、首页三列网格与旧移动壁纸下线（r105）
+
+- 手机端与桌面端在 `<head>` 首屏即无条件锁定 `html[data-pond-mode]` 并隐藏旧壳 `.wallpaper-root`、`#wallpaper-time-switch`、`.mobile-statusbar`，`pond-site-bridge.mjs` 不再存在任何移除 `data-pond-mode` 或回退旧星空移动壳的分支；旧版移动壁纸 `assets/images/mobile-wallpapers/{morning,day,dusk,night}.webp` 已从仓库物理下线删除，全端旧壁纸预载请求恒为 `0`。
+- 移动端首页（`#home`）采用 `3 列 × 2 行` 居中规整点阵图标网格（`x = 0.20 / 0.50 / 0.80, y = 0.22 / 0.41`，`2x` UI 离屏超采样与 `2.15px` 移动专属 CRT 点距）；左上 `[data-open-welcome]`（`left: 12px; top: 8px; width: 148px; height: 44px`）与右上四季粒子滑块（`x = 0.59..0.91`）热区完全错开，左下 `[data-account-toggle]`（`54×44px`）精准覆盖 `ID` 按钮，春夏秋冬四季、公告欢迎窗、登录弹窗与三语切换均无热区互抢；底部 Dock 保持 `.mobile-dock-selection` `280ms` 平滑滑动与图标上浮发光过渡。
+- 知识库文章页在移动端打开后隐藏列表/分类/搜索栏并切换为 100% 全宽单栏阅读器（解除桌面 `205px` 左栏与 `.article-detail-card` `126px` 右内边距）；聊天室输入框占满剩余宽度且冷开跳过隐藏 `.chatroom-avatar` 实现 0ms 即显；工具区隐藏空分类栏并采用紧凑卡片，一屏完整呈现全部 3 个工具入口。
+
 ## 2026-11-27 手机端池塘 CRT 同源整体改造与八项体验修复（r103–r104）
 
 - 手机端已全面接入与 PC 端同源的 WebGL2 午夜池塘 CRT 引擎（`html[data-pond-mode]` 覆盖桌面与移动视口）：首页直接渲染动态池塘、锦鲤、四季景物、1.0 秒风吹切季、Persepolis `uWarm 0→1` 启动显影、6 个点阵入口图标、顶部时钟与季节滑块，以及 Dock 上方高对比 `ID · 中 / EN / 日` 角标；同时保留底部 6 入口磨砂 CRT Dock（含 44px 收起/展开手柄）与各窗口全部既有业务逻辑和数据。

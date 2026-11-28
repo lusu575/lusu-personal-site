@@ -104,38 +104,27 @@
       const activeTheme = themes.includes(preview) ? preview : storedTheme || localTheme;
       document.documentElement.dataset.timeTheme = activeTheme;
 
-      const mobileShell = window.matchMedia?.("(max-width: 760px), (max-height: 520px) and (pointer: coarse)")?.matches;
       const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
       document.documentElement.dataset.motion = reducedMotion ? "reduced" : "full";
-      if (!mobileShell) {
-        const rawHash = (window.location.hash || "").replace(/^#\/?/, "").toLowerCase();
-        const pathName = (window.location.pathname || "").toLowerCase();
-        let initialPondMode = "home";
-        if (/^\/articles\/[^/]+/i.test(pathName) || /^knowledge\/[^/]+/i.test(rawHash)) {
-          initialPondMode = "article";
-        } else if (rawHash.startsWith("knowledge")) {
-          initialPondMode = "knowledge";
-        } else if (rawHash.startsWith("videos")) {
-          initialPondMode = "videos";
-        } else if (rawHash.startsWith("resources")) {
-          initialPondMode = "resources";
-        } else if (rawHash.startsWith("games")) {
-          initialPondMode = "games";
-        } else if (rawHash.startsWith("chatroom")) {
-          initialPondMode = "chatroom";
-        } else if (rawHash.startsWith("about")) {
-          initialPondMode = "about";
-        }
-        document.documentElement.dataset.pondMode = initialPondMode;
-      } else {
-        const preload = document.createElement("link");
-        preload.rel = "preload";
-        preload.as = "image";
-        preload.type = "image/webp";
-        preload.href = `/assets/images/mobile-wallpapers/${activeTheme}.webp?v=20260711-calm-motion-r13`;
-        preload.dataset.wallpaperPreload = `${activeTheme}:mobile`;
-        document.head.appendChild(preload);
+      const rawHash = (window.location.hash || "").replace(/^#\/?/, "").toLowerCase();
+      const pathName = (window.location.pathname || "").toLowerCase();
+      let initialPondMode = "home";
+      if (/^\/articles\/[^/]+/i.test(pathName) || /^knowledge\/[^/]+/i.test(rawHash)) {
+        initialPondMode = "article";
+      } else if (rawHash.startsWith("knowledge") || rawHash.startsWith("blog")) {
+        initialPondMode = "knowledge";
+      } else if (rawHash.startsWith("videos")) {
+        initialPondMode = "videos";
+      } else if (rawHash.startsWith("resources")) {
+        initialPondMode = "resources";
+      } else if (rawHash.startsWith("games")) {
+        initialPondMode = "games";
+      } else if (rawHash.startsWith("chatroom")) {
+        initialPondMode = "chatroom";
+      } else if (rawHash.startsWith("about")) {
+        initialPondMode = "about";
       }
+      document.documentElement.dataset.pondMode = initialPondMode;
     })();
   </script>
   <style id="pond-first-paint-guard">
@@ -146,7 +135,11 @@
         #030e10 !important;
       color: #eafbf8;
     }
-    html[data-pond-mode] .wallpaper-layer {
+    html[data-pond-mode] .wallpaper-layer,
+    html[data-pond-mode] .wallpaper-root,
+    html[data-pond-mode] #wallpaper-time-switch,
+    html[data-pond-mode] .mobile-statusbar,
+    html[data-pond-mode] .desktop-intro {
       display: none !important;
     }
     html[data-pond-mode]:not([data-ui-shell="mobile"]):not([data-shell="mobile"]) .xp-taskbar {
@@ -171,12 +164,12 @@
   <link rel="stylesheet" href="/css/style.css?v=20260908-site-review-r1">
   <link rel="stylesheet" data-mobile-shell-style href="/css/mobile-ios-shell.css?v=20261029-private-mcp-r1">
   <link rel="stylesheet" href="/css/motion-system.css?v=20260908-site-review-r1">
-  <script>(function(){try{{var h=(location.hash||'').replace(/^#/,'').split('?')[0];var m=h==='knowledge'?'knowledge':h.indexOf('article-')===0?'article':h==='videos'?'videos':h==='resources'?'resources':h==='games'?'games':h==='chatroom'?'chatroom':h==='about'?'about':'home';var d=document.documentElement.dataset;d.pondMode=m;var red=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;var navType=(performance.getEntriesByType&&performance.getEntriesByType('navigation')[0]&&performance.getEntriesByType('navigation')[0].type)||'';if(m==='home'&&!red&&navType!=='back_forward'){d.pondBoot='active';var finishBoot=function(){if(d.pondBoot!=='done'){d.pondBoot='done';d.pondBootWebgl='ready';}try{var eng=window.__pondVisualBridge&&window.__pondVisualBridge.getEngine&&window.__pondVisualBridge.getEngine();if(eng&&eng.bootActive)eng.skipBoot();}catch(e){}};window.setTimeout(finishBoot,2500);window.addEventListener('pointerdown',finishBoot,{passive:true,once:true});window.addEventListener('keydown',finishBoot,{once:true});}else{d.pondBoot='done';d.pondBootWebgl='ready';}}}catch(e){}})();</script>
+  <script>(function(){try{{var h=(location.hash||'').replace(/^#/,'').split('?')[0];var m=(h==='knowledge'||h==='blog')?'knowledge':h.indexOf('article-')===0?'article':h==='videos'?'videos':h==='resources'?'resources':h==='games'?'games':h==='chatroom'?'chatroom':h==='about'?'about':(document.documentElement.dataset.pondMode||'home');var d=document.documentElement.dataset;d.pondMode=m;var mob=window.matchMedia&&window.matchMedia('(max-width: 760px), (max-height: 520px) and (pointer: coarse)').matches;var red=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;var navType=(performance.getEntriesByType&&performance.getEntriesByType('navigation')[0]&&performance.getEntriesByType('navigation')[0].type)||'';if(m==='home'&&!mob&&!red&&navType!=='back_forward'){d.pondBoot='active';var finishBoot=function(){if(d.pondBoot!=='done'){d.pondBoot='done';d.pondBootWebgl='ready';}try{var eng=window.__pondVisualBridge&&window.__pondVisualBridge.getEngine&&window.__pondVisualBridge.getEngine();if(eng&&eng.bootActive)eng.skipBoot();}catch(e){}};window.setTimeout(finishBoot,2500);window.addEventListener('pointerdown',finishBoot,{passive:true,once:true});window.addEventListener('keydown',finishBoot,{once:true});}else{d.pondBoot='done';d.pondBootWebgl='ready';}}}catch(e){}})();</script>
   <style id="pond-boot-critical">
     html[data-pond-mode]{background:#04141a radial-gradient(ellipse at 50% 48%,#0a2c35 0%,#05171e 56%,#030d12 100%) !important}
     html[data-pond-mode] .wallpaper-root,html[data-pond-mode] #wallpaper-time-switch{display:none !important;animation:none !important}
   </style>
-  <link rel="stylesheet" href="/css/pond-windows.css?v=20261127-mobile-ci-verify-r104">
+  <link rel="stylesheet" href="/css/pond-windows.css?v=20261128-mobile-pond-all-r105">
   <style id="pixel-cursor-r3">
     @media (hover: hover) and (pointer: fine) and (forced-colors: none) {
       html,
@@ -703,6 +696,6 @@
   <script src="/js/telemetry.js?v=20260802-traffic-budget-r1"></script>
   <script src="/js/ui-motion.js?v=20260908-site-review-r1"></script>
   <script type="module" src="/js/main.js?v=20261029-private-mcp-r1"></script>
-  <script type="module" src="/js/pond-windows/pond-site-bundle.mjs?v=20261127-mobile-ci-verify-r104"></script>
+  <script type="module" src="/js/pond-windows/pond-site-bundle.mjs?v=20261128-mobile-pond-all-r105"></script>
 </body>
 </html>
